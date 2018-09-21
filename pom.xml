@@ -7,7 +7,18 @@
     <groupId>us.fortherealm.plugin</groupId>
     <artifactId>FTRCore</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <name>FTRCore</name>
+
+    <description>The core plugin for FTR</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <fileOutput>C:/Users/Owner/Desktop/For the Realm Custom Plugins</fileOutput>
+    </properties>
+
     <build>
+        <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -17,23 +28,78 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <version>3.7.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.spigotmc:spigot-api</exclude>
+                                    <exclude>org.bukkit:craftbukkit</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-files-on-build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${fileOutput}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <include>${project.artifactId}-${project.version}.jar</include>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
-
-
-    <name>FTRCore</name>
-
-    <description>The core plugin for FTR</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <repositories>
         <!-- Spigot Repo -->
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -47,11 +113,9 @@
         </dependency>
         <!-- ArmorEquip API -->
         <dependency>
-            <groupId>com.codingforcookies.armorequip</groupId>
+            <groupId>com.github.Arnuh</groupId>
             <artifactId>ArmorEquipEvent</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>C:/Users/Owner/Desktop/For the Realm Custom Plugins/ArmorEquipEvent 1.12.2.jar</systemPath>
+            <version>1.6.5</version>
         </dependency>
         <!-- CraftBukkit -->
         <dependency>

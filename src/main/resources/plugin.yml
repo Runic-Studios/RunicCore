@@ -3,7 +3,6 @@ version: 1.0.0
 main: me.skyfallin.plugin.Main
 description: A plugin for managing all custom items on the server.
 author: Skyfallin_
-
 commands:
   artifactinfo:
     usage: /<command>
@@ -12,4 +11,5 @@ commands:
     usage: /<command>
     description: returns info...
   getrune:
-    usage: /<command>
+    usage: Error?
+    description: Obtain a rune of the given skill type.

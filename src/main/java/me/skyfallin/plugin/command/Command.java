@@ -1,5 +1,6 @@
 package me.skyfallin.plugin.command;
 
+import me.skyfallin.plugin.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -18,7 +19,8 @@ public abstract class Command implements ICommand {
         this.usage = usage;
         this.argsCount = argsCount;
 
-        CommandExecutor.addCommand(label, this);
+        // CommandListener.addCommand(label, this);
+        Main.getPlugin(Main.class).getLogger().info("Command initialized: " + label);
     }
 
     @Override
@@ -39,7 +41,7 @@ public abstract class Command implements ICommand {
         {
             Player player = (Player) sender;
 
-            if(player.isOp() || player.hasPermission("perm.admin"))
+            if(player.isOp() || player.hasPermission("ftr.staffmode"))
             {
                 this.onOPCommand(player, args);
             }
