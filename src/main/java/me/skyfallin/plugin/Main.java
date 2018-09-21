@@ -1,6 +1,6 @@
 package me.skyfallin.plugin;
 
-import me.skyfallin.plugin.commands.Commands;
+import me.skyfallin.plugin.command.CommandExecutor;
 import me.skyfallin.plugin.events.*;
 import me.skyfallin.plugin.healthbars.Healthbars;
 import me.skyfallin.plugin.listeners.HealthScaleListener;
@@ -18,11 +18,14 @@ public class Main extends JavaPlugin {
     private static Main plugin;
 
     private static SkillManager skillManager;
+    private static CommandExecutor commandExecutor;
 
     public void onEnable() {
 
         plugin = this;
         skillManager = new SkillManager(plugin);
+        commandExecutor = new CommandExecutor(plugin);
+
         this.s = Bukkit.getScoreboardManager().getMainScoreboard();
         getLogger().info(" §aFTRCore has been enabled.");
         getServer().getPluginManager().registerEvents(new SkillUseEvent(), this);
@@ -42,7 +45,6 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
-        getServer().getPluginManager().registerEvents(new Commands(), this);
         skillManager.registerSkills();
         skillManager.startCooldownTask();
         loadConfig();
@@ -53,9 +55,14 @@ public class Main extends JavaPlugin {
         return skillManager;
     }
 
+    public static CommandExecutor getCommandExecutor() {
+        return commandExecutor;
+    }
+
     public void onDisable() {
         getLogger().info(" has been disabled.");
         skillManager = null;
+        commandExecutor = null;
         plugin = null;
     }
 
