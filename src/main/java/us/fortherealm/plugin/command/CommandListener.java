@@ -14,17 +14,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class CommandListener implements Listener, CommandExecutor {
-    private static Main plugin;
     private static Map<String, Command> commands;
 
-    public CommandListener(Plugin plugin)
+    public CommandListener()
     {
-        commands = new HashMap<String, Command>();
-        plugin = plugin;
-        plugin.getLogger().info("Listener initialized.");
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        //this.addCommands();
-
+        commands = new ConcurrentSkipListMap<String, Command>(String.CASE_INSENSITIVE_ORDER) {};
+        Bukkit.getServer().getPluginManager().registerEvents(this, Main.getInstance());
+        this.addCommands();
     }
 
     @Override
@@ -48,17 +44,9 @@ public class CommandListener implements Listener, CommandExecutor {
         return commands;
     }
 
-    public static void addCommand(String label, Command command) {
-        //plugin.getLogger().info("Registered command: " + label);
-        Bukkit.getServer().getLogger().info(commands + "");
-        Main.getCommandExecutor().getCommands().put(label, command);
-    }
-
-    /*
     public void addCommands() {
-        addCommand("getrune", new GetRune());
+       this.getCommands().put("getrune", new GetRune());
     }
-    */
 
     private void reloadCommands() {}
 }

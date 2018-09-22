@@ -15,7 +15,6 @@ import java.util.*;
 
 public class Healthbars implements Listener {
     private static Map<UUID, Bar> mobs = new HashMap<>();
-
     private static Map<EntityType, Integer> mobHeight = new HashMap<EntityType, Integer>();
 
     public Healthbars() {

@@ -16,13 +16,15 @@ import java.util.*;
 public class SkillManager {
 
     private List<Skill> skillList;
-    private Main plugin;
+    private Main plugin = Main.getInstance();
     private HashMap<UUID, HashMap<Skill, Long>> cooldown;
 
-    public SkillManager(Plugin plugin) {
-        this.plugin = (Main) plugin;
+    public SkillManager() {
         this.skillList = new ArrayList<>();
         this.cooldown = new HashMap<>();
+
+        this.registerSkills();
+        this.startCooldownTask();
     }
 
     public void registerSkills() {

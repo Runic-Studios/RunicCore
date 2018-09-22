@@ -53,7 +53,7 @@ public class Rejuvenate extends Skill {
                     // entityCheck.checkNearby(location, player, plugin);
 
                 }
-            }.runTaskTimer(Main.getPlugin(Main.class), 0L, 1L); // 1 tick, the speed
+            }.runTaskTimer(Main.getInstance(), 0L, 1L); // 1 tick, the speed
         }
     }
 

@@ -28,6 +28,6 @@ public class Bubble {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(Main.getPlugin(Main.class), delay, period);
+        }.runTaskTimer(Main.getInstance(), delay, period);
     }
 }

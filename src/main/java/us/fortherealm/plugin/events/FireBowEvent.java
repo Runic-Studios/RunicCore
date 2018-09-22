@@ -52,7 +52,7 @@ public class FireBowEvent implements Listener {
                     Player p = (Player)e.getEntity();
                     ((CraftPlayer)p).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object)0);
                 }
-            }.runTaskLater(Main.getPlugin(Main.class), 3);
+            }.runTaskLater(Main.getInstance(), 3);
         }
     }
 

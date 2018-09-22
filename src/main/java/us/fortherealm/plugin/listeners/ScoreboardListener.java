@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class ScoreboardListener implements Listener {
 
     ScoreboardUtil boardUtil = new ScoreboardUtil();
-    private Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getInstance();
 
     // *** ON PLAYER LOGIN, UPDATES ALL HEALTH BAR SCORES TO THEIR RESPECTIVE PLAYER'S CURRENT HP *** //
     // *** MOST OF THE CODE FOR THIS IS IN ITEMS MAIN or SCOREBOARD UTIL BTW *** //

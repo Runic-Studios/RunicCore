@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class HealthScaleListener implements Listener {
 
-    private Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getInstance();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e)

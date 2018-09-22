@@ -14,20 +14,50 @@ import us.fortherealm.plugin.events.*;
 
 public class Main extends JavaPlugin {
 
-    private Scoreboard s;
-    private static Main plugin;
-
+    private static Main instance;
+    private static Scoreboard scoreboard;
     private static SkillManager skillManager;
-    private static CommandListener commandExecutor;
+    private static CommandListener commandListener;
 
     public void onEnable() {
 
-        plugin = this;
-        skillManager = new SkillManager(plugin);
-        commandExecutor = new CommandListener(plugin);
+        instance = this;
+        skillManager = new SkillManager();
+        commandListener = new CommandListener();
 
-        this.s = Bukkit.getScoreboardManager().getMainScoreboard();
+        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+
         getLogger().info(" §aFTRCore has been enabled.");
+
+        this.registerEvents();
+        this.loadConfig();
+    }
+
+    public static Main getInstance() { return instance; }
+
+    public static SkillManager getSkillManager(){
+        return skillManager;
+    }
+
+    public static CommandListener getCommandListener() {
+        return commandListener;
+    }
+
+    public static Scoreboard getScoreboard() { return scoreboard; }
+
+    public void onDisable() {
+        getLogger().info(" has been disabled.");
+        skillManager = null;
+        commandListener = null;
+        instance = null;
+    }
+
+    private void loadConfig() {
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+    }
+
+    private void registerEvents() {
         getServer().getPluginManager().registerEvents(new SkillUseEvent(), this);
         getServer().getPluginManager().registerEvents(new FirstJoinEvent(), this);
         getServer().getPluginManager().registerEvents(new DeathEvent(), this);
@@ -45,29 +75,5 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
-        skillManager.registerSkills();
-        skillManager.startCooldownTask();
-        loadConfig();
-
-    }
-
-    public static SkillManager getSkillManager(){
-        return skillManager;
-    }
-
-    public static CommandListener getCommandExecutor() {
-        return commandExecutor;
-    }
-
-    public void onDisable() {
-        getLogger().info(" has been disabled.");
-        skillManager = null;
-        commandExecutor = null;
-        plugin = null;
-    }
-
-    public void loadConfig() {
-        getConfig().options().copyDefaults(true);
-        saveConfig();
     }
 }

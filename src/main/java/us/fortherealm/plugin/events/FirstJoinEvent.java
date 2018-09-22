@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class FirstJoinEvent implements Listener {
 
-    private Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getInstance();
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {

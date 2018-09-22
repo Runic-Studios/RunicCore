@@ -50,7 +50,7 @@ public class Comet extends Skill {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(Main.getPlugin(Main.class), 0L, 1L);
+        }.runTaskTimer(Main.getInstance(), 0L, 1L);
     }
 
     public void entityCheck(Player player, Location cometLocation) {

@@ -14,7 +14,7 @@ import org.bukkit.material.Dye;
 
 public class SheepDyeEvent implements Listener {
 
-    private Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getInstance();
 
     // *** MESSING WITH DYE EVENT IS MESSY, SO THIS SIMPLY GIVES THE ITEM BACK *** //
     @EventHandler

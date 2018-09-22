@@ -18,9 +18,6 @@ public abstract class Command implements ICommand {
         this.permission = permission;
         this.usage = usage;
         this.argsCount = argsCount;
-
-        CommandListener.addCommand(label, this);
-        Main.getPlugin(Main.class).getLogger().info("Command initialized: " + label);
     }
 
     @Override

@@ -17,7 +17,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 public class ScoreboardHealthListener implements Listener {
 
     ScoreboardUtil boardUtil = new ScoreboardUtil();
-    private Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getInstance();
 
     @EventHandler
     public void onDamage (EntityDamageEvent e) {

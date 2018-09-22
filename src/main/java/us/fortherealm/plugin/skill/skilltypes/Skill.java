@@ -15,7 +15,7 @@ public abstract class Skill implements ISkill, Listener {
     private ChatColor color;
     private ClickType clickType;
     private double cooldown;
-    protected Main plugin;
+    protected Main plugin = Main.getInstance();
     protected boolean doCooldown = true;
 
     public Skill(String name, String description, ChatColor color, ClickType clickType, double cooldown) {
@@ -24,7 +24,6 @@ public abstract class Skill implements ISkill, Listener {
         this.color = color;
         this.clickType = clickType;
         this.cooldown = cooldown;
-        plugin = Main.getPlugin(Main.class);
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
