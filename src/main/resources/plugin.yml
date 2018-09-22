@@ -1,7 +1,7 @@
 name: FTRCore
-version: 1.0.0
-main: me.skyfallin.plugin.Main
-description: A plugin for managing all custom items on the server.
+version: 2.0.0
+main: us.fortherealm.plugin.Main
+description: Core plugin for the "For the Realm" server
 author: Skyfallin_
 commands:
   artifactinfo:
