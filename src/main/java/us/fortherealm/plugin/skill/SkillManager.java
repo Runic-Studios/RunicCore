@@ -27,47 +27,6 @@ public class SkillManager {
         this.startCooldownTask();
     }
 
-    public void registerSkills() {
-        this.skillList.add(new Fireball());
-        this.skillList.add(new Frostbolt());
-        this.skillList.add(new Speed());
-        this.skillList.add(new Heal());
-        this.skillList.add(new Parry());
-        this.skillList.add(new Blink());
-        this.skillList.add(new Comet());
-        this.skillList.add(new Windstride());
-        this.skillList.add(new IceNova());
-        this.skillList.add(new Rejuvenate());
-        this.skillList.add(new Discharge());
-        this.skillList.add(new Enrage());
-        this.skillList.add(new Deliverance());
-        this.skillList.add(new SmokeBomb());
-        this.skillList.add(new Backstab());
-        this.skillList.add(new Barrage());
-        this.skillList.add(new Grapple());
-    }
-
-    public void startCooldownTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-
-                for(Player player : Bukkit.getOnlinePlayers()) {
-                    if(cooldown.containsKey(player.getUniqueId())) {
-                        HashMap<Skill, Long> skills = cooldown.get(player.getUniqueId());
-                        List<String> cdString = new ArrayList<>();
-
-                        for(Skill skill : skills.keySet()) {
-                            cdString.add(ChatColor.RED + skill.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, skill) +/*+ ChatColor.RED +*/ "s");
-                        }
-
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
-                    }
-                }
-            }
-        }.runTaskTimer(this.plugin, 0, 10);
-    }
-
     public List<Skill> getSkills() {
         return this.skillList;
     }
@@ -136,4 +95,45 @@ public class SkillManager {
             return null;
     }
 
+
+    private void registerSkills() {
+        this.skillList.add(new Fireball());
+        this.skillList.add(new Frostbolt());
+        this.skillList.add(new Speed());
+        this.skillList.add(new Heal());
+        this.skillList.add(new Parry());
+        this.skillList.add(new Blink());
+        this.skillList.add(new Comet());
+        this.skillList.add(new Windstride());
+        this.skillList.add(new IceNova());
+        this.skillList.add(new Rejuvenate());
+        this.skillList.add(new Discharge());
+        this.skillList.add(new Enrage());
+        this.skillList.add(new Deliverance());
+        this.skillList.add(new SmokeBomb());
+        this.skillList.add(new Backstab());
+        this.skillList.add(new Barrage());
+        this.skillList.add(new Grapple());
+    }
+
+    private void startCooldownTask() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                for(Player player : Bukkit.getOnlinePlayers()) {
+                    if(cooldown.containsKey(player.getUniqueId())) {
+                        HashMap<Skill, Long> skills = cooldown.get(player.getUniqueId());
+                        List<String> cdString = new ArrayList<>();
+
+                        for(Skill skill : skills.keySet()) {
+                            cdString.add(ChatColor.RED + skill.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, skill) +/*+ ChatColor.RED +*/ "s");
+                        }
+
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
+                    }
+                }
+            }
+        }.runTaskTimer(this.plugin, 0, 10);
+    }
 }

@@ -1,9 +1,8 @@
 package us.fortherealm.plugin.skill.skills;
 
+import org.bukkit.*;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
-import us.fortherealm.plugin.util.BlocksUtil;
-import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -35,8 +34,8 @@ public class Blink extends Skill {
             currentBlock = iter.next();
             Material currentBlockType = currentBlock.getType();
 
-            if (BlocksUtil.transparentBlocks.contains(currentBlockType)) {
-                if (BlocksUtil.transparentBlocks.contains(currentBlock.getRelative(BlockFace.UP).getType())) {
+            if (currentBlockType.isTransparent()) {
+                if (currentBlock.getRelative(BlockFace.UP).getType().isTransparent()) {
                     validFinalBlock = currentBlock;
                 }
             }

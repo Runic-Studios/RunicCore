@@ -44,7 +44,7 @@ public class CommandListener implements Listener, CommandExecutor {
         return commands;
     }
 
-    public void addCommands() {
+    private void addCommands() {
        this.getCommands().put("getrune", new GetRune());
     }
 
