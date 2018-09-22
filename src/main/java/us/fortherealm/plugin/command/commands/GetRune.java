@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class GetRune extends Command {
     public GetRune() {
-        super("getrune", 1, new String[]{"/getrune", "<skillname>"}, "&eObtain a rune with given skill name.", "ftr.command.getrune");
+        super("getrune", "&eObtain a rune with given skill name.", "ftr.command.getrune");
     }
 
     @Override

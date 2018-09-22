@@ -23,13 +23,7 @@ public class FirstJoinEvent implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                player.sendMessage(ChatColor.GREEN + "Welcome back to the project, " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + ".");
-            }
-        }, 1);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.sendMessage(ChatColor.GREEN + "Welcome back to the project, " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "."), 1);
 
 
         if (!player.hasPlayedBefore()) {
@@ -74,13 +68,9 @@ public class FirstJoinEvent implements Listener {
             player.getInventory().setItem(0, sparringsword);
             player.getInventory().setItem(1, firerune);
             player.getInventory().setItem(8, hearthstone);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    player.setHealthScale((player.getMaxHealth() / 12.5));//ex: (50 / 12.5) = 4.0 = 2 hearts
-                    player.setHealth(player.getMaxHealth());//default hp
-                }
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                player.setHealthScale((player.getMaxHealth() / 12.5));//ex: (50 / 12.5) = 4.0 = 2 hearts
+                player.setHealth(player.getMaxHealth());//default hp
             }, 18); // ~ 1 second, shorter than 20 ticks so as to let the scoreboard update.
         }
     }

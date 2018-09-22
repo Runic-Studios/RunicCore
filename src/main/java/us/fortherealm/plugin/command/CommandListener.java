@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.command;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.commands.GetRune;
 import org.bukkit.ChatColor;
@@ -8,12 +9,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import us.fortherealm.plugin.command.commands.PartyCMD;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class CommandListener implements Listener, CommandExecutor {
+public class CommandListener implements Listener {
     private static Map<String, Command> commands;
 
     public CommandListener()
@@ -23,7 +25,6 @@ public class CommandListener implements Listener, CommandExecutor {
         this.addCommands();
     }
 
-    @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args)
     {
         for(String cmd : commands.keySet()) {
@@ -46,6 +47,7 @@ public class CommandListener implements Listener, CommandExecutor {
 
     private void addCommands() {
        this.getCommands().put("getrune", new GetRune());
+       this.getCommands().put("party", new PartyCMD());
     }
 
     private void reloadCommands() {}

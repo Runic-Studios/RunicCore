@@ -37,6 +37,7 @@
                 <excludes>
                   <exclude>org.spigotmc:spigot-api</exclude>
                   <exclude>org.bukkit:craftbukkit</exclude>
+                  <exclude>com.github.Arnuh:ArmorEquipEvent</exclude>
                 </excludes>
               </artifactSet>
               <finalName>${project.artifactId}-${project.version}</finalName>
@@ -113,9 +114,15 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.github.Arnuh</groupId>
+      <artifactId>ArmorEquipEvent</artifactId>
+      <version>1.6.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.12-R0.1-SNAPSHOT</version>
+      <version>1.12.2-R0.1-SNAPSHOT</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/craftbukkit-1.12.2.jar</systemPath>
     </dependency>

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 public class ExampleCommand extends Command {
 
     public ExampleCommand() {
-        super("example", 2, new String[]{"/example", "args1", "args2"}, "An example command!", "example.command.permission");
+        super("example","An example command!", "example.command.permission");
     }
 
     @Override

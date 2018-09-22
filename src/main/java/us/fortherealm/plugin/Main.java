@@ -1,10 +1,13 @@
 package us.fortherealm.plugin;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import us.fortherealm.plugin.command.CommandListener;
 import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.HealthScaleListener;
 import us.fortherealm.plugin.listeners.ScoreboardHealthListener;
 import us.fortherealm.plugin.listeners.ScoreboardListener;
+import us.fortherealm.plugin.parties.PartyManager;
 import us.fortherealm.plugin.skill.SkillUseEvent;
 import us.fortherealm.plugin.skill.SkillManager;
 import org.bukkit.Bukkit;
@@ -15,17 +18,16 @@ import us.fortherealm.plugin.events.*;
 public class Main extends JavaPlugin {
 
     private static Main instance;
-    private static Scoreboard scoreboard;
     private static SkillManager skillManager;
     private static CommandListener commandListener;
+    private static PartyManager partyManager;
 
     public void onEnable() {
 
         instance = this;
         skillManager = new SkillManager();
+        partyManager = new PartyManager();
         commandListener = new CommandListener();
-
-        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
         getLogger().info(" §aFTRCore has been enabled.");
 
@@ -39,16 +41,17 @@ public class Main extends JavaPlugin {
         return skillManager;
     }
 
+    public static PartyManager getPartyManager() { return partyManager; }
+
     public static CommandListener getCommandListener() {
         return commandListener;
     }
-
-    public static Scoreboard getScoreboard() { return scoreboard; }
 
     public void onDisable() {
         getLogger().info(" has been disabled.");
         skillManager = null;
         commandListener = null;
+        partyManager = null;
         instance = null;
     }
 
@@ -75,5 +78,10 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        return Main.getCommandListener().onCommand(sender, command, label, args);
     }
 }

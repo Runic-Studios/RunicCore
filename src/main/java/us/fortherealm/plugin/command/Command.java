@@ -1,6 +1,5 @@
 package us.fortherealm.plugin.command;
 
-import us.fortherealm.plugin.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -8,27 +7,18 @@ import org.bukkit.entity.Player;
 
 public abstract class Command implements ICommand {
     private String label, description, permission;
-    private String[] usage;
-    private int argsCount;
 
-    public Command(String label, int argsCount, String[] usage, String description, String permission)
+    public Command(String label, String description, String permission)
     {
         this.label = label;
         this.description = description;
         this.permission = permission;
-        this.usage = usage;
-        this.argsCount = argsCount;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args)
     {
         if(sender == null) return;
-
-        if(this.getArgsCount() != args.length)
-        {
-            sender.sendMessage("Usage: " + getUsage());
-        }
 
         if(sender instanceof ConsoleCommandSender)
         {
@@ -58,16 +48,6 @@ public abstract class Command implements ICommand {
 
     @Override
     public String getName() {return this.getLabel();}
-
-    @Override
-    public int getArgsCount() {
-        return this.argsCount;
-    }
-
-    @Override
-    public String getUsage() {
-        return String.join(" ", this.usage);
-    }
 
     @Override
     public String getLabel() {

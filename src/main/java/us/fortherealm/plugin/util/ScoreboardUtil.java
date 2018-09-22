@@ -7,6 +7,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import us.fortherealm.plugin.Main;
 
 import java.util.Set;
 
@@ -32,8 +33,7 @@ public class ScoreboardUtil {
     }
 
     public void updateSideScoreboard(Player player) {
-
-        org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
+        Scoreboard scoreboard = player.getScoreboard();
         Objective sidebar = scoreboard.getObjective("sidebar");
 
         Set<String> entries;

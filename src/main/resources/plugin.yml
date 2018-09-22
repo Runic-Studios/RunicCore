@@ -13,3 +13,6 @@ commands:
   getrune:
     usage: Error?
     description: Obtain a rune of the given skill type.
+  party:
+    usage: /<command>
+    description: Party Command

@@ -5,10 +5,6 @@ import org.bukkit.command.CommandSender;
 public interface ICommand {
     void execute(CommandSender sender, String[] params);
 
-    int getArgsCount();
-
-    String getUsage();
-
     String getLabel();
 
     String getName();

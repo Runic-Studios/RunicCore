@@ -17,14 +17,9 @@ public class ScoreboardListener implements Listener {
     // *** MOST OF THE CODE FOR THIS IS IN ITEMS MAIN or SCOREBOARD UTIL BTW *** //
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                Player pl = e.getPlayer();
-                boardUtil.setupScoreboard(pl);
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Player pl = e.getPlayer();
+            boardUtil.setupScoreboard(pl);
         },20);//==1.0s (20 ticks so as to wait for the health to be updated from 20 ==> 50 first)
     }
 }
