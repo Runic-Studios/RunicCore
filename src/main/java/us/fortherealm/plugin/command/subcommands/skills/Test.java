@@ -37,12 +37,16 @@ public class Test implements SubCommand {
 	@Override
 	public void onUserCommand(Player sender, String[] params) {
 		
-		if (params.length == 0) {
+		if (params.length == 1) {
 			sender.sendMessage(ChatColor.RED + "You must specify a skill name!");
 			return;
 		}
 		
-		Skill skill = Main.getSkillManager().getSkillByName(params[1]);
+		StringBuilder skillName = new StringBuilder();
+		for(int c = 1; c < params.length; c++)
+			skillName.append(params[c] + " ");
+		skillName.delete(skillName.length() - 1, skillName.length()); // Removes final space
+		Skill skill = Main.getSkillManager().getSkillByName(skillName.toString());
 		
 		if (skill == null) {
 			sender.sendMessage(ChatColor.RED + "Error: Skill does not exist.");
