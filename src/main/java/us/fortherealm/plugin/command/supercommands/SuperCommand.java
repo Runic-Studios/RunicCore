@@ -84,8 +84,8 @@ public abstract class SuperCommand implements CommandExecutor, TabCompleter {
 		
 		if(args.length > 1) {
 			SubCommand possibleCommand = findAvailableSubCommandFromString(args[0], sender, false);
-			if(possibleCommand == null || possibleCommand.permissionLabel() == null
-					|| !cmdHelper.senderHasPerms(sender, possibleCommand.permissionLabel()))
+			if(possibleCommand.permissionLabel() != null &&
+					!(commandHelper.senderHasPerms(sender, false, possibleCommand.permissionLabel())))
 				return null;
 			return possibleCommand.onTabComplete(sender, cmd, label, args);
 		}
