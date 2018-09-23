@@ -1,8 +1,8 @@
 package us.fortherealm.plugin.skill.skills;
 
+import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.parties.Party;
-import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.KnockbackUtil;
