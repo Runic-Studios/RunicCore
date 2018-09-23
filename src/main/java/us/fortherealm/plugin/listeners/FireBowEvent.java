@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.events;
+package us.fortherealm.plugin.listeners;
 
 import us.fortherealm.plugin.Main;
 import net.minecraft.server.v1_12_R1.DataWatcherObject;

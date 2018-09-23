@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.events;
+package us.fortherealm.plugin.listeners;
 
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;

@@ -2,24 +2,23 @@ package us.fortherealm.plugin;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import us.fortherealm.plugin.command.CommandListener;
+import us.fortherealm.plugin.command.subcommands.party.*;
+import us.fortherealm.plugin.command.subcommands.runes.Test;
+import us.fortherealm.plugin.command.supercommands.PartySC;
+import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.healthbars.Healthbars;
-import us.fortherealm.plugin.listeners.HealthScaleListener;
-import us.fortherealm.plugin.listeners.ScoreboardHealthListener;
-import us.fortherealm.plugin.listeners.ScoreboardListener;
+import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
 import us.fortherealm.plugin.skill.SkillUseEvent;
 import us.fortherealm.plugin.skill.SkillManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Scoreboard;
-import us.fortherealm.plugin.events.*;
+
+import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
     private static Main instance;
     private static SkillManager skillManager;
-    private static CommandListener commandListener;
     private static PartyManager partyManager;
 
     public void onEnable() {
@@ -27,12 +26,13 @@ public class Main extends JavaPlugin {
         instance = this;
         skillManager = new SkillManager();
         partyManager = new PartyManager();
-        commandListener = new CommandListener();
 
         getLogger().info(" §aFTRCore has been enabled.");
 
         this.registerEvents();
         this.loadConfig();
+        
+        this.registerCommands();
     }
 
     public static Main getInstance() { return instance; }
@@ -43,14 +43,9 @@ public class Main extends JavaPlugin {
 
     public static PartyManager getPartyManager() { return partyManager; }
 
-    public static CommandListener getCommandListener() {
-        return commandListener;
-    }
-
     public void onDisable() {
         getLogger().info(" has been disabled.");
         skillManager = null;
-        commandListener = null;
         partyManager = null;
         instance = null;
     }
@@ -79,9 +74,30 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
     }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        return Main.getCommandListener().onCommand(sender, command, label, args);
+    
+    private void registerCommands() {
+        registerSkillCommands();
+        registerPartyCommands();
     }
+    
+    private void registerSkillCommands() {
+        SkillSC skillSC = new SkillSC();
+        getCommand("skill").setExecutor(skillSC);
+        
+        skillSC.addCommand(Arrays.asList("test"), new Test(skillSC));
+    }
+    
+    private void registerPartyCommands() {
+        PartySC partySC = new PartySC();
+        getCommand("party").setExecutor(partySC);
+        
+        partySC.addCommand(Arrays.asList("create"), new Create(partySC));
+        partySC.addCommand(Arrays.asList("disband", "end"), new Disband(partySC));
+        partySC.addCommand(Arrays.asList("help"), new Help(partySC));
+        partySC.addCommand(Arrays.asList("invite", "add"), new Invite(partySC));
+        partySC.addCommand(Arrays.asList("join"), new Join(partySC));
+        partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
+        partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
+    }
+    
 }

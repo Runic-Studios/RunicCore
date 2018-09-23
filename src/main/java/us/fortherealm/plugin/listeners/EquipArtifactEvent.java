@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.events;
+package us.fortherealm.plugin.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.UUID;
 
-public class EquipRuneEvent implements Listener {
+public class EquipArtifactEvent implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
@@ -23,13 +23,13 @@ public class EquipRuneEvent implements Listener {
         Player player = (Player) e.getWhoClicked();
         int itemSlot = e.getSlot();
         ItemStack cursorItem = player.getItemOnCursor();
-        ItemStack oldItem = player.getInventory().getItem(1);
+        ItemStack oldItem = player.getInventory().getItem(0);
         ItemMeta cursorItemMeta = cursorItem.getItemMeta();
         ItemMeta oldItemMeta = oldItem.getItemMeta();
 
         if (e.getClickedInventory() == null || player.getItemOnCursor() == null || !cursorItem.hasItemMeta()) return;
 
-        if (itemSlot == 1 && player.getGameMode() == GameMode.SURVIVAL
+        if (itemSlot == 0 && player.getGameMode() == GameMode.SURVIVAL
                 && e.getClickedInventory().getType().equals(InventoryType.PLAYER)
                 && cursorItem.getType() != Material.AIR && cursorItem.hasItemMeta()) {
 
@@ -37,7 +37,7 @@ public class EquipRuneEvent implements Listener {
             String loreAsString = ChatColor.stripColor
                     (String.join(" ", player.getItemOnCursor().getItemMeta().getLore()));
 
-            if (loreAsString.contains("Rune")) {
+            if (loreAsString.contains("Artifact")) {
 
                 lore.add(ChatColor.DARK_GRAY + "Equipped");
                 cursorItemMeta.setLore(lore);
