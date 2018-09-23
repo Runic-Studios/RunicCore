@@ -2,6 +2,7 @@ package us.fortherealm.plugin.skill.skills;
 
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.parties.Party;
+import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.KnockbackUtil;
@@ -29,6 +30,28 @@ public class Fireball extends Skill {
         fireball.setVelocity(velocity);
         fireball.setShooter(player);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
+        new BukkitRunnable() {
+
+            double t = 0;
+
+            public void run() {
+                t = t + 0.5;
+                Location loc = fireball.getLocation();
+                Vector direction = loc.getDirection().normalize();
+                double x = direction.getX();
+                double y = direction.getY();
+                double z = direction.getZ();
+                loc.add(x,y,z);
+                fireball.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, fireball.getLocation(), 5, 1F, 1F, 1F, 0);
+                fireball.getWorld().spawnParticle(Particle.DRIP_LAVA, fireball.getLocation(), 10, 1F, 1F, 1F, 0);
+                fireball.getWorld().spawnParticle(Particle.SMOKE_LARGE, fireball.getLocation(), 10, 1F, 1F, 1F, 0);
+                loc.subtract(x,y,z);
+                if (fireball.isOnGround() || fireball.isDead()) {
+                    this.cancel();
+                }
+            }
+
+        }.runTaskTimer(Main.getInstance(), 0, 1);
     }
 
     @EventHandler
