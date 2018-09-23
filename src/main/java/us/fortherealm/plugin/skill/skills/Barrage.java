@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Barrage extends Skill {
 
     private HashMap<Arrow, UUID> bArrows = new HashMap<>();
-
+    //hello
     public Barrage() {
         super("Barrage", "fire arrows that deal double damage and daze enemies", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
     }
