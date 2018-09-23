@@ -39,21 +39,25 @@ this.onUserCommand(sender, params);
     @Override
     public void onUserCommand(Player sender, String[] params) {
 
-        String skillname = params[0];
+        if (params.length == 0) {
+            sender.sendMessage(ChatColor.RED + "You must specify a skill name!");
+            return;
+        }
+        String skillname = String.join(" ", params);
         Skill skill = Main.getSkillManager().getSkillByName(skillname);
         if (skill != null) {
-            sender.getInventory().setItem(2,baseRune(skillname));
+            sender.getInventory().setItem(1,baseRune(skill));
         } else {
             sender.sendMessage(color("&cError: Skill does not exist."));
         }
     }
 
-    public ItemStack baseRune(String skillname) {
-        ItemStack baseRune = new ItemStack(Material.INK_SACK, 1, (byte) 1);
+    public ItemStack baseRune(Skill skill) {
+        ItemStack baseRune = new ItemStack(Material.INK_SACK, 1, (byte) (Math.random() * 10 + 5));
         ItemMeta runeMeta = baseRune.getItemMeta();
-        runeMeta.setDisplayName(ChatColor.YELLOW + "Rune of " + skillname);
+        runeMeta.setDisplayName(ChatColor.YELLOW + "Rune of " + skill.getName());
         ArrayList<String> runeLore = new ArrayList<String>();
-        runeLore.add(ChatColor.GRAY + "Skill: " + ChatColor.RED + skillname);
+        runeLore.add(ChatColor.GRAY + "Skill: " + ChatColor.RED + skill.getName());
         runeLore.add(ChatColor.YELLOW + "Rune");
         runeMeta.setLore(runeLore);
         runeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.skill.skills;
 
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import org.bukkit.*;
@@ -9,7 +10,9 @@ import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-// TODO: party damage check
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class Comet extends Skill {
     public Comet() {
         super("Comet", "coming soon",
@@ -31,7 +34,6 @@ public class Comet extends Skill {
 
     public void startTask(Player player, FallingBlock comet) {
         new BukkitRunnable() {
-
             @Override
             public void run() {
                 comet.getWorld().spawnParticle(Particle.FLAME, comet.getLocation(), 5, 0.2F, 1.0F, 0.2F, 0);
@@ -58,10 +60,15 @@ public class Comet extends Skill {
             if (entity.getLocation().distance(cometLocation) <= 5) {
                 if (entity != (player)) {
                     if (entity.getType().isAlive()) {
-                        Damageable victim = (Damageable) entity;
-                        victim.damage(50, player);
-                        Vector force = (cometLocation.toVector().subtract(victim.getLocation().toVector()).multiply(-1).setY(0.6));
-                        victim.setVelocity(force);
+                        Party party = Main.getPartyManager().getPlayerParty(player);
+                        if (party != null && party.getMembers().contains(entity.getUniqueId())) {
+                            // Do nothing
+                        } else {
+                            Damageable victim = (Damageable) entity;
+                            victim.damage(50, player);
+                            Vector force = (cometLocation.toVector().subtract(victim.getLocation().toVector()).multiply(-1).setY(0.6));
+                            victim.setVelocity(force);
+                        }
                     }
                 }
             }

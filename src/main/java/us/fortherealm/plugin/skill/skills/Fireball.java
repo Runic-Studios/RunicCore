@@ -2,6 +2,7 @@ package us.fortherealm.plugin.skill.skills;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.KnockbackUtil;
@@ -60,7 +61,11 @@ public class Fireball extends Skill {
             if (smfb.getShooter() instanceof Player) {
                 Player player = (Player) smfb.getShooter();
                 LivingEntity victim = (LivingEntity) event.getEntity();
+                Party party = Main.getPartyManager().getPlayerParty(player);
                 event.setCancelled(true);
+                if (party != null && party.getMembers().contains(victim.getUniqueId())) {
+                    return;
+                }
                 victim.damage(20, player);
                 victim.setLastDamageCause(event);
                 KnockbackUtil.knockback(player, victim);

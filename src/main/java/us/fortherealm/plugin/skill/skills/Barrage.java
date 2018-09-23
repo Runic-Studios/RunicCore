@@ -1,5 +1,7 @@
 package us.fortherealm.plugin.skill.skills;
 
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import org.bukkit.*;
@@ -76,14 +78,19 @@ public class Barrage extends Skill {
             if (arrow.getShooter() instanceof Player) {
                 Player damager = (Player) arrow.getShooter();
                 if (bArrows.containsKey(arrow)) {
-                    e.setDamage(e.getDamage() * 2);
-                    e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_LARGE, e.getEntity().getLocation(), 3, 0, 0, 0, 0);
-                    e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
-                    if (e.getEntity() instanceof Player) {
-                        Player victim = (Player) e.getEntity();
-                        victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 160, 2));
-                        victim.sendMessage(ChatColor.RED + "You are dazed by " + ChatColor.WHITE + damager.getName()
-                                + ChatColor.RED + "'s barrage of arrows!");
+                    Party party = Main.getPartyManager().getPlayerParty(damager);
+                    if (party != null && party.getMembers().contains(e.getEntity().getUniqueId())) {
+                        // Do nothing
+                    } else {
+                        e.setDamage(e.getDamage() * 2);
+                        e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_LARGE, e.getEntity().getLocation(), 3, 0, 0, 0, 0);
+                        e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
+                        if (e.getEntity() instanceof Player) {
+                            Player victim = (Player) e.getEntity();
+                            victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 160, 2));
+                            victim.sendMessage(ChatColor.RED + "You are dazed by " + ChatColor.WHITE + damager.getName()
+                                    + ChatColor.RED + "'s barrage of arrows!");
+                        }
                     }
                 }
             }

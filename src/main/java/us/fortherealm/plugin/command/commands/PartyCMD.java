@@ -108,7 +108,7 @@ public class PartyCMD extends Command {
                             Player target = Bukkit.getPlayer(params[1]);
                             if(target != null) {
                                 if(Main.getPartyManager().addInvite(new Invite(party, target))) {
-                                    party.sendMessage("&3&lParty &7&l> &6" + sender.getName() + " &ahas invited &e" + params[1] + " &a to the party!");
+                                    party.sendMessage("&3&lParty &7&l> &6" + sender.getName() + " &ahas invited &e" + params[1] + " &ato the party!");
 
                                     target.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Party " + ChatColor.GRAY + "" + ChatColor.BOLD + "> " +
                                             ChatColor.GREEN + "You have been invited to " + ChatColor.GOLD + sender.getName() + ChatColor.GREEN + "'s party! " +
@@ -186,7 +186,7 @@ public class PartyCMD extends Command {
                     Invite invite = Main.getPartyManager().getActiveInvite(sender);
                     if(invite != null) {
                         sender.sendMessage(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Party " + ChatColor.GRAY + "" + ChatColor.BOLD + "> " +
-                                ChatColor.GREEN + "You joined " + ChatColor.GOLD + invite.getInviter() + ChatColor.GREEN + "'s party!");
+                                ChatColor.GREEN + "You joined " + ChatColor.GOLD + invite.getInviter().getName() + ChatColor.GREEN + "'s party!");
                         invite.getParty().sendMemberMessage(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Party " + ChatColor.GRAY + "" + ChatColor.BOLD + "> " +
                                 ChatColor.GOLD +  sender.getName() + ChatColor.GREEN + " has joined the party!");
                         invite.getParty().addMember(sender.getUniqueId());
