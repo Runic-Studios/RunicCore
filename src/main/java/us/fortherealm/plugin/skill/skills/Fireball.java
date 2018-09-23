@@ -32,23 +32,61 @@ public class Fireball extends Skill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
         new BukkitRunnable() {
 
-            double t = 0;
+            //double a = Math.PI/4;
+            Location loc = fireball.getLocation();
+            Location loc2 = fireball.getLocation();
+            Location loc3 = fireball.getLocation();
+            int smokeCircleParticles = 50;
+            float radius = 0.7f;
 
             public void run() {
-                t = t + 0.5;
+                //a = a + 0.1 * Math.PI;
+
+                //double theta = 0; theta <= 2 * Math.PI; theta = theta + Math.PI/32
+                for (int i = 0; i < smokeCircleParticles; i++) {
+
+                    //theta = theta + Math.PI/32;
+                    double angle, x, z;
+                    angle = 2 * Math.PI * i /smokeCircleParticles;
+                    x = Math.cos(angle) * radius;
+                    z = Math.sin(angle) * radius;
+                    loc.add(x, 0, z);
+                    loc2.add(x, -0.66, z);
+                    loc3.add(x, -1.33, z);
+                    fireball.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc, 1, 1F, 1F, 1F, 0);
+                    fireball.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc2, 1, 1F, 1F, 1F, 0);
+                    fireball.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc3, 1, 1F, 1F, 1F, 0);
+                    loc.subtract(x,0,z);
+                    loc2.subtract(x, -0.66, z);
+                    loc3.subtract(x, -1.33, z);
+
+                    /*double x = a * Math.cos(theta);
+                    double y = 2 * Math.exp(-0.1 * a) * Math.sin(a) + 1.5;
+                    double z = a * Math.sin(theta);
+                    loc.add(x,y,z);
+                    loc.subtract(x,y,z);*/
+
+
+                    if (fireball.isOnGround() || fireball.isDead()) {
+                        this.cancel();
+                    }
+
+                }
+                /* --Regular smoke trail for fireball--
+
                 Location loc = fireball.getLocation();
                 Vector direction = loc.getDirection().normalize();
                 double x = direction.getX();
                 double y = direction.getY();
                 double z = direction.getZ();
                 loc.add(x,y,z);
-                fireball.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, fireball.getLocation(), 5, 1F, 1F, 1F, 0);
-                fireball.getWorld().spawnParticle(Particle.DRIP_LAVA, fireball.getLocation(), 10, 1F, 1F, 1F, 0);
                 fireball.getWorld().spawnParticle(Particle.SMOKE_LARGE, fireball.getLocation(), 10, 1F, 1F, 1F, 0);
                 loc.subtract(x,y,z);
                 if (fireball.isOnGround() || fireball.isDead()) {
                     this.cancel();
                 }
+
+                */
             }
 
         }.runTaskTimer(Main.getInstance(), 0, 1);
