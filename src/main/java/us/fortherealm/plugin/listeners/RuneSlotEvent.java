@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.events;
+package us.fortherealm.plugin.listeners;
 
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.PacketPlayOutChat;

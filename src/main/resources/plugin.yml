@@ -7,12 +7,9 @@ commands:
   artifactinfo:
     usage: /<command>
     description: Returns info on the artifact slot.
-  runeinfo:
+  skill:
     usage: /<command>
-    description: returns info...
-  getrune:
-    usage: Error?
-    description: Obtain a rune of the given skill type.
+    description: Base for all skill commands
   party:
     usage: /<command>
-    description: Party Command
+    description: Base for all party commands
