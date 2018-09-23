@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.command.subcommands.runes;
+package us.fortherealm.plugin.command.subcommands.skills;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -31,34 +31,40 @@ public class Test implements SubCommand {
 	
 	@Override
 	public void onOPCommand(Player sender, String[] args) {
-		
+		this.onUserCommand(sender, args);
 	}
 	
 	@Override
-	public void onUserCommand(Player sender, String[] args) {
-		String skillname = args[0];
-		Skill skill = Main.getSkillManager().getSkillByName(skillname);
+	public void onUserCommand(Player sender, String[] params) {
 		
-		if(skill == null) {
+		if (params.length == 0) {
+			sender.sendMessage(ChatColor.RED + "You must specify a skill name!");
+			return;
+		}
+		
+		Skill skill = Main.getSkillManager().getSkillByName(params[1]);
+		
+		if (skill == null) {
 			sender.sendMessage(ChatColor.RED + "Error: Skill does not exist.");
 			return;
 		}
 		
-		sender.getInventory().setItem(2, baseRune(skillname));
+		sender.getInventory().setItem(1,baseRune(skill));
 	}
 	
-	private ItemStack baseRune(String skillname) {
-		ItemStack baseRune = new ItemStack(Material.INK_SACK, 1, (byte) 1);
+	public ItemStack baseRune(Skill skill) {
+		ItemStack baseRune = new ItemStack(Material.INK_SACK, 1, (byte) (Math.random() * 10 + 5));
 		ItemMeta runeMeta = baseRune.getItemMeta();
-		runeMeta.setDisplayName(ChatColor.YELLOW + "Rune of " + skillname);
+		runeMeta.setDisplayName(ChatColor.YELLOW + "Rune of " + skill.getName());
 		ArrayList<String> runeLore = new ArrayList<String>();
-		runeLore.add(ChatColor.GRAY + "Skill: " + ChatColor.RED + skillname);
+		runeLore.add(ChatColor.GRAY + "Skill: " + ChatColor.RED + skill.getName());
 		runeLore.add(ChatColor.YELLOW + "Rune");
 		runeMeta.setLore(runeLore);
 		runeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		baseRune.setItemMeta(runeMeta);
 		return baseRune;
 	}
+	
 	
 	@Override
 	public String permissionLabel() {
@@ -71,12 +77,12 @@ public class Test implements SubCommand {
 		for(Skill skill : Main.getSkillManager().getSkills())
 			skillNames.add(skill.getName());
 		
-		if(args.length == 0)
+		if(args.length == 1)
 			return skillNames;
 		
 		List<String> specificSkills = new ArrayList<>();
 		for(String skillName : skillNames)
-			if(skillName.toLowerCase().startsWith(skillName.toLowerCase()))
+			if(skillName.toLowerCase().startsWith(args[1].toLowerCase()))
 				specificSkills.add(skillName);
 		
 		return specificSkills;
