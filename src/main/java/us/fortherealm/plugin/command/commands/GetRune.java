@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.command.commands;
 
+import org.bukkit.command.TabCompleter;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.Command;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
@@ -12,8 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class GetRune extends Command {
+public class GetRune extends Command implements TabCompleter {
     public GetRune() {
         super("getrune", "&eObtain a rune with given skill name.", "ftr.command.getrune");
     }
@@ -29,10 +31,10 @@ public class GetRune extends Command {
         // elevated permissions
         /*
         if(params.length == 2 && params[1] == "obtain") {
-// spawn a fireball
-} else {
-this.onUserCommand(sender, params);
-}
+        // spawn a fireball
+        } else {
+        this.onUserCommand(sender, params);
+        }
          */
     }
 
@@ -59,5 +61,22 @@ this.onUserCommand(sender, params);
         runeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         baseRune.setItemMeta(runeMeta);
         return baseRune;
+    }
+    
+    @Override
+    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args) {
+        List<String> skillNames = new ArrayList<>();
+        for(Skill skill : Main.getSkillManager().getSkills())
+            skillNames.add(skill.getName());
+        
+        if(args.length == 0)
+            return skillNames;
+        
+        List<String> specificSkills = new ArrayList<>();
+        for(String skillName : skillNames)
+            if(skillName.toLowerCase().startsWith(skillName.toLowerCase()))
+                specificSkills.add(skillName);
+        
+        return specificSkills;
     }
 }
