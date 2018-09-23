@@ -5,14 +5,13 @@ import org.bukkit.command.CommandSender;
 import us.fortherealm.plugin.command.CommandListener;
 import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.HealthScaleListener;
+import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.listeners.ScoreboardHealthListener;
 import us.fortherealm.plugin.listeners.ScoreboardListener;
 import us.fortherealm.plugin.parties.PartyManager;
 import us.fortherealm.plugin.skill.SkillUseEvent;
 import us.fortherealm.plugin.skill.SkillManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Scoreboard;
 import us.fortherealm.plugin.events.*;
 
 public class Main extends JavaPlugin {
@@ -78,6 +77,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
+        getServer().getPluginManager().registerEvents(new PartyDamageListener(),this);
     }
 
     @Override

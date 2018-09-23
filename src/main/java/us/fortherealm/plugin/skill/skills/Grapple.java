@@ -73,6 +73,12 @@ public class Grapple extends Skill {
                                 player.setVelocity(v);
                             }
                         }, 1L);
+                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                            public void run() {
+                                safefall.remove(uuid);
+                                player.sendMessage(ChatColor.GRAY + "You lost safefall!");
+                            }
+                        }, 60L);
                     }
                 }
             }
