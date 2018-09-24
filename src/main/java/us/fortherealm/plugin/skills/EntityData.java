@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.oldskills.skilltypes;
+package us.fortherealm.plugin.skills;
 
 import org.bukkit.Location;
 
