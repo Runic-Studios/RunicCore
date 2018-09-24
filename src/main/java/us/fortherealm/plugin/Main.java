@@ -1,16 +1,14 @@
 package us.fortherealm.plugin;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import us.fortherealm.plugin.command.subcommands.party.*;
-import us.fortherealm.plugin.command.subcommands.runes.Test;
+import us.fortherealm.plugin.command.subcommands.skills.Test;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
-import us.fortherealm.plugin.skill.SkillUseEvent;
-import us.fortherealm.plugin.skill.SkillManager;
+import us.fortherealm.plugin.oldskills.SkillUseEvent;
+import us.fortherealm.plugin.oldskills.SkillManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
@@ -82,12 +80,13 @@ public class Main extends JavaPlugin {
     
     private void registerSkillCommands() {
         SkillSC skillSC = new SkillSC();
-        getCommand("skill").setExecutor(skillSC);
+        getCommand("skills").setExecutor(skillSC);
         
         skillSC.addCommand(Arrays.asList("test"), new Test(skillSC));
     }
     
     private void registerPartyCommands() {
+        
         PartySC partySC = new PartySC();
         getCommand("party").setExecutor(partySC);
         
@@ -98,6 +97,7 @@ public class Main extends JavaPlugin {
         partySC.addCommand(Arrays.asList("join"), new Join(partySC));
         partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
+   
     }
     
 }

@@ -9,7 +9,7 @@ commands:
     description: Returns info on the artifact slot.
   skill:
     usage: /<command>
-    description: Base for all skill commands
+    description: Base for all skills commands
   party:
     usage: /<command>
     description: Base for all party commands

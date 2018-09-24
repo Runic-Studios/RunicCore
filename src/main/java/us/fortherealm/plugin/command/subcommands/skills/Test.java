@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
-import us.fortherealm.plugin.skill.skilltypes.Skill;
+import us.fortherealm.plugin.oldskills.skilltypes.Skill;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class Test implements SubCommand {
 	public void onUserCommand(Player sender, String[] params) {
 		
 		if (params.length == 1) {
-			sender.sendMessage(ChatColor.RED + "You must specify a skill name!");
+			sender.sendMessage(ChatColor.RED + "You must specify a skills name!");
 			return;
 		}
 		

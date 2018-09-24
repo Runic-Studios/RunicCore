@@ -3,13 +3,11 @@ package us.fortherealm.plugin.command.supercommands;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import us.fortherealm.plugin.util.CommandsUtil;
 
 public class SkillSC extends SuperCommand {
 	
-	
 	public SkillSC() {
-		super("skill.skill");
+		super("skills.skills");
 	}
 	
 	@Override

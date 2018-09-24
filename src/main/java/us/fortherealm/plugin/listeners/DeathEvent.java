@@ -17,7 +17,7 @@ import org.bukkit.scoreboard.Score;
 // TODO: Check if killer/victim are in OUTLAW MODE
 // TODO: Apply ELO ratings if OUTLAW MODE
 // TODO: Add ELO ratings to death messages
-// TODO: change death method to its own method, add checks for type of death
+// TODO: change death method to its own method, add checks for types of death
 public class DeathEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
