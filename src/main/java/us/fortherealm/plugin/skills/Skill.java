@@ -8,10 +8,13 @@ import us.fortherealm.plugin.skills.events.SkillCastEvent;
 
 public abstract class Skill implements ISkill {
 	
-	// If you decide to change execute command:
-	//  1) remember to call super.executeCommand()
-	//  2) remember to call SkillImpactEvent before the skill has cast
-	//          and check if the skill was cancelled before casting the skill
+	// ************* VERY IMPORTANT *************
+	// When extending anything from the SkillAPI,
+	// you MUST call skillImpactEvent right before
+	// your skill is actually done andthen check if
+	// skillImpactEvent resulted in the skill being
+	// cancelled
+	// ************* VERY IMPORTANT *************
 	
 	private Main plugin = Main.getInstance();
 	
@@ -30,10 +33,20 @@ public abstract class Skill implements ISkill {
 	}
 	
 	@Override
-	public void executeSkill(Player player) {
+	public final void executeEntireSkill(Player player) {
+		executeSkillSetup(player);
+		executeSkill(player);
+		executeSkillCleanUp(player);
+	}
+	
+	public void executeSkillSetup(Player player) {
 		SkillCastEvent event = new SkillCastEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
 	}
+	
+	public abstract void executeSkill(Player player);
+	
+	public void executeSkillCleanUp(Player player) {}
 	
 	public Player getPlayer() {
 		return player;

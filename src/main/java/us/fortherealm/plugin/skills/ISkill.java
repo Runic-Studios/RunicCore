@@ -9,7 +9,7 @@ public interface ISkill {
 	
 	String getDescription(); // returns the skills description
 	
-	void executeSkill(Player player); // casts the skills
+	void executeEntireSkill(Player player); // casts the skills
 	
 	double getCooldown();
 	
