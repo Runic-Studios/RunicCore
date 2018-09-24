@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class RuneCasterTester extends RuneCaster {
 	public RuneCasterTester() {
-		super(new ItemStack(Material.SLIME_BALL), "test caster", 1,
+		super(new ItemStack(Material.SLIME_BALL), "test caster", 5,
 				Arrays.asList(new Fireball()), Arrays.asList(new Deliverance()));
 	}
 }

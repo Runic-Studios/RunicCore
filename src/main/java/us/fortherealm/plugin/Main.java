@@ -2,6 +2,7 @@ package us.fortherealm.plugin;
 
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.subcommands.skills.Test;
+import us.fortherealm.plugin.command.subcommands.skills.TestCaster;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.healthbars.Healthbars;
@@ -10,6 +11,8 @@ import us.fortherealm.plugin.parties.PartyManager;
 import us.fortherealm.plugin.oldskills.SkillUseEvent;
 import us.fortherealm.plugin.oldskills.SkillManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.fortherealm.plugin.skills.caster.CasterManager;
+import us.fortherealm.plugin.skills.caster.itemcaster.PlayerInteractWithRegisteredItemCasterListener;
 
 import java.util.Arrays;
 
@@ -18,12 +21,14 @@ public class Main extends JavaPlugin {
     private static Main instance;
     private static SkillManager skillManager;
     private static PartyManager partyManager;
+    private static CasterManager casterManager;
 
     public void onEnable() {
 
         instance = this;
         skillManager = new SkillManager();
         partyManager = new PartyManager();
+        casterManager = new CasterManager();
 
         getLogger().info(" §aFTRCore has been enabled.");
 
@@ -41,6 +46,10 @@ public class Main extends JavaPlugin {
 
     public static PartyManager getPartyManager() { return partyManager; }
 
+    public static CasterManager getCasterManager() {
+        return casterManager;
+    }
+    
     public void onDisable() {
         getLogger().info(" has been disabled.");
         skillManager = null;
@@ -71,6 +80,8 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
+        
+        getServer().getPluginManager().registerEvents(new PlayerInteractWithRegisteredItemCasterListener(), this);
     }
     
     private void registerCommands() {
@@ -80,9 +91,10 @@ public class Main extends JavaPlugin {
     
     private void registerSkillCommands() {
         SkillSC skillSC = new SkillSC();
-        getCommand("skills").setExecutor(skillSC);
+        getCommand("skill").setExecutor(skillSC);
         
-        skillSC.addCommand(Arrays.asList("test"), new Test(skillSC));
+        skillSC.addCommand(Arrays.asList("testSkill"), new Test(skillSC));
+        skillSC.addCommand(Arrays.asList("test"), new TestCaster(skillSC));
     }
     
     private void registerPartyCommands() {

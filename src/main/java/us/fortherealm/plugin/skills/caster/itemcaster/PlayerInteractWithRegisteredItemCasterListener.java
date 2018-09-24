@@ -1,9 +1,11 @@
 package us.fortherealm.plugin.skills.caster.itemcaster;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
 
 import java.util.ArrayList;
@@ -15,9 +17,13 @@ public class PlayerInteractWithRegisteredItemCasterListener implements Listener 
 	
 	@EventHandler
 	public void onInteractEvent(PlayerInteractEvent event) {
+		
+		if(event.getItem() == null)
+			return;
+		
 		for(ItemCaster registeredItemCaster : registeredItemCasters) {
 			
-			if(!event.getItem().equals(registeredItemCaster.getItem()))
+			if(registeredItemCaster == null || !event.getItem().equals(registeredItemCaster.getItem()))
 				continue;
 			
 			event.setCancelled(true);

@@ -1,6 +1,11 @@
 package us.fortherealm.plugin.skills.caster;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skills.Skill;
 
 public class Caster {
 	
@@ -16,6 +21,13 @@ public class Caster {
 	
 	public double getCooldown() {
 		return (doCooldown) ? this.cooldown : 0;
+	}
+	
+	public void executeSkill(Skill skill, Player player) {
+		if(!Main.getCasterManager().isOnCooldown(player, this)) {
+			skill.executeSkill(player);
+			Main.getCasterManager().addCooldown(player, this, this.getCooldown());
+		}
 	}
 	
 	public void setCooldown(double cooldown) {

@@ -54,13 +54,14 @@ public class CasterManager {
     @SuppressWarnings({"unchecked", "IntegerDivisionInFloatingPointContext"})
     public int getUserCooldown(Player player, Caster caster) {
         double cooldownRemaining = 0;
-
+        
         if(isOnCooldown(player, caster)) {
             HashMap<Caster, Long> cd = this.cooldown.get(player.getUniqueId());
             if(cd.containsKey(caster)) {
                 cooldownRemaining = (cd.get(caster) + ((caster.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
         }
+        
         return ((int) (cooldownRemaining / 1000));
     }
 
