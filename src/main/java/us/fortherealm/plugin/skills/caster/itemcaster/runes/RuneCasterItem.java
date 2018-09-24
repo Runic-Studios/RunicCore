@@ -6,13 +6,13 @@ import us.fortherealm.plugin.skills.caster.itemcaster.ItemCaster;
 
 import java.util.List;
 
-public class RuneCaster extends ItemCaster {
+public class RuneCasterItem extends ItemCaster {
 	
-	public RuneCaster(ItemStack item, String name, double cooldown, List<Skill> primarySkills, List<Skill> secondarySkills) {
+	public RuneCasterItem(ItemStack item, String name, double cooldown, List<Skill> primarySkills, List<Skill> secondarySkills) {
 		super(item, name, Type.RUNE, cooldown, primarySkills, secondarySkills);
 	}
 	
-	public RuneCaster(ItemStack item, String name, double cooldown, List<Skill> primarySkills, List<Skill> secondarySkills, boolean addToRegisteredItemCasterListener) {
+	public RuneCasterItem(ItemStack item, String name, double cooldown, List<Skill> primarySkills, List<Skill> secondarySkills, boolean addToRegisteredItemCasterListener) {
 		super(item, name, Type.RUNE, cooldown, primarySkills, secondarySkills, addToRegisteredItemCasterListener);
 	}
 }

@@ -1,14 +1,13 @@
 package us.fortherealm.plugin.skills;
 
 import org.bukkit.entity.Player;
-import us.fortherealm.plugin.oldskills.skilltypes.SkillItemType;
 
 public interface ISkill {
 	
-	String getName(); // returns the skills name
+	String getName(); // returns the oldskills name
 	
-	String getDescription(); // returns the skills description
+	String getDescription(); // returns the oldskills description
 	
-	void executeEntireSkill(Player player); // casts the skills
+	void executeEntireSkill(Player player); // casts the oldskills
 	
 }

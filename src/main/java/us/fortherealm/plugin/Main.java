@@ -1,32 +1,32 @@
 package us.fortherealm.plugin;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.subcommands.skills.Test;
-import us.fortherealm.plugin.command.subcommands.skills.TestCaster;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
-import us.fortherealm.plugin.oldskills.SkillUseEvent;
-import us.fortherealm.plugin.oldskills.SkillManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.skills.caster.CasterManager;
 import us.fortherealm.plugin.skills.caster.itemcaster.PlayerInteractWithRegisteredItemCasterListener;
+import us.fortherealm.plugin.skills.caster.itemcaster.runes.RuneCasterItem;
+import us.fortherealm.plugin.skills.skilltypes.defensive.Deliverance;
+import us.fortherealm.plugin.skills.skilltypes.offensive.Fireball;
 
 import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
     private static Main instance;
-    private static SkillManager skillManager;
     private static PartyManager partyManager;
     private static CasterManager casterManager;
 
     public void onEnable() {
 
         instance = this;
-        skillManager = new SkillManager();
         partyManager = new PartyManager();
         casterManager = new CasterManager();
 
@@ -40,10 +40,6 @@ public class Main extends JavaPlugin {
 
     public static Main getInstance() { return instance; }
 
-    public static SkillManager getSkillManager(){
-        return skillManager;
-    }
-
     public static PartyManager getPartyManager() { return partyManager; }
 
     public static CasterManager getCasterManager() {
@@ -52,7 +48,6 @@ public class Main extends JavaPlugin {
     
     public void onDisable() {
         getLogger().info(" has been disabled.");
-        skillManager = null;
         partyManager = null;
         instance = null;
     }
@@ -63,7 +58,6 @@ public class Main extends JavaPlugin {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new SkillUseEvent(), this);
         getServer().getPluginManager().registerEvents(new FirstJoinEvent(), this);
         getServer().getPluginManager().registerEvents(new DeathEvent(), this);
         getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
@@ -93,8 +87,7 @@ public class Main extends JavaPlugin {
         SkillSC skillSC = new SkillSC();
         getCommand("skill").setExecutor(skillSC);
         
-        skillSC.addCommand(Arrays.asList("testSkill"), new Test(skillSC));
-        skillSC.addCommand(Arrays.asList("test"), new TestCaster(skillSC));
+        skillSC.addCommand(Arrays.asList("test"), new Test(skillSC));
     }
     
     private void registerPartyCommands() {
@@ -110,6 +103,15 @@ public class Main extends JavaPlugin {
         partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
    
+    }
+    
+    private void addCasters() {
+        getCasterManager().addCaster(
+                new RuneCasterItem(new ItemStack(Material.SLIME_BALL),
+                        "test caster", 5,
+                        Arrays.asList(new Fireball()), Arrays.asList(new Deliverance())
+                )
+        );
     }
     
 }

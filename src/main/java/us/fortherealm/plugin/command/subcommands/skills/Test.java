@@ -11,7 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
-import us.fortherealm.plugin.oldskills.skilltypes.Skill;
+import us.fortherealm.plugin.skills.caster.Caster;
+import us.fortherealm.plugin.skills.caster.itemcaster.ItemCaster;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,35 +39,29 @@ public class Test implements SubCommand {
 	public void onUserCommand(Player sender, String[] params) {
 		
 		if (params.length == 1) {
-			sender.sendMessage(ChatColor.RED + "You must specify a skills name!");
+			sender.sendMessage(ChatColor.RED + "You must specify a oldskills name!");
 			return;
 		}
 		
-		StringBuilder skillName = new StringBuilder();
+		StringBuilder casterName = new StringBuilder();
 		for(int c = 1; c < params.length; c++)
-			skillName.append(params[c] + " ");
-		skillName.delete(skillName.length() - 1, skillName.length()); // Removes final space
-		Skill skill = Main.getSkillManager().getSkillByName(skillName.toString());
+			casterName.append(params[c] + " ");
+		casterName.delete(casterName.length() - 1, casterName.length()); // Removes final space
 		
-		if (skill == null) {
-			sender.sendMessage(ChatColor.RED + "Error: Skill does not exist.");
+		Caster caster = Main.getCasterManager().getCasterByName(casterName.toString());
+		
+		if(!(caster instanceof ItemCaster)) {
+			System.out.println(ChatColor.RED + "was not an item caster... strange");
+		}
+		
+		ItemCaster itemCaster = (ItemCaster) Main.getCasterManager().getCasterByName(casterName.toString());
+		
+		if (itemCaster == null) {
+			sender.sendMessage(ChatColor.RED + "Error: Caster does not exist.");
 			return;
 		}
 		
-		sender.getInventory().setItem(1,baseRune(skill));
-	}
-	
-	public ItemStack baseRune(Skill skill) {
-		ItemStack baseRune = new ItemStack(Material.INK_SACK, 1, (byte) (Math.random() * 10 + 5));
-		ItemMeta runeMeta = baseRune.getItemMeta();
-		runeMeta.setDisplayName(ChatColor.YELLOW + "Rune of " + skill.getName());
-		ArrayList<String> runeLore = new ArrayList<String>();
-		runeLore.add(ChatColor.GRAY + "Skill: " + ChatColor.RED + skill.getName());
-		runeLore.add(ChatColor.YELLOW + "Rune");
-		runeMeta.setLore(runeLore);
-		runeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		baseRune.setItemMeta(runeMeta);
-		return baseRune;
+		sender.getInventory().setItem(1,itemCaster.getItem());
 	}
 	
 	
@@ -77,18 +72,19 @@ public class Test implements SubCommand {
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		List<String> skillNames = new ArrayList<>();
-		for(Skill skill : Main.getSkillManager().getSkills())
-			skillNames.add(skill.getName());
+		List<String> casterNames = new ArrayList<>();
+		for(Caster caster : Main.getCasterManager().getCasters())
+			casterNames.add(caster.getName());
 		
 		if(args.length == 1)
-			return skillNames;
+			return casterNames;
 		
-		List<String> specificSkills = new ArrayList<>();
-		for(String skillName : skillNames)
-			if(skillName.toLowerCase().startsWith(args[1].toLowerCase()))
-				specificSkills.add(skillName);
+		List<String> specificCaster = new ArrayList<>();
+		for(String casterName : casterNames)
+			if(casterName.toLowerCase().startsWith(args[1].toLowerCase()))
+				specificCaster.add(casterName);
 		
-		return specificSkills;
+		return specificCaster;
 	}
+	
 }

@@ -7,11 +7,11 @@ import org.bukkit.command.CommandSender;
 public class SkillSC extends SuperCommand {
 	
 	public SkillSC() {
-		super("skills.skills");
+		super("oldskills.oldskills");
 	}
 	
 	@Override
 	public void executeBasicCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		sender.sendMessage(ChatColor.GOLD + "Basic skills command");
+		sender.sendMessage(ChatColor.GOLD + "Basic oldskills command");
 	}
 }

@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.skills.caster.itemcaster.runes.RuneCasterTester;
 
 import java.util.*;
 
@@ -21,7 +20,6 @@ public class CasterManager {
         this.casterList = new ArrayList<>();
         this.cooldown = new HashMap<>();
 
-        this.registerCasters();
         this.startCooldownTask();
     }
 
@@ -85,11 +83,6 @@ public class CasterManager {
         return (foundCaster != null) ? foundCaster : null;
     }
 
-
-    private void registerCasters() {
-        this.casterList.add(new RuneCasterTester());
-    }
-
     private void startCooldownTask() {
         new BukkitRunnable() {
             @Override
@@ -109,6 +102,14 @@ public class CasterManager {
                 }
             }
         }.runTaskTimer(this.plugin, 0, 10);
+    }
+    
+    public void addCaster(Caster caster) {
+        this.casterList.add(caster);
+    }
+    
+    public void delCaster(Caster caster) {
+        this.casterList.remove(caster);
     }
     
     public List<Caster> getCasters() {

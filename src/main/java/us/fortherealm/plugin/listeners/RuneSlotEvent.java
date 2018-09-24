@@ -38,7 +38,7 @@ public class RuneSlotEvent implements Listener {
             if (!cursoritem.hasItemMeta() || !cursoritem.getItemMeta().hasLore()) {
                 runeevent.setCancelled(true);
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-                player.sendMessage(ChatColor.RED + "Only skills are allowed in this slot.");
+                player.sendMessage(ChatColor.RED + "Only oldskills are allowed in this slot.");
             } else if (cursoritem.hasItemMeta() && cursoritem.getItemMeta().hasLore()) {
                 String loreAsString = ChatColor.stripColor(String.join(" ", player.getItemOnCursor().getItemMeta().getLore()));
                 if (loreAsString.contains("Rune")) {
@@ -63,7 +63,7 @@ public class RuneSlotEvent implements Listener {
                 if (!loreAsString.contains("Rune")) {
                     runeevent.setCancelled(true);
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-                    player.sendMessage(ChatColor.RED + "Only skills are allowed in this slot.");
+                    player.sendMessage(ChatColor.RED + "Only oldskills are allowed in this slot.");
                 }
             }
         }
