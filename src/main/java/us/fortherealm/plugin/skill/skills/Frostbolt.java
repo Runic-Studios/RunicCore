@@ -34,7 +34,7 @@ public class Frostbolt extends Skill {
         new BukkitRunnable() {
 
             public void run() {
-                new VertCircleFrame(1).playParticle(Particle.SNOW_SHOVEL, snowball.getLocation());
+                new VertCircleFrame(0.5F).playParticle(Particle.SNOW_SHOVEL, snowball.getLocation());
                 if (snowball.isOnGround() || snowball.isDead()) {
                     this.cancel();
                 }

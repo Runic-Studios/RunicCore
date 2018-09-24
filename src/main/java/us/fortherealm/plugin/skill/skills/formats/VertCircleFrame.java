@@ -5,9 +5,9 @@ import org.bukkit.util.Vector;
 
 public class VertCircleFrame implements ParticleFormat {
 
-    private int radius;
+    private float radius;
 
-    public VertCircleFrame(int radius) {
+    public VertCircleFrame(float radius) {
         this.radius = radius;
     }
 
@@ -24,7 +24,7 @@ public class VertCircleFrame implements ParticleFormat {
         }
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(float radius) {
         this.radius = radius;
     }
 

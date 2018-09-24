@@ -5,9 +5,9 @@ import org.bukkit.util.Vector;
 
 public class HorizCircleFrame implements ParticleFormat {
 
-    private int radius;
+    private float radius;
 
-    public HorizCircleFrame(int radius) {
+    public HorizCircleFrame(float radius) {
         this.radius = radius;
     }
 
@@ -24,7 +24,7 @@ public class HorizCircleFrame implements ParticleFormat {
         }
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(float radius) {
         this.radius = radius;
     }
 

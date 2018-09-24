@@ -50,7 +50,7 @@ public class Rejuvenate extends Skill {
                         this.cancel();
                     }
                     //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0.1f, 0.1f, 0.1f, 0.01);
-                    new VertCircleFrame(1).playParticle(Particle.VILLAGER_HAPPY, location);
+                    new VertCircleFrame(0.5F).playParticle(Particle.VILLAGER_HAPPY, location);
                     allyCheck(location, player);
                     // entityCheck.checkNearby(location, player, plugin);
 

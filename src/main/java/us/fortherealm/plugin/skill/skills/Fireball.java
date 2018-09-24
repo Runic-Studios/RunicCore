@@ -34,7 +34,7 @@ public class Fireball extends Skill{
 
         new BukkitRunnable() {
             public void run() {
-                new VertCircleFrame(1).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
+                new VertCircleFrame(0.5F).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
                 if (fireball.isOnGround() || fireball.isDead()) {
                     this.cancel();
                 }
