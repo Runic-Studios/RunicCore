@@ -11,6 +11,4 @@ public interface ISkill {
 	
 	void executeEntireSkill(Player player); // casts the skills
 	
-	double getCooldown();
-	
 }

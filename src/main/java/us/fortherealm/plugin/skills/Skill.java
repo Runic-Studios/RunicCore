@@ -11,9 +11,9 @@ public abstract class Skill implements ISkill {
 	// ************* VERY IMPORTANT *************
 	// When extending anything from the SkillAPI,
 	// you MUST call skillImpactEvent right before
-	// your skill is actually done andthen check if
+	// your skill is actually executed andthen check if
 	// skillImpactEvent resulted in the skill being
-	// cancelled
+	// cancelled and if so stop the execution!!!
 	// ************* VERY IMPORTANT *************
 	
 	private Main plugin = Main.getInstance();
@@ -22,14 +22,11 @@ public abstract class Skill implements ISkill {
 	private String description;
 	private Player player;
 	
-	private double cooldown;
-	private boolean doCooldown = true;
 	
-	public Skill(Player player, String name, String description, double cooldown) {
-		this.player = player;
+	
+	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
-		this.cooldown = cooldown;
 	}
 	
 	@Override
@@ -39,12 +36,13 @@ public abstract class Skill implements ISkill {
 		executeSkillCleanUp(player);
 	}
 	
-	public void executeSkillSetup(Player player) {
+	public final void executeSkillSetup(Player player) {
 		SkillCastEvent event = new SkillCastEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
+		this.player = player;
 	}
 	
-	public abstract void executeSkill(Player player);
+	public void executeSkill(Player player) {}
 	
 	public void executeSkillCleanUp(Player player) {}
 	
@@ -59,11 +57,6 @@ public abstract class Skill implements ISkill {
 	@Override
 	public String getDescription() {
 		return this.description;
-	}
-	
-	@Override
-	public double getCooldown() {
-		return (doCooldown) ? this.cooldown : 0;
 	}
 	
 }

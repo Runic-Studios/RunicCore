@@ -19,15 +19,15 @@ public class ItemCaster extends Caster implements Listener {
 	
 	private ItemStack item;
 	
-	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType) {
-		this(item, name, itemType, true);
+	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType, double cooldown,
+	                  List<Skill> primarySkills, List<Skill> secondarySkills) {
+		this(item, name, itemType, cooldown, primarySkills, secondarySkills,true);
 	}
 	
-	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType, boolean addToRegisteredItemCasterListener) {
-		this(item, name, itemType, null, null, addToRegisteredItemCasterListener);
-	}
-	
-	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType, List<Skill> primarySkills, List<Skill> secondarySkills, boolean addToRegisteredItemCasterListener) {
+	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType, double cooldown,
+	                  List<Skill> primarySkills, List<Skill> secondarySkills,
+	                  boolean addToRegisteredItemCasterListener) {
+		super(cooldown, name);
 		
 		if(item == null || name == null || itemType == null) {
 			try {
@@ -110,13 +110,15 @@ public class ItemCaster extends Caster implements Listener {
 	}
 	
 	public enum Type {
-		RUNE("Rune"),
-		ARTIFACT("Artifact");
+		RUNE("Rune", 1),
+		ARTIFACT("Artifact", 0);
 		
 		private String name;
+		private int slot;
 		
-		Type(String name) {
+		Type(String name, int slot) {
 			this.name = name;
+			this.slot = slot;
 		}
 		
 		@Override
@@ -126,6 +128,10 @@ public class ItemCaster extends Caster implements Listener {
 		
 		public String getName() {
 			return name;
+		}
+		
+		public int getSlot() {
+			return slot;
 		}
 		
 	}
