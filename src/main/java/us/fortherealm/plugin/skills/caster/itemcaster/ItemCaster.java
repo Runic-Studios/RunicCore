@@ -1,7 +1,11 @@
 package us.fortherealm.plugin.skills.caster.itemcaster;
 
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.caster.Caster;
 
@@ -15,68 +19,115 @@ public class ItemCaster extends Caster implements Listener {
 	
 	private ItemStack item;
 	
-	public ItemCaster() {
-		this(true);
+	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType) {
+		this(item, name, itemType, true);
 	}
 	
-	public ItemCaster(boolean addToRegisteredItemCasterListener) {
-		this(null, null, addToRegisteredItemCasterListener);
+	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType, boolean addToRegisteredItemCasterListener) {
+		this(item, name, itemType, null, null, addToRegisteredItemCasterListener);
 	}
 	
-	public ItemCaster(List<Skill> primarySkills, List<Skill> secondarySkills, boolean addToRegisteredItemCasterListener) {
+	public ItemCaster(ItemStack item, String name, ItemCaster.Type itemType, List<Skill> primarySkills, List<Skill> secondarySkills, boolean addToRegisteredItemCasterListener) {
+		
+		if(item == null || name == null || itemType == null) {
+			try {
+				throw new NullPointerException();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "ItemCaster could not be created due to null fields");
+				return;
+			}
+		}
+		
 		if(primarySkills != null)
-			this.primarySkills = primarySkills;
+			this.primarySkills.addAll(primarySkills);
 		
 		if(secondarySkills != null)
-			this.secondarySkills = secondarySkills;
+			this.secondarySkills.addAll(secondarySkills);
+		
+		item.setItemMeta(generateItemMeta(item, name, itemType));
+		this.item = item;
 		
 		if(addToRegisteredItemCasterListener)
 			PlayerInteractWithRegisteredItemCasterListener.addRegisteredItemCaster(this);
 	}
 	
-	public List<Skill> getPrimarySkills() {
-		return primarySkills;
+	public void executePrimarySkills(Player player) {
+		for(Skill skill : primarySkills) {
+			skill.executeSkill(player);
+		}
 	}
 	
-	public void setPrimarySkills(List<Skill> primarySkills) {
-		this.primarySkills = primarySkills;
-	}
-	
-	public void addPrimarySkill(Skill skill) {
-		this.primarySkills.add(skill);
-	}
-	
-	public void delPrimarySkill(Skill skill) {
-		this.primarySkills.remove(skill);
-	}
-	
-	public List<Skill> getSecondarySkills() {
-		return secondarySkills;
-	}
-	
-	public void setSecondarySkills(List<Skill> secondarySkills) {
-		this.secondarySkills = secondarySkills;
-	}
-	
-	public void addSecondarySkill(Skill skill) {
-		this.secondarySkills.add(skill);
-	}
-	
-	public void delSecondarySkill(Skill skill) {
-		this.secondarySkills.remove(skill);
+	public void executeSecondarySkills(Player player) {
+		for(Skill skill : secondarySkills) {
+			skill.executeSkill(player);
+		}
 	}
 	
 	public ItemStack getItem() {
 		return item;
 	}
 	
-	public void setItem(ItemStack item) {
-		this.item = item;
+	public List<Skill> getSecondarySkills() {
+		return secondarySkills;
 	}
 	
-	public static ItemStack generateItemStack() {
+	
+	public List<Skill> getPrimarySkills() {
+		return primarySkills;
+	}
+	
+	public ItemMeta generateItemMeta(ItemStack item, String name, ItemCaster.Type itemType) {
+		ItemMeta itemMeta = item.getItemMeta();
+		itemMeta.setDisplayName(ChatColor.YELLOW + name);
+		List<String> lore = new ArrayList<>();
 		
-		return null;
+		if(primarySkills.size() != 0) {
+			
+			lore.add(ChatColor.GRAY + "Primary:");
+			
+			for(Skill skill : primarySkills)
+				lore.add(ChatColor.RED + skill.getName());
+			
+			lore.add("");
+		}
+		
+		if(secondarySkills.size() != 0) {
+			
+			lore.add(ChatColor.GRAY + "Secondary:");
+			
+			for (Skill skill : secondarySkills)
+				lore.add(ChatColor.DARK_RED + skill.getName());
+			
+			lore.add("");
+			
+		}
+		
+		lore.add(ChatColor.YELLOW + itemType.getName());
+		itemMeta.setLore(lore);
+		
+		return itemMeta;
+	}
+	
+	public enum Type {
+		RUNE("Rune"),
+		ARTIFACT("Artifact");
+		
+		private String name;
+		
+		Type(String name) {
+			this.name = name;
+		}
+		
+		@Override
+		public String toString() {
+			return getName();
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
 	}
 	
 }
