@@ -3,6 +3,8 @@ package us.fortherealm.plugin.skill.skills;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.parties.Party;
+import us.fortherealm.plugin.skill.skills.formats.HorizCircleFrame;
+import us.fortherealm.plugin.skill.skills.formats.VertCircleFrame;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.KnockbackUtil;
@@ -17,12 +19,8 @@ import org.bukkit.util.Vector;
 // TODO: if hit enemy is a player, check if enemy player is in OUTLAW MODE for damage check
 public class Fireball extends Skill{
 
-    private int radius;
-
     public Fireball() {
         super ("Fireball", "Shoots a fireball.", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 4);
-
-        this.radius = radius;
     }
 
     @Override
@@ -34,16 +32,13 @@ public class Fireball extends Skill{
         fireball.setShooter(player);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
 
-
         new BukkitRunnable() {
-
             public void run() {
-                playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
+                new VertCircleFrame(1).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
                 if (fireball.isOnGround() || fireball.isDead()) {
                     this.cancel();
                 }
             }
-
         }.runTaskTimer(Main.getInstance(), 0, 1);
     }
 
@@ -67,24 +62,6 @@ public class Fireball extends Skill{
                         Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
             }
         }
-    }
-
-    public void playParticle(Particle particle, Location location) {
-        for (double b = 0; b <= 360; b++) {
-            Location loc = location.clone();
-            int radius = 100;
-
-            double theta = Math.toRadians(b);
-            Vector vector = new Vector (this.radius * Math.cos(theta), 0D, this.radius * Math.sin(0));
-
-            loc.getWorld().spawnParticle(particle, location.add(vector), 1, 0, 0, 0, 0);
-            loc.subtract(vector);
-
-        }
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
     }
 
 }
