@@ -1,5 +1,7 @@
 package us.fortherealm.plugin.skill.skills;
 
+import org.bukkit.Particle;
+import us.fortherealm.plugin.skill.skills.formats.HorizCircleFrame;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
 import org.bukkit.Bukkit;
@@ -19,6 +21,8 @@ public class Speed extends Skill {
     public void onRightClick(Player player, SkillItemType type) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 2)); //100 ticks = 5s (Speed III)
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_BLAST, 0.5F, 1.0F);
+        new HorizCircleFrame(1).playParticle(Particle.TOTEM, player.getLocation());
+        new HorizCircleFrame(1).playParticle(Particle.TOTEM, player.getEyeLocation());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override

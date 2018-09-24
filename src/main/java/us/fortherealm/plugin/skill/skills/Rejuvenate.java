@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.skill.skills;
 
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skill.skills.formats.VertCircleFrame;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.HealUtil;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
@@ -48,7 +49,8 @@ public class Rejuvenate extends Skill {
                     if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= 10.0D) { // 10 block range
                         this.cancel();
                     }
-                    player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0.1f, 0.1f, 0.1f, 0.01);
+                    //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0.1f, 0.1f, 0.1f, 0.01);
+                    new VertCircleFrame(1).playParticle(Particle.VILLAGER_HAPPY, location);
                     allyCheck(location, player);
                     // entityCheck.checkNearby(location, player, plugin);
 
