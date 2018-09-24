@@ -1,6 +1,5 @@
 package us.fortherealm.plugin.skills.skilltypes;
 
-import org.bukkit.entity.Player;
 import us.fortherealm.plugin.skills.Skill;
 
 public class TargetingSkill<T> extends Skill {

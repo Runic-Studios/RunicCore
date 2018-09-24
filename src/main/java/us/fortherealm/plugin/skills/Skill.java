@@ -3,6 +3,7 @@ package us.fortherealm.plugin.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
 
@@ -52,6 +53,10 @@ public abstract class Skill implements ISkill {
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	protected Plugin getPlugin() {
+		return plugin;
 	}
 	
 	@Override
