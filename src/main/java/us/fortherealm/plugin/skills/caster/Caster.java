@@ -25,7 +25,7 @@ public class Caster {
 	
 	public void executeSkill(Skill skill, Player player) {
 		if(!Main.getCasterManager().isOnCooldown(player, this)) {
-			skill.executeSkill(player);
+			skill.executeEntireSkill(player);
 			Main.getCasterManager().addCooldown(player, this, this.getCooldown());
 		}
 	}

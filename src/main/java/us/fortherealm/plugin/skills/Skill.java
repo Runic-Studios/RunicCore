@@ -21,9 +21,7 @@ public abstract class Skill implements ISkill {
 	
 	private String name;
 	private String description;
-	private Player player;
-	
-	
+	protected Player player;
 	
 	public Skill(String name, String description) {
 		this.name = name;
@@ -32,20 +30,21 @@ public abstract class Skill implements ISkill {
 	
 	@Override
 	public final void executeEntireSkill(Player player) {
-		executeSkillSetup(player);
-		executeSkill(player);
-		executeSkillCleanUp(player);
-	}
-	
-	public final void executeSkillSetup(Player player) {
 		SkillCastEvent event = new SkillCastEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
+		
+		if(event.isCancelled())
+			return;
+		
 		this.player = player;
+		
+		executeSkill();
+		executeSkillCleanUp();
 	}
 	
-	public void executeSkill(Player player) {}
+	protected void executeSkill() {}
 	
-	public void executeSkillCleanUp(Player player) {}
+	protected void executeSkillCleanUp() {}
 	
 	public Player getPlayer() {
 		return player;

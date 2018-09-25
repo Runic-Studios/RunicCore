@@ -25,7 +25,6 @@ public class FirstJoinEvent implements Listener {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.sendMessage(ChatColor.GREEN + "Welcome back to the project, " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "."), 1);
 
-
         if (!player.hasPlayedBefore()) {
             ItemStack sparringsword = new ItemStack(Material.WOOD_SWORD);
             ItemMeta swordmeta = sparringsword.getItemMeta();

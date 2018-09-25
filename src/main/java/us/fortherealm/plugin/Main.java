@@ -36,6 +36,7 @@ public class Main extends JavaPlugin {
         this.loadConfig();
         
         this.registerCommands();
+        this.initializeCasters();
     }
 
     public static Main getInstance() { return instance; }
@@ -105,7 +106,7 @@ public class Main extends JavaPlugin {
    
     }
     
-    private void addCasters() {
+    private void initializeCasters() {
         getCasterManager().addCaster(
                 new RuneCasterItem(new ItemStack(Material.SLIME_BALL),
                         "test caster", 5,
