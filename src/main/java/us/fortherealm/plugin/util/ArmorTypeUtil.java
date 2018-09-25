@@ -20,7 +20,7 @@ public enum ArmorTypeUtil{
     /**
      * Attempts to match the ArmorType for the specified ItemStack.
      *
-     * @param itemStack The ItemStack to parse the type of.
+     * @param itemStack The ItemStack to parse the skilltypes of.
      * @return The parsed ArmorType. (null if none were found.)
      */
     public static ArmorTypeUtil matchType(final ItemStack itemStack){

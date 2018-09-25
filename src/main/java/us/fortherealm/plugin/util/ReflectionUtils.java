@@ -30,12 +30,12 @@ public final class ReflectionUtils {
     private ReflectionUtils() {}
 
     /**
-     * Returns the constructor of a given class with the given parameter types
+     * Returns the constructor of a given class with the given parameter skilltypes
      *
      * @param clazz Target class
-     * @param parameterTypes Parameter types of the desired constructor
-     * @return The constructor of the target class with the specified parameter types
-     * @throws NoSuchMethodException If the desired constructor with the specified parameter types cannot be found
+     * @param parameterTypes Parameter skilltypes of the desired constructor
+     * @return The constructor of the target class with the specified parameter skilltypes
+     * @throws NoSuchMethodException If the desired constructor with the specified parameter skilltypes cannot be found
      * @see DataType
      * @see DataType#getPrimitive(Class[])
      * @see DataType#compare(Class[], Class[])
@@ -48,7 +48,7 @@ public final class ReflectionUtils {
             }
             return constructor;
         }
-        throw new NoSuchMethodException("There is no such constructor in this class with the specified parameter types");
+        throw new NoSuchMethodException("There is no such constructor in this class with the specified parameter skilltypes");
     }
 
 
@@ -64,7 +64,7 @@ public final class ReflectionUtils {
      * @return The instance of the target class with the specified arguments
      * @throws InstantiationException If you cannot create an instance of the target class due to certain circumstances
      * @throws IllegalAccessException If the desired constructor cannot be accessed due to certain circumstances
-     * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the constructor (this should not occur since it searches for a constructor with the types of the arguments)
+     * @throws IllegalArgumentException If the skilltypes of the arguments do not match the parameter skilltypes of the constructor (this should not occur since it searches for a constructor with the skilltypes of the arguments)
      * @throws InvocationTargetException If the desired constructor cannot be invoked
      * @throws NoSuchMethodException If the desired constructor with the specified arguments cannot be found
      */
@@ -78,13 +78,13 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Returns a method of a class with the given parameter types
+     * Returns a method of a class with the given parameter skilltypes
      *
      * @param clazz Target class
      * @param methodName Name of the desired method
-     * @param parameterTypes Parameter types of the desired method
-     * @return The method of the target class with the specified name and parameter types
-     * @throws NoSuchMethodException If the desired method of the target class with the specified name and parameter types cannot be found
+     * @param parameterTypes Parameter skilltypes of the desired method
+     * @return The method of the target class with the specified name and parameter skilltypes
+     * @throws NoSuchMethodException If the desired method of the target class with the specified name and parameter skilltypes cannot be found
      * @see DataType#getPrimitive(Class[])
      * @see DataType#compare(Class[], Class[])
      */
@@ -96,7 +96,7 @@ public final class ReflectionUtils {
             }
             return method;
         }
-        throw new NoSuchMethodException("There is no such method in this class with the specified name and parameter types");
+        throw new NoSuchMethodException("There is no such method in this class with the specified name and parameter skilltypes");
     }
 
 
@@ -112,7 +112,7 @@ public final class ReflectionUtils {
      * @param arguments Arguments which are used to invoke the desired method
      * @return The result of invoking the desired method on the target object
      * @throws IllegalAccessException If the desired method cannot be accessed due to certain circumstances
-     * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the method (this should not occur since it searches for a method with the types of the arguments)
+     * @throws IllegalArgumentException If the skilltypes of the arguments do not match the parameter skilltypes of the method (this should not occur since it searches for a method with the skilltypes of the arguments)
      * @throws InvocationTargetException If the desired method cannot be invoked on the target object
      * @throws NoSuchMethodException If the desired method of the class of the target object with the specified name and arguments cannot be found
      * @see #getMethod(Class, String, Class...)
@@ -131,7 +131,7 @@ public final class ReflectionUtils {
      * @param arguments Arguments which are used to invoke the desired method
      * @return The result of invoking the desired method on the target object
      * @throws IllegalAccessException If the desired method cannot be accessed due to certain circumstances
-     * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the method (this should not occur since it searches for a method with the types of the arguments)
+     * @throws IllegalArgumentException If the skilltypes of the arguments do not match the parameter skilltypes of the method (this should not occur since it searches for a method with the skilltypes of the arguments)
      * @throws InvocationTargetException If the desired method cannot be invoked on the target object
      * @throws NoSuchMethodException If the desired method of the target class with the specified name and arguments cannot be found
      * @see #getMethod(Class, String, Class...)
@@ -242,7 +242,7 @@ public final class ReflectionUtils {
      * @param declared Whether the desired field is declared or not
      * @param fieldName Name of the desired field
      * @param value New value
-     * @throws IllegalArgumentException If the type of the value does not match the type of the desired field
+     * @throws IllegalArgumentException If the skilltypes of the value does not match the skilltypes of the desired field
      * @throws IllegalAccessException If the desired field cannot be accessed
      * @throws NoSuchFieldException If the desired field of the target class cannot be found
      * @throws SecurityException If the desired field cannot be made accessible
@@ -261,7 +261,7 @@ public final class ReflectionUtils {
      * @param declared Whether the desired field is declared or not
      * @param fieldName Name of the desired field
      * @param value New value
-     * @throws IllegalArgumentException If the type of the value does not match the type of the desired field
+     * @throws IllegalArgumentException If the skilltypes of the value does not match the skilltypes of the desired field
      * @throws IllegalAccessException If the desired field cannot be accessed
      * @throws NoSuchFieldException If the desired field of the desired class cannot be found
      * @throws SecurityException If the desired field cannot be made accessible
@@ -279,7 +279,7 @@ public final class ReflectionUtils {
      * @param declared Whether the desired field is declared or not
      * @param fieldName Name of the desired field
      * @param value New value
-     * @throws IllegalArgumentException If the type of the value does not match the type of the desired field
+     * @throws IllegalArgumentException If the skilltypes of the value does not match the skilltypes of the desired field
      * @throws IllegalAccessException If the desired field cannot be accessed
      * @throws NoSuchFieldException If the desired field of the target object cannot be found
      * @throws SecurityException If the desired field cannot be made accessible
@@ -322,7 +322,7 @@ public final class ReflectionUtils {
         private final String path;
 
         /**
-         * Construct a new package type
+         * Construct a new package skilltypes
          *
          * @param path Path of the package
          */
@@ -331,7 +331,7 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Construct a new package type
+         * Construct a new package skilltypes
          *
          * @param parent Parent package of the package
          * @param path Path of the package
@@ -341,7 +341,7 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Returns the path of this package type
+         * Returns the path of this package skilltypes
          *
          * @return The path
          */
@@ -377,7 +377,7 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Represents an enumeration of Java data types with corresponding classes
+     * Represents an enumeration of Java data skilltypes with corresponding classes
      * <p>
      * This class is part of the <b>ReflectionUtils</b> and follows the same usage conditions
      *
@@ -407,10 +407,10 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Construct a new data type
+         * Construct a new data skilltypes
          *
-         * @param primitive Primitive class of this data type
-         * @param reference Reference class of this data type
+         * @param primitive Primitive class of this data skilltypes
+         * @param reference Reference class of this data skilltypes
          */
         private DataType(Class<?> primitive, Class<?> reference) {
             this.primitive = primitive;
@@ -418,7 +418,7 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Returns the primitive class of this data type
+         * Returns the primitive class of this data skilltypes
          *
          * @return The primitive class
          */
@@ -427,7 +427,7 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Returns the reference class of this data type
+         * Returns the reference class of this data skilltypes
          *
          * @return The reference class
          */
@@ -436,19 +436,19 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Returns the data type with the given primitive/reference class
+         * Returns the data skilltypes with the given primitive/reference class
          *
-         * @param clazz Primitive/Reference class of the data type
-         * @return The data type
+         * @param clazz Primitive/Reference class of the data skilltypes
+         * @return The data skilltypes
          */
         public static DataType fromClass(Class<?> clazz) {
             return CLASS_MAP.get(clazz);
         }
 
         /**
-         * Returns the primitive class of the data type with the given reference class
+         * Returns the primitive class of the data skilltypes with the given reference class
          *
-         * @param clazz Reference class of the data type
+         * @param clazz Reference class of the data skilltypes
          * @return The primitive class
          */
         public static Class<?> getPrimitive(Class<?> clazz) {
@@ -457,9 +457,9 @@ public final class ReflectionUtils {
         }
 
         /**
-         * Returns the reference class of the data type with the given primitive class
+         * Returns the reference class of the data skilltypes with the given primitive class
          *
-         * @param clazz Primitive class of the data type
+         * @param clazz Primitive class of the data skilltypes
          * @return The reference class
          */
         public static Class<?> getReference(Class<?> clazz) {
