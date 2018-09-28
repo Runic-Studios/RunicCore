@@ -5,14 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.Caster;
-import us.fortherealm.plugin.skills.caster.itemcaster.ItemCaster;
+import us.fortherealm.plugin.skills.caster.CasterStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,20 +46,17 @@ public class Test implements SubCommand {
 			casterName.append(params[c] + " ");
 		casterName.delete(casterName.length() - 1, casterName.length()); // Removes final space
 		
-		Caster caster = Main.getCasterManager().getCasterByName(casterName.toString());
-		
-		if(!(caster instanceof ItemCaster)) {
-			System.out.println(ChatColor.RED + "was not an item caster... strange");
+		for(CasterStorage<ItemStack> casterStorage : Main.getItemCasterManager().getCasterStorages()) {
+			Caster mother = casterStorage.getMotherCaster();
+			
+			if(!(mother.getName().toLowerCase().equals(params[1].toLowerCase())))
+				return;
+			
+			ItemStack testItem = new ItemStack(Material.CLAY_BALL);
+			testItem.setItemMeta(Main.getItemCasterManager().generateItemMeta(testItem, mother));
+			
+			casterStorage.addLinkedCaster(testItem);
 		}
-		
-		ItemCaster itemCaster = (ItemCaster) Main.getCasterManager().getCasterByName(casterName.toString());
-		
-		if (itemCaster == null) {
-			sender.sendMessage(ChatColor.RED + "Error: Caster does not exist.");
-			return;
-		}
-		
-		sender.getInventory().setItem(1,itemCaster.getItem());
 	}
 	
 	
@@ -73,8 +68,9 @@ public class Test implements SubCommand {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		List<String> casterNames = new ArrayList<>();
-		for(Caster caster : Main.getCasterManager().getCasters())
-			casterNames.add(caster.getName());
+		for(CasterStorage<ItemStack> casterStorage : Main.getItemCasterManager().getCasterStorages()) {
+			casterNames.add(casterStorage.getMotherCaster().getName());
+		}
 		
 		if(args.length == 1)
 			return casterNames;

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +24,8 @@ public class Fireball extends TargetingSkill<LivingEntity> implements Listener {
         super ("Fireball", "Shoots a fireball.");
     }
     
-    public void executeSkill(Player player) {
+    @Override
+    public void executeSkill() {
         // Launch fireball
         SmallFireball fireball = player.launchProjectile(SmallFireball.class);
         fireball.setIsIncendiary(false);
@@ -33,21 +33,22 @@ public class Fireball extends TargetingSkill<LivingEntity> implements Listener {
         fireball.setVelocity(velocity);
         fireball.setShooter(player);
         
-        // Sets the skill's fireball to the created fireball
-        this.fireball = fireball;
-        
         // play sound effect
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
+        
+        this.fireball = fireball;
+        
     }
     
     @EventHandler
     public void onFireballDamage(EntityDamageByEntityEvent event) {
+        System.out.println(1);
         if (!(event.getDamager() instanceof SmallFireball))
             return;
         
-        // Check if this fireball is the skill's fireball
+        System.out.println(5);
         SmallFireball smfb = (SmallFireball) event.getDamager();
-        if (!(smfb.equals(fireball)))
+        if(!(smfb.equals(fireball)))
             return;
         
         // Cancel the original event to create our own effect
