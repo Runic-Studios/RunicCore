@@ -137,8 +137,6 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 			for (Skill skill : secondarySkills)
 				lore.add(ChatColor.DARK_RED + skill.getName());
 			
-			lore.add("");
-			
 		}
 		
 		// Do not change until stated
@@ -209,8 +207,6 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		lore.add(sb2.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
 
 		// Legit
-		lore.add(sb2.toString());
-
 //		lore.add(sb2.toString());
 
 		// Changing this requires changing the parseItemType method
@@ -237,9 +233,9 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	}
 
 	private List<Skill> parseSkills(ItemMeta meta, String keyword) {
-		List<Skill> primarySkills = new ArrayList<>();
+		List<Skill> skills = new ArrayList<>();
 		List<String> lore = meta.getLore();
-		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split(".");
+		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split("\\.");
 		boolean isOnGoodStuff = false;
 		for(String info : skillInfo) {
 			if(isOnGoodStuff) {
@@ -247,13 +243,13 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 					break;
 				for(SkillRegistry registeredSkill : SkillRegistry.values()) {
 					if(registeredSkill.getUniqueId() == Integer.valueOf(info))
-						primarySkills.add(registeredSkill.getSkill());
+						skills.add(registeredSkill.getSkill());
 				}
 			}
 			if(info.equalsIgnoreCase(keyword))
 				isOnGoodStuff = true;
 		}
-		return primarySkills;
+		return skills;
 	}
 	
 	private void displayCooldown(Player player) {
@@ -270,7 +266,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 			
 			@Override
 			public void run() {
-				
+
 				Set<CasterItemStack> oldCastersOnCooldown = new HashSet<>(); // Avoids threading issues
 				
 				synchronized(castersOnCooldown) {
@@ -325,11 +321,13 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
 	public final static boolean containsCasterSignature(ItemStack item) {
 		List<String> lore = item.getItemMeta().getLore();
-		if(lore.size() < 3)
+		if(lore.size() < 3) {
 			return false;
-		String[] lastWords = lore.get(lore.size() - 3).split(".");
-		if(lastWords.length != 2)
+		}
+		String[] lastWords = lore.get(lore.size() - 3).split("\\.");
+		if(lastWords.length != 2) {
 			return false;
+		}
 		return lastWords[0].replace(String.valueOf(ChatColor.COLOR_CHAR), "").equals(getCasterSignature());
 	}
 	
@@ -337,7 +335,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(!(containsItemId(item)))
 			return null;
 		List<String> lore = item.getItemMeta().getLore();
-		String[] lastWords = lore.get(lore.size() - 3).split(".");
+		String[] lastWords = lore.get(lore.size() - 3).split("\\.");
 		if(lastWords.length != 2)
 			return null;
 		return lastWords[1].replace(String.valueOf(ChatColor.COLOR_CHAR), "");
@@ -347,7 +345,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		List<String> lore = item.getItemMeta().getLore();
 		if(lore.size() < 3)
 			return false;
-		String[] lastWords = lore.get(lore.size() - 3).split(".");
+		String[] lastWords = lore.get(lore.size() - 3).split("\\.");
 		return lastWords.length == 2 || !(containsCasterSignature(item));
 	}
 	

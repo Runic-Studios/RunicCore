@@ -13,13 +13,29 @@ public class PlayerInteractWithCasterItemStack implements Listener {
 		
 //		if (event.getItem() == null || !(event.getItem() instanceof CasterItemStack)) // Does not work because
 //			return;                                                                   // spigot is lame
-		
+
+		System.out.println("preGoodStuff");
+
+		if(event.getItem() == null)
+			return;
+
+		System.out.println("sortaGoodStuff");
+
 		if(!(CasterItemStack.containsCasterSignature(event.getItem())))
 			return;
+
+		System.out.println("isCasterItem");
 
 		event.setCancelled(true);
 
 		CasterItemStack casterItem = CasterItemStack.getCasterItem(event.getItem());
+
+		if(casterItem == null) {
+			System.out.println("null caster");
+			return;
+		}
+
+		System.out.println(casterItem.getName());
 
 		switch (event.getAction()) {
 			case RIGHT_CLICK_BLOCK:
