@@ -42,6 +42,13 @@ public abstract class Skill implements ISkill {
 		executeSkill();
 		executeSkillCleanUp();
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		if(!(object instanceof Skill))
+			return false;
+		return this.getClass().equals(((Skill) object).getClass());
+	}
 	
 	protected void executeSkill() {}
 	
@@ -63,5 +70,5 @@ public abstract class Skill implements ISkill {
 	public String getDescription() {
 		return this.description;
 	}
-	
+
 }

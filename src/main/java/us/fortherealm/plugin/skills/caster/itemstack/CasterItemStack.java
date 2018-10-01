@@ -13,7 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.SkillRegistry;
-import us.fortherealm.plugin.skills.caster.Caster;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.*;
 public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	
 	private static long nextId;
-	private static long currentThousandthId;
+	private static long currentHundredthId;
 	private static Map<Long, CasterItemStack> iHateSpigotMap = new HashMap<>();
 	
 	private static Map<CasterItemStack, Player> castersOnCooldown = new HashMap<>();
@@ -41,13 +40,13 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(!(casterData.exists()))
 			casterData.mkdir();
 		YamlConfiguration yamlData = YamlConfiguration.loadConfiguration(casterData);
-		if(!(yamlData.isSet("thousandthId")))
-			yamlData.set("thousandthId", 0);
+		if(!(yamlData.isSet("hundredthId")))
+			yamlData.set("hundredthId", 0);
 
-		CasterItemStack.nextId = (yamlData.getLong("thousandthId") + 1) * 1000;
-		CasterItemStack.currentThousandthId = yamlData.getLong("thousandthId") + 1;
+		CasterItemStack.nextId = (yamlData.getLong("hundredthId") + 1) * 100;
+		CasterItemStack.currentHundredthId = yamlData.getLong("hundredthId") + 1;
 
-		yamlData.set("thousandthId", currentThousandthId);
+		yamlData.set("hundredthId", currentHundredthId);
 
 		try {
 			yamlData.save(casterData);
@@ -156,10 +155,24 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
 		sb.append('.');
 
-		for(char c : String.valueOf(nextId).toCharArray()) {
+		for(char c : String.valueOf(nextId++).toCharArray()) {
 			if (c == '.')
 				continue;
 			sb.append(ChatColor.COLOR_CHAR + String.valueOf(c));
+		}
+
+		if(nextId / 100 > currentHundredthId) {
+			currentHundredthId = nextId / 100;
+			File casterData = new File("src/main/java/us/fortherealm/plugin/skills/caster/CasterData.yml");
+			YamlConfiguration yamlData = YamlConfiguration.loadConfiguration(casterData);
+
+			yamlData.set("hundredthId", currentHundredthId);
+
+			try {
+				yamlData.save(casterData);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		// Bug testing
@@ -174,15 +187,18 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		// Changing this requires changing the parseSkills method
 		sb.append('p');
 		for(Skill pSkill : primarySkills)
-			for(SkillRegistry registeredSkill : SkillRegistry.values())
-				if(registeredSkill.getSkill().equals(pSkill))
-					sb.append('.' + registeredSkill.getUniqueId());
+			for(SkillRegistry registeredSkill : SkillRegistry.values()) {
+				if (registeredSkill.getSkill().equals(pSkill))
+					sb.append("." + registeredSkill.getUniqueId());
+			}
 
 		sb.append(".s");
-		for(Skill sSkill : secondarySkills)
-			for(SkillRegistry registeredSkill : SkillRegistry.values())
-				if(registeredSkill.getSkill().equals(sSkill))
-					sb.append('.' + registeredSkill.getUniqueId());
+		for(Skill sSkill : secondarySkills) {
+			for (SkillRegistry registeredSkill : SkillRegistry.values()) {
+				if (registeredSkill.getSkill().equals(sSkill))
+					sb.append("." + registeredSkill.getUniqueId());
+			}
+		}
 
 		StringBuilder sb2 = new StringBuilder();
 		for(char c : sb.toString().toCharArray()) {
@@ -302,8 +318,9 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	}
 
 	// Skill API will break if this is changed
+	// Not kidding; this like... actually has to stay
 	public final static String getCasterSignature() {
-		return "69Caster69";
+		return "69";
 	}
 
 	public final static boolean containsCasterSignature(ItemStack item) {
@@ -311,6 +328,8 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(lore.size() < 3)
 			return false;
 		String[] lastWords = lore.get(lore.size() - 3).split(".");
+		if(lastWords.length != 2)
+			return false;
 		return lastWords[0].replace(String.valueOf(ChatColor.COLOR_CHAR), "").equals(getCasterSignature());
 	}
 	
@@ -319,6 +338,8 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 			return null;
 		List<String> lore = item.getItemMeta().getLore();
 		String[] lastWords = lore.get(lore.size() - 3).split(".");
+		if(lastWords.length != 2)
+			return null;
 		return lastWords[1].replace(String.valueOf(ChatColor.COLOR_CHAR), "");
 	}
 	
