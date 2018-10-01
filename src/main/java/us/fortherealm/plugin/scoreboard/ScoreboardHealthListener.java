@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.listeners;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import org.bukkit.scoreboard.Scoreboard;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.util.ScoreboardUtil;
 import org.bukkit.Bukkit;
@@ -15,9 +16,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 public class ScoreboardHealthListener implements Listener {
-
+/*
     ScoreboardUtil boardUtil = new ScoreboardUtil();
     private Main plugin = Main.getInstance();
+    Scoreboard s = boardUtil.getScoreboard();
 
     @EventHandler
     public void onDamage (EntityDamageEvent e) {
@@ -28,8 +30,8 @@ public class ScoreboardHealthListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    boardUtil.updateSideScoreboard((Player) victim);//does what you think it does
-                    boardUtil.updateHealthBar((Player) victim);//updates enemy health bars below their name
+                    boardUtil.updateSideScoreboard((Player) victim, s);//does what you think it does
+                    boardUtil.updateHealthBar((Player) victim, s);//updates enemy health bars below their name
                 }
             }, 1);//1 tick(s)
         }
@@ -44,8 +46,8 @@ public class ScoreboardHealthListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    boardUtil.updateSideScoreboard((Player) regenEntity);
-                    boardUtil.updateHealthBar((Player) regenEntity);
+                    boardUtil.updateSideScoreboard((Player) regenEntity, s);
+                    boardUtil.updateHealthBar((Player) regenEntity, s);
                 }
             }, 1);//1 tick(s)
         }
@@ -59,8 +61,8 @@ public class ScoreboardHealthListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                boardUtil.updateSideScoreboard((Player) playerWhoEquipped);
-                boardUtil.updateHealthBar((Player) playerWhoEquipped);
+                boardUtil.updateSideScoreboard((Player) playerWhoEquipped, s);
+                boardUtil.updateHealthBar((Player) playerWhoEquipped, s);
             }
         }, 20);//2 tick(s) = 1.0s so it runs after the hp change from HealthScaleListener in the main plugin
 
@@ -89,4 +91,5 @@ public class ScoreboardHealthListener implements Listener {
             }
         }, 10);//1 tick(s) = 0.5s
     }
+    */
 }

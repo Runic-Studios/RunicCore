@@ -10,7 +10,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class ScoreboardListener implements Listener {
 
-    ScoreboardUtil boardUtil = new ScoreboardUtil();
+    /*
+    private ScoreboardUtil boardUtil = new ScoreboardUtil();
     private Main plugin = Main.getInstance();
 
     // *** ON PLAYER LOGIN, UPDATES ALL HEALTH BAR SCORES TO THEIR RESPECTIVE PLAYER'S CURRENT HP *** //
@@ -20,6 +21,7 @@ public class ScoreboardListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Player pl = e.getPlayer();
             boardUtil.setupScoreboard(pl);
-        },20);//==1.0s (20 ticks so as to wait for the health to be updated from 20 ==> 50 first)
+        },40);//==1.0s (20 ticks so as to wait for the health to be updated from 20 ==> 50 first)
     }
+    */
 }
