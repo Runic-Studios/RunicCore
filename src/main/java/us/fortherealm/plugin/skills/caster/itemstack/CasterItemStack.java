@@ -28,7 +28,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	private static boolean isTaskRunning;
 	
 	private String name;
-	private int cooldown;
+	private double cooldown;
 	private long lastCast;
 	private Type itemType;
 	
@@ -36,7 +36,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	private List<Skill> secondarySkills = new ArrayList<>();
 
 	static {
-		File casterData = new File("src/main/java/us/fortherealm/plugin/skills/caster/CasterData.yml");
+		File casterData = new File(Main.getInstance().getDataFolder() + "/resources/data/CasterData.yml");
 		if(!(casterData.exists()))
 			casterData.mkdir();
 		YamlConfiguration yamlData = YamlConfiguration.loadConfiguration(casterData);
@@ -62,9 +62,16 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
 		this.name = parseName(meta);
 		this.itemType = parseItemType(meta);
+		this.cooldown = parseCooldown(meta);
 
 		this.primarySkills = parseSkills(meta, "p");
 		this.secondarySkills = parseSkills(meta, "s");
+
+		System.out.println("name" + "\t" + name);
+		System.out.println("itemType" + "\t" + itemType);
+		System.out.println("cooldown" + "\t" + cooldown);
+		System.out.println("primarySkills" + "\t" + primarySkills);
+		System.out.println("secondarySkills" + "\t" + secondarySkills);
 
 		setItemMeta(meta);
 	}
@@ -75,6 +82,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		
 		this.name = name;
 		this.itemType = itemType;
+		this.cooldown = cooldown;
 		
 		if(primarySkills != null)
 			this.primarySkills.addAll(primarySkills);
@@ -86,6 +94,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	}
 	
 	public void executeSkill(Skill skill, Player player) {
+		System.out.println(isOnCooldown());
 		if(this.isOnCooldown())
 			return;
 
@@ -146,22 +155,22 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		StringBuilder sb = new StringBuilder();
 
 		for(char c : getCasterSignature().toCharArray()) {
-			if (c == '.')
+			if (c == '|')
 				continue;
 			sb.append(ChatColor.COLOR_CHAR + String.valueOf(c));
 		}
 
-		sb.append('.');
+		sb.append('|');
 
 		for(char c : String.valueOf(nextId++).toCharArray()) {
-			if (c == '.')
+			if (c == '|')
 				continue;
 			sb.append(ChatColor.COLOR_CHAR + String.valueOf(c));
 		}
 
 		if(nextId / 100 > currentHundredthId) {
 			currentHundredthId = nextId / 100;
-			File casterData = new File("src/main/java/us/fortherealm/plugin/skills/caster/CasterData.yml");
+			File casterData = new File(Main.getInstance().getDataFolder() + "/resources/data/CasterData.yml");
 			YamlConfiguration yamlData = YamlConfiguration.loadConfiguration(casterData);
 
 			yamlData.set("hundredthId", currentHundredthId);
@@ -187,16 +196,18 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		for(Skill pSkill : primarySkills)
 			for(SkillRegistry registeredSkill : SkillRegistry.values()) {
 				if (registeredSkill.getSkill().equals(pSkill))
-					sb.append("." + registeredSkill.getUniqueId());
+					sb.append("|" + registeredSkill.getUniqueId());
 			}
 
-		sb.append(".s");
+		sb.append("|s");
 		for(Skill sSkill : secondarySkills) {
 			for (SkillRegistry registeredSkill : SkillRegistry.values()) {
 				if (registeredSkill.getSkill().equals(sSkill))
-					sb.append("." + registeredSkill.getUniqueId());
+					sb.append("|" + registeredSkill.getUniqueId());
 			}
 		}
+
+		sb.append("|c|" + cooldown);
 
 		StringBuilder sb2 = new StringBuilder();
 		for(char c : sb.toString().toCharArray()) {
@@ -227,7 +238,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	private Type parseItemType(ItemMeta meta) {
 		List<String> lore = meta.getLore();
 		for(Type type : Type.values())
-			if(type.getName().equals(lore.get(lore.size() - 1)))
+			if(type.getName().equals(ChatColor.stripColor(lore.get(lore.size() - 1))))
 				return type;
 		return null;
 	}
@@ -235,7 +246,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	private List<Skill> parseSkills(ItemMeta meta, String keyword) {
 		List<Skill> skills = new ArrayList<>();
 		List<String> lore = meta.getLore();
-		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split("\\.");
+		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split("\\|");
 		boolean isOnGoodStuff = false;
 		for(String info : skillInfo) {
 			if(isOnGoodStuff) {
@@ -250,6 +261,15 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 				isOnGoodStuff = true;
 		}
 		return skills;
+	}
+
+	private double parseCooldown(ItemMeta meta) {
+		List<String> lore = meta.getLore();
+		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split("\\|");
+		for(int c = 0; c < skillInfo.length; c++)
+			if(skillInfo[c].equalsIgnoreCase("c"))
+				return Double.parseDouble(skillInfo[c+1]);
+		return Double.MAX_VALUE;
 	}
 	
 	private void displayCooldown(Player player) {
@@ -305,12 +325,16 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	}
 	
 	public final static CasterItemStack getCasterItem(ItemStack item) {
-		if(!(containsCasterSignature(item)))
+		if(!(containsCasterSignature(item))) {
 			return null;
-		if(iHateSpigotMap.get(getItemId(item)) == null)
-			iHateSpigotMap.put(Long.valueOf(getItemId(item)), new CasterItemStack(item));
+		}
 
-		return iHateSpigotMap.get(getItemId(item));
+		if(iHateSpigotMap.get(Long.valueOf(getItemId(item))) == null) {
+			System.out.println("item not found on map");
+			iHateSpigotMap.put(Long.valueOf(getItemId(item)), new CasterItemStack(item));
+		}
+
+		return iHateSpigotMap.get(Long.valueOf(getItemId(item)));
 	}
 
 	// Skill API will break if this is changed
@@ -324,7 +348,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(lore.size() < 3) {
 			return false;
 		}
-		String[] lastWords = lore.get(lore.size() - 3).split("\\.");
+		String[] lastWords = lore.get(lore.size() - 3).split("\\|");
 		if(lastWords.length != 2) {
 			return false;
 		}
@@ -335,7 +359,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(!(containsItemId(item)))
 			return null;
 		List<String> lore = item.getItemMeta().getLore();
-		String[] lastWords = lore.get(lore.size() - 3).split("\\.");
+		String[] lastWords = lore.get(lore.size() - 3).split("\\|");
 		if(lastWords.length != 2)
 			return null;
 		return lastWords[1].replace(String.valueOf(ChatColor.COLOR_CHAR), "");
@@ -345,19 +369,19 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		List<String> lore = item.getItemMeta().getLore();
 		if(lore.size() < 3)
 			return false;
-		String[] lastWords = lore.get(lore.size() - 3).split("\\.");
+		String[] lastWords = lore.get(lore.size() - 3).split("\\|");
 		return lastWords.length == 2 || !(containsCasterSignature(item));
 	}
 	
 	private boolean isOnCooldown() {
-		return getCurrentCooldown() < cooldown * 1000;
+		return getCurrentCooldown() != 0;
 	}
 	
-	private long getCurrentCooldown() {
-		return cooldown*1000 - (System.currentTimeMillis() - lastCast);
+	private double getCurrentCooldown() {
+		return Math.max(0, cooldown*1000 - (System.currentTimeMillis() - lastCast));
 	}
 	
-	public int getTotalCooldown() {
+	public double getTotalCooldown() {
 		return cooldown;
 	}
 	
