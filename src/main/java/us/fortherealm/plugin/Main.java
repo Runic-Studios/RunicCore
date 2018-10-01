@@ -8,8 +8,7 @@ import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.skills.caster.ItemCasterManager;
-import us.fortherealm.plugin.skills.caster.PlayerInteractWithCasterItem;
+import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
 import us.fortherealm.plugin.skills.skilltypes.offensive.Fireball;
 
 import java.util.Arrays;
@@ -18,13 +17,11 @@ public class Main extends JavaPlugin {
 
     private static Main instance;
     private static PartyManager partyManager;
-    private static ItemCasterManager itemCasterManager;
 
     public void onEnable() {
 
         instance = this;
         partyManager = new PartyManager();
-        itemCasterManager = new ItemCasterManager();
 
         getLogger().info(" §aFTRCore has been enabled.");
 
@@ -37,10 +34,6 @@ public class Main extends JavaPlugin {
     public static Main getInstance() { return instance; }
 
     public static PartyManager getPartyManager() { return partyManager; }
-    
-    public static ItemCasterManager getItemCasterManager() {
-        return itemCasterManager;
-    }
     
     public void onDisable() {
         getLogger().info(" has been disabled.");
@@ -73,7 +66,7 @@ public class Main extends JavaPlugin {
         
         getServer().getPluginManager().registerEvents(new Fireball(), this);
         
-        getServer().getPluginManager().registerEvents(new PlayerInteractWithCasterItem(), this);
+        getServer().getPluginManager().registerEvents(new PlayerInteractWithCasterItemStack(), this);
     }
     
     private void registerCommands() {

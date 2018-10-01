@@ -128,7 +128,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <fileOutput>${user.home}/Desktop/For the Realm Custom Plugins</fileOutput>
+    <fileOutput>${user.home}/Desktop/Spigot/plugins</fileOutput>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 </project>

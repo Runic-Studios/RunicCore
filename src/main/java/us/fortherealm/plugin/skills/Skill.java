@@ -1,7 +1,6 @@
 package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
@@ -18,7 +17,8 @@ public abstract class Skill implements ISkill {
 	// ************* VERY IMPORTANT *************
 	
 	private Main plugin = Main.getInstance();
-	
+
+	private SkillRegistry skillRegistry;
 	private String name;
 	private String description;
 	protected Player player;
@@ -26,6 +26,7 @@ public abstract class Skill implements ISkill {
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
+		this.skillRegistry = skillRegistry;
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.caster.exception;
+package us.fortherealm.plugin.skills.caster.itemstack.exception;
 
 import net.md_5.bungee.api.ChatColor;
 
