@@ -1,8 +1,7 @@
 package us.fortherealm.plugin.skills;
 
-import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.skilltypes.defensive.Deliverance;
-import us.fortherealm.plugin.skills.skilltypes.offensive.Fireball;
+import us.fortherealm.plugin.skills.skilltypes.offensive.fireball.Fireball;
 
 public enum SkillRegistry {
 

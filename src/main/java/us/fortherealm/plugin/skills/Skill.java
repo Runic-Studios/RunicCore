@@ -6,6 +6,9 @@ import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Skill implements ISkill {
 	
 	// ************* VERY IMPORTANT *************
@@ -17,6 +20,8 @@ public abstract class Skill implements ISkill {
 	// ************* VERY IMPORTANT *************
 	
 	private Main plugin = Main.getInstance();
+
+	private static List<Skill> activeSkills = new ArrayList<>();
 
 	private SkillRegistry skillRegistry;
 	private String name;
@@ -38,6 +43,8 @@ public abstract class Skill implements ISkill {
 			return;
 		
 		this.player = player;
+
+		this.activeSkills.add(this);
 		
 		executeSkill();
 		executeSkillCleanUp();
@@ -69,6 +76,10 @@ public abstract class Skill implements ISkill {
 	@Override
 	public String getDescription() {
 		return this.description;
+	}
+
+	public static List<Skill> getActiveSkills() {
+		return activeSkills;
 	}
 
 }

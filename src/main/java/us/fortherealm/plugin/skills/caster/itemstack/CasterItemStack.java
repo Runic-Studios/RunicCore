@@ -67,12 +67,6 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		this.primarySkills = parseSkills(meta, "p");
 		this.secondarySkills = parseSkills(meta, "s");
 
-		System.out.println("name" + "\t" + name);
-		System.out.println("itemType" + "\t" + itemType);
-		System.out.println("cooldown" + "\t" + cooldown);
-		System.out.println("primarySkills" + "\t" + primarySkills);
-		System.out.println("secondarySkills" + "\t" + secondarySkills);
-
 		setItemMeta(meta);
 	}
 
@@ -94,7 +88,6 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	}
 	
 	public void executeSkill(Skill skill, Player player) {
-		System.out.println(isOnCooldown());
 		if(this.isOnCooldown())
 			return;
 
@@ -330,7 +323,6 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		}
 
 		if(iHateSpigotMap.get(Long.valueOf(getItemId(item))) == null) {
-			System.out.println("item not found on map");
 			iHateSpigotMap.put(Long.valueOf(getItemId(item)), new CasterItemStack(item));
 		}
 
@@ -344,7 +336,11 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	}
 
 	public final static boolean containsCasterSignature(ItemStack item) {
+	    if(item == null)
+	        return false;
 		List<String> lore = item.getItemMeta().getLore();
+		if(lore == null)
+		    return false;
 		if(lore.size() < 3) {
 			return false;
 		}

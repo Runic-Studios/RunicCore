@@ -1,7 +1,6 @@
 package us.fortherealm.plugin.skills.skilltypes;
 
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.SkillRegistry;
 
 public class TargetingSkill<T> extends Skill {
 	
@@ -33,8 +32,8 @@ public class TargetingSkill<T> extends Skill {
 		return target;
 	}
 	
-	protected void setTarget(T target) {
-		this.setTarget(target);
+	public void setTarget(T target) {
+		this.target = target;
 	}
 	
 }

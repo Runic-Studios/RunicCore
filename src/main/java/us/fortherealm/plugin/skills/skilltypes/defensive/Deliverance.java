@@ -46,12 +46,6 @@ public class Deliverance extends TargetingSkill<Player> {
                         confusionLevel
                 )
         );
-        player.addPotionEffect(
-                new PotionEffect(
-                        PotionEffectType.JUMP,              // Reduces all fall damage
-                        (bubbleDuration - 1)*20,
-                        128)
-        );
         
         // Create bubble around player
         Bubble.bubbleEffect(player.getLocation(), Particle.FIREWORKS_SPARK,
@@ -89,6 +83,10 @@ public class Deliverance extends TargetingSkill<Player> {
     
                     // Tells skill who the target is
                     Player target = (Player) entity;
+
+                    if(player.equals(target))
+                        continue;
+
                     Deliverance.this.setTarget(target);
                     
                     // Tells events that the skill is about to impact
@@ -105,5 +103,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 }
             }
         }.runTaskTimer(getPlugin(), 0, 20/updatesPerSecond);
+
+        player.setWalkSpeed(initialWalkSpeed);
     }
 }

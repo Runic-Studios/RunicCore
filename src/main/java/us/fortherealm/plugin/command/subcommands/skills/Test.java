@@ -5,12 +5,11 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
 import us.fortherealm.plugin.skills.skilltypes.defensive.Deliverance;
-import us.fortherealm.plugin.skills.skilltypes.offensive.Fireball;
+import us.fortherealm.plugin.skills.skilltypes.offensive.fireball.Fireball;
 
 import java.util.Arrays;
 import java.util.List;
