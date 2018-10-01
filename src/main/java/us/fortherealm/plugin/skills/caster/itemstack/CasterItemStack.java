@@ -176,10 +176,10 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		}
 
 		// Bug testing
-		lore.add(sb.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
+//		lore.add(sb.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
 
 		// Legit
-//		lore.add(sb.toString());
+		lore.add(sb.toString());
 
 		// Caster parser crator
 		sb = new StringBuilder();
@@ -208,10 +208,10 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		}
 
 		// Bug testing
-		lore.add(sb2.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
+//		lore.add(sb2.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
 
 		// Legit
-//		lore.add(sb2.toString());
+		lore.add(sb2.toString());
 
 		// Changing this requires changing the parseItemType method
 		// Make sure this is 1 line
