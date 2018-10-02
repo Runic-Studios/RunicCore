@@ -35,11 +35,11 @@ public class Deliverance extends TargetingSkill<Player> {
     @Override
     public void executeSkill() {
 
-        initialWalkSpeed = player.getWalkSpeed();
+        initialWalkSpeed = getPlayer().getWalkSpeed();
 
         // Set player effects
-        player.setWalkSpeed(walkSpeed);
-        player.addPotionEffect(
+        getPlayer().setWalkSpeed(walkSpeed);
+        getPlayer().addPotionEffect(
                 new PotionEffect(
                         PotionEffectType.CONFUSION,
                         bubbleDuration*20,
@@ -48,13 +48,13 @@ public class Deliverance extends TargetingSkill<Player> {
         );
 
         // Create bubble around player
-        Bubble.bubbleEffect(player.getLocation(), Particle.FIREWORKS_SPARK,
+        Bubble.bubbleEffect(getPlayer().getLocation(), Particle.FIREWORKS_SPARK,
                 10 /* 5 oscillations */, 0, 1, bubbleSize);
 
         // Play sound effects
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_IMPACT, 0.5F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-        player.getLocation().getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_IMPACT, 0.5F, 1.0F);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
+        getPlayer().getLocation().getWorld().spigot().strikeLightningEffect(getPlayer().getLocation(), true);
 
         // Begin skill event
         final long startTime = System.currentTimeMillis();
@@ -66,25 +66,25 @@ public class Deliverance extends TargetingSkill<Player> {
                 long timePassed = System.currentTimeMillis() - startTime;
                 if (timePassed > bubbleDuration * 1000) {
                     this.cancel();
-                    player.setWalkSpeed(initialWalkSpeed);
+                    getPlayer().setWalkSpeed(initialWalkSpeed);
                     return;
                 }
 
                 // More effect noises
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CAT_HISS, 0.01F, 0.5F);
+                getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_CAT_HISS, 0.01F, 0.5F);
 
                 // Look for targets nearby
-                for (Entity entity : player.getLocation().getChunk().getEntities()) {
+                for (Entity entity : getPlayer().getLocation().getChunk().getEntities()) {
 
                     // Removes targets not close enough
-                    if (entity.getLocation().distance(player.getLocation()) > bubbleSize ||
+                    if (entity.getLocation().distance(getPlayer().getLocation()) > bubbleSize ||
                             !(entity instanceof Player))
                         continue; // Continue ends the current for loop iteration and moves on to the next
 
                     // Tells skill who the target is
                     Player target = (Player) entity;
 
-                    if(player.equals(target))
+                    if(getPlayer().equals(target))
                         continue;
 
                     Deliverance.this.setTarget(target);
@@ -98,12 +98,12 @@ public class Deliverance extends TargetingSkill<Player> {
                         continue;
 
                     // Executes the skill
-                    Vector force = (player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.75).setY(0.3));
+                    Vector force = (getPlayer().getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.75).setY(0.3));
                     entity.setVelocity(force);
                 }
             }
         }.runTaskTimer(getPlugin(), 0, 20/updatesPerSecond);
 
-        player.setWalkSpeed(initialWalkSpeed);
+        getPlayer().setWalkSpeed(initialWalkSpeed);
     }
 }

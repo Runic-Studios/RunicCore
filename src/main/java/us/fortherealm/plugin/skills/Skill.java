@@ -2,6 +2,7 @@ package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
@@ -9,7 +10,7 @@ import us.fortherealm.plugin.skills.events.SkillCastEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Skill implements ISkill {
+public abstract class Skill implements ISkill, Listener {
 	
 	// ************* VERY IMPORTANT *************
 	// When extending anything from the SkillAPI,
@@ -23,15 +24,17 @@ public abstract class Skill implements ISkill {
 
 	private static List<Skill> activeSkills = new ArrayList<>();
 
-	private SkillRegistry skillRegistry;
 	private String name;
 	private String description;
-	protected Player player;
+	private Player player;
 	
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
-		this.skillRegistry = skillRegistry;
+
+
+		if(this instanceof Listener)
+			Bukkit.getServer().getPluginManager().registerEvents((Listener) this, Main.getInstance());
 	}
 	
 	@Override

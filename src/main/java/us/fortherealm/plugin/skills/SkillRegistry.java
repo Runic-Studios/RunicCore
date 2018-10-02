@@ -1,12 +1,14 @@
 package us.fortherealm.plugin.skills;
 
+import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 
 public enum SkillRegistry {
 
     FIREBALL(Fireball.class, 1),
-    DELIVERANCE(Deliverance.class, 2);
+    DELIVERANCE(Deliverance.class, 2),
+    BACKSTAB(Backstab.class, 3);
 
 
     private int uniqueId;

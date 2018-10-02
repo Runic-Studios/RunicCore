@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.FireballListener;
 
 import java.util.Arrays;
 
@@ -65,8 +64,6 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
-        
-        getServer().getPluginManager().registerEvents(new FireballListener(), this);
         
         getServer().getPluginManager().registerEvents(new PlayerInteractWithCasterItemStack(), this);
     }

@@ -65,12 +65,12 @@ public class Fireball extends TargetingSkill<LivingEntity> implements Listener {
             return;
         
         // perform damage
-        target.damage(damageAmount, player);
+        target.damage(damageAmount, getPlayer());
         target.setLastDamageCause(event);
-        KnockbackUtil.knockback(player, target);
+        KnockbackUtil.knockback(getPlayer(), target);
 
         // effects
-        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+        getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
         target.getWorld().spigot().playEffect(target.getEyeLocation(),
                 Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
 

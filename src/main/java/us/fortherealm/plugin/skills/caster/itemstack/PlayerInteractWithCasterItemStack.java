@@ -20,8 +20,6 @@ public class PlayerInteractWithCasterItemStack implements Listener {
 		if(!(CasterItemStack.containsCasterSignature(event.getItem())))
 			return;
 
-		event.setCancelled(true);
-
 		CasterItemStack casterItem = CasterItemStack.getCasterItem(event.getItem());
 
 		if(casterItem == null)
