@@ -3,13 +3,11 @@ package us.fortherealm.plugin.skills.skilltypes.rogue.offensive;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 public class Backstab extends Skill {
