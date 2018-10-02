@@ -82,4 +82,12 @@ public abstract class Skill implements ISkill {
 		return activeSkills;
 	}
 
+	public static void addActiveSkill(Skill skill) {
+		activeSkills.add(skill);
+	}
+
+	public static void delActiveSkill(Skill skill) {
+		activeSkills.remove(skill);
+	}
+
 }
