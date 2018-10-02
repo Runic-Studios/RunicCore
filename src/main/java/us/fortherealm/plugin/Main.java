@@ -8,6 +8,8 @@ import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
+import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
 import us.fortherealm.plugin.skills.skilltypes.offensive.fireball.FireballListener;
 

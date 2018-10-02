@@ -47,6 +47,7 @@ public class FireBowEvent implements Listener {
     @EventHandler
     public void onDamage(final EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
+            Arrow arrow = (Arrow) e.getDamager();
             new BukkitRunnable(){
                 public void run() {
                     Player p = (Player)e.getEntity();

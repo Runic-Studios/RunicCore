@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class FirstJoinEvent implements Listener {
 
@@ -26,6 +27,7 @@ public class FirstJoinEvent implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.sendMessage(ChatColor.GREEN + "Welcome back to the project, " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "."), 1);
 
         if (!player.hasPlayedBefore()) {
+            UUID uuid = event.getPlayer().getUniqueId();
             ItemStack sparringsword = new ItemStack(Material.WOOD_SWORD);
             ItemMeta swordmeta = sparringsword.getItemMeta();
             swordmeta.setDisplayName(ChatColor.WHITE + "Blunt Sparring Sword");
