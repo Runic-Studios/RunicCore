@@ -8,6 +8,8 @@ import org.bukkit.util.Vector;
 public class KnockbackUtil {
 
     public static void knockback(Player p, Entity t) {
+        if(t == null || p == null)
+            return;
         Location l = t.getLocation().subtract(p.getLocation());
         double distance = t.getLocation().distance(p.getLocation());
         Vector v = l.toVector().multiply(1/distance);

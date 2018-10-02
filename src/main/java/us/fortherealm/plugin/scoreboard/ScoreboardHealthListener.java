@@ -1,56 +1,74 @@
-package us.fortherealm.plugin.listeners;
+package us.fortherealm.plugin.scoreboard;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
-import org.bukkit.scoreboard.Scoreboard;
-import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.util.ScoreboardUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import us.fortherealm.plugin.Main;
 
 public class ScoreboardHealthListener implements Listener {
-/*
-    ScoreboardUtil boardUtil = new ScoreboardUtil();
-    private Main plugin = Main.getInstance();
-    Scoreboard s = boardUtil.getScoreboard();
+
+    private ScoreboardManager sbm = new ScoreboardManager();
+    private Plugin plugin = Main.getInstance();
 
     @EventHandler
     public void onDamage (EntityDamageEvent e) {
 
-        LivingEntity victim = (LivingEntity) e.getEntity();
+        //only listen for players
+        if (!(e.getEntity() instanceof Player)) { return; }
 
-        if (victim instanceof Player) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    boardUtil.updateSideScoreboard((Player) victim, s);//does what you think it does
-                    boardUtil.updateHealthBar((Player) victim, s);//updates enemy health bars below their name
+        Player victim = (Player) e.getEntity();
+
+        // set to 3 tick delay to ensure scoreboard displays proper health value
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                sbm.updateSideScoreboard(victim);
+
+                // update health bar
+                Objective healthbar = victim.getScoreboard().getObjective("healthbar");
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    Score score = healthbar.getScore(online.getName());
+                    score.setScore((int) online.getHealth());
                 }
-            }, 1);//1 tick(s)
-        }
+            }
+        }.runTaskLater(plugin, 3);
     }
 
     @EventHandler
     public void onRegen (EntityRegainHealthEvent e) {
 
-        LivingEntity regenEntity = (LivingEntity) e.getEntity();
+        //only listen for players
+        if (!(e.getEntity() instanceof Player)) { return; }
 
-        if (regenEntity instanceof Player) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    boardUtil.updateSideScoreboard((Player) regenEntity, s);
-                    boardUtil.updateHealthBar((Player) regenEntity, s);
+        Player victim = (Player) e.getEntity();
+
+        // set to 3 tick delay to ensure scoreboard displays proper health value
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                sbm.updateSideScoreboard(victim);
+
+                // update health bar
+                Objective healthbar = victim.getScoreboard().getObjective("healthbar");
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    Score score = healthbar.getScore(online.getName());
+                    score.setScore((int) online.getHealth());
                 }
-            }, 1);//1 tick(s)
-        }
+            }
+        }.runTaskLater(plugin, 3);
     }
 
     @EventHandler
@@ -61,8 +79,8 @@ public class ScoreboardHealthListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                boardUtil.updateSideScoreboard((Player) playerWhoEquipped, s);
-                boardUtil.updateHealthBar((Player) playerWhoEquipped, s);
+                sbm.updateSideScoreboard((Player) playerWhoEquipped);
+                //sbm.updateHealthBar((Player) playerWhoEquipped);
             }
         }, 20);//2 tick(s) = 1.0s so it runs after the hp change from HealthScaleListener in the main plugin
 
@@ -91,5 +109,4 @@ public class ScoreboardHealthListener implements Listener {
             }
         }, 10);//1 tick(s) = 0.5s
     }
-    */
 }

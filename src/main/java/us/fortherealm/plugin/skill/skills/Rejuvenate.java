@@ -1,3 +1,4 @@
+/*
 package us.fortherealm.plugin.skill.skills;
 
 import us.fortherealm.plugin.Main;
@@ -5,7 +6,7 @@ import us.fortherealm.plugin.skill.skills.formats.VertCircleFrame;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.HealUtil;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
-import us.fortherealm.plugin.util.ScoreboardUtil;
+import us.fortherealm.plugin.scoreboard.ScoreboardUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -108,3 +109,4 @@ public class Rejuvenate extends Skill {
         }
     }
 }
+*/

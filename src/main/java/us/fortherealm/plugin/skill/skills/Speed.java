@@ -1,3 +1,4 @@
+/*
 package us.fortherealm.plugin.skill.skills;
 
 import org.bukkit.Particle;
@@ -32,3 +33,4 @@ public class Speed extends Skill {
         }, 100);//5 secs
     }
 }
+*/

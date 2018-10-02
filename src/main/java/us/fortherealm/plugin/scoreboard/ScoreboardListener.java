@@ -1,27 +1,40 @@
-package us.fortherealm.plugin.listeners;
+package us.fortherealm.plugin.scoreboard;
 
-import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.util.ScoreboardUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import us.fortherealm.plugin.Main;
 
 public class ScoreboardListener implements Listener {
 
-    /*
-    private ScoreboardUtil boardUtil = new ScoreboardUtil();
-    private Main plugin = Main.getInstance();
+    private ScoreboardManager sbm = new ScoreboardManager();
+    private Plugin plugin = Main.getInstance();
 
-    // *** ON PLAYER LOGIN, UPDATES ALL HEALTH BAR SCORES TO THEIR RESPECTIVE PLAYER'S CURRENT HP *** //
-    // *** MOST OF THE CODE FOR THIS IS IN ITEMS MAIN or SCOREBOARD UTIL BTW *** //
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            Player pl = e.getPlayer();
-            boardUtil.setupScoreboard(pl);
-        },40);//==1.0s (20 ticks so as to wait for the health to be updated from 20 ==> 50 first)
+
+        Player player = e.getPlayer();
+
+        // delay by 1s on first join to wait for server to change hp from 20 ==> 50
+        if (!player.hasPlayedBefore()) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sbm.setupScoreboard(e.getPlayer());
+                }
+            }.runTaskLater(plugin, 20);
+
+        // otherwise update quickly
+        } else {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sbm.setupScoreboard(e.getPlayer());
+                }
+            }.runTaskLater(plugin, 1);
+        }
     }
-    */
 }

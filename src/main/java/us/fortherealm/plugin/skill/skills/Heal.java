@@ -1,10 +1,11 @@
+/*
 package us.fortherealm.plugin.skill.skills;
 
 import us.fortherealm.plugin.skill.skills.formats.HelixParticleFrame;
 import us.fortherealm.plugin.skill.skilltypes.skillutil.HealUtil;
 import us.fortherealm.plugin.skill.skilltypes.Skill;
 import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
-import us.fortherealm.plugin.util.ScoreboardUtil;
+import us.fortherealm.plugin.scoreboard.ScoreboardUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.*;
 import org.bukkit.ChatColor;
@@ -42,3 +43,4 @@ public class Heal extends Skill{
         }
     }
 }
+*/

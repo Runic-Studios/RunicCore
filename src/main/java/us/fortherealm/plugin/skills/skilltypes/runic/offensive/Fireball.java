@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.runic;
+package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;

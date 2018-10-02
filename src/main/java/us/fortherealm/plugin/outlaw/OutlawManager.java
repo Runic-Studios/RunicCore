@@ -8,15 +8,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import us.fortherealm.plugin.Main;
 
 import java.util.UUID;
 
 // TODO: check if killer/victim have party, perform calculations based on average party rating/pSensitivity instead
 
-public class OutlawEvent implements Listener {
+public class OutlawManager implements Listener {
 
     private RatingCalculator rc = new RatingCalculator();
     private Plugin plugin = Main.getInstance();
@@ -37,27 +35,6 @@ public class OutlawEvent implements Listener {
             plugin.getConfig().set(uuid + ".outlaw.rating", 1500);
             plugin.saveConfig();
             plugin.reloadConfig();
-        }
-
-        // TODO: change this from a scoreboard team to NMS
-        Scoreboard s = Main.getInstance().getServer().getScoreboardManager().getMainScoreboard();
-        Team outlaw = s.getTeam(player.getName());
-
-        // if a player is an outlaw, add them to their own team and make their nameplate red.
-        if (plugin.getConfig().getBoolean(uuid + ".outlaw.enabled", true)) {
-            player.sendMessage("you are an outlaw");
-            if (outlaw == null) {
-                outlaw = s.registerNewTeam(player.getName());
-                outlaw.setPrefix(ChatColor.RED + "");
-                outlaw.addEntry(player.getName());
-            }
-
-        // if a player is not an outlaw, make sure to remove that team and red name.
-        } else {
-            player.sendMessage("you are not an outlaw");
-            if (outlaw.hasEntry(player.getName())) {
-                outlaw.unregister();
-            }
         }
     }
 

@@ -1,7 +1,5 @@
 package us.fortherealm.plugin;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.subcommands.skills.Test;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -10,11 +8,8 @@ import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.skills.caster.CasterManager;
-import us.fortherealm.plugin.skills.caster.itemcaster.PlayerInteractWithRegisteredItemCasterListener;
-import us.fortherealm.plugin.skills.caster.itemcaster.runes.RuneCasterItem;
-import us.fortherealm.plugin.skills.skilltypes.defensive.Deliverance;
-import us.fortherealm.plugin.skills.skilltypes.offensive.Fireball;
+import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
+import us.fortherealm.plugin.skills.skilltypes.offensive.fireball.FireballListener;
 
 import java.util.Arrays;
 
@@ -22,13 +17,11 @@ public class Main extends JavaPlugin {
 
     private static Main instance;
     private static PartyManager partyManager;
-    private static CasterManager casterManager;
 
     public void onEnable() {
 
         instance = this;
         partyManager = new PartyManager();
-        casterManager = new CasterManager();
 
         getLogger().info(" §aFTRCore has been enabled.");
 
@@ -36,16 +29,11 @@ public class Main extends JavaPlugin {
         this.loadConfig();
         
         this.registerCommands();
-        this.initializeCasters();
     }
 
     public static Main getInstance() { return instance; }
 
     public static PartyManager getPartyManager() { return partyManager; }
-
-    public static CasterManager getCasterManager() {
-        return casterManager;
-    }
     
     public void onDisable() {
         getLogger().info(" has been disabled.");
@@ -76,7 +64,9 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
         getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
         
-        getServer().getPluginManager().registerEvents(new PlayerInteractWithRegisteredItemCasterListener(), this);
+        getServer().getPluginManager().registerEvents(new FireballListener(), this);
+        
+        getServer().getPluginManager().registerEvents(new PlayerInteractWithCasterItemStack(), this);
     }
     
     private void registerCommands() {
@@ -104,15 +94,6 @@ public class Main extends JavaPlugin {
         partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
    
-    }
-    
-    private void initializeCasters() {
-        getCasterManager().addCaster(
-                new RuneCasterItem(new ItemStack(Material.SLIME_BALL),
-                        "test caster", 5,
-                        Arrays.asList(new Fireball()), Arrays.asList(new Deliverance())
-                )
-        );
     }
     
 }

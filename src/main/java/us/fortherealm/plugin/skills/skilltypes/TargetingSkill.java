@@ -32,8 +32,8 @@ public class TargetingSkill<T> extends Skill {
 		return target;
 	}
 	
-	protected void setTarget(T target) {
-		this.setTarget(target);
+	public void setTarget(T target) {
+		this.target = target;
 	}
 	
 }

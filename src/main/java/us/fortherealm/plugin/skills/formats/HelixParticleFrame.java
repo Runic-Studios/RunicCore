@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skill.skills.formats;
+package us.fortherealm.plugin.skills.formats;
 
 import org.bukkit.*;
 import org.bukkit.util.Vector;

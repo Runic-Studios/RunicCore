@@ -22,7 +22,7 @@
 //        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
 //        Block targetBlock = player.getTargetBlock(null, maxDist);
 //        Location targetLoc = targetBlock.getLocation().clone().add(0.5, 40, 0.5);
-//        FallingBlock comet = targetLoc.getWorld().spawnFallingBlock(targetLoc, Material.DRAGON_EGG.getId(), (byte) 0);
+//        FallingBlock comet = targetLoc.getWorld().spawnFallingBlock(targetLoc, Material.DRAGON_EGG.getItemId(), (byte) 0);
 //        comet.setDropItem(false);
 //        comet.setHurtEntities(false);
 //        comet.setVelocity(new Vector(0,-3,0));

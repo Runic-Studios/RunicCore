@@ -7,7 +7,7 @@ import us.fortherealm.plugin.skills.Skill;
 
 
 public class SkillEvent extends Event implements Cancellable {
-	
+
 	private static final HandlerList handlers = new HandlerList();
 	
 	private Skill skill;
@@ -30,14 +30,13 @@ public class SkillEvent extends Event implements Cancellable {
 	public Skill getSkill() {
 		return this.skill;
 	}
-	
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
 }

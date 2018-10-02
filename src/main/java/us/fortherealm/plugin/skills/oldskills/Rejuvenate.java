@@ -4,7 +4,7 @@
 //import us.fortherealm.plugin.oldskills.skilltypes.skillutil.HealUtil;
 //import us.fortherealm.plugin.oldskills.skilltypes.Skill;
 //import us.fortherealm.plugin.oldskills.skilltypes.SkillItemType;
-//import us.fortherealm.plugin.util.ScoreboardUtil;
+//import us.fortherealm.plugin.scoreboard.ScoreboardUtil;
 //import org.bukkit.*;
 //import org.bukkit.entity.Entity;
 //import org.bukkit.entity.Player;

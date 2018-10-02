@@ -1,22 +1,20 @@
-/**
- * ELO Rating calculator
- *
- * Implements two methods 
- * 1. calculateMultiplayer - calculate rating for multiple players
- * 2. calculate2PlayersRating - for 2 player games
- *
- * @author radone@gmail.com
+/*
+  ELO Rating calculator
+
+  Implements two methods
+  1. calculateMultiplayer - calculate rating for multiple players
+  2. calculate2PlayersRating - for 2 player games
+
+  @author radone@gmail.com
  */
-package us.fortherealm.plugin.util;
+package us.fortherealm.plugin.outlaw;
 
 import java.util.HashMap;
 
 public class RatingCalculator {
 
-    /**
-     * Constructor
-     */
-    public RatingCalculator() {
+    // constructor
+    RatingCalculator() {
     }
 
     /**
@@ -58,23 +56,20 @@ public class RatingCalculator {
         // Calculate new rating
         for (int userId : usersRating.keySet()) {
 
-            /**
-             * Expected rating for an user
-             * E = Q(i) / Q(total)
-             * Q(i) = 10 ^ (R(i)/400)
+            /*
+              Expected rating for an user
+              E = Q(i) / Q(total)
+              Q(i) = 10 ^ (R(i)/400)
              */
             double expected = (double) Math.pow(10.0, ((double) usersRating.get(userId) / 400)) / Q;
 
-            /**
-             * Actual score is
-             * 1 - if player is winner
-             * 0 - if player losses
-             * (another option is to give fractions of 1/number-of-players instead of 0)
-             */
+            // (another option is to give fractions of 1/number-of-players instead of 0)
             int actualScore;
             if (userIdWinner == userId) {
+                // win
                 actualScore = 1;
             } else {
+                // loss
                 actualScore = 0;
             }
 
@@ -85,7 +80,6 @@ public class RatingCalculator {
             newUsersPoints.put(userId, newRating);
 
         }
-
         return newUsersPoints;
     }
 
@@ -103,30 +97,26 @@ public class RatingCalculator {
      *            "-" lose
      * @return New player rating
      */
-    public int calculate2PlayersRating(int player1Rating, int player2Rating, String outcome) {
+    int calculate2PlayersRating(int player1Rating, int player2Rating, String outcome, int K) {
 
         double actualScore;
 
-        // winner
-        if (outcome.equals("+")) {
-            actualScore = 1.0;
-            // draw
-        } else if (outcome.equals("=")) {
-            actualScore = 0.5;
-            // lose
-        } else if (outcome.equals("-")) {
-            actualScore = 0;
-            // invalid outcome
-        } else {
-            return player1Rating;
+        switch (outcome) {
+            // win
+            case "+":
+                actualScore = 1.0;
+                break;
+            // loss
+            case "-":
+                actualScore = 0;
+                break;
+            default:
+                return player1Rating;
         }
 
         // calculate expected outcome
         double exponent = (double) (player2Rating - player1Rating) / 400;
         double expectedOutcome = (1 / (1 + (Math.pow(10, exponent))));
-
-        // K-factor
-        int K = 32;
 
         // calculate new rating
         int newRating = (int) Math.round(player1Rating + K * (actualScore - expectedOutcome));
@@ -134,23 +124,16 @@ public class RatingCalculator {
         return newRating;
     }
 
-    /**
-     * Determine the rating constant K-factor based on current rating
-     *
-     * @param rating
-     *            Player rating
-     * @return K-factor
-     */
-    public int determineK(int rating) {
+    // Determine the rating constant K-factor based on current rating
+    int determineK(int rating) {
         int K;
         if (rating < 2000) {
-            K = 32;
+            K = 40;//32
         } else if (rating >= 2000 && rating < 2400) {
-            K = 24;
+            K = 32;//24
         } else {
-            K = 16;
+            K = 24;//16
         }
         return K;
     }
-
 }

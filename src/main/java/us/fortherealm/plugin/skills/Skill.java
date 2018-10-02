@@ -1,11 +1,13 @@
 package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Skill implements ISkill {
 	
@@ -18,7 +20,10 @@ public abstract class Skill implements ISkill {
 	// ************* VERY IMPORTANT *************
 	
 	private Main plugin = Main.getInstance();
-	
+
+	private static List<Skill> activeSkills = new ArrayList<>();
+
+	private SkillRegistry skillRegistry;
 	private String name;
 	private String description;
 	protected Player player;
@@ -26,6 +31,7 @@ public abstract class Skill implements ISkill {
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
+		this.skillRegistry = skillRegistry;
 	}
 	
 	@Override
@@ -37,9 +43,18 @@ public abstract class Skill implements ISkill {
 			return;
 		
 		this.player = player;
+
+		this.activeSkills.add(this);
 		
 		executeSkill();
 		executeSkillCleanUp();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if(!(object instanceof Skill))
+			return false;
+		return this.getClass().equals(((Skill) object).getClass());
 	}
 	
 	protected void executeSkill() {}
@@ -62,5 +77,9 @@ public abstract class Skill implements ISkill {
 	public String getDescription() {
 		return this.description;
 	}
-	
+
+	public static List<Skill> getActiveSkills() {
+		return activeSkills;
+	}
+
 }

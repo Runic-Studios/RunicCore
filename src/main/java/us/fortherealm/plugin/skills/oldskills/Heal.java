@@ -3,7 +3,7 @@
 //import us.fortherealm.plugin.oldskills.skilltypes.skillutil.HealUtil;
 //import us.fortherealm.plugin.oldskills.skilltypes.Skill;
 //import us.fortherealm.plugin.oldskills.skilltypes.SkillItemType;
-//import us.fortherealm.plugin.util.ScoreboardUtil;
+//import us.fortherealm.plugin.scoreboard.ScoreboardUtil;
 //import org.bukkit.Bukkit;
 //import org.bukkit.ChatColor;
 //import org.bukkit.Sound;
