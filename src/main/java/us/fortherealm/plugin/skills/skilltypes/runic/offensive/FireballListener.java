@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.offensive.fireball;
+package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
 
 
 import org.bukkit.Bukkit;
@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.events.SkillImpactEvent;
+import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
 
 public class FireballListener implements Listener {

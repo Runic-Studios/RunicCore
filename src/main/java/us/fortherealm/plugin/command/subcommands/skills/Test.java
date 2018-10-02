@@ -9,7 +9,7 @@ import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
-import us.fortherealm.plugin.skills.skilltypes.offensive.fireball.Fireball;
+import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 
 import java.util.Arrays;
 import java.util.List;

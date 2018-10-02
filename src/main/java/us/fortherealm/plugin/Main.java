@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
-import us.fortherealm.plugin.skills.skilltypes.offensive.fireball.FireballListener;
+import us.fortherealm.plugin.skills.skilltypes.runic.offensive.FireballListener;
 
 import java.util.Arrays;
 
