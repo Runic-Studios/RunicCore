@@ -153,7 +153,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 			sb.append(ChatColor.COLOR_CHAR + String.valueOf(c));
 		}
 
-		sb.append('|');
+		sb.append(ChatColor.COLOR_CHAR + String.valueOf('|'));
 
 		for(char c : String.valueOf(nextId++).toCharArray()) {
 			if (c == '|')
@@ -239,7 +239,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	private List<Skill> parseSkills(ItemMeta meta, String keyword) {
 		List<Skill> skills = new ArrayList<>();
 		List<String> lore = meta.getLore();
-		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split("\\|");
+		String[] skillInfo = lore.get(lore.size() - 2).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
 		boolean isOnGoodStuff = false;
 		for(String info : skillInfo) {
 			if(isOnGoodStuff) {
@@ -258,7 +258,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
 	private double parseCooldown(ItemMeta meta) {
 		List<String> lore = meta.getLore();
-		String[] skillInfo = ChatColor.stripColor(lore.get(lore.size() - 2)).split("\\|");
+		String[] skillInfo = lore.get(lore.size() - 2).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
 		for(int c = 0; c < skillInfo.length; c++)
 			if(skillInfo[c].equalsIgnoreCase("c"))
 				return Double.parseDouble(skillInfo[c+1]);
@@ -344,10 +344,9 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(lore.size() < 3) {
 			return false;
 		}
-		String[] lastWords = lore.get(lore.size() - 3).split("\\|");
-		if(lastWords.length != 2) {
+		String[] lastWords = lore.get(lore.size() - 3).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
+		if(lastWords.length != 2)
 			return false;
-		}
 		return lastWords[0].replace(String.valueOf(ChatColor.COLOR_CHAR), "").equals(getCasterSignature());
 	}
 	
@@ -355,7 +354,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(!(containsItemId(item)))
 			return null;
 		List<String> lore = item.getItemMeta().getLore();
-		String[] lastWords = lore.get(lore.size() - 3).split("\\|");
+		String[] lastWords = lore.get(lore.size() - 3).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
 		if(lastWords.length != 2)
 			return null;
 		return lastWords[1].replace(String.valueOf(ChatColor.COLOR_CHAR), "");
@@ -365,7 +364,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		List<String> lore = item.getItemMeta().getLore();
 		if(lore.size() < 3)
 			return false;
-		String[] lastWords = lore.get(lore.size() - 3).split("\\|");
+		String[] lastWords = lore.get(lore.size() - 3).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
 		return lastWords.length == 2 || !(containsCasterSignature(item));
 	}
 	

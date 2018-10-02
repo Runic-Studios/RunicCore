@@ -64,6 +64,11 @@ public class FireballListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
             target.getWorld().spigot().playEffect(target.getEyeLocation(),
                     Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
+
+            // remove skill from active skills
+            Skill.delActiveSkill(skill);
+            return;
+
         }
 
     }
