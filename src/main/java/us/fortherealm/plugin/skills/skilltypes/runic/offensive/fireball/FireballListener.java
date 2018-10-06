@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
+package us.fortherealm.plugin.skills.skilltypes.runic.offensive.fireball;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -9,37 +9,11 @@ import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.events.SkillImpactEvent;
-import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
 
-public class Fireball extends TargetingSkill<LivingEntity> {
-
-    private SmallFireball fireball;
-
-    private static final double FIREBALL_SPEED = 2;
-    private static final int DAMAGE_AMOUNT = 20;
-    
-    public Fireball() {
-        super ("Fireball", "Shoots a fireball.");
-    }
-
-    @Override
-    public void executeSkill() {
-        // Launch fireball
-        SmallFireball fireball = getPlayer().launchProjectile(SmallFireball.class);
-        fireball.setIsIncendiary(false);
-        final Vector velocity = getPlayer().getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);
-        fireball.setVelocity(velocity);
-        fireball.setShooter(getPlayer());
-        
-        // play sound effect
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
-        
-        this.fireball = fireball;
-    }
+public class FireballListener implements Listener {
 
     @EventHandler
     public void onFireballDamage(EntityDamageByEntityEvent event) {
@@ -98,19 +72,4 @@ public class Fireball extends TargetingSkill<LivingEntity> {
 
     }
 
-    public SmallFireball getSmallFireball() {
-        return fireball;
-    }
-
-    public SmallFireball getFireball() {
-        return fireball;
-    }
-
-    public double getFireballSpeed() {
-        return FIREBALL_SPEED;
-    }
-
-    public int getDamageAmount() {
-        return DAMAGE_AMOUNT;
-    }
 }

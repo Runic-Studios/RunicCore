@@ -3,8 +3,6 @@ package us.fortherealm.plugin.skills.caster.itemstack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import us.fortherealm.plugin.skills.caster.itemstack.exception.ItemNotCasterItemException;
 
 public class PlayerInteractWithCasterItemStack implements Listener {
 	
@@ -28,11 +26,11 @@ public class PlayerInteractWithCasterItemStack implements Listener {
 		switch (event.getAction()) {
 			case RIGHT_CLICK_BLOCK:
 			case RIGHT_CLICK_AIR:
-				casterItem.executePrimarySkills(event.getPlayer());
+				casterItem.executeSecondarySkills(event.getPlayer());
 				break;
 			case LEFT_CLICK_BLOCK:
 			case LEFT_CLICK_AIR:
-				casterItem.executeSecondarySkills(event.getPlayer());
+				casterItem.executePrimarySkills(event.getPlayer());
 				break;
 		}
 	}

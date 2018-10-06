@@ -9,19 +9,19 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.events.SkillImpactEvent;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.formats.Bubble;
 
 public class Deliverance extends TargetingSkill<Player> {
 
-    private final int walkSpeed = 0;
-    private final int bubbleDuration = 8;
-    private final int confusionLevel = 2;
-    private final int bubbleSize = 5;
-    private final int updatesPerSecond = 10;
-
-    private float initialWalkSpeed;
+    private static final int SLOW_AMPLITUDE = 127;
+    private static final int BUBBLE_DURATION = 8;
+    private static final int CONFUSION_LEVEL = 2;
+    private static final int BUBBLE_SIZE = 5;
+    private static final int UPDATES_PER_SECOND = 10;
 
     public Deliverance() {
         super(
@@ -29,27 +29,32 @@ public class Deliverance extends TargetingSkill<Player> {
                 "Summon a barrier of holy power around yourself for 8 seconds." +
                         " The barrier repels all enemies, however allies may pass through the barrier freely." +
                         " During this time, you may not move",
-                false);
+                false
+        );
     }
 
     @Override
     public void executeSkill() {
 
-        initialWalkSpeed = getPlayer().getWalkSpeed();
-
         // Set player effects
-        getPlayer().setWalkSpeed(walkSpeed);
+        getPlayer().addPotionEffect(
+                new PotionEffect(
+                        PotionEffectType.SLOW,
+                        BUBBLE_DURATION,
+                        SLOW_AMPLITUDE
+                )
+        );
         getPlayer().addPotionEffect(
                 new PotionEffect(
                         PotionEffectType.CONFUSION,
-                        bubbleDuration*20,
-                        confusionLevel
+                        BUBBLE_DURATION *20,
+                        CONFUSION_LEVEL
                 )
         );
 
         // Create bubble around player
         Bubble.bubbleEffect(getPlayer().getLocation(), Particle.FIREWORKS_SPARK,
-                10 /* 5 oscillations */, 0, 1, bubbleSize);
+                10 /* 5 oscillations */, 0, 1, BUBBLE_SIZE);
 
         // Play sound effects
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_IMPACT, 0.5F, 1.0F);
@@ -64,9 +69,9 @@ public class Deliverance extends TargetingSkill<Player> {
 
                 // Skill duration
                 long timePassed = System.currentTimeMillis() - startTime;
-                if (timePassed > bubbleDuration * 1000) {
+                if (timePassed > BUBBLE_DURATION * 1000) {
                     this.cancel();
-                    getPlayer().setWalkSpeed(initialWalkSpeed);
+                    getPlayer().removePotionEffect(PotionEffectType.SLOW);
                     return;
                 }
 
@@ -77,7 +82,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 for (Entity entity : getPlayer().getLocation().getChunk().getEntities()) {
 
                     // Removes targets not close enough
-                    if (entity.getLocation().distance(getPlayer().getLocation()) > bubbleSize ||
+                    if (entity.getLocation().distance(getPlayer().getLocation()) > BUBBLE_SIZE ||
                             !(entity instanceof Player))
                         continue; // Continue ends the current for loop iteration and moves on to the next
 
@@ -100,10 +105,11 @@ public class Deliverance extends TargetingSkill<Player> {
                     // Executes the skill
                     Vector force = (getPlayer().getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.75).setY(0.3));
                     entity.setVelocity(force);
+
+                    // Removes the skill from the active skills list
+                    Skill.delActiveSkill(Deliverance.this);
                 }
             }
-        }.runTaskTimer(getPlugin(), 0, 20/updatesPerSecond);
-
-        getPlayer().setWalkSpeed(initialWalkSpeed);
+        }.runTaskTimer(Main.getInstance(), 0, 20/ UPDATES_PER_SECOND);
     }
 }

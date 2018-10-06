@@ -1,5 +1,6 @@
 package us.fortherealm.plugin;
 
+import org.bukkit.plugin.PluginManager;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.subcommands.skills.Test;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -11,6 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
+import us.fortherealm.plugin.skills.listeners.SkillListenerObserver;
+import us.fortherealm.plugin.skills.skilltypes.runic.offensive.fireball.FireballListener;
 
 import java.util.Arrays;
 
@@ -31,10 +34,6 @@ public class Main extends JavaPlugin {
         
         this.registerCommands();
     }
-
-    public static Main getInstance() { return instance; }
-
-    public static PartyManager getPartyManager() { return partyManager; }
     
     public void onDisable() {
         getLogger().info(" has been disabled.");
@@ -48,24 +47,27 @@ public class Main extends JavaPlugin {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new FirstJoinEvent(), this);
-        getServer().getPluginManager().registerEvents(new DeathEvent(), this);
-        getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
-        getServer().getPluginManager().registerEvents(new ScoreboardHealthListener(), this);
-        getServer().getPluginManager().registerEvents(new SheepDyeEvent(), this);
-        getServer().getPluginManager().registerEvents(new Healthbars(), this);
-        getServer().getPluginManager().registerEvents(new ArtifactSlotEvent(), this);
-        getServer().getPluginManager().registerEvents(new RuneSlotEvent(), this);
-        getServer().getPluginManager().registerEvents(new HearthstoneEvent(), this);
-        getServer().getPluginManager().registerEvents(new DurabilityEvent(), this);
-        getServer().getPluginManager().registerEvents(new EquipArtifactEvent(), this);
-        getServer().getPluginManager().registerEvents(new EquipRuneEvent(), this);
-        getServer().getPluginManager().registerEvents(new HealthScaleListener(), this);
-        getServer().getPluginManager().registerEvents(new FireBowEvent(), this);
-        getServer().getPluginManager().registerEvents(new ResourcePackEvent(), this);
-        getServer().getPluginManager().registerEvents(new LogoutEvent(), this);
-        
-        getServer().getPluginManager().registerEvents(new PlayerInteractWithCasterItemStack(), this);
+        PluginManager pm = this.getServer().getPluginManager();
+
+        pm.registerEvents(new FirstJoinEvent(), this);
+        pm.registerEvents(new DeathEvent(), this);
+        pm.registerEvents(new ScoreboardListener(), this);
+        pm.registerEvents(new ScoreboardHealthListener(), this);
+        pm.registerEvents(new SheepDyeEvent(), this);
+        pm.registerEvents(new Healthbars(), this);
+        pm.registerEvents(new ArtifactSlotEvent(), this);
+        pm.registerEvents(new RuneSlotEvent(), this);
+        pm.registerEvents(new HearthstoneEvent(), this);
+        pm.registerEvents(new DurabilityEvent(), this);
+        pm.registerEvents(new EquipArtifactEvent(), this);
+        pm.registerEvents(new EquipRuneEvent(), this);
+        pm.registerEvents(new HealthScaleListener(), this);
+        pm.registerEvents(new FireBowEvent(), this);
+        pm.registerEvents(new ResourcePackEvent(), this);
+        pm.registerEvents(new LogoutEvent(), this);
+
+        pm.registerEvents(new PlayerInteractWithCasterItemStack(), this);
+        pm.registerEvents(new SkillListenerObserver(), this);
     }
     
     private void registerCommands() {
@@ -94,5 +96,9 @@ public class Main extends JavaPlugin {
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
    
     }
+
+    public static Main getInstance() { return instance; }
+
+    public static PartyManager getPartyManager() { return partyManager; }
     
 }

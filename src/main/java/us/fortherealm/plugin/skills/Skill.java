@@ -2,44 +2,35 @@ package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-public abstract class Skill implements ISkill, Listener {
+public abstract class Skill implements ISkill {
 	
 	// ************* VERY IMPORTANT *************
 	// When extending anything from the SkillAPI,
-	// you MUST call skillImpactEvent right before
-	// your skill is actually executed andthen check if
-	// skillImpactEvent resulted in the skill being
-	// cancelled and if so stop the execution!!!
+	// PLEASE read the tutorial at tinyurl.com/SkillsTut
 	// ************* VERY IMPORTANT *************
-	
-	private Main plugin = Main.getInstance();
 
-	private static List<Skill> activeSkills = new ArrayList<>();
+	private static Set<Skill> activeSkills = new HashSet<>();
 
 	private String name;
 	private String description;
 	private Player player;
+
+	private SkillCastEvent skiilCastEvent;
 	
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
-
-
-		if(this instanceof Listener)
-			Bukkit.getServer().getPluginManager().registerEvents((Listener) this, Main.getInstance());
 	}
 	
 	@Override
 	public final void executeEntireSkill(Player player) {
 		SkillCastEvent event = new SkillCastEvent(this);
+		this.skiilCastEvent = event;
 		Bukkit.getPluginManager().callEvent(event);
 		
 		if(event.isCancelled())
@@ -63,7 +54,11 @@ public abstract class Skill implements ISkill, Listener {
 	protected void executeSkill() {}
 	
 	protected void executeSkillCleanUp() {}
-	
+
+	public SkillCastEvent getSkillCastEvent() {
+		return skiilCastEvent;
+	}
+
 	public Player getPlayer() {
 		return player;
 	}
@@ -72,24 +67,20 @@ public abstract class Skill implements ISkill, Listener {
 		return this.name;
 	}
 	
-	protected Plugin getPlugin() {
-		return plugin;
-	}
-	
 	@Override
 	public String getDescription() {
 		return this.description;
 	}
 
-	public static List<Skill> getActiveSkills() {
+	public synchronized static Set<Skill> getActiveSkills() {
 		return activeSkills;
 	}
 
-	public static void addActiveSkill(Skill skill) {
+	public synchronized static void addActiveSkill(Skill skill) {
 		activeSkills.add(skill);
 	}
 
-	public static void delActiveSkill(Skill skill) {
+	public synchronized static void delActiveSkill(Skill skill) {
 		activeSkills.remove(skill);
 	}
 

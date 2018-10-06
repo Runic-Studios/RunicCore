@@ -22,7 +22,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	
 	private static long nextId;
 	private static long currentHundredthId;
-	private static Map<Long, CasterItemStack> iHateSpigotMap = new HashMap<>();
+	private static Map<Long, CasterItemStack> activeCastersMap = new HashMap<>();
 	
 	private static Map<CasterItemStack, Player> castersOnCooldown = new HashMap<>();
 	private static boolean isTaskRunning;
@@ -306,6 +306,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 					oldCastersOnCooldown.clear();
 					
 					if(castersOnCooldown.isEmpty()) {
+						isTaskRunning = false;
 						this.cancel();
 						return;
 					}
@@ -313,8 +314,6 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 				
 			}
 		}.runTaskTimer(Main.getInstance(), 0, 10);
-		
-		isTaskRunning = false;
 	}
 	
 	public final static CasterItemStack getCasterItem(ItemStack item) {
@@ -322,11 +321,11 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 			return null;
 		}
 
-		if(iHateSpigotMap.get(Long.valueOf(getItemId(item))) == null) {
-			iHateSpigotMap.put(Long.valueOf(getItemId(item)), new CasterItemStack(item));
+		if(activeCastersMap.get(Long.valueOf(getItemId(item))) == null) {
+			activeCastersMap.put(Long.valueOf(getItemId(item)), new CasterItemStack(item));
 		}
 
-		return iHateSpigotMap.get(Long.valueOf(getItemId(item)));
+		return activeCastersMap.get(Long.valueOf(getItemId(item)));
 	}
 
 	// Skill API will break if this is changed
