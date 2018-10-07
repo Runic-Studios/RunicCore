@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
-import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.backstab.Backstab;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.fireball.Fireball;
+import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +40,7 @@ public class Test implements SubCommand {
 				CasterItemStack.Type.RUNE,
 				5,
 				Arrays.asList(new Fireball()),
-				Arrays.asList(new Backstab())
+				Arrays.asList()
 		);
 		
 		sender.getInventory().addItem(casterItem);

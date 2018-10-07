@@ -1,8 +1,8 @@
 package us.fortherealm.plugin.skills.caster.itemstack;
 
 import com.mysql.jdbc.StringUtils;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -188,14 +188,14 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		sb.append('p');
 		for(Skill pSkill : primarySkills)
 			for(SkillRegistry registeredSkill : SkillRegistry.values()) {
-				if (registeredSkill.getSkill().equals(pSkill))
+				if (registeredSkill.getSkill().getClass().equals(pSkill.getClass()))
 					sb.append("|" + registeredSkill.getUniqueId());
 			}
 
 		sb.append("|s");
 		for(Skill sSkill : secondarySkills) {
 			for (SkillRegistry registeredSkill : SkillRegistry.values()) {
-				if (registeredSkill.getSkill().equals(sSkill))
+				if (registeredSkill.getSkill().getClass().equals(sSkill.getClass()))
 					sb.append("|" + registeredSkill.getUniqueId());
 			}
 		}

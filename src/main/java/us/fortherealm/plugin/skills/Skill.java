@@ -3,9 +3,8 @@ package us.fortherealm.plugin.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
-
-import java.util.HashSet;
-import java.util.Set;
+import us.fortherealm.plugin.skills.listeners.SkillListener;
+import us.fortherealm.plugin.skills.listeners.SkillListenerObserver;
 
 public abstract class Skill implements ISkill {
 	
@@ -14,8 +13,9 @@ public abstract class Skill implements ISkill {
 	// PLEASE read the tutorial at tinyurl.com/SkillsTut
 	// ************* VERY IMPORTANT *************
 
-	private static Set<Skill> activeSkills = new HashSet<>();
+	private static long nextUniqueId = 0;
 
+	private long uniqueId;
 	private String name;
 	private String description;
 	private Player player;
@@ -25,6 +25,7 @@ public abstract class Skill implements ISkill {
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
+		this.uniqueId = nextUniqueId++;
 	}
 	
 	@Override
@@ -37,8 +38,6 @@ public abstract class Skill implements ISkill {
 			return;
 		
 		this.player = player;
-
-		this.activeSkills.add(this);
 		
 		executeSkill();
 		executeSkillCleanUp();
@@ -48,12 +47,15 @@ public abstract class Skill implements ISkill {
 	public boolean equals(Object object) {
 		if(!(object instanceof Skill))
 			return false;
-		return this.getClass().equals(((Skill) object).getClass());
+		return this.uniqueId == ((Skill) object).uniqueId;
 	}
 	
 	protected void executeSkill() {}
 	
-	protected void executeSkillCleanUp() {}
+	protected void executeSkillCleanUp() {
+		if(this instanceof SkillListener)
+			SkillListenerObserver.addActiveSkillListener((SkillListener) this);
+	}
 
 	public SkillCastEvent getSkillCastEvent() {
 		return skiilCastEvent;
@@ -70,18 +72,6 @@ public abstract class Skill implements ISkill {
 	@Override
 	public String getDescription() {
 		return this.description;
-	}
-
-	public synchronized static Set<Skill> getActiveSkills() {
-		return activeSkills;
-	}
-
-	public synchronized static void addActiveSkill(Skill skill) {
-		activeSkills.add(skill);
-	}
-
-	public synchronized static void delActiveSkill(Skill skill) {
-		activeSkills.remove(skill);
 	}
 
 }

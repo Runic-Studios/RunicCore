@@ -13,7 +13,6 @@ import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
 import us.fortherealm.plugin.skills.listeners.SkillListenerObserver;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.fireball.FireballListener;
 
 import java.util.Arrays;
 

@@ -1,9 +1,8 @@
 package us.fortherealm.plugin.skills.listeners;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
+import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillImpactEvent;
@@ -16,18 +15,31 @@ public class SkillListenerObserver implements Listener {
     // less of a pain in the ass to write.
 
     private static Map<SkillListener, Long> activeSkillListeners = new HashMap<>();
-    private static boolean removalTaskIsRunning;
 
-    @EventHandler
+    public SkillListenerObserver() {
+        RegisteredListener registeredListener =
+                new RegisteredListener(
+                        this,
+                        (listener, event) -> onSkillEvent(event),
+                        EventPriority.NORMAL,
+                        Main.getInstance(),
+                        false);
+        for (HandlerList handler : HandlerList.getHandlerLists())
+            handler.register(registeredListener);
+
+        removalTask();
+    }
+
     private void onSkillEvent(Event event) {
+        Set<SkillListener> safeActiveSkillsMap = this.getActiveSkillListeners().keySet();
 
-        // For some reason Spigot sends null events to listeners... wtf?
-        if(event == null)
+        if(safeActiveSkillsMap.size() == 0)
             return;
 
-        Set<SkillListener> safeActiveSkillsMap = this.getActiveSkillListeners().keySet();
         for(SkillListener activeSkillListener : safeActiveSkillsMap) {
 
+            // Intellij gets really triggered over this and I could stop that but the "check" already happened in
+            // the SkillListener instantiation and it would only waste time during event execution to check again.
             Class<? extends Event> activeEventClass = activeSkillListener.getEventClass();
 
             if(!(activeEventClass.isInstance(event)))
@@ -53,21 +65,12 @@ public class SkillListenerObserver implements Listener {
     }
 
     private void removalTask() {
-        if(removalTaskIsRunning)
-            return;
-        removalTaskIsRunning = true;
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 Set<SkillListener> safeActiveSkillsMap = SkillListenerObserver.this.getActiveSkillListeners().keySet();
-
-                if(safeActiveSkillsMap.isEmpty()) {
-                    this.cancel();
-                    removalTaskIsRunning = false;
-                    return;
-                }
 
                 Long approximateTime = System.currentTimeMillis();
                 for(SkillListener skillListener : safeActiveSkillsMap) {
@@ -83,23 +86,28 @@ public class SkillListenerObserver implements Listener {
 
     }
 
-    public synchronized Map<SkillListener, Long> getActiveSkillListeners() {
+    public static synchronized Map<SkillListener, Long> getActiveSkillListeners() {
         return activeSkillListeners;
     }
 
-    public synchronized void delActiveSkillListener(SkillListener skillListener) {
+    public static synchronized void delActiveSkillListener(SkillListener skillListener) {
         activeSkillListeners.remove(skillListener);
     }
 
-    public synchronized void addActiveSkillListener(SkillListener skillListener) {
+    public static synchronized void addActiveSkillListener(SkillListener skillListener) {
         if(skillListener.timeUntilRemoval() == -1)
-            activeSkillListeners.put(skillListener, (long) -1);
+            activeSkillListeners.put(
+                    skillListener,
+                    (long) (System.currentTimeMillis() + SkillListener.MAX_SKILL_DURATION * 1000)
+            );
         else
-            activeSkillListeners.put(skillListener, System.currentTimeMillis() + (long) (skillListener.timeUntilRemoval()*1000));
-
-        if(!(removalTaskIsRunning))
-            removalTask();
-
+            activeSkillListeners.put(
+                    skillListener,
+                    Math.min(
+                            System.currentTimeMillis() + (long) (skillListener.timeUntilRemoval()*1000),
+                            System.currentTimeMillis() + (long) (SkillListener.MAX_SKILL_DURATION)
+                    )
+            );
     }
 
 }
