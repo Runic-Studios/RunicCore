@@ -16,11 +16,6 @@ public enum SkillRegistry {
     private int uniqueId;
     private Class<? extends Skill> skillClass;
 
-    static {
-        for(SkillRegistry value : values())
-            value.setUniqueId(nextUniqueId++);
-    }
-
     SkillRegistry(Class<? extends Skill> skillClass) {
         this.skillClass = skillClass;
     }

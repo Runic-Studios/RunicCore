@@ -56,7 +56,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 ahFukAStaticVar.add(
                         new PlayerSpeedStorage(
                                 getPlayer(),
-                                .2F,
+                                getPlayer().getWalkSpeed(),
                                 System.currentTimeMillis() + (BUBBLE_DURATION * 1000)
                         )
                 );

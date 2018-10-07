@@ -21,7 +21,7 @@ public abstract class Skill implements ISkill {
 	private Player player;
 
 	private SkillCastEvent skiilCastEvent;
-	
+
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
@@ -49,7 +49,7 @@ public abstract class Skill implements ISkill {
 			return false;
 		return this.uniqueId == ((Skill) object).uniqueId;
 	}
-	
+
 	protected void executeSkill() {}
 	
 	protected void executeSkillCleanUp() {
