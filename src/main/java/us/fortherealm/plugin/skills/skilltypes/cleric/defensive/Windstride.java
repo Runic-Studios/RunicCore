@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.defensive;
+package us.fortherealm.plugin.skills.skilltypes.cleric.defensive;
 
 import org.bukkit.*;
 import org.bukkit.potion.PotionEffect;

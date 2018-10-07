@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.defensive;
+package us.fortherealm.plugin.skills.oldskills;
 
 import org.bukkit.event.inventory.ClickType;
 import us.fortherealm.plugin.Main;
@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.UUID;
 
 // TODO: party check for heal
-public class Rejuvenate extends Skill {
+public class Rejuvenate {
+    /*
 
     public Rejuvenate() {
         super("Rejuvenate", "you fire a thing that heals", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 10);
@@ -98,5 +99,7 @@ public class Rejuvenate extends Skill {
                 }
             }
         }
+
     }
+    */
 }

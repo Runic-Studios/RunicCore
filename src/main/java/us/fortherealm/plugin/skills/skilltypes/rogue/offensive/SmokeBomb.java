@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.offensive;
+package us.fortherealm.plugin.skills.skilltypes.rogue.offensive;
 
 import org.bukkit.entity.*;
 import us.fortherealm.plugin.Main;

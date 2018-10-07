@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.defensive;
+package us.fortherealm.plugin.skills.skilltypes.runic.defensive;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
