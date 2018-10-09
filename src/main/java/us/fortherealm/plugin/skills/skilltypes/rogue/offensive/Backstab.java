@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.skilltypes.rogue.offensive.backstab;
+package us.fortherealm.plugin.skills.skilltypes.rogue.offensive;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
