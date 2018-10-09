@@ -15,6 +15,11 @@ public enum SkillRegistry {
 
     private static int nextUniqueId = 0;
 
+    static {
+        for (SkillRegistry value : values())
+            value.setUniqueId(nextUniqueId++);
+    }
+
     private int uniqueId;
     private Class<? extends Skill> skillClass;
 

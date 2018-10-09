@@ -52,13 +52,13 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
 
     @Override
     public Class<EntityDamageByEntityEvent> getEventClass() {
-        return null;
+        return EntityDamageByEntityEvent.class;
     }
 
     // returns the skill
     @Override
     public Skill getSkill() {
-        return null;
+        return this;
     }
 
     // listen for this specific snowball
