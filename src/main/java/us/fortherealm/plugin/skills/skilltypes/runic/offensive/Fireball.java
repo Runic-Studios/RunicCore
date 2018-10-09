@@ -33,10 +33,12 @@ public class Fireball extends TargetingSkill<LivingEntity> implements SkillListe
         
         // play sound effect
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
-        
+
+        // sets the objects name variable to the method's name variable
         this.fireball = fireball;
     }
 
+    // java generics
     @Override
     public Class<EntityDamageByEntityEvent> getEventClass() {
         return EntityDamageByEntityEvent.class;
@@ -44,7 +46,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements SkillListe
 
     @Override
     public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
-
+        // make sure the skill is listening for the exact event
         if (!(event.getDamager() instanceof SmallFireball))
             return false;
 
@@ -60,8 +62,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements SkillListe
 
     @Override
     public void initializeSkillVariables(EntityDamageByEntityEvent event) {
-
-        // Sets the target
+        // Sets the target, reminder to initialize variables
         LivingEntity target = (LivingEntity) event.getEntity();
 
         if(target == null)
@@ -70,6 +71,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements SkillListe
         setTarget(target);
     }
 
+    // returns the skill to the impact listener
     @Override
     public Skill getSkill() {
         return this;
@@ -82,12 +84,12 @@ public class Fireball extends TargetingSkill<LivingEntity> implements SkillListe
 
         LivingEntity target = this.getTarget();
 
-        // preform damage
+        // perform damage
         target.damage(DAMAGE_AMOUNT, getPlayer());
         target.setLastDamageCause(event);
         KnockbackUtil.knockback(getPlayer(), target);
 
-        // effects
+        // effects // TODO: update this business
         getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
         target.getWorld().spigot().playEffect(target.getEyeLocation(),
                 Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
