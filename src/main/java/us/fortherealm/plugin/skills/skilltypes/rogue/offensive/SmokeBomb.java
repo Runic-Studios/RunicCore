@@ -1,31 +1,31 @@
-//package us.fortherealm.plugin.skills.skilltypes.offensive.smokebomb;
+//package us.fortherealm.plugin.skills.skilltypes.rogue.offensive;
 //
 //import org.bukkit.entity.*;
 //import us.fortherealm.plugin.Main;
 //import net.minecraft.server.v1_12_R1.PacketPlayOutEntityDestroy;
 //import org.bukkit.*;
 //import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+//import org.bukkit.event.EventHandler;
+//import org.bukkit.event.EventPriority;
+//import org.bukkit.event.entity.EntityDamageByEntityEvent;
 //import org.bukkit.potion.PotionEffect;
 //import org.bukkit.potion.PotionEffectType;
 //import org.bukkit.scheduler.BukkitRunnable;
 //import org.bukkit.util.Vector;
+//import us.fortherealm.plugin.skills.Skill;
 //import us.fortherealm.plugin.skills.formats.Bubble;
 //import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 //
 //import java.util.UUID;
 //
-//// TODO Sky, you should carefully reread this to make sure it does what you want. I think it has a few bugs.
+//// TODO Sky, you should carefully reread this to make sure it does what you want. I found a few bugs but didnt read the runnable
 //// TODO: party check for blind and poison
 //public class SmokeBomb extends TargetingSkill<LivingEntity> {
 //
 //    private Arrow arrow;
 //
 //    public SmokeBomb() {
-//        super(
-//                "Smoke Bomb",
-//                "you fire a thing that shoots up and blinds and poisons enemies",
-//                false
-//        );
+//        super("Smoke Bomb", "you fire a thing that shoots up and blinds and poisons enemies");
 //    }
 //
 //    @Override
@@ -35,7 +35,6 @@
 //        startTask(getPlayer(), new Vector[]{middle});
 //    }
 //
-//    // What the fuck does this even do???? PLEASE ANNOTATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //    private void startTask(Player player, Vector[] vectors) {
 //        for (Vector vector : vectors) {
 //            Vector direction = player.getEyeLocation().getDirection().normalize().multiply(1);
@@ -82,7 +81,21 @@
 //        }
 //    }
 //
+//    @EventHandler(priority = EventPriority.HIGH)
+//    public void onArrowDamage(EntityDamageByEntityEvent e) {
+//        if(!(e.getDamager() instanceof Arrow))
+//            return;
+//        for(Skill skill : getActiveSkills()) {
+//            if((skill instanceof SmokeBomb))
+//                continue;
+//            if(!(e.getDamager().equals(((SmokeBomb) skill).getArrow())))
+//                continue;
 //
+//            e.setCancelled(true);
+//            delActiveSkill(skill);
+//            return;
+//        }
+//    }
 //
 //    public Arrow getArrow() {
 //        return this.arrow;

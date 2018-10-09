@@ -9,6 +9,7 @@ import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
+import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
 
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class Test implements SubCommand {
 				CasterItemStack.Type.RUNE,
 				5,
 				Arrays.asList(new Fireball()),
-				Arrays.asList(new Deliverance())
+				Arrays.asList(new Frostbolt())
 		);
 		
 		sender.getInventory().addItem(casterItem);
