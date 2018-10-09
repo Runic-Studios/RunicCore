@@ -1,12 +1,15 @@
 package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
 
-import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
+import us.fortherealm.plugin.skills.formats.VertCircleFrame;
 import us.fortherealm.plugin.skills.listeners.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
@@ -14,7 +17,6 @@ import us.fortherealm.plugin.skills.util.KnockbackUtil;
 public class Fireball extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
 
     private SmallFireball fireball;
-
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 20;
 
@@ -33,6 +35,16 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         
         // play sound effect
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
+
+        // premium particle effect
+        new BukkitRunnable() {
+            public void run() {
+                new VertCircleFrame(0.5F).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
+                if (fireball.isOnGround() || fireball.isDead()) {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(Main.getInstance(), 0, 1);
 
         // sets the objects name variable to the method's name variable
         this.fireball = fireball;
@@ -86,10 +98,9 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         target.setLastDamageCause(event);
         KnockbackUtil.knockback(getPlayer(), target);
 
-        // effects // TODO: update this business
+        // general effects
         getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-        target.getWorld().spigot().playEffect(target.getEyeLocation(),
-                Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
+        target.getWorld().spawnParticle(Particle.FLAME, target.getEyeLocation(), 5, 0.3f, 0.3f, 0.3f);
     }
 
 }
