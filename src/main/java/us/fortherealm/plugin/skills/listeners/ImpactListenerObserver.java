@@ -43,12 +43,6 @@ public class ImpactListenerObserver implements Listener {
             // the ImpactListener instantiation and it would only waste time during event execution to check again.
             Class<? extends Event> activeEventClass = activeImpactListener.getEventClass();
 
-            if (activeEventClass == null) {
-                System.out.println("Dumby, you gotta implement the getEventClass to something other than null");
-                return;
-            }
-            System.out.println(activeEventClass.getName() + "\t" + event.getEventName());
-
             if(!(activeEventClass.isInstance(event)))
                 continue;
 
