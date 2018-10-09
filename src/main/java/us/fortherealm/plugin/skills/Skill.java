@@ -3,8 +3,8 @@ package us.fortherealm.plugin.skills;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
-import us.fortherealm.plugin.skills.listeners.SkillListener;
-import us.fortherealm.plugin.skills.listeners.SkillListenerObserver;
+import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.ImpactListenerObserver;
 
 public abstract class Skill implements ISkill {
 	
@@ -53,8 +53,8 @@ public abstract class Skill implements ISkill {
 	protected void executeSkill() {}
 	
 	protected void executeSkillCleanUp() {
-		if(this instanceof SkillListener)
-			SkillListenerObserver.addActiveSkillListener((SkillListener) this);
+		if(this instanceof ImpactListener)
+			ImpactListenerObserver.addActiveSkillListener((ImpactListener) this);
 	}
 
 	public SkillCastEvent getSkillCastEvent() {

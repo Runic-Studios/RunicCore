@@ -7,11 +7,11 @@ import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.listeners.SkillListener;
+import us.fortherealm.plugin.skills.listeners.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
 
-public class Fireball extends TargetingSkill<LivingEntity> implements SkillListener<EntityDamageByEntityEvent> {
+public class Fireball extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
 
     private SmallFireball fireball;
 
@@ -52,10 +52,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements SkillListe
         if(fireball == null)
             return false;
 
-        if(!(smfb.equals(fireball)))
-            return false;
-
-        return true;
+        return smfb.equals(fireball);
     }
 
     @Override
