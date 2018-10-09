@@ -2,52 +2,42 @@ package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillCastEvent;
+import us.fortherealm.plugin.skills.listeners.SkillListener;
+import us.fortherealm.plugin.skills.listeners.SkillListenerObserver;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public abstract class Skill implements ISkill, Listener {
+public abstract class Skill implements ISkill {
 	
 	// ************* VERY IMPORTANT *************
 	// When extending anything from the SkillAPI,
-	// you MUST call skillImpactEvent right before
-	// your skill is actually executed andthen check if
-	// skillImpactEvent resulted in the skill being
-	// cancelled and if so stop the execution!!!
+	// PLEASE read the tutorial at tinyurl.com/SkillsTut
 	// ************* VERY IMPORTANT *************
-	
-	private Main plugin = Main.getInstance();
 
-	private static List<Skill> activeSkills = new ArrayList<>();
+	private static long nextUniqueId = 0;
 
+	private long uniqueId;
 	private String name;
 	private String description;
 	private Player player;
-	
+
+	private SkillCastEvent skiilCastEvent;
+
 	public Skill(String name, String description) {
 		this.name = name;
 		this.description = description;
-
-
-		if(this instanceof Listener)
-			Bukkit.getServer().getPluginManager().registerEvents((Listener) this, Main.getInstance());
+		this.uniqueId = nextUniqueId++;
 	}
 	
 	@Override
 	public final void executeEntireSkill(Player player) {
 		SkillCastEvent event = new SkillCastEvent(this);
+		this.skiilCastEvent = event;
 		Bukkit.getPluginManager().callEvent(event);
 		
 		if(event.isCancelled())
 			return;
 		
 		this.player = player;
-
-		this.activeSkills.add(this);
 		
 		executeSkill();
 		executeSkillCleanUp();
@@ -57,13 +47,20 @@ public abstract class Skill implements ISkill, Listener {
 	public boolean equals(Object object) {
 		if(!(object instanceof Skill))
 			return false;
-		return this.getClass().equals(((Skill) object).getClass());
+		return this.uniqueId == ((Skill) object).uniqueId;
 	}
-	
+
 	protected void executeSkill() {}
 	
-	protected void executeSkillCleanUp() {}
-	
+	protected void executeSkillCleanUp() {
+		if(this instanceof SkillListener)
+			SkillListenerObserver.addActiveSkillListener((SkillListener) this);
+	}
+
+	public SkillCastEvent getSkillCastEvent() {
+		return skiilCastEvent;
+	}
+
 	public Player getPlayer() {
 		return player;
 	}
@@ -72,25 +69,9 @@ public abstract class Skill implements ISkill, Listener {
 		return this.name;
 	}
 	
-	protected Plugin getPlugin() {
-		return plugin;
-	}
-	
 	@Override
 	public String getDescription() {
 		return this.description;
-	}
-
-	public static List<Skill> getActiveSkills() {
-		return activeSkills;
-	}
-
-	public static void addActiveSkill(Skill skill) {
-		activeSkills.add(skill);
-	}
-
-	public static void delActiveSkill(Skill skill) {
-		activeSkills.remove(skill);
 	}
 
 }

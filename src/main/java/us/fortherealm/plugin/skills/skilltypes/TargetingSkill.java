@@ -7,10 +7,6 @@ public class TargetingSkill<T> extends Skill {
 	private boolean targetIsAlly;
 	private T target;
 	
-	public TargetingSkill(String name, String description) {
-		this(name, description, false);
-	}
-	
 	public TargetingSkill(String name, String description, boolean isTargetAnAlly) {
 		this(name, description, null, false);
 	}

@@ -1,29 +1,25 @@
 package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.events.SkillImpactEvent;
+import us.fortherealm.plugin.skills.listeners.SkillListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
 
-public class Fireball extends TargetingSkill<LivingEntity> {
+public class Fireball extends TargetingSkill<LivingEntity> implements SkillListener<EntityDamageByEntityEvent> {
 
     private SmallFireball fireball;
 
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 20;
-    
+
     public Fireball() {
-        super ("Fireball", "Shoots a fireball.");
+        super("Fireball", "Shoots a fireball.", false);
     }
 
     @Override
@@ -41,76 +37,60 @@ public class Fireball extends TargetingSkill<LivingEntity> {
         this.fireball = fireball;
     }
 
-    @EventHandler
-    public void onFireballDamage(EntityDamageByEntityEvent event) {
+    @Override
+    public Class<EntityDamageByEntityEvent> getEventClass() {
+        return EntityDamageByEntityEvent.class;
+    }
+
+    @Override
+    public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
 
         if (!(event.getDamager() instanceof SmallFireball))
+            return false;
+
+        SmallFireball smfb = (SmallFireball) event.getDamager();
+        if(fireball == null)
+            return false;
+
+        if(!(smfb.equals(fireball)))
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public void initializeSkillVariables(EntityDamageByEntityEvent event) {
+
+        // Sets the target
+        LivingEntity target = (LivingEntity) event.getEntity();
+
+        if(target == null)
             return;
 
-        for(Skill skill : Skill.getActiveSkills()) {
-
-            Player player = skill.getPlayer();
-
-            if(!(skill instanceof Fireball))
-                continue;
-            Fireball fireball = (Fireball) skill;
-
-            SmallFireball smfb = (SmallFireball) event.getDamager();
-            if(fireball.getSmallFireball() == null)
-                continue;
-
-            if(!(smfb.equals(fireball.getSmallFireball())))
-                continue;
-
-            // Cancel the original event to create our own effect
-            event.setCancelled(true);
-
-            // Tells skill who the target is
-            LivingEntity target = (LivingEntity) event.getEntity();
-
-            if(target == null)
-                continue;
-
-            fireball.setTarget(target);
-
-            // Tells events that the skill is about to impact
-            SkillImpactEvent skillImpactEvent = new SkillImpactEvent(fireball);
-            Bukkit.getPluginManager().callEvent(skillImpactEvent);
-
-            if(skillImpactEvent.isCancelled())
-                return;
-
-            // preform damage
-            target.damage(((Fireball) skill).getDamageAmount(), player);
-            target.setLastDamageCause(event);
-            KnockbackUtil.knockback(player, target);
-
-            // effects
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-            target.getWorld().spigot().playEffect(target.getEyeLocation(),
-                    Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
-
-            // remove skill from active skills
-            Skill.delActiveSkill(skill);
-            return;
-
-        }
-
+        setTarget(target);
     }
 
-    public SmallFireball getSmallFireball() {
-        return fireball;
+    @Override
+    public Skill getSkill() {
+        return this;
     }
 
-    public SmallFireball getFireball() {
-        return fireball;
+    @Override
+    public void doImpact(EntityDamageByEntityEvent event) {
+        // Cancel the original event to create our own effect
+        event.setCancelled(true);
+
+        LivingEntity target = this.getTarget();
+
+        // preform damage
+        target.damage(DAMAGE_AMOUNT, getPlayer());
+        target.setLastDamageCause(event);
+        KnockbackUtil.knockback(getPlayer(), target);
+
+        // effects
+        getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+        target.getWorld().spigot().playEffect(target.getEyeLocation(),
+                Effect.FLAME, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 50, 16);
     }
 
-    public double getFireballSpeed() {
-        return FIREBALL_SPEED;
-    }
-
-    public int getDamageAmount() {
-        return DAMAGE_AMOUNT;
-    }
 }

@@ -9,19 +9,22 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.events.SkillImpactEvent;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.formats.Bubble;
+import us.fortherealm.plugin.skills.util.PlayerSpeedStorage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Deliverance extends TargetingSkill<Player> {
 
-    private final int walkSpeed = 0;
-    private final int bubbleDuration = 8;
-    private final int confusionLevel = 2;
-    private final int bubbleSize = 5;
-    private final int updatesPerSecond = 10;
+    private static List<PlayerSpeedStorage> ahFukAStaticVar = new ArrayList<>();
 
-    private float initialWalkSpeed;
+    private static final int BUBBLE_DURATION = 8;
+    private static final int BUBBLE_SIZE = 5;
+    private static final double UPDATES_PER_SECOND = 10;
 
     public Deliverance() {
         super(
@@ -29,27 +32,51 @@ public class Deliverance extends TargetingSkill<Player> {
                 "Summon a barrier of holy power around yourself for 8 seconds." +
                         " The barrier repels all enemies, however allies may pass through the barrier freely." +
                         " During this time, you may not move",
-                false);
+                false
+        );
     }
 
     @Override
     public void executeSkill() {
 
-        initialWalkSpeed = getPlayer().getWalkSpeed();
+        // This is necessary because players could (theoretically) cast deliverance multiple times
+        // before the first cool down ends
+        // which would result in players initial walk speed appearing to be 0 because that is their
+        // walk speed when this check is done and if initial walk speed is 0, their walk speed when the
+        // skill ends would be set to 0
+        boolean isFound = false;
+        for (PlayerSpeedStorage psStorage : ahFukAStaticVar) {
+            if(!(psStorage.getPlayer().equals(getPlayer())))
+                continue;
+            isFound = true;
+            psStorage.setExpirationTime(System.currentTimeMillis() + (BUBBLE_DURATION * 1000));
+            break;
+        }
+        if (!isFound) {
+                ahFukAStaticVar.add(
+                        new PlayerSpeedStorage(
+                                getPlayer(),
+                                getPlayer().getWalkSpeed(),
+                                System.currentTimeMillis() + (BUBBLE_DURATION * 1000)
+                        )
+                );
+            getPlayer().setWalkSpeed(0);
+        }
 
         // Set player effects
-        getPlayer().setWalkSpeed(walkSpeed);
         getPlayer().addPotionEffect(
                 new PotionEffect(
-                        PotionEffectType.CONFUSION,
-                        bubbleDuration*20,
-                        confusionLevel
+                        PotionEffectType.JUMP,
+                        BUBBLE_DURATION*20,
+                        -10,
+                        false,
+                        false
                 )
         );
 
         // Create bubble around player
         Bubble.bubbleEffect(getPlayer().getLocation(), Particle.FIREWORKS_SPARK,
-                10 /* 5 oscillations */, 0, 1, bubbleSize);
+                10 /* 5 oscillations */, 0, 1, BUBBLE_SIZE);
 
         // Play sound effects
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_IMPACT, 0.5F, 1.0F);
@@ -64,9 +91,18 @@ public class Deliverance extends TargetingSkill<Player> {
 
                 // Skill duration
                 long timePassed = System.currentTimeMillis() - startTime;
-                if (timePassed > bubbleDuration * 1000) {
+                if (timePassed > BUBBLE_DURATION * 1000) {
                     this.cancel();
-                    getPlayer().setWalkSpeed(initialWalkSpeed);
+                    getPlayer().removePotionEffect(PotionEffectType.SLOW);
+                    for(PlayerSpeedStorage psStorage : ahFukAStaticVar) {
+                        if(!(psStorage.getPlayer().equals(getPlayer())))
+                            continue;
+                        if(System.currentTimeMillis() + 100 < psStorage.getExpirationTime() /* .1 second lag cushion */)
+                            continue;
+                        getPlayer().setWalkSpeed(psStorage.getOriginalSpeed());
+                        ahFukAStaticVar.remove(psStorage);
+                        break;
+                    }
                     return;
                 }
 
@@ -77,7 +113,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 for (Entity entity : getPlayer().getLocation().getChunk().getEntities()) {
 
                     // Removes targets not close enough
-                    if (entity.getLocation().distance(getPlayer().getLocation()) > bubbleSize ||
+                    if (entity.getLocation().distance(getPlayer().getLocation()) > BUBBLE_SIZE ||
                             !(entity instanceof Player))
                         continue; // Continue ends the current for loop iteration and moves on to the next
 
@@ -102,8 +138,6 @@ public class Deliverance extends TargetingSkill<Player> {
                     entity.setVelocity(force);
                 }
             }
-        }.runTaskTimer(getPlugin(), 0, 20/updatesPerSecond);
-
-        getPlayer().setWalkSpeed(initialWalkSpeed);
+        }.runTaskTimer(Main.getInstance(), 0, (int) (20/UPDATES_PER_SECOND));
     }
 }
