@@ -16,15 +16,15 @@ import java.util.*;
 
 public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
-	// The UniqueIdAssigner is how each caster item stack is unique and the activeCastersMap
-	// saves time when parsing each caster item's uniqueId
+	// The UniqueIdAssigner is how each caster item stack gets a unique id and the activeCastersMap
+	// holds all casters currently in use
 	private static UniqueIdAssigner uniqueIdAssigner;
 	private static Map<Long, CasterItemStack> activeCastersMap = new HashMap<>();
 
 	// ----- NEVER CHANGE ----- //
-	private final static char ID_SPLITTER = '|';
-	private final static char PRIMARY_ID =  'p';
-	private final static char SECONDARY_ID = 's';
+	private final static String ID_SPLITTER = "|";
+	private final static String PRIMARY_ID =  "p";
+	private final static String SECONDARY_ID = "p";
 	// ----- NEVER CHANGE ----- //
 
 	// Stores the name and itemType of the CasterItemStack
@@ -148,7 +148,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		lore = generateInvisibleLore(lore);
 
 		// The parsing methods expect one line after the
-		// invisible lore which will be filled by the item type
+		// invisible lore which will can be filled by the item type
 		// Note: This is used to parse the item type, so
 		// changing this requires changing the parseType method
 		lore.add(ChatColor.YELLOW + itemType.getName());
@@ -185,10 +185,10 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	private List<String> generateInvisibleLore(List<String> lore) {
 
 		// Signature and ID creator
-		String sigID = getCasterSignature() + String.valueOf(ID_SPLITTER) + uniqueIdAssigner.getUniqueId();
+		String sigID = getCasterSignature() + ID_SPLITTER + uniqueIdAssigner.getUniqueId();
 
 		// Bug testing
-		lore.add(sigID.replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
+		lore.add(ItemMetaUtil.revealHiddenLore(sigID));
 
 		// Legit
 //		lore.add(ItemMetaUtil.hideLore(sigID));
@@ -202,7 +202,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 					sb.append(ID_SPLITTER + registeredSkill.getUniqueId());
 			}
 
-		sb.append(SECONDARY_ID + ID_SPLITTER + secondaryCooldown.getCooldown());
+		sb.append(ID_SPLITTER + SECONDARY_ID + ID_SPLITTER + secondaryCooldown.getCooldown());
 		for(Skill sSkill : secondarySkills) {
 			for (SkillRegistry registeredSkill : SkillRegistry.values()) {
 				if (registeredSkill.getSkill().getClass().equals(sSkill.getClass()))
@@ -211,7 +211,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		}
 
 		// Bug testing
-		lore.add(sb.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
+		lore.add(sb.toString());
 
 		// Legit
 //		lore.add(ItemMetaUtil.hideLore(sb.toString()));
@@ -236,7 +236,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
 	// Parses skills given the item meta and the keyword that indicates where
 	// parsing should begin
-	private List<Skill> parseSkills(ItemMeta meta, char keyword) {
+	private List<Skill> parseSkills(ItemMeta meta, String keyword) {
 		// Creates the list of skills the item contains
 		List<Skill> skills = new ArrayList<>();
 
@@ -275,7 +275,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		return skills;
 	}
 
-	private double parseCooldown(ItemMeta meta, char keyword) {
+	private double parseCooldown(ItemMeta meta, String keyword) {
 		// Gets the lore from the item meta
 		List<String> lore = meta.getLore();
 
@@ -292,11 +292,11 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	// Gets the location to start parsing given a keyword
 	// Note: Skills begin parsing at the cooldown then the skill ids
 	// Returns -1 if the start does not exist
-	private int getSkillStartIndex(String[] skillInfo, char keyword) {
+	private int getSkillStartIndex(String[] skillInfo, String keyword) {
 		boolean isFound = false;
 		int startIndex = 1;
 		for(String info : skillInfo) {
-			if (info.equalsIgnoreCase(String.valueOf(keyword))) {
+			if (info.equalsIgnoreCase(keyword)) {
 				isFound = true;
 				break;
 			}
@@ -382,20 +382,20 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	// Determines if the given item contains an item Id
 	public final static boolean containsItemId(ItemStack item) {
 
+		// Returns false if the item doesn't contain a signature
+		if(!(containsCasterSignature(item)))
+			return false;
+
 		// Gets the item's lore from the item
 		List<String> lore = item.getItemMeta().getLore();
-
-		// Returns false if the lore's length is less than 3
-		if(lore.size() < 3)
-			return false;
 
 		// Gets the third to last line in the lore which should contain the signature and ID.
 		// Also reveals the text and splits it at splitter locations.
 		String[] sigId = ItemMetaUtil.revealHiddenLore(lore.get(lore.size() - 3))
 				.split("\\" + ID_SPLITTER);
 
-		// Returns true if the length is 2 and the item contains a signature
-		return sigId.length == 2 && containsCasterSignature(item);
+		// Returns true if the length is 2
+		return sigId.length == 2;
 	}
 
 	public ItemType getItemType() {

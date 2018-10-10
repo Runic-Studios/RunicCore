@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.util;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 
 import java.io.File;
@@ -24,10 +25,8 @@ public class UniqueIdAssigner {
     private static Object synchronizer = new Object();
 
     static {
-        UniqueIdAssigner.uniqueIdFile =
-                new File(Main.getInstance().getDataFolder() + "/resources/data/UniqueIds.yml");
-        if(!(uniqueIdFile.exists()))
-            uniqueIdFile.mkdir();
+        UniqueIdAssigner.uniqueIdFile = new File(Main.getInstance().getDataFolder() + "/resources/data/UniqueIds.yml");        if(!(uniqueIdFile.exists()))
+            uniqueIdFile.getParentFile().mkdir();
         UniqueIdAssigner.yamlConfiguration = YamlConfiguration.loadConfiguration(uniqueIdFile);
     }
 
@@ -48,6 +47,10 @@ public class UniqueIdAssigner {
         }
         nextId = yamlConfiguration.getLong(uniqueIdPath) + 100;
         currentStoredId = nextId;
+
+        yamlConfiguration.set(uniqueIdPath, currentStoredId);
+
+        saveIds();
     }
 
     public long getUniqueId() {
@@ -56,13 +59,21 @@ public class UniqueIdAssigner {
             if((nextId - currentStoredId) >= 100) {
                 currentStoredId = nextId;
                 yamlConfiguration.set(uniqueIdPath, currentStoredId);
+                saveIds();
+            }
+            return nextId;
+        }
+    }
+
+    public synchronized void saveIds() {
+        new BukkitRunnable() {
+            public void run() {
                 try {
                     yamlConfiguration.save(uniqueIdFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            return nextId;
-        }
+        }.runTaskAsynchronously(Main.getInstance());
     }
 }

@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
@@ -37,12 +38,9 @@ public class Test implements SubCommand {
 	public void onUserCommand(Player sender, String[] params) {
 		
 		CasterItemStack casterItem = new CasterItemStack(
-				Material.CLAY_BALL,
-				"test",
-				CasterItemStack.Type.RUNE,
-				5,
-				Arrays.asList(new Fireball()),
-				Arrays.asList(new Frostbolt())
+				new ItemStack(Material.CLAY), "test", CasterItemStack.ItemType.RUNE,
+				Arrays.asList(new Fireball()), 5,
+				Arrays.asList(new Frostbolt()), 2
 		);
 		
 		sender.getInventory().addItem(casterItem);

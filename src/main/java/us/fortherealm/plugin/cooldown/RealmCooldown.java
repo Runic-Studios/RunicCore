@@ -6,7 +6,10 @@ public class RealmCooldown {
 
     /*
 
-    This class can be used to keep track of cooldown and to notify Players of these cooldown.
+    Realm Cooldown should be used by any class that contains a cooldown.
+    It sorts, messages, and updates all cool downs. Feel free to extend
+    it to insert your own functionality, but first make sure that you're
+    not reinventing the wheel.
 
      */
 
@@ -31,10 +34,8 @@ public class RealmCooldown {
 //
 //            @Override
 //            public void run() {
-//
-//                Set<CasterItemStack> oldCastersOnCooldown = new HashSet<>(); // Avoids threading issues
-//
 //                synchronized(castersOnCooldown) {
+//                    Set<CasterItemStack> oldCastersOnCooldown = new HashSet<>(); // Avoids threading issues
 //                    for(CasterItemStack casterItem : castersOnCooldown.keySet()) {
 //                        if(!casterItem.isOnCooldown()) {
 //                            oldCastersOnCooldown.add(casterItem);
@@ -49,9 +50,7 @@ public class RealmCooldown {
 //                                )
 //                        );
 //                    }
-//                }
 //
-//                synchronized (castersOnCooldown) {
 //                    for(CasterItemStack casterItem : oldCastersOnCooldown) {
 //                        castersOnCooldown.remove(casterItem);
 //                    }
@@ -69,7 +68,7 @@ public class RealmCooldown {
 //    }
 
     public void displayCooldown(Player player) {
-        return;
+        player.sendMessage("On cooldown for " + getCurrentCooldown() + " more seconds");
     }
 
     public boolean isOnCooldown() {
