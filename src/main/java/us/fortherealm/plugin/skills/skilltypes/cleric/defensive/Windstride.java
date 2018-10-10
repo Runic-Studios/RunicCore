@@ -5,7 +5,7 @@
 //import org.bukkit.potion.PotionEffectType;
 //import us.fortherealm.plugin.Main;
 //import us.fortherealm.plugin.skills.Skill;
-//import us.fortherealm.plugin.skills.events.SkillImpactEvent;
+//import SkillImpactEvent;
 //
 //public class Windstride extends Skill {
 //

@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.listeners;
+package us.fortherealm.plugin.skills.listeners.impact;
 
 import org.bukkit.event.Event;
 import us.fortherealm.plugin.skills.Skill;

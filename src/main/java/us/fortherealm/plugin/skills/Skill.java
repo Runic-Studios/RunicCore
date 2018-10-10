@@ -2,9 +2,9 @@ package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import us.fortherealm.plugin.skills.events.SkillCastEvent;
-import us.fortherealm.plugin.skills.listeners.ImpactListener;
-import us.fortherealm.plugin.skills.listeners.ImpactListenerObserver;
+import us.fortherealm.plugin.events.gameplay.skills.SkillCastEvent;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListenerObserver;
 
 public abstract class Skill implements ISkill {
 	

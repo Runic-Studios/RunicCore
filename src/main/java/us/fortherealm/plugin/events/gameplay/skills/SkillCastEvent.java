@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.events;
+package us.fortherealm.plugin.events.gameplay.skills;
 
 import us.fortherealm.plugin.skills.Skill;
 

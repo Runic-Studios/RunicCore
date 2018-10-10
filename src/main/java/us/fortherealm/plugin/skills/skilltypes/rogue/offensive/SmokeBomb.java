@@ -13,7 +13,7 @@
 //import org.bukkit.scheduler.BukkitRunnable;
 //import org.bukkit.util.Vector;
 //import us.fortherealm.plugin.skills.Skill;
-//import us.fortherealm.plugin.skills.formats.Bubble;
+//import us.fortherealm.plugin.skills.util.formats.Bubble;
 //import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 //
 //import java.util.UUID;

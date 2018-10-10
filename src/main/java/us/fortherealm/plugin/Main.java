@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
-import us.fortherealm.plugin.skills.listeners.ImpactListenerObserver;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListenerObserver;
 
 import java.util.Arrays;
 

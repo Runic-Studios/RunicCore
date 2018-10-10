@@ -5,7 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 
 public class Backstab extends Skill implements ImpactListener<EntityDamageByEntityEvent> {
 
