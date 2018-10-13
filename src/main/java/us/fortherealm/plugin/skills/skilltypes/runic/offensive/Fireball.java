@@ -9,16 +9,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.util.formats.VertCircleFrame;
 import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
+import us.fortherealm.plugin.skills.util.formats.VertCircleFrame;
 
 public class Fireball extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
 
-    private SmallFireball fireball;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 20;
+
+    // WARNING: If a player casts a new fireball before the first one impacts,
+    // this will override the first fireball and the first fireball will no
+    // longer activate this skill.
+    private SmallFireball fireball;
 
     public Fireball() {
         super("Fireball", "Shoots a fireball.", false);
@@ -37,14 +41,15 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
 
         // premium particle effect
+        final long castTime = System.currentTimeMillis();
         new BukkitRunnable() {
             public void run() {
                 new VertCircleFrame(0.5F).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
-                if (fireball.isOnGround() || fireball.isDead()) {
+                if (fireball.isOnGround() || fireball.isDead() || (System.currentTimeMillis() - castTime) > (ImpactListener.MAX_SKILL_DURATION * 1000)) {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 1);
+        }.runTaskTimer(Main.getInstance(), 0, 20);
 
         // sets the objects name variable to the method's name variable
         this.fireball = fireball;
@@ -94,7 +99,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         LivingEntity target = this.getTarget();
 
         // perform damage
-        target.damage(DAMAGE_AMOUNT, getPlayer());
+        target.damage(DAMAGE_AMOUNT, fireball);
         target.setLastDamageCause(event);
         KnockbackUtil.knockback(getPlayer(), target);
 

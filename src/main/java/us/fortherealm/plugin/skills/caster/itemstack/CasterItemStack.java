@@ -85,6 +85,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 
 		// Sets the primary skills and primary skills cooldown
 		this.primarySkills = parseSkills(meta, PRIMARY_ID);
+		System.out.println(parseCooldown(meta, PRIMARY_ID));
 		this.primaryCooldown = new RealmCooldown(parseCooldown(meta, PRIMARY_ID));
 
 		// Sets the secondary skills and the secondary skills cooldown

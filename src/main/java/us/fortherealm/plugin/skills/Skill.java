@@ -13,6 +13,8 @@ public abstract class Skill implements ISkill {
 	// PLEASE read the tutorial at tinyurl.com/SkillsTut
 	// ************* VERY IMPORTANT *************
 
+	protected static final double REFRESH_RATE = 0.1;
+
 	private static long nextUniqueId = 0;
 
 	private long uniqueId;
