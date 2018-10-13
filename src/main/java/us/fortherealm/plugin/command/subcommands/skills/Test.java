@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
+import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
@@ -41,7 +42,7 @@ public class Test implements SubCommand {
 				"test",
 				CasterItemStack.Type.RUNE,
 				5,
-				Arrays.asList(new Fireball()),
+				Arrays.asList(new Backstab()),
 				Arrays.asList(new Frostbolt())
 		);
 		

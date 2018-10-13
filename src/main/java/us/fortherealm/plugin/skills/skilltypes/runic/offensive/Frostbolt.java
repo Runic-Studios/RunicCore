@@ -29,6 +29,7 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
 
     @Override
     public void executeSkill() {
+
         // launch our snowball
         Snowball snowball = getPlayer().launchProjectile(Snowball.class);
         final Vector velocity = getPlayer().getLocation().getDirection().normalize().multiply(SNOWBALL_SPEED);
@@ -55,15 +56,16 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
         return EntityDamageByEntityEvent.class;
     }
 
-    // returns the skill
     @Override
     public Skill getSkill() {
+
+        // returns the skill
         return this;
     }
 
-    // listen for this specific snowball
     @Override
     public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
+
         // make sure the skill is listening for the exact event
         if (!(event.getDamager() instanceof Snowball))
             return false;
@@ -77,6 +79,7 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
 
     @Override
     public void initializeSkillVariables(EntityDamageByEntityEvent event) {
+
         // Sets the target, reminder to initialize variables
         LivingEntity target = (LivingEntity) event.getEntity();
 
@@ -88,9 +91,9 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
 
     @Override
     public void doImpact(EntityDamageByEntityEvent event) {
+
         // Cancel the original event to create our own effect
         event.setCancelled(true);
-
         LivingEntity target = this.getTarget();
 
         // perform damage & effects

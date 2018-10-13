@@ -3,40 +3,55 @@ package us.fortherealm.plugin.skills.skilltypes.rogue.offensive;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 
-public class Backstab extends Skill implements ImpactListener<EntityDamageByEntityEvent> {
+public class Backstab extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
 
     private static final double DURATION = 10;
 
     public Backstab() {
-        super("Backstab", "Self buff. For the " + DURATION + "s duration, striking enemies from behind deals 150% dmg");
+        super("Backstab", "Self buff. For the " + DURATION + "s duration, striking enemies from behind deals 150% dmg", false);
     }
 
     @Override
     public void executeSkill() {
+
+        // start the buff
         getPlayer().sendMessage(ChatColor.GREEN + "You are now backstabbing!");
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_IRONGOLEM_HURT, 0.5f, 1.0f);
     }
 
     @Override
-    public Class getEventClass() {
+    public Class<EntityDamageByEntityEvent> getEventClass() {
         return EntityDamageByEntityEvent.class;
     }
 
     @Override
     public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
 
+        // listen for our exact scenario
         if (!(event.getDamager().equals(getPlayer())))
             return false;
 
+        // check that the player is standing behind the entity
         return getPlayer().getLocation().getDirection().dot(event.getEntity().getLocation().getDirection()) < 0.0D;
     }
 
     @Override
-    public void initializeSkillVariables(EntityDamageByEntityEvent event) {}
+    public void initializeSkillVariables(EntityDamageByEntityEvent event) {
+
+        // Sets the target, reminder to initialize variables
+        LivingEntity target = (LivingEntity) event.getEntity();
+
+        if(target == null)
+            return;
+
+        setTarget(target);
+    }
 
     @Override
     public Skill getSkill() {
@@ -59,5 +74,12 @@ public class Backstab extends Skill implements ImpactListener<EntityDamageByEnti
     @Override
     public boolean removeAfterImpact() {
         return false;
+    }
+
+    @Override
+    public void onRemoval() {
+
+        // end of the buff
+        getPlayer().sendMessage(ChatColor.GRAY + "You are no longer backstabbing!");
     }
 }

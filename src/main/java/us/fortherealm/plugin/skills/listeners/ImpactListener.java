@@ -20,6 +20,8 @@ public interface ImpactListener<T extends Event> {
 
     void doImpact(T event);
 
+    default void onRemoval() { return; }
+
     default double timeUntilRemoval() {
         return -1;
     }

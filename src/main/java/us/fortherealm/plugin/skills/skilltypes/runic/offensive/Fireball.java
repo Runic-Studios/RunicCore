@@ -39,7 +39,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         // premium particle effect
         new BukkitRunnable() {
             public void run() {
-                new VertCircleFrame(0.5F).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
+                new VertCircleFrame(0.25F).playParticle(Particle.SMOKE_NORMAL, fireball.getLocation());
                 if (fireball.isOnGround() || fireball.isDead()) {
                     this.cancel();
                 }
@@ -102,5 +102,4 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
         target.getWorld().spawnParticle(Particle.FLAME, target.getEyeLocation(), 5, 0.3f, 0.3f, 0.3f);
     }
-
 }

@@ -32,7 +32,7 @@ public class ImpactListenerObserver implements Listener {
     }
 
     private void onSkillEvent(Event event) {
-        Set<ImpactListener> safeActiveSkillsMap = this.getActiveSkillListeners().keySet();
+        Set<ImpactListener> safeActiveSkillsMap = new HashSet<>(this.getActiveSkillListeners().keySet());
 
         if(safeActiveSkillsMap.size() == 0)
             return;
@@ -60,7 +60,7 @@ public class ImpactListenerObserver implements Listener {
             activeImpactListener.doImpact(activeEventClass.cast(event));
 
             if(activeImpactListener.removeAfterImpact())
-                activeSkillListeners.remove(activeImpactListener);
+                delActiveSkillListener(activeImpactListener);
 
         }
     }
@@ -71,7 +71,7 @@ public class ImpactListenerObserver implements Listener {
 
             @Override
             public void run() {
-                Set<ImpactListener> safeActiveSkillsMap = ImpactListenerObserver.this.getActiveSkillListeners().keySet();
+                Set<ImpactListener> safeActiveSkillsMap = new HashSet<>(ImpactListenerObserver.this.getActiveSkillListeners().keySet());
 
                 Long approximateTime = System.currentTimeMillis();
                 for(ImpactListener impactListener : safeActiveSkillsMap) {
@@ -92,6 +92,9 @@ public class ImpactListenerObserver implements Listener {
     }
 
     public static synchronized void delActiveSkillListener(ImpactListener impactListener) {
+
+        // run after skill is "over"
+        impactListener.onRemoval();
         activeSkillListeners.remove(impactListener);
     }
 
