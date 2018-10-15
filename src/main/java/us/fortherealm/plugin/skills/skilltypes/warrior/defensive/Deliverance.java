@@ -31,7 +31,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 "Deliverance",
                 "Summon a barrier of holy power around yourself for 8 seconds." +
                         " The barrier repels all enemies, however allies may pass through the barrier freely." +
-                        " During this time, you may not move",
+                        " During this time, you may not move.",
                 false
         );
     }

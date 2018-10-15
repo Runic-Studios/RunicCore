@@ -1,40 +1,83 @@
 package us.fortherealm.plugin.scoreboard;
 
+import com.codingforcookies.armorequip.ArmorEquipEvent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 
 public class ScoreboardListener implements Listener {
 
-    private ScoreboardManager sbm = new ScoreboardManager();
+    // global variables
+    private ScoreboardHandler sbh = new ScoreboardHandler();
     private Plugin plugin = Main.getInstance();
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
+    public void onDamage (EntityDamageEvent e) {
 
-        Player player = e.getPlayer();
+        // only listen for players
+        if (!(e.getEntity() instanceof Player)) { return; }
 
-        // delay by 1s on first join to wait for server to change hp from 20 ==> 50
-        if (!player.hasPlayedBefore()) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    sbm.setupScoreboard(e.getPlayer());
+        Player pl = (Player) e.getEntity();
+
+        // null check
+        if (pl.getScoreboard() == null) { return; }
+
+        updateHealth(pl);
+    }
+
+    @EventHandler
+    public void onRegen (EntityRegainHealthEvent e) {
+
+        //only listen for players
+        if (!(e.getEntity() instanceof Player)) { return; }
+        Player pl = (Player) e.getEntity();
+
+        // null check
+        if (pl.getScoreboard() == null) { return; }
+
+        updateHealth(pl);
+    }
+
+    @EventHandler
+    public void onArmorEquip (ArmorEquipEvent e) {
+
+        Player pl = e.getPlayer();
+
+        // null check
+        if (pl.getScoreboard() == null) { return; }
+
+        updateHealth(pl);
+
+        final double OLD_MAX_HEALTH = pl.getMaxHealth();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                e.getPlayer().setHealthScale((pl.getMaxHealth() / 12.5));//(50 / 12.5) = 4.0 = 2 hearts
+                if (OLD_MAX_HEALTH != pl.getMaxHealth()) {
+                    pl.sendMessage
+                            (ChatColor.YELLOW + "Your total health is now "
+                                    + ChatColor.GREEN + ((int) pl.getMaxHealth()) + "§e.");
                 }
-            }.runTaskLater(plugin, 20);
+            }
+        }.runTaskLater(plugin, 1L);
+    }
 
-        // otherwise update quickly
-        } else {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    sbm.setupScoreboard(e.getPlayer());
-                }
-            }.runTaskLater(plugin, 1);
-        }
+    private void updateHealth(Player pl) {
+
+        // update health bar and scoreboard
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                sbh.updateSideHealth(pl);
+                sbh.updateHealthbar(pl);
+            }
+        }.runTaskLater(plugin, 1);
     }
 }

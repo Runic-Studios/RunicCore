@@ -124,7 +124,7 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		if(primarySkills.size() != 0) {
 			
 			
-			lore.add(ChatColor.GRAY + "Primary:");
+			lore.add(ChatColor.GRAY + "Left-click:");
 			
 			for(Skill skill : primarySkills)
 				lore.add(ChatColor.RED + skill.getName());
@@ -134,10 +134,10 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		
 		if(secondarySkills.size() != 0) {
 			
-			lore.add(ChatColor.GRAY + "Secondary:");
+			lore.add(ChatColor.GRAY + "Right-click:");
 			
 			for (Skill skill : secondarySkills)
-				lore.add(ChatColor.DARK_RED + skill.getName());
+				lore.add(ChatColor.RED + skill.getName());
 			
 		}
 		
@@ -337,6 +337,8 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 	public final static boolean containsCasterSignature(ItemStack item) {
 	    if(item == null)
 	        return false;
+	    if(item.getItemMeta() == null)
+	    	return false;
 		List<String> lore = item.getItemMeta().getLore();
 		if(lore == null)
 		    return false;

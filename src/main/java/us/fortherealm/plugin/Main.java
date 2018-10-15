@@ -9,7 +9,7 @@ import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.scoreboard.ScoreboardHealthListener;
+import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
 import us.fortherealm.plugin.skills.listeners.ImpactListenerObserver;
@@ -50,8 +50,8 @@ public class Main extends JavaPlugin {
 
         pm.registerEvents(new FirstJoinEvent(), this);
         pm.registerEvents(new DeathEvent(), this);
+        pm.registerEvents(new ScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
-        pm.registerEvents(new ScoreboardHealthListener(), this);
         pm.registerEvents(new SheepDyeEvent(), this);
         pm.registerEvents(new Healthbars(), this);
         pm.registerEvents(new ArtifactSlotEvent(), this);

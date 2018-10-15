@@ -38,7 +38,7 @@ public class Backstab extends TargetingSkill<LivingEntity> implements ImpactList
             return false;
 
         // check that the player is standing behind the entity
-        return getPlayer().getLocation().getDirection().dot(event.getEntity().getLocation().getDirection()) < 0.0D;
+        return getPlayer().getLocation().getDirection().dot(event.getEntity().getLocation().getDirection()) > 0.0D;
     }
 
     @Override
@@ -80,6 +80,6 @@ public class Backstab extends TargetingSkill<LivingEntity> implements ImpactList
     public void onRemoval() {
 
         // end of the buff
-        getPlayer().sendMessage(ChatColor.GRAY + "You are no longer backstabbing!");
+        getPlayer().sendMessage(ChatColor.GRAY + "You are no longer backstabbing.");
     }
 }

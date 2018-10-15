@@ -109,7 +109,7 @@ public class ImpactListenerObserver implements Listener {
                     impactListener,
                     Math.min(
                             System.currentTimeMillis() + (long) (impactListener.timeUntilRemoval()*1000),
-                            System.currentTimeMillis() + (long) (ImpactListener.MAX_SKILL_DURATION)
+                            System.currentTimeMillis() + (long) (ImpactListener.MAX_SKILL_DURATION * 1000)
                     )
             );
     }

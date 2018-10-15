@@ -1,31 +1,39 @@
-//package us.fortherealm.plugin.skills.skilltypes.defensive;
-//
-//import org.bukkit.Bukkit;
-//import org.bukkit.ChatColor;
-//import org.bukkit.Sound;
-//import org.bukkit.potion.PotionEffect;
-//import org.bukkit.potion.PotionEffectType;
-//import us.fortherealm.plugin.Main;
-//import us.fortherealm.plugin.skills.Skill;
-//
-//public class Speed extends Skill {
-//
-//    private static int DURATION = 5;
-//    private static int SPEED = 2;
-//
-//    public Speed() {
-//        super("Speed","Increase your own move speed by 100 units.");
-//    }
-//
-//    @Override
-//    public void executeSkill() {
-//        PotionEffectType effectType = PotionEffectType.SPEED;
-//        getPlayer().addPotionEffect(new PotionEffect(effectType, DURATION, SPEED)); //100 ticks = 5s (Speed III)
-//        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_BLAST, 0.5F, 1.0F);
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
-//            getPlayer().getPotionEffect(effectType);
-//            getPlayer().sendMessage(ChatColor.GRAY + "Your speed effect has worn off!");
-//            Skill.delActiveSkill(this);
-//        }, DURATION*20);
-//    }
-//}
+package us.fortherealm.plugin.skills.skilltypes.runic.defensive;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skills.Skill;
+import us.fortherealm.plugin.skills.formats.HorizCircleFrame;
+
+public class Speed extends Skill {
+
+    // global variables
+    private static int BUFF_DURATION = 10;
+    private static int SPEED_AMPLIFIER = 2;
+
+    // default constructor
+    public Speed() {
+        super("Speed", "For " + BUFF_DURATION + " seconds, you gain massively increased movement speed!");
+    }
+
+    @Override
+    public void executeSkill() {
+
+        // apply effects
+        getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, SPEED_AMPLIFIER));
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_BLAST, 0.5F, 1.0F);
+        new HorizCircleFrame(1).playParticle(Particle.TOTEM, getPlayer().getLocation());
+        new HorizCircleFrame(1).playParticle(Particle.TOTEM, getPlayer().getEyeLocation());
+        getPlayer().sendMessage(ChatColor.GREEN + "You gain increased speed!");
+
+        // after the end of the buff
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+            getPlayer().sendMessage(ChatColor.GRAY + "Your speed effect has worn off!");
+        }, BUFF_DURATION*20);
+    }
+}

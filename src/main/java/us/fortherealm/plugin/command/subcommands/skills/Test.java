@@ -8,10 +8,18 @@ import org.bukkit.entity.Player;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
+import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Windstride;
+import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Comet;
+import us.fortherealm.plugin.skills.skilltypes.mage.offensive.IceNova;
 import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
+import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
+//import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
+import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
+import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Speed;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
+import us.fortherealm.plugin.skills.skilltypes.warrior.offensive.Enrage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,8 +50,8 @@ public class Test implements SubCommand {
 				"test",
 				CasterItemStack.Type.RUNE,
 				5,
-				Arrays.asList(new Backstab()),
-				Arrays.asList(new Frostbolt())
+				Arrays.asList(new IceNova()),
+				Arrays.asList(new Comet())
 		);
 		
 		sender.getInventory().addItem(casterItem);

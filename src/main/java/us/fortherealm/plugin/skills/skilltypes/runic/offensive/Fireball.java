@@ -58,11 +58,13 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
 
     @Override
     public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
+
         // make sure the skill is listening for the exact event
         if (!(event.getDamager() instanceof SmallFireball))
             return false;
 
         SmallFireball smfb = (SmallFireball) event.getDamager();
+
         if(fireball == null)
             return false;
 
@@ -71,6 +73,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
 
     @Override
     public void initializeSkillVariables(EntityDamageByEntityEvent event) {
+
         // Sets the target, reminder to initialize variables
         LivingEntity target = (LivingEntity) event.getEntity();
 
