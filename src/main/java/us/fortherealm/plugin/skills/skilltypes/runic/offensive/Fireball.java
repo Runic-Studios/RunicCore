@@ -99,7 +99,7 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
         // perform damage
         target.damage(DAMAGE_AMOUNT, getPlayer());
         target.setLastDamageCause(event);
-        KnockbackUtil.knockback(getPlayer(), target);
+        KnockbackUtil.knockback(getPlayer(), target, 1);
 
         // general effects
         getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);

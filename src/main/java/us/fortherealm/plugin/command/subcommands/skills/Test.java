@@ -10,6 +10,7 @@ import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
 import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Windstride;
 import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Comet;
+import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Discharge;
 import us.fortherealm.plugin.skills.skilltypes.mage.offensive.IceNova;
 import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
 import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
@@ -50,7 +51,7 @@ public class Test implements SubCommand {
 				"test",
 				CasterItemStack.Type.RUNE,
 				5,
-				Arrays.asList(new IceNova()),
+				Arrays.asList(new Discharge()),
 				Arrays.asList(new Comet())
 		);
 		

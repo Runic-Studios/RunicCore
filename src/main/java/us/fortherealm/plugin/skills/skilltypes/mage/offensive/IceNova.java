@@ -119,7 +119,7 @@ public class IceNova extends TargetingSkill<LivingEntity> implements ImpactListe
                         }.runTaskLater(Main.getInstance(), 100L); // can't be hit by the same player's beam for 5 secs
 
                         victim.damage(DAMAGE_AMOUNT, player);
-                        KnockbackUtil.knockback(player, victim);
+                        KnockbackUtil.knockback(player, victim, 1);
                         ((LivingEntity) victim).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2)); // 100 ticks = 5s (Slowness III)
                         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
                         ((LivingEntity) victim).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2)); // 100 ticks = 5s (Slowness III)

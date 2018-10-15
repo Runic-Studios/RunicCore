@@ -99,7 +99,7 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
         // perform damage & effects
         target.damage(DAMAGE_AMOUNT, getPlayer());
         target.setLastDamageCause(event);
-        KnockbackUtil.knockback(getPlayer(), target);
+        KnockbackUtil.knockback(getPlayer(), target, 1);
         target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1));
         if (target instanceof Player) {
             target.sendMessage(ChatColor.RED + "You are slowed by " + ChatColor.WHITE +

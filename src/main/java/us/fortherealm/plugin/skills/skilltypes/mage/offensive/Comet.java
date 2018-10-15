@@ -17,9 +17,10 @@ public class Comet extends TargetingSkill<EntityDamageByEntityEvent> implements 
     // global variables
     private FallingBlock comet;
     private static final double COMET_SPEED = 0.1;
-    private static final int DAMAGE_AMOUNT = 20;
-    private static final int BLAST_RADIUS = 6;
+    private static final int DAMAGE_AMT = 20;
+    private static final int BLAST_RADIUS = 5;
     private static final int MAX_DIST = 10;
+    private static final double KNOCKBACK_MULT = -0.5;
 
     // default constructor
     public Comet() {
@@ -63,19 +64,16 @@ public class Comet extends TargetingSkill<EntityDamageByEntityEvent> implements 
                     comet.getWorld().spawnParticle(Particle.FLAME, comet.getLocation(), 45, 1F, 1F, 1F, 0);
                     comet.getWorld().spawnParticle(Particle.SMOKE_LARGE, comet.getLocation(), 45, 1F, 1F, 1F, 0);
 
-                    // damage nearby entities
-                    for (Entity entity : comet.getLocation().getChunk().getEntities()) {
+                    // get nearby enemies within blast radius
+                    for (Entity entity : comet.getNearbyEntities(BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS)) {
 
-                        // only damage enemies within radius
-                        if (!(entity.getLocation().distance(comet.getLocation()) <= BLAST_RADIUS)) {
-                            return;
-                        }
-
-                        // apply effects
+                        // apply effects, damage
                         if (entity != getPlayer() && entity.getType().isAlive()) {
                             Damageable victim = (Damageable) entity;
-                            victim.damage(DAMAGE_AMOUNT, getPlayer());
-                            Vector knockback = (comet.getLocation().toVector().subtract(victim.getLocation().toVector()).multiply(-1).setY(0.6));
+                            victim.damage(DAMAGE_AMT, getPlayer());
+                            //KnockbackUtil.knockback(getPlayer(), victim, 2);
+                            Vector knockback = (comet.getLocation().toVector().subtract(victim.getLocation().toVector())
+                                    .multiply(KNOCKBACK_MULT).setY(0.3333));
                             victim.setVelocity(knockback);
                         }
                     }

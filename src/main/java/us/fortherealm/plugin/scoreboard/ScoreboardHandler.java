@@ -43,7 +43,7 @@ public class ScoreboardHandler implements Listener {
 
         // setup side scoreboard
         Objective sidebar = board.registerNewObjective("sidebar", "dummy");
-        sidebar.setDisplayName(ChatColor.DARK_PURPLE + "     §lFor the Realm     ");
+        sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lFor The Realm     ");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         // setup health below the nameplate
@@ -78,8 +78,10 @@ public class ScoreboardHandler implements Listener {
         blankSpaceTwo.setScore(2);
 
         // set side board header
-        Score characterInfo = sidebar.getScore(ChatColor.LIGHT_PURPLE + "§lCharacter");
+        Score characterInfo = sidebar.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Alpha");
         characterInfo.setScore(6);
+        //Score characterInfo = sidebar.getScore(ChatColor.LIGHT_PURPLE + "§lCharacter");
+        //characterInfo.setScore(6);
 
         // TODO: update info for class, prof, and guild
         Score playerClass = sidebar.getScore(classAsString());

@@ -2,6 +2,7 @@ package us.fortherealm.plugin.skills;
 
 import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Windstride;
 import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Comet;
+import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Discharge;
 import us.fortherealm.plugin.skills.skilltypes.mage.offensive.IceNova;
 import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
 import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
@@ -12,6 +13,7 @@ import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
 import us.fortherealm.plugin.skills.skilltypes.warrior.offensive.Enrage;
 
+@SuppressWarnings("deprecation")
 public enum SkillRegistry {
 
     // Add Skills here!!
@@ -25,6 +27,7 @@ public enum SkillRegistry {
     ENRAGE(Enrage.class),
     HEAL(Heal.class),
     ICENOVA(IceNova.class),
+    DISCHARGE(Discharge.class),
     COMET(Comet.class);
 
     private static int nextUniqueId = 0;
