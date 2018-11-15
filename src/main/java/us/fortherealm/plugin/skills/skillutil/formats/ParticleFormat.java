@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.formats;
+package us.fortherealm.plugin.skills.util.formats;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;

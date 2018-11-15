@@ -5,22 +5,13 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
-import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Windstride;
-import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Comet;
-import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Discharge;
-import us.fortherealm.plugin.skills.skilltypes.mage.offensive.IceNova;
-import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
-//import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Speed;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
-import us.fortherealm.plugin.skills.skilltypes.warrior.offensive.Enrage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,12 +38,9 @@ public class Test implements SubCommand {
 	public void onUserCommand(Player sender, String[] params) {
 		
 		CasterItemStack casterItem = new CasterItemStack(
-				Material.CLAY_BALL,
-				"test",
-				CasterItemStack.Type.RUNE,
-				5,
-				Arrays.asList(new Discharge()),
-				Arrays.asList(new Comet())
+				new ItemStack(Material.CLAY), "test", CasterItemStack.ItemType.RUNE,
+				Arrays.asList(new Fireball()), 5,
+				Arrays.asList(new Frostbolt()), 2
 		);
 		
 		sender.getInventory().addItem(casterItem);

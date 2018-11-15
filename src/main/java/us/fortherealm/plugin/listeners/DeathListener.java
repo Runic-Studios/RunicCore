@@ -18,8 +18,6 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import java.util.UUID;
 
-// TODO: update EntityDamageEvent method
-
 public class DeathEvent implements Listener {
 
     Plugin plugin = Main.getInstance();
@@ -28,16 +26,17 @@ public class DeathEvent implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerHitToDeath(EntityDamageByEntityEvent e) {
 
-        // only listen if a player is the entity receiving damage AND that player "dies"
+        // only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
         if (!(e.getEntity() instanceof Player && ((Player) e.getEntity()).getHealth() - e.getDamage() < 1)) {
             return;
         }
 
+        // initialize event variables
         Player victim = (Player) e.getEntity();
         Entity damager = e.getDamager();
         Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
-        // if the player died to an arrow, set damager to its shooter
+        // if the player was killed by an arrow, set damager to its shooter
         if (damager instanceof Arrow) {
             Arrow arrow = (Arrow) damager;
             if (arrow.getShooter() instanceof Player) {
@@ -51,7 +50,8 @@ public class DeathEvent implements Listener {
         victim.setFoodLevel(20);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 30, 0.2f, 0.2f, 0.2f);
+        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 30,
+                new Particle.DustOptions(Color.RED, 3));
         victim.teleport(respawnLocation);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
@@ -66,7 +66,7 @@ public class DeathEvent implements Listener {
         }
 
         // broadcast the death message
-        broadcastDeathMessage(damager, victim);
+        broadcastSlainDeathMessage(damager, victim);
 
         // apply outlaw mechanics if the player is an outlaw AND the killer is an outlaw
         if (damager instanceof Player) {
@@ -75,37 +75,46 @@ public class DeathEvent implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onDamage(EntityDamageEvent event) {
-        if (event instanceof EntityDamageByEntityEvent) {
+    public void onDamage(EntityDamageEvent e) {
+
+        // this event likes to get confused with the event above, so let's just fix that.
+        if (e instanceof EntityDamageByEntityEvent) {
             return;
         }
-        Entity damagedEntity = event.getEntity();
-        Location respawnLocation = new Location(damagedEntity.getWorld(), -732, 34, 111);
-        World world = damagedEntity.getWorld();
-        if (damagedEntity instanceof Player) {
-            Player victim = (Player) event.getEntity();
-            if (victim.getHealth() - event.getDamage() < 1) {
-                event.setCancelled(true);
-                victim.setHealth(victim.getMaxHealth());
-                victim.setFoodLevel(20);
-                victim.setFireTicks(0);
-                world.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-                victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
-                victim.getWorld().spigot().playEffect(victim.getEyeLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.2F, 0.2F, 0.00F, 30, 16);
-                victim.teleport(respawnLocation);
-                victim.sendMessage(ChatColor.RED + "Oh no, you have died!");
-                victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
-                if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-                    Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
-                    Score score = o.getScore(victim);
-                    score.setScore((int) victim.getHealth());
-                }
-            }
+
+        // only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
+        if (!(e.getEntity() instanceof Player && ((Player) e.getEntity()).getHealth() - e.getDamage() < 1)) {
+            return;
+        }
+
+        // initialize event variables
+        Player victim = (Player) e.getEntity();
+        Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
+
+        // apply new death mechanics
+        victim.setHealth(victim.getMaxHealth());
+        victim.setFoodLevel(20);
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
+        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 30,
+                new Particle.DustOptions(Color.RED, 3));
+        victim.teleport(respawnLocation);
+        victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
+        victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
+        victim.sendMessage(ChatColor.RED + "You have been slain!");
+        victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
+
+        // update the scoreboard
+        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
+            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
+            Score score = o.getScore(victim);
+            score.setScore((int) victim.getHealth());
         }
     }
 
-    private void broadcastDeathMessage(Entity damager, Player victim) {
+    private void broadcastSlainDeathMessage(Entity damager, Player victim) {
 
+        // initialize method variables
         String nameDam = damager.getName();
         String nameVic = victim.getName();
         UUID p1 = damager.getUniqueId();
@@ -122,5 +131,14 @@ public class DeathEvent implements Listener {
 
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
+    }
+
+    private void broadcastDeathMessage(Player victim) {
+
+        // initialize method variables
+        String nameVic = victim.getName();
+
+        // display death message
+        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " died!");
     }
 }

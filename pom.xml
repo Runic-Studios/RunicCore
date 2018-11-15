@@ -14,7 +14,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <fileOutput>${user.home}/Desktop/Project Rebirth Server Files/plugins</fileOutput>
+        <fileOutput>${user.home}/Desktop/FTR Server Assets/~ Local Server/plugins</fileOutput>
     </properties>
 
     <build>
@@ -102,22 +102,36 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- ArmorEquip API -->
         <dependency>
             <groupId>com.github.Arnuh</groupId>
             <artifactId>ArmorEquipEvent</artifactId>
-            <version>1.6.5</version>
+            <version>1.7.1</version>
         </dependency>
         <!-- CraftBukkit -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/craftbukkit-1.12.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/craftbukkit-1.13.2.jar</systemPath>
+        </dependency>
+        <!-- ProtocolTab API -->
+        <dependency>
+        <groupId>com.github.kacperduras</groupId>
+        <artifactId>ProtocolTab</artifactId>
+        <version>1.2.0</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/lib/ProtocolTab-1.2.0.jar</systemPath>
+        </dependency>
+        <!-- Inventory (GUI) API -->
+        <dependency>
+            <groupId>fr.minuskube.inv</groupId>
+            <artifactId>smart-invs</artifactId>
+            <version>1.2.5</version>
         </dependency>
     </dependencies>
 </project>

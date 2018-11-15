@@ -10,9 +10,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.skills.events.SkillImpactEvent;
+import us.fortherealm.plugin.events.gameplay.skills.SkillImpactEvent;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
-import us.fortherealm.plugin.skills.formats.Bubble;
+import us.fortherealm.plugin.skills.util.formats.Bubble;
 import us.fortherealm.plugin.skills.util.PlayerSpeedStorage;
 
 import java.util.ArrayList;

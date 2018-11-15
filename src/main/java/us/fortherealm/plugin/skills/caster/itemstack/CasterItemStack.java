@@ -1,399 +1,405 @@
 package us.fortherealm.plugin.skills.caster.itemstack;
 
 import com.mysql.jdbc.StringUtils;
-import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.SkillRegistry;
+import us.fortherealm.plugin.cooldown.RealmCooldown;
+import us.fortherealm.plugin.util.ItemMetaUtil;
+import us.fortherealm.plugin.util.UniqueIdAssigner;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class CasterItemStack extends ItemStack implements ICasterItemStack {
-	
-	private static long nextId;
-	private static long currentHundredthId;
+
+	// The UniqueIdAssigner is how each caster item stack gets a unique id and the activeCastersMap
+	// holds all casters currently in use
+	private static UniqueIdAssigner uniqueIdAssigner;
 	private static Map<Long, CasterItemStack> activeCastersMap = new HashMap<>();
-	
-	private static Map<CasterItemStack, Player> castersOnCooldown = new HashMap<>();
-	private static boolean isTaskRunning;
-	
+
+	// ----- NEVER CHANGE ----- //
+	private final static String ID_SPLITTER = "|";
+	private final static String PRIMARY_ID =  "p";
+	private final static String SECONDARY_ID = "p";
+	// ----- NEVER CHANGE ----- //
+
+	// Stores the name and itemType of the CasterItemStack
 	private String name;
-	private double cooldown;
-	private long lastCast;
-	private Type itemType;
-	
+	private ItemType itemType;
+
+	// The primary and secondary skills storage
 	private List<Skill> primarySkills = new ArrayList<>();
 	private List<Skill> secondarySkills = new ArrayList<>();
 
+	// The cooldownStorage for primary and secondary skills
+	private final RealmCooldown primaryCooldown;
+	private final RealmCooldown secondaryCooldown;
+
+	// Assigns the uniqueIdAssigner with a reference for all of the CasterItemStacks to use
 	static {
-		File casterData = new File(Main.getInstance().getDataFolder() + "/resources/data/CasterData.yml");
-		if(!(casterData.exists()))
-			casterData.mkdir();
-		YamlConfiguration yamlData = YamlConfiguration.loadConfiguration(casterData);
-		if(!(yamlData.isSet("hundredthId")))
-			yamlData.set("hundredthId", 0);
-
-		CasterItemStack.nextId = (yamlData.getLong("hundredthId") + 1) * 100;
-		CasterItemStack.currentHundredthId = yamlData.getLong("hundredthId") + 1;
-
-		yamlData.set("hundredthId", currentHundredthId);
-
-		try {
-			yamlData.save(casterData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		CasterItemStack.uniqueIdAssigner = new UniqueIdAssigner("casterItemUniqueId");
 	}
 
-	private CasterItemStack(ItemStack item) {
+	// The constructor to create a CasterItemStack
+	public CasterItemStack(ItemStack item, String name, ItemType itemType,
+						   List<Skill> primarySkills, double primaryCooldown,
+						   List<Skill> secondarySkills, double secondaryCooldown) {
+
+		// Sets the physical item
 		super(item);
 
-		ItemMeta meta = item.getItemMeta();
-
-		this.name = parseName(meta);
-		this.itemType = parseItemType(meta);
-		this.cooldown = parseCooldown(meta);
-
-		this.primarySkills = parseSkills(meta, "p");
-		this.secondarySkills = parseSkills(meta, "s");
-
-		setItemMeta(meta);
-	}
-
-	public CasterItemStack(Material itemMaterial, String name, Type itemType, double cooldown,
-	                       List<Skill> primarySkills, List<Skill> secondarySkills) {
-		super(itemMaterial);
-		
+		// Sets the name and itemType
 		this.name = name;
 		this.itemType = itemType;
-		this.cooldown = cooldown;
-		
+
+		// Sets the primary skills and the primary skills cooldown
 		if(primarySkills != null)
 			this.primarySkills.addAll(primarySkills);
-		
+		this.primaryCooldown = new RealmCooldown(primaryCooldown);
+
+		// Sets the secondary skills and the secondary skills cooldown
 		if(secondarySkills != null)
 			this.secondarySkills.addAll(secondarySkills);
+		this.secondaryCooldown = new RealmCooldown(secondaryCooldown);
 
+		// Sets the itemMeta so it can be parsed
 		setItemMeta(generateItemMeta());
 	}
-	
-	public void executeSkill(Skill skill, Player player) {
-		if(this.isOnCooldown())
-			return;
 
-		this.lastCast = System.currentTimeMillis();
-		
-		displayCooldown(player);
-		
+	// The constructor for itemStacks being parsed into CasterItemStacks
+	private CasterItemStack(ItemStack item) {
+
+		// Sets the physical item
+		super(item);
+
+		// Get the itemMeta of the item so it can be parsed
+		ItemMeta meta = item.getItemMeta();
+
+		// Sets the name and itemType
+		this.name = parseName(meta);
+		this.itemType = parseItemType(meta);
+
+		// Sets the primary skills and primary skills cooldown
+		this.primarySkills = parseSkills(meta, PRIMARY_ID);
+		System.out.println(parseCooldown(meta, PRIMARY_ID));
+		this.primaryCooldown = new RealmCooldown(parseCooldown(meta, PRIMARY_ID));
+
+		// Sets the secondary skills and the secondary skills cooldown
+		this.secondarySkills = parseSkills(meta, SECONDARY_ID);
+		this.secondaryCooldown = new RealmCooldown(parseCooldown(meta, SECONDARY_ID));
+	}
+
+	// Executes the specified skill with the player as the user
+	@Override
+	public void executeSkill(Skill skill, Player player) {
 		skill.executeEntireSkill(player);
 	}
-	
+
+	// Executes all of the primary skills if they are not on cooldown
 	public void executePrimarySkills(Player player) {
+		if(primaryCooldown.isOnCooldown()) {
+			primaryCooldown.displayCooldown(player);
+			return;
+		}
+
 		for(Skill skill : primarySkills) {
 			executeSkill(skill, player);
 		}
 	}
-	
+
+	// Executes all of the secondary skills if they are not on cooldown
 	public void executeSecondarySkills(Player player) {
+		if(secondaryCooldown.isOnCooldown()) {
+			secondaryCooldown.displayCooldown(player);
+			return;
+		}
+
 		for(Skill skill : secondarySkills) {
 			executeSkill(skill, player);
 		}
 	}
-	
+
+	// Generates the item meta
 	private ItemMeta generateItemMeta() {
+		// Gets the current Item Meta
 		ItemMeta itemMeta = getItemMeta();
-		
+
+		// Add item flags
 		itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemMeta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+		itemMeta.addItemFlags(ItemFlag.HIDE_DESTROYS);
+		itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 
-
-		// Changing this requires changing the parseName method
+		// Sets the name of the item
+		// Note: This is used to parse the item name, so
+		// changing this requires changing the parseName method
 		itemMeta.setDisplayName(ChatColor.YELLOW + name);
 
+		// Generates a new list of strings to become the lore
 		List<String> lore = new ArrayList<>();
-		
-		if(primarySkills.size() != 0) {
-			
-			
-			lore.add(ChatColor.GRAY + "Left-click:");
-			
-			for(Skill skill : primarySkills)
-				lore.add(ChatColor.RED + skill.getName());
-			
-			lore.add("");
-		}
-		
-		if(secondarySkills.size() != 0) {
-			
-			lore.add(ChatColor.GRAY + "Right-click:");
-			
-			for (Skill skill : secondarySkills)
-				lore.add(ChatColor.RED + skill.getName());
-			
-		}
-		
-		// Do not change until stated
 
-		// Changing this requires changing the getSignature, getId, and respective contains methods
-		// Signature and ID creator
-		StringBuilder sb = new StringBuilder();
+		// Sets the lore visible to the player
+		lore = generateVisibleLore(lore);
 
-		for(char c : getCasterSignature().toCharArray()) {
-			if (c == '|')
-				continue;
-			sb.append(ChatColor.COLOR_CHAR + String.valueOf(c));
-		}
+		// Sets the invisible lore used to parse the stats
+		lore = generateInvisibleLore(lore);
 
-		sb.append(ChatColor.COLOR_CHAR + String.valueOf('|'));
-
-		for(char c : String.valueOf(nextId++).toCharArray()) {
-			if (c == '|')
-				continue;
-			sb.append(ChatColor.COLOR_CHAR + String.valueOf(c));
-		}
-
-		if(nextId / 100 > currentHundredthId) {
-			currentHundredthId = nextId / 100;
-			File casterData = new File(Main.getInstance().getDataFolder() + "/resources/data/CasterData.yml");
-			YamlConfiguration yamlData = YamlConfiguration.loadConfiguration(casterData);
-
-			yamlData.set("hundredthId", currentHundredthId);
-
-			try {
-				yamlData.save(casterData);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		// Bug testing
-//		lore.add(sb.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
-
-		// Legit
-		lore.add(sb.toString());
-
-		// Caster parser crator
-		sb = new StringBuilder();
-
-		// Changing this requires changing the parseSkills method
-		sb.append('p');
-		for(Skill pSkill : primarySkills)
-			for(SkillRegistry registeredSkill : SkillRegistry.values()) {
-				if (registeredSkill.getSkill().getClass().equals(pSkill.getClass()))
-					sb.append("|" + registeredSkill.getUniqueId());
-			}
-
-		sb.append("|s");
-		for(Skill sSkill : secondarySkills) {
-			for (SkillRegistry registeredSkill : SkillRegistry.values()) {
-				if (registeredSkill.getSkill().getClass().equals(sSkill.getClass()))
-					sb.append("|" + registeredSkill.getUniqueId());
-			}
-		}
-
-		sb.append("|c|" + cooldown);
-
-		StringBuilder sb2 = new StringBuilder();
-		for(char c : sb.toString().toCharArray()) {
-			sb2.append(ChatColor.COLOR_CHAR + String.valueOf(c));
-		}
-
-		// Bug testing
-//		lore.add(sb2.toString().replace(String.valueOf(ChatColor.COLOR_CHAR), ""));
-
-		// Legit
-		lore.add(sb2.toString());
-
-		// Changing this requires changing the parseItemType method
-		// Make sure this is 1 line
+		// The parsing methods expect one line after the
+		// invisible lore which will can be filled by the item type
+		// Note: This is used to parse the item type, so
+		// changing this requires changing the parseType method
 		lore.add(ChatColor.YELLOW + itemType.getName());
 
+		// Sets the lore
 		itemMeta.setLore(lore);
 
-		// End do not change
-		
+		// Returns the generated ItemMeta
 		return itemMeta;
 	}
 
+	// Sets the visible lore
+	// This is very ugly so it will likely be changed before launch
+	protected List<String> generateVisibleLore(List<String> lore) {
+		if(primarySkills.size() != 0) {
+			lore.add(ChatColor.GRAY + "Primary:");
+
+			for(Skill skill : primarySkills)
+				lore.add(ChatColor.RED + skill.getName());
+
+			lore.add("");
+		}
+
+		if(secondarySkills.size() != 0) {
+			lore.add(ChatColor.GRAY + "Secondary:");
+
+			for (Skill skill : secondarySkills)
+				lore.add(ChatColor.DARK_RED + skill.getName());
+		}
+		return lore;
+	}
+
+	// Sets the invisible lore which will be used to parse item stats
+	private List<String> generateInvisibleLore(List<String> lore) {
+
+		// Signature and ID creator
+		String sigID = getCasterSignature() + ID_SPLITTER + uniqueIdAssigner.getUniqueId();
+
+		// Bug testing
+		lore.add(ItemMetaUtil.revealHiddenLore(sigID));
+
+		// Legit
+//		lore.add(ItemMetaUtil.hideLore(sigID));
+
+		// Skills and cooldown creator
+		StringBuilder sb = new StringBuilder();
+		sb.append(PRIMARY_ID + ID_SPLITTER + primaryCooldown.getCooldown());
+		for(Skill pSkill : primarySkills)
+			for(SkillRegistry registeredSkill : SkillRegistry.values()) {
+				if (registeredSkill.getSkill().getClass().equals(pSkill.getClass()))
+					sb.append(ID_SPLITTER + registeredSkill.getUniqueId());
+			}
+
+		sb.append(ID_SPLITTER + SECONDARY_ID + ID_SPLITTER + secondaryCooldown.getCooldown());
+		for(Skill sSkill : secondarySkills) {
+			for (SkillRegistry registeredSkill : SkillRegistry.values()) {
+				if (registeredSkill.getSkill().getClass().equals(sSkill.getClass()))
+					sb.append(ID_SPLITTER + registeredSkill.getUniqueId());
+			}
+		}
+
+		// Bug testing
+		lore.add(sb.toString());
+
+		// Legit
+//		lore.add(ItemMetaUtil.hideLore(sb.toString()));
+
+
+		return lore;
+	}
+
+	// Parses the caster's name of the item from the meta's display name
 	private String parseName(ItemMeta meta) {
 		return ChatColor.stripColor(meta.getDisplayName());
 	}
 
-	private Type parseItemType(ItemMeta meta) {
+	// Parses the itemType from the last value in the lore
+	private ItemType parseItemType(ItemMeta meta) {
 		List<String> lore = meta.getLore();
-		for(Type type : Type.values())
+		for(ItemType type : ItemType.values())
 			if(type.getName().equals(ChatColor.stripColor(lore.get(lore.size() - 1))))
 				return type;
 		return null;
 	}
 
+	// Parses skills given the item meta and the keyword that indicates where
+	// parsing should begin
 	private List<Skill> parseSkills(ItemMeta meta, String keyword) {
+		// Creates the list of skills the item contains
 		List<Skill> skills = new ArrayList<>();
+
+		// Gets the lore from the item meta
 		List<String> lore = meta.getLore();
-		String[] skillInfo = lore.get(lore.size() - 2).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
-		boolean isOnGoodStuff = false;
-		for(String info : skillInfo) {
-			if(isOnGoodStuff) {
-				if(!(StringUtils.isStrictlyNumeric(info)))
-					break;
-				for(SkillRegistry registeredSkill : SkillRegistry.values()) {
-					if(registeredSkill.getUniqueId() == Integer.valueOf(info))
-						skills.add(registeredSkill.getSkill());
-				}
-			}
-			if(info.equalsIgnoreCase(keyword))
-				isOnGoodStuff = true;
+
+		// Gets the skill info which is located on the second to last line
+		// of the item meta's lore. Also reveals the hidden text and splits
+		// the skill info at the location of every ID_SPLITTER
+		String[] skillInfo = ItemMetaUtil.revealHiddenLore(lore.get(lore.size() - 2))
+						.split("\\" + ID_SPLITTER);
+
+		// Gets the index to begin parsing skills
+		int startIndex = getSkillStartIndex(skillInfo, keyword);
+
+		// Returns no skills if the start was not found
+		if(startIndex == -1)
+			return skills;
+
+		// Iterates from the startIndex to the end of the skill info
+		for(int c = startIndex + 1 /* Skips the first index, because the cooldown is located here */;
+			c < skillInfo.length;
+			c++) {
+
+			// Breaks the loop if the value is not numeric (meaning all the info from the keyword has been parsed)
+			if(!(StringUtils.isStrictlyNumeric(skillInfo[c])))
+				break;
+
+			// Checks with registered skills to see what the current number corresponds to
+			for(SkillRegistry registeredSkill : SkillRegistry.values())
+				if(registeredSkill.getUniqueId() == Integer.valueOf(skillInfo[c]))
+					skills.add(registeredSkill.getSkill());
 		}
+
+		// Returns all of the skills
 		return skills;
 	}
 
-	private double parseCooldown(ItemMeta meta) {
+	private double parseCooldown(ItemMeta meta, String keyword) {
+		// Gets the lore from the item meta
 		List<String> lore = meta.getLore();
-		String[] skillInfo = lore.get(lore.size() - 2).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
-		for(int c = 0; c < skillInfo.length; c++)
-			if(skillInfo[c].equalsIgnoreCase("c"))
-				return Double.parseDouble(skillInfo[c+1]);
-		return Double.MAX_VALUE;
-	}
-	
-	private void displayCooldown(Player player) {
-		synchronized (castersOnCooldown) {
-			castersOnCooldown.put(this, player);
-		}
-		
-		if(isTaskRunning)
-			return;
-		
-		isTaskRunning = true;
-		
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
 
-				Set<CasterItemStack> oldCastersOnCooldown = new HashSet<>(); // Avoids threading issues
-				
-				synchronized(castersOnCooldown) {
-					for(CasterItemStack casterItem : castersOnCooldown.keySet()) {
-						if(!casterItem.isOnCooldown()) {
-							oldCastersOnCooldown.add(casterItem);
-							continue;
-						}
-						
-						castersOnCooldown.get(casterItem).spigot().sendMessage(
-								ChatMessageType.ACTION_BAR,
-								new net.md_5.bungee.api.chat.TextComponent(
-										casterItem.getName() + " is on cooldown for " +
-												casterItem.getCurrentCooldown()/1000 + " more seconds"
-								)
-						);
-					}
-				}
-				
-				synchronized (castersOnCooldown) {
-					for(CasterItemStack casterItem : oldCastersOnCooldown) {
-						castersOnCooldown.remove(casterItem);
-					}
-					oldCastersOnCooldown.clear();
-					
-					if(castersOnCooldown.isEmpty()) {
-						isTaskRunning = false;
-						this.cancel();
-						return;
-					}
-				}
-				
-			}
-		}.runTaskTimer(Main.getInstance(), 0, 10);
+		// Gets the skill info which is located on the second to last line
+		// of the item meta's lore. Also reveals the hidden text and splits
+		// the skill info at the location of every ID_SPLITTER
+		String[] skillInfo = ItemMetaUtil.revealHiddenLore(lore.get(lore.size() - 2))
+				.split("\\" + ID_SPLITTER);
+
+		// Returns the double value of the skillInfo at the cooldown's location
+		return Double.valueOf(skillInfo[getSkillStartIndex(skillInfo, keyword)]);
 	}
-	
+
+	// Gets the location to start parsing given a keyword
+	// Note: Skills begin parsing at the cooldown then the skill ids
+	// Returns -1 if the start does not exist
+	private int getSkillStartIndex(String[] skillInfo, String keyword) {
+		boolean isFound = false;
+		int startIndex = 1;
+		for(String info : skillInfo) {
+			if (info.equalsIgnoreCase(keyword)) {
+				isFound = true;
+				break;
+			}
+			startIndex++;
+		}
+
+		return (isFound) ? startIndex : -1;
+	}
+
+	// The static method used to convert ItemStacks to CasterItemStacks
 	public final static CasterItemStack getCasterItem(ItemStack item) {
+
+		// Returns null if the item is not a caster item stack
 		if(!(containsCasterSignature(item))) {
 			return null;
 		}
 
+		// Checks if the item has already been parsed. If not, it parses
+		// the item and stores it at the item's unique ID location.
 		if(activeCastersMap.get(Long.valueOf(getItemId(item))) == null) {
 			activeCastersMap.put(Long.valueOf(getItemId(item)), new CasterItemStack(item));
 		}
 
+		// Returns the CasterItemStack stored at the location of  the items unique ID
 		return activeCastersMap.get(Long.valueOf(getItemId(item)));
 	}
 
-	// Skill API will break if this is changed
-	// Not kidding; this like... actually has to stay
+	// All casters contain this breathtaking signature
 	public final static String getCasterSignature() {
 		return "69";
 	}
 
+	// Determines if an item contains the Caster Signature
 	public final static boolean containsCasterSignature(ItemStack item) {
-	    if(item == null)
+
+		// False if the item is null
+		if(item == null)
 	        return false;
-	    if(item.getItemMeta() == null)
-	    	return false;
+
+		// Gets the lore
 		List<String> lore = item.getItemMeta().getLore();
+
+		// False if the lore is null
 		if(lore == null)
 		    return false;
+
+		// False if the lore is not atleast three lines long
 		if(lore.size() < 3) {
 			return false;
 		}
-		String[] lastWords = lore.get(lore.size() - 3).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
-		if(lastWords.length != 2)
+
+		// Gets the third to last line in the lore which should contain the signature and ID.
+		// Also reveals the text and splits it at splitter locations.
+		String[] sigId = ItemMetaUtil.revealHiddenLore(lore.get(lore.size() - 3))
+				.split("\\" + ID_SPLITTER);
+
+		// Returns false if the length of sigID is not 2 (signature and id)
+		if(sigId.length != 2)
 			return false;
-		return lastWords[0].replace(String.valueOf(ChatColor.COLOR_CHAR), "").equals(getCasterSignature());
+
+		// Returns if sig equals the caster signature
+		return sigId[0].equals(getCasterSignature());
 	}
-	
+
+	// Get the item's unique ID
 	public final static String getItemId(ItemStack item) {
+		// Returns null if the item does not have an id
 		if(!(containsItemId(item)))
 			return null;
+
+		// Gets the lore from the item
 		List<String> lore = item.getItemMeta().getLore();
-		String[] lastWords = lore.get(lore.size() - 3).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
-		if(lastWords.length != 2)
-			return null;
-		return lastWords[1].replace(String.valueOf(ChatColor.COLOR_CHAR), "");
+
+		// Gets the third to last line in the lore which should contain the signature and ID.
+		// Also reveals the text and splits it at splitter locations.
+		String[] sigId = ItemMetaUtil.revealHiddenLore(lore.get(lore.size() - 3))
+				.split("\\" + ID_SPLITTER);
+
+		// Returns the id
+		return sigId[1];
 	}
-	
+
+	// Determines if the given item contains an item Id
 	public final static boolean containsItemId(ItemStack item) {
-		List<String> lore = item.getItemMeta().getLore();
-		if(lore.size() < 3)
+
+		// Returns false if the item doesn't contain a signature
+		if(!(containsCasterSignature(item)))
 			return false;
-		String[] lastWords = lore.get(lore.size() - 3).replace(String.valueOf(ChatColor.COLOR_CHAR), "").split("\\|");
-		return lastWords.length == 2 || !(containsCasterSignature(item));
+
+		// Gets the item's lore from the item
+		List<String> lore = item.getItemMeta().getLore();
+
+		// Gets the third to last line in the lore which should contain the signature and ID.
+		// Also reveals the text and splits it at splitter locations.
+		String[] sigId = ItemMetaUtil.revealHiddenLore(lore.get(lore.size() - 3))
+				.split("\\" + ID_SPLITTER);
+
+		// Returns true if the length is 2
+		return sigId.length == 2;
 	}
-	
-	private boolean isOnCooldown() {
-		return getCurrentCooldown() != 0;
-	}
-	
-	private double getCurrentCooldown() {
-		return Math.max(0, cooldown*1000 - (System.currentTimeMillis() - lastCast));
-	}
-	
-	public double getTotalCooldown() {
-		return cooldown;
-	}
-	
-	public void setCooldown(int cooldown) {
-		this.cooldown = cooldown;
-	}
-	
-	public long getLastCast() {
-		return lastCast;
-	}
-	
-	public void setLastCast(long lastCast) {
-		this.lastCast = lastCast;
-	}
-	
-	public Type getItemType() {
+
+	public ItemType getItemType() {
 		return itemType;
 	}
 	
@@ -401,18 +407,18 @@ public class CasterItemStack extends ItemStack implements ICasterItemStack {
 		return name;
 	}
 	
-	public enum Type {
+	public enum ItemType {
 		RUNE(0, "Rune"),
 		ARTIFACT(1, "Artifact");
 		
 		private String name;
 		private int slot;
 		
-		Type(int slot, String name) {
+		ItemType(int slot, String name) {
 			this.slot = slot;
 			this.name = name;
 		}
-		
+
 		public int getSlot() {
 			return slot;
 		}

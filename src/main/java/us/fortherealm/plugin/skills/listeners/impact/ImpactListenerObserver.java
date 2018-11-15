@@ -1,13 +1,12 @@
-package us.fortherealm.plugin.skills.listeners;
+package us.fortherealm.plugin.skills.listeners.impact;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.*;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.skills.events.SkillImpactEvent;
+import us.fortherealm.plugin.events.gameplay.skills.SkillImpactEvent;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.util.*;
 
 public class ImpactListenerObserver implements Listener {

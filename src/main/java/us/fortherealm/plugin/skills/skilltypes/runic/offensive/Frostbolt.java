@@ -3,7 +3,7 @@ package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.formats.VertCircleFrame;
+import us.fortherealm.plugin.skills.util.formats.VertCircleFrame;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 import us.fortherealm.plugin.skills.util.KnockbackUtil;
 
