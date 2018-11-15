@@ -1,5 +1,6 @@
 name: FTRCore
 version: 2.0.0
+api-version: 1.13
 main: us.fortherealm.plugin.Main
 description: Core plugin for the "For the Realm" server
 author: Skyfallin_

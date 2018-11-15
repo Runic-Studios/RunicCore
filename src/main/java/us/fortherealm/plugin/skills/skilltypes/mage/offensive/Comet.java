@@ -9,7 +9,7 @@ import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 
 public class Comet extends TargetingSkill<EntityDamageByEntityEvent> implements ImpactListener<EntityChangeBlockEvent> {
@@ -24,7 +24,7 @@ public class Comet extends TargetingSkill<EntityDamageByEntityEvent> implements 
 
     // default constructor
     public Comet() {
-        super("Comet", "coming soon", false);
+        super("Comet", "coming soon", 8, false);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class Comet extends TargetingSkill<EntityDamageByEntityEvent> implements 
 
                     // play effects
                     comet.getWorld().playSound(comet.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-                    comet.getWorld().playSound(comet.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5F, 1.0F);
+                    comet.getWorld().playSound(comet.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 1.0F);
                     comet.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, comet.getLocation(), 5, 0.2F, 1.0F, 0.2F, 0);
                     comet.getWorld().spawnParticle(Particle.FLAME, comet.getLocation(), 45, 1F, 1F, 1F, 0);
                     comet.getWorld().spawnParticle(Particle.SMOKE_LARGE, comet.getLocation(), 45, 1F, 1F, 1F, 0);

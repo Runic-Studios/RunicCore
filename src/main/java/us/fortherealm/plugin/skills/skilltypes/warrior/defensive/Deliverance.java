@@ -12,8 +12,8 @@ import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.events.gameplay.skills.SkillImpactEvent;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
-import us.fortherealm.plugin.skills.util.formats.Bubble;
-import us.fortherealm.plugin.skills.util.PlayerSpeedStorage;
+import us.fortherealm.plugin.skills.skillutil.formats.Bubble;
+import us.fortherealm.plugin.skills.skillutil.PlayerSpeedStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 "Deliverance",
                 "Summon a barrier of holy power around yourself for 8 seconds." +
                         " The barrier repels all enemies, however allies may pass through the barrier freely." +
-                        " During this time, you may not move.",
+                        " During this time, you may not move.", 5,
                 false
         );
     }
@@ -79,7 +79,7 @@ public class Deliverance extends TargetingSkill<Player> {
                 10 /* 5 oscillations */, 0, 1, BUBBLE_SIZE);
 
         // Play sound effects
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_IMPACT, 0.5F, 1.0F);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         getPlayer().getLocation().getWorld().spigot().strikeLightningEffect(getPlayer().getLocation(), true);
 

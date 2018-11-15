@@ -8,7 +8,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.formats.HorizCircleFrame;
+import us.fortherealm.plugin.skills.skillutil.formats.HorizCircleFrame;
 
 public class Speed extends Skill {
 
@@ -18,7 +18,7 @@ public class Speed extends Skill {
 
     // default constructor
     public Speed() {
-        super("Speed", "For " + BUFF_DURATION + " seconds, you gain massively increased movement speed!");
+        super("Speed", "For " + BUFF_DURATION + " seconds, you gain massively increased movement speed!", 6);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Speed extends Skill {
 
         // apply effects
         getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, SPEED_AMPLIFIER));
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_BLAST, 0.5F, 1.0F);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
         new HorizCircleFrame(1).playParticle(Particle.TOTEM, getPlayer().getLocation());
         new HorizCircleFrame(1).playParticle(Particle.TOTEM, getPlayer().getEyeLocation());
         getPlayer().sendMessage(ChatColor.GREEN + "You gain increased speed!");

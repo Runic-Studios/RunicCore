@@ -7,46 +7,112 @@ import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-//import java.util.Random;
+import java.util.ArrayList;
 
-public class PartyHelpGUI implements InventoryProvider {
+public class GUIBuilder implements InventoryProvider {
 
-    public static final SmartInventory INVENTORY = SmartInventory.builder()
-            .id("partyHelp")
-            .provider(new PartyHelpGUI())
+    public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
+            .id("classSelection")
+            .provider(new GUIBuilder())
             .size(1, 9)
-            .title(ChatColor.BLUE + "Available Party Commands")
+            .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Class!")
             .build();
-
-    //private final Random random = new Random();
 
     @Override
     public void init(Player player, InventoryContents contents) {
 
-        //contents.fillBorders(ClickableItem.empty(new ItemStack(Material.STONE)));
-
-        contents.set(0, 1, ClickableItem.of(new ItemStack(Material.CARROT),
+        // select archer
+        contents.set(0, 0, ClickableItem.of
+                (menuItem(Material.BOW,
+                        ChatColor.GREEN,
+                        "Archer",
+                        "test",
+                        "Barrage",
+                        "Parry",
+                        "Frostbolt",
+                        "Speed"),
                 e -> player.sendMessage(ChatColor.GOLD + "You clicked on a potato.")));
 
-        contents.set(0, 7, ClickableItem.of(new ItemStack(Material.BARRIER),
-                e -> player.closeInventory()));
+        // select cleric
+        contents.set(0, 2, ClickableItem.of
+                (menuItem(Material.IRON_SHOVEL,
+                        ChatColor.AQUA,
+                        "Cleric",
+                        "test",
+                        "Windstride",
+                        "Rejuvenate",
+                        "Frostbolt",
+                        "Heal"),
+                e -> player.sendMessage(ChatColor.GOLD + "You clicked on a potato.")));
+
+        // select mage
+        contents.set(0, 4, ClickableItem.of
+                (menuItem(Material.IRON_HOE,
+                        ChatColor.LIGHT_PURPLE,
+                        "Mage",
+                        "test",
+                        "Ice Nova",
+                        "Discharge",
+                        "Fireball",
+                        ChatColor.LIGHT_PURPLE + "Blink"),
+                e -> player.sendMessage(ChatColor.GOLD + "You clicked on a potato.")));
+
+        // select rogue
+        contents.set(0, 6, ClickableItem.of
+                (menuItem(Material.IRON_SWORD,
+                        ChatColor.YELLOW,
+                        "Rogue",
+                        "test",
+                        "Backstab",
+                        "Cloak",
+                        "Frostbolt",
+                        "Speed"),
+                e -> player.sendMessage(ChatColor.GOLD + "You clicked on a potato.")));
+
+        // select warrior
+        contents.set(0, 8, ClickableItem.of
+                (menuItem(Material.IRON_AXE,
+                        ChatColor.RED,
+                        "Warrior",
+                        "test5",
+                        "Deliverance",
+                        "Enrage",
+                        "Fireball",
+                        "Frostbolt"),
+                e -> player.sendMessage(ChatColor.GOLD + "You clicked on a potato.")));
     }
 
-    // used for animated inventories, not necessary here
+    // used for animated inventories
     @Override
     public void update(Player player, InventoryContents contents) {
+    }
 
-//        int state = contents.property("state", 0);
-//        contents.setProperty("state", state + 1);
-//
-//        if(state % 5 != 0)
-//            return;
-//
-//        short durability = (short) random.nextInt(15);
-//
-//        ItemStack glass = new ItemStack(Material.STONE, 1, durability);
-//        contents.fillBorders(ClickableItem.empty(glass));
+    private ItemStack menuItem(Material material, ChatColor color, String displayName, String description,
+                               String artLeft, String artRight, String runeLeft, String runeRight) {
+
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(color + displayName);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GOLD + "-> Select this class");
+        lore.add(ChatColor.GRAY + ""); // blank line
+        lore.add(ChatColor.GRAY + "Info:");
+        lore.add(description);
+        lore.add(ChatColor.GRAY + ""); // blank line
+        lore.add(ChatColor.GRAY + "Default Spells:");
+        lore.add(ChatColor.GRAY + " - " + color + artLeft);
+        lore.add(ChatColor.GRAY + " - " + color + artRight);
+        lore.add(ChatColor.GRAY + " - " + color + runeLeft);
+        lore.add(ChatColor.GRAY + " - " + color + runeRight);
+        meta.setLore(lore);
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        item.setItemMeta(meta);
+        return item;
     }
 }

@@ -1,16 +1,20 @@
 package us.fortherealm.plugin.command.subcommands.party;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
+import us.fortherealm.plugin.gui.GUIBuilder;
 
 import java.util.List;
 
 public class Help implements SubCommand {
 	
 	private PartySC party;
+
+	private GUIBuilder partyHelpGUI;
 	
 	public Help(PartySC party) {
 		this.party = party;
@@ -28,7 +32,13 @@ public class Help implements SubCommand {
 	
 	@Override
 	public void onUserCommand(Player sender, String[] args) {
-		// TODO: Help Screen
+        sender.sendMessage
+                (ChatColor.DARK_GREEN + "Party "
+                        + ChatColor.GOLD + "» "
+                        + ChatColor.GRAY + "Available commands: "
+                        + ChatColor.YELLOW + "create, disband, help, invite, join, kick, leave");
+
+        GUIBuilder.CLASS_SELECTION.open(sender);
 	}
 	
 	@Override

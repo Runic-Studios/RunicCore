@@ -6,7 +6,7 @@ import us.fortherealm.plugin.skills.Skill;
 public interface ImpactListener<T extends Event> {
 
     // Maximum duration a skill can exist on the skillObserverList
-    double MAX_SKILL_DURATION = 15;
+    double MAX_SKILL_DURATION = 15000;//todo: double MAX_SKILL_DURATION = 15;
 
     // If I were a reflection wizard this part wouldn't be necessary. For now though,
     // I'm going to keep it and spend time doing other things.

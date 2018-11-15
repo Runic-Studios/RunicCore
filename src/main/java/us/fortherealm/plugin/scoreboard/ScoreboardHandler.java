@@ -78,10 +78,8 @@ public class ScoreboardHandler implements Listener {
         blankSpaceTwo.setScore(2);
 
         // set side board header
-        Score characterInfo = sidebar.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Alpha");
+        Score characterInfo = sidebar.getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "Character");
         characterInfo.setScore(6);
-        //Score characterInfo = sidebar.getScore(ChatColor.LIGHT_PURPLE + "§lCharacter");
-        //characterInfo.setScore(6);
 
         // TODO: update info for class, prof, and guild
         Score playerClass = sidebar.getScore(classAsString());

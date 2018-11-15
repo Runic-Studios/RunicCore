@@ -21,13 +21,15 @@ public abstract class Skill implements ISkill {
 	private String name;
 	private String description;
 	private Player player;
+	private int cooldown;
 
 	private SkillCastEvent skiilCastEvent;
 
-	public Skill(String name, String description) {
+	public Skill(String name, String description, int cooldown) {//double cooldown
 		this.name = name;
 		this.description = description;
 		this.uniqueId = nextUniqueId++;
+		this.cooldown = cooldown;
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public abstract class Skill implements ISkill {
 
 	protected void executeSkill() {}
 	
-	protected void executeSkillCleanUp() {
+	private void executeSkillCleanUp() {
 		if(this instanceof ImpactListener)
 			ImpactListenerObserver.addActiveSkillListener((ImpactListener) this);
 	}
@@ -76,4 +78,8 @@ public abstract class Skill implements ISkill {
 		return this.description;
 	}
 
+    //@Override
+    public int getCooldown() {
+        return this.cooldown;
+    }
 }

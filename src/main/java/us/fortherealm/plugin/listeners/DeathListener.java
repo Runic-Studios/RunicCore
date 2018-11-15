@@ -18,7 +18,7 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import java.util.UUID;
 
-public class DeathEvent implements Listener {
+public class DeathListener implements Listener {
 
     Plugin plugin = Main.getInstance();
     private OutlawManager outlawEvent = new OutlawManager();
@@ -55,7 +55,6 @@ public class DeathEvent implements Listener {
         victim.teleport(respawnLocation);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
-        victim.sendMessage(ChatColor.RED + "You have been slain!");
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
 
         // update the scoreboard
@@ -67,6 +66,7 @@ public class DeathEvent implements Listener {
 
         // broadcast the death message
         broadcastSlainDeathMessage(damager, victim);
+        victim.sendMessage(ChatColor.RED + "You have been slain!");
 
         // apply outlaw mechanics if the player is an outlaw AND the killer is an outlaw
         if (damager instanceof Player) {
@@ -92,6 +92,7 @@ public class DeathEvent implements Listener {
         Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // apply new death mechanics
+        e.setCancelled(true);
         victim.setHealth(victim.getMaxHealth());
         victim.setFoodLevel(20);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
@@ -101,8 +102,11 @@ public class DeathEvent implements Listener {
         victim.teleport(respawnLocation);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
-        victim.sendMessage(ChatColor.RED + "You have been slain!");
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
+
+        // broadcast the death message
+        broadcastDeathMessage(victim);
+        victim.sendMessage(ChatColor.RED + "You have been slain!");
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {

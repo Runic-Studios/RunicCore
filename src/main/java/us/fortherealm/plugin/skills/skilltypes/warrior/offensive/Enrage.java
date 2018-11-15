@@ -8,7 +8,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.formats.Cone;
+import us.fortherealm.plugin.skills.skillutil.formats.Cone;
 
 public class Enrage extends Skill {
 
@@ -18,7 +18,7 @@ public class Enrage extends Skill {
 
     // constructor
     public Enrage() {
-        super("Enrage", "channel for 5s, buff for 10s");
+        super("Enrage", "channel for 5s, buff for 10s", 8);
 
         /* TODO: fix this particle effect, add removal message
         new BukkitRunnable() {
@@ -53,7 +53,7 @@ public class Enrage extends Skill {
             @Override
             public void run() {
                 getPlayer().sendMessage(ChatColor.GREEN + "You become enraged!");
-                getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 0.5f, 1.0f);
+                getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.0f);
                 getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
                 getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, 1));
                 getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, BUFF_DURATION*20, 1));

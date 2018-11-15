@@ -11,12 +11,12 @@
 //import org.bukkit.potion.PotionEffect;
 //import org.bukkit.potion.PotionEffectType;
 //import org.bukkit.scheduler.BukkitRunnable;
-//import org.bukkit.util.Vector;
+//import org.bukkit.skillutil.Vector;
 //import us.fortherealm.plugin.skills.Skill;
-//import us.fortherealm.plugin.skills.util.formats.Bubble;
+//import us.fortherealm.plugin.skills.skillutil.formats.Bubble;
 //import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 //
-//import java.util.UUID;
+//import java.skillutil.UUID;
 //
 //// TODO Sky, you should carefully reread this to make sure it does what you want. I found a few bugs but didnt read the runnable
 //// TODO: party check for blind and poison

@@ -4,7 +4,6 @@ import net.minecraft.server.v1_13_R2.IChatBaseComponent;
 import net.minecraft.server.v1_13_R2.PacketPlayOutChat;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -15,7 +14,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
-public class RuneSlotEvent implements Listener {
+public class RuneListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent runeevent) {
@@ -49,7 +48,7 @@ public class RuneSlotEvent implements Listener {
     }
 
     @EventHandler
-    public void onItemDrop (PlayerDropItemEvent e) {
+    public void onItemDrop(PlayerDropItemEvent e) {
 
         Player player = e.getPlayer();
         int slot = player.getInventory().getHeldItemSlot();

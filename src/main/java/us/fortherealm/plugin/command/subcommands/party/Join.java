@@ -18,13 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Accept implements SubCommand {
+public class Join implements SubCommand {
 
     private PartySC party;
     private NameTagChanger nameTagChanger = new NameTagChanger();
     private Plugin plugin = Main.getInstance();
 
-    public Accept(PartySC party) {
+    public Join(PartySC party) {
         this.party = party;
     }
 
@@ -106,7 +106,7 @@ public class Accept implements SubCommand {
                 (ChatColor.DARK_GREEN + "Party "
                         + ChatColor.GOLD + "» "
                         + ChatColor.WHITE + storedName
-                        + ChatColor.GREEN + " has joined the party!", sender.getUniqueId());
+                        + ChatColor.GREEN + " joined the party!", sender.getUniqueId());
 
         // update the joiner's name for current members
         nameTagChanger.changeNameParty(party, sender, ChatColor.GREEN + storedName);
@@ -132,12 +132,12 @@ public class Accept implements SubCommand {
             ProtocolTabAPI.getTablist(member).update();
         }
     }
-	
+
 	@Override
 	public String permissionLabel() {
 		return null;
 	}
-	
+
 	@Override
 	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
 		return null;

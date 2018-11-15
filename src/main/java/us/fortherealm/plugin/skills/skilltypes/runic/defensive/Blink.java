@@ -14,7 +14,7 @@ public class Blink extends Skill {
 
     // constructor
     public Blink() {
-        super("Blink", "You blink");
+        super("Blink", "You blink", 4);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class Blink extends Skill {
         teleportLoc.setYaw(loc.getYaw());
 
         // play effects
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.5f, 1.2f);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
         getPlayer().getWorld().spawnParticle(Particle.SPELL_WITCH, getPlayer().getEyeLocation(), 50, 0.3f, 0.3f, 0.3f);
         getPlayer().getWorld().spawnParticle(Particle.SPELL_WITCH, teleportLoc, 50, 0.3f, 0.3f, 0.3f);
 

@@ -10,9 +10,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
-import us.fortherealm.plugin.skills.util.KnockbackUtil;
+import us.fortherealm.plugin.skills.skillutil.KnockbackUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +27,7 @@ public class IceNova extends TargetingSkill<LivingEntity> implements ImpactListe
 
     // constructor
     public IceNova() {
-        super("Ice Nova", "Shoots three beams of ice.", false);
+        super("Ice Nova", "Shoots three beams of ice.", 8, false);
         this.hasBeenHit = new HashMap<>();
     }
 
@@ -35,7 +35,7 @@ public class IceNova extends TargetingSkill<LivingEntity> implements ImpactListe
     public void executeSkill() {
 
         // sound effects
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5f, 2.0f);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.0f);
 
         // create three beams

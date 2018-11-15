@@ -10,10 +10,10 @@
 //import org.bukkit.potion.PotionEffect;
 //import org.bukkit.potion.PotionEffectType;
 //import org.bukkit.scheduler.BukkitRunnable;
-//import org.bukkit.util.Vector;
+//import org.bukkit.skillutil.Vector;
 //
-//import java.util.HashMap;
-//import java.util.UUID;
+//import java.skillutil.HashMap;
+//import java.skillutil.UUID;
 //
 //// TODO: party damage check
 //public class Barrage extends Skill {
@@ -48,7 +48,7 @@
 //                @Override
 //                public void run() {
 //                    Location arrowLoc = arrow.getLocation();
-//                    player.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
+//                    player.getWorld().spawnParticle(Particle.FLAME, arrowLoc, 5, 0, 0, 0, 0);
 //                    if(arrow.isDead() || arrow.isOnGround()) {
 //                        this.cancel();
 //                    }

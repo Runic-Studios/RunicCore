@@ -12,23 +12,30 @@ import us.fortherealm.plugin.Main;
 public class PartyDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
+
     public void onDamage(EntityDamageByEntityEvent e) {
-        if (e.getEntity() instanceof Player) {
-            Player victim = (Player) e.getEntity();
-            if (e.getDamager() instanceof Player) {
-                Player damager = (Player) e.getDamager();
+
+        if (!(e.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player victim = (Player) e.getEntity();
+
+        if (e.getDamager() instanceof Player) {
+            Player damager = (Player) e.getDamager();
+            Party party = Main.getPartyManager().getPlayerParty(damager);
+            if (party != null && party.getMembers().contains(victim.getUniqueId())) {
+                e.setCancelled(true);
+            }
+        }
+
+        if (e.getDamager() instanceof Projectile) {
+            ProjectileSource shooter = (ProjectileSource) ((Projectile) e.getDamager()).getShooter();
+            if (shooter instanceof Player) {
+                Player damager = (Player) shooter;
                 Party party = Main.getPartyManager().getPlayerParty(damager);
                 if (party != null && party.getMembers().contains(victim.getUniqueId())) {
                     e.setCancelled(true);
-                }
-            } else if (e.getDamager() instanceof Projectile) {
-                ProjectileSource shooter = (ProjectileSource) ((Projectile) e.getDamager()).getShooter();
-                if (shooter instanceof Player) {
-                    Player damager = (Player) shooter;
-                    Party party = Main.getPartyManager().getPlayerParty(damager);
-                    if (party != null && party.getMembers().contains(victim.getUniqueId())) {
-                        e.setCancelled(true);
-                    }
                 }
             }
         }

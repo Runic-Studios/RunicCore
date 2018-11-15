@@ -20,55 +20,8 @@ public class RealmCooldown {
         this.cooldown = cooldown;
     }
 
-//    private void displayCooldown(Player player) {
-//        synchronized (castersOnCooldown) {
-//            castersOnCooldown.put(this, player);
-//        }
-//
-//        if(isTaskRunning)
-//            return;
-//
-//        isTaskRunning = true;
-//
-//        new BukkitRunnable() {
-//
-//            @Override
-//            public void run() {
-//                synchronized(castersOnCooldown) {
-//                    Set<CasterItemStack> oldCastersOnCooldown = new HashSet<>(); // Avoids threading issues
-//                    for(CasterItemStack casterItem : castersOnCooldown.keySet()) {
-//                        if(!casterItem.isOnCooldown()) {
-//                            oldCastersOnCooldown.add(casterItem);
-//                            continue;
-//                        }
-//
-//                        castersOnCooldown.get(casterItem).spigot().sendMessage(
-//                                ChatMessageType.ACTION_BAR,
-//                                new net.md_5.bungee.api.chat.TextComponent(
-//                                        casterItem.getName() + " is on cooldown for " +
-//                                                casterItem.getCurrentCooldown()/1000 + " more seconds"
-//                                )
-//                        );
-//                    }
-//
-//                    for(CasterItemStack casterItem : oldCastersOnCooldown) {
-//                        castersOnCooldown.remove(casterItem);
-//                    }
-//                    oldCastersOnCooldown.clear();
-//
-//                    if(castersOnCooldown.isEmpty()) {
-//                        isTaskRunning = false;
-//                        this.cancel();
-//                        return;
-//                    }
-//                }
-//
-//            }
-//        }.runTaskTimer(Main.getInstance(), 0, 10);
-//    }
-
-    public void displayCooldown(Player player) {
-        player.sendMessage("On cooldown for " + getCurrentCooldown() + " more seconds");
+    public void displayCooldown(Player player, String thingOnCooldown) {
+        player.sendMessage(thingOnCooldown + "is on cooldown for " + (int) (getCurrentCooldown() / 1000) + " more seconds");
     }
 
     public boolean isOnCooldown() {

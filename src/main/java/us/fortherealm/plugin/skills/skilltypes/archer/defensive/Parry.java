@@ -7,10 +7,10 @@
 //import org.bukkit.event.EventHandler;
 //import org.bukkit.event.entity.EntityDamageEvent;
 //import org.bukkit.event.player.PlayerQuitEvent;
-//import org.bukkit.util.Vector;
+//import org.bukkit.skillutil.Vector;
 //
-//import java.util.HashMap;
-//import java.util.UUID;
+//import java.skillutil.HashMap;
+//import java.skillutil.UUID;
 //
 //public class Parry extends Skill {
 //

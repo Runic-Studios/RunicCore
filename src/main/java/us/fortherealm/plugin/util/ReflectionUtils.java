@@ -317,7 +317,7 @@ public final class ReflectionUtils {
         CRAFTBUKKIT_SCHEDULER(CRAFTBUKKIT, "scheduler"),
         CRAFTBUKKIT_SCOREBOARD(CRAFTBUKKIT, "scoreboard"),
         CRAFTBUKKIT_UPDATER(CRAFTBUKKIT, "updater"),
-        CRAFTBUKKIT_UTIL(CRAFTBUKKIT, "util");
+        CRAFTBUKKIT_UTIL(CRAFTBUKKIT, "skillutil");
 
         private final String path;
 

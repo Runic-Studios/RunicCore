@@ -2,16 +2,16 @@ package us.fortherealm.plugin.skills.skilltypes.mage.offensive;
 
 import org.bukkit.entity.*;
 import us.fortherealm.plugin.Main;
-import net.minecraft.server.v1_12_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.listeners.ImpactListener;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 
 import java.util.HashMap;
@@ -27,12 +27,12 @@ public class Discharge extends TargetingSkill<EntityDamageByEntityEvent> impleme
     private HashMap<Arrow, UUID> trails = new HashMap<>();
 
     public Discharge() {
-        super("Discharge", "fire a bolt of lightning that travels. if it hits a solid block, it blows up", false);
+        super("Discharge", "fire a bolt of lightning that travels. if it hits a solid block, it blows up", 7, false);
     }
 
     @Override
     public void executeSkill() {
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 0.5f, 1.0f);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1.0f);
         Vector middle = getPlayer().getEyeLocation().getDirection().normalize();
 
         startTask(getPlayer(), new Vector[]{middle});
@@ -59,7 +59,7 @@ public class Discharge extends TargetingSkill<EntityDamageByEntityEvent> impleme
                     if (arrow.isDead() || arrow.isOnGround()) {
                         this.cancel();
                         arrow.getWorld().spigot().strikeLightningEffect(arrowLoc, true);
-                        arrowLoc.getWorld().playSound(arrowLoc, Sound.ENTITY_LIGHTNING_THUNDER, 0.5f, 1.0f);
+                        arrowLoc.getWorld().playSound(arrowLoc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 1.0f);
                         arrowLoc.getWorld().playSound(arrowLoc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
                         arrowLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 5, 0.2f, 0.2f, 0.2f, 0);
 

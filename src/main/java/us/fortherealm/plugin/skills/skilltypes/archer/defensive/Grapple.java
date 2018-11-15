@@ -10,10 +10,10 @@
 //import org.bukkit.event.entity.EntityDamageByEntityEvent;
 //import org.bukkit.event.entity.EntityDamageEvent;
 //import org.bukkit.scheduler.BukkitRunnable;
-//import org.bukkit.util.Vector;
+//import org.bukkit.skillutil.Vector;
 //
-//import java.util.HashMap;
-//import java.util.UUID;
+//import java.skillutil.HashMap;
+//import java.skillutil.UUID;
 //
 //public class Grapple extends Skill {
 //

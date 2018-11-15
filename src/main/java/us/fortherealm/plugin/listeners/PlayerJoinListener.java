@@ -15,12 +15,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
+import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
+import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
 import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FirstJoinEvent implements Listener {
+public class PlayerJoinListener implements Listener {
 
     private Main plugin = Main.getInstance();
 
@@ -29,10 +31,10 @@ public class FirstJoinEvent implements Listener {
 
         Player player = event.getPlayer();
 
-        // send welcome message
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> player.sendMessage
-                (ChatColor.GREEN + "Welcome back to Alterra, "
-                        + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "."), 1);
+        // set join message
+        // TODO: inform players if their guild mate or friend logs in.
+        event.setJoinMessage("");
+        player.sendMessage(ChatColor.GRAY + "Loading resource pack...");
 
         if (!player.hasPlayedBefore()) {
 
@@ -41,7 +43,7 @@ public class FirstJoinEvent implements Listener {
 
             // create the player's artifact
             CasterItemStack artifact = new CasterItemStack
-                    (new ItemStack(Material.IRON_HOE),
+                    (new ItemStack(Material.BOW),
                             player.getName() + "'s Artifact", CasterItemStack.ItemType.ARTIFACT,
                             Arrays.asList(new Fireball()), 5,
                             Arrays.asList(new Frostbolt()), 2);
@@ -58,8 +60,8 @@ public class FirstJoinEvent implements Listener {
             CasterItemStack rune = new CasterItemStack
                     (new ItemStack(Material.POPPED_CHORUS_FRUIT),
                             player.getName() + "'s Rune", CasterItemStack.ItemType.RUNE,
-                            Arrays.asList(new Fireball()), 5,
-                            Arrays.asList(new Frostbolt()), 2);
+                            Arrays.asList(new Heal()), 5,
+                            Arrays.asList(new Blink()), 2);
 
             // create the hearthstone
             ItemStack hearthstone = new ItemStack(Material.NETHER_STAR);
@@ -67,8 +69,8 @@ public class FirstJoinEvent implements Listener {
             hsmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Hearthstone");
             ArrayList<String> hslore = new ArrayList<String>();
             // TODO: add variable for HS location
-            hslore.add(ChatColor.WHITE + "Left-click: " + ChatColor.GRAY + "Return to your " + ChatColor.GOLD + "Guild Hall");
-            hslore.add(ChatColor.WHITE + "Right-click: " + ChatColor.GRAY + "Return to " + ChatColor.GREEN + "The Tutorial");
+            hslore.add(ChatColor.GRAY + "Left-click: Return to your " + ChatColor.GOLD + "Guild Hall");
+            hslore.add(ChatColor.GRAY + "Right-click: Return to " + ChatColor.GREEN + "The Tutorial");
             hslore.add(ChatColor.DARK_GRAY
                     + "Speak to an " + ChatColor.YELLOW + "innkeeper "
                     + ChatColor.DARK_GRAY + "to change your home.");

@@ -4,12 +4,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
-
 import java.util.UUID;
 
 // TODO: check if killer/victim have party, perform calculations based on average party rating/pSensitivity instead
@@ -22,7 +22,7 @@ public class OutlawManager implements Listener {
         return plugin.getConfig().getInt(uuid + ".outlaw.rating");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
 
         Player player = e.getPlayer();
@@ -38,7 +38,7 @@ public class OutlawManager implements Listener {
         }
     }
 
-    //TODO: only make prefix apply in certain channels? / hook into server chat plugin
+    // TODO: only make prefix apply in certain channels? / hook into server chat plugin
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
 
@@ -84,7 +84,13 @@ public class OutlawManager implements Listener {
     }
 
     private void sendRatingMessages(Player damager, Player victim, int changeP1, int changeP2) {
-        damager.sendMessage(ChatColor.DARK_GREEN + "§lYou gained " + ChatColor.GREEN + "§l+" + changeP1 + "§l§2 OS!");
-        victim.sendMessage(ChatColor.DARK_RED + "§lYou lost " + ChatColor.RED + "§l-" + changeP2 + "§l§4 OS!");
+
+        damager.sendTitle("", ChatColor.DARK_GREEN + "You gained "
+                + ChatColor.GREEN + changeP1
+                + ChatColor.DARK_GREEN + " OS!", 10, 40, 10);
+
+        victim.sendTitle("", ChatColor.DARK_RED + "You lost "
+                + ChatColor.RED + changeP2
+                + ChatColor.DARK_RED + " OS!", 10, 40, 10);
     }
 }

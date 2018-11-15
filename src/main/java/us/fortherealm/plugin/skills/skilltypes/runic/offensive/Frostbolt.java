@@ -3,7 +3,7 @@ package us.fortherealm.plugin.skills.skilltypes.runic.offensive;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.util.formats.VertCircleFrame;
+import us.fortherealm.plugin.skills.skillutil.formats.VertCircleFrame;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
-import us.fortherealm.plugin.skills.util.KnockbackUtil;
+import us.fortherealm.plugin.skills.skillutil.KnockbackUtil;
 
 public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
 
@@ -24,7 +24,7 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
 
     // default constructor
     public Frostbolt() {
-        super("Frostbolt", "Shoots a frostbolt.", false);
+        super("Frostbolt", "Shoots a frostbolt.", 8, false);
     }
 
     @Override
@@ -35,17 +35,19 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
         final Vector velocity = getPlayer().getLocation().getDirection().normalize().multiply(SNOWBALL_SPEED);
         snowball.setVelocity(velocity);
         snowball.setShooter(getPlayer());
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5f, 1);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
 
         // premium particle effect
+        final long castTime = System.currentTimeMillis();
         new BukkitRunnable() {
             public void run() {
-                new VertCircleFrame(0.5F).playParticle(Particle.SNOW_SHOVEL, snowball.getLocation());
-                if (snowball.isOnGround() || snowball.isDead()) {
+                //new VertCircleFrame(0.5F).playParticle(Particle.CLOUD, snowball.getLocation());
+                // TODO: add snow trail
+                if (snowball.isOnGround() || snowball.isDead() || (System.currentTimeMillis() - castTime) > (ImpactListener.MAX_SKILL_DURATION * 1000)) {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 1);
+        }.runTaskTimer(Main.getInstance(), 0, 20);
 
         // sets the objects name variable to the method's name variable
         this.snowball = snowball;
@@ -108,6 +110,7 @@ public class Frostbolt extends TargetingSkill<LivingEntity> implements ImpactLis
 
         // general effects
         getPlayer().playSound(getPlayer().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
+        // TODO: update this particle effect
         target.getWorld().spawnParticle(Particle.SNOWBALL, target.getEyeLocation(), 5, 0.3f, 0.3f, 0.3f);
     }
 }

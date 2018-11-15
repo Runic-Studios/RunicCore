@@ -10,7 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
-public class ResourcePackEvent implements Listener {
+public class ResourcePackListener implements Listener {
 
     private Main plugin = Main.getInstance();
 

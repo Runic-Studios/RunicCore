@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.skills.util;
+package us.fortherealm.plugin.skills.skillutil;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;

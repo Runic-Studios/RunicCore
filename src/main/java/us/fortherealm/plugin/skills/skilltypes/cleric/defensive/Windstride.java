@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.skills.events.SkillImpactEvent;
+import us.fortherealm.plugin.events.gameplay.skills.SkillImpactEvent;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
 
 public class Windstride extends TargetingSkill<Player> {
@@ -14,7 +14,7 @@ public class Windstride extends TargetingSkill<Player> {
     private static int SPEED_AMPLIFIER = 1;
 
     public Windstride() {
-        super("Windstride", "You increase the movement speed of yourself and all party members by an amount", true);
+        super("Windstride", "You increase the movement speed of yourself and all party members by an amount", 8, true);
 
         /*
         // TODO: update this effect to not use hashmap, apply to all allies
@@ -40,8 +40,8 @@ public class Windstride extends TargetingSkill<Player> {
         // TODO: only apply windstride if there are no "stronger" speed effects active on that ally/player
 
         // Begin sound effects
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 0.5F, 0.7F);
-        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5F, 0.7F);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5F, 0.7F);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 0.7F);
 
         // Check if skill should impact
         SkillImpactEvent event = new SkillImpactEvent(this);

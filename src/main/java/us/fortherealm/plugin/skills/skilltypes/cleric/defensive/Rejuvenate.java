@@ -11,12 +11,12 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
+import org.bukkit.skillutil.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.skillutil.ArrayList;
+import java.skillutil.HashMap;
+import java.skillutil.List;
+import java.skillutil.UUID;
 
 // TODO: party check for heal
 public class Rejuvenate extends Skill {

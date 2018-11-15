@@ -106,11 +106,10 @@ public class ImpactListenerObserver implements Listener {
         else
             activeSkillListeners.put(
                     impactListener,
-                    Math.min(
+                    Math.max(
                             System.currentTimeMillis() + (long) (impactListener.timeUntilRemoval()*1000),
                             System.currentTimeMillis() + (long) (ImpactListener.MAX_SKILL_DURATION * 1000)
                     )
             );
     }
-
 }
