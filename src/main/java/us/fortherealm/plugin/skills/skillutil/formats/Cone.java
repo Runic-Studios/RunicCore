@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.skills.skillutil.formats;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -25,7 +26,12 @@ public class Cone {
                         y = 0.5*t;
                         z = 0.4*(2*Math.PI-t)*0.5*sin(t + phi + i*Math.PI);
                         playerLoc.add(x, y, z);
-                        playerLoc.getWorld().spawnParticle(particle, playerLoc, 1, 0, 0, 0, 0);
+                        if (particle ==  Particle.REDSTONE) {
+                            player.getWorld().spawnParticle(Particle.REDSTONE, playerLoc,
+                                    1, 0, 0, 0, 0, new Particle.DustOptions(Color.RED, 1));
+                        } else {
+                            playerLoc.getWorld().spawnParticle(particle, playerLoc, 1, 0, 0, 0, 0);
+                        }
                         playerLoc.subtract(x,y,z);
                     }
 

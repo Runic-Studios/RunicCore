@@ -7,6 +7,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skills.Skill;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class Blink extends Skill {
 
     // instance variables
@@ -54,10 +55,12 @@ public class Blink extends Skill {
         teleportLoc.setPitch(loc.getPitch());
         teleportLoc.setYaw(loc.getYaw());
 
-        // play effects
+        // particles, sounds
+        getPlayer().getWorld().spawnParticle(Particle.REDSTONE, getPlayer().getLocation().add(0,1,0),
+                25, 0, 0.2f, 0.2f, 0.2f, new Particle.DustOptions(Color.FUCHSIA, 15));
+        getPlayer().getWorld().spawnParticle(Particle.REDSTONE, teleportLoc.add(0,1,0),
+                25, 0, 0.2f, 0.2f, 0.2f, new Particle.DustOptions(Color.FUCHSIA, 15));
         getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
-        getPlayer().getWorld().spawnParticle(Particle.SPELL_WITCH, getPlayer().getEyeLocation(), 50, 0.3f, 0.3f, 0.3f);
-        getPlayer().getWorld().spawnParticle(Particle.SPELL_WITCH, teleportLoc, 50, 0.3f, 0.3f, 0.3f);
 
         // teleport the player to the blink location
         getPlayer().teleport(teleportLoc);

@@ -55,7 +55,7 @@ public class Discharge extends TargetingSkill<EntityDamageByEntityEvent> impleme
                 @Override
                 public void run() {
                     Location arrowLoc = arrow.getLocation();
-                    player.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 5, 0, 0, 0, 0);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.AQUA, 1));
                     if (arrow.isDead() || arrow.isOnGround()) {
                         this.cancel();
                         arrow.getWorld().spigot().strikeLightningEffect(arrowLoc, true);
@@ -68,6 +68,11 @@ public class Discharge extends TargetingSkill<EntityDamageByEntityEvent> impleme
                             if (entity != (player)) {
                                 if (entity.getType().isAlive()) {
                                     Damageable victim = (Damageable) entity;
+
+                                    // skip party members
+                                    if (Main.getPartyManager().getPlayerParty(player) != null
+                                            && Main.getPartyManager().getPlayerParty(getPlayer()).hasMember(entity.getUniqueId())) { continue; }
+
                                     victim.damage(DAMAGE_AMT, player);
                                     Vector force = (arrowLoc.toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
                                     victim.setVelocity(force);
@@ -80,7 +85,6 @@ public class Discharge extends TargetingSkill<EntityDamageByEntityEvent> impleme
         }
     }
 
-    // TODO: put this in precise event and doImpact
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onArrowDamage(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Arrow) {

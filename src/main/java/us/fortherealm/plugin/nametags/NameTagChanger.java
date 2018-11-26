@@ -6,7 +6,6 @@ import net.minecraft.server.v1_13_R2.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -16,8 +15,6 @@ import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -196,7 +193,7 @@ public class NameTagChanger {
         new BukkitRunnable() {
             @Override
             public void run() {
-                sbh.updateSideHealth(pl);
+                sbh.updateSideInfo(pl);
                 sbh.updateHealthbar(pl);
             }
         }.runTaskLater(plugin, 1);

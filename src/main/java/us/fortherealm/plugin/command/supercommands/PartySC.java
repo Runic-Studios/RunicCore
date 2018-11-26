@@ -3,8 +3,6 @@ package us.fortherealm.plugin.command.supercommands;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import us.fortherealm.plugin.gui.GUIBuilder;
-import us.fortherealm.plugin.util.CommandsUtil;
 
 public class PartySC extends SuperCommand {
 	

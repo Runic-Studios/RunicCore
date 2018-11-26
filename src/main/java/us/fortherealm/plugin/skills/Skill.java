@@ -2,6 +2,7 @@ package us.fortherealm.plugin.skills;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.events.gameplay.skills.SkillCastEvent;
 import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.listeners.impact.ImpactListenerObserver;
@@ -21,6 +22,7 @@ public abstract class Skill implements ISkill {
 	private String name;
 	private String description;
 	private Player player;
+	private String playerName;
 	private int cooldown;
 
 	private SkillCastEvent skiilCastEvent;
@@ -42,6 +44,7 @@ public abstract class Skill implements ISkill {
 			return;
 		
 		this.player = player;
+		this.playerName = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.name").toString();
 		
 		executeSkill();
 		executeSkillCleanUp();
@@ -68,6 +71,8 @@ public abstract class Skill implements ISkill {
 	public Player getPlayer() {
 		return player;
 	}
+
+	public String getPlayerName() { return this.playerName; }
 	
 	public String getName() {
 		return this.name;

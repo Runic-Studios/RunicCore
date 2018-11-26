@@ -9,10 +9,11 @@ import us.fortherealm.plugin.skills.skillutil.formats.HelixParticleFrame;
 
 public class Heal extends Skill {
 
+    // global variables
     private static final double HEAL_AMT = 25;
-
     private HealUtil hu = new HealUtil();
 
+    // constructor matching super
     public Heal() {
         super("Heal", "You restore" + HEAL_AMT + "of your health", 5);
     }

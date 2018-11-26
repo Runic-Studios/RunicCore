@@ -2,13 +2,12 @@ package us.fortherealm.plugin.command.subcommands.party;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import pl.kacperduras.protocoltab.ProtocolTabAPI;
-import pl.kacperduras.protocoltab.manager.ProtocolTab;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -58,6 +57,7 @@ public class Leave implements SubCommand {
 
         // leaver is removed from the party
         party.removeMember(sender.getUniqueId());
+        sender.playSound(sender.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1);
 
         // reset the party member's name colors for the leaver
         PartyDisconnect.updatePartyNames(party, sender, plugin, nameTagChanger);
@@ -65,6 +65,7 @@ public class Leave implements SubCommand {
         // if the new member count is less than 1, just disband the party
 		if (party.getPartySize() < 1) {
             Main.getPartyManager().disbandParty(party);
+            Main.getTabListManager().setupTab(sender);
         } else {
 
             // if the party leaver is not the leader
@@ -105,16 +106,12 @@ public class Leave implements SubCommand {
 
         // remove the leaver from the party array
         party.getPartyNames().remove(senderNameToString);
-        ProtocolTabAPI.getTablist(sender).setSlot(40, "  &a&n Party (" + 0 + ") &r");
-        for (int i = 41; i < 60; i++) {
-            ProtocolTabAPI.getTablist(sender).setSlot(i, ProtocolTab.BLANK_TEXT);
+
+        // update the tablist
+        for (Player member : party.getPlayerMembers()) {
+            Main.getTabListManager().setupTab(member);
         }
-
-        ProtocolTabAPI.getTablist(sender).update();
-
-        // update the player list
-        int partyCount = party.getPartySize();
-        PartyDisconnect.updatePartyList(party, partyCount);
+        Main.getTabListManager().setupTab(sender);
 
         // sets the player's name color to RED if outlaw is enabled
         // delay by 0.5s in case the player's outlaw data is null

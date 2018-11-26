@@ -1,9 +1,12 @@
 package us.fortherealm.plugin.skills;
 
+import us.fortherealm.plugin.skills.skilltypes.archer.defensive.Parry;
+import us.fortherealm.plugin.skills.skilltypes.archer.offensive.Barrage;
+import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Rejuvenate;
 import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Windstride;
 import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Comet;
 import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Discharge;
-import us.fortherealm.plugin.skills.skilltypes.mage.offensive.IceNova;
+import us.fortherealm.plugin.skills.skilltypes.mage.offensive.ArcaneSpike;
 import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
 import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
 import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
@@ -26,9 +29,12 @@ public enum SkillRegistry {
     BLINK(Blink.class),
     ENRAGE(Enrage.class),
     HEAL(Heal.class),
-    ICENOVA(IceNova.class),
+    ICENOVA(ArcaneSpike.class),
     DISCHARGE(Discharge.class),
-    COMET(Comet.class);
+    COMET(Comet.class),
+    REJUVENATE(Rejuvenate.class),
+    BARRAGE(Barrage.class),
+    PARRY(Parry.class);
 
     private static int nextUniqueId = 0;
 

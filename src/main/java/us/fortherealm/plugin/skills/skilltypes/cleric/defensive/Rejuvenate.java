@@ -1,41 +1,81 @@
-/*
-package us.fortherealm.plugin.skill.skills;
+package us.fortherealm.plugin.skills.skilltypes.cleric.defensive;
 
-import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.skill.skills.formats.VertCircleFrame;
-import us.fortherealm.plugin.skill.skilltypes.skillutil.HealUtil;
-import us.fortherealm.plugin.skill.skilltypes.Skill;
-import us.fortherealm.plugin.skill.skilltypes.SkillItemType;
-import us.fortherealm.plugin.scoreboard.ScoreboardUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.skillutil.Vector;
+import org.bukkit.util.Vector;
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skills.Skill;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
+import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
+import us.fortherealm.plugin.skills.skillutil.HealUtil;
 
-import java.skillutil.ArrayList;
-import java.skillutil.HashMap;
-import java.skillutil.List;
-import java.skillutil.UUID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-// TODO: party check for heal
-public class Rejuvenate extends Skill {
+@SuppressWarnings("FieldCanBeLocal")
+public class Rejuvenate extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
 
-    ScoreboardUtil boardUtil = new ScoreboardUtil();
-    // EntityCheck entityCheck = new EntityCheck();
+    private HealUtil hu = new HealUtil();
     private HashMap<UUID, List<UUID>> hasBeenHit;
+    private final int RADIUS = 10;
+    private final double BEAM_WIDTH = 2.0;
 
+    // in seconds
+    private final int SUCCESSIVE_COOLDOWN = 5;
+
+    // constructor
     public Rejuvenate() {
-        super("Rejuvenate", "you fire a thing that heals", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 10);
+        super("Rejuvenate", "a prjectile heal", 8, true);
         this.hasBeenHit = new HashMap<>();
     }
 
+    // actual skill code (really all we need)
+    public void executeSkill() {
 
-    public void onRightClick(Player player, SkillItemType type) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-        Vector middle = player.getEyeLocation().getDirection().normalize();
+        // sound effect
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
 
-        startTask(player, new Vector[]{middle});
+        // particle effect, skill effects
+        Vector middle = getPlayer().getEyeLocation().getDirection().normalize();
+        startTask(getPlayer(), new Vector[]{middle});
+    }
+
+    // return our event
+    @Override
+    public Class<EntityDamageByEntityEvent> getEventClass() {
+        return EntityDamageByEntityEvent.class;
+    }
+
+    // returns this object when we call getSkill method
+    @Override
+    public Skill getSkill() {
+        return this;
+    }
+
+    // only listen for our event
+    // still, do we need this?
+    @Override
+    public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
+        return true;
+    }
+
+    // reminder to initialize skill variables
+    // do we need this?
+    @Override
+    public void initializeSkillVariables(EntityDamageByEntityEvent event) {
+
+    }
+
+    // do we need this?
+    @Override
+    public void doImpact(EntityDamageByEntityEvent event) {
+
     }
 
     private void startTask(Player player, Vector[] vectors) {
@@ -47,66 +87,75 @@ public class Rejuvenate extends Skill {
                 @Override
                 public void run() {
                     location.add(vector);
-                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= 10.0D) { // 10 block range
+                    // 10 block range before skill dies out naturally
+                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RADIUS) {
                         this.cancel();
                     }
-                    //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0.1f, 0.1f, 0.1f, 0.01);
-                    new VertCircleFrame(0.5F).playParticle(Particle.VILLAGER_HAPPY, location);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
+                    player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0, 0, 0, 0);
                     allyCheck(location, player);
-                    // entityCheck.checkNearby(location, player, plugin);
-
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 1L); // 1 tick, the speed
+            }.runTaskTimer(Main.getInstance(), 0L, 1L);
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void allyCheck(Location location, Player player) {
-        for (Entity e : location.getChunk().getEntities()) {
-            if (e.getLocation().distance(location) <= 1.5) {
+        for (Entity e : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (e.getLocation().distance(location) <= BEAM_WIDTH) {
                 if (e != (player)) {
-                    if (e instanceof Player) {
-                        Player ally = (Player) e;
-                        if (hasBeenHit.containsKey(ally.getUniqueId())) {
-                            List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                            if (uuids.contains(player.getUniqueId())) {
-                                break;
-                            } else {
-                                uuids.add(player.getUniqueId());
-                                hasBeenHit.put(ally.getUniqueId(), uuids);
-                            }
+
+                    // only listen for players
+                    if (!(e instanceof Player)) { return; }
+
+                    // skip the player if we've got a party and they're not in it
+                    if (Main.getPartyManager().getPlayerParty(getPlayer()) != null
+                            && !Main.getPartyManager().getPlayerParty(getPlayer()).hasMember(e.getUniqueId())) { continue; }
+
+                    // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
+                    // multiple times
+                    Player ally = (Player) e;
+                    if (hasBeenHit.containsKey(ally.getUniqueId())) {
+                        List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                        if (uuids.contains(player.getUniqueId())) {
+                            break;
                         } else {
-                            List<UUID> uuids = new ArrayList<>();
                             uuids.add(player.getUniqueId());
                             hasBeenHit.put(ally.getUniqueId(), uuids);
                         }
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                                uuids.remove(player.getUniqueId());
-                                hasBeenHit.put(ally.getUniqueId(), uuids);
-                            }
-                        }.runTaskLater(plugin, 100L); // can't be hit by the same player's beam for 5 secs
+                    } else {
+                        List<UUID> uuids = new ArrayList<>();
+                        uuids.add(player.getUniqueId());
+                        hasBeenHit.put(ally.getUniqueId(), uuids);
+                    }
 
-                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-                        if (ally.getHealth() == ally.getMaxHealth()) {
-                            ally.sendMessage(ChatColor.GRAY + "You are currently at full health.");
-                            ally.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        } else {
-                            HealUtil.healPlayer(25, ally, " from " + ChatColor.WHITE + player.getName());
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                                @Override
-                                public void run() {
-                                    boardUtil.updateSideScoreboard(ally);//does what you think it does
-                                    boardUtil.updateHealthBar(ally);//updates enemy health bars below their name
-                                }
-                            }, 1);//1 tick(s)
-                            break;
+                    // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                            uuids.remove(player.getUniqueId());
+                            hasBeenHit.put(ally.getUniqueId(), uuids);
                         }
+                    }.runTaskLater(Main.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
+
+                    if (ally.getHealth() == ally.getMaxHealth()) {
+                        ally.sendMessage(
+                                ChatColor.WHITE + getPlayerName()
+                                        + ChatColor.GRAY + " tried to heal you, but you are currently at full health.");
+                        ally.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+
+                    } else {
+                        hu.healPlayer(25, ally, " from " + ChatColor.WHITE + getPlayerName());
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+                        ally.getWorld().spawnParticle(Particle.HEART, ally.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
+
+                        // what does this guy do?
+                        break;
                     }
                 }
             }
         }
     }
 }
-*/
+

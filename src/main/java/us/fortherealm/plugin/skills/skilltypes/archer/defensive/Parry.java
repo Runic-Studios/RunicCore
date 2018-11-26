@@ -1,65 +1,82 @@
-//package us.fortherealm.plugin.skills.skills;
+package us.fortherealm.plugin.skills.skilltypes.archer.defensive;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skills.Skill;
+
+import java.util.HashMap;
+import java.util.UUID;
+
+public class Parry extends Skill implements Listener {
+
+    // globals (eventually I'd like to move the events back in here)
+    private static HashMap<UUID, Long> noFall = new HashMap<>();
+    private double LAUNCH_PATH_MULT = 1.5;
+
+    // constructor
+    public Parry() {
+        super("Parry", "you parry", 1);
+    }
+
+    @Override
+    public void executeSkill() {
+
+        // skill variables, vectors
+        UUID uuid = getPlayer().getUniqueId();
+        Vector look = getPlayer().getLocation().getDirection();
+        Vector launchPath = new Vector(-look.getX(), 1.0, -look.getZ()).normalize();
+
+        // particles, sounds
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
+        getPlayer().getWorld().spawnParticle(Particle.REDSTONE, getPlayer().getLocation(),
+                25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GRAY, 20));
+
+        getPlayer().setVelocity(launchPath.multiply(LAUNCH_PATH_MULT));
+        noFall.put(uuid, System.currentTimeMillis());
+
+        // remove the player from the noFall hashmap
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                noFall.remove(uuid);
+                getPlayer().sendMessage(ChatColor.GRAY + "You lost safefall!");
+            }
+        }.runTaskLater(Main.getInstance(), 40L);
+    }
+
+    public HashMap<UUID, Long> getNoFall() {
+        return noFall;
+    }
 //
-//import us.fortherealm.plugin.oldskills.skilltypes.Skill;
-//import us.fortherealm.plugin.oldskills.skilltypes.SkillItemType;
-//import org.bukkit.*;
-//import org.bukkit.entity.Player;
-//import org.bukkit.event.EventHandler;
-//import org.bukkit.event.entity.EntityDamageEvent;
-//import org.bukkit.event.player.PlayerQuitEvent;
-//import org.bukkit.skillutil.Vector;
-//
-//import java.skillutil.HashMap;
-//import java.skillutil.UUID;
-//
-//public class Parry extends Skill {
-//
-//    private HashMap<UUID, Long> noFall = new HashMap<>();
-//
-//    public Parry() {
-//        super("Parry", "You leap", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 8);
-//    }
-//
-//    @Override
-//    public void onLeftClick(Player player, SkillItemType type) {
-//
-//        UUID uuid = player.getUniqueId();
-//        Vector look = player.getLocation().getDirection();
-//        Vector launchPath = new Vector(-look.getX(), 1.0, -look.getZ()).normalize();
-//        //player.setFallDistance(-999999999.0f);
-//        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5f, 2.0f);
-//        player.getWorld().spigot().playEffect(player.getLocation(),
-//                Effect.CLOUD, 0, 0, 0.3F, 0.3F, 0.3F, 0.01F, 15, 16);
-//        player.setVelocity(launchPath.multiply(1.5));
-//        noFall.put(uuid, System.currentTimeMillis());
-//
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-//            @Override
-//            public void run() {
-//                noFall.remove(uuid);
-//                player.sendMessage(ChatColor.GRAY + "You lost safefall!");
-//            }
-//        },40); // after 2 secs
-//    }
-//
-//    @EventHandler
+//    @EventHandler(priority = EventPriority.HIGHEST)
 //    public void onFallDamage(EntityDamageEvent e) {
-//        if (e.getEntity() instanceof Player && e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
+//        if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
+//            e.getEntity().sendMessage(e.getEntity().getUniqueId() + "");
+//            e.getEntity().sendMessage("ahh");
 //            UUID uuid = e.getEntity().getUniqueId();
 //            if (noFall.containsKey(uuid)) {
 //                e.setCancelled(true);
-//            } else if (!noFall.containsKey(uuid)) {
-//                // Do nothing
+//                e.getEntity().setFallDistance(-500f);
+//                e.getEntity().sendMessage("you were prevented from fall damage");
 //            }
-//
 //        }
 //    }
 //
 //    @EventHandler
 //    public void onQuit(PlayerQuitEvent e) {
 //        UUID uuid = e.getPlayer().getUniqueId();
-//        if (noFall.containsKey(uuid)) {
-//            noFall.remove(uuid);
-//        }
+//        noFall.remove(uuid);
 //    }
-//}
+}

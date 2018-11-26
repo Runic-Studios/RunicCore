@@ -75,7 +75,7 @@ public class ScoreboardListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                sbh.updateSideHealth(pl);
+                sbh.updateSideInfo(pl);
                 sbh.updateHealthbar(pl);
             }
         }.runTaskLater(plugin, 1);

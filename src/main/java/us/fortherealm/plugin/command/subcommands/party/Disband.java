@@ -6,8 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import pl.kacperduras.protocoltab.ProtocolTabAPI;
-import pl.kacperduras.protocoltab.manager.ProtocolTab;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -16,6 +14,7 @@ import us.fortherealm.plugin.nametags.NameTagChanger;
 import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Disband implements SubCommand {
@@ -61,10 +60,12 @@ public class Disband implements SubCommand {
 
 		if(!args[1].equalsIgnoreCase("admin"))
 			this.onUserCommand(sender, args);
-		
+
 		Party targetParty = Main.getPartyManager().getPlayerParty(target);
 
 		if(targetParty != null) {
+
+		    ArrayList<Player> members = targetParty.getPlayerMembers();
 
             // reset tablist for leader and members, inform them of disband
             for (Player member : targetParty.getPlayerMembers()) {
@@ -74,11 +75,6 @@ public class Disband implements SubCommand {
                                 + ChatColor.GOLD + "» "
                                 + ChatColor.RED + "Your party has been disbanded by an admin!");
 
-                ProtocolTabAPI.getTablist(member).setSlot(40, "  &a&n Party (" + 0 + ") &r");
-                for (int i = 41; i < 60; i++) {
-                    ProtocolTabAPI.getTablist(member).setSlot(i, ProtocolTab.BLANK_TEXT);
-                }
-                ProtocolTabAPI.getTablist(member).update();
             }
 
             // reset the party member's name colors for the kicked player
@@ -89,6 +85,12 @@ public class Disband implements SubCommand {
 
             // disband the party
 			Main.getPartyManager().disbandParty(targetParty);
+
+            // update the tablist
+            for (Player member : members) {
+                Main.getTabListManager().setupTab(member);
+            }
+
 			sender.sendMessage
                     (ChatColor.DARK_RED + "Party Admin "
                             + ChatColor.GOLD + "» "
@@ -107,10 +109,7 @@ public class Disband implements SubCommand {
 	
 	@Override
 	public void onUserCommand(Player sender, String[] args) {
-		
 		Party party = Main.getPartyManager().getPlayerParty(sender);
-		
-		
 	}
 	
 	@Override

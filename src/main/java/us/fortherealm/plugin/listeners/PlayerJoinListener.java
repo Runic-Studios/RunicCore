@@ -14,13 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class PlayerJoinListener implements Listener {
 
@@ -41,27 +35,10 @@ public class PlayerJoinListener implements Listener {
             // broadcast new player welcome message
             Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName() + ChatColor.LIGHT_PURPLE + " joined the server for the first time!");
 
-            // create the player's artifact
-            CasterItemStack artifact = new CasterItemStack
-                    (new ItemStack(Material.BOW),
-                            player.getName() + "'s Artifact", CasterItemStack.ItemType.ARTIFACT,
-                            Arrays.asList(new Fireball()), 5,
-                            Arrays.asList(new Frostbolt()), 2);
-
-            artifact.setDurability((short) 5);
-
-            ItemMeta meta = artifact.getItemMeta();
-
-            meta.setUnbreakable(true);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            artifact.setItemMeta(meta);
-
-            // create the player's rune
-            CasterItemStack rune = new CasterItemStack
-                    (new ItemStack(Material.POPPED_CHORUS_FRUIT),
-                            player.getName() + "'s Rune", CasterItemStack.ItemType.RUNE,
-                            Arrays.asList(new Heal()), 5,
-                            Arrays.asList(new Blink()), 2);
+            // set the player's class to "None"
+            Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class", "None");
+            Main.getInstance().saveConfig();
+            Main.getInstance().reloadConfig();
 
             // create the hearthstone
             ItemStack hearthstone = new ItemStack(Material.NETHER_STAR);
@@ -77,9 +54,7 @@ public class PlayerJoinListener implements Listener {
             hsmeta.setLore(hslore);
             hearthstone.setItemMeta(hsmeta);
 
-            // set the items!
-            player.getInventory().setItem(0, artifact);
-            player.getInventory().setItem(1, rune);
+            // set the item!
             player.getInventory().setItem(2, hearthstone);
 
             // update the player's health scale and hp, delayed by 10 ticks to wait for their max health to be updated

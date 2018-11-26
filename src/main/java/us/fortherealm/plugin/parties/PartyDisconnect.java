@@ -1,6 +1,5 @@
 package us.fortherealm.plugin.parties;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,12 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import pl.kacperduras.protocoltab.ProtocolTabAPI;
-import pl.kacperduras.protocoltab.manager.ProtocolTab;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.nametags.NameTagChanger;
-
-import java.util.UUID;
 
 public class PartyDisconnect implements Listener {
 
@@ -49,8 +44,9 @@ public class PartyDisconnect implements Listener {
                                     + ChatColor.RED + " left the party by disconnecting.");
 
                     // update the player list for other party members
-                    int partyCount = party.getPartySize();
-                    updatePartyList(party, partyCount);
+                    for (Player member : party.getPlayerMembers()) {
+                        Main.getTabListManager().setupTab(member);
+                    }
                     return;
                 }
 
@@ -59,7 +55,7 @@ public class PartyDisconnect implements Listener {
                 String storedNameLead = plugin.getConfig().get(party.getLeader() + ".info.name").toString();
 
                 // grab the new Player newLeader from their uuid in the party array
-                Player newLeader = Bukkit.getPlayer(UUID.fromString(party.getLeader().toString()));
+                //Player newLeader = Bukkit.getPlayer(UUID.fromString(party.getLeader().toString()));
 
                 // inform members of leader change
                 party.sendMessage
@@ -70,35 +66,11 @@ public class PartyDisconnect implements Listener {
                                 + ChatColor.WHITE + storedNameLead
                                 + ChatColor.GREEN + " is now the party leader!");
 
-                // update the player list for other party members
-                int partyCount = party.getPartySize();
-                updatePartyList(party, partyCount);
-            }
-        }
-    }
-
-    public static void updatePartyList(Party party, int partyCount) {
-        for (Player member : party.getPlayerMembers()) {
-            ProtocolTabAPI.getTablist(member).setSlot(40, "  &a&n Party (" + partyCount + ") &r");
-
-            // reset the party column
-            for (int j = 41; j < 60; j++) {
-                ProtocolTabAPI.getTablist(member).setSlot(j, ProtocolTab.BLANK_TEXT);
-            }
-
-            for (int k = 0; k < party.getPartyNames().size() && k < 20; k++) {
-
-                if (party.getPartyNames().get(k) == null) {
-                    continue;
-                }
-
-                if (k == 0) {
-                    ProtocolTabAPI.getTablist(member).setSlot(k + 41, ChatColor.GREEN + "★ " + ChatColor.WHITE + party.getPartyNames().get(k));
-                } else {
-                    ProtocolTabAPI.getTablist(member).setSlot(k + 41, party.getPartyNames().get(k));
+                // update the tablist
+                for (Player member : party.getPlayerMembers()) {
+                    Main.getTabListManager().setupTab(member);
                 }
             }
-            ProtocolTabAPI.getTablist(member).update();
         }
     }
 

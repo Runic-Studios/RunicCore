@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.parties.PartyManager;
 import us.fortherealm.plugin.skills.Skill;
 import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
 import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
@@ -83,10 +84,15 @@ public class Fireball extends TargetingSkill<LivingEntity> implements ImpactList
 
     @Override
     public void doImpact(EntityDamageByEntityEvent event) {
-        // Cancel the original event to create our own effect
+
+        // cancel the original event to create our own effect
         event.setCancelled(true);
 
         LivingEntity target = this.getTarget();
+
+        // cancel the effect if the target is in our party
+        if (Main.getPartyManager().getPlayerParty(getPlayer()) != null
+                && Main.getPartyManager().getPlayerParty(getPlayer()).hasMember(target.getUniqueId())) { return; }
 
         // perform damage
         target.damage(DAMAGE_AMOUNT, getPlayer());

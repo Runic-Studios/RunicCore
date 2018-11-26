@@ -1,8 +1,7 @@
 package us.fortherealm.plugin;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import us.fortherealm.plugin.classes.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.subcommands.skills.Test;
 //import us.fortherealm.plugin.command.supercommands.ArtifactSC;
@@ -17,31 +16,35 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.playerlist.PlayerListManager;
+import us.fortherealm.plugin.playerlist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
-//import us.fortherealm.plugin.skills.caster.itemstack.CooldownManager;
 import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
 import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
 import us.fortherealm.plugin.skills.listeners.impact.ImpactListenerObserver;
+import us.fortherealm.plugin.skills.skilltypes.archer.defensive.ParryListener;
 
 import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
+    // wrappers
     private static Main instance;
     private static PartyManager partyManager;
     private static NameTagChanger nameTagChanger;
-    //private static CooldownManager cooldownManager;
+    private static TabListManager tabListManager;
 
+    // getters for wrappers
     public static Main getInstance() { return instance; }
     public static PartyManager getPartyManager() { return partyManager; }
+    public static TabListManager getTabListManager() { return tabListManager; }
     //public static CooldownManager getCooldownManager(){ return cooldownManager; }
 
     public void onEnable() {
 
         instance = this;
         partyManager = new PartyManager();
+        tabListManager = new TabListManager(this);
 
         getLogger().info(" §aFTRCore has been enabled.");
 
@@ -54,19 +57,6 @@ public class Main extends JavaPlugin {
     }
     
     public void onDisable() {
-
-        // reset player's game profiles from their changed names to their stored names
-        for (Player online : Bukkit.getOnlinePlayers()) {
-
-            // grab the player's stored name
-            // convert it to a string
-            Object storedName = this.getConfig().get(online.getUniqueId() + ".info.name");
-            String nameToString = storedName.toString();
-
-            // set the player's name back to their stored name
-            nameTagChanger.changeNameGlobal(online, nameToString);
-        }
-
         getLogger().info(" has been disabled.");
         partyManager = null;
         instance = null;
@@ -91,7 +81,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new DurabilityListener(), this);
         pm.registerEvents(new SneakListener(), this);
         pm.registerEvents(new HealthScaleListener(), this);
-        pm.registerEvents(new FireBowEvent(), this);
+        pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDisconnect(), this);
@@ -99,17 +89,15 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new OutlawManager(), this);
         pm.registerEvents(new PlayerInteractWithCasterItemStack(), this);
-        pm.registerEvents(new PlayerListManager(), this);
+        //pm.registerEvents(new PlayerListManager(), this);
         pm.registerEvents(new ImpactListenerObserver(), this);
+        pm.registerEvents(new ExpListener(), this);
+        pm.registerEvents(new ParryListener(), this);
     }
     
     private void registerCommands() {
         registerSkillCommands();
         registerPartyCommands();
-
-        // TODO: change super command to 'info', add 'artifact, rune, etc.' as sub commands
-        //ArtifactSC artifactInfo = new ArtifactSC();
-       // getCommand("artifactinfo").setExecutor(artifactInfo);
     }
     
     private void registerSkillCommands() {

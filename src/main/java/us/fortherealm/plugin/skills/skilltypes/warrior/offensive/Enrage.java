@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.skills.skilltypes.warrior.offensive;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffect;
@@ -19,21 +20,6 @@ public class Enrage extends Skill {
     // constructor
     public Enrage() {
         super("Enrage", "channel for 5s, buff for 10s", 8);
-
-        /* TODO: fix this particle effect, add removal message
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Player player = null;
-                for(UUID key : ragers.keySet()) {
-                    player = ragers.get(key);
-                    if (player != null) {
-                        player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 5, 0.2f,  0.2f, 0.2f, 0.01);
-                    }
-                }
-            }
-        }.runTaskTimerAsynchronously(Main.getInstance(), 20L, 3L);
-        */
     }
 
     @Override
@@ -53,18 +39,17 @@ public class Enrage extends Skill {
             @Override
             public void run() {
                 getPlayer().sendMessage(ChatColor.GREEN + "You become enraged!");
+
+                // particles, sounds
                 getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.0f);
                 getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
+                getPlayer().getWorld().spawnParticle(Particle.REDSTONE, getPlayer().getLocation(),
+                        25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.RED, 20));
+
+                // potion effects
                 getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, 1));
                 getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, BUFF_DURATION*20, 1));
             }
         }.runTaskLater(Main.getInstance(), CHANNEL_DURATION*20);
     }
-
-    //@Override
-    //public void onRemoval() {
-
-        // end of the buff
-        //getPlayer().sendMessage(ChatColor.GRAY + "You no longer feel enraged.");
-    //}
 }

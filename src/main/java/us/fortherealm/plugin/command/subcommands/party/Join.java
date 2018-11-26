@@ -1,12 +1,10 @@
 package us.fortherealm.plugin.command.subcommands.party;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import pl.kacperduras.protocoltab.ProtocolTabAPI;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -14,9 +12,7 @@ import us.fortherealm.plugin.parties.Invite;
 import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.nametags.NameTagChanger;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Join implements SubCommand {
 
@@ -96,10 +92,8 @@ public class Join implements SubCommand {
                         + ChatColor.WHITE + inviterNameToString
                         + ChatColor.GREEN + "'s party!");
 
-        // grab the player's stored name
-        // convert it to a string
+        // grab the player's stored name, convert it to a string
         String storedName = plugin.getConfig().get(sender.getUniqueId() + ".info.name").toString();
-        String storedLeaderName = plugin.getConfig().get(party.getLeader() + ".info.name").toString();
 
         // inform the party members of a new member, disclude the sender
         invite.getParty().sendOtherMembersMessage
@@ -114,22 +108,9 @@ public class Join implements SubCommand {
         // update the party members' name colors for the joiner
         nameTagChanger.showPartyNames(party, sender);
 
-        // update partyCount, player list names
-        int partyCount = party.getPartySize();
+        // update the tablist
         for (Player member : party.getPlayerMembers()) {
-            ProtocolTabAPI.getTablist(member).setSlot(40, "  &a&n Party (" + partyCount + ") &r");
-
-            for (int k = 0; k < party.getPartyNames().size() && k < 20; k++) {
-
-                if (party.getPartyNames().get(k) == null) { continue; }
-
-                if (party.getPartyNames().get(k).equals(storedLeaderName)) {
-                    ProtocolTabAPI.getTablist(member).setSlot(k + 41, ChatColor.GREEN + "★ " + ChatColor.WHITE + party.getPartyNames().get(k));
-                } else {
-                    ProtocolTabAPI.getTablist(member).setSlot(k + 41, party.getPartyNames().get(k));
-                }
-            }
-            ProtocolTabAPI.getTablist(member).update();
+            Main.getTabListManager().setupTab(member);
         }
     }
 

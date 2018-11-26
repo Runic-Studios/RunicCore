@@ -1,6 +1,5 @@
 package us.fortherealm.plugin.command.subcommands.party;
 
-import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -8,9 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.StringUtil;
-import pl.kacperduras.protocoltab.ProtocolTabAPI;
-import pl.kacperduras.protocoltab.manager.ProtocolTab;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -20,7 +16,6 @@ import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Kick implements SubCommand {
@@ -104,6 +99,8 @@ public class Kick implements SubCommand {
                         + ChatColor.WHITE + targetName
                         + ChatColor.RED + " from your party!");
 
+		ArrayList<Player> members = party.getPlayerMembers();
+
 		// remove the player from the party and party array
         party.removeMember(target.getUniqueId());
         party.getPartyNames().remove(targetName);
@@ -125,17 +122,10 @@ public class Kick implements SubCommand {
                         + ChatColor.WHITE + targetName
                         + ChatColor.RED + " from the party!");
 
-        // update all tablists and name colors for party members
-        ProtocolTabAPI.getTablist(target).setSlot(40, "  &a&n Party (" + 0 + ") &r");
-
-        for (int i = 41; i < 60; i++) {
-            ProtocolTabAPI.getTablist(target).setSlot(i, ProtocolTab.BLANK_TEXT);
-        }
-        ProtocolTabAPI.getTablist(target).update();
-
-        // update the player list
-        int partyCount = party.getPartySize();
-        PartyDisconnect.updatePartyList(party, partyCount);
+		// update the tablist
+		for (Player member : members) {
+			Main.getTabListManager().setupTab(member);
+		}
 
         // sets the player's name color to RED if outlaw is enabled
         // delay by 0.5s in case the player's outlaw data is null

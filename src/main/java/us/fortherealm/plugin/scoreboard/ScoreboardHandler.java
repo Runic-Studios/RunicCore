@@ -24,18 +24,18 @@ public class ScoreboardHandler implements Listener {
                 @Override
                 public void run() {
                     createScoreboard(e.getPlayer());
-                    updateSideHealth(e.getPlayer());
+                    updateSideInfo(e.getPlayer());
                     updateHealthbar(e.getPlayer());
                 }
             }.runTaskLater(Main.getInstance(), 20L);
         } else {
             createScoreboard(e.getPlayer());
-            updateSideHealth(e.getPlayer());
+            updateSideInfo(e.getPlayer());
             updateHealthbar(e.getPlayer());
         }
     }
 
-    private void createScoreboard(Player pl){
+    public void createScoreboard(Player pl){
 
         // create our scoreboard
         ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -55,7 +55,7 @@ public class ScoreboardHandler implements Listener {
         pl.setScoreboard(board);
     }
 
-    public void updateSideHealth(Player pl){
+    public void updateSideInfo(Player pl){
 
         Scoreboard board = pl.getScoreboard();
         Objective sidebar = board.getObjective("sidebar");
@@ -81,13 +81,8 @@ public class ScoreboardHandler implements Listener {
         Score characterInfo = sidebar.getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "Character");
         characterInfo.setScore(6);
 
-        // TODO: update info for class, prof, and guild
-        Score playerClass = sidebar.getScore(classAsString());
-        playerClass.setScore(5);
-        Score playerProfession = sidebar.getScore(profAsString());
-        playerProfession.setScore(4);
-        Score playerGuild = sidebar.getScore(guildAsString());
-        playerGuild.setScore(3);
+        // TODO: update info for prof, and guild
+        updatePlayerInfo(pl);
 
         // setup side health display
         Score side = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(healthAsString(pl));
@@ -108,23 +103,38 @@ public class ScoreboardHandler implements Listener {
         }
     }
 
+    public void updatePlayerInfo(Player pl) {
+
+        Scoreboard board = pl.getScoreboard();
+        Objective sidebar = board.getObjective("sidebar");
+
+        // ensure the scoreboard objective exists
+        if (sidebar == null) { return; }
+
+        Score playerClass = sidebar.getScore(playerClass(pl));
+        playerClass.setScore(5);
+        Score playerProfession = sidebar.getScore(playerProf());
+        playerProfession.setScore(4);
+        Score playerGuild = sidebar.getScore(playerGuild());
+        playerGuild.setScore(3);
+    }
+
     private String healthAsString(Player pl) {
-        String health = ChatColor.DARK_RED + "❤ " + ChatColor.RED + ((int) Math.round(pl.getHealth()))
+        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + ((int) Math.round(pl.getHealth()))
                 + " §7/ " + ChatColor.RED + ((int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        return health;
     }
 
-    private String classAsString() {
-        String plClass = ChatColor.GRAY + "Class: " + ChatColor.GREEN + "None";
-        return plClass;
+    private String playerClass(Player pl) {
+        String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class");
+        return ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className + ChatColor.GRAY + " - " + ChatColor.GREEN + pl.getLevel();
     }
 
-    private String profAsString() {
-        String plProf = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None";
+    private String playerProf() {
+        String plProf = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None" + ChatColor.GRAY + " - " + ChatColor.GREEN + "0";
         return plProf;
     }
 
-    private String guildAsString() {
+    private String playerGuild() {
         String plGuild = ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None";
         return plGuild;
     }

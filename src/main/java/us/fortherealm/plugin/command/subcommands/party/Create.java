@@ -6,7 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import pl.kacperduras.protocoltab.ProtocolTabAPI;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -49,7 +48,7 @@ public class Create implements SubCommand {
 
 		// create the party
 		Main.getPartyManager().addParty(new Party(sender.getUniqueId()));
-		sender.playSound(sender.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+		sender.playSound(sender.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
 
 		// inform the sender
 		sender.sendMessage
@@ -57,13 +56,8 @@ public class Create implements SubCommand {
                         + ChatColor.GOLD + "» "
                         + ChatColor.GREEN + "You created a party!");
 
-		// grab player's stored name
-        String storedName = plugin.getConfig().get(sender.getUniqueId() + ".info.name").toString();
-
-		// update partyCount and player list
-		ProtocolTabAPI.getTablist(sender).setSlot(40, "  &a&n Party (" + 1 + ") &r");
-        ProtocolTabAPI.getTablist(sender).setSlot(41, ChatColor.GREEN + "★ " + ChatColor.WHITE + storedName);
-        ProtocolTabAPI.getTablist(sender).update();
+		// update tab
+        Main.getTabListManager().setupTab(sender);
 	}
 
 	@Override

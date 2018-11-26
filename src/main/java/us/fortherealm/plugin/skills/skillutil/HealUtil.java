@@ -37,7 +37,7 @@ public class HealUtil  {
         new BukkitRunnable() {
             @Override
             public void run() {
-                sbh.updateSideHealth(player);
+                sbh.updateSideInfo(player);
                 sbh.updateHealthbar(player);
             }
         }.runTaskLater(Main.getInstance(), 1);

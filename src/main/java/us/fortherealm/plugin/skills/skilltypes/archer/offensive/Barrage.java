@@ -1,74 +1,91 @@
-//package us.fortherealm.plugin.skills.skills;
-//
-//import us.fortherealm.plugin.oldskills.skilltypes.Skill;
-//import us.fortherealm.plugin.oldskills.skilltypes.SkillItemType;
-//import org.bukkit.*;
-//import org.bukkit.entity.*;
-//import org.bukkit.event.EventHandler;
-//import org.bukkit.event.EventPriority;
-//import org.bukkit.event.entity.EntityDamageByEntityEvent;
-//import org.bukkit.potion.PotionEffect;
-//import org.bukkit.potion.PotionEffectType;
-//import org.bukkit.scheduler.BukkitRunnable;
-//import org.bukkit.skillutil.Vector;
-//
-//import java.skillutil.HashMap;
-//import java.skillutil.UUID;
-//
-//// TODO: party damage check
-//public class Barrage extends Skill {
-//
-//    private HashMap<Arrow, UUID> bArrows = new HashMap<>();
-//    //hello
-//    public Barrage() {
-//        super("Barrage", "fire arrows that deal double damage and daze enemies", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
-//    }
-//
-//    @Override
-//    public void onLeftClick(Player player, SkillItemType type) {
-//        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
-//        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5f, 1);
-//        Vector middle = player.getEyeLocation().getDirection().normalize().multiply(2);
-//        Vector left = rotateVectorAroundY(middle, -22.5);
-//        Vector leftMid = rotateVectorAroundY(middle, -11.25);
-//        Vector rightMid = rotateVectorAroundY(middle, 11.25);
-//        Vector right = rotateVectorAroundY(middle, 22.5);
-//
-//        startTask(player, new Vector[]{middle, left, leftMid, rightMid, right});
-//    }
-//
-//    private void startTask(Player player, Vector[] vectors) {
-//        for (Vector vector : vectors) {
-//            Arrow arrow = player.launchProjectile(Arrow.class);
-//            UUID uuid = player.getUniqueId();
-//            arrow.setVelocity(vector);
-//            arrow.setShooter(player);
-//            bArrows.put(arrow, uuid);
-//            new BukkitRunnable() {
-//                @Override
-//                public void run() {
-//                    Location arrowLoc = arrow.getLocation();
-//                    player.getWorld().spawnParticle(Particle.FLAME, arrowLoc, 5, 0, 0, 0, 0);
-//                    if(arrow.isDead() || arrow.isOnGround()) {
-//                        this.cancel();
-//                    }
-//                }
-//            }.runTaskTimer(plugin, 0, 1L);
-//        }
-//    }
-//
-//    private Vector rotateVectorAroundY(Vector vector, double degrees) {
-//        Vector newVector = vector.clone();
-//        double rad = Math.toRadians(degrees);
-//        double cos = Math.cos(rad);
-//        double sine = Math.sin(rad);
-//        double x = vector.getX();
-//        double z = vector.getZ();
-//        newVector.setX(cos * x - sine * z);
-//        newVector.setZ(sine * x + cos * z);
-//        return newVector;
-//    }
-//
+package us.fortherealm.plugin.skills.skilltypes.archer.offensive;
+
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skills.Skill;
+import us.fortherealm.plugin.skills.listeners.impact.ImpactListener;
+import us.fortherealm.plugin.skills.skilltypes.TargetingSkill;
+
+import java.util.UUID;
+
+import static us.fortherealm.plugin.skills.skillutil.VectorUtil.rotateVectorAroundY;
+
+public class Barrage extends TargetingSkill<LivingEntity> implements ImpactListener<EntityDamageByEntityEvent> {
+
+    // constructor
+    public Barrage() {
+        super("Barrage", "shoot five arrows", 8, false);
+    }
+
+    @Override
+    public void executeSkill() {
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        getPlayer().getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+        Vector middle = getPlayer().getEyeLocation().getDirection().normalize().multiply(2);
+        Vector left = rotateVectorAroundY(middle, -22.5);
+        Vector leftMid = rotateVectorAroundY(middle, -11.25);
+        Vector rightMid = rotateVectorAroundY(middle, 11.25);
+        Vector right = rotateVectorAroundY(middle, 22.5);
+
+        startTask(getPlayer(), new Vector[]{middle, left, leftMid, rightMid, right});
+    }
+
+    @Override
+    public Class<EntityDamageByEntityEvent> getEventClass() {
+        return EntityDamageByEntityEvent.class;
+    }
+
+    @Override
+    public Skill getSkill() {
+        return this;
+    }
+
+    @Override
+    public boolean isPreciseEvent(EntityDamageByEntityEvent event) {
+        return true;
+    }
+
+
+    @Override
+    public void initializeSkillVariables(EntityDamageByEntityEvent event) {
+
+    }
+
+    @Override
+    public void doImpact(EntityDamageByEntityEvent event) {
+
+    }
+
+    private void startTask(Player player, Vector[] vectors) {
+        for (Vector vector : vectors) {
+            Arrow arrow = player.launchProjectile(Arrow.class);
+            UUID uuid = player.getUniqueId();
+            arrow.setVelocity(vector);
+            arrow.setShooter(player);
+            //if (arrow.)
+            //bArrows.put(arrow, uuid);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Location arrowLoc = arrow.getLocation();
+                    player.getWorld().spawnParticle(Particle.FLAME, arrowLoc, 5, 0, 0, 0, 0);
+                    if (arrow.isDead() || arrow.isOnGround()) {
+                        this.cancel();
+                    }
+                }
+            }.runTaskTimer(Main.getInstance(), 0, 1L);
+        }
+    }
+}
+
 //    @EventHandler(priority = EventPriority.HIGH)
 //    public void onArrowDamage(EntityDamageByEntityEvent e) {
 //        if (e.getDamager() instanceof Arrow) {
@@ -89,6 +106,3 @@
 //            }
 //        }
 //    }
-//}
-//
-//

@@ -1,7 +1,10 @@
 package us.fortherealm.plugin.listeners;
 
+import net.minecraft.server.v1_13_R2.DataWatcher;
+import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
@@ -20,26 +23,39 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class FireBowEvent implements Listener {
+public class BowListener implements Listener {
 
     private Plugin plugin = Main.getInstance();
     private static final int ARROW_VELOCITY_MULT = 3;
+
+//    @EventHandler
+//    public void handleDraw(EntityShootBowEvent event) {
+//        if(!(event.getEntity() instanceof Player)) return;
+//
+//        if (event.getForce())
+//
+//        event.setCancelled(true);
+//    }
 
     @EventHandler
     public void onDraw(PlayerInteractEvent e) {
 
         Player player = e.getPlayer();
 
-        if (e.getItem() != null && e.getItem().getType() == Material.BOW) {
+        if (e.getItem() != null && e.getItem().getType() == Material.BOW) {//bow
             if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
                 // cancel the default bow mechanics
-                e.setCancelled(true);
+                //e.setCancelled(true);
 
                 // don't fire arrow if they're sneaking, since they're casting a spell
                 if (player.isSneaking()) {
                     return;
                 }
+
+//                DataWatcher watcher = new DataWatcher(((CraftPlayer)player).getHandle());
+//                watcher.register(new DataWatcherObject<>(5, DataWatcherRegistry.a), (byte) 1);
+//                ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(((CraftPlayer)player).getHandle().getId(), watcher, true));
 
                 // implement cooldown system
                 if (player.getCooldown(Material.BOW) <= 0) {
@@ -70,7 +86,7 @@ public class FireBowEvent implements Listener {
                     player.setCooldown(Material.BOW, 15);
 
                 } else if (player.getCooldown(Material.BOW) != 0) {
-                    e.setCancelled(true);
+                    //e.setCancelled(true);
                 }
             }
         }
