@@ -50,7 +50,7 @@ public class DeathListener implements Listener {
         victim.setFoodLevel(20);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 30,
+        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.RED, 3));
         victim.teleport(respawnLocation);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
@@ -97,7 +97,7 @@ public class DeathListener implements Listener {
         victim.setFoodLevel(20);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 30,
+        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.RED, 3));
         victim.teleport(respawnLocation);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
@@ -119,8 +119,8 @@ public class DeathListener implements Listener {
     private void broadcastSlainDeathMessage(Entity damager, Player victim) {
 
         // initialize method variables
-        String nameDam = damager.getName();
-        String nameVic = victim.getName();
+        String nameDam = plugin.getConfig().get(damager.getUniqueId() + ".info.name").toString();
+        String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
         UUID p1 = damager.getUniqueId();
         UUID p2 = victim.getUniqueId();
         double ratingP1 = outlawEvent.getRating(p1);
@@ -129,8 +129,8 @@ public class DeathListener implements Listener {
         // if both players are outlaws, amend the death message to display their rating
         if (plugin.getConfig().getBoolean(p1 + ".outlaw.enabled", true)
                 && plugin.getConfig().getBoolean(p2 + ".outlaw.enabled", true)) {
-            nameDam = ChatColor.RED + "[" + (int) ratingP1 + "] " + ChatColor.WHITE + damager.getName();
-            nameVic = ChatColor.RED + "[" + (int) ratingP2 + "] " + ChatColor.WHITE + victim.getName();
+            nameDam = ChatColor.RED + "[" + (int) ratingP1 + "] " + ChatColor.WHITE + nameDam;
+            nameVic = ChatColor.RED + "[" + (int) ratingP2 + "] " + ChatColor.WHITE + nameVic;
         }
 
         // display death message
@@ -140,7 +140,7 @@ public class DeathListener implements Listener {
     private void broadcastDeathMessage(Player victim) {
 
         // initialize method variables
-        String nameVic = victim.getName();
+        String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
 
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " died!");

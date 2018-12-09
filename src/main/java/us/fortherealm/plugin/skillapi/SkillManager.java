@@ -1,6 +1,12 @@
 package us.fortherealm.plugin.skillapi;
 
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.skillapi.skills.archer.*;
+import us.fortherealm.plugin.skillapi.skills.cleric.*;
+import us.fortherealm.plugin.skillapi.skills.mage.*;
+import us.fortherealm.plugin.skillapi.skills.rogue.*;
+import us.fortherealm.plugin.skillapi.skills.runic.*;
+import us.fortherealm.plugin.skillapi.skills.warrior.*;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -8,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-//import us.fortherealm.plugin.skillapi.skills.*;
 
 import java.util.*;
 
@@ -91,25 +96,26 @@ public class SkillManager {
 
 
     private void registerSkills() {
-    //    this.skillList.add(new Fireball());
-    //    this.skillList.add(new Frostbolt());
-    //    this.skillList.add(new Speed());
-   //     this.skillList.add(new Heal());
-   //     this.skillList.add(new Parry());
-   //     this.skillList.add(new Blink());
-  //      this.skillList.add(new Comet());
-   //     this.skillList.add(new Windstride());
-    //    this.skillList.add(new IceNova());
-   //     this.skillList.add(new Rejuvenate());
-    //    this.skillList.add(new Discharge());
-    //    this.skillList.add(new Enrage());
-     //   this.skillList.add(new Deliverance());
-    //    this.skillList.add(new SmokeBomb());
-      //  this.skillList.add(new Backstab());
-    //    this.skillList.add(new Barrage());
-   //     this.skillList.add(new Grapple());
+        this.skillList.add(new Fireball());
+        this.skillList.add(new Frostbolt());
+        this.skillList.add(new Speed());
+        this.skillList.add(new Heal());
+        this.skillList.add(new Parry());
+        this.skillList.add(new Blink());
+        this.skillList.add(new Comet());
+        this.skillList.add(new Windstride());
+        this.skillList.add(new ArcaneSpike());
+        this.skillList.add(new Rejuvenate());
+        this.skillList.add(new Discharge());
+        this.skillList.add(new Enrage());
+        this.skillList.add(new Deliverance());
+        this.skillList.add(new SmokeBomb());
+        this.skillList.add(new Backstab());
+        this.skillList.add(new Barrage());
+        this.skillList.add(new Grapple());
     }
 
+    // starts the repeating task to manage player cooldowns
     private void startCooldownTask() {
         new BukkitRunnable() {
             @Override

@@ -1,8 +1,5 @@
 package us.fortherealm.plugin.listeners;
 
-import com.mojang.authlib.GameProfile;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import org.bukkit.Bukkit;

@@ -13,30 +13,14 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
-import us.fortherealm.plugin.skills.Skill;
-import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
-import us.fortherealm.plugin.skills.skilltypes.archer.defensive.Parry;
-import us.fortherealm.plugin.skills.skilltypes.archer.offensive.Barrage;
-import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Rejuvenate;
-import us.fortherealm.plugin.skills.skilltypes.cleric.defensive.Windstride;
-import us.fortherealm.plugin.skills.skilltypes.mage.offensive.ArcaneSpike;
-import us.fortherealm.plugin.skills.skilltypes.mage.offensive.Discharge;
-import us.fortherealm.plugin.skills.skilltypes.rogue.offensive.Backstab;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Blink;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Heal;
-import us.fortherealm.plugin.skills.skilltypes.runic.defensive.Speed;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Fireball;
-import us.fortherealm.plugin.skills.skilltypes.runic.offensive.Frostbolt;
-import us.fortherealm.plugin.skills.skilltypes.warrior.defensive.Deliverance;
-import us.fortherealm.plugin.skills.skilltypes.warrior.offensive.Enrage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.bukkit.Color.*;
 
 public class SelectClass implements InventoryProvider {
 
+    // globals
     public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
             .id("classSelection")
             .provider(new SelectClass())
@@ -58,7 +42,7 @@ public class SelectClass implements InventoryProvider {
                         "Barrage"),
                 e -> {
                         setupArtifact(player, "Archer");
-                        setupRune(player, "Archer");
+                        setupRune(player);
                         setConfig(player, "Archer");
                         player.closeInventory();
                 }));
@@ -72,7 +56,7 @@ public class SelectClass implements InventoryProvider {
                         "Rejuvenate"),
                         e -> {
                             setupArtifact(player, "Cleric");
-                            setupRune(player, "Cleric");
+                            setupRune(player);
                             setConfig(player, "Cleric");
                             player.closeInventory();
                         }));
@@ -86,7 +70,7 @@ public class SelectClass implements InventoryProvider {
                         "Arcane Spike"),
                         e -> {
                             setupArtifact(player, "Mage");
-                            setupRune(player, "Mage");
+                            setupRune(player);
                             setConfig(player, "Mage");
                             player.closeInventory();
                         }));
@@ -100,7 +84,7 @@ public class SelectClass implements InventoryProvider {
                         "Backstab"),
                         e -> {
                             setupArtifact(player, "Rogue");
-                            setupRune(player, "Rogue");
+                            setupRune(player);
                             setConfig(player, "Rogue");
                             player.closeInventory();
                         }));
@@ -114,7 +98,7 @@ public class SelectClass implements InventoryProvider {
                         "Deliverance"),
                         e -> {
                             setupArtifact(player, "Warrior");
-                            setupRune(player, "Warrior");
+                            setupRune(player);
                             setConfig(player, "Warrior");
                             player.closeInventory();
                         }));
@@ -152,15 +136,15 @@ public class SelectClass implements InventoryProvider {
 
         String itemName = "";
         Material material = Material.STICK;
-        Skill primary = new Fireball();
-        Skill secondary = new Fireball();
+        String primary = "";
+        String secondary = "";
 
         switch (className) {
             case "Archer":
                 itemName = "Stiff Oaken Shortbow";
                 material = Material.BOW;
-                primary = new Barrage();
-                secondary = new Parry();
+                primary = ChatColor.GRAY + "Left-click: " + ChatColor.GREEN + "Barrage";
+                secondary = ChatColor.GRAY + "Shift + Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
                 launchFirework(player, LIME);
                 player.sendTitle(
                         ChatColor.DARK_GREEN + "You selected",
@@ -169,8 +153,8 @@ public class SelectClass implements InventoryProvider {
             case "Cleric":
                 itemName = "Initiate's Oaken Mace";
                 material = Material.WOODEN_SHOVEL;
-                primary = new Rejuvenate();
-                secondary = new Windstride();
+                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Rejuvenate";
+                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
                 launchFirework(player, AQUA);
                 player.sendTitle(
                         ChatColor.DARK_AQUA + "You selected",
@@ -179,8 +163,8 @@ public class SelectClass implements InventoryProvider {
             case "Mage":
                 itemName = "Sturdy Oaken Branch";
                 material = Material.WOODEN_HOE;
-                primary = new ArcaneSpike();
-                secondary = new Discharge();
+                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Arcane Spike";
+                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
                 launchFirework(player, FUCHSIA);
                 player.sendTitle(
                         ChatColor.DARK_PURPLE + "You selected",
@@ -189,7 +173,8 @@ public class SelectClass implements InventoryProvider {
             case "Rogue":
                 itemName = "Oaken Sparring Sword";
                 material = Material.WOODEN_SWORD;
-                primary = new Backstab();
+                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Smoke Bomb";
+                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
                 launchFirework(player, YELLOW);
                 player.sendTitle(
                         ChatColor.GOLD + "You selected",
@@ -198,8 +183,8 @@ public class SelectClass implements InventoryProvider {
             case "Warrior":
                 itemName = "Worn Oaken Battleaxe";
                 material = Material.WOODEN_AXE;
-                primary = new Deliverance();
-                secondary = new Enrage();
+                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Charge";
+                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
                 launchFirework(player, RED);
                 player.sendTitle(
                         ChatColor.DARK_RED + "You selected",
@@ -207,54 +192,51 @@ public class SelectClass implements InventoryProvider {
                 break;
         }
 
-        CasterItemStack artifact = new CasterItemStack(
-                new ItemStack(material),
-                itemName, CasterItemStack.ItemType.ARTIFACT,
-                Arrays.asList(primary), 1,
-                Arrays.asList(secondary), 2);
-
+        ItemStack artifact = new ItemStack(material);
         ItemMeta meta = artifact.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+        meta.setDisplayName(ChatColor.YELLOW + itemName);
+        lore.add(primary);
+        lore.add(secondary);
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Click this item to open the editor.");
+        lore.add("");
+        lore.add(ChatColor.YELLOW + "Artifact");
+
+        // set the player's artifact
         meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        meta.setLore(lore);
         artifact.setItemMeta(meta);
         player.getInventory().setItem(0, artifact);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
     }
 
-    private void setupRune(Player player, String className) {
+    // creates the player's rune
+    private void setupRune(Player player) {
 
-        Skill primary = new Fireball();
-        Skill secondary = new Fireball();
+        String primary = ChatColor.GRAY + "Left-click: " + ChatColor.RED + "[SLOT LOCKED]";
+        String secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
 
-        switch (className) {
-            case "Archer":
-                primary = new Frostbolt();
-                secondary = new Speed();
-                break;
-            case "Cleric":
-                primary = new Frostbolt();
-                secondary = new Heal();
-                break;
-            case "Mage":
-                primary = new Fireball();
-                secondary = new Blink();
-                break;
-            case "Rogue":
-                primary = new Frostbolt();
-                secondary = new Speed();
-                break;
-            case "Warrior":
-                primary = new Fireball();
-                secondary = new Frostbolt();
-                break;
-        }
+        // grab our variables
+        ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
+        ItemMeta meta = rune.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ancient Rune");
+        lore.add(primary);
+        lore.add(secondary);
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Click this item to open the editor.");
+        lore.add("");
+        lore.add(ChatColor.LIGHT_PURPLE + "Rune");
 
-        // create the player's rune
-        CasterItemStack rune = new CasterItemStack(
-                new ItemStack(Material.POPPED_CHORUS_FRUIT),
-                "Ancient Rune", CasterItemStack.ItemType.RUNE,
-                Arrays.asList(primary), 1,
-                Arrays.asList(secondary), 2);
-
+        // set the player's rune
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        meta.setLore(lore);
+        rune.setItemMeta(meta);
         player.getInventory().setItem(1, rune);
     }
 

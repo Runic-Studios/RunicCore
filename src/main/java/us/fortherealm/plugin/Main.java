@@ -3,13 +3,9 @@ package us.fortherealm.plugin;
 import org.bukkit.plugin.PluginManager;
 import us.fortherealm.plugin.classes.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
-import us.fortherealm.plugin.command.subcommands.skills.Test;
-//import us.fortherealm.plugin.command.supercommands.ArtifactSC;
 import us.fortherealm.plugin.command.supercommands.PartySC;
-import us.fortherealm.plugin.command.supercommands.SkillSC;
 import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.listeners.*;
-import us.fortherealm.plugin.nametags.NameTagChanger;
 import us.fortherealm.plugin.nametags.PlayerNameManager;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import us.fortherealm.plugin.parties.PartyDamageListener;
@@ -19,45 +15,44 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.playerlist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
-import us.fortherealm.plugin.skills.caster.itemstack.CasterItemStack;
-import us.fortherealm.plugin.skills.caster.itemstack.PlayerInteractWithCasterItemStack;
-import us.fortherealm.plugin.skills.listeners.impact.ImpactListenerObserver;
-import us.fortherealm.plugin.skills.skilltypes.archer.defensive.ParryListener;
+import us.fortherealm.plugin.skillapi.SkillManager;
+import us.fortherealm.plugin.skillapi.SkillUseEvent;
 
 import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
-    // wrappers
+    // handlers
     private static Main instance;
     private static PartyManager partyManager;
-    private static NameTagChanger nameTagChanger;
+    private static SkillManager skillManager;
     private static TabListManager tabListManager;
 
-    // getters for wrappers
+    // getters for handlers
     public static Main getInstance() { return instance; }
     public static PartyManager getPartyManager() { return partyManager; }
+    public static SkillManager getSkillManager() { return skillManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
-    //public static CooldownManager getCooldownManager(){ return cooldownManager; }
 
     public void onEnable() {
 
+        // instantiate everything we need
         instance = this;
         partyManager = new PartyManager();
+        skillManager = new SkillManager();
         tabListManager = new TabListManager(this);
 
+        // enable message
         getLogger().info(" §aFTRCore has been enabled.");
 
+        // register our events, config, commands
         this.registerEvents();
         this.loadConfig();
-        
         this.registerCommands();
-
-        CasterItemStack.startCooldownTask();
     }
     
     public void onDisable() {
-        getLogger().info(" has been disabled.");
+        getLogger().info(" §cFTRCore has been enabled.");
         partyManager = null;
         instance = null;
     }
@@ -68,6 +63,7 @@ public class Main extends JavaPlugin {
     }
 
     private void registerEvents() {
+
         PluginManager pm = this.getServer().getPluginManager();
 
         pm.registerEvents(new PlayerJoinListener(), this);
@@ -79,7 +75,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new RuneListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
-        pm.registerEvents(new SneakListener(), this);
+        pm.registerEvents(new StavesListener(), this);
         pm.registerEvents(new HealthScaleListener(), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
@@ -88,23 +84,12 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new PlayerNameManager(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new OutlawManager(), this);
-        pm.registerEvents(new PlayerInteractWithCasterItemStack(), this);
-        //pm.registerEvents(new PlayerListManager(), this);
-        pm.registerEvents(new ImpactListenerObserver(), this);
         pm.registerEvents(new ExpListener(), this);
-        pm.registerEvents(new ParryListener(), this);
+        pm.registerEvents(new SkillUseEvent(), this);
     }
     
     private void registerCommands() {
-        registerSkillCommands();
         registerPartyCommands();
-    }
-    
-    private void registerSkillCommands() {
-        SkillSC skillSC = new SkillSC();
-        getCommand("skill").setExecutor(skillSC);
-        
-        skillSC.addCommand(Arrays.asList("test"), new Test(skillSC));
     }
     
     private void registerPartyCommands() {

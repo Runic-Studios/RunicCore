@@ -34,6 +34,8 @@ public class SkillUseEvent implements Listener {
                 break;
             }
         }
+
+        // todo: update this message
         if (skillCasted != null) {
             if (skillItemType == SkillItemType.NONE) {
                 player.sendMessage(ChatColor.RED + "You must place this in your " + SkillItemType.ARTIFACT.getName()

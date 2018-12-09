@@ -1,10 +1,7 @@
 package us.fortherealm.plugin.listeners;
 
-import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
@@ -28,15 +25,6 @@ public class BowListener implements Listener {
     private Plugin plugin = Main.getInstance();
     private static final int ARROW_VELOCITY_MULT = 3;
 
-//    @EventHandler
-//    public void handleDraw(EntityShootBowEvent event) {
-//        if(!(event.getEntity() instanceof Player)) return;
-//
-//        if (event.getForce())
-//
-//        event.setCancelled(true);
-//    }
-
     @EventHandler
     public void onDraw(PlayerInteractEvent e) {
 
@@ -45,17 +33,10 @@ public class BowListener implements Listener {
         if (e.getItem() != null && e.getItem().getType() == Material.BOW) {//bow
             if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-                // cancel the default bow mechanics
-                //e.setCancelled(true);
-
                 // don't fire arrow if they're sneaking, since they're casting a spell
                 if (player.isSneaking()) {
                     return;
                 }
-
-//                DataWatcher watcher = new DataWatcher(((CraftPlayer)player).getHandle());
-//                watcher.register(new DataWatcherObject<>(5, DataWatcherRegistry.a), (byte) 1);
-//                ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(((CraftPlayer)player).getHandle().getId(), watcher, true));
 
                 // implement cooldown system
                 if (player.getCooldown(Material.BOW) <= 0) {
@@ -83,10 +64,8 @@ public class BowListener implements Listener {
                         }
                     }.runTaskTimer(plugin, 0, 1L);
 
-                    player.setCooldown(Material.BOW, 15);
+                    player.setCooldown(Material.BOW, 30);
 
-                } else if (player.getCooldown(Material.BOW) != 0) {
-                    //e.setCancelled(true);
                 }
             }
         }
@@ -100,7 +79,6 @@ public class BowListener implements Listener {
     @EventHandler
     public void onDamage(final EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
-            Arrow arrow = (Arrow) e.getDamager();
             new BukkitRunnable(){
                 public void run() {
                     Player p = (Player)e.getEntity();
