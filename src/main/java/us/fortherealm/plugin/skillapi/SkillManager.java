@@ -98,7 +98,7 @@ public class SkillManager {
     private void registerSkills() {
         this.skillList.add(new Fireball());
         this.skillList.add(new Frostbolt());
-        this.skillList.add(new Speed());
+        this.skillList.add(new Sprint());
         this.skillList.add(new Heal());
         this.skillList.add(new Parry());
         this.skillList.add(new Blink());

@@ -13,15 +13,15 @@ import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skillutil.formats.HorizCircleFrame;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Speed extends Skill {
+public class Sprint extends Skill {
 
     // global variables
     private static int BUFF_DURATION = 10;
     private static int SPEED_AMPLIFIER = 2;
 
     // constructor
-    public Speed() {
-        super("Speed","Increase your own move speed by 100 units.", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10);
+    public Sprint() {
+        super("Sprint","Increase your own move speed by...", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10);
     }
 
     // skill execute code

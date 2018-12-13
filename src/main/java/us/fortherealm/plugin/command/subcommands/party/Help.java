@@ -6,15 +6,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
-import us.fortherealm.plugin.classes.SelectClass;
+import us.fortherealm.plugin.classes.ClassGUI;
 
 import java.util.List;
 
 public class Help implements SubCommand {
 	
 	private PartySC party;
-
-	private SelectClass partyHelpGUI;
 	
 	public Help(PartySC party) {
 		this.party = party;
@@ -38,7 +36,7 @@ public class Help implements SubCommand {
                         + ChatColor.GRAY + "Available commands: "
                         + ChatColor.YELLOW + "create, disband, help, invite, join, kick, leave");
 
-        SelectClass.CLASS_SELECTION.open(sender);
+        ClassGUI.CLASS_SELECTION.open(sender);
 	}
 	
 	@Override

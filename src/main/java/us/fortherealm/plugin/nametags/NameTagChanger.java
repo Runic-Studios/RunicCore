@@ -87,7 +87,7 @@ public class NameTagChanger {
             // update health displays
             updateHealth(partyMember);
 
-            // ignore the current player in the loop if it is the name-changed player, only update their playerlist name
+            // ignore the current player in the loop if it is the name-changed player, only update their tablist name
             if (partyMember == joiner) {
 
                 continue;
@@ -135,20 +135,15 @@ public class NameTagChanger {
         // for every online player
         for (Player online : Bukkit.getOnlinePlayers()) {
 
-            // ignore the current player in the loop is the name-changed player, only update their playerlist name
-            if (online == p) {
+            // ignore the current player in the loop is the name-changed player, only update their tablist name
+            if (online == p) { continue; }
 
-                // grab the player's stored name
-                Object storedNameP = plugin.getConfig().get(p.getUniqueId() + ".info.name");
-                String pNameToString = storedNameP.toString();
-
-            } else {
 
                 // update health displays for all OTHER players
                 updateHealth(online);
 
                 changeName(online, p, newName);
-            }
+
         }
 
         // null check

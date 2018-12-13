@@ -1,6 +1,7 @@
 package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
+import us.fortherealm.plugin.editor.ArtifactListener;
 import us.fortherealm.plugin.classes.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -12,7 +13,7 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.playerlist.TabListManager;
+import us.fortherealm.plugin.tablist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skillapi.SkillManager;

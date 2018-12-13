@@ -1,19 +1,17 @@
 package us.fortherealm.plugin.listeners;
 
+import de.tr7zw.itemnbtapi.NBTItem;
+import de.tr7zw.itemnbtapi.NBTList;
+import de.tr7zw.itemnbtapi.NBTListCompound;
+import de.tr7zw.itemnbtapi.NBTType;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
@@ -28,8 +26,8 @@ import java.util.UUID;
 public class StavesListener  implements Listener {
 
     // globals
-    private static double BEAM_WIDTH = 1.5;
-    private static int DAMAGE_AMT = 10;
+    private static double BEAM_WIDTH = 2.0;
+    private static double DAMAGE_AMT = 0.0;
     private static int RADIUS = 5;
     private static double RANGE = 8.0;
     private static final int SPEED_MULT = 2;
@@ -51,6 +49,16 @@ public class StavesListener  implements Listener {
             return;
         }
 
+        // iterate through the staff's attributes, retrieve the weapon damage
+        NBTItem nbti = new NBTItem(e.getItem());
+        NBTList list = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        for(int i = 0; i < list.size(); i++){
+            NBTListCompound lc = list.getCompound(i);
+            if(lc.getString("Name").equals("custom.staffDamage")){
+                DAMAGE_AMT = lc.getDouble("Amount");
+            }
+        }
+
         Player pl = e.getPlayer();
 
         if ((e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) && pl.getCooldown(Material.WOODEN_HOE) <= 0) {
@@ -58,16 +66,22 @@ public class StavesListener  implements Listener {
             // cancel the event
             e.setCancelled(true);
 
+            // Iterate through the staff's attributes, retrieve the weapon cooldown
+            double amount = 0.0;
+            for(int i = 0; i < list.size(); i++){
+                NBTListCompound lc = list.getCompound(i);
+                if(lc.getString("Name").equals("generic.attackSpeed")){
+                    amount = lc.getDouble("Amount");
+                }
+            }
+
             // set the cooldown
-            pl.setCooldown(Material.WOODEN_HOE, 30);
-            // todo: in the class select, make the artifacts have different attack speeds, make the cooldwn equal to that speed
-            //pl.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(1);
+            pl.setCooldown(Material.WOODEN_HOE, (int) (24+amount)*20);
 
             // create our vector to be used later
             Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);
 
             // play sound effect
-            // todo: add cooldown
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
 
             // particle effect
@@ -89,7 +103,6 @@ public class StavesListener  implements Listener {
                     if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                         this.cancel();
                     }
-
 
                     // get nearby entities
                     for (Entity e : location.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
@@ -119,7 +132,7 @@ public class StavesListener  implements Listener {
                                         hasBeenHit.put(victim.getUniqueId(), uuids);
                                     }
 
-                                    // can't be hit by the same player's beam for 0.25 secs
+                                    // can't be hit by the same player's beam for 1 tick
                                     new BukkitRunnable() {
                                         @Override
                                         public void run() {
@@ -127,10 +140,10 @@ public class StavesListener  implements Listener {
                                             uuids.remove(pl.getUniqueId());
                                             hasBeenHit.put(victim.getUniqueId(), uuids);
                                         }
-                                    }.runTaskLater(Main.getInstance(), 5L);
+                                    }.runTaskLater(Main.getInstance(), 1L);
 
-                                    // apply skill effects
-                                    victim.damage(DAMAGE_AMT, pl);
+                                    // apply attack effects
+                                    victim.damage((int) (DAMAGE_AMT/2), pl);
                                     pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                                     KnockbackUtil.knockback(pl, victim, 1);
                                     this.cancel();

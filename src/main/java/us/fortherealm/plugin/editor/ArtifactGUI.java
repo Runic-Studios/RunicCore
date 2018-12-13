@@ -1,0 +1,84 @@
+package us.fortherealm.plugin.editor;
+
+import fr.minuskube.inv.ClickableItem;
+import fr.minuskube.inv.SmartInventory;
+import fr.minuskube.inv.content.InventoryContents;
+import fr.minuskube.inv.content.InventoryProvider;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+
+public class ArtifactGUI implements InventoryProvider {
+
+    /**
+     * CHANGE THE ID FOR EACH NEW GUI
+     */
+    public static final SmartInventory CUSTOMIZE_ARTIFACT = SmartInventory.builder()
+            .id("artifactCustomization")
+            .provider(new us.fortherealm.plugin.editor.ArtifactGUI())
+            .size(1, 9)
+            .title(ChatColor.WHITE + "" + ChatColor.BOLD + "Artifact Editor")
+            .build();
+
+    @Override
+    public void init(Player player, InventoryContents contents) {
+
+        // skin editor
+        contents.set(0, 2, ClickableItem.of
+                (menuItem(player.getInventory().getItem(0).getType(),
+                        ChatColor.YELLOW,
+                        "Skin Editor",
+                        "Click to customize your artifact skin"),
+                        e -> {
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+                            SkinsGUI.ARTIFACT_SKINS.open(player);
+                        }));
+
+        // spell editor
+        contents.set(0, 4, ClickableItem.of
+                (menuItem(Material.FIRE_CHARGE,
+                        ChatColor.GREEN,
+                        "Spell Editor",
+                        "Click to customize your artifact abilities"),
+                        e -> {
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+                            player.closeInventory();
+                        }));
+
+        // close inventory
+        contents.set(0, 6, ClickableItem.of
+                (menuItem(Material.BARRIER,
+                        ChatColor.RED,
+                        "Close",
+                        "Close the editor"),
+                        e -> {
+                            player.closeInventory();
+                            player.sendMessage(ChatColor.GRAY + "You closed the editor.");
+                        }));
+    }
+
+    // used for animated inventories
+    @Override
+    public void update(Player player, InventoryContents contents) {
+    }
+
+    // creates the visual menu
+    private ItemStack menuItem(Material material, ChatColor color, String displayName, String description) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(color + displayName);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + description);
+        meta.setLore(lore);
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        item.setItemMeta(meta);
+        return item;
+    }
+}
+

@@ -1,7 +1,6 @@
-package us.fortherealm.plugin.playerlist;
+package us.fortherealm.plugin.tablist;
 
 import com.keenant.tabbed.Tabbed;
-import com.keenant.tabbed.item.PlayerTabItem;
 import com.keenant.tabbed.item.TextTabItem;
 import com.keenant.tabbed.tablist.TabList;
 import com.keenant.tabbed.tablist.TableTabList;
@@ -48,8 +47,9 @@ public class TabListManager implements Listener {
 
         // header, footer
         tab.setHeaderFooter
-                (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "For The Realm " + ChatColor.RED + ChatColor.BOLD + "Alpha",
-                ChatColor.RED + "www.fortherealm.us");
+                (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "For The Realm\n"
+                                + ChatColor.WHITE + ChatColor.BOLD + "A New Kind of MMORPG",
+                ChatColor.GREEN + "Visit our website: " + ChatColor.GOLD + "www.fortherealm.us");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem

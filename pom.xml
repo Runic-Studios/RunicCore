@@ -119,21 +119,17 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/craftbukkit-1.13.2.jar</systemPath>
         </dependency>
-        <!--&lt;!&ndash; ProtocolTab API &ndash;&gt;-->
-        <!--<dependency>-->
-        <!--<groupId>com.github.kacperduras</groupId>-->
-        <!--<artifactId>ProtocolTab</artifactId>-->
-        <!--<version>1.2.0</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${project.basedir}/lib/ProtocolTab-1.2.0.jar</systemPath>-->
-        <!--</dependency>-->
-        <!-- Inventory (GUI) API -->
+        <!-- NBT Api -->
+        <dependency>
+            <groupId>com.github.tr7zw</groupId>
+            <artifactId>Item-NBT-API</artifactId>
+            <version>be4dfa593b</version>
+        </dependency>
         <dependency>
             <groupId>fr.minuskube.inv</groupId>
             <artifactId>smart-invs</artifactId>
             <version>1.2.5</version>
         </dependency>
-
         <!-- Tabbed API -->
         <dependency>
             <groupId>com.github.thekeenant</groupId>

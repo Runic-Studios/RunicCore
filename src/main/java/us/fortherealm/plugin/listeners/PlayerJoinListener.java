@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.listeners;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import org.bukkit.Bukkit;
@@ -27,6 +28,9 @@ public class PlayerJoinListener implements Listener {
         event.setJoinMessage("");
         player.sendMessage(ChatColor.GRAY + "Loading resource pack...");
 
+        /**
+         * setup for new players
+         */
         if (!player.hasPlayedBefore()) {
 
             // broadcast new player welcome message
@@ -43,8 +47,8 @@ public class PlayerJoinListener implements Listener {
             hsmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Hearthstone");
             ArrayList<String> hslore = new ArrayList<String>();
             // TODO: add variable for HS location
-            hslore.add(ChatColor.GRAY + "Left-click: Return to your " + ChatColor.GOLD + "Guild Hall");
-            hslore.add(ChatColor.GRAY + "Right-click: Return to " + ChatColor.GREEN + "The Tutorial");
+            hslore.add(ChatColor.GRAY + "Left click: Return to your " + ChatColor.GOLD + "Guild Hall");
+            hslore.add(ChatColor.GRAY + "Right click: Return to " + ChatColor.GREEN + "The Tutorial");
             hslore.add(ChatColor.DARK_GRAY
                     + "Speak to an " + ChatColor.YELLOW + "innkeeper "
                     + ChatColor.DARK_GRAY + "to change your home.");

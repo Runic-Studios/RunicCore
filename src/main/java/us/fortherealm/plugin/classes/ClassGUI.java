@@ -12,18 +12,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.ArrayList;
 
 import static org.bukkit.Color.*;
 
-public class SelectClass implements InventoryProvider {
+public class ClassGUI implements InventoryProvider {
 
     // globals
     public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
             .id("classSelection")
-            .provider(new SelectClass())
+            .provider(new ClassGUI())
             .size(1, 9)
             .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Class!")
             .build();
@@ -131,30 +132,35 @@ public class SelectClass implements InventoryProvider {
         return item;
     }
 
-    // sets the player artifact
+    // sets the player editor
     private void setupArtifact(Player player, String className) {
 
+        // grab our variables
         String itemName = "";
         Material material = Material.STICK;
         String primary = "";
         String secondary = "";
+        double attSpeed = -23.0;
+        double bowSpeed = 1.0;
+        double damage = 5.0;
 
         switch (className) {
             case "Archer":
                 itemName = "Stiff Oaken Shortbow";
                 material = Material.BOW;
-                primary = ChatColor.GRAY + "Left-click: " + ChatColor.GREEN + "Barrage";
-                secondary = ChatColor.GRAY + "Shift + Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
+                primary = ChatColor.WHITE + "Left click§7: " + ChatColor.GREEN + "Barrage";
+                secondary = ChatColor.WHITE + "Shift + Right§7: " + ChatColor.RED + "SLOT LOCKED";
                 launchFirework(player, LIME);
                 player.sendTitle(
                         ChatColor.DARK_GREEN + "You selected",
                         ChatColor.GREEN + className + "!", 10, 40, 10);
+                attSpeed = 0.0;
                 break;
             case "Cleric":
                 itemName = "Initiate's Oaken Mace";
                 material = Material.WOODEN_SHOVEL;
-                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Rejuvenate";
-                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
+                primary = ChatColor.WHITE + "Shift + Left§7: " + ChatColor.GREEN + "Rejuvenate";
+                secondary = ChatColor.WHITE + "Right click§7: " + ChatColor.RED + "SLOT LOCKED";
                 launchFirework(player, AQUA);
                 player.sendTitle(
                         ChatColor.DARK_AQUA + "You selected",
@@ -163,8 +169,8 @@ public class SelectClass implements InventoryProvider {
             case "Mage":
                 itemName = "Sturdy Oaken Branch";
                 material = Material.WOODEN_HOE;
-                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Arcane Spike";
-                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
+                primary = ChatColor.WHITE + "Shift + Left§7: " + ChatColor.GREEN + "Arcane Spike";
+                secondary = ChatColor.WHITE + "Right click§7: " + ChatColor.RED + "SLOT LOCKED";
                 launchFirework(player, FUCHSIA);
                 player.sendTitle(
                         ChatColor.DARK_PURPLE + "You selected",
@@ -173,8 +179,8 @@ public class SelectClass implements InventoryProvider {
             case "Rogue":
                 itemName = "Oaken Sparring Sword";
                 material = Material.WOODEN_SWORD;
-                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Smoke Bomb";
-                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
+                primary = ChatColor.WHITE + "Shift + Left§7: " + ChatColor.GREEN + "Smoke Bomb";
+                secondary = ChatColor.WHITE + "Right click§7: " + ChatColor.RED + "SLOT LOCKED";
                 launchFirework(player, YELLOW);
                 player.sendTitle(
                         ChatColor.GOLD + "You selected",
@@ -183,8 +189,8 @@ public class SelectClass implements InventoryProvider {
             case "Warrior":
                 itemName = "Worn Oaken Battleaxe";
                 material = Material.WOODEN_AXE;
-                primary = ChatColor.GRAY + "Shift + Left-click: " + ChatColor.GREEN + "Charge";
-                secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
+                primary = ChatColor.WHITE + "Shift + Left§7: " + ChatColor.GREEN + "Charge";
+                secondary = ChatColor.WHITE + "Right click§7: " + ChatColor.RED + "SLOT LOCKED";
                 launchFirework(player, RED);
                 player.sendTitle(
                         ChatColor.DARK_RED + "You selected",
@@ -192,23 +198,63 @@ public class SelectClass implements InventoryProvider {
                 break;
         }
 
+        // build the player's editor
         ItemStack artifact = new ItemStack(material);
         ItemMeta meta = artifact.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
         meta.setDisplayName(ChatColor.YELLOW + itemName);
+
+        // spell display
+        lore.add("");
+        lore.add(ChatColor.GREEN + "Spells:");
         lore.add(primary);
         lore.add(secondary);
         lore.add("");
-        lore.add(ChatColor.GRAY + "Click this item to open the editor.");
+
+        // custom stat display
+        lore.add(ChatColor.RED + "Stats:");
+        if (!className.equals("Archer")) {
+            lore.add(ChatColor.GRAY + "Att Speed: " + ChatColor.RED + (24 + attSpeed));
+        } else {
+            lore.add(ChatColor.GRAY + "Att Speed: " + ChatColor.RED + (bowSpeed));
+        }
+        lore.add(ChatColor.GRAY + "DMG: " + ChatColor.RED + (int) damage + "-" + (int) damage);
+        lore.add("");
+        lore.add(ChatColor.WHITE + "Click §7this item to open the editor.");
         lore.add("");
         lore.add(ChatColor.YELLOW + "Artifact");
-
-        // set the player's artifact
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         meta.setLore(lore);
         artifact.setItemMeta(meta);
+
+        // --------------------------------------------------------------------------------------------------------
+        // ADD DEFAULT SECONDARY STATS
+        artifact = AttributeUtil.addStats(artifact, "generic.attackSpeed", attSpeed);
+
+        // multiply by 2 for standard defences, subtract one because all weapons have base 1 damage.
+        switch (className) {
+            case "Cleric":
+            case "Rogue":
+            case "Warrior":
+                artifact = AttributeUtil.addStats(artifact, "generic.attackDamage", (damage * 2) - 1);
+                break;
+            case "Archer":
+                // store custom bow attributes, set melee damage to 0
+                artifact = AttributeUtil.addStats(artifact, "custom.bowSpeed", bowSpeed);
+                artifact = AttributeUtil.addStats(artifact, "custom.bowDamage", (damage * 2) - 1);
+                artifact = AttributeUtil.addStats(artifact, "generic.attackDamage", 0);
+                break;
+            case "Mage":
+                // store custom staff attributes, set melee damage to 0
+                artifact = AttributeUtil.addStats(artifact, "custom.staffDamage", (damage * 2) - 1);
+                artifact = AttributeUtil.addStats(artifact, "generic.attackDamage", 0);
+                break;
+        }
+        // --------------------------------------------------------------------------------------------------------
+
+        // set the player's editor
         player.getInventory().setItem(0, artifact);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
     }
@@ -216,18 +262,20 @@ public class SelectClass implements InventoryProvider {
     // creates the player's rune
     private void setupRune(Player player) {
 
-        String primary = ChatColor.GRAY + "Left-click: " + ChatColor.RED + "[SLOT LOCKED]";
-        String secondary = ChatColor.GRAY + "Right-click: " + ChatColor.RED + "[SLOT LOCKED]";
+        String primary = ChatColor.WHITE + "Left click§7: " + ChatColor.RED + "SLOT LOCKED";
+        String secondary = ChatColor.WHITE + "Right click§7: " + ChatColor.RED + "SLOT LOCKED";
 
         // grab our variables
         ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         ItemMeta meta = rune.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
         meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ancient Rune");
+        lore.add("");
+        lore.add(ChatColor.GREEN + "Spells:");
         lore.add(primary);
         lore.add(secondary);
         lore.add("");
-        lore.add(ChatColor.GRAY + "Click this item to open the editor.");
+        lore.add(ChatColor.WHITE + "Click §7this item to open the editor.");
         lore.add("");
         lore.add(ChatColor.LIGHT_PURPLE + "Rune");
 
@@ -248,6 +296,7 @@ public class SelectClass implements InventoryProvider {
         Main.getInstance().reloadConfig();
         sbh.updatePlayerInfo(player);
         sbh.updateSideInfo(player);
+        sbh.updateHealthbar(player);
     }
 
     private void launchFirework(Player p, Color color) {

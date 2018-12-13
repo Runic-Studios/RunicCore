@@ -7,7 +7,7 @@ author: Skyfallin_
 commands:
   artifactinfo:
     usage: /<command>
-    description: Returns info on the artifact slot.
+    description: Returns info on the editor slot.
   skill:
     usage: /<command>
     description: Base for all oldskills commands
