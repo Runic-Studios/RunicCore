@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.editor;
+package us.fortherealm.plugin.artifact;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -8,6 +8,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class ArtifactGUI implements InventoryProvider {
      */
     public static final SmartInventory CUSTOMIZE_ARTIFACT = SmartInventory.builder()
             .id("artifactCustomization")
-            .provider(new us.fortherealm.plugin.editor.ArtifactGUI())
+            .provider(new us.fortherealm.plugin.artifact.ArtifactGUI())
             .size(1, 9)
             .title(ChatColor.WHITE + "" + ChatColor.BOLD + "Artifact Editor")
             .build();
@@ -27,23 +28,29 @@ public class ArtifactGUI implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
 
-        // skin editor
+        // grab player's artifact
+        ItemStack artifact = player.getInventory().getItem(0);
+        ItemMeta meta = artifact.getItemMeta();
+
+        // skin artifact
         contents.set(0, 2, ClickableItem.of
-                (menuItem(player.getInventory().getItem(0).getType(),
+                (menuItem(artifact.getType(),
                         ChatColor.YELLOW,
                         "Skin Editor",
-                        "Click to customize your artifact skin"),
+                        "Click to customize your artifact skin",
+                        ((Damageable) meta).getDamage()),
                         e -> {
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                             SkinsGUI.ARTIFACT_SKINS.open(player);
                         }));
 
-        // spell editor
+        // spell artifact
         contents.set(0, 4, ClickableItem.of
                 (menuItem(Material.FIRE_CHARGE,
                         ChatColor.GREEN,
                         "Spell Editor",
-                        "Click to customize your artifact abilities"),
+                        "Click to customize your artifact abilities",
+                        0),
                         e -> {
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                             player.closeInventory();
@@ -54,7 +61,8 @@ public class ArtifactGUI implements InventoryProvider {
                 (menuItem(Material.BARRIER,
                         ChatColor.RED,
                         "Close",
-                        "Close the editor"),
+                        "Close the editor",
+                        0),
                         e -> {
                             player.closeInventory();
                             player.sendMessage(ChatColor.GRAY + "You closed the editor.");
@@ -67,13 +75,14 @@ public class ArtifactGUI implements InventoryProvider {
     }
 
     // creates the visual menu
-    private ItemStack menuItem(Material material, ChatColor color, String displayName, String description) {
+    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, String desc, int durability) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(color + displayName);
+        meta.setDisplayName(dispColor + displayName);
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + description);
+        lore.add(ChatColor.GRAY + desc);
         meta.setLore(lore);
+        ((Damageable) meta).setDamage(durability);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

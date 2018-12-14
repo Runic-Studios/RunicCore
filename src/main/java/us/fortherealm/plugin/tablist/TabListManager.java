@@ -48,7 +48,7 @@ public class TabListManager implements Listener {
         // header, footer
         tab.setHeaderFooter
                 (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "For The Realm\n"
-                                + ChatColor.WHITE + ChatColor.BOLD + "A New Kind of MMORPG",
+                                + ChatColor.GOLD + ChatColor.BOLD + "A New Kind of MMORPG",
                 ChatColor.GREEN + "Visit our website: " + ChatColor.GOLD + "www.fortherealm.us");
 
         // Column 1 (Online)

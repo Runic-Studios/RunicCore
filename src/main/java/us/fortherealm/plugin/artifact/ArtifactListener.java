@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.editor;
+package us.fortherealm.plugin.artifact;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -13,14 +13,14 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ArtifactListener implements Listener {
 
-    // opens the editor editor
+    // opens the artifact artifact
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
         Player player = (Player) e.getWhoClicked();
         int itemslot = e.getSlot();
 
-        // only listen for the editor slot
+        // only listen for the artifact slot
         if (itemslot != 0) return;
 
         // don't trigger if there's no item in the slot to avoid null issues
@@ -32,13 +32,13 @@ public class ArtifactListener implements Listener {
         // only listen for a player inventory
         if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
 
-        // cancel the event, open the editor
+        // cancel the event, open the artifact
         e.setCancelled(true);
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
         ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
     }
 
-    // cancel editor swapping
+    // cancel artifact swapping
     @EventHandler
     public void onItemSwap(PlayerSwapHandItemsEvent swapevent) {
 
@@ -52,7 +52,7 @@ public class ArtifactListener implements Listener {
         }
     }
 
-    // cancel editor dropping
+    // cancel artifact dropping
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
 
@@ -62,7 +62,7 @@ public class ArtifactListener implements Listener {
         if (slot == 0 && player.getGameMode() == GameMode.SURVIVAL) {
             e.setCancelled(true);
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-            player.sendMessage(ChatColor.RED + "You cannot drop your editor.");
+            player.sendMessage(ChatColor.RED + "You cannot drop your artifact.");
         }
     }
 }

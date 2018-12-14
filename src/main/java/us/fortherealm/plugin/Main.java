@@ -1,7 +1,7 @@
 package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
-import us.fortherealm.plugin.editor.ArtifactListener;
+import us.fortherealm.plugin.artifact.ArtifactListener;
 import us.fortherealm.plugin.classes.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;

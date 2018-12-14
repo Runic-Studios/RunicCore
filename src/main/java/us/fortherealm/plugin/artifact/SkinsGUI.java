@@ -1,5 +1,9 @@
-package us.fortherealm.plugin.editor;
+package us.fortherealm.plugin.artifact;
 
+import de.tr7zw.itemnbtapi.NBTItem;
+import de.tr7zw.itemnbtapi.NBTList;
+import de.tr7zw.itemnbtapi.NBTListCompound;
+import de.tr7zw.itemnbtapi.NBTType;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -32,13 +36,18 @@ public class SkinsGUI implements InventoryProvider {
         // determine the player's class
         String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class").toString();
 
-        // skin editor
+        // grab player's artifact
+        ItemStack artifact = player.getInventory().getItem(0);
+        ItemMeta meta = artifact.getItemMeta();
+
+        // skin artifact
         contents.set(0, 4, ClickableItem.of
-                (menuItem(player.getInventory().getItem(0).getType(),
+                (menuItem(artifact.getType(),
                         ChatColor.YELLOW,
-                        player.getInventory().getItem(0).getItemMeta().getDisplayName(),
+                        meta.getDisplayName(),
                         "Click an appearance to change your skin!",
-                        "Click here to return to the editor", 0),
+                        "Click here to return to the artifact",
+                        ((Damageable) meta).getDamage()),
                         e -> {
                             ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
                         }));
@@ -106,11 +115,9 @@ public class SkinsGUI implements InventoryProvider {
                             ChatColor.RED,
                             name, desc, "", durab),
                             e -> {
-                                // transform artifact
-                                // refresh the screen, don't close the inventory
-                                updateSkin(player);
+                        // todo: only do this if the skin is unlocked
+                                updateSkin(player, material, name, durab);
                                 SkinsGUI.ARTIFACT_SKINS.open(player);
-                                //player.closeInventory();
                             }));
         } else {
             contents.set(row, slot, ClickableItem.of
@@ -124,13 +131,48 @@ public class SkinsGUI implements InventoryProvider {
     }
 
     // transforms the player's artifact skin
-    private void updateSkin(Player player) {
+    private void updateSkin(Player player, Material material, String name, int durab) {
 
-        // grab the item in slot 0
-        ItemStack oldItem = player.getInventory().getItem(0);
+        // grab the player's artifact
+        ItemStack artifact = player.getInventory().getItem(0);
 
-        ItemStack newItem = new ItemStack(oldItem.getType());
+        // retrieve the artfiact's old NBT tags (attributes)
+        NBTItem nbti = new NBTItem(artifact);
+        NBTList oldAttributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
 
+        // update the display material, name, and durability of the artifact
+        ItemMeta meta = artifact.getItemMeta();
+        artifact.setType(material);
+        meta.setDisplayName(ChatColor.YELLOW + name);
+        ((Damageable) meta).setDamage(durab);
+        artifact.setItemMeta(meta);
+
+        // determine the player's class
+        //String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class").toString();
+        //LoreGenerator.generateArtifactLore(artifact, ChatColor.YELLOW, artifact.getItemMeta().getDisplayName(), className, durab);
+
+        // create a new list of attributes
+        NBTItem nbtiNew = new NBTItem(artifact);
+        NBTList newAttributes = nbtiNew.getList("AttributeModifiers", NBTType.NBTTagCompound);
+
+        // add all the attributes back
+        for (int i = 0; i < oldAttributes.size(); i++) {
+            NBTListCompound oldStat = oldAttributes.getCompound(i);
+            // generic attributes are automatically saved, so this prevent duplicates
+            if (!(oldStat.getString("Name").startsWith("generic"))) {
+                NBTListCompound newStat = newAttributes.addCompound();
+                newStat.setDouble("Amount", oldStat.getDouble("Amount"));
+                newStat.setString("AttributeName", oldStat.getString("AttributeName"));
+                newStat.setString("Name", oldStat.getString("Name"));
+                newStat.setInteger("Operation", 0);
+                newStat.setInteger("UUIDLeast", 59764);
+                newStat.setInteger("UUIDMost", 31483);
+                artifact = nbtiNew.getItem();
+            }
+        }
+
+        // update the artifact!
+        player.getInventory().setItem(0, artifact);
     }
 }
 

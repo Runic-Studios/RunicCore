@@ -9,18 +9,41 @@ import org.bukkit.inventory.ItemStack;
 public class AttributeUtil {
 
     // takes an ItemStack, returns a new ItemStack with applied attributes
-    public static ItemStack addStats(ItemStack item, String modifier, double amount) {
+    public static ItemStack addStat(ItemStack item, String modifier, double amount) {
         ItemStack artifact = item;
         NBTItem nbti = new NBTItem(artifact);
-        NBTList attribute = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
-        NBTListCompound mod1 = attribute.addCompound();
-        mod1.setDouble("Amount", amount);
-        mod1.setString("AttributeName", modifier);
-        mod1.setString("Name", modifier);
-        mod1.setInteger("Operation", 0);
-        mod1.setInteger("UUIDLeast", 59764);
-        mod1.setInteger("UUIDMost", 31483);
+        NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        NBTListCompound attribute = attributes.addCompound();
+        attribute.setDouble("Amount", amount);
+        attribute.setString("AttributeName", modifier);
+        attribute.setString("Name", modifier);
+        attribute.setInteger("Operation", 0);
+        attribute.setInteger("UUIDLeast", 59764);
+        attribute.setInteger("UUIDMost", 31483);
         artifact = nbti.getItem();
         return artifact;
+    }
+
+    // takes an ItemStack, returns a new ItemStack with applied attributes
+    public static ItemStack addSpell(ItemStack item, String spellSlot, String spell) {
+        ItemStack artifact = item;
+        NBTItem nbti = new NBTItem(artifact);
+        nbti.setString(spellSlot, spell);
+        artifact = nbti.getItem();
+        return artifact;
+    }
+
+    // searches for a given stat on an item
+    public static double getValue(ItemStack item, String name) {
+        double amount = 0;
+        NBTItem nbti = new NBTItem(item);
+        NBTList list = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        for (int i = 0; i < list.size(); i++) {
+            NBTListCompound lc = list.getCompound(i);
+            if (lc.getString("Name").equals(name)) {
+                amount = lc.getDouble("Amount");
+            }
+        }
+        return amount;
     }
 }
