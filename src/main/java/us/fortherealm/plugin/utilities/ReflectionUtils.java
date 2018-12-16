@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.util;
+package us.fortherealm.plugin.utilities;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

@@ -1,9 +1,5 @@
 package us.fortherealm.plugin.artifact;
 
-import de.tr7zw.itemnbtapi.NBTItem;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -55,15 +51,19 @@ public class SkinsGUI implements InventoryProvider {
         // skin displays are class-specific
         switch (className) {
             case "Archer":
+                displaySkinsArcher(player, contents);
                 break;
             case "Cleric":
+                displaySkinsCleric(player, contents);
                 break;
             case "Mage":
                 displaySkinsMage(player, contents);
                 break;
             case "Rogue":
+                displaySkinsRogue(player, contents);
                 break;
             case "Warrior":
+                displaySkinsWarrior(player, contents);
                 break;
         }
     }
@@ -91,6 +91,36 @@ public class SkinsGUI implements InventoryProvider {
     }
 
     // displays an entire class' skin screen, with booleans for unlocked skins
+    private void displaySkinsArcher(Player player, InventoryContents contents) {
+
+        // todo: make permissions
+        // if (!they have permission) {
+        displaySkin(player, contents, 1, 0, Material.BOW, "Worn Stone Shortbow", "Unlock by reaching lv. 10!", 5, false);
+        // else
+        // displaySkin(player, contents, 1, 0, Material.STONE_HOE, "Worn Stone Cane", "Unlock by...", 0, true);
+
+
+        displaySkin(player, contents, 1, 1, Material.BOW, "Polished Silver Shortbow", "Unlock by reaching lv. 20!", 10, false);
+        displaySkin(player, contents, 1, 2, Material.BOW, "Victorious Gilded Shortbow", "Unlock by reaching lv. 30!", 15, false);
+        displaySkin(player, contents, 1, 3, Material.BOW, "Ancient Crystal Shortbow", "Unlock by reaching lv. 40!", 20, false);
+    }
+
+    // displays an entire class' skin screen, with booleans for unlocked skins
+    private void displaySkinsCleric(Player player, InventoryContents contents) {
+
+        // todo: make permissions
+        // if (!they have permission) {
+        displaySkin(player, contents, 1, 0, Material.STONE_SHOVEL, "Worn Stone Club", "Unlock by reaching lv. 10!", 0, false);
+        // else
+        // displaySkin(player, contents, 1, 0, Material.STONE_HOE, "Worn Stone Cane", "Unlock by...", 0, true);
+
+
+        displaySkin(player, contents, 1, 1, Material.IRON_SHOVEL, "Polished Silver Hammer", "Unlock by reaching lv. 20!", 0, false);
+        displaySkin(player, contents, 1, 2, Material.GOLDEN_SHOVEL, "Victorious Gilded Mace", "Unlock by reaching lv. 30!", 0, false);
+        displaySkin(player, contents, 1, 3, Material.DIAMOND_SHOVEL, "Ancient Crystal Maul", "Unlock by reaching lv. 40!", 0, false);
+    }
+
+    // displays an entire class' skin screen, with booleans for unlocked skins
     private void displaySkinsMage(Player player, InventoryContents contents) {
 
         // todo: make permissions
@@ -104,6 +134,36 @@ public class SkinsGUI implements InventoryProvider {
         displaySkin(player, contents, 1, 2, Material.GOLDEN_HOE, "Victorious Gilded Staff", "Unlock by reaching lv. 30!", 0, false);
         displaySkin(player, contents, 1, 3, Material.DIAMOND_HOE, "Ancient Crystal Greatstaff", "Unlock by reaching lv. 40!", 0, false);
         displaySkin(player, contents, 1, 4, Material.IRON_HOE, "Primal Arcane Rod", "§8Unlocked by becoming an alpha backer.", 5, false);
+    }
+
+    // displays an entire class' skin screen, with booleans for unlocked skins
+    private void displaySkinsRogue(Player player, InventoryContents contents) {
+
+        // todo: make permissions
+        // if (!they have permission) {
+        displaySkin(player, contents, 1, 0, Material.STONE_SWORD, "Worn Stone Sword", "Unlock by reaching lv. 10!", 0, false);
+        // else
+        // displaySkin(player, contents, 1, 0, Material.STONE_SWORD, "Worn Stone Cane", "Unlock by...", 0, true);
+
+
+        displaySkin(player, contents, 1, 1, Material.IRON_SWORD, "Polished Silver Broadsword", "Unlock by reaching lv. 20!", 0, false);
+        displaySkin(player, contents, 1, 2, Material.GOLDEN_SWORD, "Victorious Gilded Longsword", "Unlock by reaching lv. 30!", 0, false);
+        displaySkin(player, contents, 1, 3, Material.DIAMOND_SWORD, "Ancient Crystal Greatsword", "Unlock by reaching lv. 40!", 0, false);
+    }
+
+    // displays an entire class' skin screen, with booleans for unlocked skins
+    private void displaySkinsWarrior(Player player, InventoryContents contents) {
+
+        // todo: make permissions
+        // if (!they have permission) {
+        displaySkin(player, contents, 1, 0, Material.STONE_AXE, "Worn Stone Axe", "Unlock by reaching lv. 10!", 0, false);
+        // else
+        // displaySkin(player, contents, 1, 0, Material.STONE_AXE, "Worn Stone Cane", "Unlock by...", 0, true);
+
+
+        displaySkin(player, contents, 1, 1, Material.IRON_AXE, "Polished Silver Broadaxe", "Unlock by reaching lv. 20!", 0, false);
+        displaySkin(player, contents, 1, 2, Material.GOLDEN_AXE, "Victorious Gilded Reaver", "Unlock by reaching lv. 30!", 0, false);
+        displaySkin(player, contents, 1, 3, Material.DIAMOND_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 0, false);
     }
 
     // display for each skin
@@ -136,40 +196,12 @@ public class SkinsGUI implements InventoryProvider {
         // grab the player's artifact
         ItemStack artifact = player.getInventory().getItem(0);
 
-        // retrieve the artfiact's old NBT tags (attributes)
-        NBTItem nbti = new NBTItem(artifact);
-        NBTList oldAttributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
-
         // update the display material, name, and durability of the artifact
         ItemMeta meta = artifact.getItemMeta();
         artifact.setType(material);
         meta.setDisplayName(ChatColor.YELLOW + name);
         ((Damageable) meta).setDamage(durab);
         artifact.setItemMeta(meta);
-
-        // determine the player's class
-        //String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class").toString();
-        //LoreGenerator.generateArtifactLore(artifact, ChatColor.YELLOW, artifact.getItemMeta().getDisplayName(), className, durab);
-
-        // create a new list of attributes
-        NBTItem nbtiNew = new NBTItem(artifact);
-        NBTList newAttributes = nbtiNew.getList("AttributeModifiers", NBTType.NBTTagCompound);
-
-        // add all the attributes back
-        for (int i = 0; i < oldAttributes.size(); i++) {
-            NBTListCompound oldStat = oldAttributes.getCompound(i);
-            // generic attributes are automatically saved, so this prevent duplicates
-            if (!(oldStat.getString("Name").startsWith("generic"))) {
-                NBTListCompound newStat = newAttributes.addCompound();
-                newStat.setDouble("Amount", oldStat.getDouble("Amount"));
-                newStat.setString("AttributeName", oldStat.getString("AttributeName"));
-                newStat.setString("Name", oldStat.getString("Name"));
-                newStat.setInteger("Operation", 0);
-                newStat.setInteger("UUIDLeast", 59764);
-                newStat.setInteger("UUIDMost", 31483);
-                artifact = nbtiNew.getItem();
-            }
-        }
 
         // update the artifact!
         player.getInventory().setItem(0, artifact);

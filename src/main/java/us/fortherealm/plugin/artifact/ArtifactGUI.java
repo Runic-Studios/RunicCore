@@ -22,7 +22,7 @@ public class ArtifactGUI implements InventoryProvider {
             .id("artifactCustomization")
             .provider(new us.fortherealm.plugin.artifact.ArtifactGUI())
             .size(1, 9)
-            .title(ChatColor.WHITE + "" + ChatColor.BOLD + "Artifact Editor")
+            .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Artifact Editor")
             .build();
 
     @Override

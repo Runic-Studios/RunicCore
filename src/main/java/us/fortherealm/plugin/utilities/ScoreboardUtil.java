@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.util;
+package us.fortherealm.plugin.utilities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
-//import java.util.Collections;
+//import java.utilities.Collections;
 import java.util.List;
 
 public class TabCompleteUtil {

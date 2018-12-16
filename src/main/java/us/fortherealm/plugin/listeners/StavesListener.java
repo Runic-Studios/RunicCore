@@ -1,9 +1,5 @@
 package us.fortherealm.plugin.listeners;
 
-import de.tr7zw.itemnbtapi.NBTItem;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
 import org.bukkit.*;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -12,23 +8,25 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
+import us.fortherealm.plugin.utilities.WeaponEnum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("deprecation")
 public class StavesListener  implements Listener {
 
     // globals
     private static double BEAM_WIDTH = 2.0;
-    private static double DAMAGE_AMT = 0.0;
     private static int RADIUS = 5;
     private static double RANGE = 8.0;
     private static final int SPEED_MULT = 2;
@@ -43,40 +41,41 @@ public class StavesListener  implements Listener {
             return;
         }
 
+        // retrieve the weapon type
+        ItemStack artifact = e.getItem();
+        WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+        double cooldown = e.getPlayer().getCooldown(artifact.getType());
+
+        // only listen for items that can be artifact weapons
+        if (artifactType == null) return;
+
         // only listen for staves
-        if (!(e.getItem().getType().equals(Material.WOODEN_HOE)
-                || e.getItem().getType().equals(Material.STONE_HOE)
-                || e.getItem().getType().equals(Material.IRON_HOE)
-                || e.getItem().getType().equals(Material.GOLDEN_HOE)
-                || e.getItem().getType().equals(Material.DIAMOND_HOE))) {
-            return;
-        }
+        if (!(artifactType.equals(WeaponEnum.STAFF))) return;
 
         Player pl = e.getPlayer();
 
-        if ((e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
-                && pl.getCooldown(Material.WOODEN_HOE) <= 0 && pl.getCooldown(Material.STONE_HOE) <= 0
-                && pl.getCooldown(Material.IRON_HOE) <=0 && pl.getCooldown(Material.GOLDEN_HOE) <=0
-                && pl.getCooldown(Material.DIAMOND_HOE) <=0) {
+        // only listen for left clicks
+        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) return;
 
-            // cancel the event, run custom mechanics
-            e.setCancelled(true);
-            staffAttack(pl, e);
-        }
+        // only apply cooldown if its not already active
+        if (cooldown != 0) return;
+
+        // cancel the event, run custom mechanics
+        e.setCancelled(true);
+        staffAttack(artifact, pl);
     }
 
-    private void staffAttack(Player pl, PlayerInteractEvent e) {
+    private void staffAttack(ItemStack artifact, Player pl) {//, PlayerInteractEvent e
 
         // retrieve the weapon damage, cooldown
-        DAMAGE_AMT = AttributeUtil.getValue(e.getItem(), "custom.staffDamage");
-        double speed = AttributeUtil.getValue(e.getItem(), "generic.attackSpeed");
+        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
+        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+        double speed = AttributeUtil.getGenericDouble(artifact, "generic.attackSpeed");
 
         // set the cooldown
-        pl.setCooldown(Material.WOODEN_HOE, (int) (24+speed)*20);
-        pl.setCooldown(Material.STONE_HOE, (int) (24+speed)*20);
-        pl.setCooldown(Material.IRON_HOE, (int) (24+speed)*20);
-        pl.setCooldown(Material.GOLDEN_HOE, (int) (24+speed)*20);
-        pl.setCooldown(Material.DIAMOND_HOE, (int) (24+speed)*20);
+        if (speed != 0) {
+            pl.setCooldown(artifact.getType(), (int) (20/(24+speed)));
+        }
 
         // create our vector to be used later
         Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);
@@ -142,8 +141,14 @@ public class StavesListener  implements Listener {
                                     }
                                 }.runTaskLater(Main.getInstance(), 1L);
 
-                                // apply attack effects
-                                victim.damage((int) (DAMAGE_AMT/2), pl);
+                                // apply attack effects, random damage amount
+                                if (maxDamage != 0) {
+                                    int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+                                    victim.damage(randomNum, pl);
+                                } else {
+                                    victim.damage(minDamage, pl);
+                                }
+
                                 pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                                 KnockbackUtil.knockback(pl, victim, 1);
                                 this.cancel();

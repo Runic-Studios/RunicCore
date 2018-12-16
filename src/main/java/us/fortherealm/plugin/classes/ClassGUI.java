@@ -145,9 +145,6 @@ public class ClassGUI implements InventoryProvider {
         String itemName = "";
         Material material = Material.STICK;
         String spell = "null";
-        double attSpeed = -23.0;
-        double damage = 5.0;
-        double bowSpeed = 1.0;
 
         // build class-specific variables
         switch (className) {
@@ -159,7 +156,6 @@ public class ClassGUI implements InventoryProvider {
                 player.sendTitle(
                         ChatColor.DARK_GREEN + "You selected",
                         ChatColor.GREEN + className + "!", 10, 40, 10);
-                attSpeed = 0.0;
                 break;
             case "Cleric":
                 itemName = "Initiate's Oaken Mace";
@@ -199,8 +195,6 @@ public class ClassGUI implements InventoryProvider {
                 break;
         }
 
-        // --------------------------------------------------------------------------------------------------------
-
         // create the artifact
         ItemStack artifact = new ItemStack(material);
 
@@ -208,66 +202,40 @@ public class ClassGUI implements InventoryProvider {
         artifact = AttributeUtil.addSpell(artifact, "primarySpell", spell);
         artifact = AttributeUtil.addSpell(artifact, "secondarySpell", ChatColor.RED + "LOCKED");
 
+        // --------------------------------------------------------------------------------------------------------
         // add default damage, attack speed values
-        // multiply by 2 for standard defences, subtract one because all weapons have base 1 damage.
+        // multiply by 2 for standard defences, subtract one because some weapons have base 1 damage.
         switch (className) {
             case "Archer":
-                // store custom bow attributes, set melee damage to 0
-                artifact = AttributeUtil.addStat(artifact, "custom.bowSpeed", bowSpeed);
-                artifact = AttributeUtil.addStat(artifact, "custom.bowDamage", (damage * 2) - 1);
-                artifact = AttributeUtil.addStat(artifact, "generic.attackDamage", 0);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", -23.25);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 4);
                 break;
             case "Cleric":
-                artifact = AttributeUtil.addStat(artifact, "generic.attackSpeed", attSpeed);
-                artifact = AttributeUtil.addStat(artifact, "generic.attackDamage", (damage * 2) - 1);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 8);
                 break;
             case "Mage":
-                // store custom staff attributes, set melee damage to 0
-                artifact = AttributeUtil.addStat(artifact, "generic.attackSpeed", attSpeed);
-                artifact = AttributeUtil.addStat(artifact, "custom.staffDamage", (damage * 2) - 1);
-                artifact = AttributeUtil.addStat(artifact, "generic.attackDamage", 0);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Rogue":
-                artifact = AttributeUtil.addStat(artifact, "generic.attackSpeed", attSpeed);
-                artifact = AttributeUtil.addStat(artifact, "generic.attackDamage", (damage * 2) - 1);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.1);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Warrior":
-                artifact = AttributeUtil.addStat(artifact, "generic.attackSpeed", attSpeed);
-                artifact = AttributeUtil.addStat(artifact, "generic.attackDamage", (damage * 2) - 1);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.25);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 4);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 6);
                 break;
         }
         // --------------------------------------------------------------------------------------------------------
 
-        // save our attributes, since we'll have to re-apply them after we update the meta
-        NBTItem nbtiOld = new NBTItem(artifact);
-        NBTList oldAttributes = nbtiOld.getList("AttributeModifiers", NBTType.NBTTagCompound);
-
-        // generate our lore (which destroys our custom attributes, oh goodie -__-)
+        // generate our lore
         LoreGenerator.generateArtifactLore(artifact, ChatColor.YELLOW, itemName, className, 0);
-
-        // create a new list of attributes
-        NBTItem nbtiNew = new NBTItem(artifact);
-        NBTList newAttributes = nbtiNew.getList("AttributeModifiers", NBTType.NBTTagCompound);
-
-        // add the spells back
-        nbtiNew.setString("primarySpell", spell);
-        nbtiNew.setString("secondarySpell", ChatColor.RED + "LOCKED");
-
-
-        // add all the attributes back, and since generic attributes are automatically saved, we add a duplicate check
-        for (int i = 0; i < oldAttributes.size(); i++) {
-            NBTListCompound oldStat = oldAttributes.getCompound(i);
-            if (!(oldStat.getString("Name").startsWith("generic"))) {
-                NBTListCompound newStat = newAttributes.addCompound();
-                newStat.setDouble("Amount", oldStat.getDouble("Amount"));
-                newStat.setString("AttributeName", oldStat.getString("AttributeName"));
-                newStat.setString("Name", oldStat.getString("Name"));
-                newStat.setInteger("Operation", 0);
-                newStat.setInteger("UUIDLeast", 59764);
-                newStat.setInteger("UUIDMost", 31483);
-                artifact = nbtiNew.getItem();
-            }
-        }
 
         // set the player's artifact. we're done.
         player.getInventory().setItem(0, artifact);

@@ -24,6 +24,7 @@ import java.util.UUID;
 public class SmokeBomb extends Skill {
 
     // globals
+    private static final int DAMAGE_AMT = 15;
     private static final int DURATION = 5;
     private static final int RADIUS = 5;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
@@ -94,7 +95,7 @@ public class SmokeBomb extends Skill {
                             // damage the entity, blind them if they're a player
                             if (entity.getType().isAlive()) {
                                 Damageable victim = (Damageable) entity;
-                                victim.damage(15, player);
+                                victim.damage(DAMAGE_AMT, player);
                                 if (victim instanceof Player) {
                                     ((Player) victim).addPotionEffect
                                             (new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 0));

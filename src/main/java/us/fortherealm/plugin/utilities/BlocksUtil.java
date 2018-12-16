@@ -1,8 +1,4 @@
-package us.fortherealm.plugin.util;
-
-import java.util.*;
-
-import org.bukkit.Material;
+package us.fortherealm.plugin.utilities;
 
 public final class BlocksUtil
 {

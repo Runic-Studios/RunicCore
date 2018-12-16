@@ -68,7 +68,6 @@ public class Main extends JavaPlugin {
         PluginManager pm = this.getServer().getPluginManager();
 
         pm.registerEvents(new PlayerJoinListener(), this);
-        pm.registerEvents(new DeathListener(), this);
         pm.registerEvents(new ScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new Healthbars(), this);
@@ -79,6 +78,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new StavesListener(), this);
         pm.registerEvents(new HealthScaleListener(), this);
         pm.registerEvents(new BowListener(), this);
+        pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDisconnect(), this);
@@ -87,6 +87,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new OutlawManager(), this);
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SkillUseEvent(), this);
+        pm.registerEvents(new WeaponListener(), this);
     }
     
     private void registerCommands() {

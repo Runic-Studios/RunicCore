@@ -4,12 +4,15 @@ import de.tr7zw.itemnbtapi.NBTItem;
 import de.tr7zw.itemnbtapi.NBTList;
 import de.tr7zw.itemnbtapi.NBTListCompound;
 import de.tr7zw.itemnbtapi.NBTType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.fortherealm.plugin.attributes.AttributeUtil;
 
 import java.util.ArrayList;
 
@@ -24,7 +27,6 @@ public class LoreGenerator {
 
         // grab our NBT attributes wrapper
         NBTItem nbti = new NBTItem(artifact);
-        NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
 
         // spell display
         String prim = nbti.getString("primarySpell");
@@ -55,35 +57,19 @@ public class LoreGenerator {
         lore.add(ChatColor.GRAY + "Stats:");
         switch (className) {
             case "Archer":
-                for (int i = 0; i < attributes.size(); i++) {
-                    NBTListCompound stat = attributes.getCompound(i);
-                    String name = stat.getString("Name");
-                    if (name.equals("custom.bowSpeed")) {
-                        lore.add(ChatColor.RED + "Att Speed: " + stat.getDouble("Amount"));
-                    } else if (name.equals("custom.bowDamage")) {
-                        lore.add(ChatColor.RED + "DMG: " + (int) (stat.getDouble("Amount")+1)/2);
-                    }
-                }
+                fillLore(lore, nbti, "Archer");
                 break;
             case "Cleric":
-                fillLore(lore, attributes);
+                fillLore(lore, nbti, "Cleric");
                 break;
             case "Mage":
-                for (int i = 0; i < attributes.size(); i++) {
-                    NBTListCompound stat = attributes.getCompound(i);
-                    String name = stat.getString("Name");
-                    if (name.equals("generic.attackSpeed")) {
-                        lore.add(ChatColor.RED + "Att Speed: " + (24+stat.getDouble("Amount")));
-                    } else if (name.equals("custom.staffDamage")) {
-                        lore.add(ChatColor.RED + "DMG: " + (int) (stat.getDouble("Amount")+1)/2);
-                    }
-                }
+                fillLore(lore, nbti, "Mage");
                 break;
             case "Rogue":
-                fillLore(lore, attributes);
+                fillLore(lore, nbti, "Rogue");
                 break;
             case "Warrior":
-                fillLore(lore, attributes);
+                fillLore(lore, nbti, "Warrior");
                 break;
         }
 
@@ -101,15 +87,24 @@ public class LoreGenerator {
         artifact.setItemMeta(meta);
     }
 
-    private static void fillLore(ArrayList<String> lore, NBTList attributes) {
-        for (int i = 0; i < attributes.size(); i++) {
-            NBTListCompound stat = attributes.getCompound(i);
-            String name = stat.getString("Name");
-            if (name.equals("generic.attackSpeed")) {
-                lore.add(ChatColor.RED + "Att Speed: " + (24+stat.getDouble("Amount")));
-            } else if (name.equals("generic.attackDamage")) {
-                lore.add(ChatColor.RED + "DMG: " + (int) (stat.getDouble("Amount")+1)/2);
-            }
+    // creates lore based on attributes
+    private static void fillLore(ArrayList<String> lore, NBTItem nbti, String className) {
+        double min = nbti.getDouble("custom.minDamage");
+        double max = nbti.getDouble("custom.maxDamage");
+        double speed;
+        if (className.equals("Archer")) {
+            speed = AttributeUtil.getCustomDouble(nbti.getItem(), "custom.bowSpeed");
+        } else {
+            speed = AttributeUtil.getGenericDouble(nbti.getItem(), "generic.attackSpeed");
         }
+        double roundedSpeed = round(24+speed);
+        lore.add(ChatColor.RED + "Att Speed: " + roundedSpeed);
+        lore.add(ChatColor.RED + "DMG: " + (int) min + "-" + (int) max);
+    }
+
+    // rounds to 2 decimal places
+    private static double round(double value) {
+        int scale = (int) Math.pow(10, 2);
+        return (double) Math.round(value * scale) / scale;
     }
 }

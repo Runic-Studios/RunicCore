@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
-import us.fortherealm.plugin.util.CommandsUtil;
+import us.fortherealm.plugin.utilities.CommandsUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

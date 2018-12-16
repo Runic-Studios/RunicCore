@@ -7,7 +7,7 @@ import de.tr7zw.itemnbtapi.NBTType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
@@ -25,79 +25,77 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.utilities.DamageIndicators;
+import us.fortherealm.plugin.utilities.WeaponEnum;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BowListener implements Listener {
 
     private Plugin plugin = Main.getInstance();
     private static final int ARROW_VELOCITY_MULT = 3;
-    private static double DAMAGE_AMT = 0.0;
-    private static double speed = 0.0;
 
     @EventHandler
     public void onDraw(PlayerInteractEvent e) {
 
         // null check
-        if (e.getItem() == null) { return; }
-
-        // iterate through the bow's attributes, retrieve the weapon damage
-        NBTItem nbti = new NBTItem(e.getItem());
-        NBTList list = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
-        for(int i = 0; i < list.size(); i++){
-            NBTListCompound lc = list.getCompound(i);
-            if(lc.getString("Name").equals("custom.bowDamage")){
-                DAMAGE_AMT = lc.getDouble("Amount");
-            }
+        if (e.getItem() == null) {
+            return;
         }
 
-        // iterate through the bow's attriutes, retrieve the weapon speed
-        for(int i = 0; i < list.size(); i++){
-            NBTListCompound lc = list.getCompound(i);
-            if(lc.getString("Name").equals("custom.bowSpeed")){
-                speed = lc.getDouble("Amount");
-            }
-        }
+        // retrieve the weapon type
+        ItemStack artifact = e.getItem();
+        WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+        double cooldown = e.getPlayer().getCooldown(artifact.getType());
+        double speed = AttributeUtil.getCustomDouble(artifact, "custom.bowSpeed");
 
-        Player player = e.getPlayer();
+        // only listen for items that can be artifact weapons
+        if (artifactType == null) return;
 
-        if (e.getItem().getType() == Material.BOW) {
-            if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        // only listen for staves
+        if (!(artifactType.equals(WeaponEnum.BOW))) return;
 
-                // don't fire arrow if they're sneaking, since they're casting a spell
-                if (player.isSneaking()) {
-                    return;
-                }
+        Player pl = e.getPlayer();
 
-                // implement cooldown system
-                if (player.getCooldown(Material.BOW) <= 0) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        // only listen for left clicks
+        if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
-                    // fire a custom arrow
-                    final Vector direction = player.getEyeLocation().getDirection().multiply(ARROW_VELOCITY_MULT);
+        // only apply cooldown if its not already active
+        if (cooldown != 0) return;
 
-                    Arrow myArrow = player.getWorld().spawn
-                            (player.getEyeLocation().add
-                                    (direction.getX(), direction.getY(), direction.getZ()), Arrow.class);
 
-                    myArrow.setVelocity(direction);
+        // don't fire arrow if they're sneaking, since they're casting a spell
+        if (pl.isSneaking()) return;
 
-                    myArrow.setShooter(player);
+        pl.playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
 
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            Location arrowLoc = myArrow.getLocation();
-                            player.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
-                            if(myArrow.isDead() || myArrow.isOnGround()) {
-                                this.cancel();
-                            }
-                        }
-                    }.runTaskTimer(plugin, 0, 1L);
+        // fire a custom arrow
+        final Vector direction = pl.getEyeLocation().getDirection().multiply(ARROW_VELOCITY_MULT);
 
-                    player.setCooldown(Material.BOW, (int) speed*20);
+        Arrow myArrow = pl.getWorld().spawn
+                (pl.getEyeLocation().add
+                        (direction.getX(), direction.getY(), direction.getZ()), Arrow.class);
 
+        myArrow.setVelocity(direction);
+        myArrow.setShooter(pl);
+
+        // remove the arrow
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location arrowLoc = myArrow.getLocation();
+                pl.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
+                if (myArrow.isDead() || myArrow.isOnGround()) {
+                    this.cancel();
                 }
             }
+        }.runTaskTimer(plugin, 0, 1L);
+
+        // set the cooldown
+        if (speed != 0) {
+            pl.setCooldown(artifact.getType(), (int) (20 / (24 + speed)));
         }
     }
 
@@ -109,27 +107,44 @@ public class BowListener implements Listener {
     // method to handle custom damage for bows
     @EventHandler(priority = EventPriority.HIGH)
     public void onDamage(final EntityDamageByEntityEvent e) {
-        if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
 
-            // cancel the event
-            e.setCancelled(true);
+        // only listen for arrows
+        if (!(e.getDamager() instanceof Arrow)) return;
 
-            // grab our variables
-            Player pl = (Player)e.getEntity();
-            Arrow arrow = (Arrow) e.getDamager();
-            Player damager = (Player) arrow.getShooter();
+        Arrow arrow = (Arrow) e.getDamager();
 
-            // remove the arrow
-            new BukkitRunnable(){
-                public void run() {
-                    ((CraftPlayer)pl).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object)0);
-                }
-            }.runTaskLater(Main.getInstance(), 3);
+        // only listen for arrows shot by a player
+        if (!(arrow.getShooter() instanceof Player)) return;
 
-            // damage the entity
-            if (!(e.getEntity().getType().isAlive())) { return; }
-            Damageable victim = (Damageable) e.getEntity();
-            victim.damage((int) (DAMAGE_AMT/2), damager);
+        // get our entity
+        if (!(e.getEntity().getType().isAlive())) return;
+
+        Player damager = (Player) arrow.getShooter();
+
+        // grab our variables
+        Damageable victim = (Damageable) e.getEntity();
+        ItemStack artifact = damager.getInventory().getItem(0);
+
+        // retrieve the weapon damage, cooldown
+        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
+        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+
+        // cancel the event
+        e.setCancelled(true);
+
+        // remove the arrow
+        new BukkitRunnable() {
+            public void run() {
+                ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
+            }
+        }.runTaskLater(Main.getInstance(), 3);
+
+        // apply attack effects, random damage amount
+        if (maxDamage != 0) {
+            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+            victim.damage(randomNum, damager);
+        } else {
+            victim.damage(minDamage, damager);
         }
     }
 

@@ -48,12 +48,12 @@ public class TabListManager implements Listener {
         // header, footer
         tab.setHeaderFooter
                 (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "For The Realm\n"
-                                + ChatColor.GOLD + ChatColor.BOLD + "A New Kind of MMORPG",
-                ChatColor.GREEN + "Visit our website: " + ChatColor.GOLD + "www.fortherealm.us");
+                                + ChatColor.WHITE + ChatColor.BOLD + "A New Kind of MMORPG",
+                ChatColor.RED + "Visit our website: " + ChatColor.GOLD + "www.fortherealm.us");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem
-                (ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]",0, Skins.getDot(ChatColor.WHITE)));
+                (ChatColor.YELLOW + "" + ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]",0, Skins.getDot(ChatColor.YELLOW)));
 
         // fill column with online players
         int i = 0;
@@ -85,7 +85,7 @@ public class TabListManager implements Listener {
 
         // Column 4 (Friends)
         tab.set(3, 0, new TextTabItem
-                (ChatColor.AQUA + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.AQUA)));
+                (ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.DARK_GREEN)));
     }
 
     // update tablist on player quit
