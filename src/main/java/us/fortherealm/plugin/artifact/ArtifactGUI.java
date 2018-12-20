@@ -53,7 +53,7 @@ public class ArtifactGUI implements InventoryProvider {
                         0),
                         e -> {
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-                            player.closeInventory();
+                            SpellsGUI.ARTIFACT_SPELLS.open(player);
                         }));
 
         // close inventory

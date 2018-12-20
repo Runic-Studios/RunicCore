@@ -62,20 +62,18 @@ public class StavesListener  implements Listener {
 
         // cancel the event, run custom mechanics
         e.setCancelled(true);
+
+        // if they're sneaking, they're casting a spell. so we don't fire the attack.
+        if (pl.isSneaking()) return;
+
         staffAttack(artifact, pl);
     }
 
-    private void staffAttack(ItemStack artifact, Player pl) {//, PlayerInteractEvent e
+    private void staffAttack(ItemStack artifact, Player pl) {
 
         // retrieve the weapon damage, cooldown
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
-        double speed = AttributeUtil.getGenericDouble(artifact, "generic.attackSpeed");
-
-        // set the cooldown
-        if (speed != 0) {
-            pl.setCooldown(artifact.getType(), (int) (20/(24+speed)));
-        }
 
         // create our vector to be used later
         Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);

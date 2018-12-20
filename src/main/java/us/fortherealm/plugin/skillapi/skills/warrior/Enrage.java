@@ -21,7 +21,12 @@ public class Enrage extends Skill {
 
     // constructor
     public Enrage() {
-        super("Enrage", "channel for 5s, buff for 10s", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+        super("Enrage",
+                "For " + CHANNEL_DURATION + " seconds, you channel a powerful" +
+                        "\nrage and may not move. After, you gain" +
+                        "\nan immense boost of speed and strength" +
+                        "\nfor " + BUFF_DURATION + " seconds!",
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 
     // skill execute code

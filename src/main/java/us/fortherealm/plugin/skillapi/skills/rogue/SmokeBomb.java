@@ -31,7 +31,10 @@ public class SmokeBomb extends Skill {
 
     // constructor
     public SmokeBomb() {
-        super("Smoke Bomb", "you fire a thing that shoots up and blinds and poisons enemies",
+        super("Smoke Bomb",
+                "You fire a cloud of toxic smoke that" +
+                        "\ndeals " + DAMAGE_AMT + " damage and blinds enemies for" +
+                        "\n" + DURATION + " seconds!",
                 ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 

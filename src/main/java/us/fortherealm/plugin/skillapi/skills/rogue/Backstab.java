@@ -15,12 +15,14 @@ import java.util.UUID;
 public class Backstab extends Skill {
 
     // globals, duration measured in seconds
+    private static final double DAMAGE_MULT = 1.5;
     private static final int DURATION = 10;
     private HashMap<UUID, Long> stabbers = new HashMap<>();
 
     // constructor
     public Backstab() {
-        super("Backstab", "Self buff. For " + DURATION + " seconds, striking enemies from behind deals 150% dmg",
+        super("Backstab",
+                "For " + DURATION + " seconds, striking enemies from\nbehind deals " + (int) (DAMAGE_MULT*100) + "% weapon damage!",
                 ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 
@@ -51,11 +53,9 @@ public class Backstab extends Skill {
                     && player.getLocation().getDirection().dot(e.getEntity().getLocation().getDirection()) >= 0.0D) {
                 // if the dot-product of both entitys' vectors is greater than 0 (positive),
                 // then they're facing the same direction and it's a back stab
-                e.setDamage(e.getDamage() * 1.5);
-                //e.getEntity().getWorld().spawnParticle(Particle.CRIT,
-                        //e.getEntity().getLocation().add(0,1.5,0), 30, 0, 0.2F, 0.2F, 0.2F);
+                e.setDamage(e.getDamage() * DAMAGE_MULT);
                 e.getEntity().getWorld().spawnParticle(Particle.REDSTONE, e.getEntity().getLocation(),
-                        25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.YELLOW, 1));
+                        25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.RED, 1));
 
                 e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 0.5F, 0.6F);
             }

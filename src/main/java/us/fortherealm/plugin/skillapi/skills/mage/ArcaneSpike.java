@@ -24,7 +24,11 @@ public class ArcaneSpike extends Skill {
 
     // constructor
     public ArcaneSpike() {
-        super("Arcane Spike", "Shoots three beams of ice.", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+        super("Arcane Spike",
+                "You launch three beams of arcane magic!" +
+                "\nEach beam deals " + DAMAGE_AMOUNT + " damage to enemies " +
+                "\nit passes through.",
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
         this.hasBeenHit = new HashMap<>();
     }
 

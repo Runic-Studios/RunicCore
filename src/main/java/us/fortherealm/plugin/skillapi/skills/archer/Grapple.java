@@ -21,10 +21,15 @@ public class Grapple extends Skill {
     // globals
     private HashMap<Arrow, UUID> hooks = new HashMap<>();
     private HashMap<UUID, Long> safefall = new HashMap<>();
+    private static double HOOK_LENGTH = 30.0;
 
     // constructor
     public Grapple() {
-        super("Grapple", "fire a grappling hook", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
+        super("Grapple",
+                "You fire a grappling hook which pulls" +
+                        "\nyou to your target location, up to a max" +
+                        "\nof " + (int) HOOK_LENGTH + " blocks!",
+                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
     }
 
     // skill execute code
@@ -56,7 +61,7 @@ public class Grapple extends Skill {
                 }
                 if (arrow.isOnGround()) {
                     this.cancel();
-                    if (arrowLoc.distance(startLoc) > 30.0D) {
+                    if (arrowLoc.distance(startLoc) > HOOK_LENGTH) {
                         pl.sendMessage(ChatColor.RED + "Your hook flew too far!");
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
                     } else {

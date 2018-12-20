@@ -1,6 +1,10 @@
 package us.fortherealm.plugin.listeners;
 
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +21,7 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import us.fortherealm.plugin.utilities.DamageIndicators;
+import us.fortherealm.plugin.utilities.WeaponEnum;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,19 +44,20 @@ public class DamageListener implements Listener {
         // only listen for when a player swings
         if (damager instanceof Player) {
             ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
+            WeaponEnum artifactType = WeaponEnum.matchType(artifact);
             int damage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
             int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+            int slot = ((Player) damager).getInventory().getHeldItemSlot();
 
+            // don't fire attack if they're sneaking, since they're casting a spell
+            if (((Player) damager).isSneaking() && slot == 0) {
+                e.setCancelled(true);
+                return;
+            }
 
             // ignore bows, staves, null check, ignore items without the attribute, check for cooldown
-            if (artifact != null
-                    && damage != 0
-                    && (!(artifact.getType().equals(Material.BOW)
-                    || artifact.getType().equals(Material.WOODEN_HOE)
-                    || artifact.getType().equals(Material.STONE_HOE)
-                    || artifact.getType().equals(Material.IRON_HOE)
-                    || artifact.getType().equals(Material.GOLDEN_HOE)
-                    || artifact.getType().equals(Material.DIAMOND_HOE)))) {
+            if (artifact != null && damage != 0 &&
+                    (!(artifactType.equals(WeaponEnum.BOW) || artifactType.equals(WeaponEnum.STAFF)))) {
                 if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
                     if (maxDamage != 0) {
                         int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);

@@ -22,11 +22,13 @@ public class Barrage extends Skill {
 
     // globals
     private HashMap<Arrow, UUID> bArrows = new HashMap<>();
-    private final int DAMAGE_MULTIPLIER = 2;
+    private static final int DAMAGE_MULTIPLIER = 2;
 
     // constructor
     public Barrage() {
-        super("Barrage", "fire arrows that deal double damage and daze enemies", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
+        super("Barrage",
+                "You launch a volley of five magical arrows\nthat deal " + (DAMAGE_MULTIPLIER*100) + "% weapon damage!",
+                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
     }
 
     // skill execute code

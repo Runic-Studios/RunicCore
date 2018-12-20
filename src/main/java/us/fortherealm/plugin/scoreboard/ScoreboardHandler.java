@@ -25,13 +25,11 @@ public class ScoreboardHandler implements Listener {
                 public void run() {
                     createScoreboard(e.getPlayer());
                     updateSideInfo(e.getPlayer());
-                    updateHealthbar(e.getPlayer());
                 }
             }.runTaskLater(Main.getInstance(), 20L);
         } else {
             createScoreboard(e.getPlayer());
             updateSideInfo(e.getPlayer());
-            updateHealthbar(e.getPlayer());
         }
     }
 
@@ -45,11 +43,6 @@ public class ScoreboardHandler implements Listener {
         Objective sidebar = board.registerNewObjective("sidebar", "dummy");
         sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lFor The Realm     ");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-        // setup health below the nameplate
-        Objective healthbar = board.registerNewObjective("healthbar", "health");
-        healthbar.setDisplayName(ChatColor.RED + "❤");
-        healthbar.setDisplaySlot(DisplaySlot.BELOW_NAME);
 
         // set the board!
         pl.setScoreboard(board);
@@ -89,20 +82,6 @@ public class ScoreboardHandler implements Listener {
         side.setScore(1);
     }
 
-    public void updateHealthbar(Player pl) {
-
-        Objective healthbar = pl.getScoreboard().getObjective("healthbar");
-
-        // ensure the scoreboard objective exists
-        if (healthbar == null) { return; }
-
-        // updates the health below the nameplate for all OTHER players
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            Score score = healthbar.getScore(online.getName());
-            score.setScore((int) online.getHealth());
-        }
-    }
-
     public void updatePlayerInfo(Player pl) {
 
         Scoreboard board = pl.getScoreboard();
@@ -126,6 +105,9 @@ public class ScoreboardHandler implements Listener {
 
     private String playerClass(Player pl) {
         String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class");
+        if (className == null) {
+            className = "None";
+        }
         return ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className + ChatColor.GRAY + " - " + ChatColor.GREEN + pl.getLevel();
     }
 

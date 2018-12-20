@@ -18,12 +18,15 @@ import java.util.UUID;
 public class Parry extends Skill {
 
     // globals (eventually I'd like to move the events back in here)
-    private double LAUNCH_PATH_MULT = 1.5;
     private HashMap<UUID, Long> noFall = new HashMap<>();
+    private static final double LAUNCH_PATH_MULT = 1.5;
+    private static final int DURATION = 2;
 
     // constructor
     public Parry() {
-        super("Parry", "You leap", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 8);
+        super("Parry", "You launch yourself backwards in the air!" +
+                "\nFor the next " + DURATION + " seconds, you are protected" +
+                "\nfrom fall damage.", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 8);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class Parry extends Skill {
                 noFall.remove(uuid);
                 pl.sendMessage(ChatColor.GRAY + "You lost safefall!");
             }
-        }.runTaskLater(Main.getInstance(), 40L);
+        }.runTaskLater(Main.getInstance(), (DURATION*20));
     }
 
     // prevent fall damage if the pl is parrying

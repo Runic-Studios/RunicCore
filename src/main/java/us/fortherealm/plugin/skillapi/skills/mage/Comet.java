@@ -26,7 +26,10 @@ public class Comet extends Skill {
 
     // constructor
     public Comet() {
-        super("Comet", "coming soon",
+        super("Comet",
+                "You call a comet to fall from the sky!" +
+                        "\nUpon impact, the comet deals " + DAMAGE_AMT + " damage" +
+                        "\nto all enemies within " + BLAST_RADIUS + " blocks!",
                 ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 

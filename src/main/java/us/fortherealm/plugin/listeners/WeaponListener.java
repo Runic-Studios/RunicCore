@@ -3,6 +3,8 @@ package us.fortherealm.plugin.listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.attributes.AttributeUtil;
@@ -31,7 +33,14 @@ public class WeaponListener implements Listener {
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
 
-        if (artifactType.equals(WeaponEnum.BOW) || artifactType.equals(WeaponEnum.STAFF)) return;
+        // ignore bows
+        if (artifactType.equals(WeaponEnum.BOW)) return;
+
+        // don't fire cooldown if they're sneaking, since they're casting a spell
+        if (e.getPlayer().isSneaking()) {
+            e.setCancelled(true);
+            return;
+        }
 
         double speed = AttributeUtil.getGenericDouble(artifact, "generic.attackSpeed");
         if (speed != 0) {

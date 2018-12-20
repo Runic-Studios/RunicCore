@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.artifact;
 
+import de.tr7zw.itemnbtapi.NBTItem;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -11,8 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.attributes.AttributeUtil;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class SkinsGUI implements InventoryProvider {
 
@@ -42,7 +45,7 @@ public class SkinsGUI implements InventoryProvider {
                         ChatColor.YELLOW,
                         meta.getDisplayName(),
                         "Click an appearance to change your skin!",
-                        "Click here to return to the artifact",
+                        "Click here to return to the editor",
                         ((Damageable) meta).getDamage()),
                         e -> {
                             ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
@@ -66,28 +69,6 @@ public class SkinsGUI implements InventoryProvider {
                 displaySkinsWarrior(player, contents);
                 break;
         }
-    }
-
-    // used for animated inventories
-    @Override
-    public void update(Player player, InventoryContents contents) {
-    }
-
-    // creates the visual menu
-    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, String desc, String desc2, int durability) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(dispColor + displayName);
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + desc);
-        if (!desc2.equals("")) lore.add(ChatColor.DARK_GRAY + desc2);
-        meta.setLore(lore);
-        ((Damageable) meta).setDamage(durability);
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
-        return item;
     }
 
     // displays an entire class' skin screen, with booleans for unlocked skins
@@ -205,6 +186,28 @@ public class SkinsGUI implements InventoryProvider {
 
         // update the artifact!
         player.getInventory().setItem(0, artifact);
+    }
+
+    // used for animated inventories
+    @Override
+    public void update(Player player, InventoryContents contents) {
+    }
+
+    // creates the visual menu
+    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, String desc, String desc2, int durability) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(dispColor + displayName);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + desc);
+        if (!desc2.equals("")) lore.add(ChatColor.DARK_GRAY + desc2);
+        meta.setLore(lore);
+        ((Damageable) meta).setDamage(durability);
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        item.setItemMeta(meta);
+        return item;
     }
 }
 

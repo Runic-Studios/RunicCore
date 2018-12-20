@@ -21,6 +21,7 @@ public class Rejuvenate extends Skill {
     // grab our globals
     private HealUtil hu = new HealUtil();
     private HashMap<UUID, List<UUID>> hasBeenHit;
+    private static final int HEAL_AMT = 25;
     private final int RADIUS = 10;
     private final int RANGE = 15;
     private final double BEAM_WIDTH = 2.0;
@@ -31,7 +32,11 @@ public class Rejuvenate extends Skill {
 
     // constructor
     public Rejuvenate() {
-        super("Rejuvenate", "you fire a thing that heals", ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 10);
+        super("Rejuvenate",
+                "You launch a beam of healing magic," +
+                "\nrestoring " + HEAL_AMT + " health to all party members" +
+                "\nit passes through.",
+                ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 10);
         this.hasBeenHit = new HashMap<>();
     }
 
@@ -120,7 +125,7 @@ public class Rejuvenate extends Skill {
                         ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                     } else {
-                        hu.healPlayer(25, ally, " from " + ChatColor.WHITE + storedName);
+                        hu.healPlayer(HEAL_AMT, ally, " from " + ChatColor.WHITE + storedName);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                         ally.getWorld().spawnParticle(Particle.HEART, ally.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 

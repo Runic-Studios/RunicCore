@@ -57,19 +57,19 @@ public class LoreGenerator {
         lore.add(ChatColor.GRAY + "Stats:");
         switch (className) {
             case "Archer":
-                fillLore(lore, nbti, "Archer");
+                fillLore(lore, artifact, "Archer");
                 break;
             case "Cleric":
-                fillLore(lore, nbti, "Cleric");
+                fillLore(lore, artifact, "Cleric");
                 break;
             case "Mage":
-                fillLore(lore, nbti, "Mage");
+                fillLore(lore, artifact, "Mage");
                 break;
             case "Rogue":
-                fillLore(lore, nbti, "Rogue");
+                fillLore(lore, artifact, "Rogue");
                 break;
             case "Warrior":
-                fillLore(lore, nbti, "Warrior");
+                fillLore(lore, artifact, "Warrior");
                 break;
         }
 
@@ -88,14 +88,14 @@ public class LoreGenerator {
     }
 
     // creates lore based on attributes
-    private static void fillLore(ArrayList<String> lore, NBTItem nbti, String className) {
-        double min = nbti.getDouble("custom.minDamage");
-        double max = nbti.getDouble("custom.maxDamage");
+    private static void fillLore(ArrayList<String> lore, ItemStack item, String className) {
+        double min = AttributeUtil.getCustomDouble(item, "custom.minDamage");
+        double max = AttributeUtil.getCustomDouble(item, "custom.maxDamage");
         double speed;
         if (className.equals("Archer")) {
-            speed = AttributeUtil.getCustomDouble(nbti.getItem(), "custom.bowSpeed");
+            speed = AttributeUtil.getCustomDouble(item, "custom.bowSpeed");
         } else {
-            speed = AttributeUtil.getGenericDouble(nbti.getItem(), "generic.attackSpeed");
+            speed = AttributeUtil.getGenericDouble(item, "generic.attackSpeed");
         }
         double roundedSpeed = round(24+speed);
         lore.add(ChatColor.RED + "Att Speed: " + roundedSpeed);

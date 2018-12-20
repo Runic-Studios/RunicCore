@@ -38,7 +38,6 @@ public class HealUtil  {
             @Override
             public void run() {
                 sbh.updateSideInfo(player);
-                sbh.updateHealthbar(player);
             }
         }.runTaskLater(Main.getInstance(), 1);
     }

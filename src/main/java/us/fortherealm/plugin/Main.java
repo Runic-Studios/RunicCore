@@ -13,6 +13,8 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.fortherealm.plugin.professions.ProfManager;
+//import us.fortherealm.plugin.professions.ResourceAdder;
 import us.fortherealm.plugin.tablist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
@@ -26,12 +28,14 @@ public class Main extends JavaPlugin {
     // handlers
     private static Main instance;
     private static PartyManager partyManager;
+    private static ProfManager profManager;
     private static SkillManager skillManager;
     private static TabListManager tabListManager;
 
     // getters for handlers
     public static Main getInstance() { return instance; }
     public static PartyManager getPartyManager() { return partyManager; }
+    public static ProfManager getProfManager() { return profManager; }
     public static SkillManager getSkillManager() { return skillManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
 
@@ -40,6 +44,7 @@ public class Main extends JavaPlugin {
         // instantiate everything we need
         instance = this;
         partyManager = new PartyManager();
+        profManager = new ProfManager();
         skillManager = new SkillManager();
         tabListManager = new TabListManager(this);
 
@@ -88,6 +93,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SkillUseEvent(), this);
         pm.registerEvents(new WeaponListener(), this);
+        //pm.registerEvents(new ResourceAdder(), this);
     }
     
     private void registerCommands() {

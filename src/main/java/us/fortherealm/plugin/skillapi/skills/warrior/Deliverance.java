@@ -28,8 +28,12 @@ public class Deliverance extends Skill {
 
     // constructor
     public Deliverance() {
-        super("Deliverance", "summon a barrier of holy power around yourself for 8 seconds." +
-                        "the barrier repels all enemies. party members may pass through the barrier freely. during this time you may not move",
+        super("Deliverance",
+                "You summon a barrier of holy power" +
+                        "\naround yourself for " + BUBBLE_DURATION + " seconds! The barrier" +
+                        "\nrepels all enemies, but party members may" +
+                        "\npass through it freely. During this time," +
+                        "\nyou may not move.",
                 ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 9);
     }
 

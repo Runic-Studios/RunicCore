@@ -22,6 +22,7 @@ import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.bukkit.Color.*;
 
@@ -237,7 +238,7 @@ public class ClassGUI implements InventoryProvider {
         // generate our lore
         LoreGenerator.generateArtifactLore(artifact, ChatColor.YELLOW, itemName, className, 0);
 
-        // set the player's artifact. we're done.
+        // set the player's artifact
         player.getInventory().setItem(0, artifact);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
     }
@@ -279,7 +280,6 @@ public class ClassGUI implements InventoryProvider {
         Main.getInstance().reloadConfig();
         sbh.updatePlayerInfo(player);
         sbh.updateSideInfo(player);
-        sbh.updateHealthbar(player);
     }
 
     private void launchFirework(Player p, Color color) {

@@ -76,7 +76,6 @@ public class ScoreboardListener implements Listener {
             @Override
             public void run() {
                 sbh.updateSideInfo(pl);
-                sbh.updateHealthbar(pl);
             }
         }.runTaskLater(plugin, 1);
     }
