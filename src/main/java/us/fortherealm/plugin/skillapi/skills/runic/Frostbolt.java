@@ -29,7 +29,11 @@ public class Frostbolt extends Skill {
 
     // constructor
     public Frostbolt() {
-        super("Frostbolt", "Shoots a Frostbolt", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+        super("Frostbolt",
+                "You launch a projectile bolt of ice" +
+                        "\nwhich deals " + DAMAGE_AMT + " damage on impact" +
+                        "\nand slows its target!",
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
         this.hasBeenHit = new HashMap<>();
     }
 

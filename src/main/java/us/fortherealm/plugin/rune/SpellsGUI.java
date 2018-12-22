@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.artifact;
+package us.fortherealm.plugin.rune;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -22,8 +22,8 @@ public class SpellsGUI implements InventoryProvider {
     /**
      * CHANGE THE ID FOR EACH NEW GUI
      */
-    public static final SmartInventory ARTIFACT_SPELLS = SmartInventory.builder()
-            .id("artifactSpells")
+    public static final SmartInventory RUNIC_SPELLS = SmartInventory.builder()
+            .id("runicSpells")
             .provider(new SpellsGUI())
             .size(2, 9)
             .title(ChatColor.GREEN + "" + ChatColor.BOLD + "Available Spells")
@@ -32,16 +32,13 @@ public class SpellsGUI implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
 
-        // determine the player's class
-        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class").toString();
-
-        // grab player's artifact
-        ItemStack artifact = player.getInventory().getItem(0);
-        ItemMeta meta = artifact.getItemMeta();
+        // grab player's rune
+        ItemStack rune = player.getInventory().getItem(1);
+        ItemMeta meta = rune.getItemMeta();
 
         // build the menu description, updates live with their current skills
-        String primarySpell = AttributeUtil.getSpell(artifact, "primarySpell");
-        String secondarySpell = AttributeUtil.getSpell(artifact, "secondarySpell");
+        String primarySpell = AttributeUtil.getSpell(rune, "primarySpell");
+        String secondarySpell = AttributeUtil.getSpell(rune, "secondarySpell");
         ArrayList<String> desc = new ArrayList<>();
         desc.add("");
         desc.add(ChatColor.GRAY + "Spells:");
@@ -54,72 +51,33 @@ public class SpellsGUI implements InventoryProvider {
 
         // build the menu item
         contents.set(0, 4, ClickableItem.of
-                (menuItem(artifact.getType(),
+                (menuItem(rune.getType(),
                         ChatColor.YELLOW,
                         meta.getDisplayName(),
                         desc,
                         ((Damageable) meta).getDamage()),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
+                            RuneGUI.CUSTOMIZE_RUNE.open(player);
                         }));
 
-        // artifact spell displays are class-specific
-        switch (className) {
-            case "Archer":
-                displaySpellsArcher(player, contents);
-                break;
-            case "Cleric":
-                displaySpellsCleric(player, contents);
-                break;
-            case "Mage":
-                displaySpellsMage(player, contents);
-                break;
-            case "Rogue":
-                displaySpellsRogue(player, contents);
-                break;
-            case "Warrior":
-                displaySpellsWarrior(player, contents);
-                break;
-        }
+        // runic spells are NOT class specific
+        displayRunicSpells(player, contents);
     }
 
-    private void displaySpellsArcher(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Barrage", "Archer");
-        displaySpell(player, contents, 1, 1, "Grapple", "Archer");
-        displaySpell(player, contents, 1, 2, "Parry", "Archer");
-    }
-
-    private void displaySpellsCleric(Player player, InventoryContents contents) {
-        //displaySpell(player, contents, 1, 0, "Lightwell", "Cleric");
-        displaySpell(player, contents, 1, 1, "Rejuvenate", "Cleric");
-        displaySpell(player, contents, 1, 2, "Windstride", "Cleric");
-    }
-
-    private void displaySpellsMage(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Arcane Spike", "Mage");
-        displaySpell(player, contents, 1, 1, "Comet", "Mage");
-        displaySpell(player, contents, 1, 2, "Discharge", "Mage");
-    }
-
-    private void displaySpellsRogue(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Backstab", "Rogue");
-        //displaySpell(player, contents, 1, 1, "Cloak", "Rogue");
-        displaySpell(player, contents, 1, 2, "Smoke Bomb", "Rogue");
-    }
-
-    private void displaySpellsWarrior(Player player, InventoryContents contents) {
-        //displaySpell(player, contents, 1, 0, "Charge", "Warrior");
-        displaySpell(player, contents, 1, 1, "Enrage", "Warrior");
-        displaySpell(player, contents, 1, 2, "Deliverance", "Warrior");
+    private void displayRunicSpells(Player player, InventoryContents contents) {
+        displaySpell(player, contents, 1, 0, "Blink");
+        displaySpell(player, contents, 1, 1, "Heal");
+        displaySpell(player, contents, 1, 2, "Fireball");
+        displaySpell(player, contents, 1, 3, "Frostbolt");
+        displaySpell(player, contents, 1, 4, "Sprint");
     }
 
     // display for each skin
-    private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName, String className) {
+    private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName) {
 
         String[] desc = Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n");
-        ItemStack item = player.getInventory().getItem(0);
-        String itemName = item.getItemMeta().getDisplayName();
+        ItemStack item = player.getInventory().getItem(1);
         if (player.hasPermission("ftr.spells." + spellName)) {
             contents.set(row, slot, ClickableItem.of
                     (spellMenuItem(Material.ENCHANTED_BOOK,
@@ -127,9 +85,9 @@ public class SpellsGUI implements InventoryProvider {
                             spellName, desc),
                             e -> {
                                 if (e.isLeftClick()) {
-                                    updateArtifactSpell(player, item, "primarySpell", spellName, itemName, className);
+                                    updateArtifactSpell(player, item, "primarySpell", spellName);
                                 } else {
-                                    updateArtifactSpell(player, item, "secondarySpell", spellName, itemName, className);
+                                    updateArtifactSpell(player, item, "secondarySpell", spellName);
                                 }
                             }));
         } else {
@@ -140,11 +98,11 @@ public class SpellsGUI implements InventoryProvider {
                             e -> {
                                 player.sendMessage(ChatColor.RED + "You haven't unlocked this spell yet!");
                             }));
-            }
+        }
     }
 
     // updates a spell
-    private void updateArtifactSpell(Player pl, ItemStack item, String spellSlot, String spellName, String itemName, String className) {
+    private void updateArtifactSpell(Player pl, ItemStack item, String spellSlot, String spellName) {
         // check so players can't have two of the same spell
         String otherSpell = "";
 
@@ -156,11 +114,11 @@ public class SpellsGUI implements InventoryProvider {
 
         if (!otherSpell.equals(spellName)) {
             item = AttributeUtil.addSpell(item, spellSlot, spellName);
-            LoreGenerator.generateArtifactLore(item, ChatColor.YELLOW, itemName, className, 0);
-            pl.getInventory().setItem(0, item);
-            SpellsGUI.ARTIFACT_SPELLS.open(pl);
+            RuneLoreGenerator.generateRuneLore(item);
+            pl.getInventory().setItem(1, item);
+            SpellsGUI.RUNIC_SPELLS.open(pl);
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-            pl.sendMessage(ChatColor.GREEN + "You imbued your artifact with " + spellName + "!");
+            pl.sendMessage(ChatColor.GREEN + "You imbued your rune with " + spellName + "!");
         } else {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             pl.sendMessage(ChatColor.RED + "You can't imbue the same skill in two slots.");

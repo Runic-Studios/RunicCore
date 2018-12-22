@@ -22,7 +22,10 @@ public class Fireball extends Skill {
 
     // constructor
     public Fireball() {
-        super ("Fireball", "Shoots a fireball.", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+        super ("Fireball",
+                "You launch a projectile fireball" +
+                        "\nwhich deals " + DAMAGE_AMOUNT + " damage on impact!",
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 
     // skill execute code

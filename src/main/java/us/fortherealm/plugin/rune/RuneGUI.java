@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.artifact;
+package us.fortherealm.plugin.rune;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -13,51 +13,35 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
-public class ArtifactGUI implements InventoryProvider {
+public class RuneGUI implements InventoryProvider {
 
     /**
      * CHANGE THE ID FOR EACH NEW GUI
      */
-    public static final SmartInventory CUSTOMIZE_ARTIFACT = SmartInventory.builder()
-            .id("artifactCustomization")
-            .provider(new us.fortherealm.plugin.artifact.ArtifactGUI())
+    public static final SmartInventory CUSTOMIZE_RUNE = SmartInventory.builder()
+            .id("runeCustomization")
+            .provider(new us.fortherealm.plugin.rune.RuneGUI())
             .size(1, 9)
-            .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Artifact Editor")
+            .title(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Rune Editor")
             .build();
 
     @Override
     public void init(Player player, InventoryContents contents) {
 
-        // grab player's artifact
-        ItemStack artifact = player.getInventory().getItem(0);
-        ItemMeta meta = artifact.getItemMeta();
-
-        // skin artifact
-        contents.set(0, 2, ClickableItem.of
-                (menuItem(artifact.getType(),
-                        ChatColor.YELLOW,
-                        "Skin Editor",
-                        "Click to customize your artifact skin",
-                        ((Damageable) meta).getDamage()),
-                        e -> {
-                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            SkinsGUI.ARTIFACT_SKINS.open(player);
-                        }));
-
-        // spell artifact
-        contents.set(0, 4, ClickableItem.of
+        // spell rune
+        contents.set(0, 3, ClickableItem.of
                 (menuItem(Material.FIRE_CHARGE,
                         ChatColor.GREEN,
                         "Spell Editor",
-                        "Click to customize your artifact abilities",
+                        "Click to customize your runic abilities",
                         0),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            SpellsGUI.ARTIFACT_SPELLS.open(player);
+                            SpellsGUI.RUNIC_SPELLS.open(player);
                         }));
 
         // close inventory
-        contents.set(0, 6, ClickableItem.of
+        contents.set(0, 5, ClickableItem.of
                 (menuItem(Material.BARRIER,
                         ChatColor.RED,
                         "Close",

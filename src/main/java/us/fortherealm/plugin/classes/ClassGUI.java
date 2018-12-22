@@ -1,16 +1,11 @@
 package us.fortherealm.plugin.classes;
 
-import de.tr7zw.itemnbtapi.NBTItem;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.*;
 import org.bukkit.entity.Firework;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -19,10 +14,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.artifact.LoreGenerator;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.rune.RuneLoreGenerator;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import static org.bukkit.Color.*;
 
@@ -245,30 +240,10 @@ public class ClassGUI implements InventoryProvider {
 
     // creates the player's rune
     private void setupRune(Player player) {
-
-        String primary = ChatColor.WHITE + "Left click§7: " + ChatColor.RED + "SLOT LOCKED";
-        String secondary = ChatColor.WHITE + "Right click§7: " + ChatColor.RED + "SLOT LOCKED";
-
-        // grab our variables
         ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
-        ItemMeta meta = rune.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ancient Rune");
-        lore.add("");
-        lore.add(ChatColor.GREEN + "Spells:");
-        lore.add(primary);
-        lore.add(secondary);
-        lore.add("");
-        lore.add(ChatColor.WHITE + "Click §7this item to open the editor.");
-        lore.add("");
-        lore.add(ChatColor.LIGHT_PURPLE + "Rune");
-
-        // set the player's rune
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        meta.setLore(lore);
-        rune.setItemMeta(meta);
+        rune = AttributeUtil.addSpell(rune, "primarySpell", ChatColor.RED + "LOCKED");
+        rune = AttributeUtil.addSpell(rune, "secondarySpell", ChatColor.RED + "LOCKED");
+        RuneLoreGenerator.generateRuneLore(rune);
         player.getInventory().setItem(1, rune);
     }
 

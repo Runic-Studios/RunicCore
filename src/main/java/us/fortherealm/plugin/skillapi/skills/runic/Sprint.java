@@ -21,7 +21,9 @@ public class Sprint extends Skill {
 
     // constructor
     public Sprint() {
-        super("Sprint","Increase your own move speed by...", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10);
+        super("Sprint",
+                "For " + BUFF_DURATION + " seconds, you gain a" +
+                        "\nmassive boost to your speed!", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10);
     }
 
     // skill execute code

@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ArtifactListener implements Listener {
 
-    // opens the artifact artifact
+    // opens the artifact editor
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
@@ -34,7 +34,7 @@ public class ArtifactListener implements Listener {
 
         // cancel the event, open the artifact
         e.setCancelled(true);
-        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
         ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
     }
 

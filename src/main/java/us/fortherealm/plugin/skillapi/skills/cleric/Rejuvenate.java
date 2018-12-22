@@ -121,7 +121,7 @@ public class Rejuvenate extends Skill {
                     if (ally.getHealth() == ally.getMaxHealth()) {
                         ally.sendMessage(
                                 ChatColor.WHITE + storedName
-                                        + ChatColor.GRAY + " tried to heal you, but you are currently at full health.");
+                                        + ChatColor.GRAY + " tried to heal you, but you are at full health.");
                         ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                     } else {

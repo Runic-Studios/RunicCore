@@ -17,7 +17,10 @@ public class Blink extends Skill {
 
     // constructor
     public Blink() {
-        super("Blink", "You blink", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+        super("Blink",
+                "You teleport forward, up to" +
+                        "\na distance of " + MAX_DIST + " blocks!",
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 
     // skill execute code

@@ -12,10 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.attributes.AttributeUtil;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 public class SkinsGUI implements InventoryProvider {
 
@@ -48,6 +46,7 @@ public class SkinsGUI implements InventoryProvider {
                         "Click here to return to the editor",
                         ((Damageable) meta).getDamage()),
                         e -> {
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                             ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
                         }));
 
@@ -71,100 +70,65 @@ public class SkinsGUI implements InventoryProvider {
         }
     }
 
-    // displays an entire class' skin screen, with booleans for unlocked skins
     private void displaySkinsArcher(Player player, InventoryContents contents) {
-
-        // todo: make permissions
-        // if (!they have permission) {
-        displaySkin(player, contents, 1, 0, Material.BOW, "Worn Stone Shortbow", "Unlock by reaching lv. 10!", 5, false);
-        // else
-        // displaySkin(player, contents, 1, 0, Material.STONE_HOE, "Worn Stone Cane", "Unlock by...", 0, true);
-
-
-        displaySkin(player, contents, 1, 1, Material.BOW, "Polished Silver Shortbow", "Unlock by reaching lv. 20!", 10, false);
-        displaySkin(player, contents, 1, 2, Material.BOW, "Victorious Gilded Shortbow", "Unlock by reaching lv. 30!", 15, false);
-        displaySkin(player, contents, 1, 3, Material.BOW, "Ancient Crystal Shortbow", "Unlock by reaching lv. 40!", 20, false);
+        displaySkin(player, contents, 1, 0, Material.BOW, "Stiff Oaken Shortbow", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.BOW, "Worn Stone Shortbow", "Unlock by reaching lv. 10!", 5, "stone_bow");
+        displaySkin(player, contents, 1, 2, Material.BOW, "Polished Silver Shortbow", "Unlock by reaching lv. 20!", 10, "iron_bow");
+        displaySkin(player, contents, 1, 3, Material.BOW, "Victorious Gilded Shortbow", "Unlock by reaching lv. 30!", 15, "golden_bow");
+        displaySkin(player, contents, 1, 4, Material.BOW, "Ancient Crystal Shortbow", "Unlock by reaching lv. 40!", 20, "diamond_bow");
     }
 
-    // displays an entire class' skin screen, with booleans for unlocked skins
     private void displaySkinsCleric(Player player, InventoryContents contents) {
-
-        // todo: make permissions
-        // if (!they have permission) {
-        displaySkin(player, contents, 1, 0, Material.STONE_SHOVEL, "Worn Stone Club", "Unlock by reaching lv. 10!", 0, false);
-        // else
-        // displaySkin(player, contents, 1, 0, Material.STONE_HOE, "Worn Stone Cane", "Unlock by...", 0, true);
-
-
-        displaySkin(player, contents, 1, 1, Material.IRON_SHOVEL, "Polished Silver Hammer", "Unlock by reaching lv. 20!", 0, false);
-        displaySkin(player, contents, 1, 2, Material.GOLDEN_SHOVEL, "Victorious Gilded Mace", "Unlock by reaching lv. 30!", 0, false);
-        displaySkin(player, contents, 1, 3, Material.DIAMOND_SHOVEL, "Ancient Crystal Maul", "Unlock by reaching lv. 40!", 0, false);
+        displaySkin(player, contents, 1, 0, Material.WOODEN_SHOVEL, "Worn Oaken Battleaxe", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.STONE_SHOVEL, "Worn Stone Club", "Unlock by reaching lv. 10!", 0, "stone_mace");
+        displaySkin(player, contents, 1, 2, Material.IRON_SHOVEL, "Polished Silver Hammer", "Unlock by reaching lv. 20!", 0, "iron_mace");
+        displaySkin(player, contents, 1, 3, Material.GOLDEN_SHOVEL, "Victorious Gilded Mace", "Unlock by reaching lv. 30!", 0, "golden_mace");
+        displaySkin(player, contents, 1, 4, Material.DIAMOND_SHOVEL, "Ancient Crystal Maul", "Unlock by reaching lv. 40!", 0, "diamond_mace");
     }
 
-    // displays an entire class' skin screen, with booleans for unlocked skins
     private void displaySkinsMage(Player player, InventoryContents contents) {
-
-        // todo: make permissions
-        // if (!they have permission) {
-        displaySkin(player, contents, 1, 0, Material.STONE_HOE, "Worn Stone Cane", "Unlock by reaching lv. 10!", 0, false);
-        // else
-        // displaySkin(player, contents, 1, 0, Material.STONE_HOE, "Worn Stone Cane", "Unlock by...", 0, true);
-
-
-        displaySkin(player, contents, 1, 1, Material.IRON_HOE, "Polished Silver Scepter", "Unlock by reaching lv. 20!", 0, false);
-        displaySkin(player, contents, 1, 2, Material.GOLDEN_HOE, "Victorious Gilded Staff", "Unlock by reaching lv. 30!", 0, false);
-        displaySkin(player, contents, 1, 3, Material.DIAMOND_HOE, "Ancient Crystal Greatstaff", "Unlock by reaching lv. 40!", 0, false);
-        displaySkin(player, contents, 1, 4, Material.IRON_HOE, "Primal Arcane Rod", "§8Unlocked by becoming an alpha backer.", 5, false);
+        displaySkin(player, contents, 1, 0, Material.WOODEN_HOE, "Sturdy Oaken Branch", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.STONE_HOE, "Worn Stone Cane", "Unlock by reaching lv. 10!", 0, "stone_staff");
+        displaySkin(player, contents, 1, 2, Material.IRON_HOE, "Polished Silver Scepter", "Unlock by reaching lv. 20!", 0, "iron_staff");
+        displaySkin(player, contents, 1, 3, Material.GOLDEN_HOE, "Victorious Gilded Staff", "Unlock by reaching lv. 30!", 0, "guilded_staff");
+        displaySkin(player, contents, 1, 4, Material.DIAMOND_HOE, "Ancient Crystal Greatstaff", "Unlock by reaching lv. 40!", 0, "diamond_staff");
+        displaySkin(player, contents, 1, 5, Material.IRON_HOE, "Primal Arcane Rod", "§8Unlocked by becoming an alpha backer.", 5, "arcane_staff");
     }
 
-    // displays an entire class' skin screen, with booleans for unlocked skins
     private void displaySkinsRogue(Player player, InventoryContents contents) {
-
-        // todo: make permissions
-        // if (!they have permission) {
-        displaySkin(player, contents, 1, 0, Material.STONE_SWORD, "Worn Stone Sword", "Unlock by reaching lv. 10!", 0, false);
-        // else
-        // displaySkin(player, contents, 1, 0, Material.STONE_SWORD, "Worn Stone Cane", "Unlock by...", 0, true);
-
-
-        displaySkin(player, contents, 1, 1, Material.IRON_SWORD, "Polished Silver Broadsword", "Unlock by reaching lv. 20!", 0, false);
-        displaySkin(player, contents, 1, 2, Material.GOLDEN_SWORD, "Victorious Gilded Longsword", "Unlock by reaching lv. 30!", 0, false);
-        displaySkin(player, contents, 1, 3, Material.DIAMOND_SWORD, "Ancient Crystal Greatsword", "Unlock by reaching lv. 40!", 0, false);
+        displaySkin(player, contents, 1, 0, Material.WOODEN_AXE, "Worn Oaken Battleaxe", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.STONE_SWORD, "Worn Stone Sword", "Unlock by reaching lv. 10!", 0, "stone_sword");
+        displaySkin(player, contents, 1, 2, Material.IRON_SWORD, "Polished Silver Broadsword", "Unlock by reaching lv. 20!", 0, "iron_sword");
+        displaySkin(player, contents, 1, 3, Material.GOLDEN_SWORD, "Victorious Gilded Longsword", "Unlock by reaching lv. 30!", 0, "golden_sword");
+        displaySkin(player, contents, 1, 4, Material.DIAMOND_SWORD, "Ancient Crystal Greatsword", "Unlock by reaching lv. 40!", 0, "diamond_sword");
     }
 
-    // displays an entire class' skin screen, with booleans for unlocked skins
     private void displaySkinsWarrior(Player player, InventoryContents contents) {
-
-        // todo: make permissions
-        // if (!they have permission) {
-        displaySkin(player, contents, 1, 0, Material.STONE_AXE, "Worn Stone Axe", "Unlock by reaching lv. 10!", 0, false);
-        // else
-        // displaySkin(player, contents, 1, 0, Material.STONE_AXE, "Worn Stone Cane", "Unlock by...", 0, true);
-
-
-        displaySkin(player, contents, 1, 1, Material.IRON_AXE, "Polished Silver Broadaxe", "Unlock by reaching lv. 20!", 0, false);
-        displaySkin(player, contents, 1, 2, Material.GOLDEN_AXE, "Victorious Gilded Reaver", "Unlock by reaching lv. 30!", 0, false);
-        displaySkin(player, contents, 1, 3, Material.DIAMOND_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 0, false);
+        displaySkin(player, contents, 1, 0, Material.WOODEN_AXE, "Worn Oaken Battleaxe", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.STONE_AXE, "Crumbling Stone Axe", "Unlock by reaching lv. 10!", 0, "stone_axe");
+        displaySkin(player, contents, 1, 2, Material.IRON_AXE, "Polished Silver Broadaxe", "Unlock by reaching lv. 20!", 0, "iron_axe");
+        displaySkin(player, contents, 1, 3, Material.GOLDEN_AXE, "Victorious Gilded Reaver", "Unlock by reaching lv. 30!", 0, "golden_axe");
+        displaySkin(player, contents, 1, 4, Material.DIAMOND_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 0, "diamond_axe");
     }
 
     // display for each skin
     private void displaySkin(Player player, InventoryContents contents, int row, int slot,
-                             Material material, String name, String desc, int durab, boolean isUnlocked) {
-        if (!isUnlocked) {
+                             Material material, String name, String desc, int durab, String perm) {
+
+        if (perm.equals("") || player.hasPermission("ftr.skins." + perm)) {
             contents.set(row, slot, ClickableItem.of
                     (menuItem(material,
-                            ChatColor.RED,
-                            name, desc, "", durab),
+                            ChatColor.YELLOW,
+                            name, ChatColor.GREEN + "Unlocked!", "", durab),
                             e -> {
-                        // todo: only do this if the skin is unlocked
                                 updateSkin(player, material, name, durab);
                                 SkinsGUI.ARTIFACT_SKINS.open(player);
                             }));
         } else {
             contents.set(row, slot, ClickableItem.of
                     (menuItem(material,
-                            ChatColor.YELLOW,
-                            name, ChatColor.GREEN + "Unlocked!", "", durab),
+                            ChatColor.RED,
+                            name, ChatColor.RED + desc, "", durab),
                             e -> {
                                 player.closeInventory();
                             }));
@@ -186,6 +150,8 @@ public class SkinsGUI implements InventoryProvider {
 
         // update the artifact!
         player.getInventory().setItem(0, artifact);
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+        player.sendMessage(ChatColor.GREEN + "Enjoy your new skin!");
     }
 
     // used for animated inventories

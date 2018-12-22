@@ -1,11 +1,8 @@
-package us.fortherealm.plugin.listeners;
+package us.fortherealm.plugin.rune;
 
-import net.minecraft.server.v1_13_R2.IChatBaseComponent;
-import net.minecraft.server.v1_13_R2.PacketPlayOutChat;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,30 +13,38 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class RuneListener implements Listener {
 
+    // opens the rune editor
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent runeevent) {
+    public void onInventoryClick(InventoryClickEvent e) {
 
-        Player player = (Player) runeevent.getWhoClicked();
-        int itemslot = runeevent.getSlot();
+        Player player = (Player) e.getWhoClicked();
+        int itemslot = e.getSlot();
 
-        // disable players from interacting with rune slot
-        if (itemslot == 1 && player.getGameMode() == GameMode.SURVIVAL && runeevent.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
-            runeevent.setCancelled(true);
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-            IChatBaseComponent comp = IChatBaseComponent.ChatSerializer
-                    .a("{\"text\":\"This is your §7rune §eslot. For more info on §7runes§e, click\",\"color\":\"yellow\",\"extra\":[{\"text\":\" [HERE]\",\"color\":\"green\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/runeinfo\"}}]}");
-            PacketPlayOutChat packet = new PacketPlayOutChat(comp);
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-        }
+        // only listen for the rune slot
+        if (itemslot != 1) return;
+
+        // don't trigger if there's no item in the slot to avoid null issues
+        if (player.getInventory().getItem(1) == null) return;
+
+        // only activate in survival mode to save builders the headache
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+
+        // only listen for a player inventory
+        if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
+
+        // cancel the event, open the artifact
+        e.setCancelled(true);
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+        RuneGUI.CUSTOMIZE_RUNE.open(player);
     }
 
+    // cancel rune swapping
     @EventHandler
     public void onItemSwap(PlayerSwapHandItemsEvent swapevent) {
 
         Player p = swapevent.getPlayer();
         int slot = p.getInventory().getHeldItemSlot();
 
-        // block rune swapping
         if (slot == 1) {
             swapevent.setCancelled(true);
             p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
@@ -47,13 +52,13 @@ public class RuneListener implements Listener {
         }
     }
 
+    // cancel rune dropping
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
 
         Player player = e.getPlayer();
         int slot = player.getInventory().getHeldItemSlot();
 
-        // cancel rune dropping
         if (slot == 1 && player.getGameMode() == GameMode.SURVIVAL) {
             e.setCancelled(true);
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
@@ -61,4 +66,3 @@ public class RuneListener implements Listener {
         }
     }
 }
-

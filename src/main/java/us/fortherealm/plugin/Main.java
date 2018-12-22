@@ -15,6 +15,7 @@ import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.professions.ProfManager;
 //import us.fortherealm.plugin.professions.ResourceAdder;
+import us.fortherealm.plugin.rune.RuneListener;
 import us.fortherealm.plugin.tablist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
