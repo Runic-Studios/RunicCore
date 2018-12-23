@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.parties.Party;
+import us.fortherealm.plugin.skillapi.SkillManager;
 
 // TODO: fix flickering, fix pings in text component always being '0'
 public class TabListManager implements Listener {
@@ -33,7 +34,8 @@ public class TabListManager implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             TabList test = tabbed.getTabList(online);
-            setupTab(online);
+            Main.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
+                    (Main.getInstance(), () -> setupTab(online), 1);
         }
     }
 

@@ -5,7 +5,9 @@ import us.fortherealm.plugin.artifact.ArtifactListener;
 import us.fortherealm.plugin.classes.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
+import us.fortherealm.plugin.healthbars.CombatManager;
 import us.fortherealm.plugin.healthbars.Healthbars;
+import us.fortherealm.plugin.healthbars.PlayerBars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.nametags.PlayerNameManager;
 import us.fortherealm.plugin.outlaw.OutlawManager;
@@ -28,6 +30,7 @@ public class Main extends JavaPlugin {
 
     // handlers
     private static Main instance;
+    private static CombatManager combatManager;
     private static PartyManager partyManager;
     private static ProfManager profManager;
     private static SkillManager skillManager;
@@ -35,6 +38,7 @@ public class Main extends JavaPlugin {
 
     // getters for handlers
     public static Main getInstance() { return instance; }
+    public static CombatManager getCombatManager() { return combatManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static SkillManager getSkillManager() { return skillManager; }
@@ -44,6 +48,7 @@ public class Main extends JavaPlugin {
 
         // instantiate everything we need
         instance = this;
+        combatManager = new CombatManager();
         partyManager = new PartyManager();
         profManager = new ProfManager();
         skillManager = new SkillManager();
@@ -95,6 +100,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new SkillUseEvent(), this);
         pm.registerEvents(new WeaponListener(), this);
         //pm.registerEvents(new ResourceAdder(), this);
+        pm.registerEvents(new PlayerBars(), this);
     }
     
     private void registerCommands() {

@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.listeners;
 
 import org.bukkit.attribute.Attribute;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ public class PlayerJoinListener implements Listener {
 
     private Main plugin = Main.getInstance();
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
