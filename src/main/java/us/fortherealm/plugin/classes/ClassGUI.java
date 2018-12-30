@@ -12,9 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.artifact.LoreGenerator;
+import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.attributes.AttributeUtil;
-import us.fortherealm.plugin.rune.RuneLoreGenerator;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.ArrayList;
@@ -208,22 +207,22 @@ public class ClassGUI implements InventoryProvider {
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 4);
                 break;
             case "Cleric":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 8);
                 break;
             case "Mage":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Rogue":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.1);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.1, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Warrior":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.25);
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.25, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 4);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 6);
                 break;
@@ -243,14 +242,15 @@ public class ClassGUI implements InventoryProvider {
         ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         rune = AttributeUtil.addSpell(rune, "primarySpell", ChatColor.RED + "LOCKED");
         rune = AttributeUtil.addSpell(rune, "secondarySpell", ChatColor.RED + "LOCKED");
-        RuneLoreGenerator.generateRuneLore(rune);
+        LoreGenerator.generateRuneLore(rune);
         player.getInventory().setItem(1, rune);
     }
 
     private void setConfig(Player player, String className) {
         // todo: save player exp on logout
         player.setLevel(1);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class", className);
+        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.name", className);
+        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 1);
         Main.getInstance().saveConfig();
         Main.getInstance().reloadConfig();
         sbh.updatePlayerInfo(player);

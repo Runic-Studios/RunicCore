@@ -19,7 +19,7 @@ public class AttributeUtil {
     }
 
     // takes an ItemStack, returns a new ItemStack with applied attributes
-    public static ItemStack addGenericStat(ItemStack item, String modifier, double amount) {
+    public static ItemStack addGenericStat(ItemStack item, String modifier, double amount, String slot) {
         ItemStack artifact = item;
         NBTItem nbti = new NBTItem(artifact);
         NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
@@ -27,9 +27,25 @@ public class AttributeUtil {
         attribute.setDouble("Amount", amount);
         attribute.setString("AttributeName", modifier);
         attribute.setString("Name", modifier);
+        attribute.setString("Slot", slot);
         attribute.setInteger("Operation", 0);
-        attribute.setInteger("UUIDLeast", 59764);
-        attribute.setInteger("UUIDMost", 31483);
+        attribute.setInteger("UUIDLeast", 1);
+        int maxUUID = 2;
+        switch (slot) {
+            case "head":
+                maxUUID = 3;
+                break;
+            case "chest":
+                maxUUID = 5;
+                break;
+            case "legs":
+                maxUUID = 7;
+                break;
+            case "feet":
+                maxUUID = 9;
+                break;
+        }
+        attribute.setInteger("UUIDMost", maxUUID);
         artifact = nbti.getItem();
         return artifact;
     }
@@ -77,15 +93,4 @@ public class AttributeUtil {
         NBTItem nbti = new NBTItem(item);
         return nbti.getString(spellSlot);
     }
-
-    // takes an ItemStack, returns a new ItemStack with applied attributes
-//    public static void setSpell(ItemStack item, String spellSlot, String spell) {
-//        NBTItem nbti = new NBTItem(item);
-//        if (nbti.hasKey(spellSlot)) {
-//            nbti.removeKey(spellSlot);
-//        }
-//        nbti.setString(spellSlot, spell);
-//        item = nbti.getItem();
-//        return item;
-//    }
 }

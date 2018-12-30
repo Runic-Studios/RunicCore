@@ -50,6 +50,8 @@ public class Party {
        this.leader = uuid;
    }
 
+   // todo: public void getAvgRating
+
     public UUID getLeader() {
         return this.leader;
     }

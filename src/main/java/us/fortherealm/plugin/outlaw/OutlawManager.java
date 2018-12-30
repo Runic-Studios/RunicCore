@@ -19,7 +19,7 @@ public class OutlawManager implements Listener {
     private RatingCalculator rc = new RatingCalculator();
     private Plugin plugin = Main.getInstance();
     public double getRating(UUID uuid) {
-        return plugin.getConfig().getInt(uuid + ".rating");
+        return plugin.getConfig().getInt(uuid + ".info.rating");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -29,8 +29,8 @@ public class OutlawManager implements Listener {
         UUID uuid = player.getUniqueId();
 
         // if the player data cannot be found, use default settings (also sets up new players)
-        if (!plugin.getConfig().isSet(uuid + ".rating")){
-            plugin.getConfig().set(uuid + ".rating", 1500);
+        if (!plugin.getConfig().isSet(uuid + ".info.rating")){
+            plugin.getConfig().set(uuid + ".info.rating", 1500);
             plugin.saveConfig();
             plugin.reloadConfig();
         }
@@ -46,27 +46,29 @@ public class OutlawManager implements Listener {
         int r1 = 0;
         int r2 = 0;
 
-
         // todo: check for the guild settings, NOT per-player before applying rating mechanics
+        //sef9esfesfe7sfesf79es8f7es---sefesfes
+            //name: idiots
+            //outlaw: false
         // todo: add proportion calculator
         // if (p1.guild.outaw.isEnabled...)
             // if the player has a party, calculate that party's average rating
             // otherwise, the r1 is simply the player's current rating
             if (p1Party != null) {
                 for (UUID partyMember : p1Party.getMembers()) {
-                    r1 += Main.getInstance().getConfig().getInt(partyMember + ".rating");
+                    r1 += Main.getInstance().getConfig().getInt(partyMember + ".info.rating");
                 }
                 r1 = r1/(p1Party.getPartySize());
             } else {
-                r1 = Main.getInstance().getConfig().getInt(p1 + ".rating");
+                r1 = Main.getInstance().getConfig().getInt(p1 + ".info.rating");
             }
             if (p2Party != null) {
                 for (UUID partyMember : p2Party.getMembers()) {
-                    r2 += Main.getInstance().getConfig().getInt(partyMember + ".rating");
+                    r2 += Main.getInstance().getConfig().getInt(partyMember + ".info.rating");
                 }
                 r2 = r2/(p2Party.getPartySize());
             } else {
-                r2 = Main.getInstance().getConfig().getInt(p2 + ".rating");
+                r2 = Main.getInstance().getConfig().getInt(p2 + ".info.rating");
             }
 
             // calculate new score for a win "+"
@@ -76,8 +78,8 @@ public class OutlawManager implements Listener {
             int newRatingP2 = rc.calculateRating(r2, r1, "-", rc.determineK(r2));
 
             // update config values
-            Main.getInstance().getConfig().set(p1 + ".rating", newRatingP1);
-            Main.getInstance().getConfig().set(p2 + ".rating", newRatingP2);
+            Main.getInstance().getConfig().set(p1 + ".info.rating", newRatingP1);
+            Main.getInstance().getConfig().set(p2 + ".info.rating", newRatingP2);
             Main.getInstance().saveConfig();
             Main.getInstance().reloadConfig();
 

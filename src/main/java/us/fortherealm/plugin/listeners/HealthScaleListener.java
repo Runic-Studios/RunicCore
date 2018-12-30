@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.listeners;
 
+import org.bukkit.attribute.Attribute;
 import us.fortherealm.plugin.Main;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,12 +10,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class HealthScaleListener implements Listener {
 
-    private Main plugin = Main.getInstance();
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e)
     {
-        Player player = e.getPlayer();
-        e.getPlayer().setHealthScale((player.getMaxHealth() / 12.5));//ex: (50 / 12.5) = 4.0 = 2 hearts
+        Player pl = e.getPlayer();
+        double maxHealth = pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+
+        //ex: (50 / 12.5) = 4.0 = 2 hearts displayed
+        pl.setHealthScale(maxHealth / 12.5);
     }
 }

@@ -129,10 +129,7 @@ public class BowListener implements Listener {
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
-        // cancel the event
-        e.setCancelled(true);
-
-        // remove the arrow
+        // remove the arrow with nms magic
         new BukkitRunnable() {
             public void run() {
                 ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
@@ -142,9 +139,9 @@ public class BowListener implements Listener {
         // apply attack effects, random damage amount
         if (maxDamage != 0) {
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            victim.damage(randomNum, damager);
+            e.setDamage(randomNum);
         } else {
-            victim.damage(minDamage, damager);
+            e.setDamage(minDamage);
         }
     }
 

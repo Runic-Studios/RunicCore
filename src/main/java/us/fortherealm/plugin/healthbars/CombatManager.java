@@ -39,7 +39,6 @@ public class CombatManager {
                         if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION*1000)) {
                             playersInCombat.remove(online.getUniqueId());
                             online.sendMessage(ChatColor.GREEN + "You have left combat!");
-                            //Bukkit.getBossBar()
                         }
                     }
                 }

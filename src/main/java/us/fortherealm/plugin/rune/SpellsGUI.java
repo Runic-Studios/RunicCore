@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.item.LoreGenerator;
 
 import java.util.ArrayList;
 
@@ -114,7 +115,7 @@ public class SpellsGUI implements InventoryProvider {
 
         if (!otherSpell.equals(spellName)) {
             item = AttributeUtil.addSpell(item, spellSlot, spellName);
-            RuneLoreGenerator.generateRuneLore(item);
+            LoreGenerator.generateRuneLore(item);
             pl.getInventory().setItem(1, item);
             SpellsGUI.RUNIC_SPELLS.open(pl);
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);

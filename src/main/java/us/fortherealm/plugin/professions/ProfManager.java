@@ -32,4 +32,6 @@ public class ProfManager {
             }
         }.runTaskTimerAsynchronously(this.plugin, 20, 200);//1 sec delay, 10 sec intervals
     }
+
+    // todo: add particles tasks for ores, anvils, farms, trees, and fish (oh, dear)
 }

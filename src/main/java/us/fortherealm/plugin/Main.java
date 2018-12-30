@@ -6,7 +6,6 @@ import us.fortherealm.plugin.classes.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.healthbars.CombatManager;
-import us.fortherealm.plugin.healthbars.Healthbars;
 import us.fortherealm.plugin.healthbars.PlayerBars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.nametags.PlayerNameManager;
@@ -15,6 +14,7 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.fortherealm.plugin.professions.blacksmith.AnvilListener;
 import us.fortherealm.plugin.professions.ProfManager;
 //import us.fortherealm.plugin.professions.ResourceAdder;
 import us.fortherealm.plugin.rune.RuneListener;
@@ -81,7 +81,6 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new PlayerJoinListener(), this);
         pm.registerEvents(new ScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
-        pm.registerEvents(new Healthbars(), this);
         pm.registerEvents(new ArtifactListener(), this);
         pm.registerEvents(new RuneListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
@@ -101,6 +100,8 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new WeaponListener(), this);
         //pm.registerEvents(new ResourceAdder(), this);
         pm.registerEvents(new PlayerBars(), this);
+        pm.registerEvents(new AnvilListener(), this);
+        pm.registerEvents(new ArmorTypeListener(), this);
     }
     
     private void registerCommands() {
@@ -119,6 +120,7 @@ public class Main extends JavaPlugin {
         partySC.addCommand(Arrays.asList("join", "accept"), new Join(partySC));
         partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
-   
+
+        partySC.addCommand(Arrays.asList("prof", "profession"), new Prof(partySC));
     }
 }

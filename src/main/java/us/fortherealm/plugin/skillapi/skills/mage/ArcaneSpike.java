@@ -16,7 +16,7 @@ import java.util.*;
 public class ArcaneSpike extends Skill {
 
     // globals
-    private static final int DAMAGE_AMOUNT = 20;
+    private static final int DAMAGE_AMOUNT = 5;
     private static final double BEAM_WIDTH = 1.5;
     private static final int BEAM_LENGTH = 16;
     private static final int RADIUS = 16;

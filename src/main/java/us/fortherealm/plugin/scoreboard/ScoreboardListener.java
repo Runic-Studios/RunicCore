@@ -1,7 +1,9 @@
 package us.fortherealm.plugin.scoreboard;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,19 +54,16 @@ public class ScoreboardListener implements Listener {
         // null check
         if (pl.getScoreboard() == null) { return; }
 
-        updateHealth(pl);
-
-        final double OLD_MAX_HEALTH = pl.getMaxHealth();
-
         new BukkitRunnable() {
             @Override
             public void run() {
-                e.getPlayer().setHealthScale((pl.getMaxHealth() / 12.5));//(50 / 12.5) = 4.0 = 2 hearts
-                if (OLD_MAX_HEALTH != pl.getMaxHealth()) {
-                    pl.sendMessage
-                            (ChatColor.YELLOW + "Your total health is now "
-                                    + ChatColor.GREEN + ((int) pl.getMaxHealth()) + "§e.");
+                //ex: (50 / 12.5) = 4.0 = 2 hearts displayed
+                double maxHealth = pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                pl.setHealthScale((maxHealth / 12.5));
+                if (pl.getHealth() > maxHealth) {
+                    pl.setHealth(maxHealth);
                 }
+                updateHealth(pl);
             }
         }.runTaskLater(plugin, 1L);
     }

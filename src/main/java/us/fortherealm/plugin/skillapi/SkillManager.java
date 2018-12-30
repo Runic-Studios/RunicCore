@@ -113,6 +113,9 @@ public class SkillManager {
         this.skillList.add(new Backstab());
         this.skillList.add(new Barrage());
         this.skillList.add(new Grapple());
+        this.skillList.add(new Charge());
+        this.skillList.add(new Cloak());
+        this.skillList.add(new HolyNova());
     }
 
     // starts the repeating task to manage player cooldowns

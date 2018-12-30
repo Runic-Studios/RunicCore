@@ -74,7 +74,7 @@ public class ScoreboardHandler implements Listener {
         Score characterInfo = sidebar.getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "Character");
         characterInfo.setScore(6);
 
-        // TODO: update info for prof, and guild
+        // TODO: update info for guild
         updatePlayerInfo(pl);
 
         // setup side health display
@@ -92,28 +92,42 @@ public class ScoreboardHandler implements Listener {
 
         Score playerClass = sidebar.getScore(playerClass(pl));
         playerClass.setScore(5);
-        Score playerProfession = sidebar.getScore(playerProf());
+        Score playerProfession = sidebar.getScore(playerProf(pl));
         playerProfession.setScore(4);
         Score playerGuild = sidebar.getScore(playerGuild());
         playerGuild.setScore(3);
     }
 
     private String healthAsString(Player pl) {
-        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + ((int) Math.round(pl.getHealth()))
-                + " §7/ " + ChatColor.RED + ((int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        int currentHealth = (int) Math.round(pl.getHealth());
+        int maxHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §7/ " + ChatColor.RED + maxHealth;
     }
 
     private String playerClass(Player pl) {
-        String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class");
+        String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        int currentLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
         if (className == null) {
             className = "None";
         }
-        return ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className + ChatColor.GRAY + " - " + ChatColor.GREEN + pl.getLevel();
+        String display = ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className;
+        if (currentLevel != 0) {
+            display = ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className + ChatColor.GRAY + " - " + ChatColor.GREEN + currentLevel;
+        }
+        return display;
     }
 
-    private String playerProf() {
-        String plProf = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None" + ChatColor.GRAY + " - " + ChatColor.GREEN + "0";
-        return plProf;
+    private String playerProf(Player pl) {
+        String profName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
+        int currentLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        if (profName == null) {
+            profName = "None";
+        }
+        String display = ChatColor.GRAY + "Prof: "+ ChatColor.GREEN + profName;
+        if (currentLevel != 0) {
+            display = ChatColor.GRAY + "Prof: "+ ChatColor.GREEN + profName + ChatColor.GRAY + " - " + ChatColor.GREEN + currentLevel;
+        }
+        return display;
     }
 
     private String playerGuild() {

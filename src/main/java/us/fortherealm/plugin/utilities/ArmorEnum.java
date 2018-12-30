@@ -8,12 +8,12 @@ import org.bukkit.inventory.ItemStack;
  * @Website http://codingforcookies.com/
  * @Since Jul 30, 2015 6:46:16 PM
  */
-public enum ArmorTypeUtil{
+public enum ArmorEnum {
     HELMET(5), CHESTPLATE(6), LEGGINGS(7), BOOTS(8);
 
     private final int slot;
 
-    ArmorTypeUtil(int slot){
+    ArmorEnum(int slot){
         this.slot = slot;
     }
 
@@ -23,7 +23,7 @@ public enum ArmorTypeUtil{
      * @param itemStack The ItemStack to parse the skilltypes of.
      * @return The parsed ArmorType. (null if none were found.)
      */
-    public static ArmorTypeUtil matchType(final ItemStack itemStack){
+    public static ArmorEnum matchSlot(final ItemStack itemStack){
         if(itemStack == null) { return null; }
         switch (itemStack.getType()){
             case DIAMOND_HELMET:

@@ -34,6 +34,7 @@ public class SkillUseEvent implements Listener {
                 break;
             }
         }
+        // todo: update to NBT, change action
 
         // todo: update this message
         if (skillCasted != null) {

@@ -31,7 +31,7 @@ public class SkinsGUI implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
 
         // determine the player's class
-        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class").toString();
+        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class.name").toString();
 
         // grab player's artifact
         ItemStack artifact = player.getInventory().getItem(0);
@@ -79,7 +79,7 @@ public class SkinsGUI implements InventoryProvider {
     }
 
     private void displaySkinsCleric(Player player, InventoryContents contents) {
-        displaySkin(player, contents, 1, 0, Material.WOODEN_SHOVEL, "Worn Oaken Battleaxe", "", 0, "");
+        displaySkin(player, contents, 1, 0, Material.WOODEN_SHOVEL, "Initiate's Oaken Mace", "", 0, "");
         displaySkin(player, contents, 1, 1, Material.STONE_SHOVEL, "Worn Stone Club", "Unlock by reaching lv. 10!", 0, "stone_mace");
         displaySkin(player, contents, 1, 2, Material.IRON_SHOVEL, "Polished Silver Hammer", "Unlock by reaching lv. 20!", 0, "iron_mace");
         displaySkin(player, contents, 1, 3, Material.GOLDEN_SHOVEL, "Victorious Gilded Mace", "Unlock by reaching lv. 30!", 0, "golden_mace");
@@ -96,7 +96,7 @@ public class SkinsGUI implements InventoryProvider {
     }
 
     private void displaySkinsRogue(Player player, InventoryContents contents) {
-        displaySkin(player, contents, 1, 0, Material.WOODEN_AXE, "Worn Oaken Battleaxe", "", 0, "");
+        displaySkin(player, contents, 1, 0, Material.WOODEN_SWORD, "Oaken Sparring Sword", "", 0, "");
         displaySkin(player, contents, 1, 1, Material.STONE_SWORD, "Worn Stone Sword", "Unlock by reaching lv. 10!", 0, "stone_sword");
         displaySkin(player, contents, 1, 2, Material.IRON_SWORD, "Polished Silver Broadsword", "Unlock by reaching lv. 20!", 0, "iron_sword");
         displaySkin(player, contents, 1, 3, Material.GOLDEN_SWORD, "Victorious Gilded Longsword", "Unlock by reaching lv. 30!", 0, "golden_sword");

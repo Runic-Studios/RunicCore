@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.item.LoreGenerator;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class SpellsGUI implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
 
         // determine the player's class
-        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class").toString();
+        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class.name").toString();
 
         // grab player's artifact
         ItemStack artifact = player.getInventory().getItem(0);
@@ -91,7 +92,7 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     private void displaySpellsCleric(Player player, InventoryContents contents) {
-        //displaySpell(player, contents, 1, 0, "Lightwell", "Cleric");
+        displaySpell(player, contents, 1, 0, "Holy Nova", "Cleric");
         displaySpell(player, contents, 1, 1, "Rejuvenate", "Cleric");
         displaySpell(player, contents, 1, 2, "Windstride", "Cleric");
     }
@@ -104,12 +105,12 @@ public class SpellsGUI implements InventoryProvider {
 
     private void displaySpellsRogue(Player player, InventoryContents contents) {
         displaySpell(player, contents, 1, 0, "Backstab", "Rogue");
-        //displaySpell(player, contents, 1, 1, "Cloak", "Rogue");
+        displaySpell(player, contents, 1, 1, "Cloak", "Rogue");
         displaySpell(player, contents, 1, 2, "Smoke Bomb", "Rogue");
     }
 
     private void displaySpellsWarrior(Player player, InventoryContents contents) {
-        //displaySpell(player, contents, 1, 0, "Charge", "Warrior");
+        displaySpell(player, contents, 1, 0, "Charge", "Warrior");
         displaySpell(player, contents, 1, 1, "Enrage", "Warrior");
         displaySpell(player, contents, 1, 2, "Deliverance", "Warrior");
     }

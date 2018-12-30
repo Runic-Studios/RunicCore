@@ -2,8 +2,6 @@ package us.fortherealm.plugin.listeners;
 
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,10 +17,12 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.healthbars.PlayerBars;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import us.fortherealm.plugin.utilities.DamageIndicators;
 import us.fortherealm.plugin.utilities.WeaponEnum;
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -116,8 +116,17 @@ public class DamageListener implements Listener {
     }
 
     private void applyDeathMechanics(EntityDamageEvent e, Player victim, Location respawnLocation) {
+
+        // cancel the event
         e.setCancelled(true);
-        victim.setHealth(victim.getMaxHealth());
+
+        // if player is in combat, remove them
+        if (!Main.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
+            Main.getCombatManager().getPlayersInCombat().remove(victim.getUniqueId());
+            victim.sendMessage(ChatColor.GREEN + "You have left combat!");
+        }
+
+        victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
@@ -130,7 +139,6 @@ public class DamageListener implements Listener {
     }
 
     private void applySlainMechanics(EntityDamageEvent e, Entity damager, Player victim) {
-        Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // if the player was killed by an arrow, set damager to its shooter
         if (damager instanceof Arrow) {
@@ -140,12 +148,29 @@ public class DamageListener implements Listener {
             }
         }
 
+        // todo: change this to the killed player's hearthstone location
+        Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
+
         // apply new death mechanics
         applyDeathMechanics(e, victim, respawnLocation);
 
+        // remove their bar from their attacker's screens
+        if (PlayerBars.getBossBars().containsKey(damager.getUniqueId())) {
+            HashMap<UUID, BossBar> bossBarHashMap = PlayerBars.getBossBars();
+            UUID damagerID = damager.getUniqueId();
+            bossBarHashMap.get(damagerID).removePlayer((Player) damager);
+            bossBarHashMap.remove(damagerID);
+            PlayerBars.getCurrentRunnables().remove(damagerID);
+        }
+
+//        if (bossBarHashMap.containsKey(damagerID)) {
+//            bossBarHashMap.get(damagerID).removePlayer(damager);
+//            bossBarHashMap.remove(damagerID);
+//        }
+
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
+          Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
             Score score = o.getScore(victim);
             score.setScore((int) victim.getHealth());
         }
