@@ -71,7 +71,7 @@ public class ScoreboardHandler implements Listener {
         blankSpaceTwo.setScore(2);
 
         // set side board header
-        Score characterInfo = sidebar.getScore(ChatColor.GREEN + "" + ChatColor.BOLD + "Character");
+        Score characterInfo = sidebar.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + "Character");
         characterInfo.setScore(6);
 
         // TODO: update info for guild
@@ -107,12 +107,14 @@ public class ScoreboardHandler implements Listener {
     private String playerClass(Player pl) {
         String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
         int currentLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        String display;
         if (className == null) {
-            className = "None";
-        }
-        String display = ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className;
-        if (currentLevel != 0) {
-            display = ChatColor.GRAY + "Class: "+ ChatColor.GREEN + className + ChatColor.GRAY + " - " + ChatColor.GREEN + currentLevel;
+            display = ChatColor.GRAY + "Class: " + ChatColor.GREEN + "None";
+        } else {
+            display = ChatColor.GRAY + "Class: " + ChatColor.GREEN + className;
+            if (currentLevel != 0) {
+                display = ChatColor.GREEN + className + ChatColor.GRAY + " lv. " + ChatColor.GREEN + currentLevel;
+            }
         }
         return display;
     }
@@ -120,12 +122,14 @@ public class ScoreboardHandler implements Listener {
     private String playerProf(Player pl) {
         String profName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
         int currentLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        String display;
         if (profName == null) {
-            profName = "None";
-        }
-        String display = ChatColor.GRAY + "Prof: "+ ChatColor.GREEN + profName;
-        if (currentLevel != 0) {
-            display = ChatColor.GRAY + "Prof: "+ ChatColor.GREEN + profName + ChatColor.GRAY + " - " + ChatColor.GREEN + currentLevel;
+            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None";
+        } else {
+            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + profName;
+            if (currentLevel != 0) {
+                display = ChatColor.GREEN + profName + ChatColor.GRAY + " lv. " + ChatColor.GREEN + currentLevel;
+            }
         }
         return display;
     }

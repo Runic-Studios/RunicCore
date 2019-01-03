@@ -12,13 +12,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
-public class AnvilGUI implements InventoryProvider {
+public class FurnaceGUI implements InventoryProvider {
 
-    public static final SmartInventory ANVIL_GUI = SmartInventory.builder()
-            .id("anvilGUI")
-            .provider(new AnvilGUI())
+    public static final SmartInventory FURNACE_GUI = SmartInventory.builder()
+            .id("furnaceGUI")
+            .provider(new FurnaceGUI())
             .size(1, 9)
-            .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Anvil")
+            .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Furnace")
             .build();
 
     @Override
@@ -26,13 +26,13 @@ public class AnvilGUI implements InventoryProvider {
 
         // craft armor
         contents.set(0, 3, ClickableItem.of
-                (menuItem(Material.IRON_CHESTPLATE,
+                (menuItem(Material.IRON_INGOT,
                         ChatColor.WHITE,
-                        "Craft Armor",
-                        "Forge mail or plate armor!"),
+                        "Smelt Ores",
+                        "Turn raw ores into crafting materials!"),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            ArmorGUI.CRAFT_ARMOR.open(player);
+                            SmeltGUI.SMELT_ORES.open(player);
                         }));
 
         // close inventory

@@ -22,7 +22,7 @@ import java.util.UUID;
 public class NameTagChanger {
 
     private Plugin plugin = Main.getInstance();
-    private ScoreboardHandler sbh = new ScoreboardHandler();
+    private ScoreboardHandler sbh = Main.getScoreboardHandler();
 
     public void changeNameParty(Party party, Player p, String newName){
 

@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.utilities.ArmorTypeEnum;
+import us.fortherealm.plugin.classes.ArmorTypeEnum;
 
 /**
  * Listener which prevents classes from wearing incorrect types of armor

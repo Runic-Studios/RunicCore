@@ -2,11 +2,12 @@ package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
 import us.fortherealm.plugin.artifact.ArtifactListener;
-import us.fortherealm.plugin.classes.ExpListener;
+import us.fortherealm.plugin.level.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.healthbars.CombatManager;
 import us.fortherealm.plugin.healthbars.PlayerBars;
+import us.fortherealm.plugin.level.ClassLvListener;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.nametags.PlayerNameManager;
 import us.fortherealm.plugin.outlaw.OutlawManager;
@@ -14,7 +15,7 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.professions.blacksmith.AnvilListener;
+import us.fortherealm.plugin.professions.blacksmith.WorkstationListener;
 import us.fortherealm.plugin.professions.ProfManager;
 //import us.fortherealm.plugin.professions.ResourceAdder;
 import us.fortherealm.plugin.rune.RuneListener;
@@ -33,6 +34,7 @@ public class Main extends JavaPlugin {
     private static CombatManager combatManager;
     private static PartyManager partyManager;
     private static ProfManager profManager;
+    private static ScoreboardHandler scoreboardHandler;
     private static SkillManager skillManager;
     private static TabListManager tabListManager;
 
@@ -41,6 +43,7 @@ public class Main extends JavaPlugin {
     public static CombatManager getCombatManager() { return combatManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
+    public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
     public static SkillManager getSkillManager() { return skillManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
 
@@ -51,6 +54,7 @@ public class Main extends JavaPlugin {
         combatManager = new CombatManager();
         partyManager = new PartyManager();
         profManager = new ProfManager();
+        scoreboardHandler = new ScoreboardHandler();
         skillManager = new SkillManager();
         tabListManager = new TabListManager(this);
 
@@ -79,7 +83,7 @@ public class Main extends JavaPlugin {
         PluginManager pm = this.getServer().getPluginManager();
 
         pm.registerEvents(new PlayerJoinListener(), this);
-        pm.registerEvents(new ScoreboardHandler(), this);
+        pm.registerEvents(Main.getScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new ArtifactListener(), this);
         pm.registerEvents(new RuneListener(), this);
@@ -100,8 +104,9 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new WeaponListener(), this);
         //pm.registerEvents(new ResourceAdder(), this);
         pm.registerEvents(new PlayerBars(), this);
-        pm.registerEvents(new AnvilListener(), this);
+        pm.registerEvents(new WorkstationListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
+        pm.registerEvents(new ClassLvListener(), this);
     }
     
     private void registerCommands() {

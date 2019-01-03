@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.classes;
+package us.fortherealm.plugin.level;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

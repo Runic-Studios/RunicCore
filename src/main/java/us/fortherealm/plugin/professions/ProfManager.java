@@ -1,19 +1,18 @@
 package us.fortherealm.plugin.professions;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class ProfManager {
 
     // globals
     private Main plugin = Main.getInstance();
-    private static HashMap<Block, UUID> ores = new HashMap<>();
+    private ArrayList<Player> currentCrafters = new ArrayList<>();
+    private HashMap<Block, UUID> ores = new HashMap<>();
 
     // constructor
     public ProfManager() {
@@ -34,4 +33,7 @@ public class ProfManager {
     }
 
     // todo: add particles tasks for ores, anvils, farms, trees, and fish (oh, dear)
+    public ArrayList<Player> getCurrentCrafters() {
+        return currentCrafters;
+    }
 }

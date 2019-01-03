@@ -24,7 +24,7 @@ public class ProfGUI implements InventoryProvider {
             .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Profession!")
             .build();
 
-    private ScoreboardHandler sbh = new ScoreboardHandler();
+    private ScoreboardHandler sbh = Main.getScoreboardHandler();
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -82,9 +82,8 @@ public class ProfGUI implements InventoryProvider {
     }
 
     private void setConfig(Player player, String profName) {
-        player.setLevel(1);
         Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.name", profName);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", 1);
+        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", 0);
         Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", 0);
         Main.getInstance().saveConfig();
         Main.getInstance().reloadConfig();

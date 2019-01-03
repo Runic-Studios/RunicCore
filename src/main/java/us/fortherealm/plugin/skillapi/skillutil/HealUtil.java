@@ -9,7 +9,7 @@
 //
 //public class HealUtil  {
 //
-//    private ScoreboardHandler sbh = new ScoreboardHandler();
+//    private ScoreboardHandler sbh = Main.getScoreboardHandler();
 //
 //    @SuppressWarnings("deprecation")
 //    public void healPlayer(double healAmt, Player player, String sourceStr) {

@@ -49,6 +49,7 @@ public class Comet extends Skill {
         comet.setVelocity(trajectory.multiply(COMET_SPEED));
 
         // start the runnable
+        long startTime = System.currentTimeMillis();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -57,8 +58,8 @@ public class Comet extends Skill {
                 comet.getWorld().spawnParticle(Particle.FLAME, comet.getLocation(), 5, 0.2F, 1.0F, 0.2F, 0);
                 comet.getWorld().spawnParticle(Particle.SMOKE_LARGE, comet.getLocation(), 5, 0, 1.0F, 0, 0);
 
-                // once the comet lands or despawns
-                if ((comet.isOnGround() || comet.isDead())) {
+                // once the comet lands or despawns, or after 10s have passed to prevent weird exceptions.
+                if ((comet.isOnGround() || comet.isDead()) || (System.currentTimeMillis() - startTime > 10000)) {
 
                     this.cancel();
 

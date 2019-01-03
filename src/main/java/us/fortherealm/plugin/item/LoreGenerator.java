@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.utilities.NumRounder;
 
 import java.util.ArrayList;
 
@@ -35,18 +36,18 @@ public class LoreGenerator {
         lore.add(ChatColor.GRAY + "Spells:");
         if (prim != null) {
             if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Left click: " + ChatColor.GREEN + prim);
+                lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + prim);
             } else {
-                lore.add(ChatColor.WHITE + "Sneak + left: " + ChatColor.GREEN + prim);
+                lore.add(ChatColor.WHITE + "Shift + Left: " + ChatColor.GREEN + prim);
             }
         } else {
             lore.add(ChatColor.RED + "Primary: NULL");
         }
         if (sec != null) {
             if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Sneak + right: " + ChatColor.GREEN + sec);
+                lore.add(ChatColor.WHITE + "Shift + Right: " + ChatColor.GREEN + sec);
             } else {
-                lore.add(ChatColor.WHITE + "Right click: " + ChatColor.GREEN + sec);
+                lore.add(ChatColor.WHITE + "Right Click: " + ChatColor.GREEN + sec);
             }
         } else {
             lore.add(ChatColor.RED + "Secondary: NULL");
@@ -103,12 +104,12 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.GRAY + "Spells:");
         if (prim != null) {
-            lore.add(ChatColor.WHITE + "Left click: " + ChatColor.GREEN + prim);
+            lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + prim);
         } else {
             lore.add(ChatColor.RED + "Primary: NULL");
         }
         if (sec != null) {
-            lore.add(ChatColor.WHITE + "Right click: " + ChatColor.GREEN + sec);
+            lore.add(ChatColor.WHITE + "Right Click: " + ChatColor.GREEN + sec);
         } else {
             lore.add(ChatColor.RED + "Secondary: NULL");
         }
@@ -162,14 +163,8 @@ public class LoreGenerator {
         } else {
             speed = AttributeUtil.getGenericDouble(item, "generic.attackSpeed");
         }
-        double roundedSpeed = round(24+speed);
+        double roundedSpeed = NumRounder.round(24+speed);
         lore.add(ChatColor.RED + "Att Speed: " + roundedSpeed);
         lore.add(ChatColor.RED + "DMG: " + (int) min + "-" + (int) max);
-    }
-
-    // rounds to 2 decimal places
-    private static double round(double value) {
-        int scale = (int) Math.pow(10, 2);
-        return (double) Math.round(value * scale) / scale;
     }
 }

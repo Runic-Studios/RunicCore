@@ -30,7 +30,7 @@ public class ClassGUI implements InventoryProvider {
             .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Class!")
             .build();
 
-    private ScoreboardHandler sbh = new ScoreboardHandler();
+    private ScoreboardHandler sbh = Main.getScoreboardHandler();
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -247,10 +247,8 @@ public class ClassGUI implements InventoryProvider {
     }
 
     private void setConfig(Player player, String className) {
-        // todo: save player exp on logout
-        player.setLevel(1);
         Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.name", className);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 1);
+        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 0);
         Main.getInstance().saveConfig();
         Main.getInstance().reloadConfig();
         sbh.updatePlayerInfo(player);

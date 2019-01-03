@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.utilities;
+package us.fortherealm.plugin.classes;
 
 import org.bukkit.inventory.ItemStack;
 

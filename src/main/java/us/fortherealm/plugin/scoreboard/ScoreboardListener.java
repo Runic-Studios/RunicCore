@@ -16,7 +16,7 @@ import us.fortherealm.plugin.Main;
 public class ScoreboardListener implements Listener {
 
     // global variables
-    private ScoreboardHandler sbh = new ScoreboardHandler();
+    private ScoreboardHandler sbh = Main.getScoreboardHandler();
     private Plugin plugin = Main.getInstance();
 
     @EventHandler
