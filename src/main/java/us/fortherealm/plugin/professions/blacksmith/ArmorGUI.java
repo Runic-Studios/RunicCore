@@ -11,7 +11,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
-import us.fortherealm.plugin.professions.utilities.ItemUtils;
+import us.fortherealm.plugin.professions.WorkstationListener;
+import us.fortherealm.plugin.professions.utilities.FloatingItemUtil;
 import us.fortherealm.plugin.professions.utilities.ProfExpUtil;
 import us.fortherealm.plugin.utilities.ArmorEnum;
 import us.fortherealm.plugin.utilities.GUIItem;
@@ -175,7 +176,7 @@ public class ArmorGUI implements InventoryProvider {
         }
 
         // spawn item on anvil for visual
-        ItemUtils.spawnFloatingItem(pl, stationLoc, craftedItem, 4);
+        FloatingItemUtil.spawnFloatingItem(pl, stationLoc, craftedItem, 4);
 
         // start the crafting process
         new BukkitRunnable() {
@@ -232,8 +233,12 @@ public class ArmorGUI implements InventoryProvider {
         // check that the player has an open inventory space
         for (int i = 0; i < amt; i++) {
             double chance = ThreadLocalRandom.current().nextDouble(0, 100);
-            if (chance >= rate) {
-                pl.getInventory().addItem(craftedItem);
+            if (chance <= rate) {
+                if (pl.getInventory().firstEmpty() != -1) {
+                    pl.getInventory().addItem(craftedItem);
+                } else {
+                    pl.getWorld().dropItem(pl.getLocation(), craftedItem);
+                }
             } else {
                 pl.sendMessage(ChatColor.RED + "You fail to craft this item.");
             }

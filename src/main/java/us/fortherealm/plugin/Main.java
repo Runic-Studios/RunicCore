@@ -15,9 +15,12 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.fortherealm.plugin.professions.blacksmith.WorkstationListener;
+import us.fortherealm.plugin.professions.WorkstationListener;
 import us.fortherealm.plugin.professions.ProfManager;
-//import us.fortherealm.plugin.professions.ResourceAdder;
+import us.fortherealm.plugin.professions.gathering.FarmingListener;
+import us.fortherealm.plugin.professions.gathering.FishingListener;
+import us.fortherealm.plugin.professions.gathering.MiningListener;
+import us.fortherealm.plugin.professions.gathering.WCListener;
 import us.fortherealm.plugin.rune.RuneListener;
 import us.fortherealm.plugin.tablist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
@@ -90,7 +93,6 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
         pm.registerEvents(new StavesListener(), this);
-        pm.registerEvents(new HealthScaleListener(), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
@@ -102,11 +104,14 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SkillUseEvent(), this);
         pm.registerEvents(new WeaponListener(), this);
-        //pm.registerEvents(new ResourceAdder(), this);
         pm.registerEvents(new PlayerBars(), this);
         pm.registerEvents(new WorkstationListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new ClassLvListener(), this);
+        pm.registerEvents(new MiningListener(), this);
+        pm.registerEvents(new FarmingListener(), this);
+        pm.registerEvents(new WCListener(), this);
+        pm.registerEvents(new FishingListener(), this);
     }
     
     private void registerCommands() {

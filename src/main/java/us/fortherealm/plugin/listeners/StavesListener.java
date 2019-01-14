@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
@@ -43,14 +44,19 @@ public class StavesListener  implements Listener {
 
         // retrieve the weapon type
         ItemStack artifact = e.getItem();
+        ItemMeta meta = artifact.getItemMeta();
+        int durability = ((org.bukkit.inventory.meta.Damageable) meta).getDamage();
         WeaponEnum artifactType = WeaponEnum.matchType(artifact);
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
         // only listen for items that can be artifact weapons
         if (artifactType == null) return;
 
-        // only listen for staves
+        // only listen for staves, ignore staves w/ durability 100,
+        // which are farming hoes
         if (!(artifactType.equals(WeaponEnum.STAFF))) return;
+        if (durability == 100) return;
+
 
         Player pl = e.getPlayer();
 

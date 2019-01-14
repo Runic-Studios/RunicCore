@@ -19,7 +19,7 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.healthbars.PlayerBars;
 import us.fortherealm.plugin.outlaw.OutlawManager;
-import us.fortherealm.plugin.utilities.DamageIndicators;
+import us.fortherealm.plugin.utilities.HologramUtil;
 import us.fortherealm.plugin.utilities.WeaponEnum;
 
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class DamageListener implements Listener {
                 }
             }
             // display damage indicator
-            DamageIndicators.createDamageHologram(((Player) damager), victim.getLocation().add(0,1.5,0), e.getDamage());
+            HologramUtil.createDamageHologram(((Player) damager), victim.getLocation().add(0,1.5,0), e.getDamage());
         }
 
         // only listen if a player is the entity receiving damage, to check for death mechanics

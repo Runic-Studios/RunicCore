@@ -10,7 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.professions.utilities.ItemUtils;
+import us.fortherealm.plugin.professions.WorkstationListener;
+import us.fortherealm.plugin.professions.utilities.FloatingItemUtil;
 import us.fortherealm.plugin.professions.utilities.ProfExpUtil;
 import us.fortherealm.plugin.utilities.GUIItem;
 
@@ -186,7 +187,7 @@ public class SmeltGUI implements InventoryProvider {
         }
 
         // show visual reagent
-        ItemUtils.spawnFloatingItem(pl, loc, dispItem, 3);
+        FloatingItemUtil.spawnFloatingItem(pl, loc, dispItem, 3);
 
         // begin crafting process
         new BukkitRunnable() {
@@ -194,7 +195,7 @@ public class SmeltGUI implements InventoryProvider {
             @Override
             public void run() {
                 if (count == 3) {
-                    ItemUtils.spawnFloatingItem(pl, loc, craftedItem, 1);
+                    FloatingItemUtil.spawnFloatingItem(pl, loc, craftedItem, 1);
                 } else if (count > 3) {
                     this.cancel();
                     Main.getProfManager().getCurrentCrafters().remove(pl);
@@ -223,7 +224,7 @@ public class SmeltGUI implements InventoryProvider {
 
         for (int i = 0; i < amt; i++) {
             double chance = ThreadLocalRandom.current().nextDouble(0, 100);
-            if (chance >= rate) {
+            if (chance <= rate) {
                 pl.getInventory().addItem(smeltedItem);
             } else {
                 pl.sendMessage(ChatColor.RED + "You fail to craft this item.");

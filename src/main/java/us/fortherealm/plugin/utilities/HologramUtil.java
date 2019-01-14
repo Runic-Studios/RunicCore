@@ -14,19 +14,13 @@ import us.fortherealm.plugin.Main;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class DamageIndicators {
+public class HologramUtil {
 
-    private static HashMap<Player, HashMap<ArmorStand, BukkitTask>> DAMAGE_HOLOGRAMS = new HashMap<>();
+    private static HashMap<Player, HashMap<ArmorStand, BukkitTask>> HOLOGRAMS = new HashMap<>();
 
     // builds the damage hologram
     public static void createDamageHologram(Player createFor, Location createAround, double hp) {
         createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤");
-    }
-
-    public static int randInt(int min, int max) {
-        int bound = max - min + 1;
-        if (bound <= 0) return 0;
-        return ThreadLocalRandom.current().nextInt(bound) + min;
     }
 
     /**
@@ -60,7 +54,7 @@ public class DamageIndicators {
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
         nmsStand.noclip = true;
         nmsStand.setSmall(true);
-        HashMap<ArmorStand, BukkitTask> holograms = DAMAGE_HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
+        HashMap<ArmorStand, BukkitTask> holograms = HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
 
         // create our runnable
         BukkitTask runnable = new BukkitRunnable() {
@@ -84,17 +78,62 @@ public class DamageIndicators {
             removeDamageHologram(createFor, holograms.keySet().toArray(new ArmorStand[1])[0]);
     }
 
+    public static void createStaticHologram(Player createFor, Location createAround, String display, double x, double y, double z) {
+
+        // build the custom armorstand
+        ArmorStand stand = (ArmorStand) createAround.getWorld().spawnEntity(createAround.add(x, y, z).subtract(0, 1, 0), EntityType.ARMOR_STAND);
+        stand.setVisible(false);
+        stand.setCollidable(false);
+        stand.setCustomName(display);
+        stand.setCustomNameVisible(true);
+        stand.setInvulnerable(true);
+        stand.setGravity(false);
+        stand.setMarker(true);
+
+        // nms
+        EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
+        nmsStand.noclip = true;
+        nmsStand.setSmall(true);
+        HashMap<ArmorStand, BukkitTask> holograms = HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
+
+        // create our runnable
+        BukkitTask runnable = new BukkitRunnable() {
+
+            int ticks = 0;
+
+            @Override
+            public void run() {
+                if (ticks >= 20 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
+                    cancel();
+                    removeDamageHologram(createFor, stand);
+                    return;
+                }
+                ticks++;
+            }
+        }.runTaskTimer(Main.getInstance(), 0, 1);
+
+        holograms.put(stand, runnable);
+        if (holograms.keySet().size() > 4)
+            removeDamageHologram(createFor, holograms.keySet().toArray(new ArmorStand[1])[0]);
+    }
+
     private static void removeDamageHologram(Player player, ArmorStand armorStand) {
         if (armorStand.isDead())
             return;
 
-        HashMap<ArmorStand, BukkitTask> map = DAMAGE_HOLOGRAMS.get(player);
+        HashMap<ArmorStand, BukkitTask> map = HOLOGRAMS.get(player);
         BukkitTask task = map.remove(armorStand);
         armorStand.remove();
         if (task != null)
             task.cancel();
 
         if (map.isEmpty())
-            DAMAGE_HOLOGRAMS.remove(player);
+            HOLOGRAMS.remove(player);
+    }
+
+    private static int randInt(int min, int max) {
+        int bound = max - min + 1;
+        if (bound <= 0) return 0;
+        return ThreadLocalRandom.current().nextInt(bound) + min;
     }
 }

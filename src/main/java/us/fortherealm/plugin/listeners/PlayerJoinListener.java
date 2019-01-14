@@ -33,7 +33,7 @@ public class PlayerJoinListener implements Listener {
         // set join message
         // TODO: inform players if their guild mate or friend logs in.
         event.setJoinMessage("");
-        player.sendMessage(ChatColor.GRAY + "Loading resource pack...");
+        player.sendMessage(ChatColor.GRAY + "Loading resource pack, this may take a moment...");
 
         // set the player's class to "None" if they don't have one setup (do this every login in case of corruption)
         if (!plugin.getConfig().isSet(uuid + ".info.class.name")) {
@@ -70,21 +70,36 @@ public class PlayerJoinListener implements Listener {
 
             // set the item!
             player.getInventory().setItem(2, hearthstone);
+        }
 
-            // set player's default health to 50
-            NBTEntity nbtPlayer = new NBTEntity(player);
-            NBTList list = nbtPlayer.getList("Attributes", NBTType.NBTTagCompound);
-            for (int i = 0; i < list.size(); i++) {
-                NBTListCompound lc = list.getCompound(i);
-                if (lc.getString("Name").equals("generic.maxHealth")) {
-                    lc.setDouble("Base", 50f);
-                }
+        // set player's default health to 50
+        NBTEntity nbtPlayer = new NBTEntity(player);
+        NBTList list = nbtPlayer.getList("Attributes", NBTType.NBTTagCompound);
+        for (int i = 0; i < list.size(); i++) {
+            NBTListCompound lc = list.getCompound(i);
+            if (lc.getString("Name").equals("generic.maxHealth")) {
+                lc.setDouble("Base", 50f);
             }
+        }
 
-            // update the heart display
-            int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-            player.setHealthScale((maxHealth / 12.5));
-            player.setHealth(maxHealth);
+        // todo: put all health-related stuff in its own class file
+        // update the heart display
+        // (ex: 50/12.5 = 4 hearts)
+        // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
+        int scale = (int) (player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 12.5);
+        if (scale % 2 != 0) {
+            scale = scale-1;
+        }
+        player.setHealthScale(scale);
+
+        // set their hp to whatever it was on last logout
+        if (player.hasPlayedBefore()) {
+            int storedHealth = (int) Main.getInstance().getConfig().getDouble(player.getUniqueId() + ".info.health");
+            if (storedHealth > player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
+                player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+            } else {
+                player.setHealth(storedHealth);
+            }
         }
     }
 

@@ -32,11 +32,9 @@ public class Discharge extends Skill {
     // constructor
     public Discharge() {
         super("Discharge",
-                "You launch an electric spark!" +
-                        "\nUpon impact, it summons a" +
-                        "\nlightning bolt, dealing " + DAMAGE_AMT +
-                        "\ndamage to enemies within" +
-                        "\n" + BLAST_RADIUS + " blocks.",
+                "You launch an electric spark! Upon impact,\n"
+                        + "it summons a lightning bolt, dealing " + DAMAGE_AMT + "\n"
+                        + "damage to enemies within " + BLAST_RADIUS + " blocks.",
                 ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
     }
 

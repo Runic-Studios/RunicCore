@@ -15,10 +15,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
+import us.fortherealm.plugin.skillapi.SkillManager;
+import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SpellsGUI implements InventoryProvider {
+
+    // todo: add variable in each skill which corresponds to a class to make adding this easier
+    // for (Skill skill : skills) {
+    // if (skill.isMageSkill)... etc
+    // private List<Skill> skills = Main.getSkillManager().getSkills();
 
     /**
      * CHANGE THE ID FOR EACH NEW GUI
@@ -99,8 +107,9 @@ public class SpellsGUI implements InventoryProvider {
 
     private void displaySpellsMage(Player player, InventoryContents contents) {
         displaySpell(player, contents, 1, 0, "Arcane Spike", "Mage");
-        displaySpell(player, contents, 1, 1, "Comet", "Mage");
-        displaySpell(player, contents, 1, 2, "Discharge", "Mage");
+        displaySpell(player, contents, 1, 1, "Blizzard", "Mage");
+        displaySpell(player, contents, 1, 2, "Comet", "Mage");
+        displaySpell(player, contents, 1, 3, "Discharge", "Mage");
     }
 
     private void displaySpellsRogue(Player player, InventoryContents contents) {

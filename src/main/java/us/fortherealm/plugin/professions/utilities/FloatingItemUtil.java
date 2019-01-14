@@ -10,7 +10,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 
-public class ItemUtils {
+public class FloatingItemUtil {
 
     public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
@@ -26,6 +26,26 @@ public class ItemUtils {
         }
 
         // tell the item when to despawn, based on duration (in seconds)
+        setAge(duration, item);
+    }
+
+    public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration, Vector vec) {
+        Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
+        item.setVelocity(vec);
+        item.setPickupDelay(Integer.MAX_VALUE);
+
+        // send packets to make item invisible for all other players
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (p == pl) continue;
+            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(item.getEntityId());
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+        }
+
+        // tell the item when to despawn, based on duration (in seconds)
+        setAge(duration, item);
+    }
+
+    private static void setAge(int duration, Item item) {
         try
         {
             Field itemField = item.getClass().getDeclaredField("item");
@@ -44,26 +64,4 @@ public class ItemUtils {
             e.printStackTrace();
         }
     }
-//    public static BukkitTask startCrafting(Player pl, Location loc, Material material, int exp) {
-//        BukkitTask crafting = new BukkitRunnable() {
-//            int count = 0;
-//            @Override
-//            public void run() {
-//                if (count == 3) {
-//                    ItemUtils.spawnFloatingItem(pl, loc, material, 1);
-//                } else if (count > 3) {
-//                    this.cancel();
-//                    pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 0.5f, 0.2f);
-//                    //smeltItem(pl, material, name);
-//                    pl.sendMessage(ChatColor.GREEN + "Done!");
-//                    ProfExpUtil.giveExperience(pl, exp);
-//                }
-//                pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1.0f);
-//                pl.playSound(pl.getLocation(), Sound.ITEM_BUCKET_FILL_LAVA, 0.5f, 1.0f);
-//                pl.spawnParticle(Particle.FLAME, loc, 25, 0.25, 0.25, 0.25, 0.01);
-//                count = count + 1;
-//            }
-//        }.runTaskTimer(Main.getInstance(), 0, 20);
-//        return crafting;
-//    }
 }

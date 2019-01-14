@@ -116,6 +116,7 @@ public class SkillManager {
         this.skillList.add(new Charge());
         this.skillList.add(new Cloak());
         this.skillList.add(new HolyNova());
+        this.skillList.add(new Blizzard());
     }
 
     // starts the repeating task to manage player cooldowns

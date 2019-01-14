@@ -1,9 +1,5 @@
 package us.fortherealm.plugin.listeners;
 
-import de.tr7zw.itemnbtapi.NBTItem;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.event.EventPriority;
@@ -12,7 +8,6 @@ import org.bukkit.plugin.Plugin;
 import us.fortherealm.plugin.Main;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
 import net.minecraft.server.v1_13_R2.DataWatcherRegistry;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
@@ -26,7 +21,6 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.attributes.AttributeUtil;
-import us.fortherealm.plugin.utilities.DamageIndicators;
 import us.fortherealm.plugin.utilities.WeaponEnum;
 
 import java.util.concurrent.ThreadLocalRandom;

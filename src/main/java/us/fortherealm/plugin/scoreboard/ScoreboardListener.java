@@ -57,9 +57,15 @@ public class ScoreboardListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                //ex: (50 / 12.5) = 4.0 = 2 hearts displayed
+                // update the heart display
+                // (ex: 50/12.5 = 4 hearts)
+                // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
                 double maxHealth = pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-                pl.setHealthScale((maxHealth / 12.5));
+                int scale = (int) (maxHealth / 12.5);
+                if (scale % 2 != 0) {
+                    scale = scale-1;
+                }
+                pl.setHealthScale(scale);
                 if (pl.getHealth() > maxHealth) {
                     pl.setHealth(maxHealth);
                 }

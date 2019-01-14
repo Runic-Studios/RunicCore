@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import us.fortherealm.plugin.Main;
 
 public class PlayerQuitListener implements Listener {
 
@@ -17,5 +18,10 @@ public class PlayerQuitListener implements Listener {
 
         // make sure the player's walk speed is reset
         player.setWalkSpeed(0.2f);
+
+        // save player hp
+        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.health", player.getHealth());
+        Main.getInstance().saveConfig();
+        Main.getInstance().reloadConfig();
     }
 }

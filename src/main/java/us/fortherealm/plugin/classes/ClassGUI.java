@@ -165,7 +165,7 @@ public class ClassGUI implements InventoryProvider {
                 itemName = "Sturdy Oaken Branch";
                 material = Material.WOODEN_HOE;
                 launchFirework(player, FUCHSIA);
-                spell = "Arcane Spike";
+                spell = "Blizzard";
                 player.sendTitle(
                         ChatColor.DARK_PURPLE + "You selected",
                         ChatColor.LIGHT_PURPLE + className + "!", 10, 40, 10);
