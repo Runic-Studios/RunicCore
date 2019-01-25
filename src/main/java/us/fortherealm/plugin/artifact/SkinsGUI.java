@@ -79,36 +79,36 @@ public class SkinsGUI implements InventoryProvider {
     }
 
     private void displaySkinsCleric(Player player, InventoryContents contents) {
-        displaySkin(player, contents, 1, 0, Material.WOODEN_SHOVEL, "Initiate's Oaken Mace", "", 0, "");
-        displaySkin(player, contents, 1, 1, Material.STONE_SHOVEL, "Worn Stone Club", "Unlock by reaching lv. 10!", 0, "stone_mace");
-        displaySkin(player, contents, 1, 2, Material.IRON_SHOVEL, "Polished Silver Hammer", "Unlock by reaching lv. 20!", 0, "iron_mace");
-        displaySkin(player, contents, 1, 3, Material.GOLDEN_SHOVEL, "Victorious Gilded Mace", "Unlock by reaching lv. 30!", 0, "golden_mace");
-        displaySkin(player, contents, 1, 4, Material.DIAMOND_SHOVEL, "Ancient Crystal Maul", "Unlock by reaching lv. 40!", 0, "diamond_mace");
+        displaySkin(player, contents, 1, 0, Material.IRON_SHOVEL, "Initiate's Oaken Mace", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.IRON_SHOVEL, "Worn Stone Club", "Unlock by reaching lv. 10!", 1, "stone_mace");
+        displaySkin(player, contents, 1, 2, Material.IRON_SHOVEL, "Polished Silver Hammer", "Unlock by reaching lv. 20!", 2, "iron_mace");
+        displaySkin(player, contents, 1, 3, Material.IRON_SHOVEL, "Victorious Gilded Mace", "Unlock by reaching lv. 30!", 3, "golden_mace");
+        displaySkin(player, contents, 1, 4, Material.IRON_SHOVEL, "Ancient Crystal Maul", "Unlock by reaching lv. 40!", 4, "diamond_mace");
     }
 
     private void displaySkinsMage(Player player, InventoryContents contents) {
-        displaySkin(player, contents, 1, 0, Material.WOODEN_HOE, "Sturdy Oaken Branch", "", 0, "");
-        displaySkin(player, contents, 1, 1, Material.STONE_HOE, "Worn Stone Cane", "Unlock by reaching lv. 10!", 0, "stone_staff");
-        displaySkin(player, contents, 1, 2, Material.IRON_HOE, "Polished Silver Scepter", "Unlock by reaching lv. 20!", 0, "iron_staff");
-        displaySkin(player, contents, 1, 3, Material.GOLDEN_HOE, "Victorious Gilded Staff", "Unlock by reaching lv. 30!", 0, "guilded_staff");
-        displaySkin(player, contents, 1, 4, Material.DIAMOND_HOE, "Ancient Crystal Greatstaff", "Unlock by reaching lv. 40!", 0, "diamond_staff");
+        displaySkin(player, contents, 1, 0, Material.IRON_HOE, "Sturdy Oaken Branch", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.IRON_HOE, "Worn Stone Cane", "Unlock by reaching lv. 10!", 1, "stone_staff");
+        displaySkin(player, contents, 1, 2, Material.IRON_HOE, "Polished Silver Scepter", "Unlock by reaching lv. 20!", 2, "iron_staff");
+        displaySkin(player, contents, 1, 3, Material.IRON_HOE, "Victorious Gilded Staff", "Unlock by reaching lv. 30!", 3, "guilded_staff");
+        displaySkin(player, contents, 1, 4, Material.IRON_HOE, "Ancient Crystal Greatstaff", "Unlock by reaching lv. 40!", 4, "diamond_staff");
         displaySkin(player, contents, 1, 5, Material.IRON_HOE, "Primal Arcane Rod", "§8Unlocked by becoming an alpha backer.", 5, "arcane_staff");
     }
 
     private void displaySkinsRogue(Player player, InventoryContents contents) {
-        displaySkin(player, contents, 1, 0, Material.WOODEN_SWORD, "Oaken Sparring Sword", "", 0, "");
-        displaySkin(player, contents, 1, 1, Material.STONE_SWORD, "Worn Stone Sword", "Unlock by reaching lv. 10!", 0, "stone_sword");
-        displaySkin(player, contents, 1, 2, Material.IRON_SWORD, "Polished Silver Broadsword", "Unlock by reaching lv. 20!", 0, "iron_sword");
-        displaySkin(player, contents, 1, 3, Material.GOLDEN_SWORD, "Victorious Gilded Longsword", "Unlock by reaching lv. 30!", 0, "golden_sword");
-        displaySkin(player, contents, 1, 4, Material.DIAMOND_SWORD, "Ancient Crystal Greatsword", "Unlock by reaching lv. 40!", 0, "diamond_sword");
+        displaySkin(player, contents, 1, 0, Material.IRON_SWORD, "Oaken Sparring Sword", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.IRON_SWORD, "Worn Stone Sword", "Unlock by reaching lv. 10!", 1, "stone_sword");
+        displaySkin(player, contents, 1, 2, Material.IRON_SWORD, "Polished Silver Broadsword", "Unlock by reaching lv. 20!", 2, "iron_sword");
+        displaySkin(player, contents, 1, 3, Material.IRON_SWORD, "Victorious Gilded Longsword", "Unlock by reaching lv. 30!", 3, "golden_sword");
+        displaySkin(player, contents, 1, 4, Material.IRON_SWORD, "Ancient Crystal Greatsword", "Unlock by reaching lv. 40!", 4, "diamond_sword");
     }
 
     private void displaySkinsWarrior(Player player, InventoryContents contents) {
-        displaySkin(player, contents, 1, 0, Material.WOODEN_AXE, "Worn Oaken Battleaxe", "", 0, "");
-        displaySkin(player, contents, 1, 1, Material.STONE_AXE, "Crumbling Stone Axe", "Unlock by reaching lv. 10!", 0, "stone_axe");
-        displaySkin(player, contents, 1, 2, Material.IRON_AXE, "Polished Silver Broadaxe", "Unlock by reaching lv. 20!", 0, "iron_axe");
-        displaySkin(player, contents, 1, 3, Material.GOLDEN_AXE, "Victorious Gilded Reaver", "Unlock by reaching lv. 30!", 0, "golden_axe");
-        displaySkin(player, contents, 1, 4, Material.DIAMOND_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 0, "diamond_axe");
+        displaySkin(player, contents, 1, 0, Material.IRON_AXE, "Worn Oaken Battleaxe", "", 0, "");
+        displaySkin(player, contents, 1, 1, Material.IRON_AXE, "Crumbling Stone Axe", "Unlock by reaching lv. 10!", 1, "stone_axe");
+        displaySkin(player, contents, 1, 2, Material.IRON_AXE, "Polished Silver Broadaxe", "Unlock by reaching lv. 20!", 2, "iron_axe");
+        displaySkin(player, contents, 1, 3, Material.IRON_AXE, "Victorious Gilded Reaver", "Unlock by reaching lv. 30!", 3, "golden_axe");
+        displaySkin(player, contents, 1, 4, Material.IRON_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 4, "diamond_axe");
     }
 
     // display for each skin

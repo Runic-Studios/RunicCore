@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.classes.ArmorTypeEnum;
+import us.fortherealm.plugin.enums.ItemTypeEnum;
 
 /**
  * Listener which prevents classes from wearing incorrect types of armor
@@ -28,7 +28,7 @@ public class ArmorTypeListener implements Listener {
         Player pl = e.getPlayer();
         String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
 
-        ArmorTypeEnum armorType = ArmorTypeEnum.matchType(equippedItem);
+        ItemTypeEnum armorType = ItemTypeEnum.matchType(equippedItem);
 
         switch (armorType) {
             case CLOTH:

@@ -35,7 +35,7 @@ public class Discharge extends Skill {
                 "You launch an electric spark! Upon impact,\n"
                         + "it summons a lightning bolt, dealing " + DAMAGE_AMT + "\n"
                         + "damage to enemies within " + BLAST_RADIUS + " blocks.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

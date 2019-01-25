@@ -23,7 +23,7 @@ public class Windstride extends Skill {
                 "For " + BUFF_DURATION + " seconds, you grant a speed boost" +
                         "\nto yourself and all party members" +
                         "\n within" + RADIUS + " blocks!",
-                ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

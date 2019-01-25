@@ -31,7 +31,7 @@ public class Blizzard extends Skill {
                 "You summon a cloud of snow up to " + MAX_DIST + " blocks\n"
                         + "away that rains down snowballs for " + DURATION + " seconds,\n"
                         + "each dealing " + DAMAGE_AMOUNT + " damage to enemies.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 10);
         this.snowballMap = new HashMap<>();
     }
 

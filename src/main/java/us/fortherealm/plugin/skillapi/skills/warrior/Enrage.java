@@ -26,7 +26,7 @@ public class Enrage extends Skill {
                         "\nrage and may not move. After, you gain" +
                         "\nan immense boost of speed and strength" +
                         "\nfor " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

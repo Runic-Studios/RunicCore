@@ -36,7 +36,7 @@ public class Rejuvenate extends Skill {
                 "You launch a beam of healing magic," +
                 "\nrestoring " + HEAL_AMT + " health to all party members" +
                 "\nit passes through.",
-                ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 10);
+                ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 10, 10);
         this.hasBeenHit = new HashMap<>();
     }
 

@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.professions.blacksmith;
+package us.fortherealm.plugin.professions.jeweler;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -12,27 +12,27 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
-public class FurnaceGUI implements InventoryProvider {
+public class BenchGUI implements InventoryProvider {
 
-    public static final SmartInventory FURNACE_GUI = SmartInventory.builder()
-            .id("furnaceGUI")
-            .provider(new FurnaceGUI())
+    public static final SmartInventory BENCH_GUI = SmartInventory.builder()
+            .id("benchGUI")
+            .provider(new BenchGUI())
             .size(1, 9)
-            .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Furnace")
+            .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Gemcutting Bench")
             .build();
 
     @Override
     public void init(Player player, InventoryContents contents) {
 
-        // craft armor
+        // cut gems
         contents.set(0, 3, ClickableItem.of
-                (menuItem(Material.IRON_INGOT,
-                        ChatColor.WHITE,
-                        "Smelt Ores",
-                        "Turn raw ores into crafting materials!"),
+                (menuItem(Material.EMERALD,
+                        ChatColor.GREEN,
+                        "Cut Gems",
+                        "Refine raw gems into gemstones!"),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            SmeltGUI.SMELT_ORES.open(player);
+                            GemGUI.CUT_GEMS.open(player);
                         }));
 
         // close inventory

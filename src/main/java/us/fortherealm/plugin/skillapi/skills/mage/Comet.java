@@ -30,7 +30,7 @@ public class Comet extends Skill {
                 "You call a comet to fall from the sky!" +
                         "\nUpon impact, the comet deals " + DAMAGE_AMT + " damage" +
                         "\nto all enemies within " + BLAST_RADIUS + " blocks!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 15);
     }
 
     // skill execute code

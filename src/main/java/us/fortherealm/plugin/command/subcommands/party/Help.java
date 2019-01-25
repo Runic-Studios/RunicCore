@@ -1,9 +1,13 @@
 package us.fortherealm.plugin.command.subcommands.party;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.classes.ClassGUI;
@@ -37,6 +41,18 @@ public class Help implements SubCommand {
                         + ChatColor.YELLOW + "create, disband, help, invite, join, kick, leave");
 
         ClassGUI.CLASS_SELECTION.open(sender);
+
+        ItemStack silverKey = new ItemStack(Material.SHEARS);
+        ItemMeta meta = silverKey.getItemMeta();
+        ((Damageable) meta).setDamage(100);
+        silverKey.setItemMeta(meta);
+        sender.getInventory().setItem(7, silverKey);
+
+		ItemStack goldenKey = new ItemStack(Material.SHEARS);
+		ItemMeta meta2 = goldenKey.getItemMeta();
+		((Damageable) meta2).setDamage(200);
+		goldenKey.setItemMeta(meta2);
+		sender.getInventory().setItem(8, goldenKey);
 	}
 	
 	@Override

@@ -1,14 +1,13 @@
 package us.fortherealm.plugin.listeners;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.attributes.AttributeUtil;
-import us.fortherealm.plugin.utilities.WeaponEnum;
+import us.fortherealm.plugin.enums.WeaponEnum;
 
 public class WeaponListener implements Listener {
 
@@ -24,7 +23,8 @@ public class WeaponListener implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) return;
 
         ItemStack artifact = e.getItem();
-        WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+        Material artifactType = artifact.getType();
+        //WeaponEnum artifactType = WeaponEnum.matchType(artifact);
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
         // only listen for items that can be artifact weapons
@@ -34,7 +34,8 @@ public class WeaponListener implements Listener {
         if (cooldown != 0) return;
 
         // ignore bows
-        if (artifactType.equals(WeaponEnum.BOW)) return;
+        //if (artifactType.equals(WeaponEnum.BOW)) return;
+        if (artifactType == Material.BOW) return;
 
         // don't fire cooldown if they're sneaking, since they're casting a spell
         if (e.getPlayer().isSneaking()) {

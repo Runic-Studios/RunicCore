@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.listeners;
+package us.fortherealm.plugin.player;
 
 import de.tr7zw.itemnbtapi.NBTEntity;
 import de.tr7zw.itemnbtapi.NBTList;
@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class PlayerJoinListener implements Listener {
+public class FirstJoinListener implements Listener {
 
     private Main plugin = Main.getInstance();
 
@@ -52,7 +52,7 @@ public class PlayerJoinListener implements Listener {
         if (!player.hasPlayedBefore()) {
 
             // broadcast new player welcome message
-            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName() + ChatColor.LIGHT_PURPLE + " joined the server for the first time!");
+            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName() + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
 
             // create the hearthstone
             ItemStack hearthstone = new ItemStack(Material.NETHER_STAR);
@@ -91,16 +91,6 @@ public class PlayerJoinListener implements Listener {
             scale = scale-1;
         }
         player.setHealthScale(scale);
-
-        // set their hp to whatever it was on last logout
-        if (player.hasPlayedBefore()) {
-            int storedHealth = (int) Main.getInstance().getConfig().getDouble(player.getUniqueId() + ".info.health");
-            if (storedHealth > player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
-                player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-            } else {
-                player.setHealth(storedHealth);
-            }
-        }
     }
 
     private void setConfig(UUID uuid, String setting) {

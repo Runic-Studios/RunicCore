@@ -19,6 +19,7 @@ import us.fortherealm.plugin.skillapi.SkillManager;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SpellsGUI implements InventoryProvider {
@@ -127,7 +128,17 @@ public class SpellsGUI implements InventoryProvider {
     // display for each skin
     private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName, String className) {
 
-        String[] desc = Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n");
+        double cooldown = Main.getSkillManager().getSkillByName(spellName).getCooldown();
+        int manaCost = Main.getSkillManager().getSkillByName(spellName).getManaCost();
+        ArrayList<String> desc = new ArrayList<>();
+        desc.add("");
+        for (String line : Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n")) {
+            desc.add(ChatColor.GRAY + line);
+        }
+        desc.add("");
+        desc.add(ChatColor.RED + "Cooldown: " + ChatColor.YELLOW + cooldown + "s");
+        desc.add(ChatColor.DARK_AQUA + "Mana Cost: " + ChatColor.WHITE + manaCost);
+
         ItemStack item = player.getInventory().getItem(0);
         String itemName = item.getItemMeta().getDisplayName();
         if (player.hasPermission("ftr.spells." + spellName)) {
@@ -201,15 +212,11 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     // creates the visual menu
-    private ItemStack spellMenuItem(Material material, ChatColor dispColor, String displayName, String[] desc) {
+    private ItemStack spellMenuItem(Material material, ChatColor dispColor, String displayName, ArrayList<String> desc) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(dispColor + displayName);
-        ArrayList<String> lore = new ArrayList<>();
-        for (String s : desc) {
-            lore.add(ChatColor.GRAY + s);
-        }
-        meta.setLore(lore);
+        meta.setLore(desc);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

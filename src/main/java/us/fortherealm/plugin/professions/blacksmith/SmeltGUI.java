@@ -196,39 +196,48 @@ public class SmeltGUI implements InventoryProvider {
             public void run() {
                 if (count == 3) {
                     FloatingItemUtil.spawnFloatingItem(pl, loc, craftedItem, 1);
-                } else if (count > 3) {
+                }
+                if (count > 3) {
                     this.cancel();
                     Main.getProfManager().getCurrentCrafters().remove(pl);
                     pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 0.5f, 0.2f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
                     smeltItem(pl, craftedItem, name, craftedAmt, rate);
+                } else {
+                    pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1.0f);
+                    pl.playSound(pl.getLocation(), Sound.ITEM_BUCKET_FILL_LAVA, 0.5f, 1.0f);
+                    pl.spawnParticle(Particle.FLAME, loc, 25, 0.25, 0.25, 0.25, 0.01);
+                    count = count + 1;
                 }
-                pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1.0f);
-                pl.playSound(pl.getLocation(), Sound.ITEM_BUCKET_FILL_LAVA, 0.5f, 1.0f);
-                pl.spawnParticle(Particle.FLAME, loc, 25, 0.25, 0.25, 0.25, 0.01);
-                count = count + 1;
             }
         }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
     // gives the player the crafted item
     private void smeltItem(Player pl, Material material, String dispName, int amt, int rate) {
-        ItemStack smeltedItem = new ItemStack(material);
-        ItemMeta meta = smeltedItem.getItemMeta();
-        meta.setDisplayName(ChatColor.WHITE + dispName);
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ChatColor.GRAY + "Crafting Reagent");
-        meta.setLore(lore);
-        smeltedItem.setItemMeta(meta);
 
+        int failCount = 0;
         for (int i = 0; i < amt; i++) {
+
+            ItemStack smeltedItem = new ItemStack(material);
+            ItemMeta meta = smeltedItem.getItemMeta();
+            meta.setDisplayName(ChatColor.WHITE + dispName);
+            ArrayList<String> lore = new ArrayList<String>();
+            lore.add(ChatColor.GRAY + "Crafting Reagent");
+            meta.setLore(lore);
+            smeltedItem.setItemMeta(meta);
+
             double chance = ThreadLocalRandom.current().nextDouble(0, 100);
             if (chance <= rate) {
                 pl.getInventory().addItem(smeltedItem);
             } else {
-                pl.sendMessage(ChatColor.RED + "You fail to craft this item.");
+                failCount = failCount + 1;
             }
         }
+
+        // display fail message
+        if (failCount == 0) return;
+        pl.sendMessage(ChatColor.RED + "You fail to craft this item. [x" + failCount + "]");
     }
 }

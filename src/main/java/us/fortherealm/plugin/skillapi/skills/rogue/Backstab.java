@@ -23,7 +23,7 @@ public class Backstab extends Skill {
     public Backstab() {
         super("Backstab",
                 "For " + DURATION + " seconds, striking enemies from\nbehind deals " + (int) (DAMAGE_MULT*100) + "% weapon damage!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

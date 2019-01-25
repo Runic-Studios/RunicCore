@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.listeners;
+package us.fortherealm.plugin.player;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

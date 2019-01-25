@@ -28,7 +28,7 @@ public class ArcaneSpike extends Skill {
                 "You launch three beams of arcane magic!" +
                 "\nEach beam deals " + DAMAGE_AMOUNT + " damage to enemies " +
                 "\nit passes through.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
         this.hasBeenHit = new HashMap<>();
     }
 

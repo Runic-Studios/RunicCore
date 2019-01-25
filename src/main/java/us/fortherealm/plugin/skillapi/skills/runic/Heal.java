@@ -20,7 +20,7 @@ public class Heal extends Skill {
     public Heal() {
         super("Heal",
                 "You restore " + (int) HEAL_AMT + " of your own health!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 10);
     }
 
     // skill execute code

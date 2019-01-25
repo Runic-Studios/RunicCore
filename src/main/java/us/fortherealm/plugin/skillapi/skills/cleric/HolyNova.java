@@ -28,7 +28,7 @@ public class HolyNova extends Skill {
         super("Holy Nova", "For " + DURATION + " seconds, you pulse with holy power," +
                         "\nconjuring rings of light magic which" +
                         "\ndeal " + DAMAGE_AMT + " damage to enemies!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     @Override

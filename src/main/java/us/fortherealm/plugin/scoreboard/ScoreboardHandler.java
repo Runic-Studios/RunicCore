@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,22 +16,16 @@ import java.util.Set;
 
 public class ScoreboardHandler implements Listener {
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e){
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoin(PlayerJoinEvent e) {
 
-        // if our player is new, give the server 1s to update their total hp before the scoreboard is created
-        if (!e.getPlayer().hasPlayedBefore()) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    createScoreboard(e.getPlayer());
-                    updateSideInfo(e.getPlayer());
-                }
-            }.runTaskLater(Main.getInstance(), 20L);
-        } else {
-            createScoreboard(e.getPlayer());
-            updateSideInfo(e.getPlayer());
-        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                createScoreboard(e.getPlayer());
+                updateSideInfo(e.getPlayer());
+            }
+        }.runTaskLater(Main.getInstance(), 20L);
     }
 
     public void createScoreboard(Player pl){
@@ -66,20 +61,22 @@ public class ScoreboardHandler implements Listener {
 
         // add pretty formatting to side board
         Score blankSpaceSeven = sidebar.getScore("§1");
-        blankSpaceSeven.setScore(7);
+        blankSpaceSeven.setScore(8);
         Score blankSpaceTwo = sidebar.getScore("§2");
-        blankSpaceTwo.setScore(2);
+        blankSpaceTwo.setScore(3);
 
         // set side board header
         Score characterInfo = sidebar.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + "Character");
-        characterInfo.setScore(6);
+        characterInfo.setScore(7);
 
         // TODO: update info for guild
         updatePlayerInfo(pl);
 
         // setup side health display
-        Score side = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(healthAsString(pl));
-        side.setScore(1);
+        Score health = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(healthAsString(pl));
+        health.setScore(2);
+        Score mana = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(manaAsString(pl));
+        mana.setScore(1);
     }
 
     public void updatePlayerInfo(Player pl) {
@@ -91,17 +88,23 @@ public class ScoreboardHandler implements Listener {
         if (sidebar == null) { return; }
 
         Score playerClass = sidebar.getScore(playerClass(pl));
-        playerClass.setScore(5);
+        playerClass.setScore(6);
         Score playerProfession = sidebar.getScore(playerProf(pl));
-        playerProfession.setScore(4);
+        playerProfession.setScore(5);
         Score playerGuild = sidebar.getScore(playerGuild());
-        playerGuild.setScore(3);
+        playerGuild.setScore(4);
     }
 
     private String healthAsString(Player pl) {
         int currentHealth = (int) Math.round(pl.getHealth());
         int maxHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §7/ " + ChatColor.RED + maxHealth;
+    }
+
+    private String manaAsString(Player pl) {
+        int mana = Main.getManaManager().getCurrentManaList().get(pl.getUniqueId());
+        int maxMana = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
+        return ChatColor.DARK_AQUA + "✸ " + mana + " §7/ " + ChatColor.DARK_AQUA + maxMana;
     }
 
     private String playerClass(Player pl) {

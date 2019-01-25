@@ -33,7 +33,7 @@ public class Frostbolt extends Skill {
                 "You launch a projectile bolt of ice" +
                         "\nwhich deals " + DAMAGE_AMT + " damage on impact" +
                         "\nand slows its target!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
         this.hasBeenHit = new HashMap<>();
     }
 

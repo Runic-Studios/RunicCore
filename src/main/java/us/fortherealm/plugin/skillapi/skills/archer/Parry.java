@@ -26,7 +26,7 @@ public class Parry extends Skill {
     public Parry() {
         super("Parry", "You launch yourself backwards in the air!" +
                 "\nFor the next " + DURATION + " seconds, you are protected" +
-                "\nfrom fall damage.", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 8);
+                "\nfrom fall damage.", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 8, 5);
     }
 
     @Override

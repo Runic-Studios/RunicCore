@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.attributes.AttributeUtil;
-import us.fortherealm.plugin.utilities.WeaponEnum;
+import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.util.concurrent.ThreadLocalRandom;
 

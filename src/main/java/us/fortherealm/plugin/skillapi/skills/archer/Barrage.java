@@ -28,7 +28,7 @@ public class Barrage extends Skill {
     public Barrage() {
         super("Barrage",
                 "You launch a volley of five magical arrows\nthat deal " + (DAMAGE_MULTIPLIER*100) + "% weapon damage!",
-                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

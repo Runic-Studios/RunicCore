@@ -15,6 +15,8 @@ import us.fortherealm.plugin.parties.PartyDamageListener;
 import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.fortherealm.plugin.player.*;
+import us.fortherealm.plugin.professions.jeweler.SocketListener;
 import us.fortherealm.plugin.professions.WorkstationListener;
 import us.fortherealm.plugin.professions.ProfManager;
 import us.fortherealm.plugin.professions.gathering.FarmingListener;
@@ -35,6 +37,7 @@ public class Main extends JavaPlugin {
     // handlers
     private static Main instance;
     private static CombatManager combatManager;
+    private static ManaManager manaManager;
     private static PartyManager partyManager;
     private static ProfManager profManager;
     private static ScoreboardHandler scoreboardHandler;
@@ -44,6 +47,7 @@ public class Main extends JavaPlugin {
     // getters for handlers
     public static Main getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
+    public static ManaManager getManaManager() { return manaManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
@@ -55,6 +59,7 @@ public class Main extends JavaPlugin {
         // instantiate everything we need
         instance = this;
         combatManager = new CombatManager();
+        manaManager = new ManaManager();
         partyManager = new PartyManager();
         profManager = new ProfManager();
         scoreboardHandler = new ScoreboardHandler();
@@ -85,7 +90,7 @@ public class Main extends JavaPlugin {
 
         PluginManager pm = this.getServer().getPluginManager();
 
-        pm.registerEvents(new PlayerJoinListener(), this);
+        pm.registerEvents(new FirstJoinListener(), this);
         pm.registerEvents(Main.getScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new ArtifactListener(), this);
@@ -112,6 +117,10 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new FarmingListener(), this);
         pm.registerEvents(new WCListener(), this);
         pm.registerEvents(new FishingListener(), this);
+        pm.registerEvents(new SocketListener(), this);
+        pm.registerEvents(new PlayerJoinListener(), this);
+        pm.registerEvents(new ManaManager(), this);
+        pm.registerEvents(new PlayerLevelListener(), this);
     }
     
     private void registerCommands() {

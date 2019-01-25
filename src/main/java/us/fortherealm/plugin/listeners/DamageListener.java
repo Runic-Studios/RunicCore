@@ -20,7 +20,7 @@ import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.healthbars.PlayerBars;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import us.fortherealm.plugin.utilities.HologramUtil;
-import us.fortherealm.plugin.utilities.WeaponEnum;
+import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.util.HashMap;
 import java.util.UUID;

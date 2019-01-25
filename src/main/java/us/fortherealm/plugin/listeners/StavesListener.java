@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
-import us.fortherealm.plugin.utilities.WeaponEnum;
+import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,17 +46,16 @@ public class StavesListener  implements Listener {
         ItemStack artifact = e.getItem();
         ItemMeta meta = artifact.getItemMeta();
         int durability = ((org.bukkit.inventory.meta.Damageable) meta).getDamage();
-        WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+        //WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+        Material artifactType = artifact.getType();
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
         // only listen for items that can be artifact weapons
         if (artifactType == null) return;
 
-        // only listen for staves, ignore staves w/ durability 100,
-        // which are farming hoes
-        if (!(artifactType.equals(WeaponEnum.STAFF))) return;
-        if (durability == 100) return;
-
+        // IGNORE NON-STAFF ITEMS
+        if (artifactType != Material.IRON_HOE) return;
+        // if (durability >=54 ) return;
 
         Player pl = e.getPlayer();
 

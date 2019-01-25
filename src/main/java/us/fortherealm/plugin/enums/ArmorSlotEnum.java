@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.utilities;
+package us.fortherealm.plugin.enums;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -8,12 +8,12 @@ import org.bukkit.inventory.ItemStack;
  * @Website http://codingforcookies.com/
  * @Since Jul 30, 2015 6:46:16 PM
  */
-public enum ArmorEnum {
+public enum ArmorSlotEnum {
     HELMET(5), CHESTPLATE(6), LEGGINGS(7), BOOTS(8);
 
     private final int slot;
 
-    ArmorEnum(int slot){
+    ArmorSlotEnum(int slot){
         this.slot = slot;
     }
 
@@ -23,7 +23,7 @@ public enum ArmorEnum {
      * @param itemStack The ItemStack to parse the skilltypes of.
      * @return The parsed ArmorType. (null if none were found.)
      */
-    public static ArmorEnum matchSlot(final ItemStack itemStack){
+    public static ArmorSlotEnum matchSlot(final ItemStack itemStack){
         if(itemStack == null) { return null; }
         switch (itemStack.getType()){
             case DIAMOND_HELMET:

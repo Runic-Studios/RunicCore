@@ -51,7 +51,7 @@ public class ClassGUI implements InventoryProvider {
 
         // select cleric
         contents.set(0, 2, ClickableItem.of
-                (menuItem(Material.WOODEN_SHOVEL,
+                (menuItem(Material.IRON_SHOVEL,
                         ChatColor.AQUA,
                         "Cleric",
                         "A versatile support and healer.",
@@ -65,7 +65,7 @@ public class ClassGUI implements InventoryProvider {
 
         // select mage
         contents.set(0, 4, ClickableItem.of
-                (menuItem(Material.WOODEN_HOE,
+                (menuItem(Material.IRON_HOE,
                         ChatColor.LIGHT_PURPLE,
                         "Mage",
                         "A powerful, ranged nuker.",
@@ -79,7 +79,7 @@ public class ClassGUI implements InventoryProvider {
 
         // select rogue
         contents.set(0, 6, ClickableItem.of
-                (menuItem(Material.WOODEN_SWORD,
+                (menuItem(Material.IRON_SWORD,
                         ChatColor.YELLOW,
                         "Rogue",
                         "A cunning, close-range duelist.",
@@ -93,7 +93,7 @@ public class ClassGUI implements InventoryProvider {
 
         // select warrior
         contents.set(0, 8, ClickableItem.of
-                (menuItem(Material.WOODEN_AXE,
+                (menuItem(Material.IRON_AXE,
                         ChatColor.RED,
                         "Warrior",
                         "A durable, close-range fighter.",
@@ -154,7 +154,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Cleric":
                 itemName = "Initiate's Oaken Mace";
-                material = Material.WOODEN_SHOVEL;
+                material = Material.IRON_SHOVEL;
                 spell = "Rejuvenate";
                 launchFirework(player, AQUA);
                 player.sendTitle(
@@ -163,7 +163,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Mage":
                 itemName = "Sturdy Oaken Branch";
-                material = Material.WOODEN_HOE;
+                material = Material.IRON_HOE;
                 launchFirework(player, FUCHSIA);
                 spell = "Blizzard";
                 player.sendTitle(
@@ -172,7 +172,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Rogue":
                 itemName = "Oaken Sparring Sword";
-                material = Material.WOODEN_SWORD;
+                material = Material.IRON_SWORD;
                 spell = "Smoke Bomb";
                 launchFirework(player, YELLOW);
                 player.sendTitle(
@@ -181,7 +181,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Warrior":
                 itemName = "Worn Oaken Battleaxe";
-                material = Material.WOODEN_AXE;
+                material = Material.IRON_AXE;
                 spell = "Charge";
                 launchFirework(player, RED);
                 player.sendTitle(
@@ -230,7 +230,7 @@ public class ClassGUI implements InventoryProvider {
         // --------------------------------------------------------------------------------------------------------
 
         // generate our lore
-        LoreGenerator.generateArtifactLore(artifact, ChatColor.YELLOW, itemName, className, 0);
+        LoreGenerator.generateArtifactLore(artifact, ChatColor.GOLD, itemName, className, 0);
 
         // set the player's artifact
         player.getInventory().setItem(0, artifact);

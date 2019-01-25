@@ -23,7 +23,7 @@ public class Sprint extends Skill {
     public Sprint() {
         super("Sprint",
                 "For " + BUFF_DURATION + " seconds, you gain a" +
-                        "\nmassive boost to your speed!", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10);
+                        "\nmassive boost to your speed!", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10, 5);
     }
 
     // skill execute code

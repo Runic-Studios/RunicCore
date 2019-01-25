@@ -29,7 +29,7 @@ public class Grapple extends Skill {
                 "You fire a grappling hook which pulls" +
                         "\nyou to your target location, up to a max" +
                         "\nof " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

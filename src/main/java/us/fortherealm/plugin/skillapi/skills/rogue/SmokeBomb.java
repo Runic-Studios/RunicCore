@@ -35,7 +35,7 @@ public class SmokeBomb extends Skill {
                 "You fire a cloud of toxic smoke that" +
                         "\ndeals " + DAMAGE_AMT + " damage and blinds enemies for" +
                         "\n" + DURATION + " seconds!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

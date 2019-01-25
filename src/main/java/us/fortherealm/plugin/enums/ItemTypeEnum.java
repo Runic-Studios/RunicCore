@@ -1,12 +1,12 @@
-package us.fortherealm.plugin.classes;
+package us.fortherealm.plugin.enums;
 
 import org.bukkit.inventory.ItemStack;
 
-public enum ArmorTypeEnum {
+public enum ItemTypeEnum {
 
-    CLOTH, LEATHER, MAIL, PLATE, CRYSTAL;
+    CLOTH, LEATHER, MAIL, PLATE, CRYSTAL, GEMSTONE, AIR;
 
-    public static ArmorTypeEnum matchType(final ItemStack itemStack){
+    public static ItemTypeEnum matchType(final ItemStack itemStack){
         if(itemStack == null) { return null; }
         switch (itemStack.getType()){
             case DIAMOND_HELMET:
@@ -34,8 +34,13 @@ public enum ArmorTypeEnum {
             case GOLDEN_LEGGINGS:
             case GOLDEN_BOOTS:
                 return CLOTH;
+            case EMERALD:
+            case REDSTONE:
+            case LAPIS_LAZULI:
+            case QUARTZ:
+                return GEMSTONE;
             default:
-                return null;
+                return AIR;
         }
     }
 }

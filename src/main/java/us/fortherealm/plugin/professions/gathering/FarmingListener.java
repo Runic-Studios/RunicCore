@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.utilities.HologramUtil;
-import us.fortherealm.plugin.utilities.WeaponEnum;
+import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +123,8 @@ public class FarmingListener implements Listener {
         // this will always be a hoe, so we check for the staff enum
         // we also ensure it has durability 100, arbitrarily chosen.
         if (pl.getInventory().getItemInMainHand() == null) return;
-        WeaponEnum heldItem = WeaponEnum.matchType(pl.getInventory().getItemInMainHand());
+        //WeaponEnum heldItem = WeaponEnum.matchType(pl.getInventory().getItemInMainHand());
+        Material heldItem = pl.getInventory().getItemInMainHand().getType();
         ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
         int durability = ((Damageable) meta).getDamage();
 
@@ -132,7 +133,7 @@ public class FarmingListener implements Listener {
             return;
         }
 
-        if (!(heldItem.equals(WeaponEnum.STAFF)) || durability != 100) {
+        if (heldItem != Material.WOODEN_HOE) {
             pl.sendMessage(ChatColor.RED + "You need a harvesting tool to do that!");
             return;
         }

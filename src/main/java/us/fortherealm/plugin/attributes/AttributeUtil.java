@@ -18,15 +18,23 @@ public class AttributeUtil {
         return item;
     }
 
+    // overloaded method to add a stat by String
+    public static ItemStack addCustomStat(ItemStack item, String statName, String value) {
+        NBTItem nbti = new NBTItem(item);
+        nbti.setString(statName, value);
+        item = nbti.getItem();
+        return item;
+    }
+
     // takes an ItemStack, returns a new ItemStack with applied attributes
-    public static ItemStack addGenericStat(ItemStack item, String modifier, double amount, String slot) {
+    public static ItemStack addGenericStat(ItemStack item, String statName, double amt, String slot) {
         ItemStack artifact = item;
         NBTItem nbti = new NBTItem(artifact);
         NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
         NBTListCompound attribute = attributes.addCompound();
-        attribute.setDouble("Amount", amount);
-        attribute.setString("AttributeName", modifier);
-        attribute.setString("Name", modifier);
+        attribute.setDouble("Amount", amt);
+        attribute.setString("AttributeName", statName);
+        attribute.setString("Name", statName);
         attribute.setString("Slot", slot);
         attribute.setInteger("Operation", 0);
         attribute.setInteger("UUIDLeast", 1);
@@ -44,13 +52,16 @@ public class AttributeUtil {
             case "feet":
                 maxUUID = 9;
                 break;
+            default:
+                maxUUID = 11;
+                break;
         }
         attribute.setInteger("UUIDMost", maxUUID);
         artifact = nbti.getItem();
         return artifact;
     }
 
-    // takes an ItemStack, returns a new ItemStack with applied attributes
+    // takes an ItemStack, returns a new ItemStack with applied spell
     public static ItemStack addSpell(ItemStack item, String spellSlot, String spell) {
         NBTItem nbti = new NBTItem(item);
         if (nbti.hasKey(spellSlot)) {
@@ -68,6 +79,16 @@ public class AttributeUtil {
             return nbti.getDouble(statName);
         } else {
             return 0;
+        }
+    }
+
+    // above method but with Strings
+    public static String getCustomString(ItemStack item, String statName) {
+        NBTItem nbti = new NBTItem(item);
+        if (nbti.hasKey(statName)) {
+            return nbti.getString(statName);
+        } else {
+            return "";
         }
     }
 
@@ -89,6 +110,7 @@ public class AttributeUtil {
         }
     }
 
+    // finds a spell
     public static String getSpell(ItemStack item, String spellSlot) {
         NBTItem nbti = new NBTItem(item);
         return nbti.getString(spellSlot);

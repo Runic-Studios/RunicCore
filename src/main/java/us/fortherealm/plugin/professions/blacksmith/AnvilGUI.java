@@ -40,11 +40,11 @@ public class AnvilGUI implements InventoryProvider {
                 (menuItem(Material.BARRIER,
                         ChatColor.RED,
                         "Close",
-                        "Close the menu"),
+                        "Leave the workstation"),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                             player.closeInventory();
-                            player.sendMessage(ChatColor.GRAY + "You closed the menu.");
+                            player.sendMessage(ChatColor.GRAY + "You left the workstation.");
                         }));
     }
 

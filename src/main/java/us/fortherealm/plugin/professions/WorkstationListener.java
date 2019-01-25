@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.professions.blacksmith.AnvilGUI;
 import us.fortherealm.plugin.professions.blacksmith.FurnaceGUI;
+import us.fortherealm.plugin.professions.jeweler.BenchGUI;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,13 +122,12 @@ public class WorkstationListener implements Listener {
                 break;
             case "gemcutting bench":
                 pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
-                //BenchGUI.BENCH_GUI.open(pl);
+                BenchGUI.BENCH_GUI.open(pl);
                 break;
             case "spinning wheel":
                 //WheelGUI.WHEEL_GUI.open(pl);
                 break;
             case "tanning rack":
-                pl.playSound(pl.getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 10.0f, 2.0f);
                 //RackGUI.RACK_GUI.open(pl);
                 break;
         }
@@ -236,16 +236,18 @@ public class WorkstationListener implements Listener {
 
     /**
      * This event disables the vanilla functionality of: anvils, brewing stands, cauldrons,
-     * furnaces.
+     * crafting tables,  furnaces.
      */
     @EventHandler
     public void onDefaultStationUse(PlayerInteractEvent e) {
 
+        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (!e.hasBlock()) return;
         Block b = e.getClickedBlock();
         if (b.getType() == Material.ANVIL
                 || b.getType() == Material.BREWING_STAND
                 || b.getType() == Material.CAULDRON
+                || b.getType() == Material.CRAFTING_TABLE
                 || b.getType() == Material.FURNACE) {
             e.setCancelled(true);
         }

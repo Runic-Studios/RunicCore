@@ -34,7 +34,7 @@ public class Deliverance extends Skill {
                         "\nrepels all enemies, but party members may" +
                         "\npass through it freely. During this time," +
                         "\nyou may not move.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 9);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 9, 20);
     }
 
     @Override

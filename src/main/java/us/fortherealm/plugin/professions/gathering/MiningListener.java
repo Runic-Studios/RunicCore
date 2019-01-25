@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.utilities.HologramUtil;
-import us.fortherealm.plugin.utilities.WeaponEnum;
+import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,28 +97,28 @@ public class MiningListener implements Listener {
                 break;
             case LAPIS_ORE:
                 placeHolderType = Material.COBBLESTONE;
-                itemType = Material.LAPIS_LAZULI;
+                itemType = Material.LAPIS_ORE;
                 holoString = "+ Sapphire";
                 itemName = "Uncut Sapphire";
                 subPath = "ORES";
                 break;
             case EMERALD_ORE:
                 placeHolderType = Material.COBBLESTONE;
-                itemType = Material.EMERALD;
+                itemType = Material.EMERALD_ORE;
                 holoString = "+ Emerald";
                 itemName = "Uncut Emerald";
                 subPath = "ORES";
                 break;
             case NETHER_QUARTZ_ORE:
                 placeHolderType = Material.COBBLESTONE;
-                itemType = Material.QUARTZ;
+                itemType = Material.NETHER_QUARTZ_ORE;
                 holoString = "+ Opal";
                 itemName = "Uncut Opal";
                 subPath = "ORES";
                 break;
             case REDSTONE_ORE:
                 placeHolderType = Material.COBBLESTONE;
-                itemType = Material.REDSTONE;
+                itemType = Material.REDSTONE_ORE;
                 holoString = "+ Ruby";
                 itemName = "Uncut Ruby";
                 subPath = "ORES";

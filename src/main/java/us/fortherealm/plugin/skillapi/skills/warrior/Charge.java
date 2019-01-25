@@ -23,7 +23,7 @@ public class Charge extends Skill {
     // constructor
     public Charge() {
         super("Charge", "You charge fearlessly into battle!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     @Override

@@ -25,7 +25,7 @@ public class Fireball extends Skill {
         super ("Fireball",
                 "You launch a projectile fireball" +
                         "\nwhich deals " + DAMAGE_AMOUNT + " damage on impact!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1);
+                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
     }
 
     // skill execute code

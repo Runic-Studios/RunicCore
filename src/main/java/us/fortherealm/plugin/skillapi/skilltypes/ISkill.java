@@ -21,5 +21,6 @@ public interface ISkill {
 
     Skill.ClickType getClickType();
 
+    int getManaCost();
 }
 

@@ -1,21 +1,18 @@
 package us.fortherealm.plugin.item;
 
 import de.tr7zw.itemnbtapi.NBTItem;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.enums.ItemTypeEnum;
 import us.fortherealm.plugin.utilities.NumRounder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class LoreGenerator {
 
@@ -77,7 +74,7 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
         lore.add("");
-        lore.add(ChatColor.YELLOW + "Artifact");
+        lore.add(ChatColor.GOLD + "Artifact");
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -93,7 +90,7 @@ public class LoreGenerator {
         // grab our ItemMeta, ItemLore
         ItemMeta meta = rune.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ancient Rune");
+        meta.setDisplayName(ChatColor.GOLD + "Ancient Rune");
 
         // grab our NBT attributes wrapper
         NBTItem nbti = new NBTItem(rune);
@@ -117,7 +114,7 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
         lore.add("");
-        lore.add(ChatColor.LIGHT_PURPLE + "Rune");
+        lore.add(ChatColor.GOLD + "Rune");
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -127,23 +124,92 @@ public class LoreGenerator {
         rune.setItemMeta(meta);
     }
 
-    public static void generateItemLore(ItemStack item, ChatColor color, String dispName, String rarity, String type) {
+    public static void generateItemLore(ItemStack item, ChatColor dispColor, String dispName, String extra) {
 
-        // grab our ItemMeta, ItemLore
+        // grab our material, ItemMeta, ItemLore
+        ItemTypeEnum itemType = ItemTypeEnum.matchType(item);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(color + dispName);
+        meta.setDisplayName(dispColor + dispName);
+
+        int socketCount = (int) AttributeUtil.getCustomDouble(item, "custom.socketCount");
+        int currentSockets = (int) AttributeUtil.getCustomDouble(item, "custom.currentSockets");
+        if (socketCount != 0) {
+            lore.add(ChatColor.GRAY + "[" + currentSockets + "/" + socketCount + "] Gems");
+        }
 
         lore.add("");
 
+        // for armor/items
         int health = (int) AttributeUtil.getGenericDouble(item, "generic.maxHealth");
-        lore.add(ChatColor.RED + "+ " + health + "❤");
+        if (health != 0) {
+            lore.add(ChatColor.RED + "+ " + health + "❤");
+        }
+
+        // for gemstones/custom boosts
+        int customHealth = (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
+        double customAttSpeed = AttributeUtil.getCustomDouble(item, "custom.attackSpeed");
+        int manaBoost = (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
+        if (customHealth != 0) {
+            lore.add(ChatColor.RED + "+ " + customHealth + "❤");
+        } else if (customAttSpeed != 0) {
+            double roundedSpeed = NumRounder.round(customAttSpeed);
+            lore.add(ChatColor.RED + "+ " + roundedSpeed + " Att Speed");
+        } else if (manaBoost != 0) {
+            lore.add(ChatColor.DARK_AQUA + "+ " + manaBoost + "✸");
+        }
 
         lore.add("");
 
-        lore.add(color + rarity);
+        // add rarity
+        if (dispColor == ChatColor.WHITE) {
+            lore.add(ChatColor.WHITE + "Crafted");
+        } else if (dispColor == ChatColor.GRAY) {
+            lore.add(ChatColor.GRAY + "Common");
+        } else if (dispColor == ChatColor.GREEN) {
+            lore.add(ChatColor.GREEN + "Uncommon");
+        } else if (dispColor == ChatColor.AQUA) {
+            lore.add(ChatColor.AQUA + "Rare");
+        } else if (dispColor == ChatColor.LIGHT_PURPLE) {
+            lore.add(ChatColor.LIGHT_PURPLE + "Epic");
+        } else if (dispColor == ChatColor.GOLD) {
+            lore.add(ChatColor.GOLD + "Legendary");
+        }
+
+        // add type of item lore
+        String type;
+        switch (itemType) {
+            case CLOTH:
+                type = "Cloth";
+                break;
+            case LEATHER:
+                type = "Leather";
+                break;
+            case MAIL:
+                type = "Mail";
+                break;
+            case PLATE:
+                type = "Plate";
+                break;
+            case CRYSTAL:
+                type = "Crystal";
+                break;
+            case GEMSTONE:
+                type = "Gemstone";
+                break;
+            default:
+                type = "Something went wrong";
+                break;
+        }
         lore.add(ChatColor.GRAY + type);
 
+        // add additional lore if necessary
+        if (!extra.equals("")) {
+            String[] extraLore = extra.split("\n");
+            Collections.addAll(lore, extraLore);
+        }
+
+        // set other flags
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
