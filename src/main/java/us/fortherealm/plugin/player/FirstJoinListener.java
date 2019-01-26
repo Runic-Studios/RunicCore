@@ -17,6 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.fortherealm.plugin.player.utilities.HealthUtils;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -71,26 +73,6 @@ public class FirstJoinListener implements Listener {
             // set the item!
             player.getInventory().setItem(2, hearthstone);
         }
-
-        // set player's default health to 50
-        NBTEntity nbtPlayer = new NBTEntity(player);
-        NBTList list = nbtPlayer.getList("Attributes", NBTType.NBTTagCompound);
-        for (int i = 0; i < list.size(); i++) {
-            NBTListCompound lc = list.getCompound(i);
-            if (lc.getString("Name").equals("generic.maxHealth")) {
-                lc.setDouble("Base", 50f);
-            }
-        }
-
-        // todo: put all health-related stuff in its own class file
-        // update the heart display
-        // (ex: 50/12.5 = 4 hearts)
-        // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
-        int scale = (int) (player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 12.5);
-        if (scale % 2 != 0) {
-            scale = scale-1;
-        }
-        player.setHealthScale(scale);
     }
 
     private void setConfig(UUID uuid, String setting) {

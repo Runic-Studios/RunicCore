@@ -20,7 +20,7 @@ public class PlayerQuitListener implements Listener {
         player.setWalkSpeed(0.2f);
 
         // save player hp
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.health", player.getHealth());
+        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.currentHP", (int) player.getHealth());
         Main.getInstance().saveConfig();
         Main.getInstance().reloadConfig();
     }

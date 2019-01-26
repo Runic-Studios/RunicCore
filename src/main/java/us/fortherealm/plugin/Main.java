@@ -2,12 +2,11 @@ package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
 import us.fortherealm.plugin.artifact.ArtifactListener;
-import us.fortherealm.plugin.level.ExpListener;
+import us.fortherealm.plugin.player.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.healthbars.CombatManager;
 import us.fortherealm.plugin.healthbars.PlayerBars;
-import us.fortherealm.plugin.level.ClassLvListener;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.nametags.PlayerNameManager;
 import us.fortherealm.plugin.outlaw.OutlawManager;
@@ -112,14 +111,13 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new PlayerBars(), this);
         pm.registerEvents(new WorkstationListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
-        pm.registerEvents(new ClassLvListener(), this);
         pm.registerEvents(new MiningListener(), this);
         pm.registerEvents(new FarmingListener(), this);
         pm.registerEvents(new WCListener(), this);
         pm.registerEvents(new FishingListener(), this);
         pm.registerEvents(new SocketListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
-        pm.registerEvents(new ManaManager(), this);
+        pm.registerEvents(new ManaListener(), this);
         pm.registerEvents(new PlayerLevelListener(), this);
     }
     

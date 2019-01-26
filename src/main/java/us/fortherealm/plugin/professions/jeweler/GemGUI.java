@@ -42,25 +42,25 @@ public class GemGUI implements InventoryProvider {
                             BenchGUI.BENCH_GUI.open(player);
                         }));
 
-        // emerald
-        setCraftItem(player, contents, 1, 0, Material.EMERALD,
-                "Cut Emerald", "Uncut Emerald",
-                "Mail", Material.EMERALD_ORE, 1, 5, 1, "emerald");
-
-        // opal
-        setCraftItem(player, contents, 1, 1, Material.QUARTZ,
-                "Cut Opal", "Uncut Opal",
-                "Mail", Material.NETHER_QUARTZ_ORE, 1, 5, 10, "opal");
-
-        // sapphire
-        setCraftItem(player, contents, 1, 2, Material.LAPIS_LAZULI,
-                "Cut Sapphire", "Uncut Sapphire",
-                "Mail", Material.LAPIS_ORE, 1, 15, 20, "sapphire");
-
-        // ruby
-        setCraftItem(player, contents, 1, 3, Material.REDSTONE,
+        // ruby (+hp)
+        setCraftItem(player, contents, 1, 0, Material.REDSTONE,
                 "Cut Ruby", "Uncut Ruby",
-                "Mail", Material.REDSTONE_ORE, 1, 10, 30, "ruby");
+                Material.REDSTONE_ORE, 1, 5, 1, "ruby");
+
+        // sapphire (+mana)
+        setCraftItem(player, contents, 1, 1, Material.LAPIS_LAZULI,
+                "Cut Sapphire", "Uncut Sapphire",
+                Material.LAPIS_ORE, 1, 10, 10, "sapphire");
+
+        // emerald (+weap dmg)
+        setCraftItem(player, contents, 1, 2, Material.EMERALD,
+                "Cut Emerald", "Uncut Emerald",
+                Material.EMERALD_ORE, 1, 15, 20, "emerald");
+
+        // opal (+spell damage)
+        setCraftItem(player, contents, 1, 3, Material.QUARTZ,
+                "Cut Opal", "Uncut Opal",
+                Material.NETHER_QUARTZ_ORE, 1, 20, 30, "opal");
     }
 
     // used for animated inventories
@@ -69,7 +69,7 @@ public class GemGUI implements InventoryProvider {
     }
 
     private void setCraftItem(Player pl, InventoryContents contents, int row, int slot, Material craftedItem,
-                              String name, String requirements, String armorType,
+                              String name, String requirements,
                               Material reagent, int itemAmt, int exp, int reqLevel, String gemType) {
 
         // grab the location of the anvil
@@ -161,7 +161,7 @@ public class GemGUI implements InventoryProvider {
         }
 
         // spawn item on anvil for visual
-        FloatingItemUtil.spawnFloatingItem(pl, stationLoc, reagent, 4);
+        FloatingItemUtil.spawnFloatingItem(pl, stationLoc, craftedItem, 4);
 
         // start the crafting process
         new BukkitRunnable() {

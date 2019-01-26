@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.player.utilities.HealthUtils;
 
 public class ScoreboardListener implements Listener {
 
@@ -57,15 +58,8 @@ public class ScoreboardListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                // update the heart display
-                // (ex: 50/12.5 = 4 hearts)
-                // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
+                HealthUtils.setHeartDisplay(pl);
                 double maxHealth = pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-                int scale = (int) (maxHealth / 12.5);
-                if (scale % 2 != 0) {
-                    scale = scale-1;
-                }
-                pl.setHealthScale(scale);
                 if (pl.getHealth() > maxHealth) {
                     pl.setHealth(maxHealth);
                 }

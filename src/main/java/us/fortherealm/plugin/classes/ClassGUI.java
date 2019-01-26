@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.player.utilities.HealthUtils;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.ArrayList;
@@ -247,6 +248,10 @@ public class ClassGUI implements InventoryProvider {
     }
 
     private void setConfig(Player player, String className) {
+        HealthUtils.setBaseHealth(player);
+        HealthUtils.setHeartDisplay(player);
+        player.setLevel(0);
+        player.setExp(0);
         Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.name", className);
         Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 0);
         Main.getInstance().saveConfig();

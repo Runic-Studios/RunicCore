@@ -15,10 +15,13 @@ public class PlayerJoinListener implements Listener {
 
         Player pl = e.getPlayer();
 
-        if (!pl.hasPlayedBefore()) return;
-
         // set their hp to stored value from last logout
-        int storedHealth = (int) Main.getInstance().getConfig().getDouble(pl.getUniqueId() + ".info.health");
+        int storedHealth = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
+
+        if (storedHealth == 0) {
+            storedHealth = 50;
+        }
+
         if (storedHealth > pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
             pl.setHealth(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         } else {
