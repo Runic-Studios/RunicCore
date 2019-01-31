@@ -14,3 +14,6 @@ commands:
   party:
     usage: /<command>
     description: Base for all party commands
+  set:
+    usage: /<command>
+    description: set a player's info

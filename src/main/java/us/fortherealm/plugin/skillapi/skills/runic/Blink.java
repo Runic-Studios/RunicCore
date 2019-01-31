@@ -20,12 +20,12 @@ public class Blink extends Skill {
         super("Blink",
                 "You teleport forward, up to" +
                         "\na distance of " + MAX_DIST + " blocks!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
         Location loc = pl.getLocation();
         Block validFinalBlock = null;
         Block currentBlock;

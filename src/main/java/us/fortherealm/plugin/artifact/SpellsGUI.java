@@ -95,38 +95,39 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     private void displaySpellsArcher(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Barrage", "Archer");
-        displaySpell(player, contents, 1, 1, "Grapple", "Archer");
-        displaySpell(player, contents, 1, 2, "Parry", "Archer");
+        displaySpell(player, contents, 1, 0, "Barrage", "Archer", true);
+        displaySpell(player, contents, 1, 1, "Grapple", "Archer", false);
+        displaySpell(player, contents, 1, 2, "Parry", "Archer", false);
     }
 
     private void displaySpellsCleric(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Holy Nova", "Cleric");
-        displaySpell(player, contents, 1, 1, "Rejuvenate", "Cleric");
-        displaySpell(player, contents, 1, 2, "Windstride", "Cleric");
+        displaySpell(player, contents, 1, 0, "Holy Nova", "Cleric", true);
+        displaySpell(player, contents, 1, 1, "Rejuvenate", "Cleric", true);
+        displaySpell(player, contents, 1, 2, "Windstride", "Cleric", false);
     }
 
     private void displaySpellsMage(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Arcane Spike", "Mage");
-        displaySpell(player, contents, 1, 1, "Blizzard", "Mage");
-        displaySpell(player, contents, 1, 2, "Comet", "Mage");
-        displaySpell(player, contents, 1, 3, "Discharge", "Mage");
+        displaySpell(player, contents, 1, 0, "Arcane Spike", "Mage", false);
+        displaySpell(player, contents, 1, 1, "Blizzard", "Mage", true);
+        displaySpell(player, contents, 1, 2, "Comet", "Mage", false);
+        displaySpell(player, contents, 1, 3, "Discharge", "Mage", false);
     }
 
     private void displaySpellsRogue(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Backstab", "Rogue");
-        displaySpell(player, contents, 1, 1, "Cloak", "Rogue");
-        displaySpell(player, contents, 1, 2, "Smoke Bomb", "Rogue");
+        displaySpell(player, contents, 1, 0, "Backstab", "Rogue", false);
+        displaySpell(player, contents, 1, 1, "Cloak", "Rogue", false);
+        displaySpell(player, contents, 1, 2, "Smoke Bomb", "Rogue", true);
     }
 
     private void displaySpellsWarrior(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Charge", "Warrior");
-        displaySpell(player, contents, 1, 1, "Enrage", "Warrior");
-        displaySpell(player, contents, 1, 2, "Deliverance", "Warrior");
+        displaySpell(player, contents, 1, 0, "Charge", "Warrior", true);
+        displaySpell(player, contents, 1, 1, "Enrage", "Warrior", false);
+        displaySpell(player, contents, 1, 2, "Deliverance", "Warrior", false);
     }
 
     // display for each skin
-    private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName, String className) {
+    private void displaySpell(Player player, InventoryContents contents,
+                              int row, int slot, String spellName, String className, boolean isUnlocked) {
 
         double cooldown = Main.getSkillManager().getSkillByName(spellName).getCooldown();
         int manaCost = Main.getSkillManager().getSkillByName(spellName).getManaCost();
@@ -141,7 +142,7 @@ public class SpellsGUI implements InventoryProvider {
 
         ItemStack item = player.getInventory().getItem(0);
         String itemName = item.getItemMeta().getDisplayName();
-        if (player.hasPermission("ftr.spells." + spellName)) {
+        if (player.hasPermission("ftr.spells." + spellName) || isUnlocked) {
             contents.set(row, slot, ClickableItem.of
                     (spellMenuItem(Material.ENCHANTED_BOOK,
                             ChatColor.GREEN,
@@ -177,7 +178,8 @@ public class SpellsGUI implements InventoryProvider {
 
         if (!otherSpell.equals(spellName)) {
             item = AttributeUtil.addSpell(item, spellSlot, spellName);
-            LoreGenerator.generateArtifactLore(item, ChatColor.YELLOW, itemName, className, 0);
+            int durability = ((Damageable) item.getItemMeta()).getDamage();
+            LoreGenerator.generateArtifactLore(item, itemName, className, durability);
             pl.getInventory().setItem(0, item);
             SpellsGUI.ARTIFACT_SPELLS.open(pl);
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);

@@ -16,12 +16,12 @@ import java.util.Collections;
 
 public class LoreGenerator {
 
-    public static void generateArtifactLore(ItemStack artifact, ChatColor color, String itemName, String className, int durability) {
+    public static void generateArtifactLore(ItemStack artifact, String itemName, String className, int durability) {
 
         // grab our ItemMeta, ItemLore
         ItemMeta meta = artifact.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(color + itemName);
+        meta.setDisplayName(ChatColor.YELLOW + itemName);
 
         // grab our NBT attributes wrapper
         NBTItem nbti = new NBTItem(artifact);
@@ -35,14 +35,14 @@ public class LoreGenerator {
             if (artifact.getType() == Material.BOW) {
                 lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + prim);
             } else {
-                lore.add(ChatColor.WHITE + "Shift + Left: " + ChatColor.GREEN + prim);
+                lore.add(ChatColor.WHITE + "Sneak + Left: " + ChatColor.GREEN + prim);
             }
         } else {
             lore.add(ChatColor.RED + "Primary: NULL");
         }
         if (sec != null) {
             if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Shift + Right: " + ChatColor.GREEN + sec);
+                lore.add(ChatColor.WHITE + "Sneak + Right: " + ChatColor.GREEN + sec);
             } else {
                 lore.add(ChatColor.WHITE + "Right Click: " + ChatColor.GREEN + sec);
             }
@@ -74,7 +74,7 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
         lore.add("");
-        lore.add(ChatColor.GOLD + "Artifact");
+        lore.add(ChatColor.YELLOW + "Artifact");
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -90,7 +90,7 @@ public class LoreGenerator {
         // grab our ItemMeta, ItemLore
         ItemMeta meta = rune.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(ChatColor.GOLD + "Ancient Rune");
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ancient Rune");
 
         // grab our NBT attributes wrapper
         NBTItem nbti = new NBTItem(rune);
@@ -114,7 +114,7 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
         lore.add("");
-        lore.add(ChatColor.GOLD + "Rune");
+        lore.add(ChatColor.LIGHT_PURPLE + "Rune");
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.player.utilities.HealthUtils;
 
 public class PlayerJoinListener implements Listener {
 
@@ -16,6 +17,8 @@ public class PlayerJoinListener implements Listener {
         Player pl = e.getPlayer();
 
         // set their hp to stored value from last logout
+        // set their health scale
+        HealthUtils.setHeartDisplay(pl);
         int storedHealth = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
 
         if (storedHealth == 0) {

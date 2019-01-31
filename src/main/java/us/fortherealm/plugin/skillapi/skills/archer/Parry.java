@@ -26,11 +26,11 @@ public class Parry extends Skill {
     public Parry() {
         super("Parry", "You launch yourself backwards in the air!" +
                 "\nFor the next " + DURATION + " seconds, you are protected" +
-                "\nfrom fall damage.", ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 8, 5);
+                "\nfrom fall damage.", ChatColor.WHITE, 8, 5);
     }
 
     @Override
-    public void onLeftClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // skill variables, vectors
         UUID uuid = pl.getUniqueId();

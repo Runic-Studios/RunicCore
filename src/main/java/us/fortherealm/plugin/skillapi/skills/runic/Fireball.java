@@ -25,12 +25,12 @@ public class Fireball extends Skill {
         super ("Fireball",
                 "You launch a projectile fireball" +
                         "\nwhich deals " + DAMAGE_AMOUNT + " damage on impact!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player player, SkillItemType type) {
+    public void executeSkill(Player player, SkillItemType type) {
         fireball = player.launchProjectile(SmallFireball.class);
         fireball.setIsIncendiary(false);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);

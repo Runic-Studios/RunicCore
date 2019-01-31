@@ -30,12 +30,12 @@ public class Comet extends Skill {
                 "You call a comet to fall from the sky!" +
                         "\nUpon impact, the comet deals " + DAMAGE_AMT + " damage" +
                         "\nto all enemies within " + BLAST_RADIUS + " blocks!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 15);
+                ChatColor.WHITE, 1, 15);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // play effects, spawn the comet
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);

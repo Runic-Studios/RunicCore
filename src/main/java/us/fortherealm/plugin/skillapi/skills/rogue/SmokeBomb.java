@@ -35,12 +35,12 @@ public class SmokeBomb extends Skill {
                 "You fire a cloud of toxic smoke that" +
                         "\ndeals " + DAMAGE_AMT + " damage and blinds enemies for" +
                         "\n" + DURATION + " seconds!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player player, SkillItemType type) {
+    public void executeSkill(Player player, SkillItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
         startTask(player);
     }

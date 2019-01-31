@@ -15,6 +15,8 @@ import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.player.*;
+import us.fortherealm.plugin.player.commands.Level;
+import us.fortherealm.plugin.player.commands.SetSC;
 import us.fortherealm.plugin.professions.jeweler.SocketListener;
 import us.fortherealm.plugin.professions.WorkstationListener;
 import us.fortherealm.plugin.professions.ProfManager;
@@ -123,6 +125,9 @@ public class Main extends JavaPlugin {
     
     private void registerCommands() {
         registerPartyCommands();
+        SetSC setSC = new SetSC();
+        getCommand("set").setExecutor(setSC);
+        setSC.addCommand(Arrays.asList("level"), new Level(setSC));
     }
     
     private void registerPartyCommands() {

@@ -23,17 +23,17 @@ public class Charge extends Skill {
     // constructor
     public Charge() {
         super("Charge", "You charge fearlessly into battle!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // skill variables, vectors
         Vector look = pl.getLocation().getDirection();
         Vector launchPath = new Vector(look.getX(), HEIGHT, look.getZ()).normalize();
 
-        // particles, sounds
+        // sounds, particles
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),

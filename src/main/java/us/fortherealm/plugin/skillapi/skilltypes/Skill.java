@@ -9,60 +9,36 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
+import us.fortherealm.plugin.attributes.AttributeUtil;
 
 public abstract class Skill implements ISkill, Listener {
+
     private String name, description;
     private ChatColor color;
-    private ClickType clickType;
     private double cooldown;
     protected Main plugin = Main.getInstance();
     protected boolean doCooldown = true;
     private int manaCost;
 
-    public Skill(String name, String description, ChatColor color, ClickType clickType, double cooldown, int manaCost) {
+    public Skill(String name, String description, ChatColor color, double cooldown, int manaCost) {
         this.name = name;
         this.description = description;
         this.color = color;
-        this.clickType = clickType;
         this.cooldown = cooldown;
         this.manaCost = manaCost;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
-    public void execute(Player player, Action action, SkillItemType type) {
-        switch(action){
-            case LEFT_CLICK_AIR:
-            case LEFT_CLICK_BLOCK:
-                if(this.clickType.equals(ClickType.LEFT_CLICK_ONLY) || this.clickType.equals(ClickType.BOTH)) {
-                    if(!Main.getSkillManager().isOnCooldown(player, this)) {
-                        if (doCooldown) {
-                            // verify enough mana
-                            if (!verifyMana(player)) return;
-                            this.onLeftClick(player, type);
-                        }
-                    }
-                }
-                break;
-            case RIGHT_CLICK_AIR:
-            case RIGHT_CLICK_BLOCK:
-                if(this.clickType.equals(ClickType.RIGHT_CLICK_ONLY) || this.clickType.equals(ClickType.BOTH)) {
-                    if(!Main.getSkillManager().isOnCooldown(player, this)) {
-                        if (doCooldown) {
-                            // verify enough mana
-                            if (!verifyMana(player)) return;
-                            this.onRightClick(player, type);
-                        }
-                    }
-                }
-
-                break;
-            default:
-                break;
+    public void execute(Player player, SkillItemType type) {
+        if (!Main.getSkillManager().isOnCooldown(player, this)) {
+            if (doCooldown) {
+                // verify enough mana
+                if (!verifyMana(player)) return;
+                this.executeSkill(player, type);
+            }
         }
-
     }
 
     private boolean verifyMana(Player player) {
@@ -100,9 +76,6 @@ public abstract class Skill implements ISkill, Listener {
     }
 
     @Override
-    public ClickType getClickType() { return this.clickType; }
-
-    @Override
     public int getManaCost() { return this.manaCost; }
 
 
@@ -118,31 +91,12 @@ public abstract class Skill implements ISkill, Listener {
         return newVector;
     }
 
-    public void onRightClick(Player player, SkillItemType type){}
+    public void executeSkill(Player player, SkillItemType type){}
 
-    public void onLeftClick(Player player, SkillItemType type){}
-
+    // determines which skill to cast
     @Override
-    public boolean isItem(ItemStack item)
-    {
-        if (!item.hasItemMeta()) {
-            return false;
-        }
-        if (!item.getItemMeta().hasLore()) {
-            return false;
-        }
-        if (item.hasItemMeta())
-        {
-            String loreAsString = ChatColor.stripColor(String.join(" ", item.getItemMeta().getLore()));
-            return loreAsString.contains(getName());
-        }
-        return false;
-    }
-
-
-    public enum ClickType {
-        LEFT_CLICK_ONLY,
-        RIGHT_CLICK_ONLY,
-        BOTH
+    public boolean isFound(ItemStack item, String spellSlot) {
+        String spell = AttributeUtil.getSpell(item, spellSlot);
+        return spell.equals(getName());
     }
 }

@@ -29,12 +29,12 @@ public class Grapple extends Skill {
                 "You fire a grappling hook which pulls" +
                         "\nyou to your target location, up to a max" +
                         "\nof " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onLeftClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1);
         startTask(pl);

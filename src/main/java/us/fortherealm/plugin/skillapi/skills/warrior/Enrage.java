@@ -26,12 +26,12 @@ public class Enrage extends Skill {
                         "\nrage and may not move. After, you gain" +
                         "\nan immense boost of speed and strength" +
                         "\nfor " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // apply preliminary particle effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHANNEL_DURATION * 20, 99));

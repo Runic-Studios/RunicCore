@@ -17,11 +17,11 @@ public class Cloak extends Skill {
     // constructor
     public Cloak() {
         super("Cloak", "For " + DURATION + " seconds, you vanish completely from view.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // poof!
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);

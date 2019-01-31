@@ -128,6 +128,9 @@ public class DamageListener implements Listener {
 
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
+        // set their current mana to 0
+        Main.getManaManager().getCurrentManaList().put(victim.getUniqueId(), 0);
+        Main.getScoreboardHandler().updateSideInfo(victim);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,

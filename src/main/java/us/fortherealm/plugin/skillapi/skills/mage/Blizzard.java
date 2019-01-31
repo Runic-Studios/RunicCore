@@ -31,13 +31,13 @@ public class Blizzard extends Skill {
                 "You summon a cloud of snow up to " + MAX_DIST + " blocks\n"
                         + "away that rains down snowballs for " + DURATION + " seconds,\n"
                         + "each dealing " + DAMAGE_AMOUNT + " damage to enemies.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 10);
+                ChatColor.WHITE, 1, 10);
         this.snowballMap = new HashMap<>();
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         Location lookLoc = pl.getTargetBlock(null, MAX_DIST).getLocation();
         Vector launchPath = new Vector(0, -1.0, 0).normalize().multiply(SNOWBALL_SPEED);

@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ManaManager implements Listener {
 
     private static HashMap<UUID, Integer> currentPlayerManas;
-    private static final int manaPerLevel = 2;
+    private static final int manaPerLevel = 1;
     private static final int manaRegenAmt = 5;
     private static final long manaRegenTime = (long) 7.5; // seconds
 

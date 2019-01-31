@@ -4,6 +4,7 @@ import de.tr7zw.itemnbtapi.NBTItem;
 import de.tr7zw.itemnbtapi.NBTList;
 import de.tr7zw.itemnbtapi.NBTListCompound;
 import de.tr7zw.itemnbtapi.NBTType;
+import net.minecraft.server.v1_13_R2.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
@@ -38,7 +39,7 @@ public class AttributeUtil {
         attribute.setString("Slot", slot);
         attribute.setInteger("Operation", 0);
         attribute.setInteger("UUIDLeast", 1);
-        int maxUUID = 2;
+        int maxUUID;
         switch (slot) {
             case "head":
                 maxUUID = 3;
@@ -57,6 +58,23 @@ public class AttributeUtil {
                 break;
         }
         attribute.setInteger("UUIDMost", maxUUID);
+        artifact = nbti.getItem();
+        return artifact;
+    }
+
+    // overloaded method to specify the UUID of the attribute
+    public static ItemStack addGenericStat(ItemStack item, String statName, double amt, String slot, int uuid) {
+        ItemStack artifact = item;
+        NBTItem nbti = new NBTItem(artifact);
+        NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        NBTListCompound attribute = attributes.addCompound();
+        attribute.setDouble("Amount", amt);
+        attribute.setString("AttributeName", statName);
+        attribute.setString("Name", statName);
+        attribute.setString("Slot", slot);
+        attribute.setInteger("Operation", 0);
+        attribute.setInteger("UUIDLeast", 1);
+        attribute.setInteger("UUIDMost", uuid);
         artifact = nbti.getItem();
         return artifact;
     }
@@ -114,5 +132,18 @@ public class AttributeUtil {
     public static String getSpell(ItemStack item, String spellSlot) {
         NBTItem nbti = new NBTItem(item);
         return nbti.getString(spellSlot);
+    }
+
+    public static ItemStack overrideGenericDouble(ItemStack item, String name, double amt) {
+        NBTItem nbti = new NBTItem(item);
+        NBTList list = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        for (int i = 0; i < list.size(); i++) {
+            NBTListCompound lc = list.getCompound(i);
+            if (lc.getString("Name").equals(name)) {
+                lc.setDouble("Amount", amt);
+            }
+        }
+        item = nbti.getItem();
+        return item;
     }
 }

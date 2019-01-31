@@ -33,13 +33,13 @@ public class Frostbolt extends Skill {
                 "You launch a projectile bolt of ice" +
                         "\nwhich deals " + DAMAGE_AMT + " damage on impact" +
                         "\nand slows its target!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
         this.hasBeenHit = new HashMap<>();
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // create our vector to be used later
         Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED);

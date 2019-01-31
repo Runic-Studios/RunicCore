@@ -28,13 +28,13 @@ public class ArcaneSpike extends Skill {
                 "You launch three beams of arcane magic!" +
                 "\nEach beam deals " + DAMAGE_AMOUNT + " damage to enemies " +
                 "\nit passes through.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
         this.hasBeenHit = new HashMap<>();
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
         // sound effects
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.0f);

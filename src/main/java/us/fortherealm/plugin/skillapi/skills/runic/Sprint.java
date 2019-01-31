@@ -23,12 +23,12 @@ public class Sprint extends Skill {
     public Sprint() {
         super("Sprint",
                 "For " + BUFF_DURATION + " seconds, you gain a" +
-                        "\nmassive boost to your speed!", ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY,10, 5);
+                        "\nmassive boost to your speed!", ChatColor.WHITE,10, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // apply effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, SPEED_AMPLIFIER));

@@ -36,13 +36,13 @@ public class Rejuvenate extends Skill {
                 "You launch a beam of healing magic," +
                 "\nrestoring " + HEAL_AMT + " health to all party members" +
                 "\nit passes through.",
-                ChatColor.WHITE, Skill.ClickType.RIGHT_CLICK_ONLY, 10, 10);
+                ChatColor.WHITE, 10, 10);
         this.hasBeenHit = new HashMap<>();
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);

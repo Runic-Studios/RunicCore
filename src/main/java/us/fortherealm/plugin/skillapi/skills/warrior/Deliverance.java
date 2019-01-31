@@ -34,11 +34,11 @@ public class Deliverance extends Skill {
                         "\nrepels all enemies, but party members may" +
                         "\npass through it freely. During this time," +
                         "\nyou may not move.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 9, 20);
+                ChatColor.WHITE, 9, 20);
     }
 
     @Override
-    public void onRightClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
 
         // This is necessary because players could (theoretically) cast deliverance multiple times
         // before the first cool down ends
@@ -121,11 +121,6 @@ public class Deliverance extends Skill {
 
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-
-                    // Removes targets not close enough
-                    if (entity.getLocation().distance(pl.getLocation()) > BUBBLE_SIZE ||
-                            !(entity instanceof Player))
-                        continue; // Continue ends the current for loop iteration and moves on to the next
 
                     // skip the caster
                     if(entity.equals(pl)) { continue; }

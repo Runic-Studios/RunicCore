@@ -67,19 +67,29 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     private void displayRunicSpells(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Blink");
-        displaySpell(player, contents, 1, 1, "Heal");
-        displaySpell(player, contents, 1, 2, "Fireball");
-        displaySpell(player, contents, 1, 3, "Frostbolt");
-        displaySpell(player, contents, 1, 4, "Sprint");
+        displaySpell(player, contents, 1, 0, "Blink", false);
+        displaySpell(player, contents, 1, 1, "Heal", false);
+        displaySpell(player, contents, 1, 2, "Fireball", false);
+        displaySpell(player, contents, 1, 3, "Frostbolt", false);
+        displaySpell(player, contents, 1, 4, "Sprint", false);
     }
 
     // display for each skin
-    private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName) {
+    private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName, boolean isUnlocked) {
 
-        String[] desc = Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n");
+        double cooldown = Main.getSkillManager().getSkillByName(spellName).getCooldown();
+        int manaCost = Main.getSkillManager().getSkillByName(spellName).getManaCost();
+        ArrayList<String> desc = new ArrayList<>();
+        desc.add("");
+        for (String line : Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n")) {
+            desc.add(ChatColor.GRAY + line);
+        }
+        desc.add("");
+        desc.add(ChatColor.RED + "Cooldown: " + ChatColor.YELLOW + cooldown + "s");
+        desc.add(ChatColor.DARK_AQUA + "Mana Cost: " + ChatColor.WHITE + manaCost);
+
         ItemStack item = player.getInventory().getItem(1);
-        if (player.hasPermission("ftr.spells." + spellName)) {
+        if (player.hasPermission("ftr.spells." + spellName) || isUnlocked == true) {
             contents.set(row, slot, ClickableItem.of
                     (spellMenuItem(Material.ENCHANTED_BOOK,
                             ChatColor.GREEN,
@@ -150,15 +160,11 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     // creates the visual menu
-    private ItemStack spellMenuItem(Material material, ChatColor dispColor, String displayName, String[] desc) {
+    private ItemStack spellMenuItem(Material material, ChatColor dispColor, String displayName, ArrayList<String> desc) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(dispColor + displayName);
-        ArrayList<String> lore = new ArrayList<>();
-        for (String s : desc) {
-            lore.add(ChatColor.GRAY + s);
-        }
-        meta.setLore(lore);
+        meta.setLore(desc);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

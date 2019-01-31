@@ -5,13 +5,12 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.*;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.classes.utilities.ClassUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.player.utilities.HealthUtils;
@@ -22,6 +21,15 @@ import java.util.ArrayList;
 import static org.bukkit.Color.*;
 
 public class ClassGUI implements InventoryProvider {
+
+    // base attack speed, damage values for each class' artifact
+    // max attack speed is 24.0, so 24+(-23.0) = 1.0 attack speed
+    // bows use a different NBT tag.
+    private static final double archerBaseBowSpeed = -23.25;
+    private static final double clericBaseSpeed = -23.4;
+    private static final double mageBaseSpeed = -23.4;
+    private static final double rogueBaseSpeed = -23.1;
+    private static final double warriorBaseSpeed = -23.25;
 
     // globals
     public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
@@ -148,7 +156,7 @@ public class ClassGUI implements InventoryProvider {
                 itemName = "Stiff Oaken Shortbow";
                 material = Material.BOW;
                 spell = "Barrage";
-                launchFirework(player, LIME);
+                ClassUtil.launchFirework(player, LIME);
                 player.sendTitle(
                         ChatColor.DARK_GREEN + "You selected",
                         ChatColor.GREEN + className + "!", 10, 40, 10);
@@ -157,7 +165,7 @@ public class ClassGUI implements InventoryProvider {
                 itemName = "Initiate's Oaken Mace";
                 material = Material.IRON_SHOVEL;
                 spell = "Rejuvenate";
-                launchFirework(player, AQUA);
+                ClassUtil.launchFirework(player, AQUA);
                 player.sendTitle(
                         ChatColor.DARK_AQUA + "You selected",
                         ChatColor.AQUA + className + "!", 10, 40, 10);
@@ -165,7 +173,7 @@ public class ClassGUI implements InventoryProvider {
             case "Mage":
                 itemName = "Sturdy Oaken Branch";
                 material = Material.IRON_HOE;
-                launchFirework(player, FUCHSIA);
+                ClassUtil.launchFirework(player, FUCHSIA);
                 spell = "Blizzard";
                 player.sendTitle(
                         ChatColor.DARK_PURPLE + "You selected",
@@ -175,7 +183,7 @@ public class ClassGUI implements InventoryProvider {
                 itemName = "Oaken Sparring Sword";
                 material = Material.IRON_SWORD;
                 spell = "Smoke Bomb";
-                launchFirework(player, YELLOW);
+                ClassUtil.launchFirework(player, YELLOW);
                 player.sendTitle(
                         ChatColor.GOLD + "You selected",
                         ChatColor.YELLOW + className + "!", 10, 40, 10);
@@ -184,7 +192,7 @@ public class ClassGUI implements InventoryProvider {
                 itemName = "Worn Oaken Battleaxe";
                 material = Material.IRON_AXE;
                 spell = "Charge";
-                launchFirework(player, RED);
+                ClassUtil.launchFirework(player, RED);
                 player.sendTitle(
                         ChatColor.DARK_RED + "You selected",
                         ChatColor.RED + className + "!", 10, 40, 10);
@@ -203,27 +211,27 @@ public class ClassGUI implements InventoryProvider {
         // multiply by 2 for standard defences, subtract one because some weapons have base 1 damage.
         switch (className) {
             case "Archer":
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", -23.25);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", archerBaseBowSpeed);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 2);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 4);
                 break;
             case "Cleric":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4, "mainhand");
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", clericBaseSpeed, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 8);
                 break;
             case "Mage":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.4, "mainhand");
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", mageBaseSpeed, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Rogue":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.1, "mainhand");
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", rogueBaseSpeed, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Warrior":
-                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", -23.25, "mainhand");
+                artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", warriorBaseSpeed, "mainhand");
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 4);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 6);
                 break;
@@ -231,7 +239,7 @@ public class ClassGUI implements InventoryProvider {
         // --------------------------------------------------------------------------------------------------------
 
         // generate our lore
-        LoreGenerator.generateArtifactLore(artifact, ChatColor.GOLD, itemName, className, 0);
+        LoreGenerator.generateArtifactLore(artifact, itemName, className, 0);
 
         // set the player's artifact
         player.getInventory().setItem(0, artifact);
@@ -260,11 +268,23 @@ public class ClassGUI implements InventoryProvider {
         sbh.updateSideInfo(player);
     }
 
-    private void launchFirework(Player p, Color color) {
-        Firework firework = p.getWorld().spawn(p.getEyeLocation(), Firework.class);
-        FireworkMeta meta = firework.getFireworkMeta();
-        meta.setPower(0);
-        meta.addEffect(FireworkEffect.builder().with(FireworkEffect.Type.BALL_LARGE).withColor(color).build());
-        firework.setFireworkMeta(meta);
+    public static double getArcherBaseBowSpeed() {
+        return archerBaseBowSpeed;
+    }
+
+    public static double getClericBaseSpeed() {
+        return clericBaseSpeed;
+    }
+
+    public static double getMageBaseSpeed() {
+        return mageBaseSpeed;
+    }
+
+    public static double getRogueBaseSpeed() {
+        return rogueBaseSpeed;
+    }
+
+    public static double getWarriorBaseSpeed() {
+        return warriorBaseSpeed;
     }
 }

@@ -35,12 +35,12 @@ public class Discharge extends Skill {
                 "You launch an electric spark! Upon impact,\n"
                         + "it summons a lightning bolt, dealing " + DAMAGE_AMT + "\n"
                         + "damage to enemies within " + BLAST_RADIUS + " blocks.",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player player, SkillItemType type) {
+    public void executeSkill(Player player, SkillItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1.0f);
         Vector middle = player.getEyeLocation().getDirection().normalize();
         startTask(player, new Vector[]{middle});

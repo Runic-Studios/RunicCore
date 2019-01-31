@@ -28,12 +28,12 @@ public class Barrage extends Skill {
     public Barrage() {
         super("Barrage",
                 "You launch a volley of five magical arrows\nthat deal " + (DAMAGE_MULTIPLIER*100) + "% weapon damage!",
-                ChatColor.WHITE, ClickType.LEFT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onLeftClick(Player pl, SkillItemType type) {
+    public void executeSkill(Player pl, SkillItemType type) {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
         Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(2);

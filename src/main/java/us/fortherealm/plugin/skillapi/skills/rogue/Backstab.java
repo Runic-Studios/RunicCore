@@ -23,12 +23,12 @@ public class Backstab extends Skill {
     public Backstab() {
         super("Backstab",
                 "For " + DURATION + " seconds, striking enemies from\nbehind deals " + (int) (DAMAGE_MULT*100) + "% weapon damage!",
-                ChatColor.WHITE, ClickType.RIGHT_CLICK_ONLY, 1, 5);
+                ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
-    public void onRightClick(Player player, SkillItemType type) {
+    public void executeSkill(Player player, SkillItemType type) {
         UUID uuid = player.getUniqueId();
         stabbers.put(uuid, System.currentTimeMillis());
         player.sendMessage(ChatColor.GREEN + "You are now backstabbing!");

@@ -6,16 +6,19 @@ import org.bukkit.entity.Player;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.utilities.NumRounder;
 
+/**
+ * Utility to grant player profession experience and keep track of it.
+ * Since switching between the class lv / proff lv on the actual exp bar
+ * proved to be too vulnerable to bugs, I included some math to mimic the
+ * vanilla (class) leveling experience for professions.
+ * Values taken from: https://minecraft.gamepedia.com/Experience
+ * @author Skyfallin_
+ */
 public class ProfExpUtil {
 
-    /**
-     * Utility to grant player profession experience and keep track of it.
-     * Since switching between the class lv / proff lv on the actual exp bar
-     * proved to be too vulnerable to bugs, I included some math to mimic the
-     * vanilla (class) leveling experience for professions.
-     * Values taken from: https://minecraft.gamepedia.com/Experience
-     * @author Skyfallin_
-     */
+    private static final int maxLevel = 50;
+
+
     public static void giveExperience(Player pl, int expGained) {
 
         String profName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
@@ -37,9 +40,17 @@ public class ProfExpUtil {
             currentLv += 1;
             Main.getScoreboardHandler().updateSideInfo(pl);
             pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-            pl.sendTitle(
-                    ChatColor.GREEN + "Level Up!",
-                    ChatColor.GREEN + profName + " Level " + ChatColor.WHITE + currentLv, 10, 40, 10);
+
+            // title message
+            if (currentLv == maxLevel) {
+                pl.sendTitle(
+                        ChatColor.GOLD + "Max Level!",
+                        ChatColor.GOLD + profName + " Level " + ChatColor.WHITE + currentLv, 10, 40, 10);
+            } else {
+                pl.sendTitle(
+                        ChatColor.GREEN + "Level Up!",
+                        ChatColor.GREEN + profName + " Level " + ChatColor.WHITE + currentLv, 10, 40, 10);
+            }
         }
 
         // calculate the player's progress towards the next level
