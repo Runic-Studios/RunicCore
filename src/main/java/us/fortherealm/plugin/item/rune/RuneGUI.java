@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.rune;
+package us.fortherealm.plugin.item.rune;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -20,7 +20,7 @@ public class RuneGUI implements InventoryProvider {
      */
     public static final SmartInventory CUSTOMIZE_RUNE = SmartInventory.builder()
             .id("runeCustomization")
-            .provider(new us.fortherealm.plugin.rune.RuneGUI())
+            .provider(new us.fortherealm.plugin.item.rune.RuneGUI())
             .size(1, 9)
             .title(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Rune Editor")
             .build();

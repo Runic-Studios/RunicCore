@@ -15,7 +15,6 @@ import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
-import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("deprecation")
-public class StavesListener  implements Listener {
+public class StaffListener implements Listener {
 
     // globals
     private static double BEAM_WIDTH = 2.0;
@@ -45,8 +44,6 @@ public class StavesListener  implements Listener {
         // retrieve the weapon type
         ItemStack artifact = e.getItem();
         ItemMeta meta = artifact.getItemMeta();
-        int durability = ((org.bukkit.inventory.meta.Damageable) meta).getDamage();
-        //WeaponEnum artifactType = WeaponEnum.matchType(artifact);
         Material artifactType = artifact.getType();
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
@@ -54,8 +51,7 @@ public class StavesListener  implements Listener {
         if (artifactType == null) return;
 
         // IGNORE NON-STAFF ITEMS
-        if (artifactType != Material.IRON_HOE) return;
-        // if (durability >=54 ) return;
+        if (artifactType != Material.WOODEN_HOE) return;
 
         Player pl = e.getPlayer();
 

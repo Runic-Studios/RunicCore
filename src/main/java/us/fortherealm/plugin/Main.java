@@ -1,7 +1,8 @@
 package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
-import us.fortherealm.plugin.artifact.ArtifactListener;
+import us.fortherealm.plugin.item.artifact.ArtifactListener;
+import us.fortherealm.plugin.item.hearthstone.HearthstoneListener;
 import us.fortherealm.plugin.player.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -16,7 +17,10 @@ import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.player.*;
 import us.fortherealm.plugin.player.commands.Level;
+import us.fortherealm.plugin.player.commands.Mana;
 import us.fortherealm.plugin.player.commands.SetSC;
+import us.fortherealm.plugin.professions.commands.ToolGive;
+import us.fortherealm.plugin.professions.commands.ToolSC;
 import us.fortherealm.plugin.professions.jeweler.SocketListener;
 import us.fortherealm.plugin.professions.WorkstationListener;
 import us.fortherealm.plugin.professions.ProfManager;
@@ -24,7 +28,7 @@ import us.fortherealm.plugin.professions.gathering.FarmingListener;
 import us.fortherealm.plugin.professions.gathering.FishingListener;
 import us.fortherealm.plugin.professions.gathering.MiningListener;
 import us.fortherealm.plugin.professions.gathering.WCListener;
-import us.fortherealm.plugin.rune.RuneListener;
+import us.fortherealm.plugin.item.rune.RuneListener;
 import us.fortherealm.plugin.tablist.TabListManager;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
@@ -91,14 +95,13 @@ public class Main extends JavaPlugin {
 
         PluginManager pm = this.getServer().getPluginManager();
 
-        pm.registerEvents(new FirstJoinListener(), this);
         pm.registerEvents(Main.getScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new ArtifactListener(), this);
         pm.registerEvents(new RuneListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
-        pm.registerEvents(new StavesListener(), this);
+        pm.registerEvents(new StaffListener(), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
@@ -128,6 +131,11 @@ public class Main extends JavaPlugin {
         SetSC setSC = new SetSC();
         getCommand("set").setExecutor(setSC);
         setSC.addCommand(Arrays.asList("level"), new Level(setSC));
+        Mana mana = new Mana();
+        getCommand("mana").setExecutor(mana);
+        ToolSC toolSC = new ToolSC();
+        getCommand("gathertool").setExecutor(toolSC);
+        toolSC.addCommand(Arrays.asList("give"), new ToolGive(toolSC));
     }
     
     private void registerPartyCommands() {

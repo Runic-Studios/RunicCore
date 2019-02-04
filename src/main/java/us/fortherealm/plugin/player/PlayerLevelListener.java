@@ -82,33 +82,37 @@ public class PlayerLevelListener implements Listener {
                 break;
             case 10:
                 sendUnlockMessage(pl, 10, className, classLevel);
+                giveSkillpoint(pl);
                 unlockSpell(rune, "primarySpell", pl, 1);
                 break;
             case 20:
                 sendUnlockMessage(pl, 20, className, classLevel);
+                giveSkillpoint(pl);
                 unlockSpell(rune, "secondarySpell", pl, 1);
                 break;
             case 30:
                 sendUnlockMessage(pl, 30, className, classLevel);
+                giveSkillpoint(pl);
                 unlockSpell(artifact, "secondarySpell", pl, 0);
                 break;
             case 40:
+                giveSkillpoint(pl);
                 pl.sendMessage("\n");
                 ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
-                ChatUtils.sendCenteredMessage(pl,
-                        ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                                + ChatColor.DARK_AQUA + "+" + Main.getManaManager().getManaPerLevel() + "✸");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "        You've unlocked a new artifact skin!");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Skill Point");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
                 pl.sendMessage("\n");
                 break;
             case 50:
+                giveSkillpoint(pl);
                 String storedName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.name");
                 Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + storedName
                          + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + pl.getLevel() + " " + className + "!");
                 pl.sendMessage("\n");
                 ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "You've reached level " + pl.getLevel() + "!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "You can now access RAIDS!");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Skill Point");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + pl.getLevel() + "!");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "  You can now access RAIDS!");
                 pl.sendMessage("\n");
                 ClassUtil.launchFirework(pl, className);
                 break;
@@ -157,6 +161,11 @@ public class PlayerLevelListener implements Listener {
         pl.getInventory().setItem(0, artifact);
     }
 
+    private void giveSkillpoint(Player pl) {
+        int skillpoints = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.skillpoints");
+        Main.getInstance().getConfig().set(pl.getUniqueId() + ".info.skillpoints", skillpoints+1);
+        saveConfig(pl);
+    }
     private void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot) {
         item = AttributeUtil.addSpell(item, slot, ChatColor.GREEN + "UNLOCKED");
         LoreGenerator.generateRuneLore(item);
@@ -179,6 +188,7 @@ public class PlayerLevelListener implements Listener {
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         pl.sendMessage("\n");
         ChatUtils.sendCenteredMessage(pl, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "NEW SPELL SLOT UNLOCKED!");
+        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Skill Point");
         ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
         String item = "";
         if (lvl == 10 || lvl == 20) {

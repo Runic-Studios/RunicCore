@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.rune;
+package us.fortherealm.plugin.item.rune;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -26,7 +26,7 @@ public class SpellsGUI implements InventoryProvider {
     public static final SmartInventory RUNIC_SPELLS = SmartInventory.builder()
             .id("runicSpells")
             .provider(new SpellsGUI())
-            .size(2, 9)
+            .size(4, 9)
             .title(ChatColor.GREEN + "" + ChatColor.BOLD + "Available Spells")
             .build();
 
@@ -50,13 +50,28 @@ public class SpellsGUI implements InventoryProvider {
         desc.add("Right click a spell to set your secondary!");
         desc.add(ChatColor.DARK_GRAY + "Click here to return to the editor");
 
-        // build the menu item
-        contents.set(0, 4, ClickableItem.of
+        // build the menu items
+        contents.set(1, 3, ClickableItem.of
                 (menuItem(rune.getType(),
                         ChatColor.YELLOW,
                         meta.getDisplayName(),
-                        desc,
-                        ((Damageable) meta).getDamage()),
+                        desc, ((Damageable) meta).getDamage(), 1),
+                        e -> {
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+                            RuneGUI.CUSTOMIZE_RUNE.open(player);
+                        }));
+
+        int skillpoints = Main.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
+        ArrayList<String> spDesc = new ArrayList<>();
+        spDesc.add("");
+        spDesc.add(ChatColor.GRAY + "Use skill points to unlock new spells!");
+        spDesc.add("");
+        spDesc.add(ChatColor.GREEN + "Earn skill points by completing quests");
+        spDesc.add(ChatColor.GREEN + "and leveling your character!");
+        contents.set(1, 5, ClickableItem.of
+                (menuItem(Material.BONE_MEAL, ChatColor.WHITE,
+                        ChatColor.BOLD + "Skill Points: " + skillpoints,
+                        spDesc, 0, skillpoints), // read config for amount
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                             RuneGUI.CUSTOMIZE_RUNE.open(player);
@@ -67,11 +82,11 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     private void displayRunicSpells(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Blink", false);
-        displaySpell(player, contents, 1, 1, "Heal", false);
-        displaySpell(player, contents, 1, 2, "Fireball", false);
-        displaySpell(player, contents, 1, 3, "Frostbolt", false);
-        displaySpell(player, contents, 1, 4, "Sprint", false);
+        displaySpell(player, contents, 2, 2, "Blink", false);
+        displaySpell(player, contents, 2, 3, "Heal", false);
+        displaySpell(player, contents, 2, 4, "Fireball", false);
+        displaySpell(player, contents, 2, 5, "Frostbolt", false);
+        displaySpell(player, contents, 2, 6, "Sprint", false);
     }
 
     // display for each skin
@@ -142,8 +157,10 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     // creates the visual menu
-    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, ArrayList<String> desc, int durability) {
-        ItemStack item = new ItemStack(material);
+    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, ArrayList<String> desc, int durability, int amount) {
+        if (amount == 0 ) amount = 1;
+        if (amount > 64) amount = 64;
+        ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(dispColor + displayName);
         ArrayList<String> lore = new ArrayList<>();
@@ -151,7 +168,9 @@ public class SpellsGUI implements InventoryProvider {
             lore.add(ChatColor.GRAY + s);
         }
         meta.setLore(lore);
-        ((Damageable) meta).setDamage(durability);
+        if (durability != 0) {
+            ((Damageable) meta).setDamage(durability);
+        }
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

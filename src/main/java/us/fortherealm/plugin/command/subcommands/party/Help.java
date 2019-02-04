@@ -42,17 +42,30 @@ public class Help implements SubCommand {
 
         ClassGUI.CLASS_SELECTION.open(sender);
 
-        ItemStack silverKey = new ItemStack(Material.SHEARS);
-        ItemMeta meta = silverKey.getItemMeta();
-        ((Damageable) meta).setDamage(100);
-        silverKey.setItemMeta(meta);
-        sender.getInventory().setItem(7, silverKey);
+//        ItemStack silverKey = new ItemStack(Material.SHEARS);
+//        ItemMeta meta = silverKey.getItemMeta();
+//        ((Damageable) meta).setDamage(100);
+//        silverKey.setItemMeta(meta);
+//        sender.getInventory().setItem(7, silverKey);
+//
+//		ItemStack goldenKey = new ItemStack(Material.SHEARS);
+//		ItemMeta meta2 = goldenKey.getItemMeta();
+//		((Damageable) meta2).setDamage(200);
+//		goldenKey.setItemMeta(meta2);
+//		sender.getInventory().setItem(8, goldenKey);
+//
+		item(sender, 5, 3);
+		item(sender, 10, 4);
+		item(sender, 15, 5);
+		item(sender, 20, 6);
+	}
 
-		ItemStack goldenKey = new ItemStack(Material.SHEARS);
-		ItemMeta meta2 = goldenKey.getItemMeta();
-		((Damageable) meta2).setDamage(200);
-		goldenKey.setItemMeta(meta2);
-		sender.getInventory().setItem(8, goldenKey);
+	private void item(Player sender, int durab, int slot) {
+		ItemStack cloth = new ItemStack(Material.SHEARS);
+		ItemMeta metaCloth = cloth.getItemMeta();
+		((Damageable) metaCloth).setDamage(durab);
+		cloth.setItemMeta(metaCloth);
+		sender.getInventory().setItem(slot, cloth);
 	}
 	
 	@Override

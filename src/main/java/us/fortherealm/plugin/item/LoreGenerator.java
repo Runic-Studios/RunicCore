@@ -74,7 +74,9 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
         lore.add("");
-        lore.add(ChatColor.YELLOW + "Artifact");
+        if (AttributeUtil.getCustomString(artifact, "soulbound").equals("true")) {
+            lore.add(ChatColor.DARK_GRAY + "Soulbound");
+        }
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -83,6 +85,42 @@ public class LoreGenerator {
         meta.setLore(lore);
         ((Damageable) meta).setDamage(durability);
         artifact.setItemMeta(meta);
+    }
+
+    public static void generateHearthstoneLore(ItemStack hearthstone) {
+
+        // grab our ItemMeta, ItemLore
+        ItemMeta meta = hearthstone.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+        meta.setDisplayName(ChatColor.AQUA + "Hearthstone");
+
+        // grab our NBT attributes wrapper
+        NBTItem nbti = new NBTItem(hearthstone);
+
+        // item display
+        String loc = nbti.getString("location");
+        lore.add("");
+        lore.add(ChatColor.WHITE + "Left click: "
+                + ChatColor.GRAY + "Return to your "
+                + ChatColor.GOLD + "Guild Hall");
+        lore.add(ChatColor.WHITE + "Right click: "
+                + ChatColor.GRAY + "Return to "
+                + ChatColor.GREEN + loc);
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Speak to an "
+                + ChatColor.YELLOW + "innkeeper "
+                + ChatColor.GRAY + "to change your home");
+        if (AttributeUtil.getCustomString(hearthstone, "soulbound").equals("true")) {
+            lore.add("");
+            lore.add(ChatColor.DARK_GRAY + "Soulbound");
+        }
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
+        // update lore, meta
+        meta.setLore(lore);
+        hearthstone.setItemMeta(meta);
     }
 
     public static void generateRuneLore(ItemStack rune) {
@@ -114,7 +152,9 @@ public class LoreGenerator {
         lore.add("");
         lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
         lore.add("");
-        lore.add(ChatColor.LIGHT_PURPLE + "Rune");
+        if (AttributeUtil.getCustomString(rune, "soulbound").equals("true")) {
+            lore.add(ChatColor.DARK_GRAY + "Soulbound");
+        }
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.artifact;
+package us.fortherealm.plugin.item.artifact;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -20,7 +20,7 @@ public class ArtifactGUI implements InventoryProvider {
      */
     public static final SmartInventory CUSTOMIZE_ARTIFACT = SmartInventory.builder()
             .id("artifactCustomization")
-            .provider(new us.fortherealm.plugin.artifact.ArtifactGUI())
+            .provider(new us.fortherealm.plugin.item.artifact.ArtifactGUI())
             .size(1, 9)
             .title(ChatColor.YELLOW + "" + ChatColor.BOLD + "Artifact Editor")
             .build();

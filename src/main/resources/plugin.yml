@@ -17,3 +17,9 @@ commands:
   set:
     usage: /<command>
     description: set a player's info
+  mana:
+    usage: /<command>
+    description: sets your mana to full
+  gathertool:
+    usage: /<command>
+    description: give yourself a gathering tool

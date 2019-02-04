@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.rune;
+package us.fortherealm.plugin.item.rune;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class RuneListener implements Listener {
@@ -47,22 +46,8 @@ public class RuneListener implements Listener {
 
         if (slot == 1) {
             swapevent.setCancelled(true);
-            p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-            p.sendMessage(ChatColor.RED + "You cannot perform this action in this slot.");
-        }
-    }
-
-    // cancel rune dropping
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent e) {
-
-        Player player = e.getPlayer();
-        int slot = player.getInventory().getHeldItemSlot();
-
-        if (slot == 1 && player.getGameMode() == GameMode.SURVIVAL) {
-            e.setCancelled(true);
-            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-            player.sendMessage(ChatColor.RED + "You cannot drop your rune.");
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            p.sendMessage(ChatColor.GRAY + "You cannot perform this action in this slot.");
         }
     }
 }

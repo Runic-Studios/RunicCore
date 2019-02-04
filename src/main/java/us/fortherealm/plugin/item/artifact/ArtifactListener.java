@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.artifact;
+package us.fortherealm.plugin.item.artifact;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import us.fortherealm.plugin.attributes.AttributeUtil;
 
 public class ArtifactListener implements Listener {
 
@@ -40,29 +41,33 @@ public class ArtifactListener implements Listener {
 
     // cancel artifact swapping
     @EventHandler
-    public void onItemSwap(PlayerSwapHandItemsEvent swapevent) {
+    public void onItemSwap(PlayerSwapHandItemsEvent e) {
 
-        Player p = swapevent.getPlayer();
+        Player p = e.getPlayer();
         int slot = p.getInventory().getHeldItemSlot();
 
         if (slot == 0) {
-            swapevent.setCancelled(true);
-            p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-            p.sendMessage(ChatColor.RED + "You cannot perform this action in this slot.");
+            e.setCancelled(true);
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            p.sendMessage(ChatColor.GRAY + "You cannot perform this action in this slot.");
         }
     }
 
-    // cancel artifact dropping
+    // cancel artifact dropping, rune dropping, hearthstone dropping
     @EventHandler
-    public void onItemDrop(PlayerDropItemEvent e) {
+    public void onSoulboundItemDrop(PlayerDropItemEvent e) {
 
-        Player player = e.getPlayer();
-        int slot = player.getInventory().getHeldItemSlot();
+        Player pl = e.getPlayer();
+        boolean isSoulbound = false;
+        String souldbound = AttributeUtil.getCustomString(e.getItemDrop().getItemStack(), "soulbound");
+        if (souldbound.equals("true")) {
+            isSoulbound = true;
+        }
 
-        if (slot == 0 && player.getGameMode() == GameMode.SURVIVAL) {
+        if (isSoulbound && pl.getGameMode() == GameMode.SURVIVAL) {
             e.setCancelled(true);
-            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1);
-            player.sendMessage(ChatColor.RED + "You cannot drop your artifact.");
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            pl.sendMessage(ChatColor.GRAY + "This item is soulbound.");
         }
     }
 }

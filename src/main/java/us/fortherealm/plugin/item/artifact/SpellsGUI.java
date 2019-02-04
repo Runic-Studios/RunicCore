@@ -1,4 +1,4 @@
-package us.fortherealm.plugin.artifact;
+package us.fortherealm.plugin.item.artifact;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -15,12 +15,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
-import us.fortherealm.plugin.skillapi.SkillManager;
-import us.fortherealm.plugin.skillapi.skilltypes.Skill;
+import us.fortherealm.plugin.item.rune.RuneGUI;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class SpellsGUI implements InventoryProvider {
 
@@ -35,7 +32,7 @@ public class SpellsGUI implements InventoryProvider {
     public static final SmartInventory ARTIFACT_SPELLS = SmartInventory.builder()
             .id("artifactSpells")
             .provider(new SpellsGUI())
-            .size(2, 9)
+            .size(4, 9)
             .title(ChatColor.GREEN + "" + ChatColor.BOLD + "Available Spells")
             .build();
 
@@ -63,15 +60,25 @@ public class SpellsGUI implements InventoryProvider {
         desc.add(ChatColor.DARK_GRAY + "Click here to return to the editor");
 
         // build the menu item
-        contents.set(0, 4, ClickableItem.of
+        contents.set(1, 3, ClickableItem.of
                 (menuItem(artifact.getType(),
                         ChatColor.YELLOW,
                         meta.getDisplayName(),
                         desc,
-                        ((Damageable) meta).getDamage()),
+                        ((Damageable) meta).getDamage(), 1),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                             ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
+                        }));
+
+        int skillpoints = Main.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
+        contents.set(1, 5, ClickableItem.of
+                (menuItem(Material.BONE_MEAL, ChatColor.WHITE,
+                        ChatColor.BOLD + "Skill Points: " + skillpoints,
+                        desc, 0, skillpoints), // read config for amount
+                        e -> {
+                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+                            RuneGUI.CUSTOMIZE_RUNE.open(player);
                         }));
 
         // artifact spell displays are class-specific
@@ -95,34 +102,34 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     private void displaySpellsArcher(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Barrage", "Archer", true);
-        displaySpell(player, contents, 1, 1, "Grapple", "Archer", false);
-        displaySpell(player, contents, 1, 2, "Parry", "Archer", false);
+        displaySpell(player, contents, 2, 0, "Barrage", "Archer", true);
+        displaySpell(player, contents, 2, 1, "Grapple", "Archer", false);
+        displaySpell(player, contents, 2, 2, "Parry", "Archer", false);
     }
 
     private void displaySpellsCleric(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Holy Nova", "Cleric", true);
-        displaySpell(player, contents, 1, 1, "Rejuvenate", "Cleric", true);
-        displaySpell(player, contents, 1, 2, "Windstride", "Cleric", false);
+        displaySpell(player, contents, 2, 0, "Holy Nova", "Cleric", true);
+        displaySpell(player, contents, 2, 1, "Rejuvenate", "Cleric", true);
+        displaySpell(player, contents, 2, 2, "Windstride", "Cleric", false);
     }
 
     private void displaySpellsMage(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Arcane Spike", "Mage", false);
-        displaySpell(player, contents, 1, 1, "Blizzard", "Mage", true);
-        displaySpell(player, contents, 1, 2, "Comet", "Mage", false);
-        displaySpell(player, contents, 1, 3, "Discharge", "Mage", false);
+        displaySpell(player, contents, 2, 0, "Arcane Spike", "Mage", false);
+        displaySpell(player, contents, 2, 1, "Blizzard", "Mage", true);
+        displaySpell(player, contents, 2, 2, "Comet", "Mage", false);
+        displaySpell(player, contents, 2, 3, "Discharge", "Mage", false);
     }
 
     private void displaySpellsRogue(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Backstab", "Rogue", false);
-        displaySpell(player, contents, 1, 1, "Cloak", "Rogue", false);
-        displaySpell(player, contents, 1, 2, "Smoke Bomb", "Rogue", true);
+        displaySpell(player, contents, 2, 0, "Backstab", "Rogue", false);
+        displaySpell(player, contents, 2, 1, "Cloak", "Rogue", false);
+        displaySpell(player, contents, 2, 2, "Smoke Bomb", "Rogue", true);
     }
 
     private void displaySpellsWarrior(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 1, 0, "Charge", "Warrior", true);
-        displaySpell(player, contents, 1, 1, "Enrage", "Warrior", false);
-        displaySpell(player, contents, 1, 2, "Deliverance", "Warrior", false);
+        displaySpell(player, contents, 2, 0, "Charge", "Warrior", true);
+        displaySpell(player, contents, 2, 1, "Enrage", "Warrior", false);
+        displaySpell(player, contents, 2, 2, "Deliverance", "Warrior", false);
     }
 
     // display for each skin
@@ -196,8 +203,10 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     // creates the visual menu
-    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, ArrayList<String> desc, int durability) {
-        ItemStack item = new ItemStack(material);
+    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, ArrayList<String> desc, int durability, int amount) {
+        if (amount == 0 ) amount = 1;
+        if (amount > 64) amount = 64;
+        ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(dispColor + displayName);
         ArrayList<String> lore = new ArrayList<>();
@@ -205,7 +214,9 @@ public class SpellsGUI implements InventoryProvider {
             lore.add(ChatColor.GRAY + s);
         }
         meta.setLore(lore);
-        ((Damageable) meta).setDamage(durability);
+        if (durability != 0) {
+            ((Damageable) meta).setDamage(durability);
+        }
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

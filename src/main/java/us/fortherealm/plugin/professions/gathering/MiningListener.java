@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -231,5 +232,30 @@ public class MiningListener implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static ItemStack getGatheringPick(int tier) {
+        Material material = Material.WOODEN_PICKAXE;
+        switch (tier) {
+            case 2:
+                material = Material.STONE_PICKAXE;
+                break;
+            case 3:
+                material = Material.IRON_PICKAXE;
+                break;
+            case 4:
+                material = Material.GOLDEN_PICKAXE;
+                break;
+            case 5:
+                material = Material.DIAMOND_PICKAXE;
+                break;
+        }
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        item.setItemMeta(meta);
+        return item;
     }
 }

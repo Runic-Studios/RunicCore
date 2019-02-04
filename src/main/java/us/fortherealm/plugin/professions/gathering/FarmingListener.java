@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -188,7 +189,7 @@ public class FarmingListener implements Listener {
         ItemStack item = new ItemStack(Material.GOLD_NUGGET);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
-        meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
+        meta.setDisplayName(ChatColor.GOLD + "Gold");
         lore.add(ChatColor.GRAY + "Currency");
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -223,5 +224,18 @@ public class FarmingListener implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static ItemStack getGatheringHoe(int tier) {
+        ItemStack gatheringHoe = new ItemStack(Material.IRON_HOE);
+        ItemMeta meta = gatheringHoe.getItemMeta();
+//        ArrayList<String> lore = gatheringHoe.getItemMeta().getLore();
+//        lore.add()
+        ((Damageable) meta).setDamage(tier);
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        gatheringHoe.setItemMeta(meta);
+        return gatheringHoe;
     }
 }

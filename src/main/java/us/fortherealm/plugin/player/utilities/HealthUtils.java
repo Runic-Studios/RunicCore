@@ -43,6 +43,10 @@ public class HealthUtils {
         if (scale % 2 != 0) {
             scale = scale-1;
         }
+        // insurance to prevent "greater than 0" errors on first join
+        if (scale <= 0) {
+            scale=4;
+        }
         pl.setHealthScale(scale);
     }
 }

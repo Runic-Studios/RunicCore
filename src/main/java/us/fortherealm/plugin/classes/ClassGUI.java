@@ -51,16 +51,17 @@ public class ClassGUI implements InventoryProvider {
                         "Archer",
                         "An agile, long-range artillary.",
                         "Barrage"),
-                e -> {
-                        setupArtifact(player, "Archer");
-                        setupRune(player);
-                        setConfig(player, "Archer");
-                        player.closeInventory();
+                        e -> {
+                            setupArtifact(player, "Archer");
+                            setupRune(player);
+                            setupHearthstone(player);
+                            setConfig(player, "Archer");
+                            player.closeInventory();
                 }));
 
         // select cleric
         contents.set(0, 2, ClickableItem.of
-                (menuItem(Material.IRON_SHOVEL,
+                (menuItem(Material.WOODEN_SHOVEL,
                         ChatColor.AQUA,
                         "Cleric",
                         "A versatile support and healer.",
@@ -68,48 +69,52 @@ public class ClassGUI implements InventoryProvider {
                         e -> {
                             setupArtifact(player, "Cleric");
                             setupRune(player);
+                            setupHearthstone(player);
                             setConfig(player, "Cleric");
                             player.closeInventory();
                         }));
 
         // select mage
         contents.set(0, 4, ClickableItem.of
-                (menuItem(Material.IRON_HOE,
+                (menuItem(Material.WOODEN_HOE,
                         ChatColor.LIGHT_PURPLE,
                         "Mage",
                         "A powerful, ranged nuker.",
-                        "Arcane Spike"),
+                        "Blizzard"),
                         e -> {
                             setupArtifact(player, "Mage");
                             setupRune(player);
+                            setupHearthstone(player);
                             setConfig(player, "Mage");
                             player.closeInventory();
                         }));
 
         // select rogue
         contents.set(0, 6, ClickableItem.of
-                (menuItem(Material.IRON_SWORD,
+                (menuItem(Material.WOODEN_SWORD,
                         ChatColor.YELLOW,
                         "Rogue",
                         "A cunning, close-range duelist.",
-                        "Backstab"),
+                        "Smoke Bomb"),
                         e -> {
                             setupArtifact(player, "Rogue");
                             setupRune(player);
+                            setupHearthstone(player);
                             setConfig(player, "Rogue");
                             player.closeInventory();
                         }));
 
         // select warrior
         contents.set(0, 8, ClickableItem.of
-                (menuItem(Material.IRON_AXE,
+                (menuItem(Material.WOODEN_AXE,
                         ChatColor.RED,
                         "Warrior",
                         "A durable, close-range fighter.",
-                        "Deliverance"),
+                        "Charge"),
                         e -> {
                             setupArtifact(player, "Warrior");
                             setupRune(player);
+                            setupHearthstone(player);
                             setConfig(player, "Warrior");
                             player.closeInventory();
                         }));
@@ -163,7 +168,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Cleric":
                 itemName = "Initiate's Oaken Mace";
-                material = Material.IRON_SHOVEL;
+                material = Material.WOODEN_SHOVEL;
                 spell = "Rejuvenate";
                 ClassUtil.launchFirework(player, AQUA);
                 player.sendTitle(
@@ -172,7 +177,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Mage":
                 itemName = "Sturdy Oaken Branch";
-                material = Material.IRON_HOE;
+                material = Material.WOODEN_HOE;
                 ClassUtil.launchFirework(player, FUCHSIA);
                 spell = "Blizzard";
                 player.sendTitle(
@@ -181,7 +186,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Rogue":
                 itemName = "Oaken Sparring Sword";
-                material = Material.IRON_SWORD;
+                material = Material.WOODEN_SWORD;
                 spell = "Smoke Bomb";
                 ClassUtil.launchFirework(player, YELLOW);
                 player.sendTitle(
@@ -190,7 +195,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Warrior":
                 itemName = "Worn Oaken Battleaxe";
-                material = Material.IRON_AXE;
+                material = Material.WOODEN_AXE;
                 spell = "Charge";
                 ClassUtil.launchFirework(player, RED);
                 player.sendTitle(
@@ -202,9 +207,10 @@ public class ClassGUI implements InventoryProvider {
         // create the artifact
         ItemStack artifact = new ItemStack(material);
 
-        // add default spells
+        // add default spells, souldbound
         artifact = AttributeUtil.addSpell(artifact, "primarySpell", spell);
         artifact = AttributeUtil.addSpell(artifact, "secondarySpell", ChatColor.RED + "LOCKED");
+        artifact = AttributeUtil.addCustomStat(artifact, "soulbound", "true");
 
         // --------------------------------------------------------------------------------------------------------
         // add default damage, attack speed values
@@ -247,12 +253,21 @@ public class ClassGUI implements InventoryProvider {
     }
 
     // creates the player's rune
-    private void setupRune(Player player) {
+    private void setupRune(Player pl) {
         ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         rune = AttributeUtil.addSpell(rune, "primarySpell", ChatColor.RED + "LOCKED");
         rune = AttributeUtil.addSpell(rune, "secondarySpell", ChatColor.RED + "LOCKED");
+        rune = AttributeUtil.addCustomStat(rune, "soulbound", "true");
         LoreGenerator.generateRuneLore(rune);
-        player.getInventory().setItem(1, rune);
+        pl.getInventory().setItem(1, rune);
+    }
+
+    private void setupHearthstone(Player pl) {
+        ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
+        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", "Tutorial Island");
+        hearthstone = AttributeUtil.addCustomStat(hearthstone, "soulbound", "true");
+        LoreGenerator.generateHearthstoneLore(hearthstone);
+        pl.getInventory().setItem(2, hearthstone);
     }
 
     private void setConfig(Player player, String className) {

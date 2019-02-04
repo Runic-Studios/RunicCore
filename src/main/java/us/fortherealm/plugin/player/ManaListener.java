@@ -24,7 +24,7 @@ public class ManaListener implements Listener {
     private Plugin plugin = Main.getInstance();
     private ManaManager manaManager = Main.getManaManager();
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent e) {
 
         Player pl = e.getPlayer();

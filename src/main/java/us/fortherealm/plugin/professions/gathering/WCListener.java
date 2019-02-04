@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -239,5 +240,18 @@ public class WCListener implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static ItemStack getGatheringAxe(int tier) {
+        ItemStack item = new ItemStack(Material.IRON_AXE);
+        ItemMeta meta = item.getItemMeta();
+//        ArrayList<String> lore = gatheringHoe.getItemMeta().getLore();
+//        lore.add()
+        ((Damageable) meta).setDamage(tier);
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        item.setItemMeta(meta);
+        return item;
     }
 }
