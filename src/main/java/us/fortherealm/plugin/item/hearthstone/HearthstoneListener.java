@@ -33,6 +33,7 @@ public class HearthstoneListener implements Listener {
         // if its the 3rd slot in a player's inventory, run the stuff
         if (itemslot != 2) return;
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
+        if (e.getClickedInventory() == null) return;
         if (!e.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
 
         e.setCancelled(true);

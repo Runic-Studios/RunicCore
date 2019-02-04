@@ -72,10 +72,16 @@ public class SpellsGUI implements InventoryProvider {
                         }));
 
         int skillpoints = Main.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
+        ArrayList<String> spDesc = new ArrayList<>();
+        spDesc.add("");
+        spDesc.add(ChatColor.GRAY + "Use skill points to unlock new spells!");
+        spDesc.add("");
+        spDesc.add(ChatColor.GREEN + "Earn skill points by completing quests");
+        spDesc.add(ChatColor.GREEN + "and leveling your character!");
         contents.set(1, 5, ClickableItem.of
                 (menuItem(Material.BONE_MEAL, ChatColor.WHITE,
                         ChatColor.BOLD + "Skill Points: " + skillpoints,
-                        desc, 0, skillpoints), // read config for amount
+                        spDesc, 0, skillpoints), // read config for amount
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                             RuneGUI.CUSTOMIZE_RUNE.open(player);
@@ -102,34 +108,34 @@ public class SpellsGUI implements InventoryProvider {
     }
 
     private void displaySpellsArcher(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 2, 0, "Barrage", "Archer", true);
-        displaySpell(player, contents, 2, 1, "Grapple", "Archer", false);
-        displaySpell(player, contents, 2, 2, "Parry", "Archer", false);
+        displaySpell(player, contents, 2, 3, "Barrage", "Archer", true);
+        displaySpell(player, contents, 2, 4, "Grapple", "Archer", false);
+        displaySpell(player, contents, 2, 5, "Parry", "Archer", false);
     }
 
     private void displaySpellsCleric(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 2, 0, "Holy Nova", "Cleric", true);
-        displaySpell(player, contents, 2, 1, "Rejuvenate", "Cleric", true);
-        displaySpell(player, contents, 2, 2, "Windstride", "Cleric", false);
+        displaySpell(player, contents, 2, 3, "Holy Nova", "Cleric", true);
+        displaySpell(player, contents, 2, 4, "Rejuvenate", "Cleric", true);
+        displaySpell(player, contents, 2, 5, "Windstride", "Cleric", false);
     }
 
     private void displaySpellsMage(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 2, 0, "Arcane Spike", "Mage", false);
-        displaySpell(player, contents, 2, 1, "Blizzard", "Mage", true);
-        displaySpell(player, contents, 2, 2, "Comet", "Mage", false);
-        displaySpell(player, contents, 2, 3, "Discharge", "Mage", false);
+        displaySpell(player, contents, 2, 2, "Arcane Spike", "Mage", false);
+        displaySpell(player, contents, 2, 3, "Blizzard", "Mage", true);
+        displaySpell(player, contents, 2, 4, "Comet", "Mage", false);
+        displaySpell(player, contents, 2, 5, "Discharge", "Mage", false);
     }
 
     private void displaySpellsRogue(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 2, 0, "Backstab", "Rogue", false);
-        displaySpell(player, contents, 2, 1, "Cloak", "Rogue", false);
-        displaySpell(player, contents, 2, 2, "Smoke Bomb", "Rogue", true);
+        displaySpell(player, contents, 2, 3, "Backstab", "Rogue", false);
+        displaySpell(player, contents, 2, 4, "Cloak", "Rogue", false);
+        displaySpell(player, contents, 2, 5, "Smoke Bomb", "Rogue", true);
     }
 
     private void displaySpellsWarrior(Player player, InventoryContents contents) {
-        displaySpell(player, contents, 2, 0, "Charge", "Warrior", true);
-        displaySpell(player, contents, 2, 1, "Enrage", "Warrior", false);
-        displaySpell(player, contents, 2, 2, "Deliverance", "Warrior", false);
+        displaySpell(player, contents, 2, 3, "Charge", "Warrior", true);
+        displaySpell(player, contents, 2, 4, "Enrage", "Warrior", false);
+        displaySpell(player, contents, 2, 5, "Deliverance", "Warrior", false);
     }
 
     // display for each skin

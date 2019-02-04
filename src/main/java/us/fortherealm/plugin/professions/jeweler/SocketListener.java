@@ -28,6 +28,7 @@ public class SocketListener implements Listener {
 
         if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
         if (e.getCursor() == null || e.getCursor().getType() == Material.AIR) return;
+        if (e.getClickedInventory() == null) return;
         if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
         if (!(e.getWhoClicked() instanceof Player)) return;
 

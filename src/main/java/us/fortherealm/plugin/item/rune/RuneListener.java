@@ -29,6 +29,7 @@ public class RuneListener implements Listener {
         if (player.getGameMode() != GameMode.SURVIVAL) return;
 
         // only listen for a player inventory
+        if (e.getClickedInventory() == null) return;
         if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
 
         // cancel the event, open the artifact

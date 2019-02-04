@@ -1,6 +1,7 @@
 package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
+import us.fortherealm.plugin.item.HelmetListener;
 import us.fortherealm.plugin.item.artifact.ArtifactListener;
 import us.fortherealm.plugin.item.hearthstone.HearthstoneListener;
 import us.fortherealm.plugin.player.ExpListener;
@@ -124,6 +125,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new PlayerJoinListener(), this);
         pm.registerEvents(new ManaListener(), this);
         pm.registerEvents(new PlayerLevelListener(), this);
+        pm.registerEvents(new HelmetListener(), this);
     }
     
     private void registerCommands() {
