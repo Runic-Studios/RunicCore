@@ -6,6 +6,8 @@ import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
@@ -43,6 +45,27 @@ public class FloatingItemUtil {
 
         // tell the item when to despawn, based on duration (in seconds)
         setAge(duration, item);
+    }
+
+    public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration, int durab) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        ((Damageable) meta).setDamage(durab);
+        item.setItemMeta(meta);
+        Item droppedItem = loc.getWorld().dropItem(loc, item);
+        Vector vec = loc.toVector().multiply(0);
+        droppedItem.setVelocity(vec);
+        droppedItem.setPickupDelay(Integer.MAX_VALUE);
+
+        // send packets to make item invisible for all other players
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (p == pl) continue;
+            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(droppedItem.getEntityId());
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+        }
+
+        // tell the item when to despawn, based on duration (in seconds)
+        setAge(duration, droppedItem);
     }
 
     private static void setAge(int duration, Item item) {

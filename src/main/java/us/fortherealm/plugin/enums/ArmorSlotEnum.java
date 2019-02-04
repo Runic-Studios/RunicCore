@@ -32,6 +32,7 @@ public enum ArmorSlotEnum {
             case CHAINMAIL_HELMET:
             case LEATHER_HELMET:
             case PUMPKIN:
+            case SHEARS:
             case LEGACY_SKULL_ITEM:
                 return HELMET;
             case DIAMOND_CHESTPLATE:

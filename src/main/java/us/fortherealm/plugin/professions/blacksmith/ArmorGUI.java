@@ -7,6 +7,8 @@ import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
@@ -44,38 +46,38 @@ public class ArmorGUI implements InventoryProvider {
                         }));
 
         // mail
-        setCraftItem(player, contents, 1, 0, Material.CHAINMAIL_HELMET,
+        setCraftItem(player, contents, 1, 0, Material.SHEARS,
                 "Forged Chain Helmet", "Iron Link",
-                "Mail", Material.IRON_BARS, 5, 5, 1);
+                "Mail", Material.IRON_BARS, 5, 5, 1, 15);
 
         setCraftItem(player, contents, 1, 1, Material.CHAINMAIL_BOOTS,
                 "Forged Chain Boots", "Iron Link",
-                "Mail", Material.IRON_BARS, 4, 5, 5);
+                "Mail", Material.IRON_BARS, 4, 5, 5, 0);
 
         setCraftItem(player, contents, 1, 2, Material.CHAINMAIL_LEGGINGS,
                 "Forged Chain Legs", "Iron Link",
-                "Mail", Material.IRON_BARS, 7, 10, 10);
+                "Mail", Material.IRON_BARS, 7, 10, 10, 0);
 
         setCraftItem(player, contents, 1, 3, Material.CHAINMAIL_CHESTPLATE,
                 "Forged Chain Body", "Iron Link",
-                "Mail", Material.IRON_BARS, 8, 15, 15);
+                "Mail", Material.IRON_BARS, 8, 15, 15, 0);
 
         // plate
-        setCraftItem(player, contents, 1, 4, Material.IRON_HELMET,
+        setCraftItem(player, contents, 1, 4, Material.SHEARS,
                 "Forged Iron Helmet", "Iron Bar",
-                "Plate", Material.IRON_INGOT, 5, 10, 20);
+                "Plate", Material.IRON_INGOT, 5, 10, 20, 20);
 
         setCraftItem(player, contents, 1, 5, Material.IRON_BOOTS,
                 "Forged Iron Boots", "Iron Bar",
-                "Plate", Material.IRON_INGOT, 4, 10, 25);
+                "Plate", Material.IRON_INGOT, 4, 10, 25, 0);
 
         setCraftItem(player, contents, 1, 6, Material.IRON_LEGGINGS,
                 "Forged Iron Platelegs", "Iron Bar",
-                "Plate", Material.IRON_INGOT, 7, 20, 30);
+                "Plate", Material.IRON_INGOT, 7, 20, 30, 0);
 
         setCraftItem(player, contents, 1, 7, Material.IRON_CHESTPLATE,
                 "Forged Iron Platebody", "Iron Bar",
-                "Plate", Material.IRON_INGOT, 8, 30, 35);
+                "Plate", Material.IRON_INGOT, 8, 30, 35, 0);
     }
 
     // used for animated inventories
@@ -85,7 +87,7 @@ public class ArmorGUI implements InventoryProvider {
 
     private void setCraftItem(Player pl, InventoryContents contents, int row, int slot, Material craftedItem,
                               String name, String requirements, String armorType,
-                              Material reagent, int itemAmt, int exp, int reqLevel) {
+                              Material reagent, int itemAmt, int exp, int reqLevel, int durability) {
 
         // grab the location of the anvil
         Location stationLoc = WorkstationListener.getStationLocation().get(pl.getUniqueId());
@@ -124,7 +126,7 @@ public class ArmorGUI implements InventoryProvider {
         }
 
         contents.set(row, slot, ClickableItem.of
-                (GUIItem.dispItem(craftedItem, ChatColor.WHITE, name, description),
+                (GUIItem.dispItem(craftedItem, ChatColor.WHITE, name, description, durability),
                         e -> {
 
                             // check that the player has reached the req. lv
@@ -137,16 +139,16 @@ public class ArmorGUI implements InventoryProvider {
                             // make 5 if right click
                             if (e.isRightClick()) {
                                 startCrafting(pl, reagent, itemAmt*5, stationLoc,
-                                        craftedItem, name, currentLvl, armorType, exp*5, 5, rate);
+                                        craftedItem, name, currentLvl, armorType, exp*5, 5, rate, durability);
                             } else {
                                 startCrafting(pl, reagent, itemAmt, stationLoc,
-                                        craftedItem, name, currentLvl, armorType, exp, 1, rate);
+                                        craftedItem, name, currentLvl, armorType, exp, 1, rate, durability);
                             }
                         }));
     }
 
     private void startCrafting(Player pl, Material reagent, int reagentAmt, Location stationLoc, Material craftedItem,
-                               String name, int currentLvl, String type, int exp, int craftedAmt, int rate) {
+                               String name, int currentLvl, String type, int exp, int craftedAmt, int rate, int durability) {
 
         // check that the player has the items.
         if (!pl.getInventory().contains(reagent, reagentAmt)) {
@@ -176,7 +178,7 @@ public class ArmorGUI implements InventoryProvider {
         }
 
         // spawn item on anvil for visual
-        FloatingItemUtil.spawnFloatingItem(pl, stationLoc, craftedItem, 4);
+        FloatingItemUtil.spawnFloatingItem(pl, stationLoc, craftedItem, 4, durability);
 
         // start the crafting process
         new BukkitRunnable() {
@@ -190,7 +192,7 @@ public class ArmorGUI implements InventoryProvider {
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
-                    craftArmor(pl, craftedItem, name, currentLvl, craftedAmt, rate);
+                    craftArmor(pl, craftedItem, name, currentLvl, craftedAmt, rate, durability);
                 } else {
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
                     pl.spawnParticle(Particle.FIREWORKS_SPARK, stationLoc, 5, 0.25, 0.25, 0.25, 0.01);
@@ -200,13 +202,17 @@ public class ArmorGUI implements InventoryProvider {
         }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
-    private void craftArmor(Player pl, Material material, String dispName, int currentLvl, int amt, int rate) {
+    private void craftArmor(Player pl, Material material, String dispName,
+                            int currentLvl, int amt, int rate, int durability) {
 
         // create a new item up to the amount
         int failCount = 0;
         for (int i = 0; i < amt; i++) {
 
             ItemStack craftedItem = new ItemStack(material);
+            ItemMeta meta = craftedItem.getItemMeta();
+            ((Damageable) meta).setDamage(durability);
+            craftedItem.setItemMeta(meta);
 
             String itemSlot = "";
             ArmorSlotEnum armorType = ArmorSlotEnum.matchSlot(craftedItem);

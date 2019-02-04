@@ -1,5 +1,8 @@
 package us.fortherealm.plugin.item;
 
+import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.codingforcookies.armorequip.ArmorType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -55,6 +58,7 @@ public class HelmetListener implements Listener {
             pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
             pl.getInventory().setHelmet(helmet);
             pl.getInventory().setItem(slot, new ItemStack(Material.AIR));
+            Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.HOTBAR, ArmorType.HELMET, null, helmet));
         }
     }
 
@@ -91,6 +95,7 @@ public class HelmetListener implements Listener {
         }
 
         e.setCancelled(true);
+        Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.HELMET, null, helmet));
         pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
         e.setCurrentItem(new ItemStack(Material.AIR));
         pl.getInventory().setHelmet(helmet);
@@ -133,10 +138,23 @@ public class HelmetListener implements Listener {
         if (pl.getInventory().getHelmet() == null) {
             e.setCursor(new ItemStack(Material.AIR));
             pl.getInventory().setHelmet(helmet);
+            Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, null, helmet));
         } else {
             ItemStack currentHelm = pl.getInventory().getHelmet();
             e.setCursor(currentHelm);
             pl.getInventory().setHelmet(helmet);
+            Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, currentHelm, helmet));
         }
+    }
+
+    @EventHandler
+    public void onHelmetUnequip(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        if (e.getClickedInventory() == null) return;
+        if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
+        if (e.getCursor().getType() != Material.SHEARS && e.getCursor().getType() != Material.AIR) return;
+        if (e.getSlot() != 39) return;
+        Player pl = (Player) e.getWhoClicked();
+        Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, e.getCurrentItem(), e.getCursor()));
     }
 }
