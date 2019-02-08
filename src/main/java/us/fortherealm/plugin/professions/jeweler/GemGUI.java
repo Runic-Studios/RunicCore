@@ -226,6 +226,16 @@ public class GemGUI implements InventoryProvider {
     private ItemStack addGemStat(String gemType, int currentLvl, ItemStack craftedItem) {
         switch (gemType) {
             case "emerald":
+                // item will have a random physical damage value that increases w/ lvl (max of +5)
+                int minDmg = 1;
+                int maxDmg;
+                if (currentLvl != 1) {
+                    maxDmg = (int) (0.1 * currentLvl) + 1;
+                } else {
+                    maxDmg = (int) 1.1;
+                }
+                int rangeE = ThreadLocalRandom.current().nextInt(minDmg, maxDmg + 1);
+                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.attackDamage", rangeE);
                 break;
             case "ruby": {
                 // item will have a random health value that increases w/ prof lv (max of +26)
@@ -236,13 +246,12 @@ public class GemGUI implements InventoryProvider {
                 } else {
                     maxHP = 2;
                 }
-                int range = ThreadLocalRandom.current().nextInt(minHP, maxHP + 1);
-                craftedItem = AttributeUtil.addCustomStat
-                        (craftedItem, "custom.maxHealth", range);
+                int rangeR = ThreadLocalRandom.current().nextInt(minHP, maxHP + 1);
+                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.maxHealth", rangeR);
                 break;
             }
             case "opal": {
-                // item will have a random move speed
+                // item will have a random
                 break;
             }
             case "sapphire":
@@ -254,9 +263,8 @@ public class GemGUI implements InventoryProvider {
                 } else {
                     maxMana = 2;
                 }
-                int range = ThreadLocalRandom.current().nextInt(minMana, maxMana + 1);
-                craftedItem = AttributeUtil.addCustomStat
-                        (craftedItem, "custom.manaBoost", range);
+                int rangeS = ThreadLocalRandom.current().nextInt(minMana, maxMana + 1);
+                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.manaBoost", rangeS);
                 break;
         }
         return craftedItem;

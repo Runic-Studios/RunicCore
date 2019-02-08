@@ -32,11 +32,10 @@ public class WorkstationListener implements Listener {
      * play their respective sounds
      * @author Skyfallin_
      */
-    // todo: add defaults for regen_blocks.yml and workstations.yml for IDS to onEnable
     @EventHandler
     public void onOpenInventory(PlayerInteractEvent e) {
 
-        if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
+        if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if (!e.hasBlock()) return;
 
         Player pl = e.getPlayer();
