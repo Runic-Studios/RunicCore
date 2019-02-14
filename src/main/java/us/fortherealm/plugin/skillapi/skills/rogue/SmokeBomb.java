@@ -3,10 +3,7 @@ package us.fortherealm.plugin.skillapi.skills.rogue;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -17,6 +14,7 @@ import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -97,10 +95,10 @@ public class SmokeBomb extends Skill {
 
                             // damage the entity, blind them if they're a player
                             if (entity.getType().isAlive()) {
-                                Damageable victim = (Damageable) entity;
-                                victim.damage(DAMAGE_AMT, player);
+                                LivingEntity victim = (LivingEntity) entity;
+                                DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, player);
                                 if (victim instanceof Player) {
-                                    ((Player) victim).addPotionEffect
+                                    victim.addPotionEffect
                                             (new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 0));
                                 }
                             }

@@ -3,6 +3,7 @@ package us.fortherealm.plugin.listeners;
 import org.bukkit.*;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +16,7 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-// todo: fix left-click "punch" damage
 public class StaffListener implements Listener {
 
     // globals
@@ -113,7 +114,8 @@ public class StaffListener implements Listener {
                     if (e.getLocation().distance(location) <= BEAM_WIDTH) {
                         if (e != (pl)) {
                             if (e.getType().isAlive()) {
-                                Damageable victim = (Damageable) e;
+
+                                LivingEntity victim = (LivingEntity) e;
 
                                 // skip party members
                                 if (Main.getPartyManager().getPlayerParty(pl) != null
@@ -149,13 +151,12 @@ public class StaffListener implements Listener {
                                 // apply attack effects, random damage amount
                                 if (maxDamage != 0) {
                                     int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-                                    victim.damage(randomNum, pl);
+                                    DamageUtil.damageEntityWeapon(randomNum, victim, pl);
                                 } else {
-                                    victim.damage(minDamage, pl);
+                                    DamageUtil.damageEntityWeapon(minDamage, victim, pl);
                                 }
 
                                 pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-                                KnockbackUtil.knockback(pl, victim, 1);
                                 this.cancel();
                             }
                         }

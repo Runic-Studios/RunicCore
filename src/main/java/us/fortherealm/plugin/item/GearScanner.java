@@ -32,16 +32,25 @@ public class GearScanner {
         return armorAndOffhand;
     }
 
+    public static int getHealingBoost(Player pl) {
+
+        int healingBoost = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            healingBoost += (int) AttributeUtil.getCustomDouble(item, "custom.healingBoost");
+        }
+        return healingBoost;
+    }
+
     public static int getMagicBoost(Player pl) {
 
         int magicBoost = 0;
-
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
         for (ItemStack item : armorAndOffhand) {
             magicBoost += (int) AttributeUtil.getCustomDouble(item, "custom.magicDamage");
         }
-
         return magicBoost;
     }
 }

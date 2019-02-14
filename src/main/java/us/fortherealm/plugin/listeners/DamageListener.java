@@ -18,6 +18,7 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.outlaw.OutlawManager;
+import us.fortherealm.plugin.utilities.DamageUtil;
 import us.fortherealm.plugin.utilities.HologramUtil;
 import us.fortherealm.plugin.enums.WeaponEnum;
 
@@ -37,15 +38,19 @@ public class DamageListener implements Listener {
     private Plugin plugin = Main.getInstance();
     private OutlawManager outlawEvent = new OutlawManager();
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent e) {
+
+        if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
+        if (e.getDamager() instanceof SmallFireball) return;
+        if (e.getDamage() <= 0) return;
 
         Entity damager = e.getDamager();
         Entity entity = e.getEntity();
 
         // only listen for damageable entities
-        if (!(entity instanceof Damageable)) return;
-        Damageable victim = (Damageable) entity;
+        if (!(entity instanceof LivingEntity)) return;
+        LivingEntity victim = (LivingEntity) entity;
 
         // only listen for when a player swings or fires an arrow
         if (damager instanceof Player) {
@@ -83,56 +88,59 @@ public class DamageListener implements Listener {
                 return;
             }
 
-            // ignore bows, staves, null check, ignore items without the attribute, check for cooldown
-            if ((!(artifactType.equals(WeaponEnum.BOW)|| artifactType.equals(WeaponEnum.STAFF)))) {
-
-                if (artifactType.equals(WeaponEnum.HAND)) {
-                    damage = 1;
-                    maxDamage = 1;
-                }
-
-                if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
-                    int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
-                    e.setDamage(randomNum);
-                } else {
-                    e.setCancelled(true);
-                    return;
-                }
+            // check for cooldown
+            if (artifactType.equals(WeaponEnum.HAND)
+                    || artifactType.equals(WeaponEnum.STAFF)
+                    || artifactType.equals(WeaponEnum.BOW)) {
+                damage = 1;
+                maxDamage = 1;
             }
 
-            // display damage indicator
-            HologramUtil.createDamageHologram(((Player) damager),
-                    victim.getLocation().add(0,1.5,0), e.getDamage());
+            if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
+                e.setCancelled(true);
+                int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
+                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager);
+            } else {
+                e.setCancelled(true);
+                return;
+            }
         }
 
         // only listen if a player is the entity receiving damage, to check for death mechanics
         if (!(victim instanceof Player)) return;
 
         // only listen for if the player were to "die"
-        if (!((victim.getHealth() - e.getFinalDamage() < 1))) return;
+        if (!((victim.getHealth() - e.getFinalDamage() <= 0))) return;
 
-        applySlainMechanics(e, e.getDamager(), ((Player) victim));
+        applySlainMechanics(e.getDamager(), ((Player) victim));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent e) {
 
+        if (e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+        if (e.getDamage() <= 0) return;
+
         // this event likes to get confused with the event above, so let's just fix that.
-        if (e instanceof EntityDamageByEntityEvent) {
-            return;
-        }
+        if (e instanceof EntityDamageByEntityEvent) return;
 
         // only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
-        if (!(e.getEntity() instanceof Player && ((Player) e.getEntity()).getHealth() - e.getDamage() < 1)) {
-            return;
-        }
+        if (!(e.getEntity() instanceof Player)) return;
+        Player pl = (Player) e.getEntity();
+        if (!(pl.getHealth() - e.getDamage() <= 0)) return;
 
         // initialize event variables
         Player victim = (Player) e.getEntity();
         Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
+        // cancel the event
+        e.setCancelled(true);
+
         // apply new death mechanics
-        applyDeathMechanics(e, victim, respawnLocation);
+        applyDeathMechanics(victim, respawnLocation);
+    }
+
+    public void applyDeathMechanics(Player victim, Location respawnLocation) {
 
         // broadcast the death message
         broadcastDeathMessage(victim);
@@ -144,12 +152,6 @@ public class DamageListener implements Listener {
             Score score = o.getScore(victim);
             score.setScore((int) victim.getHealth());
         }
-    }
-
-    private void applyDeathMechanics(EntityDamageEvent e, Player victim, Location respawnLocation) {
-
-        // cancel the event
-        e.setCancelled(true);
 
         // if player is in combat, remove them
         if (!Main.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
@@ -163,16 +165,16 @@ public class DamageListener implements Listener {
         Main.getManaManager().getCurrentManaList().put(victim.getUniqueId(), 0);
         Main.getScoreboardHandler().updateSideInfo(victim);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.RED, 3));
         victim.teleport(respawnLocation);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 1);
+        victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
     }
 
-    private void applySlainMechanics(EntityDamageEvent e, Entity damager, Player victim) {
+    public void applySlainMechanics(Entity damager, Player victim) {
 
         // if the player was killed by an arrow, set damager to its shooter
         if (damager instanceof Arrow) {
@@ -186,7 +188,7 @@ public class DamageListener implements Listener {
         Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // apply new death mechanics
-        applyDeathMechanics(e, victim, respawnLocation);
+        applyDeathMechanics(victim, respawnLocation);
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {

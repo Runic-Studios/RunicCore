@@ -19,7 +19,11 @@ public class HologramUtil {
 
     // builds the damage hologram
     public static void createDamageHologram(Player createFor, Location createAround, double hp) {
-        createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤");
+        createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤⚔");
+    }
+
+    public static void createSkillDamageHologram(Player createFor, Location createAround, double hp) {
+        createDamageHologram(createFor, createAround, ChatColor.DARK_AQUA + "-" + (int) hp + " ❤ʔ");
     }
 
     /**
@@ -77,7 +81,6 @@ public class HologramUtil {
     public static void createStaticHologram(Player createFor, Location createAround, String display, double x, double y, double z) {
 
         // build the custom armorstand
-        //ArmorStand stand = (ArmorStand) createAround.getWorld().spawnEntity(createAround.add(x, y, z).subtract(0, 1, 0), EntityType.ARMOR_STAND);
         Consumer consumer = new InvisStandSpawner();
         ArmorStand stand = createAround.getWorld().spawn(createAround.add(x, y, z).subtract(0, 1, 0), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
         stand.setCustomName(display);

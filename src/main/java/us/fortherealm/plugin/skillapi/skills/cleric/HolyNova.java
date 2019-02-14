@@ -3,18 +3,13 @@ package us.fortherealm.plugin.skillapi.skills.cleric;
 import org.bukkit.*;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
-
-import java.util.HashMap;
-import java.util.UUID;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class HolyNova extends Skill {
@@ -83,7 +78,10 @@ public class HolyNova extends Skill {
                     && Main.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
             // Executes the skill
-            ((Damageable) entity).damage(DAMAGE_AMT, pl);
+            if (entity.getType().isAlive()) {
+                LivingEntity victim = (LivingEntity) entity;
+                DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
+            }
         }
     }
 }

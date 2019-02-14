@@ -96,7 +96,7 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String healthAsString(Player pl) {
-        int currentHealth = (int) Math.round(pl.getHealth());
+        int currentHealth = (int) pl.getHealth();
         int maxHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §7/ " + ChatColor.RED + maxHealth;
     }

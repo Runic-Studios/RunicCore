@@ -1,14 +1,15 @@
 package us.fortherealm.plugin.skillapi.skills.mage;
 
 import org.bukkit.*;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
+import us.fortherealm.plugin.utilities.DamageUtil;
 import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
 
 import java.util.*;
@@ -73,7 +74,7 @@ public class ArcaneSpike extends Skill {
                 if (e == (player)) { continue; }
 
                 if (e.getType().isAlive()) {
-                    Damageable victim = (Damageable) e;
+                    LivingEntity victim = (LivingEntity) e;
 
                     // skip party members
                     if (Main.getPartyManager().getPlayerParty(player) != null
@@ -103,7 +104,7 @@ public class ArcaneSpike extends Skill {
                         }
                     }.runTaskLater(Main.getInstance(), 100L);
 
-                    victim.damage(DAMAGE_AMOUNT, player);
+                    DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
                     KnockbackUtil.knockback(player, victim, 1);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
                     break;

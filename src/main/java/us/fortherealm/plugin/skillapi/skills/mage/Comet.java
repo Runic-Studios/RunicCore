@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 @SuppressWarnings("deprecation")
 public class Comet extends Skill {
@@ -84,8 +85,8 @@ public class Comet extends Skill {
 
                         // apply effects, damage
                         if (entity.getType().isAlive()) {
-                            Damageable victim = (Damageable) entity;
-                            victim.damage(DAMAGE_AMT, pl);
+                            LivingEntity victim = (LivingEntity) entity;
+                            DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
                             Vector force = (comet.getLocation().toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
                             victim.setVelocity(force);
                         }

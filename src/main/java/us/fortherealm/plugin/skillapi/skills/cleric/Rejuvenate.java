@@ -66,7 +66,7 @@ public class Rejuvenate extends Skill {
                     if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                         this.cancel();
                     }
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, location, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
+                    pl.getWorld().spawnParticle(Particle.REDSTONE, location, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
                     pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0, 0, 0, 0);
                     allyCheck(pl, location);
                 }
@@ -125,7 +125,7 @@ public class Rejuvenate extends Skill {
                         ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                     } else {
-                        hu.healPlayer(HEAL_AMT, ally, " from " + ChatColor.WHITE + storedName);
+                        hu.healPlayer(HEAL_AMT, ally, pl, " from " + ChatColor.WHITE + storedName);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                         ally.getWorld().spawnParticle(Particle.HEART, ally.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 

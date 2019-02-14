@@ -5,12 +5,14 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Fireball extends Skill {
@@ -39,13 +41,13 @@ public class Fireball extends Skill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onFireballDamage(EntityDamageByEntityEvent event) {
 
         // only listen for our fireball
-        if (!(event.getDamager().equals(this.fireball))) {
-            return;
-        }
+        if (!(event.getDamager().equals(this.fireball))) return;
+
+        event.setCancelled(true);
 
         // grab our variables
         Player player = (Player) fireball.getShooter();
@@ -56,13 +58,11 @@ public class Fireball extends Skill {
                 && Main.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
 
         // cancel the event, apply skill mechanics
-        event.setCancelled(true);
-        victim.damage(DAMAGE_AMOUNT, player);
-        victim.setLastDamageCause(event);
+        DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
         KnockbackUtil.knockback(player, victim);
 
         // particles, sounds
-        victim.getWorld().spawnParticle(Particle.FLAME, victim.getLocation(), 5, 0.5F, 0.5F, 0.5F);
+        victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
     }
 }

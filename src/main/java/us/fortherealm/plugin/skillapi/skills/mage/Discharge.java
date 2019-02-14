@@ -3,10 +3,7 @@ package us.fortherealm.plugin.skillapi.skills.mage;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -15,6 +12,7 @@ import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -78,7 +76,7 @@ public class Discharge extends Skill {
                         for (Entity entity : arrow.getNearbyEntities(BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS)) {
                             if (entity != (pl)) {
                                 if (entity.getType().isAlive()) {
-                                    Damageable victim = (Damageable) entity;
+                                    LivingEntity victim = (LivingEntity) entity;
 
                                     // skip party members
                                     if (Main.getPartyManager().getPlayerParty(pl) != null
@@ -86,7 +84,7 @@ public class Discharge extends Skill {
                                         continue;
                                     }
 
-                                    victim.damage(DAMAGE_AMT, pl);
+                                    DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
                                     Vector force = (arrowLoc.toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
                                     victim.setVelocity(force);
                                 }

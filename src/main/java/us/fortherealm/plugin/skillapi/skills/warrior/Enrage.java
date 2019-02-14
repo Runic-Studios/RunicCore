@@ -1,10 +1,11 @@
 package us.fortherealm.plugin.skillapi.skills.warrior;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,26 +13,35 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skillutil.formats.Cone;
+import us.fortherealm.plugin.utilities.DamageUtil;
+import us.fortherealm.plugin.utilities.HologramUtil;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Enrage extends Skill {
 
     // instance variables
     private static final int CHANNEL_DURATION = 4;
     private static final int BUFF_DURATION = 10;
+    private static final int DAMAGE_AMT = 3;
+    private HashMap<UUID, Long> ragers = new HashMap<>();
 
     // constructor
     public Enrage() {
         super("Enrage",
                 "For " + CHANNEL_DURATION + " seconds, you channel a powerful" +
                         "\nrage and may not move. After, you gain" +
-                        "\nan immense boost of speed and strength" +
-                        "\nfor " + BUFF_DURATION + " seconds!",
+                        "\nan immense boost of speed and your attacks" +
+                        "\ndeal" + DAMAGE_AMT + "additional spell damage" + " for " + BUFF_DURATION + " seconds!",
                 ChatColor.WHITE, 1, 5);
     }
 
     // skill execute code
     @Override
     public void executeSkill(Player pl, SkillItemType type) {
+
+        UUID uuid = pl.getUniqueId();
 
         // apply preliminary particle effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHANNEL_DURATION * 20, 99));
@@ -54,11 +64,44 @@ public class Enrage extends Skill {
                 pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
                         25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.RED, 20));
 
-                // potion effects
+                // potion effect, dmg effect
                 pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION * 20, 1));
+                ragers.put(uuid, System.currentTimeMillis());
                 pl.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, BUFF_DURATION * 20, 1));
+
+                // remove damage buff
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        ragers.remove(uuid);
+                        pl.sendMessage(ChatColor.GRAY + "You no longer feel enraged.");
+                    }
+                }.runTaskLater(plugin, BUFF_DURATION * 20);
+
             }
         }.runTaskLater(Main.getInstance(), CHANNEL_DURATION * 20);
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent e) {
+
+        if (!(e.getDamager() instanceof Player)) return;
+        if (!(e.getEntity() instanceof LivingEntity)) return;
+        if (e.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
+
+        Player player = (Player) e.getDamager();
+        UUID uuid = player.getUniqueId();
+        LivingEntity le = (LivingEntity) e.getEntity();
+
+        if (!ragers.containsKey(uuid)) return;
+
+        // prevent infinite damage loop
+        e.setCancelled(true);
+        DamageUtil.damageEntityMagic(DAMAGE_AMT, le, player);
+
+        le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
+
+        le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }
 }
 

@@ -12,6 +12,7 @@ import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -62,12 +63,17 @@ public class Blizzard extends Skill {
                 pl.getWorld().spawnParticle(Particle.REDSTONE, cloudLoc,
                         25, 1.5f, 0.75f, 0.75f, new Particle.DustOptions(Color.WHITE, 20));
 
-                // spawn 5 snowballs
+                // spawn 9 snowballs in a 3x3 square
                 spawnSnowball(pl, cloudLoc, launchPath);
                 spawnSnowball(pl, cloudLoc.add(1, 0, 0), launchPath);
-                spawnSnowball(pl, cloudLoc.add(-2, 0 , 0), launchPath);
+                spawnSnowball(pl, cloudLoc.add(-2, 0, 0), launchPath);
                 spawnSnowball(pl, cloudLoc.add(2, 0, 1), launchPath);
-                spawnSnowball(pl, cloudLoc.add(0, 0 , -2), launchPath);
+                spawnSnowball(pl, cloudLoc.add(0, 0, -2), launchPath);
+                spawnSnowball(pl, cloudLoc.add(-1, 0, 2), launchPath);
+                spawnSnowball(pl, cloudLoc.add(-1, 0, 0), launchPath);
+                spawnSnowball(pl, cloudLoc.add(0, 0, -2), launchPath);
+                spawnSnowball(pl, cloudLoc.add(1, 0, 0), launchPath);
+
             }
         }.runTaskTimer(Main.getInstance(), 0, 10); // drops a snowball every half second
     }
@@ -95,7 +101,7 @@ public class Blizzard extends Skill {
                 && Main.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
 
         // apply damage, knockback
-        victim.damage(DAMAGE_AMOUNT, shooter);
+        DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, shooter);
         victim.setLastDamageCause(e);
         KnockbackUtil.knockback(shooter, victim);
     }

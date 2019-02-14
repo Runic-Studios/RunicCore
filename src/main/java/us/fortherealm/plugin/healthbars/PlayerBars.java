@@ -55,7 +55,7 @@ public class PlayerBars implements Listener {
         BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
         String name = Main.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
         bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        bossBar.setTitle(name + " " + ChatColor.RED + (int) health + ChatColor.DARK_RED + " ❤");
+        bossBar.setTitle(name + " " + ChatColor.RED + (int) (health) + ChatColor.DARK_RED + " ❤");
 
         // remove the player from the map to prevent duplicate health bars
         if (bossBarHashMap.containsKey(damagerID)) {

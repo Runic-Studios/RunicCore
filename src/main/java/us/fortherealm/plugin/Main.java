@@ -113,7 +113,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new OutlawManager(), this);
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SkillUseEvent(), this);
-        pm.registerEvents(new WeaponListener(), this);
+        pm.registerEvents(new WeaponCDListener(), this);
         pm.registerEvents(new PlayerBars(), this);
         pm.registerEvents(new WorkstationListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);

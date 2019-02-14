@@ -28,7 +28,7 @@ public class Heal extends Skill {
     public void executeSkill(Player pl, SkillItemType type) {
 
         // heal the player
-        hu.healPlayer(HEAL_AMT, pl, "");
+        hu.healPlayer(HEAL_AMT, pl, pl, "");
 
         // particle effects
         new BukkitRunnable() {

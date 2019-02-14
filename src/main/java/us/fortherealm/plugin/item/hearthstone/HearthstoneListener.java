@@ -84,17 +84,19 @@ public class HearthstoneListener implements Listener {
     private void activateHearthstone(Player pl) {
         hsCooldowns.put(pl.getUniqueId(), System.currentTimeMillis());
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-        pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0,1,0),
-                10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 5));
 
         new BukkitRunnable() {
             int count = 0;
             @Override
             public void run() {
 
-                if (count >= teleportTime) {
+                if (count >= teleportTime-1) {
                     this.cancel();
+                    // todo: add teleport method
                 }
+
+                pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0,1,0),
+                        10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 3));
 
                 pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Teleporting... "
                         + ChatColor.WHITE + ChatColor.BOLD + + (teleportTime-count) + "s");

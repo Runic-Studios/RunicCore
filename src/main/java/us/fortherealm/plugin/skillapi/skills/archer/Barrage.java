@@ -1,8 +1,6 @@
 package us.fortherealm.plugin.skillapi.skills.archer;
 
 import us.fortherealm.plugin.Main;
-import us.fortherealm.plugin.item.GearScanner;
-import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import org.bukkit.*;
@@ -10,10 +8,9 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import us.fortherealm.plugin.utilities.DamageUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -82,7 +79,7 @@ public class Barrage extends Skill {
             return;
         }
 
-        // deal extra damage if arrow in in the barrage hashmap
+        // deal magic damage if arrow in in the barrage hashmap
         if (bArrows.containsKey(arrow)) {
 
             e.setCancelled(true);
@@ -91,8 +88,7 @@ public class Barrage extends Skill {
             Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
             LivingEntity le = (LivingEntity) e.getEntity();
 
-            int magicBoost = GearScanner.getMagicBoost(pl);
-            le.damage(DAMAGE+magicBoost, pl);
+            DamageUtil.damageEntityMagic(DAMAGE, le, pl);
             e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
             e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
         }
