@@ -2,7 +2,6 @@ package us.fortherealm.plugin.listeners;
 
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,21 +16,28 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
-import us.fortherealm.plugin.healthbars.PlayerBars;
+import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import us.fortherealm.plugin.utilities.HologramUtil;
 import us.fortherealm.plugin.enums.WeaponEnum;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * This class does a lot. Might be worth splitting up.
+ * Currently, it manages all melee damage calculators (including gemstones).
+ * It also applies all of our death mechanics, melee cooldown mechanics, what have you.
+ * @author Skyfallin_
+ */
+@SuppressWarnings("deprecation")
 public class DamageListener implements Listener {
 
-    Plugin plugin = Main.getInstance();
+    private Plugin plugin = Main.getInstance();
     private OutlawManager outlawEvent = new OutlawManager();
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onDamage(EntityDamageByEntityEvent e) {
 
         Entity damager = e.getDamager();
@@ -41,13 +47,35 @@ public class DamageListener implements Listener {
         if (!(entity instanceof Damageable)) return;
         Damageable victim = (Damageable) entity;
 
-        // only listen for when a player swings
+        // only listen for when a player swings or fires an arrow
         if (damager instanceof Player) {
+
+            Player pl = (Player) damager;
+
             ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
             WeaponEnum artifactType = WeaponEnum.matchType(artifact);
             int damage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
             int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
             int slot = ((Player) damager).getInventory().getHeldItemSlot();
+
+            // --------------------
+            // for punching 'n stuff
+            if (damage == 0) {
+                damage = 1;
+            }
+            if (maxDamage == 0) {
+                maxDamage = 1;
+            }
+            // -------------------
+
+            // grab player's armor, offhand (check for gem bonuses)
+            ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(pl);
+
+            // calculate the player's total damage boost
+            for (ItemStack item : armorAndOffhand) {
+                int damageBoost = (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
+                maxDamage = maxDamage + damageBoost;
+            }
 
             // don't fire attack if they're sneaking, since they're casting a spell
             if (((Player) damager).isSneaking() && slot == 0) {
@@ -56,22 +84,25 @@ public class DamageListener implements Listener {
             }
 
             // ignore bows, staves, null check, ignore items without the attribute, check for cooldown
-            if (artifact != null && damage != 0 &&
-                    (!(artifactType.equals(WeaponEnum.BOW) || artifactType.equals(WeaponEnum.STAFF)))) {
+            if ((!(artifactType.equals(WeaponEnum.BOW)|| artifactType.equals(WeaponEnum.STAFF)))) {
+
+                if (artifactType.equals(WeaponEnum.HAND)) {
+                    damage = 1;
+                    maxDamage = 1;
+                }
+
                 if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
-                    if (maxDamage != 0) {
-                        int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
-                        e.setDamage(randomNum);
-                    } else {
-                        e.setDamage(damage);
-                    }
+                    int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
+                    e.setDamage(randomNum);
                 } else {
                     e.setCancelled(true);
                     return;
                 }
             }
+
             // display damage indicator
-            HologramUtil.createDamageHologram(((Player) damager), victim.getLocation().add(0,1.5,0), e.getDamage());
+            HologramUtil.createDamageHologram(((Player) damager),
+                    victim.getLocation().add(0,1.5,0), e.getDamage());
         }
 
         // only listen if a player is the entity receiving damage, to check for death mechanics
@@ -156,20 +187,6 @@ public class DamageListener implements Listener {
 
         // apply new death mechanics
         applyDeathMechanics(e, victim, respawnLocation);
-
-        // remove their bar from their attacker's screens
-        if (PlayerBars.getBossBars().containsKey(damager.getUniqueId())) {
-            HashMap<UUID, BossBar> bossBarHashMap = PlayerBars.getBossBars();
-            UUID damagerID = damager.getUniqueId();
-            bossBarHashMap.get(damagerID).removePlayer((Player) damager);
-            bossBarHashMap.remove(damagerID);
-            PlayerBars.getCurrentRunnables().remove(damagerID);
-        }
-
-//        if (bossBarHashMap.containsKey(damagerID)) {
-//            bossBarHashMap.get(damagerID).removePlayer(damager);
-//            bossBarHashMap.remove(damagerID);
-//        }
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {

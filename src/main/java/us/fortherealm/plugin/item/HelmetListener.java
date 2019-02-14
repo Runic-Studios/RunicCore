@@ -152,7 +152,7 @@ public class HelmetListener implements Listener {
         if (!(e.getWhoClicked() instanceof Player)) return;
         if (e.getClickedInventory() == null) return;
         if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
-        if (e.getCursor().getType() != Material.SHEARS && e.getCursor().getType() != Material.AIR) return;
+        if (e.getCursor() != null && e.getCursor().getType() != Material.SHEARS && e.getCursor().getType() != Material.AIR) return;
         if (e.getSlot() != 39) return;
         Player pl = (Player) e.getWhoClicked();
         Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, e.getCurrentItem(), e.getCursor()));

@@ -8,11 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.item.GearScanner;
 
 import java.util.ArrayList;
 
@@ -66,21 +66,9 @@ public class ManaListener implements Listener {
     }
 
     private void calculateMana(Player pl) {
-        // grab player's armor, offhand
-        ArrayList<ItemStack> armorAndOffhand = new ArrayList<>();
-        PlayerInventory inv = pl.getInventory();
-        ItemStack helmet = inv.getHelmet();
-        ItemStack chestplate = inv.getChestplate();
-        ItemStack leggings = inv.getLeggings();
-        ItemStack boots = inv.getBoots();
-        ItemStack offhand = inv.getItemInOffHand();
 
-        // add all the items to arraylist
-        if (helmet != null) armorAndOffhand.add(pl.getInventory().getHelmet());
-        if (chestplate != null) armorAndOffhand.add(pl.getInventory().getChestplate());
-        if (leggings != null) armorAndOffhand.add(pl.getInventory().getLeggings());
-        if (boots != null) armorAndOffhand.add(pl.getInventory().getBoots());
-        if (offhand != null) armorAndOffhand.add(pl.getInventory().getItemInOffHand());
+        // grab player's armor, offhand
+        ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(pl);
 
         int totalItemManaBoost = 0;
 

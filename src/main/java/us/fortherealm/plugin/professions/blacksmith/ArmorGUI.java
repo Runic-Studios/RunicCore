@@ -47,25 +47,25 @@ public class ArmorGUI implements InventoryProvider {
 
         // mail
         setCraftItem(player, contents, 1, 0, Material.SHEARS,
-                "Forged Chain Helmet", "Iron Link",
+                "Forged Chain Helmet", "Chain Link",
                 "Mail", Material.IRON_BARS, 5, 5, 1, 15);
 
         setCraftItem(player, contents, 1, 1, Material.CHAINMAIL_BOOTS,
-                "Forged Chain Boots", "Iron Link",
+                "Forged Chain Boots", "Chain Link",
                 "Mail", Material.IRON_BARS, 4, 5, 5, 0);
 
         setCraftItem(player, contents, 1, 2, Material.CHAINMAIL_LEGGINGS,
-                "Forged Chain Legs", "Iron Link",
+                "Forged Chain Legs", "Chain Link",
                 "Mail", Material.IRON_BARS, 7, 10, 10, 0);
 
         setCraftItem(player, contents, 1, 3, Material.CHAINMAIL_CHESTPLATE,
-                "Forged Chain Body", "Iron Link",
+                "Forged Chain Body", "Chain Link",
                 "Mail", Material.IRON_BARS, 8, 15, 15, 0);
 
         // plate
         setCraftItem(player, contents, 1, 4, Material.SHEARS,
                 "Forged Iron Helmet", "Iron Bar",
-                "Plate", Material.IRON_INGOT, 5, 10, 20, 20);
+                "Plate", Material.IRON_INGOT, 5, 10, 20, 25);
 
         setCraftItem(player, contents, 1, 5, Material.IRON_BOOTS,
                 "Forged Iron Boots", "Iron Bar",

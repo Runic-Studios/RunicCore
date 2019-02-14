@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.skillapi.skills.archer;
 
 import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
@@ -22,12 +23,13 @@ public class Barrage extends Skill {
 
     // globals
     private HashMap<Arrow, UUID> bArrows = new HashMap<>();
-    private static final int DAMAGE_MULTIPLIER = 2;
+    private static final int DAMAGE = 5;
 
     // constructor
     public Barrage() {
         super("Barrage",
-                "You launch a volley of five magical arrows\nthat deal " + (DAMAGE_MULTIPLIER*100) + "% weapon damage!",
+                "You launch a volley of five magical arrows\n"
+                        + "that deal " + DAMAGE + " damage!",
                 ChatColor.WHITE, 1, 5);
     }
 
@@ -66,7 +68,7 @@ public class Barrage extends Skill {
     }
 
     // deal bonus damage if arrow is a barrage arrow
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onArrowDamage(EntityDamageByEntityEvent e) {
 
         // only listen for arrows
@@ -82,7 +84,15 @@ public class Barrage extends Skill {
 
         // deal extra damage if arrow in in the barrage hashmap
         if (bArrows.containsKey(arrow)) {
-            e.setDamage(e.getDamage() + (e.getDamage() * DAMAGE_MULTIPLIER));
+
+            e.setCancelled(true);
+
+            if (!(e.getEntity() instanceof LivingEntity)) return;
+            Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
+            LivingEntity le = (LivingEntity) e.getEntity();
+
+            int magicBoost = GearScanner.getMagicBoost(pl);
+            le.damage(DAMAGE+magicBoost, pl);
             e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
             e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
         }

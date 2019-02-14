@@ -2,14 +2,8 @@ package us.fortherealm.plugin.enums;
 
 import org.bukkit.inventory.ItemStack;
 
-/**
- * @Author Borlea
- * @Github https://github.com/borlea/
- * @Website http://codingforcookies.com/
- * @Since Jul 30, 2015 6:46:16 PM
- */
 public enum ArmorSlotEnum {
-    HELMET(5), CHESTPLATE(6), LEGGINGS(7), BOOTS(8);
+    HELMET(5), CHESTPLATE(6), LEGGINGS(7), BOOTS(8), OFFHAND(9);
 
     private final int slot;
 
@@ -54,7 +48,7 @@ public enum ArmorSlotEnum {
             case LEATHER_BOOTS:
                 return BOOTS;
             default:
-                return null;
+                return OFFHAND;
         }
     }
 

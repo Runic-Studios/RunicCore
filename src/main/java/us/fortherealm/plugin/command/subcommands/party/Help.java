@@ -58,6 +58,7 @@ public class Help implements SubCommand {
 		item(sender, 10, 4);
 		item(sender, 15, 5);
 		item(sender, 20, 6);
+		item(sender, 25, 7);
 	}
 
 	private void item(Player sender, int durab, int slot) {

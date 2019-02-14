@@ -186,17 +186,34 @@ public class LoreGenerator {
             lore.add(ChatColor.RED + "+ " + health + "❤");
         }
 
+        // -------------------------------------------------------------------------------------------
         // for gemstones/custom boosts
         int customHealth = (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
         double customAttSpeed = AttributeUtil.getCustomDouble(item, "custom.attackSpeed");
         int manaBoost = (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
+        double damageBoost = AttributeUtil.getCustomDouble(item, "custom.attackDamage");
+        double healingBoost = AttributeUtil.getCustomDouble(item, "custom.healingBoost");
+        double magicBoost = AttributeUtil.getCustomDouble(item, "custom.magicDamage");
+        // -------------------------------------------------------------------------------------------
+
         if (customHealth != 0) {
             lore.add(ChatColor.RED + "+ " + customHealth + "❤");
-        } else if (customAttSpeed != 0) {
+        }
+        if (customAttSpeed != 0) {
             double roundedSpeed = NumRounder.round(customAttSpeed);
             lore.add(ChatColor.RED + "+ " + roundedSpeed + " Att Speed");
-        } else if (manaBoost != 0) {
+        }
+        if (manaBoost != 0) {
             lore.add(ChatColor.DARK_AQUA + "+ " + manaBoost + "✸");
+        }
+        if (damageBoost != 0) {
+            lore.add(ChatColor.RED + "+ " + (int) damageBoost + "⚔");
+        }
+        if (healingBoost != 0) {
+            lore.add(ChatColor.GREEN + "+ " + (int) healingBoost + "✦");
+        }
+        if (magicBoost != 0) {
+            lore.add(ChatColor.DARK_AQUA + "+ " + (int) magicBoost + "ʔ");
         }
 
         lore.add("");
@@ -219,20 +236,20 @@ public class LoreGenerator {
         // add type of item lore
         String type;
         switch (itemType) {
-            case CLOTH:
-                type = "Cloth";
+            case PLATE:
+                type = "Plate"; // (iron)
                 break;
-            case LEATHER:
-                type = "Leather";
+            case GUILDED:
+                type = "Guilded"; // (gold)
                 break;
             case MAIL:
-                type = "Mail";
+                type = "Mail"; // (chainmail)
                 break;
-            case PLATE:
-                type = "Plate";
+            case LEATHER:
+                type = "Leather"; // (leather)
                 break;
-            case CRYSTAL:
-                type = "Crystal";
+            case CLOTH:
+                type = "Cloth"; // (diamond)
                 break;
             case GEMSTONE:
                 type = "Gemstone";

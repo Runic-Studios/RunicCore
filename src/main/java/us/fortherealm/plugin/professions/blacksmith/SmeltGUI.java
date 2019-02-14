@@ -46,7 +46,7 @@ public class SmeltGUI implements InventoryProvider {
         ironLinkReqs.put(Material.IRON_ORE, 1);
         ironLinkReqs.put(Material.SPRUCE_LOG, 2);
         setSmeltItem(player, contents, 1, 0, Material.IRON_BARS,
-                "Iron Link", ironLinkReqs, "Iron Ore\nSpruce Log", 3, 1);
+                "Chain Link", ironLinkReqs, "Iron Ore\nSpruce Log", 3, 1);
 
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
         ironBarReqs.put(Material.IRON_ORE, 1);

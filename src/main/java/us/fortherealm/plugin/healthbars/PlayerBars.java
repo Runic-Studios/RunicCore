@@ -11,22 +11,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.Main;
 
 import java.util.*;
 
+/**
+ * This class manages player vs. player health bars using Minecraft's boss bar system.
+ */
 public class PlayerBars implements Listener {
 
-    private static HashMap<UUID, BossBar> bossBarHashMap = new HashMap<>();
+    private HashMap<UUID, BossBar> bossBarHashMap = new HashMap<>();
     private HashMap<UUID, UUID> currentTarget = new HashMap<>();
-    private static HashMap<UUID, BukkitRunnable> currentRunnables = new HashMap<>();
-    private BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
-
-    public static HashMap<UUID, BossBar> getBossBars() {
-        return bossBarHashMap;
-    }
-    public static HashMap<UUID, BukkitRunnable> getCurrentRunnables() { return currentRunnables; }
+    private HashMap<UUID, BukkitRunnable> currentRunnables = new HashMap<>();
 
     @EventHandler
     public void onCombat(EntityDamageByEntityEvent e) {
@@ -47,24 +45,26 @@ public class PlayerBars implements Listener {
         UUID damagerID = damager.getUniqueId();
         UUID victimID = victim.getUniqueId();
 
-        // prevent duplicates
-        if (bossBar.getPlayers().contains(damager)) {
-            bossBar.removePlayer(damager);
-        }
-
         // set bar's display to enemy's health
         double health = victim.getHealth() - e.getDamage();
 
         if (health <= 0) return;
 
-        // display the bar, add the player to our hashmap for later
-        bossBar.addPlayer(damager);
-        bossBarHashMap.put(damagerID, bossBar);
+        // -------------------------------------------------------------------------
+        // display the bar, add the player to our hashmap so we can remove 'em later, set the progress, title
+        BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
         String name = Main.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
-
-        // set the progress, title
         bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         bossBar.setTitle(name + " " + ChatColor.RED + (int) health + ChatColor.DARK_RED + " ❤");
+
+        // remove the player from the map to prevent duplicate health bars
+        if (bossBarHashMap.containsKey(damagerID)) {
+            bossBarHashMap.get(damagerID).removePlayer(damager);
+        }
+
+        bossBar.addPlayer(damager);
+        bossBarHashMap.put(damagerID, bossBar);
+        // -------------------------------------------------------------------------
 
         // set the victim to the damager's current target (so their health can be tracked by the method below)
         if (currentTarget.containsValue(damagerID)) {
@@ -113,6 +113,10 @@ public class PlayerBars implements Listener {
         Main.getCombatManager().addPlayer(victimID, System.currentTimeMillis());
     }
 
+    /**
+     * This event updates the victim's healthbar for his attacker if he takes damage from a source
+     * OTHER than the attacker.
+     */
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
 
@@ -142,7 +146,7 @@ public class PlayerBars implements Listener {
             }
 
             // retrieve the damager's bossbar and variables
-            BossBar bossBar = bossBarHashMap.get(attacker.getUniqueId());
+            BossBar bossBar = bossBarHashMap.get(attackerID);
             double health = victim.getHealth() - e.getDamage();
 
             if (health <= 0) return;
@@ -155,5 +159,44 @@ public class PlayerBars implements Listener {
                 bossBar.setTitle(name + " " + ChatColor.RED + (int) health + ChatColor.DARK_RED + " ❤");
             }
         }
+    }
+
+    /**
+     * This event updates the victim's healthbar for his attacker if he regains health
+     * (Delayed by 1 tick to show the proper health value)
+     */
+    @EventHandler
+    public void onHealthRegen(EntityRegainHealthEvent e) {
+
+        // retrieve the player victim
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!(e.getEntity() instanceof Player)) return;
+                Player victim = (Player) e.getEntity();
+                UUID victimID = victim.getUniqueId();
+
+                if (currentTarget.containsKey(victimID)) {
+
+                    // retrieve the player attacker
+                    Player attacker = Bukkit.getPlayer(currentTarget.get(victimID));
+                    UUID attackerID = attacker.getUniqueId();
+
+                    // retrieve the damager's bossbar and variables
+                    BossBar bossBar = bossBarHashMap.get(attackerID);
+                    double health = victim.getHealth();
+
+                    if (health <= 0) return;
+
+                    String name = Main.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+
+                    // if the bossbar isn't null, update the victim's health for the attacker
+                    if (bossBar != null) {
+                        bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                        bossBar.setTitle(name + " " + ChatColor.RED + (int) health + ChatColor.DARK_RED + " ❤");
+                    }
+                }
+            }
+        }.runTaskLater(Main.getInstance(), 1);
     }
 }

@@ -96,18 +96,18 @@ public class MiningListener implements Listener {
                 itemName = "Iron Ore";
                 subPath = "ORES";
                 break;
+            case REDSTONE_ORE:
+                placeHolderType = Material.COBBLESTONE;
+                itemType = Material.REDSTONE_ORE;
+                holoString = "+ Ruby";
+                itemName = "Uncut Ruby";
+                subPath = "ORES";
+                break;
             case LAPIS_ORE:
                 placeHolderType = Material.COBBLESTONE;
                 itemType = Material.LAPIS_ORE;
                 holoString = "+ Sapphire";
                 itemName = "Uncut Sapphire";
-                subPath = "ORES";
-                break;
-            case EMERALD_ORE:
-                placeHolderType = Material.COBBLESTONE;
-                itemType = Material.EMERALD_ORE;
-                holoString = "+ Emerald";
-                itemName = "Uncut Emerald";
                 subPath = "ORES";
                 break;
             case NETHER_QUARTZ_ORE:
@@ -117,11 +117,18 @@ public class MiningListener implements Listener {
                 itemName = "Uncut Opal";
                 subPath = "ORES";
                 break;
-            case REDSTONE_ORE:
+            case EMERALD_ORE:
                 placeHolderType = Material.COBBLESTONE;
-                itemType = Material.REDSTONE_ORE;
-                holoString = "+ Ruby";
-                itemName = "Uncut Ruby";
+                itemType = Material.EMERALD_ORE;
+                holoString = "+ Emerald";
+                itemName = "Uncut Emerald";
+                subPath = "ORES";
+                break;
+            case DIAMOND_ORE:
+                placeHolderType = Material.COBBLESTONE;
+                itemType = Material.DIAMOND_ORE;
+                holoString = "+ Diamond";
+                itemName = "Uncut Diamond";
                 subPath = "ORES";
                 break;
             default:

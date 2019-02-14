@@ -1,6 +1,5 @@
 package us.fortherealm.plugin.professions.jeweler;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -10,6 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.enums.ArmorSlotEnum;
 import us.fortherealm.plugin.item.LoreGenerator;
@@ -35,6 +36,8 @@ public class SocketListener implements Listener {
         Player pl = (Player) e.getWhoClicked();
         ItemStack heldItem = e.getCursor();
         ItemStack socketItem = e.getCurrentItem();
+        ItemMeta metaOld = socketItem.getItemMeta();
+        int durabOld = ((Damageable) metaOld).getDamage();
         Material socketItemType = socketItem.getType();
         String socketItemName = socketItem.getItemMeta().getDisplayName();
 
@@ -53,12 +56,21 @@ public class SocketListener implements Listener {
 
         // retrive the custom values of the two items
         double itemHealth = AttributeUtil.getGenericDouble(socketItem, "generic.maxHealth");
-        double itemMana = AttributeUtil.getCustomDouble(socketItem, "custom.manaBoost");
         double gemHealth = AttributeUtil.getCustomDouble(heldItem, "custom.maxHealth");
+        double itemMana = AttributeUtil.getCustomDouble(socketItem, "custom.manaBoost");
         double gemMana = AttributeUtil.getCustomDouble(heldItem, "custom.manaBoost");
+        double itemDmg = AttributeUtil.getCustomDouble(socketItem, "custom.attackDamage");
+        double gemDmg = AttributeUtil.getCustomDouble(heldItem, "custom.attackDamage");
+        double itemHealing = AttributeUtil.getCustomDouble(socketItem, "custom.healingBoost");
+        double gemHealing = AttributeUtil.getCustomDouble(heldItem, "custom.healingBoost");
+        double itemMagDmg = AttributeUtil.getCustomDouble(socketItem, "custom.magicDamage");
+        double gemMagDmg = AttributeUtil.getCustomDouble(heldItem, "custom.magicDamage");
 
-        // create a new item with updated attributes
+        // create a new item with updated attributes, update its durability
         ItemStack newItem = new ItemStack(socketItemType);
+        ItemMeta metaNew = newItem.getItemMeta();
+        ((Damageable) metaNew).setDamage(durabOld);
+        newItem.setItemMeta(metaNew);
 
         // fill the sockets
         newItem = AttributeUtil.addCustomStat(newItem, "custom.socketCount", socketCount);
@@ -78,15 +90,20 @@ public class SocketListener implements Listener {
             case BOOTS:
                 slot = "feet";
                 break;
+            case OFFHAND:
+                slot = "offhand";
+                break;
             default:
                 slot = "mainhand";
                 break;
         }
 
         // add 'da stats
-        newItem = AttributeUtil.addGenericStat(newItem,
-                "generic.maxHealth", itemHealth + gemHealth, slot);
-        newItem = AttributeUtil.addCustomStat(newItem, "custom.manaBoost", itemMana + gemMana);
+        newItem = AttributeUtil.addGenericStat(newItem, "generic.maxHealth", itemHealth + gemHealth, slot); // ruby
+        newItem = AttributeUtil.addCustomStat(newItem, "custom.manaBoost", itemMana + gemMana); // sapphire
+        newItem = AttributeUtil.addCustomStat(newItem, "custom.attackDamage", itemDmg + gemDmg); // opal
+        newItem = AttributeUtil.addCustomStat(newItem, "custom.healingBoost", itemHealing + gemHealing); // emerald
+        newItem = AttributeUtil.addCustomStat(newItem, "custom.magicDamage", itemMagDmg + gemMagDmg); // diamond
         LoreGenerator.generateItemLore(newItem, ChatColor.WHITE, socketItemName, "");
 
         // remove the gemstone from inventory, update the item in inventory

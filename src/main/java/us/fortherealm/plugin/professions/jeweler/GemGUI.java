@@ -44,23 +44,28 @@ public class GemGUI implements InventoryProvider {
 
         // ruby (+hp)
         setCraftItem(player, contents, 1, 0, Material.REDSTONE,
-                "Cut Ruby", "Uncut Ruby",
+                "Cut Ruby", "Uncut Ruby", ChatColor.RED + "+❤ (Health)",
                 Material.REDSTONE_ORE, 1, 5, 1, "ruby");
 
         // sapphire (+mana)
         setCraftItem(player, contents, 1, 1, Material.LAPIS_LAZULI,
-                "Cut Sapphire", "Uncut Sapphire",
+                "Cut Sapphire", "Uncut Sapphire", ChatColor.DARK_AQUA + "+✸ (Mana)",
                 Material.LAPIS_ORE, 1, 10, 10, "sapphire");
 
-        // emerald (+weap dmg)
-        setCraftItem(player, contents, 1, 2, Material.EMERALD,
-                "Cut Emerald", "Uncut Emerald",
-                Material.EMERALD_ORE, 1, 15, 20, "emerald");
+        // opal (+weapon damage)
+        setCraftItem(player, contents, 1, 2, Material.QUARTZ,
+                "Cut Opal", "Uncut Opal", ChatColor.RED + "+⚔ (Weapon Damage)",
+                Material.NETHER_QUARTZ_ORE, 1, 20, 20, "opal");
 
-        // opal (+spell damage)
-        setCraftItem(player, contents, 1, 3, Material.QUARTZ,
-                "Cut Opal", "Uncut Opal",
-                Material.NETHER_QUARTZ_ORE, 1, 20, 30, "opal");
+        // emerald (+healing)
+        setCraftItem(player, contents, 1, 3, Material.EMERALD,
+                "Cut Emerald", "Uncut Emerald", ChatColor.GREEN + "+✦ (Healing)",
+                Material.EMERALD_ORE, 1, 15, 30, "emerald");
+
+        // diamond (+spell dmg)
+        setCraftItem(player, contents, 1, 4, Material.DIAMOND,
+                "Cut Diamond", "Uncut Diamond", ChatColor.DARK_AQUA + "+ʔ (Spell Damage)",
+                Material.DIAMOND_ORE, 1, 15, 40, "diamond");
     }
 
     // used for animated inventories
@@ -69,7 +74,7 @@ public class GemGUI implements InventoryProvider {
     }
 
     private void setCraftItem(Player pl, InventoryContents contents, int row, int slot, Material craftedItem,
-                              String name, String requirements,
+                              String name, String requirements, String gemDesc,
                               Material reagent, int itemAmt, int exp, int reqLevel, String gemType) {
 
         // grab the location of the anvil
@@ -98,6 +103,7 @@ public class GemGUI implements InventoryProvider {
         String description = ChatColor.RED + "Unlock by reaching lv. " + reqLevel + "!";
         if (pl.isOp() || currentLvl >= reqLevel) {
             description = "\n"
+                    + ChatColor.GOLD + gemDesc + "\n\n"
                     + "Materials required:\n"
                     + color + requirements + ChatColor.GRAY + ", " + ChatColor.WHITE + itemAmt + "\n\n"
                     + "Success Rate:\n" + rateToStr + "%\n\n"
@@ -225,19 +231,7 @@ public class GemGUI implements InventoryProvider {
 
     private ItemStack addGemStat(String gemType, int currentLvl, ItemStack craftedItem) {
         switch (gemType) {
-            case "emerald":
-                // item will have a random physical damage value that increases w/ lvl (max of +5)
-                int minDmg = 1;
-                int maxDmg;
-                if (currentLvl != 1) {
-                    maxDmg = (int) (0.1 * currentLvl) + 1;
-                } else {
-                    maxDmg = (int) 1.1;
-                }
-                int rangeE = ThreadLocalRandom.current().nextInt(minDmg, maxDmg + 1);
-                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.attackDamage", rangeE);
-                break;
-            case "ruby": {
+            case "ruby":
                 // item will have a random health value that increases w/ prof lv (max of +26)
                 int minHP = 1;
                 int maxHP;
@@ -249,11 +243,6 @@ public class GemGUI implements InventoryProvider {
                 int rangeR = ThreadLocalRandom.current().nextInt(minHP, maxHP + 1);
                 craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.maxHealth", rangeR);
                 break;
-            }
-            case "opal": {
-                // item will have a random
-                break;
-            }
             case "sapphire":
                 // item will have a random mana value that increases w/ prof lv (max of +26)
                 int minMana = 1;
@@ -265,6 +254,42 @@ public class GemGUI implements InventoryProvider {
                 }
                 int rangeS = ThreadLocalRandom.current().nextInt(minMana, maxMana + 1);
                 craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.manaBoost", rangeS);
+                break;
+            case "opal":
+                // item will have a random physical damage value that increases w/ lvl (max of +5)
+                int minDmg = 1;
+                int maxDmg;
+                if (currentLvl != 1) {
+                    maxDmg = (int) (0.1 * currentLvl) + 1;
+                } else {
+                    maxDmg = (int) 1.1;
+                }
+                int rangeO = ThreadLocalRandom.current().nextInt(minDmg, maxDmg + 1);
+                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.attackDamage", rangeO);
+                break;
+            case "emerald":
+                // item will have a random healing value that increases w/ lvl (max of +5)
+                int minHealing = 1;
+                int maxHealing;
+                if (currentLvl != 1) {
+                    maxHealing = (int) (0.1 * currentLvl) + 1;
+                } else {
+                    maxHealing = (int) 1.1;
+                }
+                int rangeE = ThreadLocalRandom.current().nextInt(minHealing, maxHealing + 1);
+                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.healingBoost", rangeE);
+                break;
+            case "diamond":
+                // item will have a random magic damage value that increases w/ lvl (max of +5)
+                int minMagDmg = 1;
+                int maxMagDmg;
+                if (currentLvl != 1) {
+                    maxMagDmg = (int) (0.1 * currentLvl) + 1;
+                } else {
+                    maxMagDmg = (int) 1.1;
+                }
+                int rangeD = ThreadLocalRandom.current().nextInt(minMagDmg, maxMagDmg + 1);
+                craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.magicDamage", rangeD);
                 break;
         }
         return craftedItem;

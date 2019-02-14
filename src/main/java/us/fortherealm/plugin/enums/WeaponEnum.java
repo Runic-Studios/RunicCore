@@ -4,7 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 public enum WeaponEnum {
 
-    BOW, MACE, STAFF, SWORD, AXE, PICKAXE;
+    BOW, MACE, STAFF, SWORD, AXE, PICKAXE, HAND;
 
     public static WeaponEnum matchType(final ItemStack itemStack){
         if(itemStack == null) { return null; }
@@ -42,7 +42,7 @@ public enum WeaponEnum {
             case DIAMOND_PICKAXE:
                 return PICKAXE;
             default:
-                return null;
+                return HAND;
         }
     }
 }

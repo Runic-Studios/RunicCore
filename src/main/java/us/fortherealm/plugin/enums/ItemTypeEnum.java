@@ -6,35 +6,37 @@ import org.bukkit.inventory.meta.Damageable;
 
 public enum ItemTypeEnum {
 
-    CLOTH, LEATHER, MAIL, PLATE, CRYSTAL, GEMSTONE, AIR;
+    CLOTH, LEATHER, GUILDED, MAIL, PLATE, GEMSTONE, AIR;
 
     public static ItemTypeEnum matchType(final ItemStack itemStack){
         if(itemStack == null) { return null; }
         if (itemStack.getType() == Material.SHEARS) {
             switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
+                case 25:
+                    return PLATE; // (iron)
                 case 20:
-                    return PLATE;
+                    return GUILDED; // (gold)
                 case 15:
-                    return MAIL;
+                    return MAIL; // (chainmail)
                 case 10:
-                    return LEATHER;
+                    return LEATHER; // (leather)
                 case 5:
-                    return CLOTH;
+                    return CLOTH; // (diamond)
                 default:
                     return CLOTH;
             }
         } else {
             switch (itemStack.getType()) {
-                case DIAMOND_HELMET:
-                case DIAMOND_CHESTPLATE:
-                case DIAMOND_LEGGINGS:
-                case DIAMOND_BOOTS:
-                    return CRYSTAL;
                 case IRON_HELMET:
                 case IRON_CHESTPLATE:
                 case IRON_LEGGINGS:
                 case IRON_BOOTS:
                     return PLATE;
+                case GOLDEN_HELMET:
+                case GOLDEN_CHESTPLATE:
+                case GOLDEN_LEGGINGS:
+                case GOLDEN_BOOTS:
+                    return GUILDED;
                 case CHAINMAIL_HELMET:
                 case CHAINMAIL_CHESTPLATE:
                 case CHAINMAIL_LEGGINGS:
@@ -45,15 +47,16 @@ public enum ItemTypeEnum {
                 case LEATHER_LEGGINGS:
                 case LEATHER_BOOTS:
                     return LEATHER;
-                case GOLDEN_HELMET:
-                case GOLDEN_CHESTPLATE:
-                case GOLDEN_LEGGINGS:
-                case GOLDEN_BOOTS:
+                case DIAMOND_HELMET:
+                case DIAMOND_CHESTPLATE:
+                case DIAMOND_LEGGINGS:
+                case DIAMOND_BOOTS:
                     return CLOTH;
-                case EMERALD:
                 case REDSTONE:
                 case LAPIS_LAZULI:
                 case QUARTZ:
+                case EMERALD:
+                case DIAMOND:
                     return GEMSTONE;
                 default:
                     return AIR;

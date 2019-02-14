@@ -31,32 +31,40 @@ public class ArmorTypeListener implements Listener {
         ItemTypeEnum armorType = ItemTypeEnum.matchType(equippedItem);
 
         switch (armorType) {
-            case CLOTH:
-                break;
-            case LEATHER:
-                if (className.equals("Mage")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip leather!");
-                }
-                break;
-            case MAIL:
-                if (className.equals("Archer") || className.equals("Mage") || className.equals("Rogue")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip mail!");
-                }
-                break;
             case PLATE:
                 if (!className.equals("Warrior")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip plate!");
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip plate armor!");
                 }
                 break;
-            case CRYSTAL:
-                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                e.setCancelled(true);
+            case GUILDED:
+                if (!className.equals("Cleric")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip guilded armor!");
+                }
+                break;
+            case MAIL:
+                if (!className.equals("Archer")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip mail armor!");
+                }
+                break;
+            case LEATHER:
+                if (!className.equals("Rogue")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip leather armor!");
+                }
+                break;
+            case CLOTH:
+                if (!className.equals("Mage")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip cloth armor!");
+                }
                 break;
         }
     }

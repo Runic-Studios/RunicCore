@@ -4,11 +4,10 @@ import net.minecraft.server.v1_13_R2.EntityArmorStand;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftArmorStand;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Consumer;
 import us.fortherealm.plugin.Main;
 
 import java.util.HashMap;
@@ -26,6 +25,7 @@ public class HologramUtil {
     /**
      * Create a hologram that floats up and deletes itself
      */
+    @SuppressWarnings("unchecked")
     public static void createDamageHologram(Player createFor, Location createAround, String display) {
 
         // variation of the tag
@@ -40,15 +40,10 @@ public class HologramUtil {
             zDif = 0.5;
         }
 
-        // build the custom armorstand
-        ArmorStand stand = (ArmorStand) createAround.getWorld().spawnEntity(createAround.add(xDif, yDif, zDif).subtract(0, 1, 0), EntityType.ARMOR_STAND);
-        stand.setVisible(false);
-        stand.setCollidable(false);
+        // use our consumer to prevent the armorstand from spawning into the world before it's invisible
+        Consumer consumer = new InvisStandSpawner();
+        ArmorStand stand = createAround.getWorld().spawn(createAround.add(xDif, yDif, zDif).subtract(0, 1, 0), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
         stand.setCustomName(display);
-        stand.setCustomNameVisible(true);
-        stand.setInvulnerable(true);
-        stand.setGravity(false);
-        stand.setMarker(true);
 
         // nms
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
@@ -78,17 +73,14 @@ public class HologramUtil {
             removeDamageHologram(createFor, holograms.keySet().toArray(new ArmorStand[1])[0]);
     }
 
+    @SuppressWarnings("unchecked")
     public static void createStaticHologram(Player createFor, Location createAround, String display, double x, double y, double z) {
 
         // build the custom armorstand
-        ArmorStand stand = (ArmorStand) createAround.getWorld().spawnEntity(createAround.add(x, y, z).subtract(0, 1, 0), EntityType.ARMOR_STAND);
-        stand.setVisible(false);
-        stand.setCollidable(false);
+        //ArmorStand stand = (ArmorStand) createAround.getWorld().spawnEntity(createAround.add(x, y, z).subtract(0, 1, 0), EntityType.ARMOR_STAND);
+        Consumer consumer = new InvisStandSpawner();
+        ArmorStand stand = createAround.getWorld().spawn(createAround.add(x, y, z).subtract(0, 1, 0), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
         stand.setCustomName(display);
-        stand.setCustomNameVisible(true);
-        stand.setInvulnerable(true);
-        stand.setGravity(false);
-        stand.setMarker(true);
 
         // nms
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();

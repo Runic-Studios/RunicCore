@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.item.GearScanner;
 
 public abstract class Skill implements ISkill, Listener {
 
@@ -22,11 +23,13 @@ public abstract class Skill implements ISkill, Listener {
     private int manaCost;
 
     public Skill(String name, String description, ChatColor color, double cooldown, int manaCost) {
+
         this.name = name;
         this.description = description;
         this.color = color;
         this.cooldown = cooldown;
         this.manaCost = manaCost;
+
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 

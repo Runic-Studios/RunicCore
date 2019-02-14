@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.professions.blacksmith.AnvilGUI;
 import us.fortherealm.plugin.professions.blacksmith.FurnaceGUI;
@@ -36,6 +37,7 @@ public class WorkstationListener implements Listener {
     public void onOpenInventory(PlayerInteractEvent e) {
 
         if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!(e.getHand() == EquipmentSlot.HAND)) return;
         if (!e.hasBlock()) return;
 
         Player pl = e.getPlayer();

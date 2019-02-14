@@ -22,7 +22,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.enums.WeaponEnum;
+import us.fortherealm.plugin.item.GearScanner;
+import us.fortherealm.plugin.utilities.HologramUtil;
 
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -67,13 +70,12 @@ public class BowListener implements Listener {
 
         // fire a custom arrow
         final Vector direction = pl.getEyeLocation().getDirection().multiply(ARROW_VELOCITY_MULT);
-
-        Arrow myArrow = pl.getWorld().spawn
-                (pl.getEyeLocation().add
-                        (direction.getX(), direction.getY(), direction.getZ()), Arrow.class);
+        Arrow myArrow = pl.launchProjectile(Arrow.class);
 
         myArrow.setVelocity(direction);
         myArrow.setShooter(pl);
+        myArrow.setCustomNameVisible(false);
+        myArrow.setCustomName("autoAttack");
 
         // remove the arrow
         new BukkitRunnable() {
@@ -123,6 +125,15 @@ public class BowListener implements Listener {
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
+        // grab player's armor, offhand (check for gem bonuses)
+        ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(damager);
+
+        // calculate the player's total damage boost
+        for (ItemStack item : armorAndOffhand) {
+            int damageBoost = (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
+            maxDamage = maxDamage + damageBoost;
+        }
+
         // remove the arrow with nms magic
         new BukkitRunnable() {
             public void run() {
@@ -137,6 +148,10 @@ public class BowListener implements Listener {
         } else {
             e.setDamage(minDamage);
         }
+
+        // spawn the damage indicator if the arrow is an autoattack
+        if (arrow.getCustomName() == null) return;
+        HologramUtil.createDamageHologram(damager, victim.getLocation().add(0,1.5,0), e.getDamage());
     }
 
     // removes arrows stuck in bodies

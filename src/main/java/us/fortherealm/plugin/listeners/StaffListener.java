@@ -9,11 +9,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
 
 import java.util.ArrayList;
@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-@SuppressWarnings("deprecation")
+// todo: fix left-click "punch" damage
 public class StaffListener implements Listener {
 
     // globals
     private static double BEAM_WIDTH = 2.0;
     private static int RADIUS = 5;
     private static double RANGE = 8.0;
-    private static final int SPEED_MULT = 2;
+    private static final int SPEED_MULT = 3;
     private HashMap<UUID, List<UUID>> hasBeenHit = new HashMap<>();
 
     // creates the mage ranged auto-attack
@@ -37,13 +37,10 @@ public class StaffListener implements Listener {
     public void onStaffAttack(PlayerInteractEvent e) {
 
         // check for null
-        if (e.getItem() == null) {
-            return;
-        }
+        if (e.getItem() == null) return;
 
         // retrieve the weapon type
         ItemStack artifact = e.getItem();
-        ItemMeta meta = artifact.getItemMeta();
         Material artifactType = artifact.getType();
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
@@ -61,8 +58,8 @@ public class StaffListener implements Listener {
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
 
-        // cancel the event, run custom mechanics
-        e.setCancelled(true);
+         // cancel the event, run custom mechanics
+         e.setCancelled(true);
 
         // if they're sneaking, they're casting a spell. so we don't fire the attack.
         if (pl.isSneaking()) return;
@@ -72,9 +69,18 @@ public class StaffListener implements Listener {
 
     private void staffAttack(ItemStack artifact, Player pl) {
 
+        // grab player's armor, offhand (check for gem bonuses)
+        ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(pl);
+
+        // calculate the player's total damage boost
+        int damageBoost = 0;
+        for (ItemStack item : armorAndOffhand) {
+            damageBoost += (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
+        }
+
         // retrieve the weapon damage, cooldown
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage") + damageBoost;
 
         // create our vector to be used later
         Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);
