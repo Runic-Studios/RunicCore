@@ -2,17 +2,9 @@ package us.fortherealm.plugin.skillapi.skills.warrior;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
-
-import java.util.HashMap;
-import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Charge extends Skill {

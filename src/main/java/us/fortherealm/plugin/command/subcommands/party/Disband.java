@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.command.util.TabCompleteUtil;
@@ -21,7 +21,7 @@ public class Disband implements SubCommand {
 	
 	private PartySC party;
 	private NameTagChanger nameTagChanger = new NameTagChanger();
-	private Plugin plugin = Main.getInstance();
+	private Plugin plugin = FTRCore.getInstance();
 	
 	public Disband(PartySC party) {
 		this.party = party;
@@ -61,7 +61,7 @@ public class Disband implements SubCommand {
 		if(!args[1].equalsIgnoreCase("admin"))
 			this.onUserCommand(sender, args);
 
-		Party targetParty = Main.getPartyManager().getPlayerParty(target);
+		Party targetParty = FTRCore.getPartyManager().getPlayerParty(target);
 
 		if(targetParty != null) {
 
@@ -84,11 +84,11 @@ public class Disband implements SubCommand {
             }
 
             // disband the party
-			Main.getPartyManager().disbandParty(targetParty);
+			FTRCore.getPartyManager().disbandParty(targetParty);
 
             // update the tablist
             for (Player member : members) {
-                Main.getTabListManager().setupTab(member);
+                FTRCore.getTabListManager().setupTab(member);
             }
 
 			sender.sendMessage
@@ -109,7 +109,7 @@ public class Disband implements SubCommand {
 	
 	@Override
 	public void onUserCommand(Player sender, String[] args) {
-		Party party = Main.getPartyManager().getPlayerParty(sender);
+		Party party = FTRCore.getPartyManager().getPlayerParty(sender);
 	}
 	
 	@Override

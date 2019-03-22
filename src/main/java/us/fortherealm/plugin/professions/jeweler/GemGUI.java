@@ -8,7 +8,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.professions.WorkstationListener;
@@ -81,7 +81,7 @@ public class GemGUI implements InventoryProvider {
         Location stationLoc = WorkstationListener.getStationLocation().get(pl.getUniqueId());
 
         // grab the player's current profession level, progress toward that level
-        int currentLvl = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        int currentLvl = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
         // determine the success rate, based on level
         int rate = (25+currentLvl);
@@ -155,7 +155,7 @@ public class GemGUI implements InventoryProvider {
 
         // take player's items, add player to currently crafting ArrayList
         pl.closeInventory();
-        Main.getProfManager().getCurrentCrafters().add(pl);
+        FTRCore.getProfManager().getCurrentCrafters().add(pl);
         pl.sendMessage(ChatColor.GRAY + "Cutting...");
         ItemStack[] inv = pl.getInventory().getContents();
         for (int i = 0; i < inv.length; i++) {
@@ -177,7 +177,7 @@ public class GemGUI implements InventoryProvider {
             public void run() {
                 if (count > 3) {
                     this.cancel();
-                    Main.getProfManager().getCurrentCrafters().remove(pl);
+                    FTRCore.getProfManager().getCurrentCrafters().remove(pl);
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
@@ -188,7 +188,7 @@ public class GemGUI implements InventoryProvider {
                     count = count + 1;
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 20);
+        }.runTaskTimer(FTRCore.getInstance(), 0, 20);
     }
 
     private void cutGem(Player pl, Material material, String dispName, int currentLvl, int amt, int rate, String gemType) {

@@ -7,7 +7,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 
@@ -52,7 +52,7 @@ public class Parry extends Skill {
                 noFall.remove(uuid);
                 pl.sendMessage(ChatColor.GRAY + "You lost safefall!");
             }
-        }.runTaskLater(Main.getInstance(), (DURATION*20));
+        }.runTaskLater(FTRCore.getInstance(), (DURATION*20));
     }
 
     // prevent fall damage if the pl is parrying

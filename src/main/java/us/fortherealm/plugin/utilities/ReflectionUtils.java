@@ -521,7 +521,7 @@ public final class ReflectionUtils {
          * Compares two class arrays on equivalence
          *
          * @param primary Primary class array
-         * @param secondary Class array which is compared to the primary array
+         * @param secondary class array which is compared to the primary array
          * @return Whether these arrays are equal or not
          */
         public static boolean compare(Class<?>[] primary, Class<?>[] secondary) {

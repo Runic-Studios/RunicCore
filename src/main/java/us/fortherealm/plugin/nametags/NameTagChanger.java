@@ -10,7 +10,7 @@ import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.parties.Party;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
@@ -21,8 +21,8 @@ import java.util.UUID;
 
 public class NameTagChanger {
 
-    private Plugin plugin = Main.getInstance();
-    private ScoreboardHandler sbh = Main.getScoreboardHandler();
+    private Plugin plugin = FTRCore.getInstance();
+    private ScoreboardHandler sbh = FTRCore.getScoreboardHandler();
 
     public void changeNameParty(Party party, Player p, String newName){
 
@@ -169,6 +169,11 @@ public class NameTagChanger {
             Field modifiersField = Field.class.getDeclaredField("modifiers");
             modifiersField.setAccessible(true);
             modifiersField.setInt(nameField, nameField.getModifiers() & ~Modifier.FINAL);
+
+            // saftey check for maximum username length
+            if (newName.length() >= 16) {
+                newName = newName.substring(0, 16);
+            }
 
             nameField.set(gp, newName);
 

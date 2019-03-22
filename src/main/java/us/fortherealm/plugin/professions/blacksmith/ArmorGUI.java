@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.professions.WorkstationListener;
@@ -26,7 +26,7 @@ public class ArmorGUI implements InventoryProvider {
     public static final SmartInventory CRAFT_ARMOR = SmartInventory.builder()
             .id("armorGUI")
             .provider(new ArmorGUI())
-            .size(2, 9)
+            .size(5, 9)
             .title(ChatColor.WHITE + "" + ChatColor.BOLD + "Select an Item")
             .build();
 
@@ -50,32 +50,49 @@ public class ArmorGUI implements InventoryProvider {
                 "Forged Chain Helmet", "Chain Link",
                 "Mail", Material.IRON_BARS, 5, 5, 1, 15);
 
-        setCraftItem(player, contents, 1, 1, Material.CHAINMAIL_BOOTS,
+        setCraftItem(player, contents, 4, 0, Material.CHAINMAIL_BOOTS,
                 "Forged Chain Boots", "Chain Link",
                 "Mail", Material.IRON_BARS, 4, 5, 5, 0);
 
-        setCraftItem(player, contents, 1, 2, Material.CHAINMAIL_LEGGINGS,
+        setCraftItem(player, contents, 3, 0, Material.CHAINMAIL_LEGGINGS,
                 "Forged Chain Legs", "Chain Link",
                 "Mail", Material.IRON_BARS, 7, 10, 10, 0);
 
-        setCraftItem(player, contents, 1, 3, Material.CHAINMAIL_CHESTPLATE,
+        setCraftItem(player, contents, 2, 0, Material.CHAINMAIL_CHESTPLATE,
                 "Forged Chain Body", "Chain Link",
                 "Mail", Material.IRON_BARS, 8, 15, 15, 0);
 
+        // guilded
+        setCraftItem(player, contents, 1, 1, Material.SHEARS,
+                "Forged Guilded Helmet", "Gold Bar",
+                "Guilded", Material.GOLD_INGOT, 5, 5, 1, 20);
+
+        setCraftItem(player, contents, 4, 1, Material.GOLDEN_BOOTS,
+                "Forged Guilded Boots", "Gold Bar",
+                "Guilded", Material.GOLD_INGOT, 4, 5, 5, 0);
+
+        setCraftItem(player, contents, 3, 1, Material.GOLDEN_LEGGINGS,
+                "Forged Guilded Legs", "Gold Bar",
+                "Guilded", Material.GOLD_INGOT, 7, 10, 10, 0);
+
+        setCraftItem(player, contents, 2, 1, Material.GOLDEN_CHESTPLATE,
+                "Forged Guilded Body", "Gold Bar",
+                "Guilded", Material.GOLD_INGOT, 8, 15, 15, 0);
+
         // plate
-        setCraftItem(player, contents, 1, 4, Material.SHEARS,
+        setCraftItem(player, contents, 1, 2, Material.SHEARS,
                 "Forged Iron Helmet", "Iron Bar",
                 "Plate", Material.IRON_INGOT, 5, 10, 20, 25);
 
-        setCraftItem(player, contents, 1, 5, Material.IRON_BOOTS,
+        setCraftItem(player, contents, 4, 2, Material.IRON_BOOTS,
                 "Forged Iron Boots", "Iron Bar",
                 "Plate", Material.IRON_INGOT, 4, 10, 25, 0);
 
-        setCraftItem(player, contents, 1, 6, Material.IRON_LEGGINGS,
+        setCraftItem(player, contents, 3, 2, Material.IRON_LEGGINGS,
                 "Forged Iron Platelegs", "Iron Bar",
                 "Plate", Material.IRON_INGOT, 7, 20, 30, 0);
 
-        setCraftItem(player, contents, 1, 7, Material.IRON_CHESTPLATE,
+        setCraftItem(player, contents, 2, 2, Material.IRON_CHESTPLATE,
                 "Forged Iron Platebody", "Iron Bar",
                 "Plate", Material.IRON_INGOT, 8, 30, 35, 0);
     }
@@ -93,7 +110,7 @@ public class ArmorGUI implements InventoryProvider {
         Location stationLoc = WorkstationListener.getStationLocation().get(pl.getUniqueId());
 
         // grab the player's current profession level, progress toward that level
-        int currentLvl = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        int currentLvl = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
         // determine the success rate, based on level
         int rate = (40+currentLvl);
@@ -166,7 +183,7 @@ public class ArmorGUI implements InventoryProvider {
 
         // take player's items, add player to currently crafting ArrayList
         pl.closeInventory();
-        Main.getProfManager().getCurrentCrafters().add(pl);
+        FTRCore.getProfManager().getCurrentCrafters().add(pl);
         pl.sendMessage(ChatColor.GRAY + "Forging...");
         ItemStack[] inv = pl.getInventory().getContents();
         for (int i = 0; i < inv.length; i++) {
@@ -188,7 +205,7 @@ public class ArmorGUI implements InventoryProvider {
             public void run() {
                 if (count > 3) {
                     this.cancel();
-                    Main.getProfManager().getCurrentCrafters().remove(pl);
+                    FTRCore.getProfManager().getCurrentCrafters().remove(pl);
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
@@ -199,7 +216,7 @@ public class ArmorGUI implements InventoryProvider {
                     count = count + 1;
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 20);
+        }.runTaskTimer(FTRCore.getInstance(), 0, 20);
     }
 
     private void craftArmor(Player pl, Material material, String dispName,

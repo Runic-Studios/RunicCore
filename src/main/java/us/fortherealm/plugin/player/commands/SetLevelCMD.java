@@ -6,18 +6,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.util.TabCompleteUtil;
 
 import java.util.List;
 
-public class Level implements SubCommand {
+public class SetLevelCMD implements SubCommand {
 
     private SetSC set;
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
 
-    public Level(SetSC set) {
+    public SetLevelCMD(SetSC set) {
         this.set = set;
     }
 

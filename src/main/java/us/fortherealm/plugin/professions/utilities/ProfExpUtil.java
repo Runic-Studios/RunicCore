@@ -3,7 +3,7 @@ package us.fortherealm.plugin.professions.utilities;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.utilities.NumRounder;
 
 /**
@@ -20,23 +20,23 @@ public class ProfExpUtil {
 
     public static void giveExperience(Player pl, int expGained) {
 
-        String profName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
-        int currentLv = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
-        int currentExp = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
+        String profName = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
+        int currentLv = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        int currentExp = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
 
-        Main.getInstance().getConfig().set(pl.getUniqueId() + ".info.prof.exp", currentExp + expGained);
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
-        int newTotalExp = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
+        FTRCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.prof.exp", currentExp + expGained);
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
+        int newTotalExp = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
 
         if (calculateExpectedLv(newTotalExp) != currentLv) {
 
-            Main.getInstance().getConfig().set(pl.getUniqueId() + ".info.prof.level", calculateExpectedLv(newTotalExp));
-            Main.getInstance().saveConfig();
-            Main.getInstance().reloadConfig();
-            currentLv = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+            FTRCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.prof.level", calculateExpectedLv(newTotalExp));
+            FTRCore.getInstance().saveConfig();
+            FTRCore.getInstance().reloadConfig();
+            currentLv = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
-            Main.getScoreboardHandler().updateSideInfo(pl);
+            FTRCore.getScoreboardHandler().updateSideInfo(pl);
 
             pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
@@ -53,7 +53,7 @@ public class ProfExpUtil {
         }
 
         // calculate the player's progress towards the next level
-        currentExp = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
+        currentExp = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
         int totalExpAtLevel = calculateTotalExperience(currentLv);
         int totalExpToLevel = calculateTotalExperience(currentLv+1);
 

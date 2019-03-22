@@ -2,7 +2,7 @@ package us.fortherealm.plugin.utilities;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class UniqueIdAssigner {
     private static Object synchronizer = new Object();
 
     static {
-        UniqueIdAssigner.uniqueIdFile = new File(Main.getInstance().getDataFolder() + "/resources/data/UniqueIds.yml");        if(!(uniqueIdFile.exists()))
+        UniqueIdAssigner.uniqueIdFile = new File(FTRCore.getInstance().getDataFolder() + "/resources/data/UniqueIds.yml");        if(!(uniqueIdFile.exists()))
             uniqueIdFile.getParentFile().mkdir();
         UniqueIdAssigner.yamlConfiguration = YamlConfiguration.loadConfiguration(uniqueIdFile);
     }
@@ -74,6 +74,6 @@ public class UniqueIdAssigner {
                     e.printStackTrace();
                 }
             }
-        }.runTaskAsynchronously(Main.getInstance());
+        }.runTaskAsynchronously(FTRCore.getInstance());
     }
 }

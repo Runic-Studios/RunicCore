@@ -7,18 +7,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.nametags.NameTagChanger;
 
 public class PartyDisconnect implements Listener {
 
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
 
     @EventHandler
     public void onMemberDisconnect(PlayerQuitEvent e) {
 
         Player player = e.getPlayer();
-        Party party = Main.getPartyManager().getPlayerParty(player);
+        Party party = FTRCore.getPartyManager().getPlayerParty(player);
         String storedName = plugin.getConfig().get(player.getUniqueId() + ".info.name").toString();
 
         if (party == null) {
@@ -32,7 +32,7 @@ public class PartyDisconnect implements Listener {
 
             // if the new member count is less than 1, just disband the party
             if (party.getPartySize() < 1) {
-                Main.getPartyManager().disbandParty(party);
+                FTRCore.getPartyManager().disbandParty(party);
             }  else {
 
                 // if the player who disconnected was NOT the party lead
@@ -45,7 +45,7 @@ public class PartyDisconnect implements Listener {
 
                     // update the player list for other party members
                     for (Player member : party.getPlayerMembers()) {
-                        Main.getTabListManager().setupTab(member);
+                        FTRCore.getTabListManager().setupTab(member);
                     }
                     return;
                 }
@@ -68,7 +68,7 @@ public class PartyDisconnect implements Listener {
 
                 // update the tablist
                 for (Player member : party.getPlayerMembers()) {
-                    Main.getTabListManager().setupTab(member);
+                    FTRCore.getTabListManager().setupTab(member);
                 }
             }
         }

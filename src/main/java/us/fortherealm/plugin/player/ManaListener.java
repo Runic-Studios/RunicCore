@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.GearScanner;
 
@@ -21,8 +21,8 @@ import java.util.ArrayList;
  */
 public class ManaListener implements Listener {
 
-    private Plugin plugin = Main.getInstance();
-    private ManaManager manaManager = Main.getManaManager();
+    private Plugin plugin = FTRCore.getInstance();
+    private ManaManager manaManager = FTRCore.getManaManager();
 
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent e) {
@@ -87,13 +87,13 @@ public class ManaListener implements Listener {
         int currentMana = manaManager.getCurrentManaList().get(pl.getUniqueId());
         if (currentMana > maxMana) {
             manaManager.getCurrentManaList().put(pl.getUniqueId(), maxMana);
-            Main.getScoreboardHandler().updateSideInfo(pl);
+            FTRCore.getScoreboardHandler().updateSideInfo(pl);
         }
     }
 
     private void saveConfig(Player pl) {
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
-        Main.getScoreboardHandler().updateSideInfo(pl);
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
+        FTRCore.getScoreboardHandler().updateSideInfo(pl);
     }
 }

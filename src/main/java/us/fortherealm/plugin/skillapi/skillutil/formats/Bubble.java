@@ -3,7 +3,7 @@ package us.fortherealm.plugin.skillapi.skillutil.formats;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -28,6 +28,6 @@ public class Bubble {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(Main.getInstance(), delay, period);
+        }.runTaskTimer(FTRCore.getInstance(), delay, period);
     }
 }

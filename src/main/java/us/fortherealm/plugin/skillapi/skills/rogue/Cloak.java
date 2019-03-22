@@ -5,7 +5,7 @@ import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 
@@ -47,6 +47,6 @@ public class Cloak extends Skill {
                         new Particle.DustOptions(Color.BLACK, 3));
                 pl.sendMessage(ChatColor.GRAY + "You reappeared.");
             }
-        }.runTaskLater(Main.getInstance(), DURATION*20);
+        }.runTaskLater(FTRCore.getInstance(), DURATION*20);
     }
 }

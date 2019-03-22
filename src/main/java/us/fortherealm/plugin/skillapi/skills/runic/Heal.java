@@ -2,7 +2,7 @@ package us.fortherealm.plugin.skillapi.skills.runic;
 
 import org.bukkit.Particle;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.HealUtil;
@@ -37,7 +37,7 @@ public class Heal extends Skill {
                 new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(Particle.HEART, pl.getLocation());
                 new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(Particle.FIREWORKS_SPARK, pl.getLocation());
             }
-        }.runTaskLater(Main.getInstance(), 1);
+        }.runTaskLater(FTRCore.getInstance(), 1);
     }
 }
 

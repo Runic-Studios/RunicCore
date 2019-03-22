@@ -1,7 +1,6 @@
 package us.fortherealm.plugin.listeners;
 
 import org.bukkit.*;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,10 +11,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.GearScanner;
-import us.fortherealm.plugin.skillapi.skillutil.KnockbackUtil;
 import us.fortherealm.plugin.utilities.DamageUtil;
 
 import java.util.ArrayList;
@@ -118,8 +116,8 @@ public class StaffListener implements Listener {
                                 LivingEntity victim = (LivingEntity) e;
 
                                 // skip party members
-                                if (Main.getPartyManager().getPlayerParty(pl) != null
-                                        && Main.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
+                                if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                                        && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
                                     continue;
                                 }
 
@@ -146,7 +144,7 @@ public class StaffListener implements Listener {
                                         uuids.remove(pl.getUniqueId());
                                         hasBeenHit.put(victim.getUniqueId(), uuids);
                                     }
-                                }.runTaskLater(Main.getInstance(), 1L);
+                                }.runTaskLater(FTRCore.getInstance(), 1L);
 
                                 // apply attack effects, random damage amount
                                 if (maxDamage != 0) {
@@ -163,6 +161,6 @@ public class StaffListener implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 1L);
+        }.runTaskTimer(FTRCore.getInstance(), 0L, 1L);
     }
 }

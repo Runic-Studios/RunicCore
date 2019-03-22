@@ -6,10 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.parties.Party;
 
 import java.util.UUID;
@@ -17,7 +16,7 @@ import java.util.UUID;
 public class OutlawManager implements Listener {
 
     private RatingCalculator rc = new RatingCalculator();
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
     public double getRating(UUID uuid) {
         return plugin.getConfig().getInt(uuid + ".info.rating");
     }
@@ -41,8 +40,8 @@ public class OutlawManager implements Listener {
 
         UUID p1 = damager.getUniqueId();
         UUID p2 = victim.getUniqueId();
-        Party p1Party = Main.getPartyManager().getPlayerParty(damager);
-        Party p2Party = Main.getPartyManager().getPlayerParty(victim);
+        Party p1Party = FTRCore.getPartyManager().getPlayerParty(damager);
+        Party p2Party = FTRCore.getPartyManager().getPlayerParty(victim);
         int r1 = 0;
         int r2 = 0;
 
@@ -56,19 +55,19 @@ public class OutlawManager implements Listener {
             // otherwise, the r1 is simply the player's current rating
             if (p1Party != null) {
                 for (UUID partyMember : p1Party.getMembers()) {
-                    r1 += Main.getInstance().getConfig().getInt(partyMember + ".info.rating");
+                    r1 += FTRCore.getInstance().getConfig().getInt(partyMember + ".info.rating");
                 }
                 r1 = r1/(p1Party.getPartySize());
             } else {
-                r1 = Main.getInstance().getConfig().getInt(p1 + ".info.rating");
+                r1 = FTRCore.getInstance().getConfig().getInt(p1 + ".info.rating");
             }
             if (p2Party != null) {
                 for (UUID partyMember : p2Party.getMembers()) {
-                    r2 += Main.getInstance().getConfig().getInt(partyMember + ".info.rating");
+                    r2 += FTRCore.getInstance().getConfig().getInt(partyMember + ".info.rating");
                 }
                 r2 = r2/(p2Party.getPartySize());
             } else {
-                r2 = Main.getInstance().getConfig().getInt(p2 + ".info.rating");
+                r2 = FTRCore.getInstance().getConfig().getInt(p2 + ".info.rating");
             }
 
             // calculate new score for a win "+"
@@ -78,10 +77,10 @@ public class OutlawManager implements Listener {
             int newRatingP2 = rc.calculateRating(r2, r1, "-", rc.determineK(r2));
 
             // update config values
-            Main.getInstance().getConfig().set(p1 + ".info.rating", newRatingP1);
-            Main.getInstance().getConfig().set(p2 + ".info.rating", newRatingP2);
-            Main.getInstance().saveConfig();
-            Main.getInstance().reloadConfig();
+            FTRCore.getInstance().getConfig().set(p1 + ".info.rating", newRatingP1);
+            FTRCore.getInstance().getConfig().set(p2 + ".info.rating", newRatingP2);
+            FTRCore.getInstance().saveConfig();
+            FTRCore.getInstance().reloadConfig();
 
             // send players messages and effects
             int changeP1 = newRatingP1 - r1;
@@ -94,10 +93,10 @@ public class OutlawManager implements Listener {
 
         damager.sendTitle("", ChatColor.DARK_GREEN + "You gained "
                 + ChatColor.GREEN + changeP1
-                + ChatColor.DARK_GREEN + " OS!", 10, 40, 10);
+                + ChatColor.DARK_GREEN + " rating!", 10, 40, 10);
 
         victim.sendTitle("", ChatColor.DARK_RED + "You lost "
                 + ChatColor.RED + changeP2
-                + ChatColor.DARK_RED + " OS!", 10, 40, 10);
+                + ChatColor.DARK_RED + " rating!", 10, 40, 10);
     }
 }

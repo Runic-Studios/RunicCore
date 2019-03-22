@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.command.util.TabCompleteUtil;
@@ -18,7 +18,7 @@ import java.util.List;
 public class Invite implements SubCommand {
 
 	private PartySC party;
-	private Plugin plugin = Main.getInstance();
+	private Plugin plugin = FTRCore.getInstance();
 
 	public Invite(PartySC party) {
 		this.party = party;
@@ -38,7 +38,7 @@ public class Invite implements SubCommand {
 	@Override
 	public void onUserCommand(Player sender, String[] args) {
 
-        Party party = Main.getPartyManager().getPlayerParty(sender);
+        Party party = FTRCore.getPartyManager().getPlayerParty(sender);
 
         // if the sender does not specify a player
         if (args.length == 1) {
@@ -52,7 +52,7 @@ public class Invite implements SubCommand {
 
         if (party == null) {
             Bukkit.dispatchCommand(sender, "party create");
-            party = Main.getPartyManager().getPlayerParty(sender);
+            party = FTRCore.getPartyManager().getPlayerParty(sender);
         }
 
         if ((args[1]).equals("nearby")) {
@@ -89,7 +89,7 @@ public class Invite implements SubCommand {
                 }
 
                 // if the sender specifies a player correctly
-                if (Main.getPartyManager().addInvite(new us.fortherealm.plugin.parties.Invite(party, (Player) entity))) {
+                if (FTRCore.getPartyManager().addInvite(new us.fortherealm.plugin.parties.Invite(party, (Player) entity))) {
 
                     party.sendMessage
                             (ChatColor.DARK_GREEN + "Party "
@@ -126,7 +126,7 @@ public class Invite implements SubCommand {
 
 //            if (party == null) {
 //                Bukkit.dispatchCommand(sender, "party create");
-//                party = Main.getPartyManager().getPlayerParty(sender);
+//                party = FTRCore.getPartyManager().getPlayerParty(sender);
 //            }
 
             // only the leader can invite others
@@ -157,7 +157,7 @@ public class Invite implements SubCommand {
             }
 
             // if the sender specifies a player correctly
-            if (Main.getPartyManager().addInvite(new us.fortherealm.plugin.parties.Invite(party, target))) {
+            if (FTRCore.getPartyManager().addInvite(new us.fortherealm.plugin.parties.Invite(party, target))) {
 
                 party.sendMessage
                         (ChatColor.DARK_GREEN + "Party "

@@ -4,12 +4,15 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.classes.utilities.ClassUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.attributes.AttributeUtil;
@@ -31,93 +34,84 @@ public class ClassGUI implements InventoryProvider {
     private static final double rogueBaseSpeed = -23.1;
     private static final double warriorBaseSpeed = -23.25;
 
-    // globals
+    // this inventory cannot be closed!
     public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
             .id("classSelection")
             .provider(new ClassGUI())
-            .size(1, 9)
-            .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Class!")
+            .size(4, 9)
+            .title(ChatColor.GREEN + "" + ChatColor.BOLD + "Choose your class!")
+            .closeable(false)
             .build();
 
-    private ScoreboardHandler sbh = Main.getScoreboardHandler();
+    private ScoreboardHandler sbh = FTRCore.getScoreboardHandler();
 
     @Override
     public void init(Player player, InventoryContents contents) {
 
         // select archer
-        contents.set(0, 0, ClickableItem.of
+        contents.set(1, 2, ClickableItem.of
                 (menuItem(Material.BOW,
                         ChatColor.GREEN,
                         "Archer",
                         "An agile, long-range artillary.",
                         "Barrage"),
                         e -> {
-                            setupArtifact(player, "Archer");
-                            setupRune(player);
-                            setupHearthstone(player);
-                            setConfig(player, "Archer");
-                            player.closeInventory();
+                            setupPlayer(player, "Archer", contents);
                 }));
 
         // select cleric
-        contents.set(0, 2, ClickableItem.of
-                (menuItem(Material.WOODEN_SHOVEL,
+        contents.set(1, 4, ClickableItem.of
+                (menuItem(Material.IRON_SHOVEL,
                         ChatColor.AQUA,
                         "Cleric",
                         "A versatile support and healer.",
                         "Rejuvenate"),
                         e -> {
-                            setupArtifact(player, "Cleric");
-                            setupRune(player);
-                            setupHearthstone(player);
-                            setConfig(player, "Cleric");
-                            player.closeInventory();
+                            setupPlayer(player, "Cleric", contents);
                         }));
 
         // select mage
-        contents.set(0, 4, ClickableItem.of
-                (menuItem(Material.WOODEN_HOE,
+        contents.set(1, 6, ClickableItem.of
+                (menuItem(Material.IRON_HOE,
                         ChatColor.LIGHT_PURPLE,
                         "Mage",
                         "A powerful, ranged nuker.",
                         "Blizzard"),
                         e -> {
-                            setupArtifact(player, "Mage");
-                            setupRune(player);
-                            setupHearthstone(player);
-                            setConfig(player, "Mage");
-                            player.closeInventory();
+                            setupPlayer(player, "Mage", contents);
                         }));
 
         // select rogue
-        contents.set(0, 6, ClickableItem.of
-                (menuItem(Material.WOODEN_SWORD,
+        contents.set(2, 3, ClickableItem.of
+                (menuItem(Material.IRON_SWORD,
                         ChatColor.YELLOW,
                         "Rogue",
                         "A cunning, close-range duelist.",
                         "Smoke Bomb"),
                         e -> {
-                            setupArtifact(player, "Rogue");
-                            setupRune(player);
-                            setupHearthstone(player);
-                            setConfig(player, "Rogue");
-                            player.closeInventory();
+                            setupPlayer(player, "Rogue", contents);
                         }));
 
         // select warrior
-        contents.set(0, 8, ClickableItem.of
-                (menuItem(Material.WOODEN_AXE,
+        contents.set(2, 5, ClickableItem.of
+                (menuItem(Material.IRON_AXE,
                         ChatColor.RED,
                         "Warrior",
                         "A durable, close-range fighter.",
                         "Charge"),
                         e -> {
-                            setupArtifact(player, "Warrior");
-                            setupRune(player);
-                            setupHearthstone(player);
-                            setConfig(player, "Warrior");
-                            player.closeInventory();
+                            setupPlayer(player, "Warrior", contents);
                         }));
+    }
+
+    private void setupPlayer(Player pl, String className, InventoryContents contents) {
+        setupArtifact(pl, className, false);
+        setupRune(pl);
+        setupHearthstone(pl);
+        setConfig(pl, className);
+        contents.inventory().close(pl);
+        sbh.updatePlayerInfo(pl);
+        sbh.updateSideInfo(pl);
     }
 
     // used for animated inventories
@@ -130,6 +124,9 @@ public class ClassGUI implements InventoryProvider {
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
+        if (material == Material.BOW) {
+            ((Damageable) meta).setDamage(10);
+        }
         meta.setDisplayName(color + displayName);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GOLD + "-> Select this class");
@@ -148,7 +145,7 @@ public class ClassGUI implements InventoryProvider {
     }
 
     // sets the player artifact
-    private void setupArtifact(Player player, String className) {
+    public static void setupArtifact(Player player, String className, boolean isTutorial) {
 
         // grab our variables
         String itemName = "";
@@ -156,53 +153,103 @@ public class ClassGUI implements InventoryProvider {
         String spell = "null";
 
         // build class-specific variables
-        switch (className) {
-            case "Archer":
+        Color color = WHITE;
+        switch (className.toLowerCase()) {
+            case "archer":
                 itemName = "Stiff Oaken Shortbow";
                 material = Material.BOW;
                 spell = "Barrage";
-                ClassUtil.launchFirework(player, LIME);
-                player.sendTitle(
-                        ChatColor.DARK_GREEN + "You selected",
-                        ChatColor.GREEN + className + "!", 10, 40, 10);
+                color = LIME;
+                if (isTutorial) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent
+                                    (ChatColor.GREEN + "Try "
+                                    + ChatColor.WHITE + "Left-Click"
+                                    + ChatColor.GREEN + "!"));
+                } else {
+                    player.sendTitle(
+                            ChatColor.DARK_GREEN + "You selected",
+                            ChatColor.GREEN + "Archer!", 10, 40, 10);
+                }
                 break;
-            case "Cleric":
+            case "cleric":
                 itemName = "Initiate's Oaken Mace";
                 material = Material.WOODEN_SHOVEL;
                 spell = "Rejuvenate";
-                ClassUtil.launchFirework(player, AQUA);
-                player.sendTitle(
-                        ChatColor.DARK_AQUA + "You selected",
-                        ChatColor.AQUA + className + "!", 10, 40, 10);
+                color = AQUA;
+                if (isTutorial) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent
+                                    (ChatColor.GREEN + "Try "
+                                            + ChatColor.WHITE + "Sneak "
+                                            + ChatColor.GREEN + " + "
+                                            + ChatColor.WHITE + "Left-Click"
+                                            + ChatColor.GREEN + "!"));
+                } else {
+                    player.sendTitle(
+                            ChatColor.DARK_AQUA + "You selected",
+                            ChatColor.AQUA + "Cleric!", 10, 40, 10);
+                }
                 break;
-            case "Mage":
+            case "mage":
                 itemName = "Sturdy Oaken Branch";
                 material = Material.WOODEN_HOE;
-                ClassUtil.launchFirework(player, FUCHSIA);
+                color = FUCHSIA;
                 spell = "Blizzard";
-                player.sendTitle(
-                        ChatColor.DARK_PURPLE + "You selected",
-                        ChatColor.LIGHT_PURPLE + className + "!", 10, 40, 10);
+                if (isTutorial) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent
+                                    (ChatColor.GREEN + "Try "
+                                            + ChatColor.WHITE + "Sneak "
+                                            + ChatColor.GREEN + " + "
+                                            + ChatColor.WHITE + "Left-Click"
+                                            + ChatColor.GREEN + "!"));
+                } else {
+                    player.sendTitle(
+                            ChatColor.DARK_PURPLE + "You selected",
+                            ChatColor.LIGHT_PURPLE + "Mage!", 10, 40, 10);
+                }
                 break;
-            case "Rogue":
+            case "rogue":
                 itemName = "Oaken Sparring Sword";
                 material = Material.WOODEN_SWORD;
                 spell = "Smoke Bomb";
-                ClassUtil.launchFirework(player, YELLOW);
-                player.sendTitle(
-                        ChatColor.GOLD + "You selected",
-                        ChatColor.YELLOW + className + "!", 10, 40, 10);
+                color = YELLOW;
+                if (isTutorial) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent
+                                    (ChatColor.GREEN + "Try "
+                                            + ChatColor.WHITE + "Sneak "
+                                            + ChatColor.GREEN + " + "
+                                            + ChatColor.WHITE + "Left-Click"
+                                            + ChatColor.GREEN + "!"));
+                } else {
+                    player.sendTitle(
+                            ChatColor.GOLD + "You selected",
+                            ChatColor.YELLOW + "Rogue!", 10, 40, 10);
+                }
                 break;
-            case "Warrior":
+            case "warrior":
                 itemName = "Worn Oaken Battleaxe";
                 material = Material.WOODEN_AXE;
                 spell = "Charge";
-                ClassUtil.launchFirework(player, RED);
-                player.sendTitle(
-                        ChatColor.DARK_RED + "You selected",
-                        ChatColor.RED + className + "!", 10, 40, 10);
+                color = RED;
+                if (isTutorial) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent
+                                    (ChatColor.GREEN + "Try "
+                                            + ChatColor.WHITE + "Sneak "
+                                            + ChatColor.GREEN + " + "
+                                            + ChatColor.WHITE + "Left-Click"
+                                            + ChatColor.GREEN + "!"));
+                } else {
+                    player.sendTitle(
+                            ChatColor.DARK_RED + "You selected",
+                            ChatColor.RED + "Warrior!", 10, 40, 10);
+                }
                 break;
         }
+        if (!isTutorial) ClassUtil.launchFirework(player, color);
 
         // create the artifact
         ItemStack artifact = new ItemStack(material);
@@ -253,7 +300,7 @@ public class ClassGUI implements InventoryProvider {
     }
 
     // creates the player's rune
-    private void setupRune(Player pl) {
+    public static void setupRune(Player pl) {
         ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         rune = AttributeUtil.addSpell(rune, "primarySpell", ChatColor.RED + "LOCKED");
         rune = AttributeUtil.addSpell(rune, "secondarySpell", ChatColor.RED + "LOCKED");
@@ -262,7 +309,7 @@ public class ClassGUI implements InventoryProvider {
         pl.getInventory().setItem(1, rune);
     }
 
-    private void setupHearthstone(Player pl) {
+    public static void setupHearthstone(Player pl) {
         ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
         hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", "Tutorial Island");
         hearthstone = AttributeUtil.addCustomStat(hearthstone, "soulbound", "true");
@@ -270,17 +317,15 @@ public class ClassGUI implements InventoryProvider {
         pl.getInventory().setItem(2, hearthstone);
     }
 
-    private void setConfig(Player player, String className) {
+    public static void setConfig(Player player, String className) {
         HealthUtils.setBaseHealth(player);
         HealthUtils.setHeartDisplay(player);
         player.setLevel(0);
         player.setExp(0);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.name", className);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 0);
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
-        sbh.updatePlayerInfo(player);
-        sbh.updateSideInfo(player);
+        FTRCore.getInstance().getConfig().set(player.getUniqueId() + ".info.class.name", className);
+        FTRCore.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 0);
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
     }
 
     public static double getArcherBaseBowSpeed() {

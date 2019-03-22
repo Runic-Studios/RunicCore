@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class ProfGUI implements InventoryProvider {
             .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Profession!")
             .build();
 
-    private ScoreboardHandler sbh = Main.getScoreboardHandler();
+    private ScoreboardHandler sbh = FTRCore.getScoreboardHandler();
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -82,11 +82,11 @@ public class ProfGUI implements InventoryProvider {
     }
 
     private void setConfig(Player player, String profName) {
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.name", profName);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", 0);
-        Main.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", 0);
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
+        FTRCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.name", profName);
+        FTRCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", 0);
+        FTRCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", 0);
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
         sbh.updatePlayerInfo(player);
         sbh.updateSideInfo(player);
     }

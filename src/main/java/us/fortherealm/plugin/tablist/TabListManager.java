@@ -14,9 +14,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.parties.Party;
-import us.fortherealm.plugin.skillapi.SkillManager;
 
 // TODO: fix flickering, fix pings in text component always being '0'
 public class TabListManager implements Listener {
@@ -27,15 +26,15 @@ public class TabListManager implements Listener {
     // constructor
     public TabListManager(Plugin plugin) {
         this.tabbed = new Tabbed(plugin);
-        Main.getInstance().getServer().getPluginManager().registerEvents(this, plugin);
+        FTRCore.getInstance().getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             TabList test = tabbed.getTabList(online);
-            Main.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
-                    (Main.getInstance(), () -> setupTab(online), 1);
+            FTRCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
+                    (FTRCore.getInstance(), () -> setupTab(online), 1);
         }
     }
 
@@ -60,7 +59,7 @@ public class TabListManager implements Listener {
         // fill column with online players
         int i = 0;
         for (Player online : Bukkit.getOnlinePlayers()) {
-            String storedName = Main.getInstance().getConfig().get(online.getUniqueId() + ".info.name").toString();
+            String storedName = FTRCore.getInstance().getConfig().get(online.getUniqueId() + ".info.name").toString();
             if (storedName != null) {
                 tab.set(0, i + 1, new TextTabItem(storedName, 0, Skins.getPlayer(online)));
             } else {
@@ -74,16 +73,16 @@ public class TabListManager implements Listener {
                 (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]" , 0, Skins.getDot(ChatColor.GOLD)));
 
         // Column 3 (Party)
-        if (Main.getPartyManager().getPlayerParty(player) == null) {
+        if (FTRCore.getPartyManager().getPlayerParty(player) == null) {
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [0]", 0, Skins.getDot(ChatColor.GREEN)));
         } else {
-            Party party = Main.getPartyManager().getPlayerParty(player);
+            Party party = FTRCore.getPartyManager().getPlayerParty(player);
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getPartySize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int j = 0;
             for (Player member : party.getPlayerMembers()) {
-                String storedName = Main.getInstance().getConfig().get(member.getUniqueId() + ".info.name").toString();
+                String storedName = FTRCore.getInstance().getConfig().get(member.getUniqueId() + ".info.name").toString();
                 tab.set(2, j+1, new TextTabItem(storedName, 0, Skins.getPlayer(member)));
                 j++;
             }
@@ -104,6 +103,6 @@ public class TabListManager implements Listener {
                     setupTab(online);
                 }
             }
-        }.runTaskLater(Main.getInstance(), 1);
+        }.runTaskLater(FTRCore.getInstance(), 1);
     }
 }

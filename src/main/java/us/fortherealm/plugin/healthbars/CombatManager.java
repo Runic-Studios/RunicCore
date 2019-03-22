@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import java.util.UUID;
 public class CombatManager {
 
     private HashMap<UUID, Long> playersInCombat;
-    private Main plugin = Main.getInstance();
+    private FTRCore plugin = FTRCore.getInstance();
     private static final int COMBAT_DURATION = 10;
 
     public CombatManager() {

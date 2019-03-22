@@ -1,9 +1,10 @@
 name: FTRCore
 version: 2.0.0
 api-version: 1.13
-main: us.fortherealm.plugin.Main
+main: us.fortherealm.plugin.FTRCore
 description: Core plugin for the "For the Realm" server
 author: Skyfallin_
+loadbefore: [Quests]
 commands:
   artifactinfo:
     usage: /<command>
@@ -23,3 +24,6 @@ commands:
   gathertool:
     usage: /<command>
     description: give yourself a gathering tool
+  npcbuilder:
+    usage: /<command>
+    description: make an npc!

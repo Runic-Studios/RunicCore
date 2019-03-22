@@ -67,6 +67,6 @@ public class ToolGive implements SubCommand {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
-        //return TabCompleteUtil.getPlayers(commandSender, strings, Main.getInstance());
+        //return TabCompleteUtil.getPlayers(commandSender, strings, FTRCore.getInstance());
     }
 }

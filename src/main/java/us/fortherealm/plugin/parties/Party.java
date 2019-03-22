@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -14,7 +14,7 @@ public class Party {
     // instanced array, variable
    private ArrayList<UUID> members = new ArrayList<>();
    private UUID leader;
-   private Plugin plugin = Main.getInstance();
+   private Plugin plugin = FTRCore.getInstance();
 
    // constructor
    public Party(UUID leader) {
@@ -142,7 +142,7 @@ public class Party {
 
                    if (this.getLeader() == member) {
                        this.sendMembersMessage("&3&lParty &7&l> &cYour party has been disbanded. &7Reason: Not Enough Members");
-                       Main.getPartyManager().disbandParty(this);
+                       FTRCore.getPartyManager().disbandParty(this);
                    }
            }
        }

@@ -11,7 +11,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.utilities.DamageUtil;
@@ -88,8 +88,8 @@ public class SmokeBomb extends Skill {
                             }
 
                             // skip party members
-                            if (Main.getPartyManager().getPlayerParty(player) != null
-                                    && Main.getPartyManager().getPlayerParty(player).hasMember(entity.getUniqueId())) {
+                            if (FTRCore.getPartyManager().getPlayerParty(player) != null
+                                    && FTRCore.getPartyManager().getPlayerParty(player).hasMember(entity.getUniqueId())) {
                                 continue;
                             }
 

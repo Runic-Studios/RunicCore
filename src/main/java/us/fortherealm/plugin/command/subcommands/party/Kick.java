@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.command.util.TabCompleteUtil;
@@ -21,7 +21,7 @@ import java.util.List;
 public class Kick implements SubCommand {
 	
 	private PartySC party;
-	private Plugin plugin = Main.getInstance();
+	private Plugin plugin = FTRCore.getInstance();
     private NameTagChanger nameTagChanger = new NameTagChanger();
 	
 	public Kick(PartySC party) {
@@ -41,7 +41,7 @@ public class Kick implements SubCommand {
 	@Override
 	public void onUserCommand(Player sender, String[] args) {
 
-		Party party = Main.getPartyManager().getPlayerParty(sender);
+		Party party = FTRCore.getPartyManager().getPlayerParty(sender);
 		
 		if(party == null) {
 			sender.sendMessage
@@ -124,7 +124,7 @@ public class Kick implements SubCommand {
 
 		// update the tablist
 		for (Player member : members) {
-			Main.getTabListManager().setupTab(member);
+			FTRCore.getTabListManager().setupTab(member);
 		}
 
         // sets the player's name color to RED if outlaw is enabled

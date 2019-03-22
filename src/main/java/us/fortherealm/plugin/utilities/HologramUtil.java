@@ -8,7 +8,7 @@ import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Consumer;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -70,7 +70,7 @@ public class HologramUtil {
                 nmsStand.locY = nmsStand.locY + .1D;
                 ticks++;
             }
-        }.runTaskTimer(Main.getInstance(), 0, 1);
+        }.runTaskTimer(FTRCore.getInstance(), 0, 1);
 
         holograms.put(stand, runnable);
         if (holograms.keySet().size() > 4)
@@ -105,7 +105,7 @@ public class HologramUtil {
                 }
                 ticks++;
             }
-        }.runTaskTimer(Main.getInstance(), 0, 1);
+        }.runTaskTimer(FTRCore.getInstance(), 0, 1);
 
         holograms.put(stand, runnable);
         if (holograms.keySet().size() > 4)

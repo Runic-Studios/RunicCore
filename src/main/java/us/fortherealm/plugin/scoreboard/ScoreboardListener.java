@@ -1,8 +1,6 @@
 package us.fortherealm.plugin.scoreboard;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,14 +9,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.player.utilities.HealthUtils;
 
 public class ScoreboardListener implements Listener {
 
     // global variables
-    private ScoreboardHandler sbh = Main.getScoreboardHandler();
-    private Plugin plugin = Main.getInstance();
+    private ScoreboardHandler sbh = FTRCore.getScoreboardHandler();
+    private Plugin plugin = FTRCore.getInstance();
 
     @EventHandler
     public void onDamage (EntityDamageEvent e) {

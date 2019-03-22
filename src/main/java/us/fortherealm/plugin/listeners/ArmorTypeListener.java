@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.enums.ItemTypeEnum;
 
 /**
@@ -26,7 +26,7 @@ public class ArmorTypeListener implements Listener {
 
         ItemStack equippedItem = e.getNewArmorPiece();
         Player pl = e.getPlayer();
-        String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String className = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
 
         ItemTypeEnum armorType = ItemTypeEnum.matchType(equippedItem);
 

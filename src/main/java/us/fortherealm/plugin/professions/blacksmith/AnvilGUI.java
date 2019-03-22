@@ -29,7 +29,7 @@ public class AnvilGUI implements InventoryProvider {
                 (menuItem(Material.IRON_CHESTPLATE,
                         ChatColor.WHITE,
                         "Craft Armor",
-                        "Forge mail or plate armor!"),
+                        "Forge mail, guilded or plate armor!"),
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                             ArmorGUI.CRAFT_ARMOR.open(player);

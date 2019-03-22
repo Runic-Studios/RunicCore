@@ -5,7 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.event.EventPriority;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
 import net.minecraft.server.v1_13_R2.DataWatcherRegistry;
 import org.bukkit.Sound;
@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("FieldCanBeLocal")
 public class BowListener implements Listener {
 
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
     private static final int ARROW_VELOCITY_MULT = 3;
 
     @EventHandler
@@ -139,7 +139,7 @@ public class BowListener implements Listener {
             public void run() {
                 ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
             }
-        }.runTaskLater(Main.getInstance(), 3);
+        }.runTaskLater(FTRCore.getInstance(), 3);
 
         // apply attack effects, random damage amount
         if (maxDamage != 0) {

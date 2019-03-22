@@ -5,7 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.parties.Invite;
@@ -18,7 +18,7 @@ public class Join implements SubCommand {
 
     private PartySC party;
     private NameTagChanger nameTagChanger = new NameTagChanger();
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
 
     public Join(PartySC party) {
         this.party = party;
@@ -37,7 +37,7 @@ public class Join implements SubCommand {
     @Override
     public void onUserCommand(Player sender, String[] args) {
 
-        Party party = Main.getPartyManager().getPlayerParty(sender);
+        Party party = FTRCore.getPartyManager().getPlayerParty(sender);
 
         // sender can't double-join parties
         if (party != null) {
@@ -48,7 +48,7 @@ public class Join implements SubCommand {
             return;
         }
 
-        Invite invite = Main.getPartyManager().getActiveInvite(sender);
+        Invite invite = FTRCore.getPartyManager().getActiveInvite(sender);
 
         // if the player has no active invite
         if (invite == null) {
@@ -59,7 +59,7 @@ public class Join implements SubCommand {
             return;
         }
 
-        Party partyLead = Main.getPartyManager().getPlayerParty(invite.getInviter());
+        Party partyLead = FTRCore.getPartyManager().getPlayerParty(invite.getInviter());
 
         // if the party is disbanded before the player joins, remove the invite
         if (partyLead == null) {
@@ -67,7 +67,7 @@ public class Join implements SubCommand {
                     (ChatColor.DARK_GREEN + "Party "
                             + ChatColor.GOLD + "» "
                             + ChatColor.RED + "This party no longer exists!");
-            Main.getPartyManager().removeInvite(invite);
+            FTRCore.getPartyManager().removeInvite(invite);
             return;
         }
 
@@ -79,10 +79,10 @@ public class Join implements SubCommand {
         invite.getParty().addMember(sender.getUniqueId());
 
         // get this value updated for later
-        party = Main.getPartyManager().getPlayerParty(sender);
+        party = FTRCore.getPartyManager().getPlayerParty(sender);
 
         // remove the invite from memory
-        Main.getPartyManager().removeInvite(invite);
+        FTRCore.getPartyManager().removeInvite(invite);
 
         // inform the player which party they joined
         sender.sendMessage
@@ -110,7 +110,7 @@ public class Join implements SubCommand {
 
         // update the tablist
         for (Player member : party.getPlayerMembers()) {
-            Main.getTabListManager().setupTab(member);
+            FTRCore.getTabListManager().setupTab(member);
         }
     }
 

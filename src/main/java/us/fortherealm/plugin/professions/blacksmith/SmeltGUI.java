@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.professions.WorkstationListener;
 import us.fortherealm.plugin.professions.utilities.FloatingItemUtil;
 import us.fortherealm.plugin.professions.utilities.ProfExpUtil;
@@ -42,16 +42,25 @@ public class SmeltGUI implements InventoryProvider {
                         }));
 
         // create reagent hashmap
+        // chain
         LinkedHashMap<Material, Integer> ironLinkReqs = new LinkedHashMap<>();
         ironLinkReqs.put(Material.IRON_ORE, 1);
         ironLinkReqs.put(Material.SPRUCE_LOG, 2);
         setSmeltItem(player, contents, 1, 0, Material.IRON_BARS,
                 "Chain Link", ironLinkReqs, "Iron Ore\nSpruce Log", 3, 1);
 
+        // gold
+        LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
+        goldBarReqs.put(Material.GOLD_NUGGET, 9);
+        goldBarReqs.put(Material.BIRCH_LOG, 2);
+        setSmeltItem(player, contents, 1, 1, Material.GOLD_INGOT,
+                "Gold Bar", goldBarReqs, "Coin\nBirch Log", 4, 10);
+
+        // iron
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
         ironBarReqs.put(Material.IRON_ORE, 1);
         ironBarReqs.put(Material.OAK_LOG, 2);
-        setSmeltItem(player, contents, 1, 1, Material.IRON_INGOT,
+        setSmeltItem(player, contents, 1, 2, Material.IRON_INGOT,
                 "Iron Bar", ironBarReqs, "Iron Ore\nOak Log", 6, 20);
     }
 
@@ -67,7 +76,7 @@ public class SmeltGUI implements InventoryProvider {
         Location stationLoc = WorkstationListener.getStationLocation().get(pl.getUniqueId());
 
         // grab the player's current profession level, progress toward that level
-        int currentLvl = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        int currentLvl = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
         // determine the success rate, based on level
         int rate = (40+currentLvl);
@@ -168,7 +177,7 @@ public class SmeltGUI implements InventoryProvider {
         // if player has everything, take player's items, display first reagent visually
         // add player to currently crafting ArrayList
         pl.closeInventory();
-        Main.getProfManager().getCurrentCrafters().add(pl);
+        FTRCore.getProfManager().getCurrentCrafters().add(pl);
         pl.sendMessage(ChatColor.GRAY + "Smelting...");
         int j = 0;
         Material dispItem = Material.STONE;
@@ -199,7 +208,7 @@ public class SmeltGUI implements InventoryProvider {
                 }
                 if (count > 3) {
                     this.cancel();
-                    Main.getProfManager().getCurrentCrafters().remove(pl);
+                    FTRCore.getProfManager().getCurrentCrafters().remove(pl);
                     pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 0.5f, 0.2f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
@@ -211,7 +220,7 @@ public class SmeltGUI implements InventoryProvider {
                     count = count + 1;
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 20);
+        }.runTaskTimer(FTRCore.getInstance(), 0, 20);
     }
 
     // gives the player the crafted item

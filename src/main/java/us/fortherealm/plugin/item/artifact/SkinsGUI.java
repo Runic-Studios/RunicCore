@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.ArrayList;
 
@@ -30,7 +30,7 @@ public class SkinsGUI implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
 
         // determine the player's class
-        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class.name").toString();
+        String className = FTRCore.getInstance().getConfig().get(player.getUniqueId() + ".info.class.name").toString();
 
         // grab player's artifact
         ItemStack artifact = player.getInventory().getItem(0);
@@ -108,6 +108,7 @@ public class SkinsGUI implements InventoryProvider {
         displaySkin(player, contents, 2, 4, Material.WOODEN_AXE, "Polished Silver Broadaxe", "Unlock by reaching lv. 20!", 2, "WOODEN_axe");
         displaySkin(player, contents, 2, 5, Material.WOODEN_AXE, "Victorious Gilded Reaver", "Unlock by reaching lv. 30!", 3, "golden_axe");
         displaySkin(player, contents, 2, 6, Material.WOODEN_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 4, "diamond_axe");
+        displaySkin(player, contents, 2, 7, Material.WOODEN_AXE, "Ancient Crystal Battleaxe", "Unlock by reaching lv. 40!", 5, "diamond_axe");
     }
 
     // display for each skin

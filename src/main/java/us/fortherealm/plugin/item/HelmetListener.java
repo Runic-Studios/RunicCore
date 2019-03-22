@@ -3,6 +3,7 @@ package us.fortherealm.plugin.item;
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.codingforcookies.armorequip.ArmorType;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.fortherealm.plugin.FTRCore;
 
 public class HelmetListener implements Listener {
 
@@ -29,24 +31,60 @@ public class HelmetListener implements Listener {
         Material material = pl.getInventory().getItemInMainHand().getType();
         ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
         int slot = pl.getInventory().getHeldItemSlot();
+        String className = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
         if (material != Material.SHEARS) return;
 
-        // helmet durabilities are: 5, 10, 15, 20
+        // helmet durabilities are: 5, 10, 15, 20, 25
         int durability = ((Damageable) meta).getDamage();
-        if (durability != 5 && durability != 10 && durability != 15 && durability != 20) return;
+        if (durability != 5 && durability != 10 && durability != 15 && durability != 20 && durability != 25) return;
 
         // sound effects
         Sound sound = Sound.ITEM_ARMOR_EQUIP_GENERIC;
         switch (durability) {
             case 5:
+                sound = Sound.ITEM_ARMOR_EQUIP_LEATHER;
+                if (!className.equals("Mage")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip cloth armor!");
+                    return;
+                }
+                break;
             case 10:
                 sound = Sound.ITEM_ARMOR_EQUIP_LEATHER;
+                if (!className.equals("Rogue")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip leather armor!");
+                    return;
+                }
                 break;
             case 15:
                 sound = Sound.ITEM_ARMOR_EQUIP_CHAIN;
+                if (!className.equals("Archer")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip mail armor!");
+                    return;
+                }
                 break;
             case 20:
+                sound = Sound.ITEM_ARMOR_EQUIP_GOLD;
+                if (!className.equals("Cleric")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip guilded armor!");
+                    return;
+                }
+                break;
+            case 25:
                 sound = Sound.ITEM_ARMOR_EQUIP_IRON;
+                if (!className.equals("Warrior")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip plate armor!");
+                    return;
+                }
                 break;
         }
 
@@ -62,6 +100,9 @@ public class HelmetListener implements Listener {
         }
     }
 
+    /**
+     * Manages shift-clicking shears (helmets) in inventory.
+     */
     @EventHandler
     public void onHelmetShiftEquip(InventoryClickEvent e) {
 
@@ -71,26 +112,62 @@ public class HelmetListener implements Listener {
         if (!e.getClick().isShiftClick()) return;
         if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
         Player pl = (Player) e.getWhoClicked();
+        String className = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
 
         ItemStack helmet = e.getCurrentItem();
         ItemMeta meta = e.getCurrentItem().getItemMeta();
 
         // helmet durabilities are: 5, 10, 15, 20
         int durability = ((Damageable) meta).getDamage();
-        if (durability != 5 && durability != 10 && durability != 15 && durability != 20) return;
+        if (durability != 5 && durability != 10 && durability != 15 && durability != 20 && durability != 25) return;
         if (pl.getInventory().getHelmet() != null) return;
 
         Sound sound = Sound.ITEM_ARMOR_EQUIP_GENERIC;
         switch (durability) {
             case 5:
+                sound = Sound.ITEM_ARMOR_EQUIP_LEATHER;
+                if (!className.equals("Mage")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip cloth armor!");
+                    return;
+                }
+                break;
             case 10:
                 sound = Sound.ITEM_ARMOR_EQUIP_LEATHER;
+                if (!className.equals("Rogue")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip leather armor!");
+                    return;
+                }
                 break;
             case 15:
                 sound = Sound.ITEM_ARMOR_EQUIP_CHAIN;
+                if (!className.equals("Archer")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip mail armor!");
+                    return;
+                }
                 break;
             case 20:
+                sound = Sound.ITEM_ARMOR_EQUIP_GOLD;
+                if (!className.equals("Cleric")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip guilded armor!");
+                    return;
+                }
+                break;
+            case 25:
                 sound = Sound.ITEM_ARMOR_EQUIP_IRON;
+                if (!className.equals("Warrior")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    e.setCancelled(true);
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip plate armor!");
+                    return;
+                }
                 break;
         }
 
@@ -101,6 +178,9 @@ public class HelmetListener implements Listener {
         pl.getInventory().setHelmet(helmet);
     }
 
+    /**
+     * Manages drag-to-equip for shears (helmets) in inventory.
+     */
     @EventHandler
     public void onHelmetDragEquip(InventoryClickEvent e) {
 
@@ -113,23 +193,49 @@ public class HelmetListener implements Listener {
         if (e.getSlot() != 39) return;
 
         Player pl = (Player) e.getWhoClicked();
+        String className = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
         ItemStack helmet = e.getCursor();
         ItemMeta meta = helmet.getItemMeta();
 
         int durability = ((Damageable) meta).getDamage();
-        if (durability != 5 && durability != 10 && durability != 15 && durability != 20) return;
+        if (durability != 5 && durability != 10 && durability != 15 && durability != 20 && durability != 25) return;
 
         Sound sound = Sound.ITEM_ARMOR_EQUIP_GENERIC;
         switch (durability) {
             case 5:
+                sound = Sound.ITEM_ARMOR_EQUIP_LEATHER;
+                if (!className.equals("Mage")) {
+                    e.setCancelled(true);
+                    return;
+                }
+                break;
             case 10:
                 sound = Sound.ITEM_ARMOR_EQUIP_LEATHER;
+                if (!className.equals("Rogue")) {
+                    e.setCancelled(true);
+                    return;
+                }
                 break;
             case 15:
                 sound = Sound.ITEM_ARMOR_EQUIP_CHAIN;
+                if (!className.equals("Archer")) {
+                    e.setCancelled(true);
+                    return;
+                }
                 break;
             case 20:
+                sound = Sound.ITEM_ARMOR_EQUIP_GOLD;
+                if (!className.equals("Cleric")) {
+                    e.setCancelled(true);
+                    return;
+                }
+                break;
+            case 25:
                 sound = Sound.ITEM_ARMOR_EQUIP_IRON;
+                if (!className.equals("Warrior")) {
+                    e.setCancelled(true);
+                    return;
+                }
                 break;
         }
 
@@ -152,9 +258,14 @@ public class HelmetListener implements Listener {
         if (!(e.getWhoClicked() instanceof Player)) return;
         if (e.getClickedInventory() == null) return;
         if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
-        if (e.getCursor() != null && e.getCursor().getType() != Material.SHEARS && e.getCursor().getType() != Material.AIR) return;
+
+        if (e.getCursor() != null && e.getCursor().getType() != Material.SHEARS
+                && e.getCursor().getType() != Material.AIR) return;
+
         if (e.getSlot() != 39) return;
         Player pl = (Player) e.getWhoClicked();
-        Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, e.getCurrentItem(), e.getCursor()));
+
+        Bukkit.getPluginManager().callEvent(new ArmorEquipEvent
+                (pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, e.getCurrentItem(), e.getCursor()));
     }
 }

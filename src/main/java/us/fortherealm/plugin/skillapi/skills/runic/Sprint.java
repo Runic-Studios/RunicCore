@@ -1,7 +1,7 @@
 package us.fortherealm.plugin.skillapi.skills.runic;
 
 import org.bukkit.Particle;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -38,7 +38,7 @@ public class Sprint extends Skill {
         pl.sendMessage(ChatColor.GREEN + "You gain increased speed!");
 
         // after the end of the buff
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(FTRCore.getInstance(), () -> {
             pl.sendMessage(ChatColor.GRAY + "Your speed effect has worn off!");
         }, BUFF_DURATION*20);
     }

@@ -11,7 +11,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
@@ -66,8 +66,8 @@ public class Frostbolt extends Skill {
         LivingEntity victim = (LivingEntity) event.getEntity();
 
         // skip party members
-        if (Main.getPartyManager().getPlayerParty(pl) != null
-                && Main.getPartyManager().getPlayerParty(pl).hasMember(victim.getUniqueId())) { return; }
+        if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(victim.getUniqueId())) { return; }
 
         // cancel the event, apply skill mechanics
         DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);

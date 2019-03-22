@@ -7,7 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 public class PartyDamageListener implements Listener {
 
@@ -23,7 +23,7 @@ public class PartyDamageListener implements Listener {
 
         if (e.getDamager() instanceof Player) {
             Player damager = (Player) e.getDamager();
-            Party party = Main.getPartyManager().getPlayerParty(damager);
+            Party party = FTRCore.getPartyManager().getPlayerParty(damager);
             if (party != null && party.getMembers().contains(victim.getUniqueId())) {
                 e.setCancelled(true);
             }
@@ -33,7 +33,7 @@ public class PartyDamageListener implements Listener {
             ProjectileSource shooter = (ProjectileSource) ((Projectile) e.getDamager()).getShooter();
             if (shooter instanceof Player) {
                 Player damager = (Player) shooter;
-                Party party = Main.getPartyManager().getPlayerParty(damager);
+                Party party = FTRCore.getPartyManager().getPlayerParty(damager);
                 if (party != null && party.getMembers().contains(victim.getUniqueId())) {
                     e.setCancelled(true);
                 }

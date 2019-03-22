@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
@@ -75,7 +75,7 @@ public class Blizzard extends Skill {
                 spawnSnowball(pl, cloudLoc.add(1, 0, 0), launchPath);
 
             }
-        }.runTaskTimer(Main.getInstance(), 0, 10); // drops a snowball every half second
+        }.runTaskTimer(FTRCore.getInstance(), 0, 10); // drops a snowball every half second
     }
 
     // listener to damage player
@@ -97,8 +97,8 @@ public class Blizzard extends Skill {
         if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
         // skip party members
-        if (Main.getPartyManager().getPlayerParty(shooter) != null
-                && Main.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
+        if (FTRCore.getPartyManager().getPlayerParty(shooter) != null
+                && FTRCore.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
 
         // apply damage, knockback
         DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, shooter);

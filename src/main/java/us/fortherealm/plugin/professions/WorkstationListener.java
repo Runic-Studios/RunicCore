@@ -12,10 +12,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
+import us.fortherealm.plugin.professions.alchemist.CauldronGUI;
 import us.fortherealm.plugin.professions.blacksmith.AnvilGUI;
 import us.fortherealm.plugin.professions.blacksmith.FurnaceGUI;
 import us.fortherealm.plugin.professions.jeweler.BenchGUI;
+import us.fortherealm.plugin.professions.leatherworker.TanningRackGUI;
+import us.fortherealm.plugin.professions.tailor.SpinningWheelGUI;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,10 +89,10 @@ public class WorkstationListener implements Listener {
         UUID uuid = pl.getUniqueId();
 
         // determine the player's profession
-        String className = Main.getInstance().getConfig().get(pl.getUniqueId() + ".info.prof.name").toString();
+        String className = FTRCore.getInstance().getConfig().get(pl.getUniqueId() + ".info.prof.name").toString();
 
         // stop the listener if the player is already crafting
-        if (Main.getProfManager().getCurrentCrafters().contains(pl)) {
+        if (FTRCore.getProfManager().getCurrentCrafters().contains(pl)) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             pl.sendMessage(ChatColor.RED + "You are currently crafting.");
             return;
@@ -108,7 +111,7 @@ public class WorkstationListener implements Listener {
                 break;
             case "cauldron":
                 pl.playSound(pl.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 0.25f);
-                //CauldronGUI.CAULDRON_GUI.open(pl);
+                CauldronGUI.CAULDRON_GUI.open(pl);
                 break;
             case "furnace":
                 if (className.equals("Blacksmith")) {
@@ -122,14 +125,21 @@ public class WorkstationListener implements Listener {
                 }
                 break;
             case "gemcutting bench":
-                pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
-                BenchGUI.BENCH_GUI.open(pl);
+                if (className.equals("Jeweler")) {
+                    pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
+                    BenchGUI.BENCH_GUI.open(pl);
+                } else {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                    pl.sendMessage(ChatColor.RED + "A jeweler would know how to use this.");
+                }
                 break;
             case "spinning wheel":
-                //WheelGUI.WHEEL_GUI.open(pl);
+                pl.playSound(pl.getLocation(), Sound.BLOCK_WET_GRASS_BREAK, 2.0f, 1.2f);
+                SpinningWheelGUI.SPINNING_WHEEL_GUI.open(pl);
                 break;
             case "tanning rack":
-                //RackGUI.RACK_GUI.open(pl);
+                pl.playSound(pl.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 2.0f, 0.8f);
+                TanningRackGUI.TANNING_RACK_GUI.open(pl);
                 break;
         }
 

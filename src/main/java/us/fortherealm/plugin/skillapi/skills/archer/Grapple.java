@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 
@@ -76,11 +76,11 @@ public class Grapple extends Skill {
                                 safefall.remove(uuid);
                                 pl.sendMessage(ChatColor.GRAY + "You lost safefall!");
                             }
-                        }.runTaskLater(Main.getInstance(), 40);
+                        }.runTaskLater(FTRCore.getInstance(), 40);
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, 1L);
+        }.runTaskTimer(FTRCore.getInstance(), 0, 1L);
     }
 
     // handles the vector

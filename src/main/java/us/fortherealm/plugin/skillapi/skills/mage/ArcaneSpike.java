@@ -6,7 +6,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.utilities.DamageUtil;
@@ -77,8 +77,8 @@ public class ArcaneSpike extends Skill {
                     LivingEntity victim = (LivingEntity) e;
 
                     // skip party members
-                    if (Main.getPartyManager().getPlayerParty(player) != null
-                            && Main.getPartyManager().getPlayerParty(player).hasMember(e.getUniqueId())) { continue; }
+                    if (FTRCore.getPartyManager().getPlayerParty(player) != null
+                            && FTRCore.getPartyManager().getPlayerParty(player).hasMember(e.getUniqueId())) { continue; }
 
                     if (this.hasBeenHit.containsKey(victim.getUniqueId())) {
                         List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
@@ -102,7 +102,7 @@ public class ArcaneSpike extends Skill {
                             uuids.remove(player.getUniqueId());
                             hasBeenHit.put(victim.getUniqueId(), uuids);
                         }
-                    }.runTaskLater(Main.getInstance(), 100L);
+                    }.runTaskLater(FTRCore.getInstance(), 100L);
 
                     DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
                     KnockbackUtil.knockback(player, victim, 1);

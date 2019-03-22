@@ -3,7 +3,7 @@ package us.fortherealm.plugin.parties;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ public class PartyManager {
     private ArrayList<Invite> activeInvites = new ArrayList<>();
 
     public PartyManager() {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(FTRCore.getInstance(), () -> {
             for(Party party : activeParties) {
                 party.update();
             }

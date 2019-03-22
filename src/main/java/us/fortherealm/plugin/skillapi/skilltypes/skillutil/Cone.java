@@ -1,6 +1,6 @@
 package us.fortherealm.plugin.skillapi.skilltypes.skillutil;
 
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -35,6 +35,6 @@ public class Cone {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(Main.getInstance(), delay, period);
+        }.runTaskTimer(FTRCore.getInstance(), delay, period);
     }
 }

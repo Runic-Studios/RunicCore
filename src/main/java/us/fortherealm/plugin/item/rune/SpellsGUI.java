@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
 
@@ -61,7 +61,7 @@ public class SpellsGUI implements InventoryProvider {
                             RuneGUI.CUSTOMIZE_RUNE.open(player);
                         }));
 
-        int skillpoints = Main.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
+        int skillpoints = FTRCore.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
         ArrayList<String> spDesc = new ArrayList<>();
         spDesc.add("");
         spDesc.add(ChatColor.GRAY + "Use skill points to unlock new spells!");
@@ -92,11 +92,11 @@ public class SpellsGUI implements InventoryProvider {
     // display for each skin
     private void displaySpell(Player player, InventoryContents contents, int row, int slot, String spellName, boolean isUnlocked) {
 
-        double cooldown = Main.getSkillManager().getSkillByName(spellName).getCooldown();
-        int manaCost = Main.getSkillManager().getSkillByName(spellName).getManaCost();
+        double cooldown = FTRCore.getSkillManager().getSkillByName(spellName).getCooldown();
+        int manaCost = FTRCore.getSkillManager().getSkillByName(spellName).getManaCost();
         ArrayList<String> desc = new ArrayList<>();
         desc.add("");
-        for (String line : Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n")) {
+        for (String line : FTRCore.getSkillManager().getSkillByName(spellName).getDescription().split("\n")) {
             desc.add(ChatColor.GRAY + line);
         }
         desc.add("");

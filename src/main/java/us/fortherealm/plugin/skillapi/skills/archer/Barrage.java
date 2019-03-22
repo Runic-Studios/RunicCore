@@ -1,6 +1,6 @@
 package us.fortherealm.plugin.skillapi.skills.archer;
 
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import org.bukkit.*;
@@ -60,7 +60,7 @@ public class Barrage extends Skill {
                         this.cancel();
                     }
                 }
-            }.runTaskTimer(Main.getInstance(), 0, 1L);
+            }.runTaskTimer(FTRCore.getInstance(), 0, 1L);
         }
     }
 

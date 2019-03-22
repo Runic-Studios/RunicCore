@@ -9,12 +9,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skillutil.formats.Cone;
 import us.fortherealm.plugin.utilities.DamageUtil;
-import us.fortherealm.plugin.utilities.HologramUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -79,7 +78,7 @@ public class Enrage extends Skill {
                 }.runTaskLater(plugin, BUFF_DURATION * 20);
 
             }
-        }.runTaskLater(Main.getInstance(), CHANNEL_DURATION * 20);
+        }.runTaskLater(FTRCore.getInstance(), CHANNEL_DURATION * 20);
     }
 
     @EventHandler

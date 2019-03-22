@@ -7,7 +7,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skillutil.PlayerSpeedStorage;
@@ -126,8 +126,8 @@ public class Deliverance extends Skill {
                     if(entity.equals(pl)) { continue; }
 
                     // skip party members
-                    if (Main.getPartyManager().getPlayerParty(pl) != null
-                            && Main.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
+                    if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                            && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
                     // Executes the skill
                     Vector force = (pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.75).setY(0.3));
@@ -135,7 +135,7 @@ public class Deliverance extends Skill {
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0, (int) (20/UPDATES_PER_SECOND));
+        }.runTaskTimer(FTRCore.getInstance(), 0, (int) (20/UPDATES_PER_SECOND));
     }
 }
 

@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.command.subcommands.SubCommand;
 import us.fortherealm.plugin.command.supercommands.PartySC;
 import us.fortherealm.plugin.parties.Party;
@@ -16,7 +16,7 @@ import java.util.List;
 public class Create implements SubCommand {
 
 	private PartySC party;
-	private Plugin plugin = Main.getInstance();
+	private Plugin plugin = FTRCore.getInstance();
 
 	public Create(PartySC party) {
 		this.party = party;
@@ -35,7 +35,7 @@ public class Create implements SubCommand {
 	@Override
 	public void onUserCommand(Player sender, String[] args) {
 
-		Party party = Main.getPartyManager().getPlayerParty(sender);
+		Party party = FTRCore.getPartyManager().getPlayerParty(sender);
 
 		// player's can't make a party if they're in one
 		if(party != null) {
@@ -47,7 +47,7 @@ public class Create implements SubCommand {
 		}
 
 		// create the party
-		Main.getPartyManager().addParty(new Party(sender.getUniqueId()));
+		FTRCore.getPartyManager().addParty(new Party(sender.getUniqueId()));
 		sender.playSound(sender.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
 
 		// inform the sender
@@ -57,7 +57,7 @@ public class Create implements SubCommand {
                         + ChatColor.GREEN + "You created a party!");
 
 		// update tab
-        Main.getTabListManager().setupTab(sender);
+        FTRCore.getTabListManager().setupTab(sender);
 	}
 
 	@Override

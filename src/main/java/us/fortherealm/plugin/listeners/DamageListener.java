@@ -14,12 +14,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.outlaw.OutlawManager;
 import us.fortherealm.plugin.utilities.DamageUtil;
-import us.fortherealm.plugin.utilities.HologramUtil;
 import us.fortherealm.plugin.enums.WeaponEnum;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("deprecation")
 public class DamageListener implements Listener {
 
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
     private OutlawManager outlawEvent = new OutlawManager();
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -154,16 +153,16 @@ public class DamageListener implements Listener {
         }
 
         // if player is in combat, remove them
-        if (!Main.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
-            Main.getCombatManager().getPlayersInCombat().remove(victim.getUniqueId());
+        if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
+            FTRCore.getCombatManager().getPlayersInCombat().remove(victim.getUniqueId());
             victim.sendMessage(ChatColor.GREEN + "You have left combat!");
         }
 
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
         // set their current mana to 0
-        Main.getManaManager().getCurrentManaList().put(victim.getUniqueId(), 0);
-        Main.getScoreboardHandler().updateSideInfo(victim);
+        FTRCore.getManaManager().getCurrentManaList().put(victim.getUniqueId(), 0);
+        FTRCore.getScoreboardHandler().updateSideInfo(victim);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,

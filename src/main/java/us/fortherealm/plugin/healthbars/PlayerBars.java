@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.*;
 
@@ -53,7 +53,7 @@ public class PlayerBars implements Listener {
         // -------------------------------------------------------------------------
         // display the bar, add the player to our hashmap so we can remove 'em later, set the progress, title
         BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
-        String name = Main.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+        String name = FTRCore.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
         bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         bossBar.setTitle(name + " " + ChatColor.RED + (int) (health) + ChatColor.DARK_RED + " ❤");
 
@@ -83,7 +83,7 @@ public class PlayerBars implements Listener {
                 @Override
                 public void run() {
 
-                    if (!Main.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
+                    if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
                         if (bossBarHashMap.containsKey(damagerID)) {
                             bossBarHashMap.get(damagerID).removePlayer(damager);
                             bossBarHashMap.remove(damagerID);
@@ -94,23 +94,23 @@ public class PlayerBars implements Listener {
                     }
                 }
             };
-            runnable.runTaskTimerAsynchronously(Main.getInstance(), 0, 20);
+            runnable.runTaskTimerAsynchronously(FTRCore.getInstance(), 0, 20);
 
             // prevent multiple runnables from happening
             currentRunnables.put(damagerID, runnable);
         }
 
         // inform the players when they first enter combat
-        if (!Main.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
+        if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
             damager.sendMessage(ChatColor.RED + "You have entered combat!");
         }
-        if (!Main.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
+        if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
             victim.sendMessage(ChatColor.RED + "You have entered combat!");
         }
 
         // add/refresh their combat timer every hit
-        Main.getCombatManager().addPlayer(damagerID, System.currentTimeMillis());
-        Main.getCombatManager().addPlayer(victimID, System.currentTimeMillis());
+        FTRCore.getCombatManager().addPlayer(damagerID, System.currentTimeMillis());
+        FTRCore.getCombatManager().addPlayer(victimID, System.currentTimeMillis());
     }
 
     /**
@@ -151,7 +151,7 @@ public class PlayerBars implements Listener {
 
             if (health <= 0) return;
 
-            String name = Main.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+            String name = FTRCore.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
 
             // if the bossbar isn't null, update the victim's health for the attacker
             if (bossBar != null) {
@@ -188,7 +188,7 @@ public class PlayerBars implements Listener {
 
                     if (health <= 0) return;
 
-                    String name = Main.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+                    String name = FTRCore.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
 
                     // if the bossbar isn't null, update the victim's health for the attacker
                     if (bossBar != null) {
@@ -197,6 +197,6 @@ public class PlayerBars implements Listener {
                     }
                 }
             }
-        }.runTaskLater(Main.getInstance(), 1);
+        }.runTaskLater(FTRCore.getInstance(), 1);
     }
 }

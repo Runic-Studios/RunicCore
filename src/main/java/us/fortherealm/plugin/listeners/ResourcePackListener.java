@@ -1,8 +1,6 @@
 package us.fortherealm.plugin.listeners;
 
-import org.bukkit.event.player.PlayerJoinEvent;
-import us.fortherealm.plugin.Main;
-import org.bukkit.Bukkit;
+import us.fortherealm.plugin.FTRCore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +10,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
 public class ResourcePackListener implements Listener {
 
-    private Main plugin = Main.getInstance();
+    private FTRCore plugin = FTRCore.getInstance();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void resourcePackEvent(PlayerResourcePackStatusEvent e) {

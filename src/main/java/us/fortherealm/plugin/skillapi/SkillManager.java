@@ -1,6 +1,6 @@
 package us.fortherealm.plugin.skillapi;
 
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skills.archer.*;
 import us.fortherealm.plugin.skillapi.skills.cleric.*;
 import us.fortherealm.plugin.skillapi.skills.mage.*;
@@ -20,7 +20,7 @@ import java.util.*;
 public class SkillManager {
 
     private List<Skill> skillList;
-    private Main plugin = Main.getInstance();
+    private FTRCore plugin = FTRCore.getInstance();
     private HashMap<UUID, HashMap<Skill, Long>> cooldown;
 
     public SkillManager() {

@@ -1,9 +1,12 @@
 package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
+import us.fortherealm.plugin.command.subcommands.set.SetClassCMD;
 import us.fortherealm.plugin.item.HelmetListener;
 import us.fortherealm.plugin.item.artifact.ArtifactListener;
 import us.fortherealm.plugin.item.hearthstone.HearthstoneListener;
+import us.fortherealm.plugin.npc.Build;
+import us.fortherealm.plugin.npc.NPCBuilderSC;
 import us.fortherealm.plugin.player.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
@@ -17,7 +20,7 @@ import us.fortherealm.plugin.parties.PartyDisconnect;
 import us.fortherealm.plugin.parties.PartyManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.fortherealm.plugin.player.*;
-import us.fortherealm.plugin.player.commands.Level;
+import us.fortherealm.plugin.player.commands.SetLevelCMD;
 import us.fortherealm.plugin.player.commands.Mana;
 import us.fortherealm.plugin.player.commands.SetSC;
 import us.fortherealm.plugin.professions.commands.ToolGive;
@@ -38,10 +41,10 @@ import us.fortherealm.plugin.skillapi.SkillUseEvent;
 
 import java.util.Arrays;
 
-public class Main extends JavaPlugin {
+public class FTRCore extends JavaPlugin {
 
     // handlers
-    private static Main instance;
+    private static FTRCore instance;
     private static CombatManager combatManager;
     private static ManaManager manaManager;
     private static PartyManager partyManager;
@@ -51,7 +54,7 @@ public class Main extends JavaPlugin {
     private static TabListManager tabListManager;
 
     // getters for handlers
-    public static Main getInstance() { return instance; }
+    public static FTRCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
     public static ManaManager getManaManager() { return manaManager; }
     public static PartyManager getPartyManager() { return partyManager; }
@@ -96,7 +99,7 @@ public class Main extends JavaPlugin {
 
         PluginManager pm = this.getServer().getPluginManager();
 
-        pm.registerEvents(Main.getScoreboardHandler(), this);
+        pm.registerEvents(FTRCore.getScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new ArtifactListener(), this);
         pm.registerEvents(new RuneListener(), this);
@@ -126,18 +129,28 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new ManaListener(), this);
         pm.registerEvents(new PlayerLevelListener(), this);
         pm.registerEvents(new HelmetListener(), this);
+        pm.registerEvents(new CraftingListener(), this);
     }
     
     private void registerCommands() {
+
+        // bigger commands get their own methods
         registerPartyCommands();
-        SetSC setSC = new SetSC();
-        getCommand("set").setExecutor(setSC);
-        setSC.addCommand(Arrays.asList("level"), new Level(setSC));
+        registerSetCommands();
+
+        // mana command
         Mana mana = new Mana();
         getCommand("mana").setExecutor(mana);
+
+        // gathertool command
         ToolSC toolSC = new ToolSC();
         getCommand("gathertool").setExecutor(toolSC);
         toolSC.addCommand(Arrays.asList("give"), new ToolGive(toolSC));
+
+        // npc build
+        NPCBuilderSC builderSC = new NPCBuilderSC();
+        getCommand("npcbuilder").setExecutor(builderSC);
+        builderSC.addCommand(Arrays.asList("build"), new Build(builderSC));
     }
     
     private void registerPartyCommands() {
@@ -154,5 +167,13 @@ public class Main extends JavaPlugin {
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
 
         partySC.addCommand(Arrays.asList("prof", "profession"), new Prof(partySC));
+    }
+
+    private void registerSetCommands() {
+
+        SetSC setSC = new SetSC();
+        getCommand("set").setExecutor(setSC);
+        setSC.addCommand(Arrays.asList("class"), new SetClassCMD(setSC));
+        setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
     }
 }

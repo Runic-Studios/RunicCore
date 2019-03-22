@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
@@ -54,8 +54,8 @@ public class Fireball extends Skill {
         LivingEntity victim = (LivingEntity) event.getEntity();
 
         // skip party members
-        if (Main.getPartyManager().getPlayerParty(player) != null
-                && Main.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
+        if (FTRCore.getPartyManager().getPlayerParty(player) != null
+                && FTRCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
 
         // cancel the event, apply skill mechanics
         DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);

@@ -6,7 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.utilities.DamageUtil;
@@ -36,7 +36,7 @@ public class HolyNova extends Skill {
                 spawnRing(pl);
             }
         };
-        nova.runTaskTimer(Main.getInstance(), 0, 20);
+        nova.runTaskTimer(FTRCore.getInstance(), 0, 20);
 
         // cancel effect
         new BukkitRunnable() {
@@ -44,7 +44,7 @@ public class HolyNova extends Skill {
             public void run() {
                 nova.cancel();
             }
-        }.runTaskLater(Main.getInstance(), DURATION*20);
+        }.runTaskLater(FTRCore.getInstance(), DURATION*20);
     }
 
     private void spawnRing(Player pl) {
@@ -74,8 +74,8 @@ public class HolyNova extends Skill {
             if(entity.equals(pl)) { continue; }
 
             // skip party members
-            if (Main.getPartyManager().getPlayerParty(pl) != null
-                    && Main.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
+            if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                    && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
             // Executes the skill
             if (entity.getType().isAlive()) {

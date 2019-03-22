@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.classes.ClassGUI;
 import us.fortherealm.plugin.classes.utilities.ClassUtil;
@@ -36,17 +36,17 @@ public class PlayerLevelListener implements Listener {
         if (pl.getLevel() > 50) return;
 
         // update player's level
-        Main.getInstance().getConfig().set(pl.getUniqueId() + ".info.class.level", pl.getLevel());
+        FTRCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.class.level", pl.getLevel());
 
         // grab the player's new info
-        String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
-        int classLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        String className = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        int classLevel = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
 
         // save player hp, restore hp.food
         HealthUtils.setPlayerHealth(pl, 50+(hpPerLevel*classLevel));
         HealthUtils.setHeartDisplay(pl);
         pl.setHealth(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        Main.getInstance().getConfig().set(pl.getUniqueId() + ".info.currentHP", (int) pl.getHealth());
+        FTRCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.currentHP", (int) pl.getHealth());
         pl.setFoodLevel(20);
 
         saveConfig(pl);
@@ -105,7 +105,7 @@ public class PlayerLevelListener implements Listener {
                 break;
             case 50:
                 giveSkillpoint(pl);
-                String storedName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.name");
+                String storedName = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.name");
                 Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + storedName
                          + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + pl.getLevel() + " " + className + "!");
                 pl.sendMessage("\n");
@@ -162,8 +162,8 @@ public class PlayerLevelListener implements Listener {
     }
 
     private void giveSkillpoint(Player pl) {
-        int skillpoints = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.skillpoints");
-        Main.getInstance().getConfig().set(pl.getUniqueId() + ".info.skillpoints", skillpoints+1);
+        int skillpoints = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.skillpoints");
+        FTRCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.skillpoints", skillpoints+1);
         saveConfig(pl);
     }
     private void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot) {
@@ -177,7 +177,7 @@ public class PlayerLevelListener implements Listener {
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + Main.getManaManager().getManaPerLevel() + "✸");
+                        + ChatColor.DARK_AQUA + "+" + FTRCore.getManaManager().getManaPerLevel() + "✸");
         ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact feels a little stronger!");
         pl.sendMessage("\n");
     }
@@ -201,8 +201,8 @@ public class PlayerLevelListener implements Listener {
     }
 
     private void saveConfig(Player pl) {
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
-        Main.getScoreboardHandler().updateSideInfo(pl);
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
+        FTRCore.getScoreboardHandler().updateSideInfo(pl);
     }
 }

@@ -2,7 +2,7 @@ package us.fortherealm.plugin.parties;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 public class Invite {
     private int counter;
@@ -19,7 +19,7 @@ public class Invite {
     void update() {
         this.counter -= 1;
         if(this.counter <= 0) {
-            Main.getPartyManager().getActiveInvites().remove(this);
+            FTRCore.getPartyManager().getActiveInvites().remove(this);
         }
     }
 

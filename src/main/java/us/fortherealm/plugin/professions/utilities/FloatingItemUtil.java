@@ -14,6 +14,35 @@ import java.lang.reflect.Field;
 
 public class FloatingItemUtil {
 
+    /**
+     * This method displays the floating item for all online players.
+     */
+    public static void spawnFloatingItem(Location loc, Material material, int duration) {
+        Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
+        Vector vec = loc.toVector().multiply(0);
+        item.setVelocity(vec);
+        item.setGravity(false);
+        item.setPickupDelay(Integer.MAX_VALUE);
+
+        // tell the item when to despawn, based on duration (in seconds)
+        setAge(duration, item);
+    }
+
+    public static Item createFloatingItem(Location loc, Material material, int duration) {
+        Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
+        Vector vec = loc.toVector().multiply(0);
+        item.setVelocity(vec);
+        item.setGravity(false);
+        item.setPickupDelay(Integer.MAX_VALUE);
+
+        // tell the item when to despawn, based on duration (in seconds)
+        setAge(duration, item);
+        return item;
+    }
+
+    /**
+     * These methods display the floating item for a specific player.
+     */
     public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
         Vector vec = loc.toVector().multiply(0);

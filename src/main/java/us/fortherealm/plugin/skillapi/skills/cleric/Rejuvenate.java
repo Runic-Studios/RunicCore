@@ -1,6 +1,6 @@
 package us.fortherealm.plugin.skillapi.skills.cleric;
 
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import org.bukkit.*;
@@ -70,7 +70,7 @@ public class Rejuvenate extends Skill {
                     pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0, 0, 0, 0);
                     allyCheck(pl, location);
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 1L);
+            }.runTaskTimer(FTRCore.getInstance(), 0L, 1L);
         }
     }
 
@@ -88,8 +88,8 @@ public class Rejuvenate extends Skill {
                     if (!(e instanceof Player)) { return; }
 
                     // skip the player if we've got a party and they're not in it
-                    if (Main.getPartyManager().getPlayerParty(pl) != null
-                            && !Main.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) { continue; }
+                    if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                            && !FTRCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) { continue; }
 
                     // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                     // multiple times
@@ -116,7 +116,7 @@ public class Rejuvenate extends Skill {
                             uuids.remove(pl.getUniqueId());
                             hasBeenHit.put(ally.getUniqueId(), uuids);
                         }
-                    }.runTaskLater(Main.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
+                    }.runTaskLater(FTRCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
                     if (ally.getHealth() == ally.getMaxHealth()) {
                         ally.sendMessage(

@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.utilities.DamageUtil;
@@ -79,8 +79,8 @@ public class Discharge extends Skill {
                                     LivingEntity victim = (LivingEntity) entity;
 
                                     // skip party members
-                                    if (Main.getPartyManager().getPlayerParty(pl) != null
-                                            && Main.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) {
+                                    if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                                            && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) {
                                         continue;
                                     }
 
@@ -92,7 +92,7 @@ public class Discharge extends Skill {
                         }
                     }
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 1L);
+            }.runTaskTimer(FTRCore.getInstance(), 0L, 1L);
         }
     }
 

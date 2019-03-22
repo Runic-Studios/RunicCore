@@ -10,11 +10,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 public class PlayerNameManager implements Listener {
 
-    private Plugin plugin = Main.getInstance();
+    private Plugin plugin = FTRCore.getInstance();
     // TODO: add this to main
     // TODO: names need to reset on serve disable
     private NameTagChanger nameTagChanger = new NameTagChanger();
@@ -43,7 +43,10 @@ public class PlayerNameManager implements Listener {
                     Object storedMemberName = plugin.getConfig().get(online.getUniqueId() + ".info.name");
                     String memberNameToString = storedMemberName.toString();
 
-                    if (plugin.getConfig().getBoolean(online.getUniqueId() + ".outlaw.enabled", true)) {
+                    // make this player an outlaw if its set
+                    if (plugin.getConfig().isSet(".outlaw.enabled")
+                            && plugin.getConfig().getBoolean(online.getUniqueId() + ".outlaw.enabled", true)) {
+
                         nameTagChanger.changeNameGlobal(online, ChatColor.RED + memberNameToString);
                     } else {
                         nameTagChanger.changeNameGlobal(online, memberNameToString + "");

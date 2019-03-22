@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.attributes.AttributeUtil;
 import us.fortherealm.plugin.item.LoreGenerator;
 import us.fortherealm.plugin.item.rune.RuneGUI;
@@ -24,7 +24,7 @@ public class SpellsGUI implements InventoryProvider {
     // todo: add variable in each skill which corresponds to a class to make adding this easier
     // for (Skill skill : skills) {
     // if (skill.isMageSkill)... etc
-    // private List<Skill> skills = Main.getSkillManager().getSkills();
+    // private List<Skill> skills = FTRCore.getSkillManager().getSkills();
 
     /**
      * CHANGE THE ID FOR EACH NEW GUI
@@ -40,7 +40,7 @@ public class SpellsGUI implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
 
         // determine the player's class
-        String className = Main.getInstance().getConfig().get(player.getUniqueId() + ".info.class.name").toString();
+        String className = FTRCore.getInstance().getConfig().get(player.getUniqueId() + ".info.class.name").toString();
 
         // grab player's artifact
         ItemStack artifact = player.getInventory().getItem(0);
@@ -71,7 +71,7 @@ public class SpellsGUI implements InventoryProvider {
                             ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
                         }));
 
-        int skillpoints = Main.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
+        int skillpoints = FTRCore.getInstance().getConfig().getInt(player.getUniqueId() + ".info.skillpoints");
         ArrayList<String> spDesc = new ArrayList<>();
         spDesc.add("");
         spDesc.add(ChatColor.GRAY + "Use skill points to unlock new spells!");
@@ -142,11 +142,11 @@ public class SpellsGUI implements InventoryProvider {
     private void displaySpell(Player player, InventoryContents contents,
                               int row, int slot, String spellName, String className, boolean isUnlocked) {
 
-        double cooldown = Main.getSkillManager().getSkillByName(spellName).getCooldown();
-        int manaCost = Main.getSkillManager().getSkillByName(spellName).getManaCost();
+        double cooldown = FTRCore.getSkillManager().getSkillByName(spellName).getCooldown();
+        int manaCost = FTRCore.getSkillManager().getSkillByName(spellName).getManaCost();
         ArrayList<String> desc = new ArrayList<>();
         desc.add("");
-        for (String line : Main.getSkillManager().getSkillByName(spellName).getDescription().split("\n")) {
+        for (String line : FTRCore.getSkillManager().getSkillByName(spellName).getDescription().split("\n")) {
             desc.add(ChatColor.GRAY + line);
         }
         desc.add("");

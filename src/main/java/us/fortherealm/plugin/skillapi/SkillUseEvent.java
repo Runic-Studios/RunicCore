@@ -1,10 +1,9 @@
 package us.fortherealm.plugin.skillapi;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import org.bukkit.ChatColor;
@@ -44,7 +43,7 @@ public class SkillUseEvent implements Listener {
 
         // determine skill to cast
         Skill skillCasted = null;
-        for (Skill skill : Main.getSkillManager().getSkills()) {
+        for (Skill skill : FTRCore.getSkillManager().getSkills()) {
             if (skill.isFound(pl.getInventory().getItemInMainHand(), spellSlot)) {
                 skillCasted = skill;
                 break;

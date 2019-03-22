@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.util.Set;
 
@@ -25,7 +25,7 @@ public class ScoreboardHandler implements Listener {
                 createScoreboard(e.getPlayer());
                 updateSideInfo(e.getPlayer());
             }
-        }.runTaskLater(Main.getInstance(), 20L);
+        }.runTaskLater(FTRCore.getInstance(), 20L);
     }
 
     public void createScoreboard(Player pl){
@@ -102,14 +102,14 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String manaAsString(Player pl) {
-        int mana = Main.getManaManager().getCurrentManaList().get(pl.getUniqueId());
-        int maxMana = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
+        int mana = FTRCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
+        int maxMana = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
         return ChatColor.DARK_AQUA + "✸ " + mana + " §7/ " + ChatColor.DARK_AQUA + maxMana;
     }
 
     private String playerClass(Player pl) {
-        String className = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
-        int currentLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        String className = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        int currentLevel = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
         String display;
         if (className == null) {
             display = ChatColor.GRAY + "Class: " + ChatColor.GREEN + "None";
@@ -123,13 +123,13 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String playerProf(Player pl) {
-        String profName = Main.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
-        int currentLevel = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        String profName = FTRCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
+        int currentLevel = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
         String display;
         if (profName == null) {
-            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None";
+            display = ChatColor.GRAY + "SetProfCMD: " + ChatColor.GREEN + "None";
         } else {
-            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + profName;
+            display = ChatColor.GRAY + "SetProfCMD: " + ChatColor.GREEN + profName;
             if (currentLevel != 0) {
                 display = ChatColor.GREEN + profName + ChatColor.GRAY + " lv. " + ChatColor.GREEN + currentLevel;
             }

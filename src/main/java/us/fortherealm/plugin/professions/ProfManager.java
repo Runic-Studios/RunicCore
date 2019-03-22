@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.*;
 public class ProfManager {
 
     // globals
-    private Main plugin = Main.getInstance();
+    private FTRCore plugin = FTRCore.getInstance();
     private ArrayList<Player> currentCrafters = new ArrayList<>();
     public ArrayList<Player> getCurrentCrafters() {
         return currentCrafters;

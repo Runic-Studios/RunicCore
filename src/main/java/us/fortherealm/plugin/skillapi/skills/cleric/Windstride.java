@@ -1,7 +1,7 @@
 package us.fortherealm.plugin.skillapi.skills.cleric;
 
 import org.bukkit.entity.Entity;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -34,14 +34,14 @@ public class Windstride extends Skill {
         applySkill(pl);
 
         // if the user has a party, each party member gets the effects as well.
-        if (Main.getPartyManager().getPlayerParty(pl) != null) {
+        if (FTRCore.getPartyManager().getPlayerParty(pl) != null) {
             for (Entity e : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
 
                 // skip our player, skip non-player entities
                 if (e == pl) { continue; }
                 if (!(e instanceof Player)) { continue; }
 
-                if (Main.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
+                if (FTRCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
                     applySkill((Player) e);
                 }
             }
@@ -63,7 +63,7 @@ public class Windstride extends Skill {
                 25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
 
         // Begin system to remove effects
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(FTRCore.getInstance(), () -> {
             pl.sendMessage(ChatColor.GRAY + "The strength of the wind leaves you.");
         }, BUFF_DURATION * 20);
     }

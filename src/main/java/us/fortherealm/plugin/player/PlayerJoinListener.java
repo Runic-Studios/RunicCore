@@ -8,14 +8,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.player.utilities.HealthUtils;
 
 import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
 
-    private Main plugin = Main.getInstance();
+    private FTRCore plugin = FTRCore.getInstance();
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PlayerJoinEvent e) {
@@ -28,7 +28,7 @@ public class PlayerJoinListener implements Listener {
         pl.sendMessage(ChatColor.GRAY + "Loading resource pack, this may take a moment...");
 
         // set their hp to stored value from last logout
-        int storedHealth = Main.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
+        int storedHealth = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
 
         if (storedHealth == 0) {
             storedHealth = 50;
@@ -82,14 +82,14 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void setConfig(UUID uuid, String setting) {
-        Main.getInstance().getConfig().set(uuid + ".info." + setting, "None");
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
+        FTRCore.getInstance().getConfig().set(uuid + ".info." + setting, "None");
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
     }
 
     private void setConfig(UUID uuid, String setting, int value) {
-        Main.getInstance().getConfig().set(uuid + ".info." + setting, value);
-        Main.getInstance().saveConfig();
-        Main.getInstance().reloadConfig();
+        FTRCore.getInstance().getConfig().set(uuid + ".info." + setting, value);
+        FTRCore.getInstance().saveConfig();
+        FTRCore.getInstance().reloadConfig();
     }
 }

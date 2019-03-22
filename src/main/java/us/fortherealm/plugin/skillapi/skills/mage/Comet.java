@@ -3,7 +3,7 @@ package us.fortherealm.plugin.skillapi.skills.mage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import us.fortherealm.plugin.Main;
+import us.fortherealm.plugin.FTRCore;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -80,8 +80,8 @@ public class Comet extends Skill {
                         }
 
                         // skip party members
-                        if (Main.getPartyManager().getPlayerParty(pl) != null
-                                && Main.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
+                        if (FTRCore.getPartyManager().getPlayerParty(pl) != null
+                                && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
                         // apply effects, damage
                         if (entity.getType().isAlive()) {
@@ -93,7 +93,7 @@ public class Comet extends Skill {
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 1L);
+        }.runTaskTimer(FTRCore.getInstance(), 0L, 1L);
     }
 
     // stops this pesky comet from changing the map
