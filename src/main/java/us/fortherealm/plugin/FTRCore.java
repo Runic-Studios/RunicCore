@@ -1,7 +1,13 @@
 package us.fortherealm.plugin;
 
 import org.bukkit.plugin.PluginManager;
+import us.fortherealm.plugin.command.subcommands.CurrencyGive;
+import us.fortherealm.plugin.command.subcommands.Skillpoint;
+import us.fortherealm.plugin.command.supercommands.CurrencySC;
+import us.fortherealm.plugin.command.supercommands.SkillpointSC;
 import us.fortherealm.plugin.command.subcommands.set.SetClassCMD;
+import us.fortherealm.plugin.healthbars.MobHealthBars;
+import us.fortherealm.plugin.healthbars.MobHealthManager;
 import us.fortherealm.plugin.item.HelmetListener;
 import us.fortherealm.plugin.item.artifact.ArtifactListener;
 import us.fortherealm.plugin.item.hearthstone.HearthstoneListener;
@@ -10,7 +16,7 @@ import us.fortherealm.plugin.npc.NPCBuilderSC;
 import us.fortherealm.plugin.player.ExpListener;
 import us.fortherealm.plugin.command.subcommands.party.*;
 import us.fortherealm.plugin.command.supercommands.PartySC;
-import us.fortherealm.plugin.healthbars.CombatManager;
+import us.fortherealm.plugin.player.CombatManager;
 import us.fortherealm.plugin.healthbars.PlayerBars;
 import us.fortherealm.plugin.listeners.*;
 import us.fortherealm.plugin.nametags.PlayerNameManager;
@@ -38,6 +44,9 @@ import us.fortherealm.plugin.scoreboard.ScoreboardHandler;
 import us.fortherealm.plugin.scoreboard.ScoreboardListener;
 import us.fortherealm.plugin.skillapi.SkillManager;
 import us.fortherealm.plugin.skillapi.SkillUseEvent;
+import us.fortherealm.plugin.tutorial.ItemPickupListener;
+import us.fortherealm.plugin.tutorial.commands.CaptainDefeated;
+import us.fortherealm.plugin.tutorial.commands.TutorialSC;
 
 import java.util.Arrays;
 
@@ -47,6 +56,7 @@ public class FTRCore extends JavaPlugin {
     private static FTRCore instance;
     private static CombatManager combatManager;
     private static ManaManager manaManager;
+    private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
     private static ProfManager profManager;
     private static ScoreboardHandler scoreboardHandler;
@@ -57,6 +67,7 @@ public class FTRCore extends JavaPlugin {
     public static FTRCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
     public static ManaManager getManaManager() { return manaManager; }
+    public static MobHealthManager getMobHealthManager() { return mobHealthManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
@@ -69,6 +80,7 @@ public class FTRCore extends JavaPlugin {
         instance = this;
         combatManager = new CombatManager();
         manaManager = new ManaManager();
+        mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
         profManager = new ProfManager();
         scoreboardHandler = new ScoreboardHandler();
@@ -82,12 +94,22 @@ public class FTRCore extends JavaPlugin {
         this.registerEvents();
         this.loadConfig();
         this.registerCommands();
+
+        // clean any stray healthbars
+        mobHealthManager.fullClean();
     }
     
     public void onDisable() {
-        getLogger().info(" §cFTRCore has been enabled.");
-        partyManager = null;
+        getLogger().info(" §cFTRCore has been disabled.");
+        // let's prevent memory leaks, shall we?
         instance = null;
+        combatManager = null;
+        manaManager = null;
+        mobHealthManager = null;
+        partyManager = null;
+        scoreboardHandler = null;
+        skillManager = null;
+        tabListManager = null;
     }
 
     private void loadConfig() {
@@ -130,6 +152,10 @@ public class FTRCore extends JavaPlugin {
         pm.registerEvents(new PlayerLevelListener(), this);
         pm.registerEvents(new HelmetListener(), this);
         pm.registerEvents(new CraftingListener(), this);
+        pm.registerEvents(new ItemPickupListener(), this);
+        pm.registerEvents(new MobHealthBars(), this);
+        pm.registerEvents(new CombatListener(), this);
+        pm.registerEvents(new PlayerRegenListener(), this);
     }
     
     private void registerCommands() {
@@ -138,11 +164,16 @@ public class FTRCore extends JavaPlugin {
         registerPartyCommands();
         registerSetCommands();
 
-        // mana command
+        // currency
+        CurrencySC currencySC = new CurrencySC();
+        getCommand("currency").setExecutor(currencySC);
+        currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
+
+        // mana commands
         Mana mana = new Mana();
         getCommand("mana").setExecutor(mana);
 
-        // gathertool command
+        // gathertool commands
         ToolSC toolSC = new ToolSC();
         getCommand("gathertool").setExecutor(toolSC);
         toolSC.addCommand(Arrays.asList("give"), new ToolGive(toolSC));
@@ -151,6 +182,16 @@ public class FTRCore extends JavaPlugin {
         NPCBuilderSC builderSC = new NPCBuilderSC();
         getCommand("npcbuilder").setExecutor(builderSC);
         builderSC.addCommand(Arrays.asList("build"), new Build(builderSC));
+
+        // skillpoint
+        SkillpointSC skillpointSC = new SkillpointSC();
+        getCommand("skillpoint").setExecutor(skillpointSC);
+        skillpointSC.addCommand(Arrays.asList("give"), new Skillpoint(skillpointSC));
+
+        // tutorial
+        TutorialSC tutorialSC = new TutorialSC();
+        getCommand("tutorial").setExecutor(tutorialSC);
+        tutorialSC.addCommand(Arrays.asList("captaindefeated"), new CaptainDefeated(tutorialSC));
     }
     
     private void registerPartyCommands() {

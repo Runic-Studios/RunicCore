@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class RuneGUI implements InventoryProvider {
 
     /**
-     * CHANGE THE ID FOR EACH NEW GUI
+     * CHANGE THE ID FOR EACH NEW ItemGUI
      */
     public static final SmartInventory CUSTOMIZE_RUNE = SmartInventory.builder()
             .id("runeCustomization")

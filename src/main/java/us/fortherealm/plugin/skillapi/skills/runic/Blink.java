@@ -13,14 +13,14 @@ import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 public class Blink extends Skill {
 
     // instance variables
-    private static int MAX_DIST = 10;
+    private static int MAX_DIST = 7;
 
     // constructor
     public Blink() {
         super("Blink",
                 "You teleport forward, up to" +
                         "\na distance of " + MAX_DIST + " blocks!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 10, 20);
     }
 
     // skill execute code

@@ -19,15 +19,16 @@ public class Fireball extends Skill {
 
     // globals
     private static final double FIREBALL_SPEED = 2;
-    private static final int DAMAGE_AMOUNT = 20;
+    private static final int DAMAGE_AMOUNT = 10;
     private SmallFireball fireball;
 
     // constructor
     public Fireball() {
         super ("Fireball",
                 "You launch a projectile fireball" +
-                        "\nwhich deals " + DAMAGE_AMOUNT + " damage on impact!",
-                ChatColor.WHITE, 1, 5);
+                        "\nwhich deals " + DAMAGE_AMOUNT + " damage on impact" +
+                        "\nand knocks your enemy back!",
+                ChatColor.WHITE, 5, 15);
     }
 
     // skill execute code
@@ -53,13 +54,16 @@ public class Fireball extends Skill {
         Player player = (Player) fireball.getShooter();
         LivingEntity victim = (LivingEntity) event.getEntity();
 
+        // skip NPCs
+        if (victim.hasMetadata("NPC")) return;
+
         // skip party members
         if (FTRCore.getPartyManager().getPlayerParty(player) != null
                 && FTRCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
 
         // cancel the event, apply skill mechanics
         DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
-        KnockbackUtil.knockback(player, victim);
+        KnockbackUtil.knockback(player, victim, 1.5);
 
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

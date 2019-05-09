@@ -70,6 +70,9 @@ public class HolyNova extends Skill {
             // only damageable entities
             if (!(entity instanceof Damageable)) { continue; }
 
+            // skip NPCs
+            if (entity.hasMetadata("NPC")) { continue; }
+
             // skip the caster
             if(entity.equals(pl)) { continue; }
 

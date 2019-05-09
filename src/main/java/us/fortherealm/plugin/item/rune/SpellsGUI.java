@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class SpellsGUI implements InventoryProvider {
 
     /**
-     * CHANGE THE ID FOR EACH NEW GUI
+     * CHANGE THE ID FOR EACH NEW ItemGUI
      */
     public static final SmartInventory RUNIC_SPELLS = SmartInventory.builder()
             .id("runicSpells")

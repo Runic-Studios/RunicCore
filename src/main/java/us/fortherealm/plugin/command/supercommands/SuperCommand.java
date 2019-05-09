@@ -20,7 +20,7 @@ public abstract class SuperCommand implements CommandExecutor, TabCompleter {
 	public SuperCommand(String permissionLabel) {
 		this(
 				new CommandsUtil(
-					ChatColor.RED.toString() + "You do not have permission to use this command.",
+					ChatColor.RED.toString() + "You do not have permission to use this commands.",
 					ChatColor.RED.toString() + "Command not found."
 				),
 				permissionLabel

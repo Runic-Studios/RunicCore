@@ -19,11 +19,11 @@ public class Comet extends Skill {
     // global variables
     private FallingBlock comet;
     private static final double COMET_SPEED = 0.1;
-    private static final int DAMAGE_AMT = 20;
+    private static final int DAMAGE_AMT = 10;
     private static final int BLAST_RADIUS = 5;
     private static final int MAX_DIST = 10;
     private static final double KNOCKBACK_MULT = -0.5;
-    private static final double KNOCKUP_AMT = 0.5;
+    private static final double KNOCKUP_AMT = 1.0;
 
     // constructor
     public Comet() {
@@ -31,7 +31,7 @@ public class Comet extends Skill {
                 "You call a comet to fall from the sky!" +
                         "\nUpon impact, the comet deals " + DAMAGE_AMT + " damage" +
                         "\nto all enemies within " + BLAST_RADIUS + " blocks!",
-                ChatColor.WHITE, 1, 15);
+                ChatColor.WHITE, 15, 20);
     }
 
     // skill execute code
@@ -73,6 +73,9 @@ public class Comet extends Skill {
 
                     // get nearby enemies within blast radius
                     for (Entity entity : comet.getNearbyEntities(BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS)) {
+
+                        // ignore NPCs
+                        if (entity.hasMetadata("NPC")) { continue; }
 
                         // skip our caster
                         if (entity.equals(pl)) {

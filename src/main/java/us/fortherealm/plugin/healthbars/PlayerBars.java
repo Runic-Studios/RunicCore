@@ -33,6 +33,9 @@ public class PlayerBars implements Listener {
         if (!(e.getDamager() instanceof Player) && !(e.getDamager() instanceof Arrow)) return;
         if (!(e.getEntity() instanceof Player)) return;
 
+        // ignore NPCs
+        if (e.getEntity().hasMetadata("NPC")) return;
+
         // grab our variables
         Player damager;
         if (e.getDamager() instanceof Arrow) {
@@ -42,6 +45,10 @@ public class PlayerBars implements Listener {
         }
 
         Player victim = (Player) e.getEntity();
+
+        // player can't enter combat with themselves
+        if (damager == victim) return;
+
         UUID damagerID = damager.getUniqueId();
         UUID victimID = victim.getUniqueId();
 
@@ -99,18 +106,6 @@ public class PlayerBars implements Listener {
             // prevent multiple runnables from happening
             currentRunnables.put(damagerID, runnable);
         }
-
-        // inform the players when they first enter combat
-        if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
-            damager.sendMessage(ChatColor.RED + "You have entered combat!");
-        }
-        if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
-            victim.sendMessage(ChatColor.RED + "You have entered combat!");
-        }
-
-        // add/refresh their combat timer every hit
-        FTRCore.getCombatManager().addPlayer(damagerID, System.currentTimeMillis());
-        FTRCore.getCombatManager().addPlayer(victimID, System.currentTimeMillis());
     }
 
     /**
@@ -122,6 +117,10 @@ public class PlayerBars implements Listener {
 
         // retrieve the player victim
         if (!(e.getEntity() instanceof Player)) return;
+
+        // ignore NPCs
+        if (e.getEntity().hasMetadata("NPC")) return;
+
         Player victim = (Player) e.getEntity();
         UUID victimID = victim.getUniqueId();
 

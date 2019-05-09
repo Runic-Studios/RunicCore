@@ -129,6 +129,8 @@ public class HearthstoneListener implements Listener {
                     currentlyUsing.remove(pl.getUniqueId());
                     pl.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2));
                     teleportToLocation(pl, pl.getInventory().getItem(2));
+                    pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+                    pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your hearthstone location.");
                     return;
                 }
 

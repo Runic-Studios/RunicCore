@@ -114,11 +114,23 @@ public class BowListener implements Listener {
 
         // get our entity
         if (!(e.getEntity().getType().isAlive())) return;
+        LivingEntity le = (LivingEntity) e.getEntity();
+
+        // skip NPCs
+        if (le.hasMetadata("NPC")) return;
 
         Player damager = (Player) arrow.getShooter();
 
         // grab our variables
         Damageable victim = (Damageable) e.getEntity();
+
+        // player can't damage themselves
+        if (victim == damager) {
+            e.setCancelled(true);
+            return;
+        }
+
+
         ItemStack artifact = damager.getInventory().getItem(0);
 
         // retrieve the weapon damage, cooldown

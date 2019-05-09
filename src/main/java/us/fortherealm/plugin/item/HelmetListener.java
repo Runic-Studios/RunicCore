@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.FTRCore;
@@ -27,6 +28,7 @@ public class HelmetListener implements Listener {
         Player pl = e.getPlayer();
 
         if (pl.getInventory().getItemInMainHand() == null) return;
+        if (e.getHand() != EquipmentSlot.HAND) return;
         ItemStack helmet = pl.getInventory().getItemInMainHand();
         Material material = pl.getInventory().getItemInMainHand().getType();
         ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();

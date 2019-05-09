@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import us.fortherealm.plugin.utilities.CurrencyUtil;
 import us.fortherealm.plugin.utilities.HologramUtil;
 import us.fortherealm.plugin.enums.WeaponEnum;
 
@@ -185,9 +186,9 @@ public class WCListener implements Listener {
             b.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 2.0f);
             HologramUtil.createStaticHologram(pl, loc, ChatColor.GOLD + "" + ChatColor.BOLD + "+ Coin", 0, 1.25, 0);
             if (pl.getInventory().firstEmpty() != -1) {
-                pl.getInventory().addItem(goldNugget());
+                pl.getInventory().addItem(CurrencyUtil.goldCoin());
             } else {
-                pl.getWorld().dropItem(pl.getLocation(), goldNugget());
+                pl.getWorld().dropItem(pl.getLocation(), CurrencyUtil.goldCoin());
             }
         }
     }
@@ -201,16 +202,7 @@ public class WCListener implements Listener {
         item.setItemMeta(meta);
         return item;
     }
-    private ItemStack goldNugget() {
-        ItemStack item = new ItemStack(Material.GOLD_NUGGET);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
-        lore.add(ChatColor.GRAY + "Currency");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
+
     public double getLogSuccessRate() {
         return this.logSuccessRate;
     }

@@ -7,23 +7,32 @@ author: Skyfallin_
 loadbefore: [Quests]
 commands:
   artifactinfo:
-    usage: /<command>
+    usage: /<commands>
     description: Returns info on the artifact slot.
+  currency:
+    usage: /<commands>
+    description: Give a player currency!
   skill:
-    usage: /<command>
+    usage: /<commands>
     description: Base for all oldskills commands
   party:
-    usage: /<command>
+    usage: /<commands>
     description: Base for all party commands
   set:
-    usage: /<command>
+    usage: /<commands>
     description: set a player's info
   mana:
-    usage: /<command>
+    usage: /<commands>
     description: sets your mana to full
   gathertool:
-    usage: /<command>
+    usage: /<commands>
     description: give yourself a gathering tool
   npcbuilder:
-    usage: /<command>
+    usage: /<commands>
     description: make an npc!
+  skillpoint:
+    usage:
+    description: add a skillpoint to a player
+  tutorial:
+    usage: /<commands>
+    description: used for tutorial-related commands

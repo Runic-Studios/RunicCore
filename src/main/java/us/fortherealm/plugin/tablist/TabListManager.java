@@ -32,6 +32,7 @@ public class TabListManager implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         for (Player online : Bukkit.getOnlinePlayers()) {
+            if (online.hasMetadata("NPC")) continue;
             TabList test = tabbed.getTabList(online);
             FTRCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
                     (FTRCore.getInstance(), () -> setupTab(online), 1);
@@ -48,9 +49,9 @@ public class TabListManager implements Listener {
 
         // header, footer
         tab.setHeaderFooter
-                (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "For The Realm\n"
+                (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "HavenRealms\n"
                                 + ChatColor.WHITE + ChatColor.BOLD + "A New Kind of MMORPG",
-                ChatColor.RED + "Visit our website: " + ChatColor.GOLD + "www.fortherealm.us");
+                ChatColor.RED + "Visit our website: " + ChatColor.GOLD + "www.havenrealms.com");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem
@@ -59,6 +60,7 @@ public class TabListManager implements Listener {
         // fill column with online players
         int i = 0;
         for (Player online : Bukkit.getOnlinePlayers()) {
+            if (online.hasMetadata("NPC")) continue;
             String storedName = FTRCore.getInstance().getConfig().get(online.getUniqueId() + ".info.name").toString();
             if (storedName != null) {
                 tab.set(0, i + 1, new TextTabItem(storedName, 0, Skins.getPlayer(online)));
@@ -100,6 +102,7 @@ public class TabListManager implements Listener {
             @Override
             public void run() {
                 for (Player online : Bukkit.getOnlinePlayers()) {
+                    if (online.hasMetadata("NPC")) continue;
                     setupTab(online);
                 }
             }

@@ -122,6 +122,9 @@ public class Deliverance extends Skill {
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
 
+                    // ignore NPCs
+                    if (entity.hasMetadata("NPC")) { continue; }
+
                     // skip the caster
                     if(entity.equals(pl)) { continue; }
 

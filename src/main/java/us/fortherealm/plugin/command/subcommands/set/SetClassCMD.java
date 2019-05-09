@@ -88,6 +88,9 @@ public class SetClassCMD implements SubCommand {
             setConfig(pl, classStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);
+
+            // set the player's slot to 0 (the artifact)
+            pl.getInventory().setHeldItemSlot(0);
         }
     }
 }

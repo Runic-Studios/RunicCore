@@ -5,12 +5,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.item.GearScanner;
 
 public class HealUtil  {
 
     @SuppressWarnings("deprecation")
-    public void healPlayer(double healAmt, Player recipient, Player caster, String sourceStr) {
+    public static void healPlayer(double healAmt, Player recipient, Player caster) {
+
+        String storedName = FTRCore.getInstance().getConfig().get(caster.getUniqueId() + ".info.name").toString();
+        String sourceStr = " from " + ChatColor.WHITE + storedName;
+        if (recipient == caster) sourceStr = "";
 
         healAmt = healAmt + GearScanner.getHealingBoost(caster);
         double newHP = recipient.getHealth() + healAmt;

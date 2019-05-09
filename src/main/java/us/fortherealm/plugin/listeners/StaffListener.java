@@ -1,6 +1,7 @@
 package us.fortherealm.plugin.listeners;
 
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -120,6 +121,10 @@ public class StaffListener implements Listener {
                                         && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
                                     continue;
                                 }
+
+                                // skip armor stands, npcs
+                                if (victim instanceof ArmorStand) continue;
+                                if (victim.hasMetadata("NPC")) continue;
 
                                 // prevent player from being hit by the same attack
                                 if (hasBeenHit.containsKey(victim.getUniqueId())) {

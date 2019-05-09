@@ -23,7 +23,7 @@ public class SmokeBomb extends Skill {
 
     // globals
     private static final int DAMAGE_AMT = 15;
-    private static final int DURATION = 5;
+    private static final int DURATION = 2;
     private static final int RADIUS = 5;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
 
@@ -31,9 +31,9 @@ public class SmokeBomb extends Skill {
     public SmokeBomb() {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke that" +
-                        "\ndeals " + DAMAGE_AMT + " damage and blinds enemies for" +
-                        "\n" + DURATION + " seconds!",
-                ChatColor.WHITE, 1, 5);
+                        "\ndeals " + DAMAGE_AMT + " damage and blinds enemies" +
+                        "\nwithin " + RADIUS + " blocks for " + DURATION + " seconds!",
+                ChatColor.WHITE, 6, 15);
     }
 
     // skill execute code
@@ -92,6 +92,9 @@ public class SmokeBomb extends Skill {
                                     && FTRCore.getPartyManager().getPlayerParty(player).hasMember(entity.getUniqueId())) {
                                 continue;
                             }
+
+                            // ignore NPCs
+                            if (entity.hasMetadata("NPC")) continue;
 
                             // damage the entity, blind them if they're a player
                             if (entity.getType().isAlive()) {

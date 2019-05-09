@@ -13,14 +13,13 @@ import org.bukkit.entity.Player;
 public class Heal extends Skill {
 
     // globals
-    private static final double HEAL_AMT = 25;
-    private HealUtil hu = new HealUtil();
+    private static final double HEAL_AMT = 20;
 
     // constructor
     public Heal() {
         super("Heal",
                 "You restore " + (int) HEAL_AMT + " of your own health!",
-                ChatColor.WHITE, 1, 10);
+                ChatColor.WHITE, 8, 20);
     }
 
     // skill execute code
@@ -28,7 +27,7 @@ public class Heal extends Skill {
     public void executeSkill(Player pl, SkillItemType type) {
 
         // heal the player
-        hu.healPlayer(HEAL_AMT, pl, pl, "");
+        HealUtil.healPlayer(HEAL_AMT, pl, pl);
 
         // particle effects
         new BukkitRunnable() {

@@ -60,7 +60,7 @@ public class WorkstationListener implements Listener {
         if (stationLocs == null) return;
 
         // iterate through data file, if it finds a saved station w/ same world, x, y, and z, then
-        // it checks 'type' and switch statement opens correct GUI
+        // it checks 'type' and switch statement opens correct ItemGUI
         String stationType = "";
         for (String stationID : stationLocs.getKeys(false)) {
 
@@ -77,7 +77,7 @@ public class WorkstationListener implements Listener {
             }
         }
 
-        // if we've found a workstation, open the associated GUI
+        // if we've found a workstation, open the associated ItemGUI
         if (!stationType.equals("")) {
             e.setCancelled(true);
             tryOpenGUI(pl, block, stationType);

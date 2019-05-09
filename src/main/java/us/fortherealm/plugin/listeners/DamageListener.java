@@ -153,7 +153,7 @@ public class DamageListener implements Listener {
         }
 
         // if player is in combat, remove them
-        if (!FTRCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
+        if (FTRCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
             FTRCore.getCombatManager().getPlayersInCombat().remove(victim.getUniqueId());
             victim.sendMessage(ChatColor.GREEN + "You have left combat!");
         }

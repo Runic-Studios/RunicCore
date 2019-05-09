@@ -1,11 +1,13 @@
 package us.fortherealm.plugin.utilities;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.item.GearScanner;
 import us.fortherealm.plugin.listeners.DamageListener;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
@@ -13,18 +15,47 @@ import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
 public class DamageUtil {
 
     public static void damageEntityMagic(double dmgAmt, LivingEntity recipient, Player caster) {
+
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
+
+        // skip party members
+        if (FTRCore.getPartyManager().getPlayerParty(caster) != null
+                && FTRCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createSkillDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster) {
+
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
+
+        // skip party members
+        if (FTRCore.getPartyManager().getPlayerParty(caster) != null
+                && FTRCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
     private static void damageEntity(double dmgAmt, LivingEntity recipient, Player caster) {
+
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
+
+        // caster can't damage themselves
+        if (recipient == caster) return;
+
+        // skip party members
+        if (FTRCore.getPartyManager().getPlayerParty(caster) != null
+                && FTRCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
 
         DamageListener damageListener = new DamageListener();
 

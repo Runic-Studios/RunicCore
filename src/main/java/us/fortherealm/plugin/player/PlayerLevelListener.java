@@ -128,31 +128,29 @@ public class PlayerLevelListener implements Listener {
 
         int durab = ((Damageable) artifact.getItemMeta()).getDamage();
 
+        double newSpeed;
         switch (className) {
             case "Archer":
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed",
-                        ClassGUI.getArcherBaseBowSpeed()+(.015*pl.getLevel())); // 1.5 at lvl 50
+                newSpeed = ClassGUI.getArcherBaseBowSpeed() + (24+ClassGUI.getArcherBaseBowSpeed()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", newSpeed);
                 break;
             case "Cleric":
-                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed",
-                        ClassGUI.getClericBaseSpeed()+(.012*pl.getLevel())); // 1.2 at lvl 50
+                newSpeed = ClassGUI.getClericBaseSpeed() + (24+ClassGUI.getClericBaseSpeed()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
                 break;
             case "Mage":
-                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed",
-                        ClassGUI.getMageBaseSpeed()+(.012*pl.getLevel())); // 1.2 at lvl 50
+                newSpeed = ClassGUI.getMageBaseSpeed() + (24+ClassGUI.getMageBaseSpeed()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
                 break;
             case "Rogue":
-                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed",
-                        ClassGUI.getRogueBaseSpeed()+(.018*pl.getLevel())); // 1.8 at lvl 50
+                newSpeed = ClassGUI.getRogueBaseSpeed() + (24+ClassGUI.getRogueBaseSpeed()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
                 break;
             case "Warrior":
-                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed",
-                        ClassGUI.getWarriorBaseSpeed()+(.015*pl.getLevel())); // 1.5 at lvl 50
+                newSpeed = ClassGUI.getWarriorBaseSpeed() + (24+ClassGUI.getWarriorBaseSpeed()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
                 break;
         }
-
-        //artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 9);
-        //artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 9);
 
         // update the lore
         LoreGenerator.generateArtifactLore(artifact, artifact.getItemMeta().getDisplayName(), className, durab);

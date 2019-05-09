@@ -10,7 +10,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import us.fortherealm.plugin.attributes.AttributeUtil;
+import us.fortherealm.plugin.item.ItemGUI;
 
 public class ArtifactListener implements Listener {
 
@@ -18,26 +22,32 @@ public class ArtifactListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
-        Player player = (Player) e.getWhoClicked();
+        Player pl = (Player) e.getWhoClicked();
         int itemslot = e.getSlot();
 
         // only listen for the artifact slot
         if (itemslot != 0) return;
 
         // don't trigger if there's no item in the slot to avoid null issues
-        if (player.getInventory().getItem(0) == null) return;
+        if (pl.getInventory().getItem(0) == null) return;
+        ItemStack artifact = pl.getInventory().getItem(0);
+        if (artifact == null) return;
+        ItemMeta meta = artifact.getItemMeta();
+        if (meta == null) return;
+        int durability = ((Damageable) meta).getDamage();
 
         // only activate in survival mode to save builders the headache
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (pl.getGameMode() != GameMode.SURVIVAL) return;
 
         // only listen for a player inventory
         if (e.getClickedInventory() == null) return;
         if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
 
-        // cancel the event, open the artifact
+        // cancel the event, open the artifact editor
         e.setCancelled(true);
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-        ArtifactGUI.CUSTOMIZE_ARTIFACT.open(player);
+        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+        ItemGUI menu = ArtifactGUINew.artifactEditor(pl, artifact, durability);
+        menu.open(pl);
     }
 
     // cancel artifact swapping

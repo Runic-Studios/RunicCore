@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class SkinsGUI implements InventoryProvider {
 
     /**
-     * CHANGE THE ID FOR EACH NEW GUI
+     * CHANGE THE ID FOR EACH NEW ItemGUI
      */
     public static final SmartInventory ARTIFACT_SKINS = SmartInventory.builder()
             .id("artifactSkins")

@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.skillapi.skills.cleric;
 
+import org.bukkit.entity.LivingEntity;
 import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
@@ -19,7 +20,6 @@ import java.util.UUID;
 public class Rejuvenate extends Skill {
 
     // grab our globals
-    private HealUtil hu = new HealUtil();
     private HashMap<UUID, List<UUID>> hasBeenHit;
     private static final int HEAL_AMT = 25;
     private final int RADIUS = 10;
@@ -81,11 +81,17 @@ public class Rejuvenate extends Skill {
         String storedName = plugin.getConfig().get(pl.getUniqueId() + ".info.name").toString();
 
         for (Entity e : location.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-            if (e.getLocation().distance(location) <= BEAM_WIDTH) {
-                if (e != (pl)) {
+
+            if (!e.getType().isAlive()) return;
+
+            LivingEntity le = (LivingEntity) e;
+
+            if (le.getLocation().distance(location) <= BEAM_WIDTH) {
+
+                if (le != (pl)) {
 
                     // only listen for players
-                    if (!(e instanceof Player)) { return; }
+                    if (!(le instanceof Player)) return;
 
                     // skip the player if we've got a party and they're not in it
                     if (FTRCore.getPartyManager().getPlayerParty(pl) != null
@@ -93,7 +99,7 @@ public class Rejuvenate extends Skill {
 
                     // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                     // multiple times
-                    Player ally = (Player) e;
+                    Player ally = (Player) le;
                     if (hasBeenHit.containsKey(ally.getUniqueId())) {
                         List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
                         if (uuids.contains(pl.getUniqueId())) {
@@ -118,6 +124,16 @@ public class Rejuvenate extends Skill {
                         }
                     }.runTaskLater(FTRCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
+                    // ignore NPCs, additional check for tutorial island
+                    if (le.hasMetadata("NPC")) {
+                        if (!pl.hasPermission("tutorial.complete.cleric") || pl.isOp()) {
+                            pl.chat("healpass");
+                            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                            le.getWorld().spawnParticle(Particle.HEART, le.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
+                        }
+                        continue;
+                    }
+
                     if (ally.getHealth() == ally.getMaxHealth()) {
                         ally.sendMessage(
                                 ChatColor.WHITE + storedName
@@ -125,7 +141,7 @@ public class Rejuvenate extends Skill {
                         ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                     } else {
-                        hu.healPlayer(HEAL_AMT, ally, pl, " from " + ChatColor.WHITE + storedName);
+                        HealUtil.healPlayer(HEAL_AMT, ally, pl);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                         ally.getWorld().spawnParticle(Particle.HEART, ally.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 

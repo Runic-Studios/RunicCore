@@ -127,9 +127,9 @@ public class ScoreboardHandler implements Listener {
         int currentLevel = FTRCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
         String display;
         if (profName == null) {
-            display = ChatColor.GRAY + "SetProfCMD: " + ChatColor.GREEN + "None";
+            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None";
         } else {
-            display = ChatColor.GRAY + "SetProfCMD: " + ChatColor.GREEN + profName;
+            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + profName;
             if (currentLevel != 0) {
                 display = ChatColor.GREEN + profName + ChatColor.GRAY + " lv. " + ChatColor.GREEN + currentLevel;
             }

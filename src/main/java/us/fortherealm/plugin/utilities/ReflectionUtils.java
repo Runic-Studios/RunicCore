@@ -302,7 +302,7 @@ public final class ReflectionUtils {
         CRAFTBUKKIT("org.bukkit.craftbukkit." + getServerVersion()),
         CRAFTBUKKIT_BLOCK(CRAFTBUKKIT, "block"),
         CRAFTBUKKIT_CHUNKIO(CRAFTBUKKIT, "chunkio"),
-        CRAFTBUKKIT_COMMAND(CRAFTBUKKIT, "command"),
+        CRAFTBUKKIT_COMMAND(CRAFTBUKKIT, "commands"),
         CRAFTBUKKIT_CONVERSATIONS(CRAFTBUKKIT, "conversations"),
         CRAFTBUKKIT_ENCHANTMENS(CRAFTBUKKIT, "enchantments"),
         CRAFTBUKKIT_ENTITY(CRAFTBUKKIT, "entity"),

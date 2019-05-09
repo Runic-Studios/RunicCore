@@ -1,11 +1,17 @@
 package us.fortherealm.plugin.skillapi.skills.mage;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.FTRCore;
@@ -13,14 +19,16 @@ import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
 import us.fortherealm.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
 import us.fortherealm.plugin.utilities.DamageUtil;
+import us.fortherealm.plugin.utilities.DirectionUtil;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 public class Blizzard extends Skill {
 
     // globals
-    private static final int DAMAGE_AMOUNT = 3;
+    private static final int DAMAGE_AMOUNT = 5;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -31,8 +39,8 @@ public class Blizzard extends Skill {
         super("Blizzard",
                 "You summon a cloud of snow up to " + MAX_DIST + " blocks\n"
                         + "away that rains down snowballs for " + DURATION + " seconds,\n"
-                        + "each dealing " + DAMAGE_AMOUNT + " damage to enemies.",
-                ChatColor.WHITE, 1, 10);
+                        + "each dealing " + DAMAGE_AMOUNT + " damage to enemies and slowing them.",
+                ChatColor.WHITE, 10, 15);
         this.snowballMap = new HashMap<>();
     }
 
@@ -49,7 +57,7 @@ public class Blizzard extends Skill {
             public void run() {
 
                 // cancel after duration
-                if (System.currentTimeMillis() - startTime >= DURATION*1000) {
+                if (System.currentTimeMillis() - startTime >= DURATION * 1000) {
                     this.cancel();
                 }
 
@@ -76,6 +84,27 @@ public class Blizzard extends Skill {
 
             }
         }.runTaskTimer(FTRCore.getInstance(), 0, 10); // drops a snowball every half second
+
+        // quest code for tutorial island, grab all regions the player is standing in
+        // -----------------------------------------------------------------------------------------
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(pl.getLocation()));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return;
+        for (ProtectedRegion region : regions) {
+            if (region.getId().contains("tutorial_mage")
+                    && (!pl.hasPermission("tutorial.complete.mage") || pl.isOp())) {
+
+                // ensure player is facing the flames
+                if (!DirectionUtil.getDirection(pl).equals("S")) return;
+                pl.chat("blizzpass");
+                pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1);
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2336, 37, 1738), Material.ICE.createBlockData());
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2335, 37, 1738), Material.ICE.createBlockData());
+            }
+        }
+        // -----------------------------------------------------------------------------------------
     }
 
     // listener to damage player
@@ -85,6 +114,8 @@ public class Blizzard extends Skill {
         if (!(e.getDamager() instanceof Snowball)) return;
         if (!(e.getEntity() instanceof LivingEntity)) return;
 
+        LivingEntity le = (LivingEntity) e.getEntity();
+
         Snowball snowball = (Snowball) e.getDamager();
         if (!snowballMap.containsKey(snowball)) return;
 
@@ -93,17 +124,25 @@ public class Blizzard extends Skill {
 
         e.setCancelled(true);
 
-        // skip the caster
-        if (victim.getUniqueId() == shooter.getUniqueId()) return;
+        // ignore NPCs
+        if (!le.hasMetadata("NPC")) {
 
-        // skip party members
-        if (FTRCore.getPartyManager().getPlayerParty(shooter) != null
-                && FTRCore.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
+            // skip the caster
+            if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
-        // apply damage, knockback
-        DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, shooter);
-        victim.setLastDamageCause(e);
-        KnockbackUtil.knockback(shooter, victim);
+            // skip party members
+            if (FTRCore.getPartyManager().getPlayerParty(shooter) != null
+                    && FTRCore.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
+
+            // apply damage, knockback
+            DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, shooter);
+            victim.setLastDamageCause(e);
+
+            // apply slow
+            if (victim instanceof Player) {
+                victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+            }
+        }
     }
 
     private void spawnSnowball(Player pl, Location loc, Vector vec) {

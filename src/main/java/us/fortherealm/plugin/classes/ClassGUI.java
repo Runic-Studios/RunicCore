@@ -31,7 +31,7 @@ public class ClassGUI implements InventoryProvider {
     private static final double archerBaseBowSpeed = -23.25;
     private static final double clericBaseSpeed = -23.4;
     private static final double mageBaseSpeed = -23.4;
-    private static final double rogueBaseSpeed = -23.1;
+    private static final double rogueBaseSpeed = -22.8;
     private static final double warriorBaseSpeed = -23.25;
 
     // this inventory cannot be closed!
@@ -161,11 +161,10 @@ public class ClassGUI implements InventoryProvider {
                 spell = "Barrage";
                 color = LIME;
                 if (isTutorial) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                            new TextComponent
-                                    (ChatColor.GREEN + "Try "
-                                    + ChatColor.WHITE + "Left-Click"
-                                    + ChatColor.GREEN + "!"));
+                    player.sendTitle(
+                            ChatColor.GOLD + "Try",
+                            ChatColor.YELLOW + "Left-Click!", 10, 100, 10);
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Left-Click " + ChatColor.GRAY + "to cast barrage!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_GREEN + "You selected",
@@ -178,13 +177,10 @@ public class ClassGUI implements InventoryProvider {
                 spell = "Rejuvenate";
                 color = AQUA;
                 if (isTutorial) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                            new TextComponent
-                                    (ChatColor.GREEN + "Try "
-                                            + ChatColor.WHITE + "Sneak "
-                                            + ChatColor.GREEN + " + "
-                                            + ChatColor.WHITE + "Left-Click"
-                                            + ChatColor.GREEN + "!"));
+                    player.sendTitle(
+                            ChatColor.GOLD + "Try",
+                            ChatColor.YELLOW + "Sneak + Left-Click!", 10, 100, 10);
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Left-Click " + ChatColor.GRAY + "to cast rejuvenate!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_AQUA + "You selected",
@@ -197,13 +193,10 @@ public class ClassGUI implements InventoryProvider {
                 color = FUCHSIA;
                 spell = "Blizzard";
                 if (isTutorial) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                            new TextComponent
-                                    (ChatColor.GREEN + "Try "
-                                            + ChatColor.WHITE + "Sneak "
-                                            + ChatColor.GREEN + " + "
-                                            + ChatColor.WHITE + "Left-Click"
-                                            + ChatColor.GREEN + "!"));
+                    player.sendTitle(
+                            ChatColor.GOLD + "Try",
+                            ChatColor.YELLOW + "Sneak + Left-Click!", 10, 100, 10);
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Left-Click " + ChatColor.GRAY + "to cast blizzard!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_PURPLE + "You selected",
@@ -216,13 +209,10 @@ public class ClassGUI implements InventoryProvider {
                 spell = "Smoke Bomb";
                 color = YELLOW;
                 if (isTutorial) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                            new TextComponent
-                                    (ChatColor.GREEN + "Try "
-                                            + ChatColor.WHITE + "Sneak "
-                                            + ChatColor.GREEN + " + "
-                                            + ChatColor.WHITE + "Left-Click"
-                                            + ChatColor.GREEN + "!"));
+                    player.sendTitle(
+                            ChatColor.GOLD + "Try",
+                            ChatColor.YELLOW + "Sneak + Left-Click!", 10, 100, 10);
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Left-Click " + ChatColor.GRAY + "to cast smoke bomb!");
                 } else {
                     player.sendTitle(
                             ChatColor.GOLD + "You selected",
@@ -235,13 +225,10 @@ public class ClassGUI implements InventoryProvider {
                 spell = "Charge";
                 color = RED;
                 if (isTutorial) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                            new TextComponent
-                                    (ChatColor.GREEN + "Try "
-                                            + ChatColor.WHITE + "Sneak "
-                                            + ChatColor.GREEN + " + "
-                                            + ChatColor.WHITE + "Left-Click"
-                                            + ChatColor.GREEN + "!"));
+                    player.sendTitle(
+                            ChatColor.GOLD + "Try",
+                            ChatColor.YELLOW + "Sneak + Left-Click!", 10, 100, 10);
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Left-Click " + ChatColor.GRAY + "to cast charge!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_RED + "You selected",
@@ -265,8 +252,8 @@ public class ClassGUI implements InventoryProvider {
         switch (className) {
             case "Archer":
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", archerBaseBowSpeed);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 2);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 4);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
                 break;
             case "Cleric":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", clericBaseSpeed, "mainhand");
@@ -280,8 +267,8 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Rogue":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", rogueBaseSpeed, "mainhand");
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 4);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 6);
                 break;
             case "Warrior":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", warriorBaseSpeed, "mainhand");

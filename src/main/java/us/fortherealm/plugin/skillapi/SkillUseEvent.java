@@ -1,5 +1,6 @@
 package us.fortherealm.plugin.skillapi;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +25,8 @@ public class SkillUseEvent implements Listener {
         // only listen for artifacts/runes
         if (slot != 0 && slot != 1) return;
 
-        if (pl.getInventory().getItemInMainHand() == null) return;
+        if (pl.getGameMode() == GameMode.CREATIVE) return;
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
 
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
 

@@ -16,14 +16,14 @@ import us.fortherealm.plugin.skillapi.skillutil.formats.HorizCircleFrame;
 public class Sprint extends Skill {
 
     // global variables
-    private static int BUFF_DURATION = 10;
+    private static int BUFF_DURATION = 7;
     private static int SPEED_AMPLIFIER = 2;
 
     // constructor
     public Sprint() {
         super("Sprint",
                 "For " + BUFF_DURATION + " seconds, you gain a" +
-                        "\nmassive boost to your speed!", ChatColor.WHITE,10, 5);
+                        "\nmassive boost to your speed!", ChatColor.WHITE,10, 10);
     }
 
     // skill execute code

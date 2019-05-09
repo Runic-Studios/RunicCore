@@ -27,7 +27,7 @@ public class SpellsGUI implements InventoryProvider {
     // private List<Skill> skills = FTRCore.getSkillManager().getSkills();
 
     /**
-     * CHANGE THE ID FOR EACH NEW GUI
+     * CHANGE THE ID FOR EACH NEW ItemGUI
      */
     public static final SmartInventory ARTIFACT_SPELLS = SmartInventory.builder()
             .id("artifactSpells")

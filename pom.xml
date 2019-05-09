@@ -107,11 +107,15 @@
             <artifactId>Item-NBT-API</artifactId>
             <version>be4dfa593b</version>
         </dependency>
+
+
         <dependency>
             <groupId>fr.minuskube.inv</groupId>
             <artifactId>smart-invs</artifactId>
             <version>1.2.5</version>
         </dependency>
+
+
         <!-- Tabbed API -->
         <dependency>
             <groupId>com.github.thekeenant</groupId>

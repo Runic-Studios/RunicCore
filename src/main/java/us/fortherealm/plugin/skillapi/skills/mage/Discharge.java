@@ -21,9 +21,9 @@ import java.util.UUID;
 public class Discharge extends Skill {
 
     // globals variables
-    private static final int DAMAGE_AMT = 10;
+    private static final int DAMAGE_AMT = 20;
     private static final int BLAST_RADIUS = 3;
-    private static final double KNOCKBACK_MULT = -1;
+    private static final double KNOCKBACK_MULT = -0.2;
     private static final double KNOCKUP_AMT = 0.5;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
 
@@ -33,7 +33,7 @@ public class Discharge extends Skill {
                 "You launch an electric spark! Upon impact,\n"
                         + "it summons a lightning bolt, dealing " + DAMAGE_AMT + "\n"
                         + "damage to enemies within " + BLAST_RADIUS + " blocks.",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 10, 20);
     }
 
     // skill execute code
@@ -77,6 +77,9 @@ public class Discharge extends Skill {
                             if (entity != (pl)) {
                                 if (entity.getType().isAlive()) {
                                     LivingEntity victim = (LivingEntity) entity;
+
+                                    // ignore NPCs
+                                    if (entity.hasMetadata("NPC")) continue;
 
                                     // skip party members
                                     if (FTRCore.getPartyManager().getPlayerParty(pl) != null

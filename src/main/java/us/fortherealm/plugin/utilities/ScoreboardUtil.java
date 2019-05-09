@@ -53,7 +53,7 @@ public class ScoreboardUtil {
         Score playerClass = sidebar.getScore(ChatColor.GRAY + "Class: " + ChatColor.GREEN + "None");
         playerClass.setScore(5);
 
-        Score playerProfession = sidebar.getScore(ChatColor.GRAY + "SetProfCMD: " + ChatColor.GREEN + "None");
+        Score playerProfession = sidebar.getScore(ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None");
         playerProfession.setScore(4);
 
         Score playerGuild = sidebar.getScore(ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None");

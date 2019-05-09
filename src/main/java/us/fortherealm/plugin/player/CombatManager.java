@@ -1,17 +1,28 @@
-package us.fortherealm.plugin.healthbars;
+package us.fortherealm.plugin.player;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.fortherealm.plugin.FTRCore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
-public class CombatManager {
+/**
+ * This class manages combat against mobs and players and handles each differently,
+ * which is why we need both a HashMap and a List.
+ */
+public class CombatManager implements Listener {
 
     private HashMap<UUID, Long> playersInCombat;
+    private List<UUID> pvpers = new ArrayList<>();
     private FTRCore plugin = FTRCore.getInstance();
     private static final int COMBAT_DURATION = 10;
 
@@ -23,6 +34,9 @@ public class CombatManager {
     public int getCombatDuration() { return COMBAT_DURATION; }
     public HashMap<UUID, Long> getPlayersInCombat() {
         return this.playersInCombat;
+    }
+    public List<UUID> getPvPers() {
+        return this.pvpers;
     }
 
     public void addPlayer(UUID uuid, Long currentTime) {
@@ -38,6 +52,7 @@ public class CombatManager {
                     if(playersInCombat.containsKey(online.getUniqueId())) {
                         if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION*1000)) {
                             playersInCombat.remove(online.getUniqueId());
+                            pvpers.remove(online.getUniqueId());
                             online.sendMessage(ChatColor.GREEN + "You have left combat!");
                         }
                     }

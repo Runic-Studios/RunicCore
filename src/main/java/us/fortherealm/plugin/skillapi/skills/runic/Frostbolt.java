@@ -21,7 +21,7 @@ import us.fortherealm.plugin.utilities.DamageUtil;
 public class Frostbolt extends Skill {
 
     private static final double SPEED = 2;
-    private static final int DAMAGE_AMT = 10;
+    private static final int DAMAGE_AMT = 8;
     private Snowball snowball;
 
     public Frostbolt() {
@@ -29,7 +29,7 @@ public class Frostbolt extends Skill {
                 "You launch a projectile bolt of ice" +
                         "\nthat deals " + DAMAGE_AMT + " damage on impact" +
                         "\nand slows its target!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 5, 15);
     }
 
     // skill execute code
@@ -65,6 +65,9 @@ public class Frostbolt extends Skill {
         Player pl = (Player) snowball.getShooter();
         LivingEntity victim = (LivingEntity) event.getEntity();
 
+        // ignore NPCs
+        if (victim.hasMetadata("NPC")) return;
+
         // skip party members
         if (FTRCore.getPartyManager().getPlayerParty(pl) != null
                 && FTRCore.getPartyManager().getPlayerParty(pl).hasMember(victim.getUniqueId())) { return; }
@@ -72,6 +75,8 @@ public class Frostbolt extends Skill {
         // cancel the event, apply skill mechanics
         DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
         KnockbackUtil.knockback(pl, victim);
+
+        // slow
         if (victim instanceof Player) {
             victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));
         }

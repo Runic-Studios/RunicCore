@@ -1,5 +1,11 @@
 package us.fortherealm.plugin.skillapi.skills.archer;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import us.fortherealm.plugin.FTRCore;
 import us.fortherealm.plugin.skillapi.skilltypes.Skill;
 import us.fortherealm.plugin.skillapi.skilltypes.SkillItemType;
@@ -11,23 +17,32 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import us.fortherealm.plugin.utilities.DamageUtil;
+import us.fortherealm.plugin.utilities.DirectionUtil;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Barrage extends Skill {
 
     // globals
-    private HashMap<Arrow, UUID> bArrows = new HashMap<>();
-    private static final int DAMAGE = 5;
+    private HashMap<Arrow, UUID> bArrows;
+    private HashMap<UUID, UUID> hasBeenHit;
+    private static final int DAMAGE = 10;
+
+    // in seconds
+    private final int SUCCESSIVE_COOLDOWN = 1;
 
     // constructor
     public Barrage() {
         super("Barrage",
                 "You launch a volley of five magical arrows\n"
                         + "that deal " + DAMAGE + " damage!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 6, 15);
+        this.bArrows = new HashMap<>();
+        this.hasBeenHit = new HashMap<>();
     }
 
     // skill execute code
@@ -41,6 +56,24 @@ public class Barrage extends Skill {
         Vector rightMid = rotateVectorAroundY(middle, 11.25);
         Vector right = rotateVectorAroundY(middle, 22.5);
         startTask(pl, new Vector[]{middle, left, leftMid, rightMid, right});
+
+        // quest code for tutorial island, grab all regions the player is standing in
+        // -----------------------------------------------------------------------------------------
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(pl.getLocation()));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return;
+        for (ProtectedRegion region : regions) {
+            if (region.getId().contains("tutorial_archer")
+                    && (!pl.hasPermission("tutorial.complete.archer") || pl.isOp())) {
+
+                // ensure player is facing the targets
+                if (!DirectionUtil.getDirection(pl).equals("S")) return;
+                pl.chat("barragepass");
+            }
+        }
+        // -----------------------------------------------------------------------------------------
     }
 
     // vectors, particles
@@ -86,11 +119,30 @@ public class Barrage extends Skill {
 
             if (!(e.getEntity() instanceof LivingEntity)) return;
             Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
+            assert pl != null;
+            UUID plID = pl.getUniqueId();
             LivingEntity le = (LivingEntity) e.getEntity();
 
-            DamageUtil.damageEntityMagic(DAMAGE, le, pl);
-            e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
-            e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
+            // ignore NPCs
+            if (le.hasMetadata("NPC")) {
+                return;
+            }
+
+            if (!hasBeenHit.containsKey(le.getUniqueId())) {
+
+                DamageUtil.damageEntityMagic(DAMAGE, le, pl);
+                e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
+                e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
+
+                hasBeenHit.put(le.getUniqueId(), plID);
+                // remove concussive hit tracker
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        hasBeenHit.remove(le.getUniqueId());
+                    }
+                }.runTaskLater(FTRCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
+            }
         }
     }
 }

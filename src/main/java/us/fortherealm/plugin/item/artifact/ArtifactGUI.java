@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class ArtifactGUI implements InventoryProvider {
 
     /**
-     * CHANGE THE ID FOR EACH NEW GUI
+     * CHANGE THE ID FOR EACH NEW ItemGUI
      */
     public static final SmartInventory CUSTOMIZE_ARTIFACT = SmartInventory.builder()
             .id("artifactCustomization")

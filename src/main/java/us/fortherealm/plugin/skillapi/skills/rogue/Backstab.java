@@ -18,7 +18,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Backstab extends Skill {
 
-    private static final int DAMAGE_AMT = 5;
+    private static final int DAMAGE_AMT = 10;
     private static final int DURATION = 10;
     private HashMap<UUID, Long> stabbers = new HashMap<>();
 
@@ -26,7 +26,7 @@ public class Backstab extends Skill {
         super("Backstab",
                 "For " + DURATION + " seconds, striking enemies from\n"
                         + "behind deals " + DAMAGE_AMT + " additional spell damage!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 15, 10);
     }
 
     @Override
@@ -54,6 +54,8 @@ public class Backstab extends Skill {
         Player pl = (Player) e.getDamager();
         UUID uuid = pl.getUniqueId();
         LivingEntity le = (LivingEntity) e.getEntity();
+
+        if (le.hasMetadata("NPC")) return;
 
         if (!stabbers.containsKey(uuid)) return;
 

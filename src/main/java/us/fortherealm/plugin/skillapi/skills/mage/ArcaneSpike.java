@@ -17,7 +17,7 @@ import java.util.*;
 public class ArcaneSpike extends Skill {
 
     // globals
-    private static final int DAMAGE_AMOUNT = 5;
+    private static final int DAMAGE_AMOUNT = 10;
     private static final double BEAM_WIDTH = 1.5;
     private static final int BEAM_LENGTH = 16;
     private static final int RADIUS = 16;
@@ -29,7 +29,7 @@ public class ArcaneSpike extends Skill {
                 "You launch three beams of arcane magic!" +
                 "\nEach beam deals " + DAMAGE_AMOUNT + " damage to enemies " +
                 "\nit passes through.",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 6, 10);
         this.hasBeenHit = new HashMap<>();
     }
 
@@ -76,6 +76,9 @@ public class ArcaneSpike extends Skill {
                 if (e.getType().isAlive()) {
                     LivingEntity victim = (LivingEntity) e;
 
+                    // ignore NPCs
+                    if (victim.hasMetadata("NPC")) { continue; }
+
                     // skip party members
                     if (FTRCore.getPartyManager().getPlayerParty(player) != null
                             && FTRCore.getPartyManager().getPlayerParty(player).hasMember(e.getUniqueId())) { continue; }
@@ -105,7 +108,7 @@ public class ArcaneSpike extends Skill {
                     }.runTaskLater(FTRCore.getInstance(), 100L);
 
                     DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
-                    KnockbackUtil.knockback(player, victim, 1);
+                    //KnockbackUtil.knockback(player, victim, 1);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
                     break;
                 }
