@@ -11,12 +11,12 @@ public class UniqueIdAssigner {
 
     /*
 
-    This skillutil can be used to assign objects with unique IDs when they can't otherwise be individualized.
-    The unique IDs are non-volatile, however the id must be stored on the object. This skillutil is ONLY
-    responsible for assigning unique IDs. An example of this skillutil's usage can be found in the CasterItemStack
+    This spellutil can be used to assign objects with unique IDs when they can't otherwise be individualized.
+    The unique IDs are non-volatile, however the id must be stored on the object. This spellutil is ONLY
+    responsible for assigning unique IDs. An example of this spellutil's usage can be found in the CasterItemStack
     class. 99.9999% of this utils usage will come from classes extending ItemStack.
 
-    Note: Deleting the yaml file this skillutil is writing to will result in a catastrophic loss of every unique id.
+    Note: Deleting the yaml file this spellutil is writing to will result in a catastrophic loss of every unique id.
 
      */
 

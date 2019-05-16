@@ -37,7 +37,7 @@ public class SpellsGUI implements InventoryProvider {
         ItemStack rune = player.getInventory().getItem(1);
         ItemMeta meta = rune.getItemMeta();
 
-        // build the menu description, updates live with their current skills
+        // build the menu description, updates live with their current spells
         String primarySpell = AttributeUtil.getSpell(rune, "primarySpell");
         String secondarySpell = AttributeUtil.getSpell(rune, "secondarySpell");
         ArrayList<String> desc = new ArrayList<>();
@@ -70,7 +70,7 @@ public class SpellsGUI implements InventoryProvider {
         spDesc.add(ChatColor.GREEN + "and leveling your character!");
         contents.set(1, 5, ClickableItem.of
                 (menuItem(Material.BONE_MEAL, ChatColor.WHITE,
-                        ChatColor.BOLD + "Skill Points: " + skillpoints,
+                        ChatColor.BOLD + "Spell Points: " + skillpoints,
                         spDesc, 0, skillpoints), // read config for amount
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);

@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.listeners.DamageListener;
-import com.runicrealms.plugin.skillapi.skilltypes.skillutil.KnockbackUtil;
+import com.runicrealms.plugin.spellapi.spelltypes.skillutil.KnockbackUtil;
 
 public class DamageUtil {
 

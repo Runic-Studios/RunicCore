@@ -14,7 +14,7 @@ public enum ArmorSlotEnum {
     /**
      * Attempts to match the ArmorType for the specified ItemStack.
      *
-     * @param itemStack The ItemStack to parse the skilltypes of.
+     * @param itemStack The ItemStack to parse the spelltypes of.
      * @return The parsed ArmorType. (null if none were found.)
      */
     public static ArmorSlotEnum matchSlot(final ItemStack itemStack){

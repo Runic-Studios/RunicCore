@@ -22,9 +22,9 @@ import java.util.ArrayList;
 public class SpellsGUI implements InventoryProvider {
 
     // todo: add variable in each skill which corresponds to a class to make adding this easier
-    // for (Skill skill : skills) {
+    // for (Spell skill : spells) {
     // if (skill.isMageSkill)... etc
-    // private List<Skill> skills = RunicCore.getSkillManager().getSkills();
+    // private List<Spell> spells = RunicCore.getSkillManager().getSkills();
 
     /**
      * CHANGE THE ID FOR EACH NEW ItemGUI
@@ -46,7 +46,7 @@ public class SpellsGUI implements InventoryProvider {
         ItemStack artifact = player.getInventory().getItem(0);
         ItemMeta meta = artifact.getItemMeta();
 
-        // build the menu description, updates live with their current skills
+        // build the menu description, updates live with their current spells
         String primarySpell = AttributeUtil.getSpell(artifact, "primarySpell");
         String secondarySpell = AttributeUtil.getSpell(artifact, "secondarySpell");
         ArrayList<String> desc = new ArrayList<>();
@@ -80,7 +80,7 @@ public class SpellsGUI implements InventoryProvider {
         spDesc.add(ChatColor.GREEN + "and leveling your character!");
         contents.set(1, 5, ClickableItem.of
                 (menuItem(Material.BONE_MEAL, ChatColor.WHITE,
-                        ChatColor.BOLD + "Skill Points: " + skillpoints,
+                        ChatColor.BOLD + "Spell Points: " + skillpoints,
                         spDesc, 0, skillpoints), // read config for amount
                         e -> {
                             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
@@ -135,7 +135,7 @@ public class SpellsGUI implements InventoryProvider {
     private void displaySpellsWarrior(Player player, InventoryContents contents) {
         displaySpell(player, contents, 2, 3, "Charge", "Warrior", true);
         displaySpell(player, contents, 2, 4, "Enrage", "Warrior", false);
-        displaySpell(player, contents, 2, 5, "Judgement", "Warrior", false);
+        displaySpell(player, contents, 2, 5, "Judgment", "Warrior", false);
     }
 
     // display for each skin

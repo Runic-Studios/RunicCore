@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.item.artifact;
 
-import com.runicrealms.plugin.skillapi.skilltypes.Skill;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -267,6 +265,9 @@ public class ArtifactGUINew {
 
             } else if (event.getPosition() == 14) {
 
+                event.setWillClose(false);
+                event.setWillDestroy(false);
+
             } else {
 
                 String spellName = event.getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
@@ -274,7 +275,12 @@ public class ArtifactGUINew {
                 // apply the skin if the player has the permission
                 if (event.getClickType() == ClickType.LEFT) {
 
-                    if (!pl.hasPermission("core.spells." + spellName)) {
+                    if (!pl.hasPermission("core.spells." + spellName)
+                            && !spellName.equals("barrage")
+                            && !spellName.equals("blizzard")
+                            && !spellName.equals("charge")
+                            && !spellName.equals("rejuvenate")
+                            && !spellName.equals("smokebomb")) {
                         pl.closeInventory();
                         event.setWillClose(true);
                         event.setWillDestroy(true);
@@ -289,7 +295,12 @@ public class ArtifactGUINew {
 
                 } else if (event.getClickType() == ClickType.RIGHT) {
 
-                    if (!pl.hasPermission("core.spells." + spellName)) {
+                    if (!pl.hasPermission("core.spells." + spellName)
+                            && !spellName.equals("barrage")
+                            && !spellName.equals("blizzard")
+                            && !spellName.equals("charge")
+                            && !spellName.equals("rejuvenate")
+                            && !spellName.equals("smokebomb")) {
                         pl.closeInventory();
                         event.setWillClose(true);
                         event.setWillDestroy(true);
@@ -311,7 +322,7 @@ public class ArtifactGUINew {
             }
         }, RunicCore.getInstance());
 
-        // build the menu description, updates live with their current skills
+        // build the menu description, updates live with their current spells
         String primarySpell = AttributeUtil.getSpell(artifact, "primarySpell");
         String secondarySpell = AttributeUtil.getSpell(artifact, "secondarySpell");
         spellEditor.setOption(12, new ItemStack(artifact.getType()), "&a" + artifact.getItemMeta().getDisplayName(),
@@ -418,7 +429,13 @@ public class ArtifactGUINew {
         }
 
         String status;
-        if (isUnlocked) {
+        if (isUnlocked
+                || spellName.equals("Barrage")
+                || spellName.equals("Blizzard")
+                || spellName.equals("Charge")
+                || spellName.equals("Rejuvenate")
+                || spellName.equals("Smoke Bomb")) {
+
             status = "&a[ Unlocked ]";
         } else {
             status = "&c[Locked] &8(&fShift + Click &8to unlock)";

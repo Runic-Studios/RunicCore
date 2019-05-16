@@ -37,8 +37,8 @@ import com.runicrealms.plugin.professions.gathering.WCListener;
 import com.runicrealms.plugin.professions.jeweler.SocketListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
-import com.runicrealms.plugin.skillapi.SkillManager;
-import com.runicrealms.plugin.skillapi.SkillUseEvent;
+import com.runicrealms.plugin.spellapi.SpellManager;
+import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.commands.CaptainDefeated;
 import com.runicrealms.plugin.tutorial.commands.TutorialSC;
@@ -59,7 +59,7 @@ public class RunicCore extends JavaPlugin {
     private static PartyManager partyManager;
     private static ProfManager profManager;
     private static ScoreboardHandler scoreboardHandler;
-    private static SkillManager skillManager;
+    private static SpellManager skillManager;
     private static TabListManager tabListManager;
 
     // getters for handlers
@@ -70,7 +70,7 @@ public class RunicCore extends JavaPlugin {
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
-    public static SkillManager getSkillManager() { return skillManager; }
+    public static SpellManager getSkillManager() { return skillManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
 
     public void onEnable() {
@@ -83,7 +83,7 @@ public class RunicCore extends JavaPlugin {
         partyManager = new PartyManager();
         profManager = new ProfManager();
         scoreboardHandler = new ScoreboardHandler();
-        skillManager = new SkillManager();
+        skillManager = new SpellManager();
         tabListManager = new TabListManager(this);
 
         // enable message
@@ -136,7 +136,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new OutlawManager(), this);
         pm.registerEvents(new ExpListener(), this);
-        pm.registerEvents(new SkillUseEvent(), this);
+        pm.registerEvents(new SpellUseEvent(), this);
         pm.registerEvents(new WeaponCDListener(), this);
         pm.registerEvents(new PlayerBars(), this);
         pm.registerEvents(new WorkstationListener(), this);
