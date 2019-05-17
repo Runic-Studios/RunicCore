@@ -43,9 +43,9 @@ public class Blizzard extends Spell {
         this.snowballMap = new HashMap<>();
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         Location lookLoc = pl.getTargetBlock(null, MAX_DIST).getLocation();
         Vector launchPath = new Vector(0, -1.0, 0).normalize().multiply(SNOWBALL_SPEED);

@@ -1,9 +1,9 @@
-package com.runicrealms.plugin.skillapi.skilltypes.skillutil;
+package com.runicrealms.plugin.spellapi.spellutil.particles;
 
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.scheduler.BukkitRunnable;
+import com.runicrealms.plugin.RunicCore;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;

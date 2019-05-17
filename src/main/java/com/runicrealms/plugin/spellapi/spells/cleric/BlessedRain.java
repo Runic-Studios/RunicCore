@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.skillutil.HealUtil;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -29,7 +29,7 @@ public class BlessedRain extends Spell {
     }
 
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         Location loc = pl.getLocation();
         //Location splashLoc = pl.getLocation();

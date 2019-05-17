@@ -7,12 +7,20 @@ import org.bukkit.util.Vector;
 
 public class KnockbackUtil {
 
-    public static void knockback(Player p, Entity t, int strength) {
-        if(t == null || p == null)
-            return;
+    private static final double POWER = 0.35;
+
+    public static void knockback(Player p, Entity t) {
         Location l = t.getLocation().subtract(p.getLocation());
         double distance = t.getLocation().distance(p.getLocation());
-        Vector v = l.toVector().multiply(strength/distance);
+        Vector v = l.toVector().multiply(POWER/distance);
+        v.setY(0.3333);
+        t.setVelocity(v);
+    }
+
+    public static void knockback(Player p, Entity t, double mult) {
+        Location l = t.getLocation().subtract(p.getLocation());
+        double distance = t.getLocation().distance(p.getLocation());
+        Vector v = l.toVector().multiply(mult/distance);
         v.setY(0.3333);
         t.setVelocity(v);
     }
@@ -26,3 +34,4 @@ public class KnockbackUtil {
         t.setVelocity(v);
     }
 }
+

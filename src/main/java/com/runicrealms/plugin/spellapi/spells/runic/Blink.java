@@ -23,9 +23,9 @@ public class Blink extends Spell {
                 ChatColor.WHITE, 10, 20);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
         Location loc = pl.getLocation();
         Block validFinalBlock = null;
         Block currentBlock;

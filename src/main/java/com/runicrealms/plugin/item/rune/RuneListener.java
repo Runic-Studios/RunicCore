@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.rune;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.item.ItemGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -10,6 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class RuneListener implements Listener {
 
@@ -25,6 +29,11 @@ public class RuneListener implements Listener {
 
         // don't trigger if there's no item in the slot to avoid null issues
         if (pl.getInventory().getItem(1) == null) return;
+        ItemStack rune = pl.getInventory().getItem(1);
+
+        ItemMeta meta = rune.getItemMeta();
+        if (meta == null) return;
+        int durability = ((Damageable) meta).getDamage();
 
         // only activate in survival mode to save builders the headache
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
@@ -44,7 +53,8 @@ public class RuneListener implements Listener {
 
         // open the rune editor
         pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-        RuneGUI.CUSTOMIZE_RUNE.open(pl);
+        ItemGUI menu = RuneGUI.runeEditor(pl, rune, durability);
+        menu.open(pl);
     }
 
     // cancel rune swapping

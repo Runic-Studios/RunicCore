@@ -22,7 +22,7 @@ public class HologramUtil {
         createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤⚔");
     }
 
-    public static void createSkillDamageHologram(Player createFor, Location createAround, double hp) {
+    public static void createSpellDamageHologram(Player createFor, Location createAround, double hp) {
         createDamageHologram(createFor, createAround, ChatColor.DARK_AQUA + "-" + (int) hp + " ❤ʔ");
     }
 

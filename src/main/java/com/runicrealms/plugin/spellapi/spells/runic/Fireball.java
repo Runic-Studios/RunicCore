@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.runic;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.skillutil.KnockbackUtil;
+import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -31,9 +31,9 @@ public class Fireball extends Spell {
                 ChatColor.WHITE, 5, 15);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player player, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         fireball = player.launchProjectile(SmallFireball.class);
         fireball.setIsIncendiary(false);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);
@@ -61,7 +61,7 @@ public class Fireball extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(player) != null
                 && RunicCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
 
-        // cancel the event, apply skill mechanics
+        // cancel the event, apply spell mechanics
         DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
         KnockbackUtil.knockback(player, victim, 1.5);
 

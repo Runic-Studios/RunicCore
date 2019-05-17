@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.formats.Cone;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -32,13 +32,13 @@ public class Enrage extends Spell {
                 "For " + CHANNEL_DURATION + " seconds, you channel a powerful" +
                         "\nrage and may not move. After, you gain" +
                         "\nan immense boost of speed and your attacks" +
-                        "\ndeal" + DAMAGE_AMT + "additional spell damage" + " for " + BUFF_DURATION + " seconds!",
+                        "\ndeal " + DAMAGE_AMT + " additional spell damage" + " for " + BUFF_DURATION + " seconds!",
                 ChatColor.WHITE, 1, 5);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         UUID uuid = pl.getUniqueId();
 

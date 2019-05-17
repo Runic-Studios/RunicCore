@@ -32,9 +32,9 @@ public class ArcaneSpike extends Spell {
         this.hasBeenHit = new HashMap<>();
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
         // sound effects
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.0f);

@@ -27,7 +27,7 @@ public class HolyNova extends Spell {
     }
 
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         // begin effect
         BukkitRunnable nova = new BukkitRunnable() {
@@ -80,7 +80,7 @@ public class HolyNova extends Spell {
             if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                     && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
-            // Executes the skill
+            // Executes the spell
             if (entity.getType().isAlive()) {
                 LivingEntity victim = (LivingEntity) entity;
                 DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);

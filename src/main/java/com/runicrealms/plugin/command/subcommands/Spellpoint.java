@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.command.subcommands;
 
-import com.runicrealms.plugin.command.supercommands.SkillpointSC;
+import com.runicrealms.plugin.command.supercommands.SpellpointSC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,14 +13,14 @@ import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.List;
 
-public class Skillpoint implements SubCommand {
+public class Spellpoint implements SubCommand {
 
-    private SkillpointSC skillpointSC;
+    private SpellpointSC spellpointSC;
     private Plugin plugin = RunicCore.getInstance();
     private ScoreboardHandler sbh = RunicCore.getScoreboardHandler();
 
-    public Skillpoint(SkillpointSC skillpointSC) {
-        this.skillpointSC = skillpointSC;
+    public Spellpoint(SpellpointSC spellpointSC) {
+        this.spellpointSC = spellpointSC;
     }
 
 
@@ -39,16 +39,16 @@ public class Skillpoint implements SubCommand {
 
         // if the sender does not specify the correct arguments
         if (args.length != 2) {
-            sender.sendMessage(ChatColor.RED + "Usage: /skillpoint give [player]");
+            sender.sendMessage(ChatColor.RED + "Usage: /spellpoint give [player]");
             return;
         }
 
         Player pl = Bukkit.getPlayer(args[1]);
 
-        // give player 1 skillpoint
+        // give player 1 spellpoint
         if (pl != null) {
-            int skillpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.skillpoints");
-            RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.skillpoints", skillpoints+1);
+            int spellpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
+            RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
             RunicCore.getInstance().saveConfig();
             RunicCore.getInstance().reloadConfig();
         }
@@ -56,7 +56,7 @@ public class Skillpoint implements SubCommand {
 
     @Override
     public String permissionLabel() {
-        return "ftrcore.skillpoint";
+        return "ftrcore.spellpoint";
     }
 
     @Override

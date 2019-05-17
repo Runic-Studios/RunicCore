@@ -34,11 +34,11 @@ public abstract class Spell implements ISpell, Listener {
 
     @Override
     public void execute(Player player, SpellItemType type) {
-        if (!RunicCore.getSkillManager().isOnCooldown(player, this)) {
+        if (!RunicCore.getSpellManager().isOnCooldown(player, this)) {
             if (doCooldown) {
                 // verify enough mana
                 if (!verifyMana(player)) return;
-                this.executeSkill(player, type);
+                this.executeSpell(player, type);
             }
         }
     }
@@ -53,7 +53,7 @@ public abstract class Spell implements ISpell, Listener {
         RunicCore.getManaManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
         RunicCore.getScoreboardHandler().updateSideInfo(player);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
-        RunicCore.getSkillManager().addCooldown(player, this, this.getCooldown());
+        RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
         return true;
     }
 
@@ -93,9 +93,9 @@ public abstract class Spell implements ISpell, Listener {
         return newVector;
     }
 
-    public void executeSkill(Player player, SpellItemType type){}
+    public void executeSpell(Player player, SpellItemType type){}
 
-    // determines which skill to cast
+    // determines which spell to cast
     @Override
     public boolean isFound(ItemStack item, String spellSlot) {
         String spell = AttributeUtil.getSpell(item, spellSlot);

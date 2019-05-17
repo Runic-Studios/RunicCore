@@ -27,75 +27,75 @@ public class SpellManager {
         this.spellList = new ArrayList<>();
         this.cooldown = new HashMap<>();
 
-        this.registerSkills();
+        this.registerSpells();
         this.startCooldownTask();
     }
 
-    public List<Spell> getSkills() {
+    public List<Spell> getSpells() {
         return this.spellList;
     }
 
-    public void addCooldown(final Player player, final Spell skill, double cooldownTime) {
+    public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
         if(this.cooldown.containsKey(player.getUniqueId())) {
-            HashMap<Spell, Long> playerSkillsOnCooldown = this.cooldown.get(player.getUniqueId());
-            playerSkillsOnCooldown.put(skill, System.currentTimeMillis());
-            this.cooldown.put(player.getUniqueId(), playerSkillsOnCooldown);
+            HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+            playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
+            this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         } else {
-            HashMap<Spell, Long> playerSkillsOnCooldown = new HashMap<>();
-            playerSkillsOnCooldown.put(skill, System.currentTimeMillis());
-            this.cooldown.put(player.getUniqueId(), playerSkillsOnCooldown);
+            HashMap<Spell, Long> playerSpellsOnCooldown = new HashMap<>();
+            playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
+            this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
 
-        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> SpellManager.this.removeCooldown(player, skill), (long) cooldownTime * 20);
+        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> SpellManager.this.removeCooldown(player, spell), (long) cooldownTime * 20);
 
     }
 
-    public boolean isOnCooldown(Player player, Spell skill) {
+    public boolean isOnCooldown(Player player, Spell spell) {
         if(!this.cooldown.containsKey(player.getUniqueId())){
             return false;
         }
-        HashMap<Spell, Long> playerSkillsOnCooldown = this.cooldown.get(player.getUniqueId());
-        return playerSkillsOnCooldown.containsKey(skill);
+        HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        return playerSpellsOnCooldown.containsKey(spell);
     }
 
     @SuppressWarnings({"unchecked", "IntegerDivisionInFloatingPointContext"})
-    public int getUserCooldown(Player player, Spell skill) {
+    public int getUserCooldown(Player player, Spell spell) {
         double cooldownRemaining = 0;
 
-        if(isOnCooldown(player, skill)) {
+        if(isOnCooldown(player, spell)) {
             HashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
-            if(cd.containsKey(skill)) {
-                cooldownRemaining = (cd.get(skill) + ((skill.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
+            if(cd.containsKey(spell)) {
+                cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
         }
         return ((int) (cooldownRemaining / 1000));
     }
 
-    public void removeCooldown(Player player, Spell skill) { // in case we forget to remove a removeCooldown method
+    public void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
         if(!this.cooldown.containsKey(player.getUniqueId())) {
             return;
         }
-        HashMap<Spell, Long> playerSkillsOnCooldown =  this.cooldown.get(player.getUniqueId());
-        playerSkillsOnCooldown.remove(skill);
-        this.cooldown.put(player.getUniqueId(), playerSkillsOnCooldown);
+        HashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
+        playerSpellsOnCooldown.remove(spell);
+        this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
 
-    public Spell getSkillByName(String name) {
-        Spell foundSkill = null;
-        for(Spell skill : getSkills()) {
-            if(skill.getName().equalsIgnoreCase(name)) {
-                foundSkill = skill;
+    public Spell getSpellByName(String name) {
+        Spell foundSpell = null;
+        for(Spell spell : getSpells()) {
+            if(spell.getName().equalsIgnoreCase(name)) {
+                foundSpell = spell;
                 break;
             }
         }
-        if(foundSkill != null)
-            return foundSkill;
+        if(foundSpell != null)
+            return foundSpell;
         else
             return null;
     }
 
 
-    private void registerSkills() {
+    private void registerSpells() {
         this.spellList.add(new Fireball());
         this.spellList.add(new Frostbolt());
         this.spellList.add(new Sprint());
@@ -127,11 +127,11 @@ public class SpellManager {
 
                 for(Player player : Bukkit.getOnlinePlayers()) {
                     if(cooldown.containsKey(player.getUniqueId())) {
-                        HashMap<Spell, Long> skills = cooldown.get(player.getUniqueId());
+                        HashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
                         List<String> cdString = new ArrayList<>();
 
-                        for(Spell skill : skills.keySet()) {
-                            cdString.add(ChatColor.RED + skill.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, skill) +/*+ ChatColor.RED +*/ "s");
+                        for(Spell spell : spells.keySet()) {
+                            cdString.add(ChatColor.RED + spell.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) +/*+ ChatColor.RED +*/ "s");
                         }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));

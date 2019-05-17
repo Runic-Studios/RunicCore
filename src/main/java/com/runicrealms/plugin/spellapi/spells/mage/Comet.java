@@ -34,9 +34,9 @@ public class Comet extends Spell {
                 ChatColor.WHITE, 15, 20);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         // play effects, spawn the comet
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);

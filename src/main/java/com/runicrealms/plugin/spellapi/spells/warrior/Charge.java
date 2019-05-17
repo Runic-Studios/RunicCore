@@ -19,9 +19,9 @@ public class Charge extends Spell {
     }
 
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
-        // skill variables, vectors
+        // spell variables, vectors
         Vector look = pl.getLocation().getDirection();
         Vector launchPath = new Vector(look.getX(), HEIGHT, look.getZ()).normalize();
 

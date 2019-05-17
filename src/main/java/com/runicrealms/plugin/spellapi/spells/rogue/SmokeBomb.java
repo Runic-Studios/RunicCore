@@ -36,9 +36,9 @@ public class SmokeBomb extends Spell {
                 ChatColor.WHITE, 6, 15);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player player, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
         startTask(player);
     }

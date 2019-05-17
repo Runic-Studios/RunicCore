@@ -30,9 +30,9 @@ public class Parry extends Spell {
     }
 
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
-        // skill variables, vectors
+        // spell variables, vectors
         UUID uuid = pl.getUniqueId();
         Vector look = pl.getLocation().getDirection();
         Vector launchPath = new Vector(-look.getX(), 1.0, -look.getZ()).normalize();

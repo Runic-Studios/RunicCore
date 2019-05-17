@@ -29,7 +29,7 @@ public class Backstab extends Spell {
     }
 
     @Override
-    public void executeSkill(Player player, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         UUID uuid = player.getUniqueId();
         stabbers.put(uuid, System.currentTimeMillis());
         player.sendMessage(ChatColor.GREEN + "You are now backstabbing!");

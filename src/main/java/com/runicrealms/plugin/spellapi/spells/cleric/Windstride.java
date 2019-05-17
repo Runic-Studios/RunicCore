@@ -26,12 +26,12 @@ public class Windstride extends Spell {
                 ChatColor.WHITE, 1, 5);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
-        // apply the skill effects
-        applySkill(pl);
+        // apply the spell effects
+        applySpell(pl);
 
         // if the user has a party, each party member gets the effects as well.
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
@@ -42,13 +42,13 @@ public class Windstride extends Spell {
                 if (!(e instanceof Player)) { continue; }
 
                 if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
-                    applySkill((Player) e);
+                    applySpell((Player) e);
                 }
             }
         }
     }
 
-    private void applySkill(Player pl) {
+    private void applySpell(Player pl) {
 
         // Begin sound effects
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5F, 0.7F);

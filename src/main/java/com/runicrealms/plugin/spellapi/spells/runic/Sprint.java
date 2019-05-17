@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.runic;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.formats.HorizCircleFrame;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import org.bukkit.Particle;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Bukkit;
@@ -26,9 +26,9 @@ public class Sprint extends Spell {
                         "\nmassive boost to your speed!", ChatColor.WHITE,10, 10);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         // apply effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, SPEED_AMPLIFIER));

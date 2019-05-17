@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spellutil.formats;
+package com.runicrealms.plugin.spellapi.spellutil.particles;
 
 import org.bukkit.*;
 import org.bukkit.util.Vector;

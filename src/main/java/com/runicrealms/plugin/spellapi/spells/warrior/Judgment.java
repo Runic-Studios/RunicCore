@@ -31,20 +31,20 @@ public class Judgment extends Spell {
         super("Judgment",
                 "You summon a barrier of holy power" +
                         "\naround yourself for " + BUBBLE_DURATION + " seconds! The barrier" +
-                        "\njudges all enemies unworthy and repels them, but party members may" +
-                        "\npass through it freely. During this time," +
-                        "\nyou may not move.",
+                        "\njudges all enemies unworthy and repels them," +
+                        "\nbut party members may pass through it freely." +
+                        "\nDuring this time, you may not move.",
                 ChatColor.WHITE, 9, 20);
     }
 
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         // This is necessary because players could (theoretically) cast deliverance multiple times
         // before the first cool down ends
         // which would result in players initial walk speed appearing to be 0 because that is their
         // walk speed when this check is done and if initial walk speed is 0, their walk speed when the
-        // skill ends would be set to 0
+        // spell ends would be set to 0
         boolean isFound = false;
         for (PlayerSpeedStorage psStorage : ahFukAStaticVar) {
             if(!(psStorage.getPlayer().equals(pl)))
@@ -80,7 +80,7 @@ public class Judgment extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         pl.getLocation().getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
 
-        // Begin skill event
+        // Begin spell event
         final long startTime = System.currentTimeMillis();
         new BukkitRunnable() {
             double phi = 0;
@@ -132,7 +132,7 @@ public class Judgment extends Spell {
                     if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                             && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
-                    // Executes the skill
+                    // Executes the spell
                     Vector force = (pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.75).setY(0.3));
                     entity.setVelocity(force);
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);

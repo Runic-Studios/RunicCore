@@ -44,9 +44,9 @@ public class Barrage extends Spell {
         this.hasBeenHit = new HashMap<>();
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
         Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(2);

@@ -5,17 +5,17 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SkillpointSC extends SuperCommand {
+public class SpellpointSC extends SuperCommand {
 
-    public SkillpointSC() {
-        super("player.skillpoint");
+    public SpellpointSC() {
+        super("player.spellpoint");
     }
 
     @Override
     public void executeBasicCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (sender instanceof Player) {
-            sender.sendMessage(ChatColor.RED + "Usage: /skillpoint give [player]");
+            sender.sendMessage(ChatColor.RED + "Usage: /spellpoint give [player]");
         }
     }
 }

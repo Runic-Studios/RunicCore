@@ -55,7 +55,7 @@ public class ArtifactListener implements Listener {
 
         // open the artifact editor
         pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-        ItemGUI menu = ArtifactGUINew.artifactEditor(pl, artifact, durability);
+        ItemGUI menu = ArtifactGUI.artifactEditor(pl, artifact, durability);
         menu.open(pl);
     }
 

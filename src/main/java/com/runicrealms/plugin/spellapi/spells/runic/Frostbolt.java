@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.runic;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.skillutil.KnockbackUtil;
+import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -32,9 +32,9 @@ public class Frostbolt extends Spell {
                 ChatColor.WHITE, 5, 15);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player player, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         snowball = player.launchProjectile(Snowball.class);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(SPEED);
         snowball.setVelocity(velocity);
@@ -72,7 +72,7 @@ public class Frostbolt extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(victim.getUniqueId())) { return; }
 
-        // cancel the event, apply skill mechanics
+        // cancel the event, apply spell mechanics
         DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
         KnockbackUtil.knockback(pl, victim);
 

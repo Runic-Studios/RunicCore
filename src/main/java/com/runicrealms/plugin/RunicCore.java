@@ -1,12 +1,12 @@
 package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.command.subcommands.CurrencyGive;
-import com.runicrealms.plugin.command.subcommands.Skillpoint;
+import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.PartySC;
-import com.runicrealms.plugin.command.supercommands.SkillpointSC;
+import com.runicrealms.plugin.command.supercommands.SpellpointSC;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBars;
@@ -59,7 +59,7 @@ public class RunicCore extends JavaPlugin {
     private static PartyManager partyManager;
     private static ProfManager profManager;
     private static ScoreboardHandler scoreboardHandler;
-    private static SpellManager skillManager;
+    private static SpellManager spellManager;
     private static TabListManager tabListManager;
 
     // getters for handlers
@@ -70,7 +70,7 @@ public class RunicCore extends JavaPlugin {
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
-    public static SpellManager getSkillManager() { return skillManager; }
+    public static SpellManager getSpellManager() { return spellManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
 
     public void onEnable() {
@@ -83,7 +83,7 @@ public class RunicCore extends JavaPlugin {
         partyManager = new PartyManager();
         profManager = new ProfManager();
         scoreboardHandler = new ScoreboardHandler();
-        skillManager = new SpellManager();
+        spellManager = new SpellManager();
         tabListManager = new TabListManager(this);
 
         // enable message
@@ -107,7 +107,7 @@ public class RunicCore extends JavaPlugin {
         mobHealthManager = null;
         partyManager = null;
         scoreboardHandler = null;
-        skillManager = null;
+        spellManager = null;
         tabListManager = null;
     }
 
@@ -181,10 +181,10 @@ public class RunicCore extends JavaPlugin {
         getCommand("npcbuilder").setExecutor(builderSC);
         builderSC.addCommand(Arrays.asList("build"), new Build(builderSC));
 
-        // skillpoint
-        SkillpointSC skillpointSC = new SkillpointSC();
-        getCommand("skillpoint").setExecutor(skillpointSC);
-        skillpointSC.addCommand(Arrays.asList("give"), new Skillpoint(skillpointSC));
+        // spellpoint
+        SpellpointSC spellpointSC = new SpellpointSC();
+        getCommand("spellpoint").setExecutor(spellpointSC);
+        spellpointSC.addCommand(Arrays.asList("give"), new Spellpoint(spellpointSC));
 
         // tutorial
         TutorialSC tutorialSC = new TutorialSC();

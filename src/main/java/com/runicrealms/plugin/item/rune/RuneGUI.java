@@ -1,78 +1,261 @@
 package com.runicrealms.plugin.item.rune;
 
-import fr.minuskube.inv.ClickableItem;
-import fr.minuskube.inv.SmartInventory;
-import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.InventoryProvider;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.LoreGenerator;
+import com.runicrealms.plugin.utilities.ColorUtil;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class RuneGUI implements InventoryProvider {
+public class RuneGUI {
 
     /**
-     * CHANGE THE ID FOR EACH NEW ItemGUI
+     * Opens the artifact editor using new instance of inventory
      */
-    public static final SmartInventory CUSTOMIZE_RUNE = SmartInventory.builder()
-            .id("runeCustomization")
-            .provider(new RuneGUI())
-            .size(1, 9)
-            .title(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Rune Editor")
-            .build();
+    public static ItemGUI runeEditor(Player pl, ItemStack artifact, int durability) {
 
-    @Override
-    public void init(Player player, InventoryContents contents) {
+        return new ItemGUI("&f&l" + pl.getName() + "'s &d&lRune Editor", 27, event -> {
 
-        // spell rune
-        contents.set(0, 3, ClickableItem.of
-                (menuItem(Material.FIRE_CHARGE,
-                        ChatColor.GREEN,
-                        "Spell Editor",
-                        "Click to customize your runic abilities",
-                        0),
-                        e -> {
-                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            SpellsGUI.RUNIC_SPELLS.open(player);
-                        }));
+            // open spell editor
+            if (event.getPosition() == 3+9) {
 
-        // close inventory
-        contents.set(0, 5, ClickableItem.of
-                (menuItem(Material.BARRIER,
-                        ChatColor.RED,
-                        "Close",
-                        "Close the editor",
-                        0),
-                        e -> {
-                            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                            player.closeInventory();
-                            player.sendMessage(ChatColor.GRAY + "You closed the editor.");
-                        }));
+                pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+                ItemGUI spellEditor = RuneGUI.spellEditor(pl, artifact, durability);
+                spellEditor.open(pl);
+                event.setWillClose(false);
+                event.setWillDestroy(true);
+
+            } else if (event.getPosition() == 5+9) {
+
+                // close editor
+                pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+                event.setWillClose(true);
+                event.setWillDestroy(true);
+            }
+
+            // setup items
+        }, RunicCore.getInstance())
+                .setOption(3+9, new ItemStack(Material.FIRE_CHARGE), "&aSpell Editor",
+                        "&fClick &7to customize your runic abilities", 0)
+                .setOption(5+9, new ItemStack(Material.BARRIER), "&cClose",
+                        "&7Exit the editor", 0);
     }
 
-    // used for animated inventories
-    @Override
-    public void update(Player player, InventoryContents contents) {
+    private static ItemGUI spellEditor(Player pl, ItemStack rune, int durability) {
+
+        // determine the player's class
+        String className = Objects.requireNonNull(RunicCore.getInstance()
+                .getConfig().get(pl.getUniqueId() + ".info.class.name")).toString();
+
+        // grab player's rune
+        ItemMeta meta = rune.getItemMeta();
+
+        int size = 36;
+//        if (skins.size() <= 5) {
+//            size = 36;
+//        } else {
+//            size = 45;
+//        }
+
+        ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, event -> {
+
+            if (event.getPosition() == 12) {
+                pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+                ItemGUI menu = RuneGUI.runeEditor(pl, rune, durability);
+                menu.open(pl);
+                event.setWillClose(false);
+                event.setWillDestroy(true);
+
+            } else if (event.getPosition() == 14) {
+
+                event.setWillClose(false);
+                event.setWillDestroy(false);
+
+            } else {
+
+                String spellName = event.getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
+
+                // apply the skin if the player has the permission
+                if (event.getClickType() == ClickType.LEFT) {
+
+                    if (!pl.hasPermission("core.spells." + spellName)) {
+                        pl.closeInventory();
+                        event.setWillClose(true);
+                        event.setWillDestroy(true);
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet.");
+                        return;
+                    }
+
+                    updateRuneSpell(pl, rune, "primarySpell",
+                            event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
+                            rune.getItemMeta().getDisplayName(), className);
+
+                } else if (event.getClickType() == ClickType.RIGHT) {
+
+                    if (!pl.hasPermission("core.spells." + spellName)) {
+                        pl.closeInventory();
+                        event.setWillClose(true);
+                        event.setWillDestroy(true);
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet.");
+                        return;
+                    }
+
+                    updateRuneSpell(pl, rune, "secondarySpell",
+                            event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
+                            rune.getItemMeta().getDisplayName(), className);
+
+                } else if (event.getClickType() == ClickType.SHIFT_LEFT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+
+                    // unlock spell
+                    if (!pl.hasPermission("core.spells." + spellName)) {
+
+                        int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
+                        if (numPoints > 0) {
+                            RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", numPoints-1);
+                            RunicCore.getInstance().saveConfig();
+                            RunicCore.getInstance().reloadConfig();
+                            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                                    "lp user " + pl.getName() + " permission set core.spells." + spellName + " true");
+                            // ex: lp user Skyfallin_ permission set core.spells.rejuvenate true
+                            pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+                            pl.sendMessage(ChatColor.GREEN + "You have unlocked "
+                                    + ChatColor.YELLOW + ChatColor.ITALIC
+                                    + event.getItem(event.getPosition()).getItemMeta().getDisplayName()
+                                    + ChatColor.GREEN + "!");
+                        }
+                    }
+                }
+
+                event.setWillClose(true);
+                event.setWillDestroy(true);
+            }
+        }, RunicCore.getInstance());
+
+        // build the menu description, updates live with their current spells
+        String primarySpell = AttributeUtil.getSpell(rune, "primarySpell");
+        String secondarySpell = AttributeUtil.getSpell(rune, "secondarySpell");
+        spellEditor.setOption(12, new ItemStack(rune.getType()), "&a" + rune.getItemMeta().getDisplayName(),
+                "\n" +
+                        "&7Spells:" +
+                        "\n&7Primary: &a" + primarySpell +
+                        "\n&7Secondary: &a" + secondarySpell +
+                        "\n" +
+                        "\n&fLeft Click &7a spell to set your primary!" +
+                        "\n&fShift + Click &7a spell to set your secondary!" +
+                        "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
+
+        int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
+        if (numPoints == 0) {
+            numPoints = 1;
+        }
+        spellEditor.setOption(14, new ItemStack(Material.BONE_MEAL, numPoints), "&f&lSpell Points",
+                "\n&7Use spell points to unlock new spells!" +
+                        "\n&aEarn spell points by completing quests" +
+                        "\n&aand leveling-up!", 0);
+
+        List<String> spells = new ArrayList<>();
+        spells.add("Blink");
+        spells.add("Fireball");
+        spells.add("Frostbolt");
+        spells.add("Sprint");
+
+        // first row of spells
+        for (int i = 0; i < spells.size() && i < 5; i++) {
+
+            // check for permissions, ex: ftr.spells.blessedrain
+            boolean unlocked= false;
+            if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
+                unlocked = true;
+            }
+            displaySpell(spellEditor, 20 + i, spells.get(i), unlocked);
+        }
+
+        return spellEditor;
     }
 
-    // creates the visual menu
-    private ItemStack menuItem(Material material, ChatColor dispColor, String displayName, String desc, int durability) {
+    // display for each skin
+    private static void displaySpell(ItemGUI editor, int position, String spellName, boolean isUnlocked) {
+
+        double cooldown = RunicCore.getSpellManager().getSpellByName(spellName).getCooldown();
+        int manaCost = RunicCore.getSpellManager().getSpellByName(spellName).getManaCost();
+
+        StringBuilder spellDesc = new StringBuilder();
+        for (String line : RunicCore.getSpellManager().getSpellByName(spellName).getDescription().split("\n")) {
+            spellDesc.append(ChatColor.GRAY).append(line).append("\n");
+        }
+
+        String status;
+        if (isUnlocked) {
+
+            status = "&a[ Unlocked ]";
+        } else {
+            status = "&c[Locked] &8(&fShift + Click &8to unlock)";
+        }
+
+        editor.setOption(position, new ItemStack(Material.ENCHANTED_BOOK), spellName,
+                status +
+                        "\n\n" + spellDesc +
+                        "\n&cCooldown: &e" + cooldown + "s" +
+                        "\n&3Mana Cost: &f" + manaCost, 0);
+    }
+
+    private static void updateRuneSpell(Player pl, ItemStack item, String spellSlot, String spellName, String itemName, String className) {
+        // check so players can't have two of the same spell
+        String otherSpell;
+
+        if (spellSlot.equals("primarySpell")) {
+            otherSpell = AttributeUtil.getSpell(item, "secondarySpell");
+        } else {
+            otherSpell = AttributeUtil.getSpell(item, "primarySpell");
+        }
+
+        if (!otherSpell.equals(spellName)) {
+            item = AttributeUtil.addSpell(item, spellSlot, spellName);
+            int durability = ((Damageable) item.getItemMeta()).getDamage();
+            LoreGenerator.generateArtifactLore(item, itemName, className, durability);
+            pl.getInventory().setItem(0, item);
+            pl.closeInventory();
+            pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+            pl.sendMessage(ChatColor.GREEN + "You imbued your rune with " + spellName + "!");
+        } else {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            pl.sendMessage(ChatColor.RED + "You can't imbue the same spell in two slots.");
+        }
+    }
+
+    public static ItemStack menuItem(Material material, String name, String desc,
+                                     int durability) {
+
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(dispColor + displayName);
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + desc);
-        meta.setLore(lore);
-        ((Damageable) meta).setDamage(durability);
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
+        lore.add(desc);
+
+        if (meta != null) {
+            meta.setLore(lore);
+            meta.setDisplayName(ColorUtil.format("&e" + name));
+            ((Damageable) meta).setDamage(durability);
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            item.setItemMeta(meta);
+        }
+
         return item;
     }
 }
-

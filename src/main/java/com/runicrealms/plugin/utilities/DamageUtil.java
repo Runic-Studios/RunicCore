@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.listeners.DamageListener;
-import com.runicrealms.plugin.spellapi.spelltypes.skillutil.KnockbackUtil;
+import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 
 public class DamageUtil {
 
@@ -26,7 +26,7 @@ public class DamageUtil {
 
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
         damageEntity(dmgAmt, recipient, caster);
-        HologramUtil.createSkillDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
+        HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster) {

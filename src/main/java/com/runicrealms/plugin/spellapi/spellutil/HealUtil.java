@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.skillapi.skilltypes.skillutil;
+package com.runicrealms.plugin.spellapi.spellutil;
 
 import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.Bukkit;
@@ -47,4 +47,5 @@ public class HealUtil  {
         Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, healAmt, EntityRegainHealthEvent.RegainReason.CUSTOM));
     }
 }
+
 

@@ -63,8 +63,8 @@ public class PlayerJoinListener implements Listener {
             setConfig(uuid, "prof.name");
         }
 
-        if (!plugin.getConfig().isSet(uuid + ".info.skillpoints")) {
-            setConfig(uuid, "skillpoints", 0);
+        if (!plugin.getConfig().isSet(uuid + ".info.spellpoints")) {
+            setConfig(uuid, "spellpoints", 0);
         }
 
         // setup for new players

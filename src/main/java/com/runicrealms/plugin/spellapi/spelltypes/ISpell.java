@@ -6,15 +6,15 @@ import org.bukkit.inventory.ItemStack;
 
 public interface ISpell {
 
-    String getName(); // returns the skill name
+    String getName(); // returns the spell name
 
     boolean isFound(ItemStack stack, String spellSlot); // searches for the given spell in the "primary" or "secondary"
 
     ChatColor getColor();
 
-    String getDescription(); // returns the skill description
+    String getDescription(); // returns the spell description
 
-    void execute(Player player, SpellItemType type); // casts the skill
+    void execute(Player player, SpellItemType type); // casts the spell
 
     double getCooldown();
 

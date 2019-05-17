@@ -36,9 +36,9 @@ public class Discharge extends Spell {
                 ChatColor.WHITE, 10, 20);
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player player, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1.0f);
         Vector middle = player.getEyeLocation().getDirection().normalize();
         startTask(player, new Vector[]{middle});

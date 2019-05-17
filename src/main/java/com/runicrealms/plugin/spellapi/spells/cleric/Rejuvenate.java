@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.skillutil.HealUtil;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.entity.LivingEntity;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
@@ -40,14 +40,14 @@ public class Rejuvenate extends Spell {
         this.hasBeenHit = new HashMap<>();
     }
 
-    // skill execute code
+    // spell execute code
     @Override
-    public void executeSkill(Player pl, SpellItemType type) {
+    public void executeSpell(Player pl, SpellItemType type) {
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
 
-        // particle effect, skill effects
+        // particle effect, spell effects
         Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(SPEED);
         startTask(pl, new Vector[]{middle});
     }
@@ -62,7 +62,7 @@ public class Rejuvenate extends Spell {
                 @Override
                 public void run() {
                     location.add(vector);
-                    // 10 block range before skill dies out naturally
+                    // 10 block range before spell dies out naturally
                     if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                         this.cancel();
                     }

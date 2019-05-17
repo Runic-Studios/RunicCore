@@ -82,21 +82,23 @@ public class PlayerLevelListener implements Listener {
                 break;
             case 10:
                 sendUnlockMessage(pl, 10, className, classLevel);
-                giveSkillpoint(pl);
+                giveSpellpoint(pl);
                 unlockSpell(rune, "primarySpell", pl, 1);
+                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                        "lp user " + pl.getName() + " permission set core.skins." + className + ".20" + " true");
                 break;
             case 20:
                 sendUnlockMessage(pl, 20, className, classLevel);
-                giveSkillpoint(pl);
+                giveSpellpoint(pl);
                 unlockSpell(rune, "secondarySpell", pl, 1);
                 break;
             case 30:
                 sendUnlockMessage(pl, 30, className, classLevel);
-                giveSkillpoint(pl);
+                giveSpellpoint(pl);
                 unlockSpell(artifact, "secondarySpell", pl, 0);
                 break;
             case 40:
-                giveSkillpoint(pl);
+                giveSpellpoint(pl);
                 pl.sendMessage("\n");
                 ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
                 ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
@@ -104,7 +106,7 @@ public class PlayerLevelListener implements Listener {
                 pl.sendMessage("\n");
                 break;
             case 50:
-                giveSkillpoint(pl);
+                giveSpellpoint(pl);
                 String storedName = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.name");
                 Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + storedName
                          + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + pl.getLevel() + " " + className + "!");
@@ -159,9 +161,9 @@ public class PlayerLevelListener implements Listener {
         pl.getInventory().setItem(0, artifact);
     }
 
-    private void giveSkillpoint(Player pl) {
-        int skillpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.skillpoints");
-        RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.skillpoints", skillpoints+1);
+    private void giveSpellpoint(Player pl) {
+        int spellpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
+        RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
         saveConfig(pl);
     }
     private void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot) {

@@ -103,7 +103,7 @@ public class StaffListener implements Listener {
                 location.getWorld().spawnParticle(Particle.REDSTONE, location,
                         5, 0.1f, 0.1f, 0.1f, new Particle.DustOptions(Color.WHITE, 1));
 
-                // range before skill dies out naturally
+                // range before spell dies out naturally
                 if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                     this.cancel();
                 }

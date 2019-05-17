@@ -12,9 +12,9 @@ commands:
   currency:
     usage: /<commands>
     description: Give a player currency!
-  skill:
+  spell:
     usage: /<commands>
-    description: Base for all oldskills commands
+    description: Base for all oldspells commands
   party:
     usage: /<commands>
     description: Base for all party commands
@@ -30,9 +30,9 @@ commands:
   npcbuilder:
     usage: /<commands>
     description: make an npc!
-  skillpoint:
+  spellpoint:
     usage:
-    description: add a skillpoint to a player
+    description: add a spellpoint to a player
   tutorial:
     usage: /<commands>
     description: used for tutorial-related commands

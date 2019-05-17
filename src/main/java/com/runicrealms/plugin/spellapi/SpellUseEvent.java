@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class SpellUseEvent implements Listener {
 
     @EventHandler
-    public void onSkill(PlayerInteractEvent e) {
+    public void onSpell(PlayerInteractEvent e) {
 
         Player pl = e.getPlayer();
         int slot = pl.getInventory().getHeldItemSlot();
@@ -31,10 +31,10 @@ public class SpellUseEvent implements Listener {
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
 
         // identify artifact or rune
-        SpellItemType skillItemType = SpellItemType.NONE;
+        SpellItemType spellItemType = SpellItemType.NONE;
         for (SpellItemType type : SpellItemType.values()) {
             if (type.getSlot() == slot) {
-                skillItemType = type;
+                spellItemType = type;
                 break;
             }
         }
@@ -43,23 +43,23 @@ public class SpellUseEvent implements Listener {
         String spellSlot = determineSpellSlot(e, pl, heldItem, slot);
         if (spellSlot.equals("")) return;
 
-        // determine skill to cast
-        Spell skillCasted = null;
-        for (Spell skill : RunicCore.getSkillManager().getSkills()) {
-            if (skill.isFound(pl.getInventory().getItemInMainHand(), spellSlot)) {
-                skillCasted = skill;
+        // determine spell to cast
+        Spell spellCasted = null;
+        for (Spell spell : RunicCore.getSpellManager().getSpells()) {
+            if (spell.isFound(pl.getInventory().getItemInMainHand(), spellSlot)) {
+                spellCasted = spell;
                 break;
             }
         }
 
-        // execute the skill
-        if (skillCasted != null) {
-            if (skillItemType == SpellItemType.NONE) {
+        // execute the spell
+        if (spellCasted != null) {
+            if (spellItemType == SpellItemType.NONE) {
                 pl.sendMessage(ChatColor.RED + "ERROR: Something went wrong.");
                 pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
                 return;
             }
-            skillCasted.execute(pl, skillItemType);
+            spellCasted.execute(pl, spellItemType);
         }
     }
 
