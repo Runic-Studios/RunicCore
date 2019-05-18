@@ -2,9 +2,10 @@ package com.runicrealms.plugin.command.subcommands.party;
 
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.PartySC;
-import com.runicrealms.plugin.nametags.NameTagChanger;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.parties.PartyDisconnect;
+import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -15,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +24,6 @@ public class Leave implements SubCommand {
 
 	private PartySC party;
     private Plugin plugin = RunicCore.getInstance();
-	private NameTagChanger nameTagChanger = new NameTagChanger();
 
 	public Leave(PartySC party) {
 		this.party = party;
@@ -52,15 +53,12 @@ public class Leave implements SubCommand {
 			return;
 		}
 
-        // grab the player's stored name
-        String senderNameToString = plugin.getConfig().get(sender.getUniqueId() + ".info.name").toString();
-
         // leaver is removed from the party
         party.removeMember(sender.getUniqueId());
         sender.playSound(sender.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1);
 
         // reset the party member's name colors for the leaver
-        PartyDisconnect.updatePartyNames(party, sender, plugin, nameTagChanger);
+        //PartyDisconnect.updatePartyNames(party, sender, plugin);
 
         // if the new member count is less than 1, just disband the party
 		if (party.getPartySize() < 1) {
@@ -74,7 +72,7 @@ public class Leave implements SubCommand {
                 party.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
-                                + ChatColor.WHITE + senderNameToString + " &chas left the party!");
+                                + ChatColor.WHITE + sender.getName() + " &chas left the party!");
             } else {
 
                 // party leader is set to whoever is now in position [0]
@@ -91,7 +89,7 @@ public class Leave implements SubCommand {
                 party.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
-                                + ChatColor.WHITE + senderNameToString
+                                + ChatColor.WHITE + sender.getName()
                                 + ChatColor.RED + " left the party. "
                                 + ChatColor.WHITE + newLeadNameToString
                                 + ChatColor.GREEN + " is now the party leader!");
@@ -105,26 +103,16 @@ public class Leave implements SubCommand {
                         + ChatColor.RED + "You left your party!");
 
         // remove the leaver from the party array
-        party.getPartyNames().remove(senderNameToString);
+        party.getPartyNames().remove(sender.getName());
+
+        // update party nametag colors
+        PartyDisconnect.updatePartyNames(party, sender);
 
         // update the tablist
         for (Player member : party.getPlayerMembers()) {
             RunicCore.getTabListManager().setupTab(member);
         }
         RunicCore.getTabListManager().setupTab(sender);
-
-        // sets the player's name color to RED if outlaw is enabled
-        // delay by 0.5s in case the player's outlaw data is null
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (plugin.getConfig().getBoolean(sender.getUniqueId() + ".outlaw.enabled", true)) {
-                    nameTagChanger.changeNameGlobal(sender, ChatColor.RED + senderNameToString);
-                } else {
-                    nameTagChanger.changeNameGlobal(sender, ChatColor.WHITE + senderNameToString);
-                }
-            }
-        }.runTaskLater(plugin, 10);
 	}
 
 	@Override

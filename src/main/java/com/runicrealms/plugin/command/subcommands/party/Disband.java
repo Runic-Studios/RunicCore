@@ -12,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
-import com.runicrealms.plugin.nametags.NameTagChanger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.List;
 public class Disband implements SubCommand {
 	
 	private PartySC party;
-	private NameTagChanger nameTagChanger = new NameTagChanger();
 	private Plugin plugin = RunicCore.getInstance();
 	
 	public Disband(PartySC party) {
@@ -78,10 +76,7 @@ public class Disband implements SubCommand {
             }
 
             // reset the party member's name colors for the kicked player
-            PartyDisconnect.updatePartyNames(targetParty, target, plugin, nameTagChanger);
-            for (Player member : targetParty.getPlayerMembers()) {
-                PartyDisconnect.updatePartyNames(targetParty, member, plugin, nameTagChanger);
-            }
+            PartyDisconnect.updatePartyNames(targetParty, target);
 
             // disband the party
 			RunicCore.getPartyManager().disbandParty(targetParty);

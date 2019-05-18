@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.parties;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,7 +10,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.nametags.NameTagChanger;
+
+import java.util.Collections;
 
 public class PartyDisconnect implements Listener {
 
@@ -74,22 +77,28 @@ public class PartyDisconnect implements Listener {
         }
     }
 
-    public static void updatePartyNames(Party party, Player target, Plugin plugin, NameTagChanger nameTagChanger) {
+    public static void updatePartyNames(Party party, Player leaver) {
+
+        // update the party members' name colors for the leaver (sender)
         for (Player member : party.getPlayerMembers()) {
-            if (member == target) {
-                continue;
+            String team = "white";
+            if (OutlawManager.isOutlaw(member)) {
+                team = "outlaw";
             }
-            String memberName = plugin.getConfig().get(member.getUniqueId() + ".info.name").toString();
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (plugin.getConfig().getBoolean(member.getUniqueId() + ".outlaw.enabled", true)) {
-                        nameTagChanger.changeNameGlobal(member, ChatColor.RED + memberName);
-                    } else {
-                        nameTagChanger.changeNameGlobal(member, ChatColor.WHITE + memberName);
-                    }
-                }
-            }.runTaskLater(plugin, 10);
+            ScoreboardHandler.setPlayerTeamFor
+                    (leaver, member.getScoreboard().getTeam(team),
+                            Collections.singletonList(member.getName()));
+        }
+
+        String team = "white";
+        if (OutlawManager.isOutlaw(leaver)) {
+            team = "outlaw";
+        }
+        // update the leaver's name for current members
+        for (Player member : party.getPlayerMembers()) {
+            ScoreboardHandler.setPlayerTeamFor
+                    (member, leaver.getScoreboard().getTeam(team),
+                            Collections.singletonList(leaver.getName()));
         }
     }
 }

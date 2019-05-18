@@ -3,21 +3,21 @@ package com.runicrealms.plugin.command.subcommands.party;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.PartySC;
-import com.runicrealms.plugin.nametags.NameTagChanger;
 import com.runicrealms.plugin.parties.Invite;
 import com.runicrealms.plugin.parties.Party;
+import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Join implements SubCommand {
 
     private PartySC party;
-    private NameTagChanger nameTagChanger = new NameTagChanger();
     private Plugin plugin = RunicCore.getInstance();
 
     public Join(PartySC party) {
@@ -71,10 +71,6 @@ public class Join implements SubCommand {
             return;
         }
 
-        // grab the inviter's stored name
-        Object storedNameInviter = plugin.getConfig().get(invite.getInviter().getUniqueId() + ".info.name");
-        String inviterNameToString = storedNameInviter.toString();
-
         // add the player by uuid to the party
         invite.getParty().addMember(sender.getUniqueId());
 
@@ -89,7 +85,7 @@ public class Join implements SubCommand {
                 (ChatColor.DARK_GREEN + "Party "
                         + ChatColor.GOLD + "» "
                         + ChatColor.GREEN + "You joined "
-                        + ChatColor.WHITE + inviterNameToString
+                        + ChatColor.WHITE + invite.getInviter().getName()
                         + ChatColor.GREEN + "'s party!");
 
         // grab the player's stored name, convert it to a string
@@ -102,11 +98,17 @@ public class Join implements SubCommand {
                         + ChatColor.WHITE + storedName
                         + ChatColor.GREEN + " joined the party!", sender.getUniqueId());
 
-        // update the joiner's name for current members
-        nameTagChanger.changeNameParty(party, sender, ChatColor.GREEN + storedName);
+        // update the joiner's (sender) name for current members
+        for (Player member : invite.getParty().getPlayerMembers()) {
+            ScoreboardHandler.setPlayerTeamFor
+                    (member, sender.getScoreboard().getTeam("party"),
+                            Collections.singletonList(sender.getName()));
+        }
 
-        // update the party members' name colors for the joiner
-        nameTagChanger.showPartyNames(party, sender);
+        // update the party members' name colors for the joiner (sender)
+        ScoreboardHandler.setPlayerTeamFor
+                (sender, sender.getScoreboard().getTeam("party"),
+                        invite.getParty().getPartyNames());
 
         // update the tablist
         for (Player member : party.getPlayerMembers()) {

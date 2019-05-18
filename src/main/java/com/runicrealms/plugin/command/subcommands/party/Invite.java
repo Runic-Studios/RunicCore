@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.command.subcommands.party;
 
 import com.runicrealms.plugin.command.supercommands.PartySC;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -70,20 +71,12 @@ public class Invite implements SubCommand {
                     return;
                 }
 
-                // grab the sender's stored name
-                Object storedNameSender = plugin.getConfig().get(sender.getUniqueId() + ".info.name");
-                String senderNameToString = storedNameSender.toString();
-
-                // grab the player's stored name
-                Object storedNameTarget = plugin.getConfig().get(entity.getUniqueId() + ".info.name");
-                String targetNameToString = storedNameTarget.toString();
-
                 // if the specified player is already in the party
                 if (party.hasMember(entity.getUniqueId())) {
                     sender.sendMessage
                             (ChatColor.DARK_GREEN + "Party "
                                     + ChatColor.GOLD + "» "
-                                    + ChatColor.WHITE + targetNameToString
+                                    + ChatColor.WHITE + entity.getName()
                                     + ChatColor.RED + " is already in the party!");
                     return;
                 }
@@ -94,16 +87,16 @@ public class Invite implements SubCommand {
                     party.sendMessage
                             (ChatColor.DARK_GREEN + "Party "
                                     + ChatColor.GOLD + "» "
-                                    + ChatColor.WHITE + senderNameToString
+                                    + ChatColor.WHITE + sender.getName()
                                     + ChatColor.GRAY + " invited "
-                                    + ChatColor.WHITE + targetNameToString
+                                    + ChatColor.WHITE + entity.getName()
                                     + ChatColor.GRAY + " to the party!");
 
                     entity.sendMessage
                             (ChatColor.DARK_GREEN + "Party "
                                     + ChatColor.GOLD + "» "
                                     + ChatColor.GRAY + "You have been invited to "
-                                    + ChatColor.WHITE + senderNameToString
+                                    + ChatColor.WHITE + sender.getName()
                                     + ChatColor.GRAY + "'s party! Type "
                                     + ChatColor.YELLOW + "/party join "
                                     + ChatColor.GRAY + "to accept!");
@@ -124,11 +117,6 @@ public class Invite implements SubCommand {
                 return;
             }
 
-//            if (party == null) {
-//                Bukkit.dispatchCommand(sender, "party create");
-//                party = RunicCore.getPartyManager().getPlayerParty(sender);
-//            }
-
             // only the leader can invite others
             if (!(party.getLeader().equals(sender.getUniqueId()))) {
                 sender.sendMessage
@@ -138,21 +126,25 @@ public class Invite implements SubCommand {
                 return;
             }
 
-            // grab the sender's stored name
-            Object storedNameSender = plugin.getConfig().get(sender.getUniqueId() + ".info.name");
-            String senderNameToString = storedNameSender.toString();
-
-            // grab the player's stored name
-            Object storedNameTarget = plugin.getConfig().get(target.getUniqueId() + ".info.name");
-            String targetNameToString = storedNameTarget.toString();
-
             // if the specified player is already in the party
             if (party.hasMember(target.getUniqueId())) {
                 sender.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
-                                + ChatColor.WHITE + targetNameToString
+                                + ChatColor.WHITE + target.getName()
                                 + ChatColor.RED + " is already in the party!");
+                return;
+            }
+
+            // if the inviter is an outlaw and the invitee is NOT an outlaw
+            if (OutlawManager.isOutlaw(sender) && !OutlawManager.isOutlaw(target)) {
+                sender.sendMessage(ChatColor.RED + "Outlaws may only party with other outlaws.");
+                return;
+            }
+
+            // if the inviter is NOT an outlaw and the invitee is an outlaw
+            if (!OutlawManager.isOutlaw(sender) && OutlawManager.isOutlaw(target)) {
+                sender.sendMessage(ChatColor.RED + "Specified player is an outlaw. Outlaws may only party with other outlaws.");
                 return;
             }
 
@@ -162,16 +154,16 @@ public class Invite implements SubCommand {
                 party.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
-                                + ChatColor.WHITE + senderNameToString
+                                + ChatColor.WHITE + sender.getName()
                                 + ChatColor.GRAY + " invited "
-                                + ChatColor.WHITE + targetNameToString
+                                + ChatColor.WHITE + target.getName()
                                 + ChatColor.GRAY + " to the party!");
 
                 target.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
                                 + ChatColor.GRAY + "You have been invited to "
-                                + ChatColor.WHITE + senderNameToString
+                                + ChatColor.WHITE + sender.getName()
                                 + ChatColor.GRAY + "'s party! Type "
                                 + ChatColor.YELLOW + "/party join "
                                 + ChatColor.GRAY + "to accept!");

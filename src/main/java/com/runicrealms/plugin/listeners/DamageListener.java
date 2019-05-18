@@ -201,7 +201,7 @@ public class DamageListener implements Listener {
         victim.sendMessage(ChatColor.RED + "You have been slain!");
 
         // apply outlaw mechanics if the player is an outlaw AND the killer is an outlaw
-        if (damager instanceof Player) {
+        if (damager instanceof Player && OutlawManager.isOutlaw((Player) damager) && OutlawManager.isOutlaw(victim)) {
             outlawEvent.onKill((Player) damager, victim);
         }
     }

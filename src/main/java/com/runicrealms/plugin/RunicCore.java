@@ -15,7 +15,6 @@ import com.runicrealms.plugin.item.artifact.ArtifactListener;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.rune.RuneListener;
 import com.runicrealms.plugin.listeners.*;
-import com.runicrealms.plugin.nametags.PlayerNameManager;
 import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.outlaw.OutlawManager;
@@ -66,7 +65,6 @@ public class RunicCore extends JavaPlugin {
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
     public static ManaManager getManaManager() { return manaManager; }
-    public static MobHealthManager getMobHealthManager() { return mobHealthManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
@@ -132,7 +130,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new ResourcePackListener(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDisconnect(), this);
-        pm.registerEvents(new PlayerNameManager(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new OutlawManager(), this);
         pm.registerEvents(new ExpListener(), this);

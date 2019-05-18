@@ -43,8 +43,13 @@ public class PlayerBars implements Listener {
         } else {
             damager = (Player) e.getDamager();
         }
-
         Player victim = (Player) e.getEntity();
+
+        // ignore party members
+        if (RunicCore.getPartyManager().getPlayerParty(damager) != null
+                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim)) {
+            return;
+        }
 
         // player can't enter combat with themselves
         if (damager == victim) return;
@@ -157,7 +162,7 @@ public class PlayerBars implements Listener {
             // if the bossbar isn't null, update the victim's health for the attacker
             if (bossBar != null) {
                 bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                bossBar.setTitle(name + " " + ChatColor.RED + (int) health + ChatColor.DARK_RED + " ❤");
+                bossBar.setTitle(name + " " + ChatColor.RED + (int) Math.ceil(health) + ChatColor.DARK_RED + " ❤");
             }
         }
     }
@@ -194,7 +199,7 @@ public class PlayerBars implements Listener {
                     // if the bossbar isn't null, update the victim's health for the attacker
                     if (bossBar != null) {
                         bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                        bossBar.setTitle(name + " " + ChatColor.RED + (int) health + ChatColor.DARK_RED + " ❤");
+                        bossBar.setTitle(name + " " + ChatColor.RED + (int) Math.ceil(health) + ChatColor.DARK_RED + " ❤");
                     }
                 }
             }

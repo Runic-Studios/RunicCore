@@ -430,7 +430,7 @@ public class ArtifactGUI {
     private static List<String> displaySpellsRogue() {
         List<String> spells = new ArrayList<>();
         spells.add("Backstab");
-        spells.add("Clock");
+        spells.add("Cloak");
         spells.add("Smoke Bomb");
         return spells;
     }

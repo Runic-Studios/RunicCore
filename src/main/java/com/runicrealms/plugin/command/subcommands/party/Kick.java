@@ -9,11 +9,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
-import com.runicrealms.plugin.nametags.NameTagChanger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ public class Kick implements SubCommand {
 	
 	private PartySC party;
 	private Plugin plugin = RunicCore.getInstance();
-    private NameTagChanger nameTagChanger = new NameTagChanger();
 	
 	public Kick(PartySC party) {
 		this.party = party;
@@ -106,7 +103,7 @@ public class Kick implements SubCommand {
         party.getPartyNames().remove(targetName);
 
         // reset the party member's name colors for the kicked player
-        PartyDisconnect.updatePartyNames(party, target, plugin, nameTagChanger);
+        PartyDisconnect.updatePartyNames(party, target);
 
         target.sendMessage
                 (ChatColor.DARK_GREEN + "Party "
@@ -126,19 +123,6 @@ public class Kick implements SubCommand {
 		for (Player member : members) {
 			RunicCore.getTabListManager().setupTab(member);
 		}
-
-        // sets the player's name color to RED if outlaw is enabled
-        // delay by 0.5s in case the player's outlaw data is null
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (plugin.getConfig().getBoolean(target.getUniqueId() + ".outlaw.enabled", true)) {
-                    nameTagChanger.changeNameGlobal(target, ChatColor.RED + targetName);
-                } else {
-                    nameTagChanger.changeNameGlobal(target, ChatColor.WHITE + targetName);
-                }
-            }
-        }.runTaskLater(plugin, 10);
 	}
 
     @Override

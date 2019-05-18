@@ -1,8 +1,11 @@
 package com.runicrealms.plugin.scoreboard;
 
+import net.minecraft.server.v1_13_R2.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_13_R2.ScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +15,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import com.runicrealms.plugin.RunicCore;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class ScoreboardHandler implements Listener {
@@ -19,11 +24,14 @@ public class ScoreboardHandler implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
 
+        Player pl = e.getPlayer();
+
+        // sets players username red if they are outlaw.
         new BukkitRunnable() {
             @Override
             public void run() {
-                createScoreboard(e.getPlayer());
-                updateSideInfo(e.getPlayer());
+                createScoreboard(pl);
+                updateSideInfo(pl);
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
@@ -34,6 +42,15 @@ public class ScoreboardHandler implements Listener {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         Scoreboard board = manager.getNewScoreboard();
 
+        // create teams to be used for name colors later
+        Team white = board.registerNewTeam("white");
+        white.setColor(ChatColor.WHITE);
+        Team party = board.registerNewTeam("party");
+        party.setColor(ChatColor.GREEN);
+        party.setCanSeeFriendlyInvisibles(true);
+        Team outlaw = board.registerNewTeam("outlaw");
+        outlaw.setColor(ChatColor.RED);
+
         // setup side scoreboard
         Objective sidebar = board.registerNewObjective("sidebar", "dummy");
         sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lFor The Realm     ");
@@ -41,6 +58,49 @@ public class ScoreboardHandler implements Listener {
 
         // set the board!
         pl.setScoreboard(board);
+    }
+
+    /**
+     * Updates player name colors
+     * @param player who will receive packets
+     * @param team name of team, "party" for green and "outlaw" for red
+     * @param affected player(s) whose names are affected
+     */
+    public static void setPlayerTeamFor(Player player, Team team, List<String> affected) {
+        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
+        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
+        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, affected, 3);
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+    }
+
+    /**
+     * Similar method, updates name for all online players, as opposed to certain players
+     * @param player whose name will be changed
+     * @param team pl.getScoreboard().getTeam("party") or "outlaw"
+     */
+    public static void changeNameGlobal(Player player, Team team) {
+        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
+        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
+        List<String> onlineNames = new ArrayList<>();
+        for (Player on : Bukkit.getOnlinePlayers()) {
+            onlineNames.add(on.getName());
+        }
+        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, onlineNames, 3);
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+    }
+
+    public static void resetTeam(Player player, Team team) {
+        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
+        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
+        List<String> onlineNames = new ArrayList<>();
+        for (Player on : Bukkit.getOnlinePlayers()) {
+            onlineNames.add(on.getName());
+        }
+        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, onlineNames, 4);
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        craftPlayer.getHandle().playerConnection.sendPacket(packet);
     }
 
     public void updateSideInfo(Player pl){
