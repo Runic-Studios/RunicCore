@@ -6,6 +6,7 @@ import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.parties.Invite;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -88,27 +89,32 @@ public class Join implements SubCommand {
                         + ChatColor.WHITE + invite.getInviter().getName()
                         + ChatColor.GREEN + "'s party!");
 
-        // grab the player's stored name, convert it to a string
-        String storedName = plugin.getConfig().get(sender.getUniqueId() + ".info.name").toString();
-
         // inform the party members of a new member, disclude the sender
         invite.getParty().sendOtherMembersMessage
                 (ChatColor.DARK_GREEN + "Party "
                         + ChatColor.GOLD + "» "
-                        + ChatColor.WHITE + storedName
+                        + ChatColor.WHITE + sender.getName()
                         + ChatColor.GREEN + " joined the party!", sender.getUniqueId());
 
         // update the joiner's (sender) name for current members
         for (Player member : invite.getParty().getPlayerMembers()) {
+            try {
             ScoreboardHandler.setPlayerTeamFor
                     (member, sender.getScoreboard().getTeam("party"),
                             Collections.singletonList(sender.getName()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // update the party members' name colors for the joiner (sender)
+        try {
         ScoreboardHandler.setPlayerTeamFor
                 (sender, sender.getScoreboard().getTeam("party"),
                         invite.getParty().getPartyNames());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // update the tablist
         for (Player member : party.getPlayerMembers()) {

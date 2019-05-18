@@ -51,21 +51,36 @@ public class OutlawManager implements Listener {
             public void run() {
                 if (RunicCore.getInstance().getConfig().getBoolean(pl.getUniqueId() + ".info.outlaw.enabled")) {
                     for (Player on : Bukkit.getOnlinePlayers()) {
+                        try {
                         ScoreboardHandler.setPlayerTeamFor(on, pl.getScoreboard().getTeam("outlaw"),
                                 Collections.singletonList(pl.getName()));
+                        } catch (Exception e) {
+                            Bukkit.broadcastMessage("fuck u");
+                            e.printStackTrace();
+                        }
                     }
                 } else {
                     for (Player on : Bukkit.getOnlinePlayers()) {
+                        try {
                         ScoreboardHandler.setPlayerTeamFor(on, pl.getScoreboard().getTeam("white"),
                                 Collections.singletonList(pl.getName()));
+                        } catch (Exception e) {
+                            Bukkit.broadcastMessage("fuck u");
+                            e.printStackTrace();
+                        }
                     }
                 }
 
                 // updates OTHER players names for joined user
                 for (Player on : Bukkit.getOnlinePlayers()) {
                     if (RunicCore.getInstance().getConfig().getBoolean(on.getUniqueId() + ".info.outlaw.enabled")) {
+                        try {
                         ScoreboardHandler.setPlayerTeamFor(pl, pl.getScoreboard().getTeam("outlaw"),
                                 Collections.singletonList(on.getName()));
+                        } catch (Exception e) {
+                            Bukkit.broadcastMessage("fuck u");
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

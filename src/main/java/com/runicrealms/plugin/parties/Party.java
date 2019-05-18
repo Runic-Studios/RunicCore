@@ -126,9 +126,8 @@ public class Party {
 
        ArrayList<String> partyNames = new ArrayList<>();
 
-       for  (UUID uuid : this.getMembers()) {
-           String storedName = plugin.getConfig().get(uuid + ".info.name").toString();
-           partyNames.add(storedName);
+       for  (Player member : this.getPlayerMembers()) {
+           partyNames.add(member.getName());
        }
        return partyNames;
    }

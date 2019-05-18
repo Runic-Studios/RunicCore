@@ -15,7 +15,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import com.runicrealms.plugin.RunicCore;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -60,47 +65,49 @@ public class ScoreboardHandler implements Listener {
         pl.setScoreboard(board);
     }
 
-    /**
-     * Updates player name colors
-     * @param player who will receive packets
-     * @param team name of team, "party" for green and "outlaw" for red
-     * @param affected player(s) whose names are affected
-     */
-    public static void setPlayerTeamFor(Player player, Team team, List<String> affected) {
-        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
-        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
-        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, affected, 3);
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+
+
+//    /**
+//     * Updates player name colors
+//     * @param player who will receive packets
+//     * @param team name of team, "party" for green and "outlaw" for red
+//     * @param affected player(s) whose names are affected
+//     */
+//    public static void setPlayerTeamFor(Player player, Team team, List<String> whoseNames) { // updateNamesFor
+//        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
+//        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
+//        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, affected, 3);
+//        CraftPlayer craftPlayer = (CraftPlayer) player;
+//        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+//    }
+    private static Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
+        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+        String name = "net.minecraft.server." + version + nmsClassString;
+        Class<?> nmsClass = Class.forName(name);
+        return nmsClass;
     }
 
-    /**
-     * Similar method, updates name for all online players, as opposed to certain players
-     * @param player whose name will be changed
-     * @param team pl.getScoreboard().getTeam("party") or "outlaw"
-     */
-    public static void changeNameGlobal(Player player, Team team) {
-        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
-        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
-        List<String> onlineNames = new ArrayList<>();
-        for (Player on : Bukkit.getOnlinePlayers()) {
-            onlineNames.add(on.getName());
-        }
-        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, onlineNames, 3);
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+    private static Object getConnection(Player player) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        Method getHandle = player.getClass().getMethod("getHandle");
+        Object nmsPlayer = getHandle.invoke(player);
+        Field conField = nmsPlayer.getClass().getField("playerConnection");
+        Object con = conField.get(nmsPlayer);
+        return con;
     }
 
-    public static void resetTeam(Player player, Team team) {
-        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
-        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
-        List<String> onlineNames = new ArrayList<>();
-        for (Player on : Bukkit.getOnlinePlayers()) {
-            onlineNames.add(on.getName());
-        }
-        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, onlineNames, 4);
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+    public static void setPlayerTeamFor(Player player, Team team, List<String> affected)
+            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        Class<?> nmsScoreboard = getNMSClass("Scoreboard");
+        Constructor<?> nmsScoreboardConstructor = nmsScoreboard.getConstructor();
+        Object scoreboardObj = nmsScoreboardConstructor.newInstance();
+        Class<?> nmsTeam = getNMSClass("ScoreboardTeam"); //new ScoreboardTeam(nmsScoreboard, team.getName());
+        Constructor<?> nmsTeamConstructor = nmsTeam.getConstructor(getNMSClass("Scoreboard"), String.class);
+        Object nmsTeamObj = nmsTeamConstructor.newInstance(scoreboardObj, team.getName());
+        Class<?> packetClass = getNMSClass("PacketPlayOutScoreboardTeam");
+        Constructor<?> packetConstructor = packetClass.getConstructor(nmsTeam, Collection.class, int.class);
+        Object packet = packetConstructor.newInstance(nmsTeamObj, affected, 3);
+        Method sendPacket = getNMSClass("PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
+        sendPacket.invoke(getConnection(player), packet);
     }
 
     public void updateSideInfo(Player pl){

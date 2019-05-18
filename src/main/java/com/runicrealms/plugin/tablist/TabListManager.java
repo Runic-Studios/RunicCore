@@ -61,9 +61,8 @@ public class TabListManager implements Listener {
         int i = 0;
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.hasMetadata("NPC")) continue;
-            String storedName = RunicCore.getInstance().getConfig().get(online.getUniqueId() + ".info.name").toString();
-            if (storedName != null) {
-                tab.set(0, i + 1, new TextTabItem(storedName, 0, Skins.getPlayer(online)));
+            if (online.getName() != null) {
+                tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
             } else {
                 tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
             }
@@ -84,8 +83,7 @@ public class TabListManager implements Listener {
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getPartySize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int j = 0;
             for (Player member : party.getPlayerMembers()) {
-                String storedName = RunicCore.getInstance().getConfig().get(member.getUniqueId() + ".info.name").toString();
-                tab.set(2, j+1, new TextTabItem(storedName, 0, Skins.getPlayer(member)));
+                tab.set(2, j+1, new TextTabItem(member.getName(), 0, Skins.getPlayer(member)));
                 j++;
             }
         }

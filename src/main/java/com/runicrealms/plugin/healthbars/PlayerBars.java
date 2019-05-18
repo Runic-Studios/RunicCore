@@ -194,7 +194,8 @@ public class PlayerBars implements Listener {
 
                     if (health <= 0) return;
 
-                    String name = RunicCore.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+                    //String name = RunicCore.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+                    String name = victim.getName();
 
                     // if the bossbar isn't null, update the victim's health for the attacker
                     if (bossBar != null) {

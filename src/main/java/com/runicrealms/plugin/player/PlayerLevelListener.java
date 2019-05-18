@@ -107,8 +107,7 @@ public class PlayerLevelListener implements Listener {
                 break;
             case 50:
                 giveSpellpoint(pl);
-                String storedName = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.name");
-                Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + storedName
+                Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
                          + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + pl.getLevel() + " " + className + "!");
                 pl.sendMessage("\n");
                 ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");

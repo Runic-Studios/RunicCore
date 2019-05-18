@@ -7,15 +7,13 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import com.runicrealms.plugin.RunicCore;
 
 public class HealUtil  {
 
     @SuppressWarnings("deprecation")
     public static void healPlayer(double healAmt, Player recipient, Player caster) {
 
-        String storedName = RunicCore.getInstance().getConfig().get(caster.getUniqueId() + ".info.name").toString();
-        String sourceStr = " from " + ChatColor.WHITE + storedName;
+        String sourceStr = " from " + ChatColor.WHITE + caster.getName();
         if (recipient == caster) sourceStr = "";
 
         healAmt = healAmt + GearScanner.getHealingBoost(caster);

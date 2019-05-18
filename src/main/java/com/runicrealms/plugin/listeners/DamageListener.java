@@ -235,7 +235,8 @@ public class DamageListener implements Listener {
     private void broadcastDeathMessage(Player victim) {
 
         // initialize method variables
-        String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
+        //String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
+        String nameVic = victim.getName();
 
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " died!");

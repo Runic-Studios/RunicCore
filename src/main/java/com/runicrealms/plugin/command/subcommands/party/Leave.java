@@ -81,17 +81,13 @@ public class Leave implements SubCommand {
                 // grab the new Player newLeader from their uuid in the party array
                 Player newLeader = Bukkit.getPlayer(UUID.fromString(party.getLeader().toString()));
 
-                // grab the new leader's stored name
-                Object storedNameLead = plugin.getConfig().get(newLeader.getUniqueId() + ".info.name");
-                String newLeadNameToString = storedNameLead.toString();
-
                 // inform members of leader change
                 party.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
                                 + ChatColor.WHITE + sender.getName()
                                 + ChatColor.RED + " left the party. "
-                                + ChatColor.WHITE + newLeadNameToString
+                                + ChatColor.WHITE + newLeader.getName()
                                 + ChatColor.GREEN + " is now the party leader!");
             }
         }

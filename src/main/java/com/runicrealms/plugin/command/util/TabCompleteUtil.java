@@ -23,7 +23,7 @@ public class TabCompleteUtil {
 
         ArrayList<String> matchedPlayers = new ArrayList<String>();
         for (Player player : commandSender.getServer().getOnlinePlayers()) {
-            String name = plugin.getConfig().get(player.getUniqueId() + ".info.name").toString();
+            String name = player.getName();
             if ((senderPlayer == null || senderPlayer.canSee(player)) && StringUtil.startsWithIgnoreCase(name, lastWord)) {
                 matchedPlayers.add(name);
             }

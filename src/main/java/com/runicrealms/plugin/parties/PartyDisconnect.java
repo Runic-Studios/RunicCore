@@ -2,27 +2,23 @@ package com.runicrealms.plugin.parties;
 
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
 import java.util.Collections;
 
 public class PartyDisconnect implements Listener {
 
-    private Plugin plugin = RunicCore.getInstance();
-
     @EventHandler
     public void onMemberDisconnect(PlayerQuitEvent e) {
 
         Player player = e.getPlayer();
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
-        String storedName = plugin.getConfig().get(player.getUniqueId() + ".info.name").toString();
 
         if (party == null) {
 
@@ -43,7 +39,7 @@ public class PartyDisconnect implements Listener {
                     party.sendMessage
                             (ChatColor.DARK_GREEN + "Party "
                                     + ChatColor.GOLD + "» "
-                                    + ChatColor.WHITE + storedName
+                                    + ChatColor.WHITE + player.getName()
                                     + ChatColor.RED + " left the party by disconnecting.");
 
                     // update the player list for other party members
@@ -55,7 +51,6 @@ public class PartyDisconnect implements Listener {
 
                 // party leader is set to whoever is now in position [0]
                 party.setLeader(party.getMemberUUID(0));
-                String storedNameLead = plugin.getConfig().get(party.getLeader() + ".info.name").toString();
 
                 // grab the new Player newLeader from their uuid in the party array
                 //Player newLeader = Bukkit.getPlayer(UUID.fromString(party.getLeader().toString()));
@@ -64,9 +59,9 @@ public class PartyDisconnect implements Listener {
                 party.sendMessage
                         (ChatColor.DARK_GREEN + "Party "
                                 + ChatColor.GOLD + "» "
-                                + ChatColor.WHITE + storedName
+                                + ChatColor.WHITE + player.getName()
                                 + ChatColor.RED + " left the party by disconnecting. "
-                                + ChatColor.WHITE + storedNameLead
+                                + ChatColor.WHITE + Bukkit.getPlayer(party.getLeader()).getName()
                                 + ChatColor.GREEN + " is now the party leader!");
 
                 // update the tablist
@@ -85,9 +80,14 @@ public class PartyDisconnect implements Listener {
             if (OutlawManager.isOutlaw(member)) {
                 team = "outlaw";
             }
-            ScoreboardHandler.setPlayerTeamFor
-                    (leaver, member.getScoreboard().getTeam(team),
-                            Collections.singletonList(member.getName()));
+            try {
+                ScoreboardHandler.setPlayerTeamFor
+                        (leaver, member.getScoreboard().getTeam(team),
+                                Collections.singletonList(member.getName()));
+            } catch (Exception e) {
+                Bukkit.broadcastMessage("fuck u");
+                e.printStackTrace();
+            }
         }
 
         String team = "white";
@@ -96,9 +96,14 @@ public class PartyDisconnect implements Listener {
         }
         // update the leaver's name for current members
         for (Player member : party.getPlayerMembers()) {
-            ScoreboardHandler.setPlayerTeamFor
-                    (member, leaver.getScoreboard().getTeam(team),
-                            Collections.singletonList(leaver.getName()));
+            try {
+                ScoreboardHandler.setPlayerTeamFor
+                        (member, leaver.getScoreboard().getTeam(team),
+                                Collections.singletonList(leaver.getName()));
+            } catch (Exception e) {
+                Bukkit.broadcastMessage("fuck u");
+                e.printStackTrace();
+            }
         }
     }
 }

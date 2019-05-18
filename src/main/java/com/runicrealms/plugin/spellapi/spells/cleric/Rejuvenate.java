@@ -78,8 +78,6 @@ public class Rejuvenate extends Spell {
     @SuppressWarnings("deprecation")
     private void allyCheck(Player pl, Location location) {
 
-        String storedName = plugin.getConfig().get(pl.getUniqueId() + ".info.name").toString();
-
         for (Entity e : location.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
 
             if (!e.getType().isAlive()) return;
@@ -136,7 +134,7 @@ public class Rejuvenate extends Spell {
 
                     if (ally.getHealth() == ally.getMaxHealth()) {
                         ally.sendMessage(
-                                ChatColor.WHITE + storedName
+                                ChatColor.WHITE + pl.getName()
                                         + ChatColor.GRAY + " tried to heal you, but you are at full health.");
                         ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
