@@ -31,7 +31,7 @@ public class FireAura extends Spell {
     public void executeSpell(Player player, SpellItemType type) {
 
         new BukkitRunnable() {
-            int count = 0;
+            int count = 1;
             @Override
             public void run() {
 

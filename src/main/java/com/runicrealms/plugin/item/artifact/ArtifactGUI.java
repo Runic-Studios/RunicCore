@@ -420,6 +420,7 @@ public class ArtifactGUI {
 
     private static List<String> displaySpellsMage() {
         List<String> spells = new ArrayList<>();
+        spells.add("Arcane Shackles");
         spells.add("Arcane Spike");
         spells.add("Blizzard");
         spells.add("Comet");

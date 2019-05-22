@@ -3,6 +3,8 @@ package com.runicrealms.plugin.healthbars;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
@@ -17,6 +19,7 @@ public class MobHealthManager {
     public MobHealthManager() {
         cleanupTask();
         fullCleanTask();
+        fixHealthBars();
     }
 
     /**
@@ -27,7 +30,7 @@ public class MobHealthManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-
+                fullClean();
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100, 600);
     }
@@ -60,11 +63,43 @@ public class MobHealthManager {
 
             String world = Bukkit.getWorlds().get(i).getName();
 
-            for (Entity en : Bukkit.getWorld(world).getEntities()) {
-                if (en instanceof ArmorStand) {
+            for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
+
+                // remove stray armorstands
+                if (en instanceof ArmorStand && !en.hasMetadata("healthbar")) {
                     en.remove();
                 }
             }
         }
+    }
+
+    private void fixHealthBars() {
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
+
+                    String world = Bukkit.getWorlds().get(i).getName();
+
+                    for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
+
+                        if (en instanceof Player) continue;
+
+                        if (en instanceof ArmorStand) continue;
+
+                        if (en.hasMetadata("NPC")) continue;
+
+                        if (!(en instanceof LivingEntity)) continue;
+
+                        LivingEntity le = (LivingEntity) en;
+
+                        if (en.getPassengers().size() == 0) {
+                            MobHealthBars.setupMob(le, true);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 100, 100L);
     }
 }
