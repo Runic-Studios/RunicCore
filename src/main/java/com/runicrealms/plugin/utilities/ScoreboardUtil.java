@@ -20,7 +20,7 @@ public class ScoreboardUtil {
         final Objective sidebar = scoreboard.registerNewObjective("sidebar", "dummy");
         final Objective healthBar = scoreboard.registerNewObjective("healthBar", "health");
 
-        sidebar.setDisplayName(ChatColor.YELLOW + "     §lFor the Realm     ");
+        sidebar.setDisplayName(ChatColor.YELLOW + "     §lRunic Realms     ");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         healthBar.setDisplayName(ChatColor.RED + "❤");

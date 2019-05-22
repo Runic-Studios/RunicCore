@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.events.SuccessfulHitEvent;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.spellapi.spells.warrior.Enrage;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -99,6 +101,12 @@ public class DamageListener implements Listener {
                 e.setCancelled(true);
                 int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
                 DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager);
+
+                // call our successful hit event, ensure that the item is the artifact
+                if (slot != 0) return;
+                SuccessfulHitEvent event = new SuccessfulHitEvent((Player) damager, victim);
+                Bukkit.getPluginManager().callEvent(event);
+
             } else {
                 e.setCancelled(true);
                 return;

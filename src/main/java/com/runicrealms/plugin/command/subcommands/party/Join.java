@@ -6,7 +6,6 @@ import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.parties.Invite;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -99,7 +98,7 @@ public class Join implements SubCommand {
         // update the joiner's (sender) name for current members
         for (Player member : invite.getParty().getPlayerMembers()) {
             try {
-            ScoreboardHandler.setPlayerTeamFor
+            ScoreboardHandler.updateNamesFor
                     (member, sender.getScoreboard().getTeam("party"),
                             Collections.singletonList(sender.getName()));
             } catch (Exception e) {
@@ -109,7 +108,7 @@ public class Join implements SubCommand {
 
         // update the party members' name colors for the joiner (sender)
         try {
-        ScoreboardHandler.setPlayerTeamFor
+        ScoreboardHandler.updateNamesFor
                 (sender, sender.getScoreboard().getTeam("party"),
                         invite.getParty().getPartyNames());
         } catch (Exception e) {

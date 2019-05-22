@@ -26,7 +26,13 @@ public final class MobHealthBars implements Listener {
         if (e.getEntity() instanceof ArmorStand) return;
         if (!(e.getEntity() instanceof LivingEntity)) return;
         LivingEntity mob = (LivingEntity) e.getEntity();
-        setupMob(mob, true);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                setupMob(mob, true);
+            }
+        }.runTaskLater(RunicCore.getInstance(), 10L);
+        //setupMob(mob, true);
     }
 
     @SuppressWarnings("unchecked")

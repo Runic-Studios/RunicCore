@@ -32,6 +32,12 @@ public class ClassGUI implements InventoryProvider {
     private static final double rogueBaseSpeed = -22.8;
     private static final double warriorBaseSpeed = -23.25;
 
+    private static final double archerBaseDamage = 5;
+    private static final double clericBaseDamage = 8;
+    private static final double mageBaseDamage = 5;
+    private static final double rogueBasedamage = 6;
+    private static final double warriorBaseDamage = 6;
+
     // this inventory cannot be closed!
     public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
             .id("classSelection")
@@ -250,28 +256,28 @@ public class ClassGUI implements InventoryProvider {
         switch (className) {
             case "Archer":
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", archerBaseBowSpeed);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", archerBaseDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", archerBaseDamage);
                 break;
             case "Cleric":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", clericBaseSpeed, "mainhand");
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 8);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", clericBaseDamage-5);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", clericBaseDamage);
                 break;
             case "Mage":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", mageBaseSpeed, "mainhand");
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 3);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 5);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", mageBaseDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", mageBaseDamage);
                 break;
             case "Rogue":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", rogueBaseSpeed, "mainhand");
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 4);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 6);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", rogueBasedamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", rogueBasedamage);
                 break;
             case "Warrior":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", warriorBaseSpeed, "mainhand");
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", 4);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", 6);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", warriorBaseDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", warriorBaseDamage);
                 break;
         }
         // --------------------------------------------------------------------------------------------------------
@@ -331,5 +337,25 @@ public class ClassGUI implements InventoryProvider {
 
     public static double getWarriorBaseSpeed() {
         return warriorBaseSpeed;
+    }
+
+    public static double getArcherBaseDamage() {
+        return archerBaseDamage;
+    }
+
+    public static double getClericBaseDamage() {
+        return clericBaseDamage;
+    }
+
+    public static double getMageBaseDamage() {
+        return mageBaseDamage;
+    }
+
+    public static double getRogueBasedamage() {
+        return rogueBasedamage;
+    }
+
+    public static double getWarriorBaseDamage() {
+        return warriorBaseDamage;
     }
 }

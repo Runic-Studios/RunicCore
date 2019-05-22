@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -60,6 +61,12 @@ public class StaffListener implements Listener {
 
          // cancel the event, run custom mechanics
          e.setCancelled(true);
+
+         // set the cooldown
+        double speed = AttributeUtil.getGenericDouble(artifact, "generic.attackSpeed");
+        if (speed != 0) {
+            e.getPlayer().setCooldown(artifact.getType(), (int) (20/(24+speed)));
+        }
 
         // if they're sneaking, they're casting a spell. so we don't fire the attack.
         if (pl.isSneaking()) return;

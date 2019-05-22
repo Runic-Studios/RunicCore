@@ -130,26 +130,42 @@ public class PlayerLevelListener implements Listener {
         int durab = ((Damageable) artifact.getItemMeta()).getDamage();
 
         double newSpeed;
+        double newDamage;
         switch (className) {
             case "Archer":
                 newSpeed = ClassGUI.getArcherBaseBowSpeed() + (24+ClassGUI.getArcherBaseBowSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", newSpeed);
+                newDamage = (int) ClassGUI.getArcherBaseDamage() + (ClassGUI.getArcherBaseDamage()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Cleric":
                 newSpeed = ClassGUI.getClericBaseSpeed() + (24+ClassGUI.getClericBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
+                newDamage = (int) ClassGUI.getClericBaseDamage() + (ClassGUI.getClericBaseDamage()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-5);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Mage":
                 newSpeed = ClassGUI.getMageBaseSpeed() + (24+ClassGUI.getMageBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
+                newDamage = (int) ClassGUI.getMageBaseDamage() + (ClassGUI.getMageBaseDamage()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Rogue":
                 newSpeed = ClassGUI.getRogueBaseSpeed() + (24+ClassGUI.getRogueBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
+                newDamage = (int) ClassGUI.getRogueBasedamage() + (ClassGUI.getRogueBasedamage()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Warrior":
                 newSpeed = ClassGUI.getWarriorBaseSpeed() + (24+ClassGUI.getWarriorBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
+                newDamage = (int) ClassGUI.getWarriorBaseDamage() + (ClassGUI.getWarriorBaseDamage()) / 50 * pl.getLevel();
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
         }
 

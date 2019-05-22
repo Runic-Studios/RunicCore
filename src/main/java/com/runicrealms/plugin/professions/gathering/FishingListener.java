@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -16,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -50,7 +52,7 @@ public class FishingListener implements Listener {
         Material itemType;
         String itemName;
         String holoString;
-        String desc = "Crafting Reagent";
+        String desc = "Raw Material";
 
         PlayerFishEvent.State state = e.getState();
         if (state == PlayerFishEvent.State.CAUGHT_ENTITY || state == PlayerFishEvent.State.CAUGHT_FISH) {
@@ -67,10 +69,10 @@ public class FishingListener implements Listener {
 
             if (fishType < 50) {
                 itemType = Material.COD;
-                itemName = "Raw Cod";
+                itemName = "Cod";
                 holoString = "+ Cod";
             } else if (fishType < 75) {
-                itemName = "Raw Salmon";
+                itemName = "Salmon";
                 itemType = Material.SALMON;
                 holoString = "+ Salmon";
             } else if (fishType < 95) {
@@ -141,6 +143,38 @@ public class FishingListener implements Listener {
         if (spawned instanceof Fish) e.setCancelled(true);
     }
 
+    /**
+     * Prevents a player from consuming raw fish
+     */
+    @EventHandler
+    public void onRawFishEat(PlayerItemConsumeEvent e) {
+
+        Material m = e.getItem().getType();
+
+        if (m == Material.COD || m == Material.SALMON) {
+            e.getPlayer().sendMessage(ChatColor.RED + "I need to cook that first.");
+            e.setCancelled(true);
+//        } else if (m == Material.PUFFERFISH || m == Material.TROPICAL_FISH) {
+//            e.getPlayer().sendMessage(ChatColor.RED + "I shouldn't eat that.");
+//            e.setCancelled(true);
+        }
+    }
+
+    /**
+     * Prevents a player from consuming puffer / tropical
+     */
+    @EventHandler
+    public void onPufferTropFishEat(PlayerInteractEvent e) {
+
+        if (e.getItem() == null) return;
+
+        Material m = e.getItem().getType();
+
+        if (m == Material.PUFFERFISH || m == Material.TROPICAL_FISH) {
+            e.getPlayer().sendMessage(ChatColor.RED + "I shouldn't eat that.");
+            e.setCancelled(true);
+        }
+    }
 
     private void gatherMaterial(Player pl, Location loc, Location fishLoc, Material gathered,
                                 String name, String itemName, String desc, String failMssg,
@@ -167,9 +201,9 @@ public class FishingListener implements Listener {
             pl.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 2.0f);
             HologramUtil.createStaticHologram(pl, loc, ChatColor.GOLD + "" + ChatColor.BOLD + "+ Coin", 0, 1.25, 0);
             if (pl.getInventory().firstEmpty() != -1) {
-                pl.getInventory().addItem(goldNugget());
+                pl.getInventory().addItem(CurrencyUtil.goldCoin());
             } else {
-                pl.getWorld().dropItem(pl.getLocation(), goldNugget());
+                pl.getWorld().dropItem(pl.getLocation(), CurrencyUtil.goldCoin());
             }
         }
     }
@@ -180,16 +214,6 @@ public class FishingListener implements Listener {
         ArrayList<String> lore = new ArrayList<>();
         meta.setDisplayName(ChatColor.WHITE + itemName);
         lore.add(ChatColor.GRAY + desc);
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    private ItemStack goldNugget() {
-        ItemStack item = new ItemStack(Material.GOLD_NUGGET);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
-        lore.add(ChatColor.GRAY + "Currency");
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;

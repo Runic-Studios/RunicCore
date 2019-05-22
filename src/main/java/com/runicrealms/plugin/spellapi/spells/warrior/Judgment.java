@@ -34,7 +34,7 @@ public class Judgment extends Spell {
                         "\njudges all enemies unworthy and repels them," +
                         "\nbut party members may pass through it freely." +
                         "\nDuring this time, you may not move.",
-                ChatColor.WHITE, 9, 20);
+                ChatColor.WHITE, 9, 25);
     }
 
     @Override

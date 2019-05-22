@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 
 import com.runicrealms.plugin.command.supercommands.SuperCommand;
 
-public class ToolSC extends SuperCommand {
+public class GathertoolSC extends SuperCommand {
 
-    public ToolSC() {
+    public GathertoolSC() {
         super("professions.tool");
     }
 

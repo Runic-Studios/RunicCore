@@ -3,6 +3,7 @@ package com.runicrealms.plugin.listeners;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -10,9 +11,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 
+/**
+ * Applies the cooldown to axes, maces, and swords. Bows and staves are handled separately.
+ */
 public class WeaponCDListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onMeleeAttack(PlayerInteractEvent e) {
 
         // check for null
@@ -26,8 +30,8 @@ public class WeaponCDListener implements Listener {
         Material artifactType = artifact.getType();
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
-        // only listen for items that can be artifact weapons
-        if (artifactType == null) return;
+        // only listen for items that can be artifact weapons, don't listen for staves
+        if (artifactType == Material.AIR || artifactType == Material.WOODEN_HOE) return;
 
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
@@ -59,8 +63,8 @@ public class WeaponCDListener implements Listener {
         Material artifactType = artifact.getType();
         double cooldown = pl.getCooldown(artifact.getType());
 
-        // only listen for items that can be artifact weapons
-        if (artifactType == null) return;
+        // only listen for items that can be artifact weapons, we DO listen for staves here
+        if (artifactType == Material.AIR) return;
 
         // only apply cooldown if its not already active
         if (cooldown != 0) return;

@@ -17,8 +17,8 @@ public class ArcaneSpike extends Spell {
 
     // globals
     private static final int DAMAGE_AMOUNT = 10;
-    private static final double BEAM_WIDTH = 1.5;
-    private static final int BEAM_LENGTH = 16;
+    private static final double BEAM_WIDTH = 2;
+    private static final int BEAM_LENGTH = 24;
     private static final int RADIUS = 16;
     private HashMap<UUID, List<UUID>> hasBeenHit;
 

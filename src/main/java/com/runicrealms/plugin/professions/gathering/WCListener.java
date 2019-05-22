@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.utilities.ColorUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -20,7 +22,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
-import com.runicrealms.plugin.enums.WeaponEnum;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +33,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * Listener for Woodcutting (Gathering Profesion)
  * adds blocks material type and coordinates to yml file
  * for the ProfManager to respawn at intervals, checks name of
- * WG region for "lumber" to perform tasks
+ * WG region for "grove" to perform tasks
  */
 public class WCListener implements Listener {
 
-    private double logSuccessRate = 75.0;
-    private double nuggetRate = 5.0;
+    private double coinRate = 5.0;
 
     @EventHandler
     public void onResourceBreak(BlockBreakEvent e) {
@@ -56,10 +56,10 @@ public class WCListener implements Listener {
 
         boolean canChop = false;
 
-        // check the region for the keyword 'lumber'
+        // check the region for the keyword 'grove'
         // ignore the rest of this event if the player cannot mine
         for (ProtectedRegion region : regions) {
-            if (region.getId().contains("lumber")) {
+            if (region.getId().contains("grove")) {
                 canChop = true;
             }
         }
@@ -91,42 +91,42 @@ public class WCListener implements Listener {
 
         switch (block.getType()) {
             // woodcutting
-            case OAK_LOG:
+            case OAK_WOOD:
                 placeHolderType = Material.OAK_PLANKS;
                 itemType = Material.OAK_LOG;
                 holoString = "+ Oak";
                 itemName = "Oak Log";
                 subPath = "LOGS";
                 break;
-            case SPRUCE_LOG:
+            case SPRUCE_WOOD:
                 placeHolderType = Material.SPRUCE_PLANKS;
                 itemType = Material.SPRUCE_LOG;
                 holoString = "+ Spruce";
                 itemName = "Spruce Log";
                 subPath = "LOGS";
                 break;
-            case BIRCH_LOG:
+            case BIRCH_WOOD:
                 placeHolderType = Material.BIRCH_PLANKS;
                 itemType = Material.BIRCH_LOG;
                 holoString = "+ Birch";
                 itemName = "Birch Log";
                 subPath = "LOGS";
                 break;
-            case JUNGLE_LOG:
+            case JUNGLE_WOOD:
                 placeHolderType = Material.JUNGLE_PLANKS;
                 itemType = Material.JUNGLE_LOG;
                 holoString = "+ Jungle";
                 itemName = "Jungle Log";
                 subPath = "LOGS";
                 break;
-            case ACACIA_LOG:
+            case ACACIA_WOOD:
                 placeHolderType = Material.ACACIA_PLANKS;
                 itemType = Material.ACACIA_LOG;
                 holoString = "+ Acacia";
                 itemName = "Acacia Log";
                 subPath = "LOGS";
                 break;
-            case DARK_OAK_LOG:
+            case DARK_OAK_WOOD:
                 placeHolderType = Material.DARK_OAK_PLANKS;
                 itemType = Material.DARK_OAK_LOG;
                 holoString = "+ Dark Oak";
@@ -139,36 +139,61 @@ public class WCListener implements Listener {
 
         e.setCancelled(true);
 
-        // make sure player has harvesting tool
-        // we also ensure it has durability 100, arbitrarily chosen.
-        if (pl.getInventory().getItemInMainHand() == null) return;
-        WeaponEnum heldItem = WeaponEnum.matchType(pl.getInventory().getItemInMainHand());
-        ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
+        // make sure player has harvesting tool, iron axe of durability 1, 2, 3, 4, or 5, corresponding to the tier.
+        // with durability magic, a durability 1 iron axe will display as wood, 5 as diamond, etc.
+        ItemStack heldItem = pl.getInventory().getItemInMainHand();
+        ItemMeta meta = heldItem.getItemMeta();
         int durability = ((Damageable) meta).getDamage();
 
-        if (heldItem == null) {
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
             pl.sendMessage(ChatColor.RED + "You need a woodcutting axe to do that!");
             return;
         }
 
-        if (!(heldItem.equals(WeaponEnum.AXE)) || durability != 100) {
+        if (heldItem.getType() != Material.IRON_AXE
+                && durability != 1
+                && durability != 2
+                && durability != 3
+                && durability != 4
+                && durability != 5) {
             pl.sendMessage(ChatColor.RED + "You need a woodcutting axe to do that!");
             return;
         }
 
-        gatherMaterial(pl, loc, block, placeHolderType, itemType, holoString,
-                itemName, desc, "You fail to gather any resources.", chance);
+        gatherMaterial(pl, loc, block,
+                placeHolderType, itemType, holoString, itemName, desc,
+                "You fail to gather any resources.", chance, durability);
         saveBlockLocation(regenBlocks, blockLocations, subPath, block, oldType);
     }
 
 
     private void gatherMaterial(Player pl, Location loc, Block b,
-                                Material placeholder, Material gathered, String name, String itemName,
-                                String desc, String failMssg, double chance) {
+                                Material placeholder, Material gathered, String name, String itemName, String desc,
+                                String failMssg, double chance, int tier) {
 
         b.setType(placeholder);
 
-        if (chance < (100 - this.logSuccessRate)) {
+        double successRate;
+        switch (tier) {
+            case 5:
+                successRate = 75;
+                break;
+            case 4:
+                successRate = 62.5;
+                break;
+            case 3:
+                successRate = 50;
+                break;
+            case 2:
+                successRate = 37.5;
+                break;
+            case 1:
+            default:
+                successRate = 25;
+                break;
+        }
+
+        if (chance < (100 - successRate)) {
             pl.sendMessage(ChatColor.RED + failMssg);
             return;
         }
@@ -182,7 +207,7 @@ public class WCListener implements Listener {
         }
 
         // give the player a coin
-        if (chance >= (100 - this.nuggetRate)) {
+        if (chance >= (100 - this.coinRate)) {
             b.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 2.0f);
             HologramUtil.createStaticHologram(pl, loc, ChatColor.GOLD + "" + ChatColor.BOLD + "+ Coin", 0, 1.25, 0);
             if (pl.getInventory().firstEmpty() != -1) {
@@ -203,18 +228,6 @@ public class WCListener implements Listener {
         return item;
     }
 
-    public double getLogSuccessRate() {
-        return this.logSuccessRate;
-    }
-    public void setLogSuccessRate(double value) {
-        this.logSuccessRate = value;
-    }
-    public double getNuggetRate() {
-        return this.nuggetRate;
-    }
-    public void setNuggetRate(double value) {
-        this.nuggetRate = value;
-    }
     private void saveBlockLocation(File file, FileConfiguration fileConfig, String subPath, Block b, Material oldType) {
 
         int firstAvailableID = fileConfig.getInt(b.getWorld().getName() + ".NEXT_ID_" + subPath);
@@ -235,10 +248,35 @@ public class WCListener implements Listener {
     }
 
     public static ItemStack getGatheringAxe(int tier) {
+
         ItemStack item = new ItemStack(Material.IRON_AXE);
         ItemMeta meta = item.getItemMeta();
-//        ArrayList<String> lore = gatheringHoe.getItemMeta().getLore();
-//        lore.add()
+        ArrayList<String> lore = new ArrayList<>();
+
+        String dispName = "";
+        String desc = "";
+        switch (tier) {
+            case 5:
+                break;
+            case 4:
+                break;
+            case 3:
+                break;
+            case 2:
+                break;
+            case 1:
+            default:
+                dispName = ColorUtil.format("&7Basic Woodcutting Axe"); // white crafted, gray common, green uncommon, blue rare, purple elite, gold legendary
+                desc = "\n&7Durability: &f100&7/100\n&7Success Rate: &c25%\n\n&7Common";
+                break;
+        }
+
+        for (String s : desc.split("\n")) {
+            lore.add(ColorUtil.format(s));
+        }
+        meta.setDisplayName(dispName);
+        meta.setLore(lore);
+
         ((Damageable) meta).setDamage(tier);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

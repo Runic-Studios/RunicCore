@@ -117,6 +117,8 @@ public class SpellManager {
         this.spellList.add(new HolyNova());
         this.spellList.add(new Blizzard());
         this.spellList.add(new BlessedRain());
+        this.spellList.add(new FireAura());
+        this.spellList.add(new Permafrost());
     }
 
     // starts the repeating task to manage player cooldowns

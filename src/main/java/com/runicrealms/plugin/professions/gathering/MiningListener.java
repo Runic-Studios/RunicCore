@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -184,9 +185,9 @@ public class MiningListener implements Listener {
             b.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 2.0f);
             HologramUtil.createStaticHologram(pl, loc, ChatColor.GOLD + "" + ChatColor.BOLD + "+ Coin", 0, 1.25, 0);
             if (pl.getInventory().firstEmpty() != -1) {
-                pl.getInventory().addItem(goldNugget());
+                pl.getInventory().addItem(CurrencyUtil.goldCoin());
             } else {
-                pl.getWorld().dropItem(pl.getLocation(), goldNugget());
+                pl.getWorld().dropItem(pl.getLocation(), CurrencyUtil.goldCoin());
             }
         }
     }
@@ -196,16 +197,6 @@ public class MiningListener implements Listener {
         ArrayList<String> lore = new ArrayList<>();
         meta.setDisplayName(ChatColor.WHITE + itemName);
         lore.add(ChatColor.GRAY + desc);
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    private ItemStack goldNugget() {
-        ItemStack item = new ItemStack(Material.GOLD_NUGGET);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
-        lore.add(ChatColor.GRAY + "Currency");
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;

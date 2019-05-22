@@ -2,7 +2,7 @@ name: RunicCore
 version: 2.0.0
 api-version: 1.13
 main: com.runicrealms.plugin.RunicCore
-description: Core plugin for the "For the Realm" server
+description: Core plugin for the "Runic Realms" server
 author: Skyfallin_
 loadbefore: [Quests]
 commands:

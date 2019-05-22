@@ -27,8 +27,8 @@ import com.runicrealms.plugin.player.commands.SetLevelCMD;
 import com.runicrealms.plugin.player.commands.SetSC;
 import com.runicrealms.plugin.professions.ProfManager;
 import com.runicrealms.plugin.professions.WorkstationListener;
-import com.runicrealms.plugin.professions.commands.ToolGive;
-import com.runicrealms.plugin.professions.commands.ToolSC;
+import com.runicrealms.plugin.professions.commands.GathertoolGive;
+import com.runicrealms.plugin.professions.commands.GathertoolSC;
 import com.runicrealms.plugin.professions.gathering.FarmingListener;
 import com.runicrealms.plugin.professions.gathering.FishingListener;
 import com.runicrealms.plugin.professions.gathering.MiningListener;
@@ -169,9 +169,9 @@ public class RunicCore extends JavaPlugin {
         getCommand("mana").setExecutor(mana);
 
         // gathertool commands
-        ToolSC toolSC = new ToolSC();
+        GathertoolSC toolSC = new GathertoolSC();
         getCommand("gathertool").setExecutor(toolSC);
-        toolSC.addCommand(Arrays.asList("give"), new ToolGive(toolSC));
+        toolSC.addCommand(Arrays.asList("give"), new GathertoolGive(toolSC));
 
         // npc build
         NPCBuilderSC builderSC = new NPCBuilderSC();

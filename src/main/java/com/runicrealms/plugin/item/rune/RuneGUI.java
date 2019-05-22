@@ -56,19 +56,10 @@ public class RuneGUI {
 
     private static ItemGUI spellEditor(Player pl, ItemStack rune, int durability) {
 
-        // determine the player's class
-        String className = Objects.requireNonNull(RunicCore.getInstance()
-                .getConfig().get(pl.getUniqueId() + ".info.class.name")).toString();
-
         // grab player's rune
         ItemMeta meta = rune.getItemMeta();
 
-        int size = 36;
-//        if (skins.size() <= 5) {
-//            size = 36;
-//        } else {
-//            size = 45;
-//        }
+        int size = 45;
 
         ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, event -> {
 
@@ -101,8 +92,7 @@ public class RuneGUI {
                     }
 
                     updateRuneSpell(pl, rune, "primarySpell",
-                            event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
-                            rune.getItemMeta().getDisplayName(), className);
+                            event.getItem(event.getPosition()).getItemMeta().getDisplayName());
 
                 } else if (event.getClickType() == ClickType.RIGHT) {
 
@@ -116,8 +106,7 @@ public class RuneGUI {
                     }
 
                     updateRuneSpell(pl, rune, "secondarySpell",
-                            event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
-                            rune.getItemMeta().getDisplayName(), className);
+                            event.getItem(event.getPosition()).getItemMeta().getDisplayName());
 
                 } else if (event.getClickType() == ClickType.SHIFT_LEFT || event.getClickType() == ClickType.SHIFT_RIGHT) {
 
@@ -169,10 +158,13 @@ public class RuneGUI {
                         "\n&aand leveling-up!", 0);
 
         List<String> spells = new ArrayList<>();
+
         spells.add("Blink");
+        spells.add("Fire Aura");
         spells.add("Fireball");
         spells.add("Frostbolt");
         spells.add("Sprint");
+        spells.add("Permafrost");
 
         // first row of spells
         for (int i = 0; i < spells.size() && i < 5; i++) {
@@ -183,6 +175,17 @@ public class RuneGUI {
                 unlocked = true;
             }
             displaySpell(spellEditor, 20 + i, spells.get(i), unlocked);
+        }
+
+        // second row of spells
+        for (int i = 5; i < spells.size() && i < 10; i++) {
+
+            // check for permissions, ex: ftr.spells.blessedrain
+            boolean unlocked= false;
+            if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
+                unlocked = true;
+            }
+            displaySpell(spellEditor, 24 + i, spells.get(i), unlocked);
         }
 
         return spellEditor;
@@ -214,7 +217,7 @@ public class RuneGUI {
                         "\n&3Mana Cost: &f" + manaCost, 0);
     }
 
-    private static void updateRuneSpell(Player pl, ItemStack item, String spellSlot, String spellName, String itemName, String className) {
+    private static void updateRuneSpell(Player pl, ItemStack item, String spellSlot, String spellName) {
         // check so players can't have two of the same spell
         String otherSpell;
 
@@ -227,8 +230,8 @@ public class RuneGUI {
         if (!otherSpell.equals(spellName)) {
             item = AttributeUtil.addSpell(item, spellSlot, spellName);
             int durability = ((Damageable) item.getItemMeta()).getDamage();
-            LoreGenerator.generateArtifactLore(item, itemName, className, durability);
-            pl.getInventory().setItem(0, item);
+            LoreGenerator.generateRuneLore(item);
+            pl.getInventory().setItem(1, item);
             pl.closeInventory();
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
             pl.sendMessage(ChatColor.GREEN + "You imbued your rune with " + spellName + "!");

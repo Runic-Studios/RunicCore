@@ -1,11 +1,8 @@
 package com.runicrealms.plugin.scoreboard;
 
-import net.minecraft.server.v1_13_R2.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.v1_13_R2.ScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +16,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -58,28 +54,13 @@ public class ScoreboardHandler implements Listener {
 
         // setup side scoreboard
         Objective sidebar = board.registerNewObjective("sidebar", "dummy");
-        sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lFor The Realm     ");
+        sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lRunic Realms     ");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         // set the board!
         pl.setScoreboard(board);
     }
 
-
-
-//    /**
-//     * Updates player name colors
-//     * @param player who will receive packets
-//     * @param team name of team, "party" for green and "outlaw" for red
-//     * @param affected player(s) whose names are affected
-//     */
-//    public static void setPlayerTeamFor(Player player, Team team, List<String> whoseNames) { // updateNamesFor
-//        net.minecraft.server.v1_13_R2.Scoreboard nmsScoreboard = new net.minecraft.server.v1_13_R2.Scoreboard();
-//        ScoreboardTeam nmsTeam = new ScoreboardTeam(nmsScoreboard, team.getName());
-//        PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(nmsTeam, affected, 3);
-//        CraftPlayer craftPlayer = (CraftPlayer) player;
-//        craftPlayer.getHandle().playerConnection.sendPacket(packet);
-//    }
     private static Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
         String name = "net.minecraft.server." + version + nmsClassString;
@@ -95,7 +76,13 @@ public class ScoreboardHandler implements Listener {
         return con;
     }
 
-    public static void setPlayerTeamFor(Player player, Team team, List<String> affected)
+    /**
+     * Updates player name colors using packets and reflection
+     * @param player who will receive packets
+     * @param team name of team, "party" for green and "outlaw" for red
+     * @param whoseNames player(s) whose names are "looked at"
+     */
+    public static void updateNamesFor(Player player, Team team, List<String> whoseNames)
             throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         Class<?> nmsScoreboard = getNMSClass("Scoreboard");
         Constructor<?> nmsScoreboardConstructor = nmsScoreboard.getConstructor();
@@ -105,7 +92,7 @@ public class ScoreboardHandler implements Listener {
         Object nmsTeamObj = nmsTeamConstructor.newInstance(scoreboardObj, team.getName());
         Class<?> packetClass = getNMSClass("PacketPlayOutScoreboardTeam");
         Constructor<?> packetConstructor = packetClass.getConstructor(nmsTeam, Collection.class, int.class);
-        Object packet = packetConstructor.newInstance(nmsTeamObj, affected, 3);
+        Object packet = packetConstructor.newInstance(nmsTeamObj, whoseNames, 3);
         Method sendPacket = getNMSClass("PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
         sendPacket.invoke(getConnection(player), packet);
     }

@@ -49,9 +49,9 @@ public class TabListManager implements Listener {
 
         // header, footer
         tab.setHeaderFooter
-                (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "HavenRealms\n"
+                (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Runic Realms\n"
                                 + ChatColor.WHITE + ChatColor.BOLD + "A New Kind of MMORPG",
-                ChatColor.RED + "Visit our website: " + ChatColor.GOLD + "www.havenrealms.com");
+                ChatColor.DARK_GREEN + "Visit our website: " + ChatColor.GREEN + "www.runicrealms.com");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem

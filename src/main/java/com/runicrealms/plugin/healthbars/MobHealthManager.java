@@ -6,6 +6,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
+import java.util.Objects;
+
 /**
  * The MobHealthManager cleans up any armor stands which are labeled as healthbars and don't have passngers.
  * Basically, it removes trash from the server.
@@ -42,7 +44,7 @@ public class MobHealthManager {
 
                     String world = Bukkit.getWorlds().get(i).getName();
 
-                    for (Entity en : Bukkit.getWorld(world).getEntities()) {
+                    for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
                         if (en.hasMetadata("healthbar") && en.getVehicle() == null) {
                             en.remove();
                         }

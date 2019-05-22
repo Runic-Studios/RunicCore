@@ -81,7 +81,7 @@ public class PartyDisconnect implements Listener {
                 team = "outlaw";
             }
             try {
-                ScoreboardHandler.setPlayerTeamFor
+                ScoreboardHandler.updateNamesFor
                         (leaver, member.getScoreboard().getTeam(team),
                                 Collections.singletonList(member.getName()));
             } catch (Exception e) {
@@ -97,7 +97,7 @@ public class PartyDisconnect implements Listener {
         // update the leaver's name for current members
         for (Player member : party.getPlayerMembers()) {
             try {
-                ScoreboardHandler.setPlayerTeamFor
+                ScoreboardHandler.updateNamesFor
                         (member, leaver.getScoreboard().getTeam(team),
                                 Collections.singletonList(leaver.getName()));
             } catch (Exception e) {

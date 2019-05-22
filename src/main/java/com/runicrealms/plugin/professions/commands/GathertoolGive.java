@@ -12,11 +12,11 @@ import com.runicrealms.plugin.command.subcommands.SubCommand;
 
 import java.util.List;
 
-public class ToolGive implements SubCommand {
+public class GathertoolGive implements SubCommand {
 
-    private ToolSC toolSC;
+    private GathertoolSC toolSC;
 
-    public ToolGive(ToolSC toolSC) {
+    public GathertoolGive(GathertoolSC toolSC) {
         this.toolSC = toolSC;
     }
 

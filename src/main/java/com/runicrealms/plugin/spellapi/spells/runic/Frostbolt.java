@@ -63,6 +63,8 @@ public class Frostbolt extends Spell {
 
         // grab our variables
         Player pl = (Player) snowball.getShooter();
+        if (pl == null) return;
+
         LivingEntity victim = (LivingEntity) event.getEntity();
 
         // ignore NPCs
@@ -77,9 +79,7 @@ public class Frostbolt extends Spell {
         KnockbackUtil.knockback(pl, victim);
 
         // slow
-        if (victim instanceof Player) {
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));
-        }
+        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));
 
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
