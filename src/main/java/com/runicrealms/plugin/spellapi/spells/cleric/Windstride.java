@@ -5,6 +5,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.entity.Entity;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -14,7 +15,7 @@ public class Windstride extends Spell {
 
     // globals
     private static final int BUFF_DURATION = 10;
-    private static final int SPEED_AMPLIFIER = 1;
+    private static final int SPEED_AMPLIFIER = 2;
     private static final int RADIUS = 10;
 
     // constructor
@@ -35,14 +36,18 @@ public class Windstride extends Spell {
 
         // if the user has a party, each party member gets the effects as well.
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-            for (Entity e : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+
+            for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+
+                if (!(en instanceof LivingEntity)) continue;
+
+                LivingEntity le = (LivingEntity) en;
 
                 // skip our player, skip non-player entities
-                if (e == pl) { continue; }
-                if (!(e instanceof Player)) { continue; }
+                if (le == pl)  continue;
 
-                if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
-                    applySpell((Player) e);
+                if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
+                    applySpell((Player) le);
                 }
             }
         }
@@ -55,7 +60,7 @@ public class Windstride extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 0.7F);
 
         // Send player info message
-        pl.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
+        //pl.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
 
         // Add player effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION * 20, SPEED_AMPLIFIER));
@@ -63,8 +68,8 @@ public class Windstride extends Spell {
                 25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
 
         // Begin system to remove effects
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            pl.sendMessage(ChatColor.GRAY + "The strength of the wind leaves you.");
-        }, BUFF_DURATION * 20);
+        //Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            //pl.sendMessage(ChatColor.GRAY + "The strength of the wind leaves you.");
+        //}, BUFF_DURATION * 20);
     }
 }

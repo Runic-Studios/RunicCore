@@ -124,12 +124,15 @@ public class BowListener implements Listener {
         // grab our variables
         Damageable victim = (Damageable) e.getEntity();
 
+        // skip party members
+        if (RunicCore.getPartyManager().getPlayerParty(damager) != null
+                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(le.getUniqueId())) { return; }
+
         // player can't damage themselves
         if (victim == damager) {
             e.setCancelled(true);
             return;
         }
-
 
         ItemStack artifact = damager.getInventory().getItem(0);
 

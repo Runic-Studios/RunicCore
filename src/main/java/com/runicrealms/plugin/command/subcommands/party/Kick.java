@@ -86,8 +86,8 @@ public class Kick implements SubCommand {
 			return;
 		}
 
-        String targetName = plugin.getConfig().get(target.getUniqueId() + ".info.name").toString();
-		String senderName = plugin.getConfig().get(sender.getUniqueId() + ".info.name").toString();
+        String targetName = target.getName();
+		String senderName = sender.getName();
 		
 		sender.sendMessage
                 (ChatColor.DARK_GREEN + "Party "

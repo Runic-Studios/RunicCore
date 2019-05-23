@@ -406,6 +406,7 @@ public class ArtifactGUI {
         spells.add("Barrage");
         spells.add("Grapple");
         spells.add("Parry");
+        spells.add("Venom Shot");
         return spells;
     }
 

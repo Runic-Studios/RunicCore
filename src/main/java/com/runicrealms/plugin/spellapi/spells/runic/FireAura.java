@@ -41,7 +41,7 @@ public class FireAura extends Spell {
 
                 } else {
 
-                    count += 1;
+                    count += PERIOD;
 
                     // particles
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.25f, 1.25f);

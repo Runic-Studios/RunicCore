@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.events.SuccessfulHitEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -23,8 +24,8 @@ public class Backstab extends Spell {
 
     public Backstab() {
         super("Backstab",
-                "For " + DURATION + " seconds, striking enemies from\n"
-                        + "behind deals " + DAMAGE_AMT + " additional spell damage!",
+                "For " + DURATION + " seconds, striking enemies from behind\n"
+                        + "with your weapon deals " + DAMAGE_AMT + " additional spell damage!",
                 ChatColor.WHITE, 15, 10);
     }
 
@@ -44,13 +45,9 @@ public class Backstab extends Spell {
     }
 
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent e) {
+    public void onDamage(SuccessfulHitEvent e) {
 
-        if (!(e.getDamager() instanceof Player)) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        if (e.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
-
-        Player pl = (Player) e.getDamager();
+        Player pl = e.getPlayer();
         UUID uuid = pl.getUniqueId();
         LivingEntity le = (LivingEntity) e.getEntity();
 
@@ -62,12 +59,9 @@ public class Backstab extends Spell {
         // then they're facing the same direction and it's a backstab
         if (!(pl.getLocation().getDirection().dot(e.getEntity().getLocation().getDirection()) >= 0.0D)) return;
 
-        // prevent an infinite damage loop
-        e.setCancelled(true);
+        // execute skill effects
         DamageUtil.damageEntityMagic((DAMAGE_AMT), le, pl);
-
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
-
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }
 }

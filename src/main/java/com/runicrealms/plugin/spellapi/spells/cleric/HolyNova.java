@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,13 +16,15 @@ public class HolyNova extends Spell {
 
     private static final int DAMAGE_AMT = 5;
     private static final int DURATION = 6;
+    private static final int HEAL_AMT = 3;
     private static final float RADIUS = 2.5f;
 
     // constructor
     public HolyNova() {
-        super("Holy Nova", "For " + DURATION + " seconds, you pulse with holy power," +
-                        "\nconjuring rings of light magic which" +
-                        "\ndeal " + DAMAGE_AMT + " damage to enemies!",
+        super("Holy Nova", "For " + DURATION + " seconds, you pulse with holy" +
+                        "\npower, conjuring rings of light magic" +
+                        "\nwhich deal " + DAMAGE_AMT + " damage to enemies" +
+                        "\nand restore " + HEAL_AMT + " health to allies!",
                 ChatColor.WHITE, 1, 5);
     }
 
@@ -61,30 +63,30 @@ public class HolyNova extends Spell {
             x = Math.cos(angle) * radius;
             z = Math.sin(angle) * radius;
             location1.add(x, 0, z);
-            location1.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location1, 1, 0, 0, 0, 0);
+            pl.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location1, 1, 0, 0, 0, 0);
             location1.subtract(x, 0, z);
         }
 
-        for (Entity entity : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
 
-            // only damageable entities
-            if (!(entity instanceof Damageable)) { continue; }
+            if (!(en instanceof LivingEntity)) continue;
+
+            LivingEntity le = (LivingEntity) en;
 
             // skip NPCs
-            if (entity.hasMetadata("NPC")) { continue; }
+            if (le.hasMetadata("NPC")) { continue; }
 
             // skip the caster
-            if(entity.equals(pl)) { continue; }
+            if(le.equals(pl)) { continue; }
 
-            // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
-
-            // Executes the spell
-            if (entity.getType().isAlive()) {
-                LivingEntity victim = (LivingEntity) entity;
-                DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
+            // heal party members
+            if (le instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl) != null
+                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
+                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl);
             }
+
+            // Executes the damage aspect of spell
+            DamageUtil.damageEntityMagic(DAMAGE_AMT, le, pl);
         }
     }
 }

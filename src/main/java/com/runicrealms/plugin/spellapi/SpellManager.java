@@ -120,6 +120,7 @@ public class SpellManager {
         this.spellList.add(new FireAura());
         this.spellList.add(new Permafrost());
         this.spellList.add(new ArcaneShackles());
+        this.spellList.add(new VenomShot());
     }
 
     // starts the repeating task to manage player cooldowns

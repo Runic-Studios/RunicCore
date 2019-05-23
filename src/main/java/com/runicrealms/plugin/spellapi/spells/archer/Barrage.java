@@ -127,6 +127,10 @@ public class Barrage extends Spell {
                 return;
             }
 
+            // skip party members
+            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
+                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
+
             if (!hasBeenHit.containsKey(le.getUniqueId())) {
 
                 DamageUtil.damageEntityMagic(DAMAGE, le, pl);
