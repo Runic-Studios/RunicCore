@@ -165,6 +165,7 @@ public class RuneGUI {
         spells.add("Frostbolt");
         spells.add("Sprint");
         spells.add("Permafrost");
+        spells.add("Petrify");
 
         // first row of spells
         for (int i = 0; i < spells.size() && i < 5; i++) {

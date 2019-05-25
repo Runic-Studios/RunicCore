@@ -3,12 +3,20 @@ package com.runicrealms.plugin.spellapi.spells.runic;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
-import org.bukkit.Particle;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.xikage.mythicmobs.skills.SkillCaster;
+import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
+import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
+import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -33,8 +41,8 @@ public class Sprint extends Spell {
         // apply effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION*20, SPEED_AMPLIFIER));
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
-        new HorizCircleFrame(1).playParticle(Particle.TOTEM, pl.getLocation());
-        new HorizCircleFrame(1).playParticle(Particle.TOTEM, pl.getEyeLocation());
+        new HorizCircleFrame(1).playParticle(Particle.TOTEM, pl.getLocation(), Color.FUCHSIA);
+        new HorizCircleFrame(1).playParticle(Particle.TOTEM, pl.getEyeLocation(), Color.FUCHSIA);
         pl.sendMessage(ChatColor.GREEN + "You gain increased speed!");
 
         // after the end of the buff

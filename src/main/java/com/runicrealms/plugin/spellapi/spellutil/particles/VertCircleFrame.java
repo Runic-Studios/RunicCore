@@ -12,12 +12,12 @@ public class VertCircleFrame implements ParticleFormat {
     }
 
     @Override
-    public void playParticle(Particle particle, Location location) {
+    public void playParticle(Particle particle, Location location, Color color) {
         location = location.clone();
 
         for (double a = 0; a <= 360; a++){
             double theta = Math.toRadians(a);
-            Vector vector = new Vector(this.radius * Math.cos(theta), this.radius * Math.sin(theta), 0D);
+            Vector vector = new Vector(this.radius * Math.cos(theta), this.radius * Math.sin(theta), location.getDirection().getZ());
 
             location.getWorld().spawnParticle(particle, location.add(vector), 1, 0, 0, 0, 0);
             location.subtract(vector);

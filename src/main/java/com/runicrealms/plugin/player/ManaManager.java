@@ -57,4 +57,20 @@ public class ManaManager implements Listener {
 
     public HashMap<UUID, Integer> getCurrentManaList() { return currentPlayerManas; }
     public int getManaPerLevel() { return manaPerLevel; }
+
+    public void addMana(Player pl, int amt) {
+
+        int mana = currentPlayerManas.get(pl.getUniqueId());
+        int maxMana = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
+
+        if (mana < maxMana) {
+
+            if (mana + amt >= maxMana) {
+                currentPlayerManas.put(pl.getUniqueId(), maxMana);
+            } else {
+                currentPlayerManas.put(pl.getUniqueId(), mana + amt);
+            }
+            RunicCore.getScoreboardHandler().updateSideInfo(pl);
+        }
+    }
  }

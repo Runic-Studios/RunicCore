@@ -11,10 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Rejuvenate extends Spell {
@@ -22,13 +19,13 @@ public class Rejuvenate extends Spell {
     // grab our globals
     private HashMap<UUID, List<UUID>> hasBeenHit;
     private static final int HEAL_AMT = 25;
-    private final int RADIUS = 10;
+    private final int RADIUS = 1;
     private final int RANGE = 15;
-    private final double BEAM_WIDTH = 2.0;
+    //private final double BEAM_WIDTH = 2.2;
     private final int SPEED = 2;
 
     // in seconds
-    private final int SUCCESSIVE_COOLDOWN = 5;
+    private final int SUCCESSIVE_COOLDOWN = 2;
 
     // constructor
     public Rejuvenate() {
@@ -78,13 +75,14 @@ public class Rejuvenate extends Spell {
     @SuppressWarnings("deprecation")
     private void allyCheck(Player pl, Location location) {
 
-        for (Entity e : location.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
+        for (Entity e : Objects.requireNonNull
+                (location.getWorld()).getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
 
             if (!e.getType().isAlive()) return;
 
             LivingEntity le = (LivingEntity) e;
 
-            if (le.getLocation().distance(location) <= BEAM_WIDTH) {
+            //if (le.getLocation().distance(location) <= BEAM_WIDTH) {
 
                 if (le != (pl)) {
 
@@ -146,7 +144,7 @@ public class Rejuvenate extends Spell {
                         // stop the beam if it hits a player
                         break;
                     }
-                }
+               // }
             }
         }
     }

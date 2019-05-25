@@ -16,7 +16,7 @@ public class HelixParticleFrame implements ParticleFormat {
     }
 
     @Override
-    public void playParticle(Particle particle, Location location) {
+    public void playParticle(Particle particle, Location location, Color color) {
         location = location.clone();
         final double totalDegrees = ((360 / this.frequency) * this.height);
         final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);
@@ -25,7 +25,12 @@ public class HelixParticleFrame implements ParticleFormat {
             double theta = Math.toRadians(a % 360);
             Vector vector = new Vector(this.radius * Math.cos(theta), 0D, this.radius * Math.sin(theta));
 
-            location.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
+            if (particle == Particle.REDSTONE) {
+                location.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement),
+                        1, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
+            } else {
+                location.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
+            }
             location.subtract(vector);
         }
     }

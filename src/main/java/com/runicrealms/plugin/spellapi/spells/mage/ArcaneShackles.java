@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
@@ -24,7 +25,7 @@ public class ArcaneShackles extends Spell {
     private static final int DURATION = 6;
     private static final int RADIUS = 4;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
-    private List<UUID> victims = new ArrayList<>();
+    private List<LivingEntity> victims = new ArrayList<>();
 
     // constructor
     public ArcaneShackles() {
@@ -45,6 +46,7 @@ public class ArcaneShackles extends Spell {
 
     // particles, vectors
     private void startTask(Player pl, Vector[] vectors) {
+
         for (Vector vector : vectors) {
             Vector direction = pl.getEyeLocation().getDirection().normalize().multiply(1);
             Arrow arrow = pl.launchProjectile(Arrow.class);
@@ -59,6 +61,7 @@ public class ArcaneShackles extends Spell {
                 PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(arrow.getEntityId());
                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
             }
+
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -91,12 +94,10 @@ public class ArcaneShackles extends Spell {
                                     }
 
                                     // apply skill effect
-                                    if (victim instanceof Player) {
-                                        ((Player) victim).playSound(victim.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 1.0f);
-                                    }
-                                    victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION*20, 30));
-                                    victim.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, DURATION*20, -30));
-                                    victims.add(victim.getUniqueId());
+                                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 2.0f);
+                                    victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION*20, 6));
+                                    victim.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, DURATION*20, 128));
+                                    victims.add(victim);
                                 }
                             }
                         }
@@ -115,13 +116,12 @@ public class ArcaneShackles extends Spell {
                     } else {
 
                         count += 1;
-                        for (UUID victim : victims) {
+                        for (LivingEntity victim : victims) {
 
-                            Player vicPl = Bukkit.getPlayer(victim);
-                            if (vicPl == null) continue;
+                            victim.setFallDistance(-512f);
 
-                            vicPl.getWorld().spawnParticle(Particle.REDSTONE, vicPl.getLocation(),
-                                    10, 0.25f, 0.25f, 0.25f, new Particle.DustOptions(Color.FUCHSIA, 3));
+                            victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getLocation(),
+                                    1, 0.25f, 0.25f, 0.25f, new Particle.DustOptions(Color.FUCHSIA, 2));
                         }
                     }
                 }

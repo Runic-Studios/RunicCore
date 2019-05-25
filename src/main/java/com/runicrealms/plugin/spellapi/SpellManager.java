@@ -121,6 +121,9 @@ public class SpellManager {
         this.spellList.add(new Permafrost());
         this.spellList.add(new ArcaneShackles());
         this.spellList.add(new VenomShot());
+        this.spellList.add(new Manabolt());
+        this.spellList.add(new Petrify());
+        this.spellList.add(new UnholyGround());
     }
 
     // starts the repeating task to manage player cooldowns

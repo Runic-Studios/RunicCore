@@ -216,11 +216,13 @@ public class DamageListener implements Listener {
 
     private void broadcastSlainDeathMessage(Entity damager, Player victim) {
 
-        String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
+        //String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
+        String nameVic = victim.getName();
 
         if (damager instanceof Player) {
 
-            String nameDam = plugin.getConfig().get(damager.getUniqueId() + ".info.name").toString();
+            //String nameDam = plugin.getConfig().get(damager.getUniqueId() + ".info.name").toString();
+            String nameDam = damager.getName();
             UUID p1 = damager.getUniqueId();
             UUID p2 = victim.getUniqueId();
             double ratingP1 = outlawEvent.getRating(p1);

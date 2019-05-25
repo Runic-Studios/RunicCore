@@ -101,6 +101,14 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/craftbukkit-1.13.2.jar</systemPath>
         </dependency>
+        <!-- MythicMobs -->
+        <dependency>
+            <groupId>net.elseland.xikage</groupId>
+            <artifactId>mythicmobs</artifactId>
+            <version>4.5.5</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/MythicMobs-4.5.5.jar</systemPath>
+        </dependency>
         <!-- NBT Api -->
         <dependency>
             <groupId>com.github.tr7zw</groupId>

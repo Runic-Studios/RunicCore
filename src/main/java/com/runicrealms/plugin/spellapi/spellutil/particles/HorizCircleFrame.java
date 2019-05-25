@@ -12,7 +12,7 @@ public class HorizCircleFrame implements ParticleFormat {
     }
 
     @Override
-    public void playParticle(Particle particle, Location location) {
+    public void playParticle(Particle particle, Location location, Color color) {
         location = location.clone();
 
         for (double a = 0; a <= 360; a++) {

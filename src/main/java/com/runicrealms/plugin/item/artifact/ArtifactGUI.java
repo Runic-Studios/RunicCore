@@ -414,6 +414,7 @@ public class ArtifactGUI {
         List<String> spells = new ArrayList<>();
         spells.add("Blessed Rain");
         spells.add("Holy Nova");
+        spells.add("Manabolt");
         spells.add("Rejuvenate");
         spells.add("Windstride");
         return spells;
@@ -442,6 +443,7 @@ public class ArtifactGUI {
         spells.add("Charge");
         spells.add("Enrage");
         spells.add("Judgment");
+        spells.add("Unholy Ground");
         return spells;
     }
 

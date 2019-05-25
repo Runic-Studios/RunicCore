@@ -18,7 +18,7 @@ public class HelixReverseParticleFrame implements ParticleFormat {
     }
 
 
-    public void playParticle(Particle particle, Location location) {
+    public void playParticle(Particle particle, Location location, Color color) {
         location = location.clone();
         final double totalDegrees = ((360 / this.frequency) * this.height);
         final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);

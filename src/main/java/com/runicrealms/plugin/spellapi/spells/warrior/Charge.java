@@ -30,17 +30,24 @@ public class Charge extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
+//        if (!pl.isOnGround()) {
+//            pl.sendMessage(No!)
+//            this.doCooldown = false;
+//        }
+
         // sounds, particles
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
 
         // CHARGEE!!
         Vector look = pl.getLocation().getDirection();
-        pl.setVelocity(new Vector(look.getX(), 1.5, look.getZ()).normalize());
+        pl.setVelocity(new Vector(look.getX(), 5.0, look.getZ()).normalize());
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                pl.setVelocity(new Vector(pl.getLocation().getDirection().getX(), -1.5, pl.getLocation().getDirection().getZ()).normalize());
+                pl.setVelocity(new Vector
+                        (pl.getLocation().getDirection().getX(), -5.0,
+                                pl.getLocation().getDirection().getZ()).multiply(2).normalize());
                 pl.setFallDistance(-512.0F);
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);

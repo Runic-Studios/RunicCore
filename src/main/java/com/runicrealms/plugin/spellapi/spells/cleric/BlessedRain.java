@@ -22,9 +22,10 @@ public class BlessedRain extends Spell {
 
     // constructor
     public BlessedRain() {
-        super("Blessed Rain", "For " + DURATION + " seconds, you summon healing waters," +
-                        "\nconjuring a ring of light magic which restores" +
-                        "\n" + HEALING_AMT + " health every " + PERIOD + " second(s) to party members!",
+        super("Blessed Rain", "For " + DURATION + " seconds, you summon healing" +
+                        "\nwaters, conjuring a ring of light magic" +
+                        "\nwhich restores " + HEALING_AMT + " health to allies within" +
+                        "\n" + RADIUS + " blocks every " + PERIOD + " second(s)!",
                 ChatColor.WHITE, 1, 5);
     }
 
@@ -36,20 +37,20 @@ public class BlessedRain extends Spell {
 
         // begin effect
         BukkitRunnable rain = new BukkitRunnable() {
+            int count = 1;
             @Override
             public void run() {
-                spawnRing(pl, loc);
+
+                if (count > DURATION) {
+                    this.cancel();
+                } else {
+
+                    count += 1;
+                    spawnRing(pl, loc);
+                }
             }
         };
         rain.runTaskTimer(RunicCore.getInstance(), 0, PERIOD*20);
-
-        // cancel effect
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                rain.cancel();
-            }
-        }.runTaskLater(RunicCore.getInstance(), DURATION*20);
     }
 
     private void spawnRing(Player pl, Location loc) {
@@ -71,7 +72,7 @@ public class BlessedRain extends Spell {
             pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
                     new Particle.DustOptions(Color.AQUA, 1));
             pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
-                    new Particle.DustOptions(Color.BLUE, 1));
+                    new Particle.DustOptions(Color.WHITE, 1));
             loc.subtract(x, 0, z);
         }
 
