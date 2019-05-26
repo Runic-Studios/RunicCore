@@ -17,9 +17,8 @@ public class ArcaneSpike extends Spell {
 
     // globals
     private static final int DAMAGE_AMOUNT = 10;
-    private static final double BEAM_WIDTH = 2;
     private static final int BEAM_LENGTH = 24;
-    private static final int RADIUS = 16;
+    private static final int RADIUS = 1;
     private HashMap<UUID, List<UUID>> hasBeenHit;
 
     // constructor
@@ -66,51 +65,55 @@ public class ArcaneSpike extends Spell {
     // prevents players from being hit twice by a single beam
     private void entityCheck(Location location, Player player) {
 
-        for (Entity e : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (e.getLocation().distance(location) <= BEAM_WIDTH) {
+        for (Entity e : Objects.requireNonNull(location.getWorld()).getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
 
-                // skip our player
-                if (e == (player)) { continue; }
+            // skip our player
+            if (e == (player)) {
+                continue;
+            }
 
-                if (e.getType().isAlive()) {
-                    LivingEntity victim = (LivingEntity) e;
+            if (e.getType().isAlive()) {
+                LivingEntity victim = (LivingEntity) e;
 
-                    // ignore NPCs
-                    if (victim.hasMetadata("NPC")) { continue; }
+                // ignore NPCs
+                if (victim.hasMetadata("NPC")) {
+                    continue;
+                }
 
-                    // skip party members
-                    if (RunicCore.getPartyManager().getPlayerParty(player) != null
-                            && RunicCore.getPartyManager().getPlayerParty(player).hasMember(e.getUniqueId())) { continue; }
+                // skip party members
+                if (RunicCore.getPartyManager().getPlayerParty(player) != null
+                        && RunicCore.getPartyManager().getPlayerParty(player).hasMember(e.getUniqueId())) {
+                    continue;
+                }
 
-                    if (this.hasBeenHit.containsKey(victim.getUniqueId())) {
-                        List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
-                        if (uuids.contains(player.getUniqueId())) {
-                            break;
-                        } else {
-                            uuids.add(player.getUniqueId());
-                            hasBeenHit.put(victim.getUniqueId(), uuids);
-                        }
+                if (this.hasBeenHit.containsKey(victim.getUniqueId())) {
+                    List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
+                    if (uuids.contains(player.getUniqueId())) {
+                        break;
                     } else {
-                        List<UUID> uuids = new ArrayList<>();
                         uuids.add(player.getUniqueId());
                         hasBeenHit.put(victim.getUniqueId(), uuids);
                     }
-
-                    // can't be hit by the same player's beam for 5 secs
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
-                            uuids.remove(player.getUniqueId());
-                            hasBeenHit.put(victim.getUniqueId(), uuids);
-                        }
-                    }.runTaskLater(RunicCore.getInstance(), 100L);
-
-                    DamageUtil.damageEntityMagic(DAMAGE_AMOUNT, victim, player);
-                    //KnockbackUtil.knockback(player, victim, 1);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-                    break;
+                } else {
+                    List<UUID> uuids = new ArrayList<>();
+                    uuids.add(player.getUniqueId());
+                    hasBeenHit.put(victim.getUniqueId(), uuids);
                 }
+
+                // can't be hit by the same player's beam for 5 secs
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
+                        uuids.remove(player.getUniqueId());
+                        hasBeenHit.put(victim.getUniqueId(), uuids);
+                    }
+                }.runTaskLater(RunicCore.getInstance(), 100L);
+
+                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player);
+                //KnockbackUtil.knockback(player, victim, 1);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+                break;
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.events.SpellDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
@@ -14,7 +15,7 @@ import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 
 public class DamageUtil {
 
-    public static void damageEntityMagic(double dmgAmt, LivingEntity recipient, Player caster) {
+    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -24,7 +25,16 @@ public class DamageUtil {
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null
                 && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
 
+        // update amount with gem values
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
+
+        // call our custom event, apply modifiers if necessary
+        SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        dmgAmt = event.getAmount();
+
+        // apply the damage
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
@@ -39,6 +49,7 @@ public class DamageUtil {
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null
                 && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
 
+        // scan the gems
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);

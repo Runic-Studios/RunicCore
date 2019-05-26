@@ -82,7 +82,7 @@ public class Charge extends Spell {
                                 continue;
                             }
 
-                            DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
+                            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
                             Vector force = (pl.getLocation().toVector().subtract
                                     (victim.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             victim.setVelocity(force.normalize());
@@ -90,6 +90,6 @@ public class Charge extends Spell {
                     }
                 }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, 3L);
+        }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
     }
 }

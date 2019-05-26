@@ -1,9 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
-import com.runicrealms.plugin.events.SuccessfulHitEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
-import com.runicrealms.plugin.spellapi.spells.warrior.Enrage;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -104,7 +103,7 @@ public class DamageListener implements Listener {
 
                 // call our successful hit event, ensure that the item is the artifact
                 if (slot != 0) return;
-                SuccessfulHitEvent event = new SuccessfulHitEvent((Player) damager, victim);
+                WeaponDamageEvent event = new WeaponDamageEvent((Player) damager, victim);
                 Bukkit.getPluginManager().callEvent(event);
 
             } else {
@@ -151,7 +150,7 @@ public class DamageListener implements Listener {
 
         // broadcast the death message
         broadcastDeathMessage(victim);
-        victim.sendMessage(ChatColor.RED + "You have been slain!");
+        victim.sendMessage(ChatColor.RED + "You have died!");
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {

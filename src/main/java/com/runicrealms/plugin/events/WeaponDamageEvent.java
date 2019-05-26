@@ -7,13 +7,17 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SuccessfulHitEvent extends Event implements Cancellable {
+/**
+ * This custom event is called when a player successfully melee attacks an enemy with their artifact,
+ * i.e., it is not on cooldown. Called in DamageListener, rather than the util.
+ */
+public class WeaponDamageEvent extends Event implements Cancellable {
 
     private Player player;
     private Entity entity;
     private boolean isCancelled;
 
-    public SuccessfulHitEvent(Player damager, Entity victim) {
+    public WeaponDamageEvent(Player damager, Entity victim) {
         this.player = damager;
         this.entity = victim;
         this.isCancelled = false;

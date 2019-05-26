@@ -404,6 +404,7 @@ public class ArtifactGUI {
     private static List<String> displaySpellsArcher() {
         List<String> spells = new ArrayList<>();
         spells.add("Barrage");
+        spells.add("Crippling Shot");
         spells.add("Grapple");
         spells.add("Parry");
         spells.add("Venom Shot");
@@ -434,6 +435,7 @@ public class ArtifactGUI {
         List<String> spells = new ArrayList<>();
         spells.add("Backstab");
         spells.add("Cloak");
+        spells.add("Shrieking Skull");
         spells.add("Smoke Bomb");
         return spells;
     }
@@ -441,6 +443,7 @@ public class ArtifactGUI {
     private static List<String> displaySpellsWarrior() {
         List<String> spells = new ArrayList<>();
         spells.add("Charge");
+        spells.add("Divine Shield");
         spells.add("Enrage");
         spells.add("Judgment");
         spells.add("Unholy Ground");

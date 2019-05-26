@@ -1,11 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,36 +18,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class VenomShot extends Spell {
+public class CripplingShot extends Spell {
 
     private static final int DAMAGE = 3;
-    private static final int PERIOD = 2;
     private static final int DURATION = 8;
-    private List<Arrow> poisonedArrs = new ArrayList<>();
+    private static final double PERCENT = 50;
+    private List<Arrow> cripplingArrs = new ArrayList<>();
+    private List<Entity> crippledPlrs = new ArrayList<>();
 
     // constructor
-    public VenomShot() {
-        super("Venom Shot", "You launch a poisonous arrow which" +
-                "\ndeals " + DAMAGE + " damage every " + PERIOD + " seconds" +
-                "\nfor " + DURATION + " seconds to its target.", ChatColor.WHITE, 1, 10);
+    public CripplingShot() {
+        super("Crippling Shot", "You launch an enchanted arrow which" +
+                "\ndeals " + DAMAGE + " damage to its target and reduces" +
+                "\nall ✦spell healing on the target by " + (int) PERCENT + "%" +
+                "\nfor " + DURATION + "seconds.", ChatColor.WHITE, 1, 1);
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
-        Arrow poisoned = pl.launchProjectile(Arrow.class);
+        Arrow crippler = pl.launchProjectile(Arrow.class);
         Vector vec = pl.getEyeLocation().getDirection().normalize().multiply(2);
-        poisoned.setVelocity(vec);
-        poisoned.setShooter(pl);
-        poisonedArrs.add(poisoned);
+        crippler.setVelocity(vec);
+        crippler.setShooter(pl);
+        cripplingArrs.add(crippler);
         new BukkitRunnable() {
             @Override
             public void run() {
-                Location arrowLoc = poisoned.getLocation();
-                pl.getWorld().spawnParticle(Particle.SLIME, arrowLoc, 5, 0, 0, 0, 0);
-                if (poisoned.isDead() || poisoned.isOnGround()) {
+                Location arrowLoc = crippler.getLocation();
+                arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
+                        50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
+                if (crippler.isDead() || crippler.isOnGround()) {
                     this.cancel();
                 }
             }
@@ -68,7 +71,7 @@ public class VenomShot extends Spell {
         }
 
         // deal magic damage if arrow in in the barrage hashmap
-        if (!poisonedArrs.contains(arrow)) return;
+        if (!cripplingArrs.contains(arrow)) return;
 
         e.setCancelled(true);
 
@@ -86,23 +89,14 @@ public class VenomShot extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
 
-        new BukkitRunnable() {
-            int count = 1;
-            @Override
-            public void run() {
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
+    }
 
-                if (count > DURATION) {
-                    this.cancel();
+    @EventHandler
+    public void onCrippledHeal(SpellHealEvent e) {
 
-                } else {
+        if (crippledPlrs.contains(e.getEntity())) {
 
-                    count += PERIOD;
-                    DamageUtil.damageEntitySpell(DAMAGE, le, pl);
-                    le.getWorld().spawnParticle(Particle.SLIME, le.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-                    le.getWorld().playSound(le.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 1);
-
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
+        }
     }
 }

@@ -18,7 +18,6 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class RuneGUI {
 
@@ -159,13 +158,15 @@ public class RuneGUI {
 
         List<String> spells = new ArrayList<>();
 
+        spells.add("Arcane Orb");
         spells.add("Blink");
         spells.add("Fire Aura");
         spells.add("Fireball");
         spells.add("Frostbolt");
-        spells.add("Sprint");
         spells.add("Permafrost");
         spells.add("Petrify");
+        spells.add("Sprint");
+        spells.add("Taunt");
 
         // first row of spells
         for (int i = 0; i < spells.size() && i < 5; i++) {

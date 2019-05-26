@@ -3,6 +3,7 @@ package com.runicrealms.plugin.professions.utilities;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,19 @@ public class FloatingItemUtil {
 
         // tell the item when to despawn, based on duration (in seconds)
         setAge(duration, item);
+    }
+
+    public static Entity spawnFloatingItem(Location loc, Material material, int duration, Vector vec, int durab) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        ((Damageable) meta).setDamage(durab);
+        item.setItemMeta(meta);
+        Item droppedItem = loc.getWorld().dropItem(loc, item);
+        droppedItem.setVelocity(vec);
+        droppedItem.setPickupDelay(Integer.MAX_VALUE);
+        // tell the item when to despawn, based on duration (in seconds)
+        setAge(duration, droppedItem);
+        return droppedItem;
     }
 
     public static Item createFloatingItem(Location loc, Material material, int duration) {

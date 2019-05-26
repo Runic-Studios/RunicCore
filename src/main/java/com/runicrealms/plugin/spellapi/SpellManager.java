@@ -124,6 +124,11 @@ public class SpellManager {
         this.spellList.add(new Manabolt());
         this.spellList.add(new Petrify());
         this.spellList.add(new UnholyGround());
+        this.spellList.add(new DivineShield());
+        this.spellList.add(new ShriekingSkull());
+        this.spellList.add(new CripplingShot());
+        this.spellList.add(new Taunt());
+        this.spellList.add(new ArcaneOrb());
     }
 
     // starts the repeating task to manage player cooldowns

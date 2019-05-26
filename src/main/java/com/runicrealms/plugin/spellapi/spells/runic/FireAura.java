@@ -64,7 +64,7 @@ public class FireAura extends Spell {
                         }
 
                         // damage enemies
-                        DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, player);
+                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player);
                     }
                 }
             }

@@ -26,7 +26,7 @@ public class CombatListener implements Listener {
 
         // grab our variables
         Player damager;
-        if (e.getDamager() instanceof Arrow) {
+        if (e.getDamager() instanceof Arrow && ((Arrow) e.getDamager()).getShooter() instanceof Player) {
             damager = (Player) ((Arrow) e.getDamager()).getShooter();
         } else {
             damager = (Player) e.getDamager();

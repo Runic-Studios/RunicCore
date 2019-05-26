@@ -86,7 +86,7 @@ public class HolyNova extends Spell {
             }
 
             // Executes the damage aspect of spell
-            DamageUtil.damageEntityMagic(DAMAGE_AMT, le, pl);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl);
         }
     }
 }

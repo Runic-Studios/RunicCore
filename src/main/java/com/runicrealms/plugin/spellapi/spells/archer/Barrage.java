@@ -133,7 +133,7 @@ public class Barrage extends Spell {
 
             if (!hasBeenHit.containsKey(le.getUniqueId())) {
 
-                DamageUtil.damageEntityMagic(DAMAGE, le, pl);
+                DamageUtil.damageEntitySpell(DAMAGE, le, pl);
                 e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
                 e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
 

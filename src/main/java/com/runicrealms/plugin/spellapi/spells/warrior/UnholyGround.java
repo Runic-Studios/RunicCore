@@ -2,30 +2,16 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import io.lumine.xikage.mythicmobs.skills.SkillCaster;
-import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
-import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class UnholyGround extends Spell {
@@ -33,7 +19,7 @@ public class UnholyGround extends Spell {
     private static final int DURATION = 6;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
-    private HashMap<UUID, Entity> taunted = new HashMap<>();
+    private List<LivingEntity> taunted = new ArrayList<>();
 
     public UnholyGround() {
         super("Unholy Ground",
@@ -90,13 +76,19 @@ public class UnholyGround extends Spell {
         // taunt the baddies
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
-            if (en instanceof Monster && !taunted.containsValue(en)) {
-                taunted.put(pl.getUniqueId(), en);
+            if (!(en instanceof LivingEntity)) continue;
+
+            if (taunted.contains(en)) {
+                continue;
+            }
+
+            if (en instanceof Monster) {
+                taunted.add((LivingEntity) en);
                 ((Monster) en).setTarget(pl);
                 MythicMobs.inst().getAPIHelper().taunt(en, pl);
                 en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                 en.getWorld().spawnParticle
-                        (Particle.VILLAGER_ANGRY, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        (Particle.VILLAGER_ANGRY, en.getLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
             }
         }
     }
@@ -109,10 +101,9 @@ public class UnholyGround extends Spell {
             x = Math.cos(angle) * radius;
             z = Math.sin(angle) * radius;
             loc.add(x, 0, z);
+            pl.getWorld().spawnParticle(Particle.SLIME, loc, 1, 0, 0, 0, 0);//,new Particle.DustOptions(Color.GREEN, 1)
             pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
-                    new Particle.DustOptions(Color.GREEN, 1));
-            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
-                    new Particle.DustOptions(Color.BLACK, 1));
+                    new Particle.DustOptions(Color.YELLOW, 1));
             loc.subtract(x, 0, z);
         }
     }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.runic;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SuccessfulHitEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -52,7 +52,7 @@ public class Permafrost extends Spell {
     }
 
     @EventHandler
-    public void onIcyHit(SuccessfulHitEvent e) {
+    public void onIcyHit(WeaponDamageEvent e) {
 
         Player pl = e.getPlayer();
         Entity en = e.getEntity();

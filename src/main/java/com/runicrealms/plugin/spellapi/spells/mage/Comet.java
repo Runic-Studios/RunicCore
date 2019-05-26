@@ -89,7 +89,7 @@ public class Comet extends Spell {
                         // apply effects, damage
                         if (entity.getType().isAlive()) {
                             LivingEntity victim = (LivingEntity) entity;
-                            DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
+                            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
                             Vector force = (comet.getLocation().toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
                             victim.setVelocity(force);
                         }

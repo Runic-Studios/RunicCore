@@ -1,9 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.events.SuccessfulHitEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -11,10 +10,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -100,7 +95,7 @@ public class Enrage extends Spell {
              * Activate on-hit effects
              */
     @EventHandler
-    public void onSuccessfulHit(SuccessfulHitEvent e) {
+    public void onSuccessfulHit(WeaponDamageEvent e) {
 
         if (!ragers.containsKey(e.getPlayer().getUniqueId())) return;
 
@@ -113,7 +108,7 @@ public class Enrage extends Spell {
 
         LivingEntity le = (LivingEntity) en;
 
-        DamageUtil.damageEntityMagic(DAMAGE_AMT, le, pl);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl);
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }

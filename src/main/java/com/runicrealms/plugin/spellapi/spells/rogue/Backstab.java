@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.events.SuccessfulHitEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -8,8 +8,6 @@ import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -45,7 +43,7 @@ public class Backstab extends Spell {
     }
 
     @EventHandler
-    public void onDamage(SuccessfulHitEvent e) {
+    public void onDamage(WeaponDamageEvent e) {
 
         Player pl = e.getPlayer();
         UUID uuid = pl.getUniqueId();
@@ -60,7 +58,7 @@ public class Backstab extends Spell {
         if (!(pl.getLocation().getDirection().dot(e.getEntity().getLocation().getDirection()) >= 0.0D)) return;
 
         // execute skill effects
-        DamageUtil.damageEntityMagic((DAMAGE_AMT), le, pl);
+        DamageUtil.damageEntitySpell((DAMAGE_AMT), le, pl);
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }

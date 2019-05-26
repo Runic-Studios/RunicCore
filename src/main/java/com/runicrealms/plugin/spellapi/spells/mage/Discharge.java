@@ -87,7 +87,7 @@ public class Discharge extends Spell {
                                         continue;
                                     }
 
-                                    DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, pl);
+                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
                                     Vector force = (arrowLoc.toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
                                     victim.setVelocity(force);
                                 }

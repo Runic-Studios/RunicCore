@@ -99,7 +99,7 @@ public class SmokeBomb extends Spell {
                             // damage the entity, blind them if they're a player
                             if (entity.getType().isAlive()) {
                                 LivingEntity victim = (LivingEntity) entity;
-                                DamageUtil.damageEntityMagic(DAMAGE_AMT, victim, player);
+                                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player);
                                 if (victim instanceof Player) {
                                     victim.addPotionEffect
                                             (new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 0));
