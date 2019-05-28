@@ -2,6 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -114,19 +115,16 @@ public class BowListener implements Listener {
 
         // get our entity
         if (!(e.getEntity().getType().isAlive())) return;
-        LivingEntity le = (LivingEntity) e.getEntity();
+        LivingEntity victim = (LivingEntity) e.getEntity();
 
         // skip NPCs
-        if (le.hasMetadata("NPC")) return;
+        if (victim.hasMetadata("NPC")) return;
 
         Player damager = (Player) arrow.getShooter();
 
-        // grab our variables
-        Damageable victim = (Damageable) e.getEntity();
-
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(damager) != null
-                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(le.getUniqueId())) { return; }
+                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim.getUniqueId())) { return; }
 
         // player can't damage themselves
         if (victim == damager) {
@@ -157,16 +155,23 @@ public class BowListener implements Listener {
         }.runTaskLater(RunicCore.getInstance(), 3);
 
         // apply attack effects, random damage amount
-        if (maxDamage != 0) {
+        //if (maxDamage != 0) {
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            e.setDamage(randomNum);
-        } else {
-            e.setDamage(minDamage);
-        }
+            //e.setDamage(randomNum);
+        //}// else {
+           // e.setDamage(minDamage);
+       // }
 
         // spawn the damage indicator if the arrow is an autoattack
         if (arrow.getCustomName() == null) return;
-        HologramUtil.createDamageHologram(damager, victim.getLocation().add(0,1.5,0), e.getDamage());
+
+        e.setCancelled(true);
+
+        DamageUtil.damageEntityWeapon(randomNum, victim, damager);
+
+//        // spawn the damage indicator if the arrow is an autoattack
+//        if (arrow.getCustomName() == null) return;
+//        HologramUtil.createDamageHologram(damager, victim.getLocation().add(0,1.5,0), e.getDamage());
     }
 
     // removes arrows stuck in bodies

@@ -42,9 +42,9 @@ public class ArcaneOrb extends Spell {
         super("Arcane Orb",
                 "You summon an orb of arcane magic!" +
                         "\nFor the next " + DURATION + " seconds, all ʔspell" +
-                        "\ndamage you deal is increased by" +
-                        "\n" + (int) PERCENT + "% if you stand within" +
-                        "\n" + RADIUS + " blocks of the orb!", ChatColor.WHITE,1, 1);
+                        "\ndamage you deal is increased by" + (int) PERCENT + "" +
+                        "\nif you stand within " + RADIUS + " blocks" +
+                        "\nof the orb!", ChatColor.WHITE,1, 1);
     }
 
     // spell execute code

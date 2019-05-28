@@ -77,7 +77,9 @@ public class DamageUtil {
         Bukkit.getPluginManager().callEvent(e);
         recipient.setLastDamageCause(e);
 
-        KnockbackUtil.knockback(caster, recipient);
+        if (recipient instanceof Player) {
+            KnockbackUtil.knockback(caster, recipient);
+        }
 
         // apply custom mechanics if the player were to die
         if (newHP >= 1) {

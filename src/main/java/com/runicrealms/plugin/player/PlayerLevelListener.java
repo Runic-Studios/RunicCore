@@ -25,7 +25,6 @@ import com.runicrealms.plugin.attributes.AttributeUtil;
  */
 public class PlayerLevelListener implements Listener {
 
-    private static final int hpPerLevel = 2;
     private static final int maxLevel = 50;
 
     @EventHandler
@@ -40,9 +39,28 @@ public class PlayerLevelListener implements Listener {
 
         // grab the player's new info
         String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        if (className == null) return;
         int classLevel = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
 
         // save player hp, restore hp.food
+        int hpPerLevel = 0;
+        switch (className.toLowerCase()) {
+            case "archer":
+                hpPerLevel = 1;
+                break;
+            case "cleric":
+                hpPerLevel = 2;
+                break;
+            case "mage":
+                hpPerLevel = 1;
+                break;
+            case "rogue":
+                hpPerLevel = 1;
+                break;
+            case "warrior":
+                hpPerLevel = 2;
+                break;
+        }
         HealthUtils.setPlayerHealth(pl, 50+(hpPerLevel*classLevel));
         HealthUtils.setHeartDisplay(pl);
         pl.setHealth(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
@@ -74,7 +92,7 @@ public class PlayerLevelListener implements Listener {
         // send a basic leveling message for all the levels that aren't milestones.
         // (10, 20, etc.)
         if (pl.getLevel() % 10 != 0) {
-            sendLevelMessage(pl);
+            sendLevelMessage(pl, hpPerLevel + "");
         }
 
         switch (pl.getLevel()) {
@@ -130,42 +148,42 @@ public class PlayerLevelListener implements Listener {
         int durab = ((Damageable) artifact.getItemMeta()).getDamage();
 
         double newSpeed;
-        double newDamage;
+        //double newDamage;
         switch (className) {
             case "Archer":
                 newSpeed = ClassGUI.getArcherBaseBowSpeed() + (24+ClassGUI.getArcherBaseBowSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", newSpeed);
-                newDamage = (int) ClassGUI.getArcherBaseDamage() + (ClassGUI.getArcherBaseDamage()) / 50 * pl.getLevel();
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
+                //newDamage = (int) ClassGUI.getArcherBaseDamage() + (ClassGUI.getArcherBaseDamage()) / 50 * pl.getLevel();
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Cleric":
                 newSpeed = ClassGUI.getClericBaseSpeed() + (24+ClassGUI.getClericBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
-                newDamage = (int) ClassGUI.getClericBaseDamage() + (ClassGUI.getClericBaseDamage()) / 50 * pl.getLevel();
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-5);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
+                //newDamage = (int) ClassGUI.getClericBaseDamage() + (ClassGUI.getClericBaseDamage()) / 50 * pl.getLevel();
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-5);
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Mage":
                 newSpeed = ClassGUI.getMageBaseSpeed() + (24+ClassGUI.getMageBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
-                newDamage = (int) ClassGUI.getMageBaseDamage() + (ClassGUI.getMageBaseDamage()) / 50 * pl.getLevel();
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
+                //newDamage = (int) ClassGUI.getMageBaseDamage() + (ClassGUI.getMageBaseDamage()) / 50 * pl.getLevel();
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Rogue":
                 newSpeed = ClassGUI.getRogueBaseSpeed() + (24+ClassGUI.getRogueBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
-                newDamage = (int) ClassGUI.getRogueBasedamage() + (ClassGUI.getRogueBasedamage()) / 50 * pl.getLevel();
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
+                //newDamage = (int) ClassGUI.getRogueBasedamage() + (ClassGUI.getRogueBasedamage()) / 50 * pl.getLevel();
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
             case "Warrior":
                 newSpeed = ClassGUI.getWarriorBaseSpeed() + (24+ClassGUI.getWarriorBaseSpeed()) / 50 * pl.getLevel();
                 artifact = AttributeUtil.overrideGenericDouble(artifact, "generic.attackSpeed", newSpeed);
-                newDamage = (int) ClassGUI.getWarriorBaseDamage() + (ClassGUI.getWarriorBaseDamage()) / 50 * pl.getLevel();
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
+                //newDamage = (int) ClassGUI.getWarriorBaseDamage() + (ClassGUI.getWarriorBaseDamage()) / 50 * pl.getLevel();
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", newDamage-2);
+                //artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", newDamage);
                 break;
         }
 
@@ -187,13 +205,13 @@ public class PlayerLevelListener implements Listener {
         pl.getInventory().setItem(itemSlot, item);
     }
 
-    private void sendLevelMessage(Player pl) {
+    private void sendLevelMessage(Player pl, String hpPerLevel) {
         pl.sendMessage("\n");
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
                         + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLevel() + "✸");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact feels a little stronger!");
+        ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact efficiency improves!");
         pl.sendMessage("\n");
     }
 

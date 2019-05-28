@@ -120,13 +120,13 @@ public class SpellManager {
         this.spellList.add(new FireAura());
         this.spellList.add(new Permafrost());
         this.spellList.add(new ArcaneShackles());
-        this.spellList.add(new VenomShot());
+        this.spellList.add(new RottingShot());
         this.spellList.add(new Manabolt());
         this.spellList.add(new Petrify());
         this.spellList.add(new UnholyGround());
         this.spellList.add(new DivineShield());
         this.spellList.add(new ShriekingSkull());
-        this.spellList.add(new CripplingShot());
+        this.spellList.add(new WoundingShot());
         this.spellList.add(new Taunt());
         this.spellList.add(new ArcaneOrb());
     }

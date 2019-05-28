@@ -46,7 +46,10 @@ public class Windstride extends Spell {
                 // skip our player, skip non-player entities
                 if (le == pl)  continue;
 
-                if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
+                if (RunicCore.getPartyManager().getPlayerParty(pl) != null
+                        && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
+                    // send player info message
+                    le.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
                     applySpell((Player) le);
                 }
             }
@@ -55,21 +58,17 @@ public class Windstride extends Spell {
 
     private void applySpell(Player pl) {
 
-        // Begin sound effects
+        // begin sound effects
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5F, 0.7F);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 0.7F);
 
-        // Send player info message
-        //pl.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
-
-        // Add player effects
+        // add player effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION * 20, SPEED_AMPLIFIER));
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
                 25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
 
-        // Begin system to remove effects
-        //Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            //pl.sendMessage(ChatColor.GRAY + "The strength of the wind leaves you.");
-        //}, BUFF_DURATION * 20);
+        // begin system to remove effects
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(),
+                () -> pl.sendMessage(ChatColor.GRAY + "The strength of the wind leaves you."), BUFF_DURATION * 20);
     }
 }

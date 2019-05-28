@@ -48,6 +48,11 @@ public class DamageListener implements Listener {
         Entity damager = e.getDamager();
         Entity entity = e.getEntity();
 
+        // bugfix for armor stands
+        if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
+            entity = e.getEntity().getVehicle();
+        }
+
         // only listen for damageable entities
         if (!(entity instanceof LivingEntity)) return;
         LivingEntity victim = (LivingEntity) entity;

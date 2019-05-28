@@ -21,7 +21,6 @@ public class Rejuvenate extends Spell {
     private static final int HEAL_AMT = 25;
     private final int RADIUS = 1;
     private final int RANGE = 15;
-    //private final double BEAM_WIDTH = 2.2;
     private final int SPEED = 2;
 
     // in seconds
@@ -89,7 +88,10 @@ public class Rejuvenate extends Spell {
                     // only listen for players
                     if (!(le instanceof Player)) return;
 
-                    // skip the player if we've got a party and they're not in it
+                    // heal nobody if we don't have a party
+                    if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
+
+                    // skip the player if they're not in the party
                     if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                             && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) { continue; }
 

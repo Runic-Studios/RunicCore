@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class VenomShot extends Spell {
+public class RottingShot extends Spell {
 
     private static final int DAMAGE = 3;
     private static final int PERIOD = 2;
@@ -25,8 +25,8 @@ public class VenomShot extends Spell {
     private List<Arrow> poisonedArrs = new ArrayList<>();
 
     // constructor
-    public VenomShot() {
-        super("Venom Shot", "You launch a poisonous arrow which" +
+    public RottingShot() {
+        super("Rotting Shot", "You launch an unholy arrow which" +
                 "\ndeals " + DAMAGE + " damage every " + PERIOD + " seconds" +
                 "\nfor " + DURATION + " seconds to its target.", ChatColor.WHITE, 1, 10);
     }
@@ -46,6 +46,8 @@ public class VenomShot extends Spell {
             public void run() {
                 Location arrowLoc = poisoned.getLocation();
                 pl.getWorld().spawnParticle(Particle.SLIME, arrowLoc, 5, 0, 0, 0, 0);
+                pl.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0,
+                        new Particle.DustOptions(Color.YELLOW, 1));
                 if (poisoned.isDead() || poisoned.isOnGround()) {
                     this.cancel();
                 }

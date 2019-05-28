@@ -32,12 +32,6 @@ public class Sprint extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
         new HorizCircleFrame(1).playParticle(Particle.TOTEM, pl.getLocation(), Color.FUCHSIA);
         new HorizCircleFrame(1).playParticle(Particle.TOTEM, pl.getEyeLocation(), Color.FUCHSIA);
-        pl.sendMessage(ChatColor.GREEN + "You gain increased speed!");
-
-        // after the end of the buff
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            pl.sendMessage(ChatColor.GRAY + "Your speed effect has worn off!");
-        }, DURATION *20);
     }
 }
 

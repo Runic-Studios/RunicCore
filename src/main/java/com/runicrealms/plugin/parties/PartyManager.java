@@ -39,7 +39,12 @@ public class PartyManager {
             this.activeInvites.add(invite);
             return true;
         } else {
-            invite.getInviter().sendMessage(ChatColor.translateAlternateColorCodes('&', "&3&lParty &7&l> &6" + invite.getInvitedPlayer().getName() + " already has an invite to another party!"));
+            invite.getInviter().sendMessage
+                    (ChatColor.DARK_GREEN + "Party "
+                            + ChatColor.GOLD + "» "
+                            + ChatColor.WHITE + invite.getInvitedPlayer().getName()
+                            + ChatColor.RED + " already has an invite to another party!");
+
             return false;
         }
     }

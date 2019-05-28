@@ -14,6 +14,7 @@ import org.bukkit.util.Consumer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.InvisStandSpawner;
 
+@SuppressWarnings({"unchecked", "deprecation"})
 public final class MobHealthBars implements Listener {
 
     /**
@@ -26,17 +27,10 @@ public final class MobHealthBars implements Listener {
         if (e.getEntity() instanceof ArmorStand) return;
         if (!(e.getEntity() instanceof LivingEntity)) return;
         LivingEntity mob = (LivingEntity) e.getEntity();
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//                setupMob(mob, true);
-//            }
-//        }.runTaskLater(RunicCore.getInstance(), 10L);
-        setupMob(mob, true);
+        setupMob(mob);
     }
 
-    @SuppressWarnings("unchecked")
-    public static void setupMob(LivingEntity mob, boolean isVanilla) {
+    public static void setupMob(LivingEntity mob) {
 
         // stack two armor stands
         Consumer consumer = new InvisStandSpawner();
@@ -46,13 +40,12 @@ public final class MobHealthBars implements Listener {
         stand.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
         mob.addPassenger(stand);
 
-        if (isVanilla) {
-            ArmorStand stand2 = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
-            stand2.setMarker(true);
-            stand2.setSmall(true);
-            stand2.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
-            stand.addPassenger(stand2);
-        }
+        // second stand
+        ArmorStand stand2 = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
+        stand2.setMarker(true);
+        stand2.setSmall(true);
+        stand2.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
+        stand.addPassenger(stand2);
 
         Entity top = mob.getPassengers().get(mob.getPassengers().size() - 1);
         Entity bottom = top.getPassengers().get(top.getPassengers().size() - 1);
@@ -65,18 +58,13 @@ public final class MobHealthBars implements Listener {
                         + createHealthDisplay(mob, 0)
                         + ChatColor.GRAY + "]";
 
-                String custom = mob.getCustomName();
-
-                if (!isVanilla) {
-                    top.setCustomName(custom);
+                if (mob instanceof Monster || mob instanceof Wolf) {
+                    top.setCustomName(ChatColor.RED + mob.getName());
                 } else {
-                    if (mob instanceof Monster || mob instanceof Wolf) {
-                        top.setCustomName(ChatColor.RED + mob.getName());
-                    } else {
-                        top.setCustomName(ChatColor.GREEN + mob.getName());
-                    }
+                    top.setCustomName(ChatColor.GREEN + mob.getName());
                 }
-               bottom.setCustomName(healthBar);
+
+                bottom.setCustomName(healthBar);
             }
         }.runTaskLater(RunicCore.getInstance(), 1);
     }

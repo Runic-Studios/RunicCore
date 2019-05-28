@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class CripplingShot extends Spell {
+public class WoundingShot extends Spell {
 
     private static final int DAMAGE = 3;
     private static final int DURATION = 8;
@@ -27,17 +28,21 @@ public class CripplingShot extends Spell {
     private List<Entity> crippledPlrs = new ArrayList<>();
 
     // constructor
-    public CripplingShot() {
-        super("Crippling Shot", "You launch an enchanted arrow which" +
+    public WoundingShot() {
+        super("Wounding Shot", "You launch an enchanted arrow which" +
                 "\ndeals " + DAMAGE + " damage to its target and reduces" +
                 "\nall ✦spell healing on the target by " + (int) PERCENT + "%" +
-                "\nfor " + DURATION + "seconds.", ChatColor.WHITE, 1, 1);
+                "\nfor " + DURATION + " seconds!", ChatColor.WHITE, 1, 1);
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_AMBIENT, 2f, 2f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_SHOOT, 0.5f, 2f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 2f, 2f);
+
         Arrow crippler = pl.launchProjectile(Arrow.class);
         Vector vec = pl.getEyeLocation().getDirection().normalize().multiply(2);
         crippler.setVelocity(vec);
@@ -48,12 +53,14 @@ public class CripplingShot extends Spell {
             public void run() {
                 Location arrowLoc = crippler.getLocation();
                 arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
-                        50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
+                        10, 0, 0, 0, 0, new Particle.DustOptions(Color.RED, 1));
                 if (crippler.isDead() || crippler.isOnGround()) {
                     this.cancel();
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
+
+        // todo: remove crippled man
     }
 
     @EventHandler
@@ -89,7 +96,15 @@ public class CripplingShot extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
+        // particles, sounds
+        crippledPlrs.add(le);
+        DamageUtil.damageEntitySpell(DAMAGE, le, pl);
+
+        // particles, sounds
+        le.sendMessage(ChatColor.RED + "You have been crippled! Healing spells are "
+                + PERCENT + "% effective on you for" + DURATION + " second(s).");
+        le.getWorld().playSound(le.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
+        le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 0.5f);
     }
 
     @EventHandler
@@ -97,6 +112,10 @@ public class CripplingShot extends Spell {
 
         if (crippledPlrs.contains(e.getEntity())) {
 
+            Bukkit.broadcastMessage("crippled");
+            double percent = PERCENT/100;
+            int newAmt = (int) (e.getAmount()*percent);
+            e.setAmount(newAmt);
         }
     }
 }

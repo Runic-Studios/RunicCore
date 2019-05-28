@@ -32,11 +32,11 @@ public class ClassGUI implements InventoryProvider {
     private static final double rogueBaseSpeed = -22.8;
     private static final double warriorBaseSpeed = -23.25;
 
-    private static final double archerBaseDamage = 5;
+    private static final double archerBaseDamage = 4;
     private static final double clericBaseDamage = 8;
     private static final double mageBaseDamage = 5;
     private static final double rogueBasedamage = 6;
-    private static final double warriorBaseDamage = 6;
+    private static final double warriorBaseDamage = 8;
 
     // this inventory cannot be closed!
     public static final SmartInventory CLASS_SELECTION = SmartInventory.builder()
@@ -256,7 +256,7 @@ public class ClassGUI implements InventoryProvider {
         switch (className) {
             case "Archer":
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.bowSpeed", archerBaseBowSpeed);
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", archerBaseDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", archerBaseDamage);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", archerBaseDamage);
                 break;
             case "Cleric":
@@ -276,7 +276,7 @@ public class ClassGUI implements InventoryProvider {
                 break;
             case "Warrior":
                 artifact = AttributeUtil.addGenericStat(artifact, "generic.attackSpeed", warriorBaseSpeed, "mainhand");
-                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", warriorBaseDamage-2);
+                artifact = AttributeUtil.addCustomStat(artifact, "custom.minDamage", warriorBaseDamage-3);
                 artifact = AttributeUtil.addCustomStat(artifact, "custom.maxDamage", warriorBaseDamage);
                 break;
         }

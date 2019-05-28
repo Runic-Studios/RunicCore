@@ -49,7 +49,7 @@ public class DivineShield extends Spell {
         shielded.add(pl.getUniqueId());
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5f, 2.0f);
         Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20L, Color.WHITE);
-        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20L, Color.YELLOW);
+        Cone.coneEffect(pl, Particle.SPELL_INSTANT, DURATION, 0, 20L, Color.WHITE);
 
         new BukkitRunnable() {
             @Override

@@ -90,6 +90,9 @@ public class BlessedRain extends Spell {
             // skip the caster
             if(entity.equals(pl)) { continue; }
 
+            // heal nobody if we don't have a party
+            if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
+
             // skip non-party members
             if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                     && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }

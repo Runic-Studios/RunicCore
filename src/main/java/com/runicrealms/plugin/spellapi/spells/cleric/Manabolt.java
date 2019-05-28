@@ -85,6 +85,9 @@ public class Manabolt extends Spell {
 
                 if (ally == pl) continue;
 
+            // restore mana to nobody if we don't have a party
+            if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
+
                 // skip the player if we've got a party and they're not in it
                 if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                         && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(ally.getUniqueId())) {

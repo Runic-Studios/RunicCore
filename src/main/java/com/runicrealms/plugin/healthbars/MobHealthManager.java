@@ -95,7 +95,7 @@ public class MobHealthManager {
                         LivingEntity le = (LivingEntity) en;
 
                         if (en.getPassengers().size() == 0) {
-                            MobHealthBars.setupMob(le, true);
+                            MobHealthBars.setupMob(le);
                         }
                     }
                 }

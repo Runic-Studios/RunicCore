@@ -37,7 +37,7 @@ public class HealUtil  {
                 }
             }
 
-            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0,1.5,0), healAmt);
+            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0,1.5,0), difference);
             recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
             recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 

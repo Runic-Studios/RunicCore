@@ -404,10 +404,10 @@ public class ArtifactGUI {
     private static List<String> displaySpellsArcher() {
         List<String> spells = new ArrayList<>();
         spells.add("Barrage");
-        spells.add("Crippling Shot");
         spells.add("Grapple");
         spells.add("Parry");
-        spells.add("Venom Shot");
+        spells.add("Rotting Shot");
+        spells.add("Wounding Shot");
         return spells;
     }
 

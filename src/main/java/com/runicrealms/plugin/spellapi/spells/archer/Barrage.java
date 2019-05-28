@@ -87,7 +87,8 @@ public class Barrage extends Spell {
                 @Override
                 public void run() {
                     Location arrowLoc = arrow.getLocation();
-                    player.getWorld().spawnParticle(Particle.FLAME, arrowLoc, 5, 0, 0, 0, 0);
+                    arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
+                            5, 0, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1));
                     if (arrow.isDead() || arrow.isOnGround()) {
                         this.cancel();
                     }
