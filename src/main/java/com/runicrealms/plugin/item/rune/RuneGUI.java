@@ -30,7 +30,7 @@ public class RuneGUI {
         return new ItemGUI("&f&l" + pl.getName() + "'s &d&lRune Editor", 27, event -> {
 
             // open spell editor
-            if (event.getPosition() == 3+9) {
+            if (event.getSlot() == 3+9) {
 
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 ItemGUI spellEditor = RuneGUI.spellEditor(pl, artifact, durability);
@@ -38,7 +38,7 @@ public class RuneGUI {
                 event.setWillClose(false);
                 event.setWillDestroy(true);
 
-            } else if (event.getPosition() == 5+9) {
+            } else if (event.getSlot() == 5+9) {
 
                 // close editor
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
@@ -63,24 +63,24 @@ public class RuneGUI {
 
         ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, (OptionClickEvent event) -> {
 
-            if (event.getPosition() == 12) {
+            if (event.getSlot() == 12) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 ItemGUI menu = RuneGUI.runeEditor(pl, rune, durability);
                 menu.open(pl);
                 event.setWillClose(false);
                 event.setWillDestroy(true);
 
-            } else if (event.getPosition() == 14) {
+            } else if (event.getSlot() == 14) {
 
                 event.setWillClose(false);
                 event.setWillDestroy(false);
 
             } else {
 
-                String spellName = event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
+                String spellName = event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
 
                 // apply the skin if the player has the permission
-                if (event.getSuper().getClick() == ClickType.LEFT) {
+                if (event.getClick() == ClickType.LEFT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)) {
                         pl.closeInventory();
@@ -92,9 +92,9 @@ public class RuneGUI {
                     }
 
                     updateRuneSpell(pl, rune, "primarySpell",
-                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName());
+                            event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName());
 
-                } else if (event.getSuper().getClick() == ClickType.RIGHT) {
+                } else if (event.getClick() == ClickType.RIGHT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)) {
                         pl.closeInventory();
@@ -106,9 +106,9 @@ public class RuneGUI {
                     }
 
                     updateRuneSpell(pl, rune, "secondarySpell",
-                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName());
+                            event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName());
 
-                } else if (event.getSuper().getClick() == ClickType.SHIFT_LEFT || event.getSuper().getClick() == ClickType.SHIFT_RIGHT) {
+                } else if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
 
                     // unlock spell
                     if (!pl.hasPermission("core.spells." + spellName)) {
@@ -124,7 +124,7 @@ public class RuneGUI {
                             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                             pl.sendMessage(ChatColor.GREEN + "You have unlocked "
                                     + ChatColor.YELLOW + ChatColor.ITALIC
-                                    + event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName()
+                                    + event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName()
                                     + ChatColor.GREEN + "!");
                         }
                     }
