@@ -1,7 +1,10 @@
 package com.runicrealms.plugin.professions;
 
+import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.artifact.ArtifactGUI;
 import com.runicrealms.plugin.professions.alchemist.CauldronGUI;
 import com.runicrealms.plugin.professions.blacksmith.AnvilGUI;
+import com.runicrealms.plugin.professions.blacksmith.BlacksmithGUI;
 import com.runicrealms.plugin.professions.blacksmith.FurnaceGUI;
 import com.runicrealms.plugin.professions.leatherworker.TanningRackGUI;
 import com.runicrealms.plugin.professions.tailor.SpinningWheelGUI;
@@ -19,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.professions.jeweler.BenchGUI;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +107,9 @@ public class WorkstationListener implements Listener {
             case "anvil":
                 if (className.equals("Blacksmith")) {
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1.0f);
-                    AnvilGUI.ANVIL_GUI.open(pl);
+                    //AnvilGUI.ANVIL_GUI.open(pl);
+                    BlacksmithGUI menu = new BlacksmithGUI(pl);//ArtifactGUI.artifactEditor(pl, artifact, durability);
+                    menu.open(pl);
                 } else {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.RED + "A blacksmith would know how to use this.");

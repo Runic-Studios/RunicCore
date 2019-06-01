@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.artifact;
 
+import com.runicrealms.plugin.item.OptionClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -27,7 +28,7 @@ public class ArtifactGUI {
      */
     public static ItemGUI artifactEditor(Player pl, ItemStack artifact, int durability) {
 
-        return new ItemGUI("&f&l" + pl.getName() + "'s &e&lArtifact Editor", 27, event -> {
+        return new ItemGUI("&f&l" + pl.getName() + "'s &e&lArtifact Editor", 27, (OptionClickEvent event) -> {
 
             // open skin editor
             if (event.getPosition() == 2+9) {
@@ -101,7 +102,7 @@ public class ArtifactGUI {
             size = 45;
         }
 
-        ItemGUI skinEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSkin Editor", size, event -> {
+        ItemGUI skinEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSkin Editor", size, (OptionClickEvent event) -> {
 
             if (event.getPosition() == 13) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
@@ -112,7 +113,7 @@ public class ArtifactGUI {
             } else {
 
                 // apply the skin if the player has the permission
-                ItemStack skin = event.getItem(event.getPosition());
+                ItemStack skin = event.getSuper().getInventory().getItem(event.getPosition());
                 applySkin(pl, className, event.getPosition(),
                         skin.getType(), skin.getItemMeta().getDisplayName(), ((Damageable) skin.getItemMeta()).getDamage());
                 event.setWillClose(true);
@@ -271,10 +272,10 @@ public class ArtifactGUI {
 
             } else {
 
-                String spellName = event.getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
+                String spellName = event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
 
                 // apply the skin if the player has the permission
-                if (event.getClickType() == ClickType.LEFT) {
+                if (event.getSuper().getClick() == ClickType.LEFT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
@@ -298,10 +299,10 @@ public class ArtifactGUI {
                     }
 
                     updateArtifactSpell(pl, artifact, spellSlot,
-                            event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
+                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName(),
                             artifact.getItemMeta().getDisplayName(), className);
 
-                } else if (event.getClickType() == ClickType.RIGHT) {
+                } else if (event.getSuper().getClick() == ClickType.RIGHT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
@@ -325,10 +326,10 @@ public class ArtifactGUI {
                     }
 
                     updateArtifactSpell(pl, artifact, spellSlot,
-                            event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
+                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName(),
                             artifact.getItemMeta().getDisplayName(), className);
 
-                } else if (event.getClickType() == ClickType.SHIFT_LEFT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+                } else if (event.getSuper().getClick() == ClickType.SHIFT_LEFT || event.getSuper().getClick() == ClickType.SHIFT_RIGHT) {
 
                     // unlock spell
                     if (!pl.hasPermission("core.spells." + spellName)
@@ -347,7 +348,7 @@ public class ArtifactGUI {
                             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                             pl.sendMessage(ChatColor.GREEN + "You have unlocked "
                                     + ChatColor.YELLOW + ChatColor.ITALIC
-                                    + event.getItem(event.getPosition()).getItemMeta().getDisplayName()
+                                    + event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName()
                                     + ChatColor.GREEN + "!");
                         }
                     }

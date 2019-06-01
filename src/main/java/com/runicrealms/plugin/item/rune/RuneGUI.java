@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.rune;
 
+import com.runicrealms.plugin.item.OptionClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,7 +61,7 @@ public class RuneGUI {
 
         int size = 54;
 
-        ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, event -> {
+        ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, (OptionClickEvent event) -> {
 
             if (event.getPosition() == 12) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
@@ -76,10 +77,10 @@ public class RuneGUI {
 
             } else {
 
-                String spellName = event.getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
+                String spellName = event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
 
                 // apply the skin if the player has the permission
-                if (event.getClickType() == ClickType.LEFT) {
+                if (event.getSuper().getClick() == ClickType.LEFT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)) {
                         pl.closeInventory();
@@ -91,9 +92,9 @@ public class RuneGUI {
                     }
 
                     updateRuneSpell(pl, rune, "primarySpell",
-                            event.getItem(event.getPosition()).getItemMeta().getDisplayName());
+                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName());
 
-                } else if (event.getClickType() == ClickType.RIGHT) {
+                } else if (event.getSuper().getClick() == ClickType.RIGHT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)) {
                         pl.closeInventory();
@@ -105,9 +106,9 @@ public class RuneGUI {
                     }
 
                     updateRuneSpell(pl, rune, "secondarySpell",
-                            event.getItem(event.getPosition()).getItemMeta().getDisplayName());
+                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName());
 
-                } else if (event.getClickType() == ClickType.SHIFT_LEFT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+                } else if (event.getSuper().getClick() == ClickType.SHIFT_LEFT || event.getSuper().getClick() == ClickType.SHIFT_RIGHT) {
 
                     // unlock spell
                     if (!pl.hasPermission("core.spells." + spellName)) {
@@ -123,7 +124,7 @@ public class RuneGUI {
                             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                             pl.sendMessage(ChatColor.GREEN + "You have unlocked "
                                     + ChatColor.YELLOW + ChatColor.ITALIC
-                                    + event.getItem(event.getPosition()).getItemMeta().getDisplayName()
+                                    + event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName()
                                     + ChatColor.GREEN + "!");
                         }
                     }
