@@ -169,6 +169,7 @@ public class RuneGUI {
         spells.add("Permafrost");
         spells.add("Petrify");
         spells.add("Reflect");
+        spells.add("Siphon");
         spells.add("Sprint");
         spells.add("Taunt");
         spells.add("Warsong");

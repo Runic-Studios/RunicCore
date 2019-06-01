@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Charge extends Spell {
+public class Slam extends Spell {
 
     private static final double KNOCKUP_AMT = 0.3;
     private static final int DAMAGE_AMT = 6;
@@ -20,8 +20,8 @@ public class Charge extends Spell {
     private static final int RADIUS = 5;
 
     // constructor
-    public Charge() {
-        super("Charge", "You charge fearlessly into the air!" +
+    public Slam() {
+        super("Slam", "You charge fearlessly into the air!" +
                         "\nUpon hitting the ground, you deal " +
                         "\n" + DAMAGE_AMT + " damage to enemies within" +
                         "\n" + RADIUS + " blocks and knock them up!",
@@ -55,7 +55,7 @@ public class Charge extends Spell {
         float multiplier = (90.0F + pitch) / 50.0F;
         directionVector.multiply(multiplier);
         velocity.add(directionVector);
-        velocity.multiply(new Vector(0.6D, 1.0D, 0.6D));
+        velocity.multiply(new Vector(0.6D, 0.8D, 0.6D));
 
         pl.setVelocity(velocity);
 //        Vector look = pl.getLocation().getDirection();

@@ -112,7 +112,7 @@ public class SpellManager {
         this.spellList.add(new Backstab());
         this.spellList.add(new Barrage());
         this.spellList.add(new Grapple());
-        this.spellList.add(new Charge());
+        this.spellList.add(new Slam());
         this.spellList.add(new Cloak());
         this.spellList.add(new HolyNova());
         this.spellList.add(new Blizzard());
@@ -134,6 +134,8 @@ public class SpellManager {
         this.spellList.add(new Warsong());
         this.spellList.add(new Blessing());
         this.spellList.add(new Reflect());
+        this.spellList.add(new Siphon());
+        this.spellList.add(new ShadowStep());
     }
 
     // starts the repeating task to manage player cooldowns

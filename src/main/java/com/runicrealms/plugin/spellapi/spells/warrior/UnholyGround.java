@@ -28,7 +28,7 @@ public class UnholyGround extends Spell {
                         "\nwhich taunts enemy monsters within " + RADIUS +
                         "\nblocks every " + PERIOD + " seconds(s), compelling" +
                         "\nthem to attack you!"
-                        , ChatColor.WHITE,1, 10);
+                        , ChatColor.WHITE,12, 15);
     }
 
     // spell execute code

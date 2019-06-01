@@ -49,7 +49,6 @@ public class Taunt extends Spell {
 
         ItemStack artifact = pl.getInventory().getItem(0);
         if (artifact == null) {
-            this.doCooldown = false;
             return;
         }
 

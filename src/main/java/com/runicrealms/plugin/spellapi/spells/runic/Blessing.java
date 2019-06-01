@@ -36,7 +36,7 @@ public class Blessing extends Spell {
                         "\n" + RING_DURATION + " seconds. The first ally who steps" +
                         "\nover the ring gains a holy" +
                         "\nshield for " + SHIELD_DURATION + " seconds, blocking" +
-                        "\nup to " + SHIELD_AMT + " damage!", ChatColor.WHITE,1, 1);
+                        "\nup to " + SHIELD_AMT + " damage!", ChatColor.WHITE,15, 15);
     }
 
     // spell execute code
@@ -79,6 +79,7 @@ public class Blessing extends Spell {
                             continue;
                         }
 
+                        // apply skill effect
                         this.cancel();
                         hasBeenUsed = true;
                         HealUtil.shieldPlayer(SHIELD_AMT, ally, pl);
@@ -93,6 +94,27 @@ public class Blessing extends Spell {
                             ally.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
                             loc.subtract(vector);
                         }
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+
+                                if (!HealUtil.getShieldedPlayers().containsKey(ally.getUniqueId())) {
+                                    this.cancel();
+
+                                } else {
+
+                                    int totalShield = HealUtil.getShieldedPlayers().get(ally.getUniqueId());
+
+                                    if (totalShield - SHIELD_AMT > 0) {
+                                        HealUtil.getShieldedPlayers().put(ally.getUniqueId(), totalShield - SHIELD_AMT);
+                                    } else {
+                                        HealUtil.getShieldedPlayers().remove(ally.getUniqueId());
+                                        ally.sendMessage(ChatColor.RED + "You have lost your shield!");
+                                    }
+                                }
+                            }
+                        }.runTaskLaterAsynchronously(RunicCore.getInstance(), SHIELD_DURATION*20L);
                     }
                 }
             }

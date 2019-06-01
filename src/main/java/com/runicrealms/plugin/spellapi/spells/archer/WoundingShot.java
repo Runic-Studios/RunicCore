@@ -4,10 +4,10 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,22 +17,23 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class WoundingShot extends Spell {
 
     private static final int DAMAGE = 3;
-    private static final int DURATION = 8;
+    private static final int DURATION = 5;
     private static final double PERCENT = 50;
     private List<Arrow> cripplingArrs = new ArrayList<>();
-    private List<Entity> crippledPlrs = new ArrayList<>();
+    private List<UUID> crippledPlrs = new ArrayList<>();
 
     // constructor
     public WoundingShot() {
         super("Wounding Shot", "You launch an enchanted arrow which" +
                 "\ndeals " + DAMAGE + " damage to its target and reduces" +
                 "\nall ✦spell healing on the target by " + (int) PERCENT + "%" +
-                "\nfor " + DURATION + " seconds!", ChatColor.WHITE, 1, 1);
+                "\nfor " + DURATION + " seconds!", ChatColor.WHITE, 15, 20);
     }
 
     @Override
@@ -59,8 +60,6 @@ public class WoundingShot extends Spell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
-
-        // todo: remove crippled man
     }
 
     @EventHandler
@@ -96,23 +95,31 @@ public class WoundingShot extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
 
-        // particles, sounds
-        crippledPlrs.add(le);
+        // spell effect
+        crippledPlrs.add(le.getUniqueId());
         DamageUtil.damageEntitySpell(DAMAGE, le, pl);
 
         // particles, sounds
-        le.sendMessage(ChatColor.RED + "You have been crippled! Healing spells are "
-                + PERCENT + "% effective on you for" + DURATION + " second(s).");
+        le.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "wounded! "
+                + ChatColor.RED + "Healing spells are " + (int) PERCENT + "% effective on you for " + DURATION
+                + " second(s)!");
+
+        Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.RED);
         le.getWorld().playSound(le.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 0.5f);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                crippledPlrs.remove(le.getUniqueId());
+            }
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
     }
 
     @EventHandler
     public void onCrippledHeal(SpellHealEvent e) {
 
-        if (crippledPlrs.contains(e.getEntity())) {
-
-            Bukkit.broadcastMessage("crippled");
+        if (crippledPlrs.contains(e.getEntity().getUniqueId())) {
             double percent = PERCENT/100;
             int newAmt = (int) (e.getAmount()*percent);
             e.setAmount(newAmt);

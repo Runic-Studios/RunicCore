@@ -102,7 +102,7 @@ public class ClassGUI implements InventoryProvider {
                         ChatColor.RED,
                         "Warrior",
                         "A durable, close-range fighter.",
-                        "Charge"),
+                        "Slam"),
                         e -> {
                             setupPlayer(player, "Warrior", contents);
                         }));
@@ -226,7 +226,7 @@ public class ClassGUI implements InventoryProvider {
             case "warrior":
                 itemName = "Worn Oaken Battleaxe";
                 material = Material.WOODEN_AXE;
-                spell = "Charge";
+                spell = "Slam";
                 color = RED;
                 if (isTutorial) {
                     player.sendTitle(

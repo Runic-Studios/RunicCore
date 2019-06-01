@@ -45,7 +45,7 @@ public class Enrage extends Spell {
 
         // apply preliminary particle effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHANNEL_DURATION * 20, 2));
-        pl.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, CHANNEL_DURATION * 80, 2));
+        pl.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, CHANNEL_DURATION * 20, 2));
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
         new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(Particle.REDSTONE, pl.getLocation(), Color.RED);

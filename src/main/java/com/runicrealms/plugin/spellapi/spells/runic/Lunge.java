@@ -44,7 +44,7 @@ public class Lunge extends Spell {
         float multiplier = (90.0F + pitch) / 50.0F;
         directionVector.multiply(multiplier);
         velocity.add(directionVector);
-        velocity.multiply(new Vector(0.8D, 1.0D, 0.8D));
+        velocity.multiply(new Vector(0.8D, 0.7D, 0.8D));
 
         pl.setVelocity(velocity);
 

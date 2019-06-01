@@ -458,6 +458,7 @@ public class ArtifactGUI {
         List<String> spells = new ArrayList<>();
         spells.add("Backstab");
         spells.add("Cloak");
+        spells.add("Shadow Step");
         spells.add("Shrieking Skull");
         spells.add("Smoke Bomb");
         return spells;
@@ -465,10 +466,10 @@ public class ArtifactGUI {
 
     private static List<String> displaySpellsWarrior() {
         List<String> spells = new ArrayList<>();
-        spells.add("Charge");
         spells.add("Divine Shield");
         spells.add("Enrage");
         spells.add("Judgment");
+        spells.add("Slam");
         spells.add("Unholy Ground");
         return spells;
     }
@@ -488,7 +489,7 @@ public class ArtifactGUI {
         if (isUnlocked
                 || spellName.equals("Barrage")
                 || spellName.equals("Blizzard")
-                || spellName.equals("Charge")
+                || spellName.equals("Slam")
                 || spellName.equals("Rejuvenate")
                 || spellName.equals("Smoke Bomb")) {
 

@@ -41,7 +41,10 @@ public class Cloak extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.BLACK, 3));
-        PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer)pl).getHandle());
+
+        PacketPlayOutPlayerInfo packet =
+                new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
+                        ((CraftPlayer)pl).getHandle());
 
         // remove threat from mobs
         for (Entity en : pl.getNearbyEntities(30, 30, 30)) {

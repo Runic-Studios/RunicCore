@@ -73,4 +73,14 @@ public class ManaManager implements Listener {
             RunicCore.getScoreboardHandler().updateSideInfo(pl);
         }
     }
+
+    public void subtractMana(Player pl, int amt) {
+
+        int mana = currentPlayerManas.get(pl.getUniqueId());
+
+        if (mana <= 0) return;
+
+        currentPlayerManas.put(pl.getUniqueId(), mana - amt);
+        RunicCore.getScoreboardHandler().updateSideInfo(pl);
+    }
  }

@@ -60,11 +60,13 @@ public class DamageListener implements Listener {
 
         if (damager instanceof Monster) {
             e.setCancelled(true);
-            Bukkit.broadcastMessage("mob damage");
-            Bukkit.broadcastMessage(e.getDamage() + "");
-            DamageUtil.damageEntityMob(Math.ceil(e.getDamage()), victim, (LivingEntity) damager);
-            MobDamageEvent event = new MobDamageEvent(damager, victim);
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(e.getDamage()), e.getDamager(), victim);
             Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            } else {
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), victim, (LivingEntity) damager);
+            }
         }
 
         // only listen for when a player swings or fires an arrow
