@@ -16,6 +16,7 @@ public class Charge extends Spell {
 
     private static final double KNOCKUP_AMT = 0.3;
     private static final int DAMAGE_AMT = 6;
+    private static final double HEIGHT = 1.2;
     private static final int RADIUS = 5;
 
     // constructor
@@ -39,14 +40,32 @@ public class Charge extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
 
         // CHARGEE!!
-        Vector look = pl.getLocation().getDirection();
-        pl.setVelocity(new Vector(look.getX(), 5.0, look.getZ()).normalize());
+        // apply effects
+        final Vector velocity = pl.getVelocity().setY(HEIGHT);
+
+        Vector directionVector = pl.getLocation().getDirection();
+        directionVector.setY(0);
+        directionVector.normalize();
+
+        float pitch = pl.getEyeLocation().getPitch();
+        if (pitch > 0.0F) {
+            pitch = -pitch;
+        }
+
+        float multiplier = (90.0F + pitch) / 50.0F;
+        directionVector.multiply(multiplier);
+        velocity.add(directionVector);
+        velocity.multiply(new Vector(0.6D, 1.0D, 0.6D));
+
+        pl.setVelocity(velocity);
+//        Vector look = pl.getLocation().getDirection();
+//        pl.setVelocity(new Vector(look.getX(), 5.0, look.getZ()).normalize());
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 pl.setVelocity(new Vector
-                        (pl.getLocation().getDirection().getX(), -5.0,
+                        (pl.getLocation().getDirection().getX(), -10.0,
                                 pl.getLocation().getDirection().getZ()).multiply(2).normalize());
                 pl.setFallDistance(-512.0F);
             }

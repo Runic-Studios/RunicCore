@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -57,6 +58,15 @@ public class DamageListener implements Listener {
         if (!(entity instanceof LivingEntity)) return;
         LivingEntity victim = (LivingEntity) entity;
 
+        if (damager instanceof Monster) {
+            e.setCancelled(true);
+            Bukkit.broadcastMessage("mob damage");
+            Bukkit.broadcastMessage(e.getDamage() + "");
+            DamageUtil.damageEntityMob(Math.ceil(e.getDamage()), victim, (LivingEntity) damager);
+            MobDamageEvent event = new MobDamageEvent(damager, victim);
+            Bukkit.getPluginManager().callEvent(event);
+        }
+
         // only listen for when a player swings or fires an arrow
         if (damager instanceof Player) {
 
@@ -104,12 +114,17 @@ public class DamageListener implements Listener {
             if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
                 e.setCancelled(true);
                 int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
-                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager);
 
                 // call our successful hit event, ensure that the item is the artifact
                 if (slot != 0) return;
-                WeaponDamageEvent event = new WeaponDamageEvent((Player) damager, victim);
+                WeaponDamageEvent event = new WeaponDamageEvent(randomNum, (Player) damager, victim);
                 Bukkit.getPluginManager().callEvent(event);
+
+                if (event.isCancelled()) {
+                    return;
+                }
+
+                DamageUtil.damageEntityWeapon(event.getAmount(), victim, (Player) damager);
 
             } else {
                 e.setCancelled(true);

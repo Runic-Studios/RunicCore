@@ -13,14 +13,24 @@ import org.bukkit.event.HandlerList;
  */
 public class WeaponDamageEvent extends Event implements Cancellable {
 
+    private int amount;
     private Player player;
     private Entity entity;
     private boolean isCancelled;
 
-    public WeaponDamageEvent(Player damager, Entity victim) {
+    public WeaponDamageEvent(int amount, Player damager, Entity victim) {
+        this.amount = amount;
         this.player = damager;
         this.entity = victim;
         this.isCancelled = false;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public Player getPlayer() {

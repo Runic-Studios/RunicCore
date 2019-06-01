@@ -2,9 +2,12 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import io.lumine.xikage.mythicmobs.MythicMobs;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -22,8 +25,11 @@ public class Cloak extends Spell {
 
     // constructor
     public Cloak() {
-        super("Cloak", "For " + DURATION + " seconds, you vanish completely from view." +
-                "\nDealing damage ends the effect early.",
+        super("Cloak", "For " + DURATION + " seconds, you vanish completely," +
+                        "\ncausing you to appear invisible to" +
+                        "\nplayers and massively reducing your" +
+                        "\nthreat to monsters. Dealing damage" +
+                        "\nends the effect early.",
                 ChatColor.WHITE, 10, 15);
         hasDealtDamage = new HashMap<>();
     }
@@ -36,6 +42,13 @@ public class Cloak extends Spell {
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.BLACK, 3));
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer)pl).getHandle());
+
+        // remove threat from mobs
+        for (Entity en : pl.getNearbyEntities(30, 30, 30)) {
+            if (en instanceof Monster) {
+                MythicMobs.inst().getAPIHelper().reduceThreat(en, pl, 2000);
+            }
+        }
 
         // hide the player, prevent them from disappearing in tab
         for (Player ps : Bukkit.getOnlinePlayers()) {

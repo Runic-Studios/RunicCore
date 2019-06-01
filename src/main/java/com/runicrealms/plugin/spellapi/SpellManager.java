@@ -129,6 +129,11 @@ public class SpellManager {
         this.spellList.add(new WoundingShot());
         this.spellList.add(new Taunt());
         this.spellList.add(new ArcaneOrb());
+        this.spellList.add(new Lunge());
+        this.spellList.add(new Harpoon());
+        this.spellList.add(new Warsong());
+        this.spellList.add(new Blessing());
+        this.spellList.add(new Reflect());
     }
 
     // starts the repeating task to manage player cooldowns

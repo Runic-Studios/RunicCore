@@ -290,7 +290,14 @@ public class ArtifactGUI {
                         return;
                     }
 
-                    updateArtifactSpell(pl, artifact, "primarySpell",
+                    String spellSlot;
+                    if (artifact.getType() == Material.BOW) {
+                        spellSlot = "secondarySpell";
+                    } else {
+                        spellSlot = "primarySpell";
+                    }
+
+                    updateArtifactSpell(pl, artifact, spellSlot,
                             event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
                             artifact.getItemMeta().getDisplayName(), className);
 
@@ -310,7 +317,14 @@ public class ArtifactGUI {
                         return;
                     }
 
-                    updateArtifactSpell(pl, artifact, "secondarySpell",
+                    String spellSlot;
+                    if (artifact.getType() == Material.BOW) {
+                        spellSlot = "primarySpell";
+                    } else {
+                        spellSlot = "secondarySpell";
+                    }
+
+                    updateArtifactSpell(pl, artifact, spellSlot,
                             event.getItem(event.getPosition()).getItemMeta().getDisplayName(),
                             artifact.getItemMeta().getDisplayName(), className);
 
@@ -347,14 +361,23 @@ public class ArtifactGUI {
         // build the menu description, updates live with their current spells
         String primarySpell = AttributeUtil.getSpell(artifact, "primarySpell");
         String secondarySpell = AttributeUtil.getSpell(artifact, "secondarySpell");
+        String spellSlot1;
+        String spellSlot2;
+        if (artifact.getType() == Material.BOW) {
+            spellSlot1 = "\n&fRight Click &7a spell to set your primary!";
+            spellSlot2 = "\n&fLeft Click &7a spell to set your secondary!";
+        } else {
+            spellSlot1 = "\n&fLeft Click &7a spell to set your primary!";
+            spellSlot2 = "\n&fRight Click &7a spell to set your secondary!";
+        }
         spellEditor.setOption(12, new ItemStack(artifact.getType()), "&a" + artifact.getItemMeta().getDisplayName(),
                 "\n" +
                         "&7Spells:" +
                         "\n&7Primary: &a" + primarySpell +
                         "\n&7Secondary: &a" + secondarySpell +
                         "\n" +
-                        "\n&fLeft Click &7a spell to set your primary!" +
-                        "\n&fShift + Click &7a spell to set your secondary!" +
+                        spellSlot1 +
+                        spellSlot2 +
                         "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
 
         int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
@@ -491,7 +514,12 @@ public class ArtifactGUI {
             otherSpell = AttributeUtil.getSpell(item, "primarySpell");
         }
 
-        if (!otherSpell.equals(spellName)) {
+        if (AttributeUtil.getSpell(item, spellSlot).equals(spellName)) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            pl.sendMessage(ChatColor.RED + "You already have that spell imbued!");
+
+        } else if (!otherSpell.equals(spellName)) {
+
             item = AttributeUtil.addSpell(item, spellSlot, spellName);
             int durability = ((Damageable) item.getItemMeta()).getDamage();
             LoreGenerator.generateArtifactLore(item, itemName, className, durability);
@@ -499,7 +527,9 @@ public class ArtifactGUI {
             pl.closeInventory();
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
             pl.sendMessage(ChatColor.GREEN + "You imbued your artifact with " + spellName + "!");
+
         } else {
+
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             pl.sendMessage(ChatColor.RED + "You can't imbue the same spell in two slots.");
         }

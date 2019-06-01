@@ -30,7 +30,7 @@ public class Permafrost extends Spell {
                 "For " + DURATION_SPELL + " seconds, your melee weapon" +
                         "\nattacks gain an icy enchantment, slowing" +
                         "\n" + "enemies hit for " + DURATION_SLOW + " second(s).",
-                ChatColor.WHITE, 12, 12);
+                ChatColor.WHITE, 12, 15);
         frosters = new ArrayList<>();
     }
 

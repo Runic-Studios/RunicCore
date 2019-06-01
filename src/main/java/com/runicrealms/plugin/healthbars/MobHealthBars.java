@@ -54,9 +54,9 @@ public final class MobHealthBars implements Listener {
             @Override
             public void run() {
 
-                String healthBar = ChatColor.GRAY + "" + "["
+                String healthBar = ChatColor.YELLOW + "" + "["
                         + createHealthDisplay(mob, 0)
-                        + ChatColor.GRAY + "]";
+                        + ChatColor.YELLOW + "]";
 
                 if (mob instanceof Monster || mob instanceof Wolf) {
                     top.setCustomName(ChatColor.RED + mob.getName());
@@ -83,9 +83,9 @@ public final class MobHealthBars implements Listener {
         LivingEntity mob = (LivingEntity) e.getEntity();
 
         if (mob.getPassengers().size() == 0) {
-            String healthBar = ChatColor.GRAY + "" + "["
+            String healthBar = ChatColor.YELLOW + "" + "["
                     + createHealthDisplay(mob, e.getDamage())
-                    + ChatColor.GRAY + "]";
+                    + ChatColor.YELLOW + "]";
             mob.setCustomName(healthBar);
             return;
         }
@@ -107,9 +107,9 @@ public final class MobHealthBars implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                String healthBar = ChatColor.GRAY + "" + "["
+                String healthBar = ChatColor.YELLOW + "" + "["
                         + createHealthDisplay(mob, 0)
-                        + ChatColor.GRAY + "]";
+                        + ChatColor.YELLOW + "]";
                 bottom.setCustomName(healthBar);
             }
         }.runTaskLater(RunicCore.getInstance(), 1);
@@ -128,9 +128,9 @@ public final class MobHealthBars implements Listener {
 
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        String healthBar = ChatColor.GRAY + "" + "["
+        String healthBar = ChatColor.YELLOW + "" + "["
                 + createHealthDisplay(le, 0)
-                + ChatColor.GRAY + "]";
+                + ChatColor.YELLOW + "]";
 
         for (Entity passenger : e.getEntity().getPassengers()) {
             passenger.setCustomName(healthBar);

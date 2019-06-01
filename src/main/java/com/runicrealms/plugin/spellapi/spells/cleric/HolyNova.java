@@ -25,7 +25,7 @@ public class HolyNova extends Spell {
                         "\npower, conjuring rings of light magic" +
                         "\nwhich deal " + DAMAGE_AMT + " damage to enemies" +
                         "\nand restore " + HEAL_AMT + " health to allies!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 12, 20);
     }
 
     @Override

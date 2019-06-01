@@ -26,6 +26,15 @@ public class HologramUtil {
         createDamageHologram(createFor, createAround, ChatColor.GREEN + "+" + (int) hp + " ❤✦");
     }
 
+    // todo: add shield icon, needs its own gemstone too
+    public static void createShieldHologram(Player createFor, Location createAround, double hp) {
+        createDamageHologram(createFor, createAround, ChatColor.WHITE + "+" + (int) hp + " ❤✦");
+    }
+
+    public static void createShieldDamageHologram(Player createFor, Location createAround, double hp) {
+        createDamageHologram(createFor, createAround, ChatColor.WHITE + "-" + (int) hp + " ❤✦");
+    }
+
     public static void createSpellDamageHologram(Player createFor, Location createAround, double hp) {
         createDamageHologram(createFor, createAround, ChatColor.DARK_AQUA + "-" + (int) hp + " ❤ʔ");
     }

@@ -101,19 +101,19 @@ public class PlayerLevelListener implements Listener {
             case 10:
                 sendUnlockMessage(pl, 10, className, classLevel);
                 giveSpellpoint(pl);
-                unlockSpell(rune, "primarySpell", pl, 1);
+                unlockSpell(rune, "primarySpell", pl, 1, className);
                 Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                         "lp user " + pl.getName() + " permission set core.skins." + className + ".20" + " true");
                 break;
             case 20:
                 sendUnlockMessage(pl, 20, className, classLevel);
                 giveSpellpoint(pl);
-                unlockSpell(rune, "secondarySpell", pl, 1);
+                unlockSpell(rune, "secondarySpell", pl, 1, className);
                 break;
             case 30:
                 sendUnlockMessage(pl, 30, className, classLevel);
                 giveSpellpoint(pl);
-                unlockSpell(artifact, "secondarySpell", pl, 0);
+                unlockSpell(artifact, "secondarySpell", pl, 0, className);
                 break;
             case 40:
                 giveSpellpoint(pl);
@@ -199,9 +199,14 @@ public class PlayerLevelListener implements Listener {
         RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
         saveConfig(pl);
     }
-    private void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot) {
+    private void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot, String className) {
+        int durab = ((Damageable) item.getItemMeta()).getDamage();
         item = AttributeUtil.addSpell(item, slot, ChatColor.GREEN + "UNLOCKED");
-        LoreGenerator.generateRuneLore(item);
+        if (itemSlot == 0) {
+            LoreGenerator.generateArtifactLore(item, item.getItemMeta().getDisplayName(), className, durab);
+        } else {
+            LoreGenerator.generateRuneLore(item);
+        }
         pl.getInventory().setItem(itemSlot, item);
     }
 

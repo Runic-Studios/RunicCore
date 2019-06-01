@@ -151,6 +151,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new MobHealthBars(), this);
         pm.registerEvents(new CombatListener(), this);
         pm.registerEvents(new PlayerRegenListener(), this);
+        pm.registerEvents(new PlayerMenuListener(), this);
     }
     
     private void registerCommands() {

@@ -167,8 +167,8 @@ public class ClassGUI implements InventoryProvider {
                 if (isTutorial) {
                     player.sendTitle(
                             ChatColor.GOLD + "Try",
-                            ChatColor.YELLOW + "Left-Click!", 10, 100, 10);
-                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Left-Click " + ChatColor.GRAY + "to cast barrage!");
+                            ChatColor.YELLOW + "Sneak + Right-Click!", 10, 100, 10);
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Right-Click " + ChatColor.GRAY + "to cast barrage!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_GREEN + "You selected",

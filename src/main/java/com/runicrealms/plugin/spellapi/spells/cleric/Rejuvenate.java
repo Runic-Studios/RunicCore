@@ -18,7 +18,7 @@ public class Rejuvenate extends Spell {
 
     // grab our globals
     private HashMap<UUID, List<UUID>> hasBeenHit;
-    private static final int HEAL_AMT = 25;
+    private static final int HEAL_AMT = 20;
     private final int RADIUS = 1;
     private final int RANGE = 15;
     private final int SPEED = 2;
@@ -32,7 +32,7 @@ public class Rejuvenate extends Spell {
                 "You launch a beam of healing magic," +
                 "\nrestoring " + HEAL_AMT + " health to all party members" +
                 "\nit passes through.",
-                ChatColor.WHITE, 10, 10);
+                ChatColor.WHITE, 10, 15);
         this.hasBeenHit = new HashMap<>();
     }
 

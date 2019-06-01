@@ -33,7 +33,7 @@ public class ArcaneOrb extends Spell {
     // global variables
     private static final int DURATION = 7;
     private static final int MAX_DIST = 5;
-    private static final double PERCENT = 50;
+    private static final double PERCENT = 25;
     private static final int RADIUS = 5;
     private HashMap<UUID, Location> buffed = new HashMap<>();
 
@@ -42,9 +42,9 @@ public class ArcaneOrb extends Spell {
         super("Arcane Orb",
                 "You summon an orb of arcane magic!" +
                         "\nFor the next " + DURATION + " seconds, all ʔspell" +
-                        "\ndamage you deal is increased by" + (int) PERCENT + "" +
+                        "\ndamage you deal is increased by " + (int) PERCENT + "%" +
                         "\nif you stand within " + RADIUS + " blocks" +
-                        "\nof the orb!", ChatColor.WHITE,1, 1);
+                        "\nof the orb!", ChatColor.WHITE,15, 20);
     }
 
     // spell execute code

@@ -26,7 +26,7 @@ public class BlessedRain extends Spell {
                         "\nwaters, conjuring a ring of light magic" +
                         "\nwhich restores " + HEALING_AMT + " health to allies within" +
                         "\n" + RADIUS + " blocks every " + PERIOD + " second(s)!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 12, 20);
     }
 
     @Override

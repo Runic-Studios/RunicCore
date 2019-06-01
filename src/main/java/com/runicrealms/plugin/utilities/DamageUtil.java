@@ -55,6 +55,44 @@ public class DamageUtil {
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
+    public static void damageEntityMob(double dmgAmt, LivingEntity recipient, LivingEntity damager) {
+
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
+
+        mobDamage(dmgAmt, recipient, damager);
+    }
+
+    private static void mobDamage(double dmgAmt, LivingEntity recipient, LivingEntity damager) {
+        DamageListener damageListener = new DamageListener();
+
+        int newHP = (int) (recipient.getHealth() - dmgAmt);
+
+        // call a custom damage event to communicate with other listeners/plugins
+        EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(damager, recipient, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
+        Bukkit.getPluginManager().callEvent(e);
+        recipient.setLastDamageCause(e);
+
+        if (recipient instanceof Player) {
+            KnockbackUtil.knockback(damager, recipient);
+        }
+
+        // apply custom mechanics if the player were to die
+        if (newHP >= 1) {
+            if (recipient instanceof Monster) {
+                Monster monster = (Monster) recipient;
+                monster.setTarget(damager);
+            }
+            recipient.setHealth(newHP);
+            recipient.damage(0.0000000000001);
+        } else if (recipient instanceof Player) {
+            damageListener.applySlainMechanics(damager, (Player) recipient);
+        } else {
+            recipient.setHealth(0);
+        }
+    }
+
     private static void damageEntity(double dmgAmt, LivingEntity recipient, Player caster) {
 
         // ignore NPCs
@@ -79,6 +117,8 @@ public class DamageUtil {
 
         if (recipient instanceof Player) {
             KnockbackUtil.knockback(caster, recipient);
+        } else if (recipient instanceof Monster) {
+            KnockbackUtil.knockbackMob(caster, recipient);
         }
 
         // apply custom mechanics if the player were to die

@@ -40,7 +40,7 @@ public class Taunt extends Spell {
         super("Taunt",
                 "You throw your artifact in front of you," +
                         "\ndealing " + DAMAGE + " damage to the first monster" +
-                        "\nhit and taunting it!", ChatColor.WHITE,1, 1);
+                        "\nhit and taunting it!", ChatColor.WHITE,8, 10);
     }
 
     // spell execute code

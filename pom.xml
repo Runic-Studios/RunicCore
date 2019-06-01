@@ -77,6 +77,13 @@
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
+
+        <!-- Paper Repo -->
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -123,7 +130,13 @@
             <version>1.2.5</version>
         </dependency>
 
-
+        <!-- Paper API -->
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Tabbed API -->
         <dependency>
             <groupId>com.github.thekeenant</groupId>

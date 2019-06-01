@@ -53,7 +53,7 @@ public class WoundingShot extends Spell {
             public void run() {
                 Location arrowLoc = crippler.getLocation();
                 arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
-                        10, 0, 0, 0, 0, new Particle.DustOptions(Color.RED, 1));
+                        10, 0, 0, 0, 0, new Particle.DustOptions(Color.RED, 2));
                 if (crippler.isDead() || crippler.isOnGround()) {
                     this.cancel();
                 }

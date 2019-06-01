@@ -14,7 +14,7 @@ import com.runicrealms.plugin.RunicCore;
 public class FireAura extends Spell {
 
     private static final int DURATION = 5;
-    private static final int DAMAGE_AMT = 5;
+    private static final int DAMAGE_AMT = 3;
     private static final int PERIOD = 1;
     private static final int RADIUS = 3;
 

@@ -19,7 +19,7 @@ public class Fireball extends Spell {
 
     // globals
     private static final double FIREBALL_SPEED = 2;
-    private static final int DAMAGE_AMOUNT = 10;
+    private static final int DAMAGE_AMOUNT = 15;
     private SmallFireball fireball;
 
     // constructor

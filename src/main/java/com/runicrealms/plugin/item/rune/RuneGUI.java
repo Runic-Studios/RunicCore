@@ -58,7 +58,7 @@ public class RuneGUI {
         // grab player's rune
         ItemMeta meta = rune.getItemMeta();
 
-        int size = 45;
+        int size = 54;
 
         ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, event -> {
 
@@ -159,14 +159,19 @@ public class RuneGUI {
         List<String> spells = new ArrayList<>();
 
         spells.add("Arcane Orb");
+        spells.add("Blessing");
         spells.add("Blink");
         spells.add("Fire Aura");
         spells.add("Fireball");
         spells.add("Frostbolt");
+        spells.add("Harpoon");
+        spells.add("Lunge");
         spells.add("Permafrost");
         spells.add("Petrify");
+        spells.add("Reflect");
         spells.add("Sprint");
         spells.add("Taunt");
+        spells.add("Warsong");
 
         // first row of spells
         for (int i = 0; i < spells.size() && i < 5; i++) {
@@ -182,12 +187,21 @@ public class RuneGUI {
         // second row of spells
         for (int i = 5; i < spells.size() && i < 10; i++) {
 
-            // check for permissions, ex: ftr.spells.blessedrain
             boolean unlocked= false;
             if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
                 unlocked = true;
             }
             displaySpell(spellEditor, 24 + i, spells.get(i), unlocked);
+        }
+
+        // third row of spells
+        for (int i = 10; i < spells.size() && i < 15; i++) {
+
+            boolean unlocked= false;
+            if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
+                unlocked = true;
+            }
+            displaySpell(spellEditor, 28 + i, spells.get(i), unlocked);
         }
 
         return spellEditor;

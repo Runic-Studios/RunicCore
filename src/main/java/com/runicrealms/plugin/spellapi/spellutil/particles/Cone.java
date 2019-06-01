@@ -39,6 +39,8 @@ public class Cone {
                             if (particle == Particle.REDSTONE) {
                                 player.getWorld().spawnParticle(Particle.REDSTONE, playerLoc,
                                         1, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
+                            } else if (particle == Particle.NOTE) {
+                                playerLoc.getWorld().spawnParticle(Particle.NOTE, playerLoc, 0, 1d, 0.0d, 0.0d, 0.1d);
                             } else {
                                 playerLoc.getWorld().spawnParticle(particle, playerLoc, 1, 0, 0, 0, 0);
                             }

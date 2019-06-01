@@ -36,7 +36,7 @@ public class Petrify extends Spell {
         super("Petrify",
                 "You launch three beams of unholy" +
                         "\nmagic, rooting all enemies hit for" +
-                        "\n" + DURATION + " second(s).", ChatColor.WHITE,1, 1);
+                        "\n" + DURATION + " second(s).", ChatColor.WHITE,10, 15);
     }
 
     // spell execute code

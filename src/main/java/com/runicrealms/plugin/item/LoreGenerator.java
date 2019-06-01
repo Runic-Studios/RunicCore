@@ -33,7 +33,7 @@ public class LoreGenerator {
         lore.add(ChatColor.GRAY + "Spells:");
         if (prim != null) {
             if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + prim);
+                lore.add(ChatColor.WHITE + "Sneak + Right: " + ChatColor.GREEN + prim);
             } else {
                 lore.add(ChatColor.WHITE + "Sneak + Left: " + ChatColor.GREEN + prim);
             }
@@ -42,7 +42,7 @@ public class LoreGenerator {
         }
         if (sec != null) {
             if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Sneak + Right: " + ChatColor.GREEN + sec);
+                lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + sec);
             } else {
                 lore.add(ChatColor.WHITE + "Right Click: " + ChatColor.GREEN + sec);
             }

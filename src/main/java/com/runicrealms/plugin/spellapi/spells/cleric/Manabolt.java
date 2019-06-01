@@ -19,7 +19,6 @@ public class Manabolt extends Spell {
     private static final int MANA_AMT = 25;
     private final int RADIUS = 1;
     private final int RANGE = 15;
-    //private final double BEAM_WIDTH = 2.2;
     private final int SPEED = 2;
 
     // in seconds
@@ -31,7 +30,7 @@ public class Manabolt extends Spell {
                 "You launch a beam of soothing magic," +
                         "\nrestoring " + MANA_AMT + " mana to all party members" +
                         "\nit passes through.",
-                ChatColor.WHITE, 1, 10);
+                ChatColor.WHITE, 10, 10);
         this.hasBeenHit = new HashMap<>();
     }
 

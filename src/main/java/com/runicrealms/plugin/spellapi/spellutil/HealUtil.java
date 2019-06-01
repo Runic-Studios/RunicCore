@@ -9,7 +9,12 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class HealUtil  {
+
+    private static HashMap<UUID, Integer> shieldedPlayers = new HashMap<>();
 
     @SuppressWarnings("deprecation")
     public static void healPlayer(double healAmt, Player recipient, Player caster) {
@@ -51,6 +56,23 @@ public class HealUtil  {
 
         // call a new health regen event to communicate with all the other events that depend on this.
         Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, healAmt, EntityRegainHealthEvent.RegainReason.CUSTOM));
+    }
+
+    //todo: create shield event
+    public static void shieldPlayer(double shieldAmt, Player recipient, Player caster) {
+
+        // scan for gem values
+        shieldAmt = shieldAmt + GearScanner.getHealingBoost(caster);
+
+        HologramUtil.createShieldHologram(recipient, recipient.getLocation().add(0,1.5,0), shieldAmt);
+        recipient.playSound(recipient.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
+        recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
+        recipient.getWorld().spawnParticle(Particle.SPELL_INSTANT, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
+        shieldedPlayers.put(recipient.getUniqueId(), (int) shieldAmt);
+    }
+
+    public static HashMap<UUID, Integer> getShieldedPlayers() {
+        return shieldedPlayers;
     }
 }
 

@@ -24,7 +24,7 @@ public class Windstride extends Spell {
                 "For " + BUFF_DURATION + " seconds, you grant a speed boost" +
                         "\nto yourself and all party members" +
                         "\nwithin " + RADIUS + " blocks!",
-                ChatColor.WHITE, 1, 5);
+                ChatColor.WHITE, 20, 15);
     }
 
     // spell execute code

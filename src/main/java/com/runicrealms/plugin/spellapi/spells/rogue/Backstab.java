@@ -22,8 +22,9 @@ public class Backstab extends Spell {
 
     public Backstab() {
         super("Backstab",
-                "For " + DURATION + " seconds, striking enemies from behind\n"
-                        + "with your weapon deals " + DAMAGE_AMT + " additional spell damage!",
+                "For " + DURATION + " seconds, striking enemies from" +
+                        "\nbehind with your weapon deals " + DAMAGE_AMT +
+                        "\nadditional spell damage!",
                 ChatColor.WHITE, 15, 10);
     }
 

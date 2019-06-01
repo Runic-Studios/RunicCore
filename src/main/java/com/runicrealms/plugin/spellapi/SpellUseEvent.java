@@ -76,10 +76,10 @@ public class SpellUseEvent implements Listener {
         } else {
             if (item.getType() == Material.BOW) {
                 if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                    spellSlot = "primarySpell";
+                    spellSlot = "secondarySpell";
                 } else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (pl.isSneaking()) {
-                        spellSlot = "secondarySpell";
+                        spellSlot = "primarySpell";
                     }
                 }
             } else {
