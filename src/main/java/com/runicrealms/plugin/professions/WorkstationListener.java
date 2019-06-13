@@ -108,8 +108,9 @@ public class WorkstationListener implements Listener {
                 if (className.equals("Blacksmith")) {
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1.0f);
                     //AnvilGUI.ANVIL_GUI.open(pl);
-                    BlacksmithGUI menu = new BlacksmithGUI(pl);//ArtifactGUI.artifactEditor(pl, artifact, durability);
-                    menu.open(pl);
+                    BlacksmithGUI blacksmithGUI = new BlacksmithGUI();//ArtifactGUI.artifactEditor(pl, artifact, durability);
+                    ItemGUI bMenu = blacksmithGUI.openMenu(pl);
+                    bMenu.open(pl);
                 } else {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.RED + "A blacksmith would know how to use this.");

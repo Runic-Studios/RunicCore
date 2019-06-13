@@ -238,6 +238,33 @@ public class PlayerLevelListener implements Listener {
         pl.sendMessage("\n");
     }
 
+    /**
+     * This method is used to calculate how much HP the wearer has from items. So it subtracts the base hp of their
+     * level. Everything uses GENERIC_MAX_HEALTH, so this is the simplest way I've done it for now.
+     * @author Skyfallin
+     */
+    public static int getHpAtLevel(Player pl) {
+
+        // grab the player's new info
+        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        if (className == null) return 50;
+
+        switch (className.toLowerCase()) {
+            case "archer":
+                return (pl.getLevel()) + 50;
+            case "cleric":
+                return (2*pl.getLevel()) + 50;
+            case "mage":
+                return (pl.getLevel()) + 50;
+            case "rogue":
+                return (pl.getLevel()) + 50;
+            case "warrior":
+                return (2*pl.getLevel()) + 50;
+        }
+
+        return 50;
+    }
+
     private void saveConfig(Player pl) {
         RunicCore.getInstance().saveConfig();
         RunicCore.getInstance().reloadConfig();

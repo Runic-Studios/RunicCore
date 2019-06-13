@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import io.lumine.xikage.mythicmobs.MythicMobs;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -17,17 +19,20 @@ import java.util.*;
 public class UnholyGround extends Spell {
 
     private static final int DURATION = 6;
+    private static final double PERCENT = 50;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
     private List<LivingEntity> taunted = new ArrayList<>();
+    private HashMap<UUID, Location> taunters = new HashMap<>();
 
     public UnholyGround() {
         super("Unholy Ground",
                 "For " + DURATION + " seconds, you desecrate an area of" +
                         "\nland, conjuring a ring of unholy magic" +
-                        "\nwhich taunts enemy monsters within " + RADIUS +
-                        "\nblocks every " + PERIOD + " seconds(s), compelling" +
-                        "\nthem to attack you!"
+                        "\nwhich taunts enemy monsters within " + (int) RADIUS +
+                        "\nblocks every " + PERIOD + " seconds(s)! While standing" +
+                        "\non the unholy ground, you take " + (int) PERCENT + "%" +
+                        "\ndamage from monsters!"
                         , ChatColor.WHITE,12, 15);
     }
 
@@ -36,8 +41,10 @@ public class UnholyGround extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_SKELETON_DEATH, 0.5F, 0.2F);
-
         Location loc = pl.getLocation();
+
+        // save uuid and location
+        taunters.put(pl.getUniqueId(), loc);
 
         // begin effect
         BukkitRunnable rain = new BukkitRunnable() {
@@ -49,6 +56,7 @@ public class UnholyGround extends Spell {
                 if (count >= DURATION) {
                     this.cancel();
                     taunted.clear();
+                    taunters.remove(pl.getUniqueId());
                 } else {
 
                     count += 1;
@@ -105,6 +113,23 @@ public class UnholyGround extends Spell {
             pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
                     new Particle.DustOptions(Color.YELLOW, 1));
             loc.subtract(x, 0, z);
+        }
+    }
+
+    @EventHandler
+    public void onMonsterDamage(MobDamageEvent e) {
+
+        if (!(e.getVictim() instanceof Player)) return;
+
+        Player pl = (Player) e.getVictim();
+
+        if (!taunters.containsKey(pl.getUniqueId())) return;
+
+        Location loc = taunters.get(pl.getUniqueId());
+        if (pl.getLocation().distance(loc) <= RADIUS) {
+            double percent = PERCENT / 100;
+            int amt = (int) (e.getAmount() * percent);
+            e.setAmount(amt);
         }
     }
 }

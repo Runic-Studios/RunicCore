@@ -3,9 +3,8 @@ package com.runicrealms.plugin.item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class OptionClickEvent {
+public class OptionClickEvent extends InventoryClickEvent {
 
-    private InventoryClickEvent invClickEvent;
     private Player player;
     private int position;
     private String name;
@@ -13,7 +12,7 @@ public class OptionClickEvent {
     private boolean destroy;
 
     public OptionClickEvent(InventoryClickEvent invClickEvent, Player player, int position, String name) {
-        this.invClickEvent = invClickEvent;
+        super(invClickEvent.getView(), invClickEvent.getSlotType(), position, invClickEvent.getClick(), invClickEvent.getAction());
         this.player = player;
         this.position = position;
         this.name = name;
@@ -25,15 +24,9 @@ public class OptionClickEvent {
         return player;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
     public String getName() {
         return name;
     }
-
-    public InventoryClickEvent getSuper() { return invClickEvent; }
 
     public boolean willClose() {
         return close;

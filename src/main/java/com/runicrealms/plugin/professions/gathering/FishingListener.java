@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -85,6 +86,20 @@ public class FishingListener implements Listener {
                 holoString = "+ Pufferfish";
             }
 
+//            // reduce items durability
+//            double itemDurab = AttributeUtil.getCustomDouble(heldItem, "durability");
+//            heldItem = AttributeUtil.addCustomStat(heldItem, "durability", itemDurab-1);
+//            GatheringUtil.generateToolLore(heldItem, durability);
+//            if (itemDurab - 1 <= 0) {
+//
+//                pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
+//                pl.sendMessage(ChatColor.RED + "Your tool broke!");
+//                pl.getInventory().setItem(slot, null);
+//            } else {
+//                pl.getInventory().setItem(slot, heldItem);
+//            }
+
+            // gather material
             gatherMaterial(pl, hookLoc, hookLoc.add(0, 1.5, 0), itemType, holoString,
                     itemName, desc, "The fish got away!", chance, fishPath);
         }
@@ -231,14 +246,14 @@ public class FishingListener implements Listener {
         this.nuggetRate = value;
     }
 
-    public static ItemStack getGatheringRod(int tier) {
-        ItemStack item = new ItemStack(Material.FISHING_ROD);
-        ItemMeta meta = item.getItemMeta();
-        ((Damageable) meta).setDamage(tier);
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
-        return item;
-    }
+//    public static ItemStack getGatheringRod(int tier) {
+//        ItemStack item = new ItemStack(Material.FISHING_ROD);
+//        ItemMeta meta = item.getItemMeta();
+//        ((Damageable) meta).setDamage(tier);
+//        meta.setUnbreakable(true);
+//        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+//        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+//        item.setItemMeta(meta);
+//        return item;
+//    }
 }

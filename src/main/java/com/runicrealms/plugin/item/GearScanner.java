@@ -32,6 +32,28 @@ public class GearScanner {
         return armorAndOffhand;
     }
 
+    public static int getManaBoost(Player pl) {
+
+        int manaBoost = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            manaBoost += (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
+        }
+        return manaBoost;
+    }
+
+    public static int getAttackDamage(Player pl) {
+
+        int attackDamage = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            attackDamage += (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
+        }
+        return attackDamage;
+    }
+
     public static int getHealingBoost(Player pl) {
 
         int healingBoost = 0;

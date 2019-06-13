@@ -3,6 +3,7 @@ package com.runicrealms.plugin.item;
 import java.util.ArrayList;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,11 +52,21 @@ public class ItemGUI implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    /*
+    Getters and setters! Hooray.
+     */
     public ClickType getClickType() { return clickType; }
 
     public ItemStack getItem(int index) {
         return inventory.getItem(index);
     }
+
+    public String getName() { return this.name; }
+
+    public void setName(String name) { this.name = ColorUtil.format(name); }
+
+
+
 
     public void setSize(int size) {
         this.size = size;
@@ -94,11 +105,7 @@ public class ItemGUI implements Listener {
 
         this.clickType = event.getClick();
 
-        Bukkit.broadcastMessage("event called 1");
-        Bukkit.broadcastMessage(this.name);
-        Bukkit.broadcastMessage(event.getInventory().getTitle());
         if (event.getInventory().getTitle().equals(this.name)) {
-            Bukkit.broadcastMessage("event called 2");
             event.setCancelled(true);
             int slot = event.getRawSlot();
             if (slot >= 0 && slot < size && optionNames[slot] != null) {

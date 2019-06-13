@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -25,6 +26,7 @@ import com.runicrealms.plugin.enums.WeaponEnum;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -138,36 +140,99 @@ public class MiningListener implements Listener {
 
         e.setCancelled(true);
 
-        // make sure player has harvesting tool
-        // we also ensure it has durability 100, arbitrarily chosen.
-        if (pl.getInventory().getItemInMainHand() == null) return;
-        WeaponEnum heldItem = WeaponEnum.matchType(pl.getInventory().getItemInMainHand());
-        ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
-        int durability = ((Damageable) meta).getDamage();
+        // make sure player has harvesting tool, corresponding to the tier.
+        // with durability magic, a durability 1 iron axe will display as wood, 5 as diamond, etc.
+        ItemStack heldItem = pl.getInventory().getItemInMainHand();
+        int slot = pl.getInventory().getHeldItemSlot();
+        ItemMeta meta = heldItem.getItemMeta();
+        int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
+        //int durability;
+//        switch (heldItem.getType()) {
+//            case DIAMOND_PICKAXE:
+//                tier = 5;
+//                break;
+//            case GOLDEN_PICKAXE:
+//                tier = 4;
+//                break;
+//            case IRON_PICKAXE:
+//                tier = 3;
+//                break;
+//            case STONE_PICKAXE:
+//                tier = 2;
+//                break;
+//            case WOODEN_PICKAXE:
+//            default:
+//                tier = 1;
+//                break;
+//        }
 
-        if (heldItem == null) {
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
             pl.sendMessage(ChatColor.RED + "You need a mining pick to do that!");
             return;
         }
 
-        if (!(heldItem.equals(WeaponEnum.PICKAXE)) || durability != 100) {
+//        if (heldItem.getType() != Material.WOODEN_PICKAXE
+//                && heldItem.getType() != Material.STONE_PICKAXE
+//                && heldItem.getType() != Material.IRON_PICKAXE
+//                && heldItem.getType() != Material.GOLDEN_PICKAXE
+//                && heldItem.getType() != Material.DIAMOND_PICKAXE) {
+        if (heldItem.getType() != Material.IRON_PICKAXE
+                && durability != 1
+                && durability != 2
+                && durability != 3
+                && durability != 4
+                && durability != 5) {
             pl.sendMessage(ChatColor.RED + "You need a mining pick to do that!");
             return;
         }
 
+        // reduce items durability
+        double itemDurab = AttributeUtil.getCustomDouble(heldItem, "durability");
+        heldItem = AttributeUtil.addCustomStat(heldItem, "durability", itemDurab-1);
+        GatheringUtil.generateToolLore(heldItem, durability);
+        if (itemDurab - 1 <= 0) {
+
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.RED + "Your tool broke!");
+            pl.getInventory().setItem(slot, null);
+        } else {
+            pl.getInventory().setItem(slot, heldItem);
+        }
+
+        // gather material
         gatherMaterial(pl, loc, block, placeHolderType, itemType, holoString,
-                itemName, desc, "You fail to gather any resources.", chance);
+                itemName, desc, "You fail to gather any resources.", chance, durability);
         saveBlockLocation(regenBlocks, blockLocations, subPath, block, oldType);
     }
 
 
     private void gatherMaterial(Player pl, Location loc, Block b,
                                 Material placeholder, Material gathered, String name, String itemName,
-                                String desc, String failMssg, double chance) {
+                                String desc, String failMssg, double chance, int tier) {
 
         b.setType(placeholder);
 
-        if (chance < (100 - this.oreSuccessRate)) {
+        double successRate;
+        switch (tier) {
+            case 5:
+                successRate = 75;
+                break;
+            case 4:
+                successRate = 62.5;
+                break;
+            case 3:
+                successRate = 50;
+                break;
+            case 2:
+                successRate = 37.5;
+                break;
+            case 1:
+            default:
+                successRate = 25;
+                break;
+        }
+
+        if (chance < (100 - successRate)) {
             pl.sendMessage(ChatColor.RED + failMssg);
             return;
         }

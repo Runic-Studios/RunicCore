@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions;
 
+import com.herocraftonline.heroes.characters.Hero;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -41,15 +42,15 @@ public class ProfGUI implements InventoryProvider {
                             player.closeInventory();
                         }));
 
-        // select miner
+        // select jeweler
         contents.set(0, 1, ClickableItem.of
-                (menuItem(Material.IRON_PICKAXE,
+                (menuItem(Material.REDSTONE,
                         ChatColor.GREEN,
-                        "Miner",
+                        "Jeweler",
                         "An agile, long-range artillary.",
                         "Barrage"),
                         e -> {
-                            setConfig(player, "Miner");
+                            setConfig(player, "Jeweler");
                             player.closeInventory();
                         }));
     }

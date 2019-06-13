@@ -31,14 +31,14 @@ public class ArtifactGUI {
         return new ItemGUI("&f&l" + pl.getName() + "'s &e&lArtifact Editor", 27, (OptionClickEvent event) -> {
 
             // open skin editor
-            if (event.getPosition() == 2+9) {
+            if (event.getSlot() == 2+9) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 ItemGUI skinEditor = ArtifactGUI.skinEditor(pl, artifact, durability);
                 skinEditor.open(pl);
                 event.setWillClose(false);
                 event.setWillDestroy(true);
 
-            } else if (event.getPosition() == 4+9) {
+            } else if (event.getSlot() == 4+9) {
 
                 // open spell editor
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
@@ -47,7 +47,7 @@ public class ArtifactGUI {
                 event.setWillClose(false);
                 event.setWillDestroy(true);
 
-            } else if (event.getPosition() == 6+9) {
+            } else if (event.getSlot() == 6+9) {
 
                 // close editor
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
@@ -104,7 +104,7 @@ public class ArtifactGUI {
 
         ItemGUI skinEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSkin Editor", size, (OptionClickEvent event) -> {
 
-            if (event.getPosition() == 13) {
+            if (event.getSlot() == 13) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 ItemGUI menu = ArtifactGUI.artifactEditor(pl, artifact, durability);
                 menu.open(pl);
@@ -113,8 +113,8 @@ public class ArtifactGUI {
             } else {
 
                 // apply the skin if the player has the permission
-                ItemStack skin = event.getSuper().getInventory().getItem(event.getPosition());
-                applySkin(pl, className, event.getPosition(),
+                ItemStack skin = event.getInventory().getItem(event.getSlot());
+                applySkin(pl, className, event.getSlot(),
                         skin.getType(), skin.getItemMeta().getDisplayName(), ((Damageable) skin.getItemMeta()).getDamage());
                 event.setWillClose(true);
                 event.setWillDestroy(true);
@@ -258,24 +258,24 @@ public class ArtifactGUI {
 
         ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, event -> {
 
-            if (event.getPosition() == 12) {
+            if (event.getSlot() == 12) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 ItemGUI menu = ArtifactGUI.artifactEditor(pl, artifact, durability);
                 menu.open(pl);
                 event.setWillClose(false);
                 event.setWillDestroy(true);
 
-            } else if (event.getPosition() == 14) {
+            } else if (event.getSlot() == 14) {
 
                 event.setWillClose(false);
                 event.setWillDestroy(false);
 
             } else {
 
-                String spellName = event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
+                String spellName = event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName().replace(" ", "").toLowerCase();
 
                 // apply the skin if the player has the permission
-                if (event.getSuper().getClick() == ClickType.LEFT) {
+                if (event.getClick() == ClickType.LEFT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
@@ -299,10 +299,10 @@ public class ArtifactGUI {
                     }
 
                     updateArtifactSpell(pl, artifact, spellSlot,
-                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName(),
+                            event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName(),
                             artifact.getItemMeta().getDisplayName(), className);
 
-                } else if (event.getSuper().getClick() == ClickType.RIGHT) {
+                } else if (event.getClick() == ClickType.RIGHT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
@@ -326,10 +326,10 @@ public class ArtifactGUI {
                     }
 
                     updateArtifactSpell(pl, artifact, spellSlot,
-                            event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName(),
+                            event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName(),
                             artifact.getItemMeta().getDisplayName(), className);
 
-                } else if (event.getSuper().getClick() == ClickType.SHIFT_LEFT || event.getSuper().getClick() == ClickType.SHIFT_RIGHT) {
+                } else if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
 
                     // unlock spell
                     if (!pl.hasPermission("core.spells." + spellName)
@@ -348,7 +348,7 @@ public class ArtifactGUI {
                             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                             pl.sendMessage(ChatColor.GREEN + "You have unlocked "
                                     + ChatColor.YELLOW + ChatColor.ITALIC
-                                    + event.getSuper().getInventory().getItem(event.getPosition()).getItemMeta().getDisplayName()
+                                    + event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName()
                                     + ChatColor.GREEN + "!");
                         }
                     }

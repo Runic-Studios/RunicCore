@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -8,6 +9,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,6 +28,7 @@ import com.runicrealms.plugin.utilities.HologramUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -35,6 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * for the ProfManager to respawn at intervals, checks name of
  * WG region for "grove" to perform tasks
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class WCListener implements Listener {
 
     private double coinRate = 5.0;
@@ -142,8 +146,9 @@ public class WCListener implements Listener {
         // make sure player has harvesting tool, iron axe of durability 1, 2, 3, 4, or 5, corresponding to the tier.
         // with durability magic, a durability 1 iron axe will display as wood, 5 as diamond, etc.
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
+        int slot = pl.getInventory().getHeldItemSlot();
         ItemMeta meta = heldItem.getItemMeta();
-        int durability = ((Damageable) meta).getDamage();
+        int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
 
         if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
             pl.sendMessage(ChatColor.RED + "You need a woodcutting axe to do that!");
@@ -160,6 +165,20 @@ public class WCListener implements Listener {
             return;
         }
 
+        // reduce items durability
+        double itemDurab = AttributeUtil.getCustomDouble(heldItem, "durability");
+        heldItem = AttributeUtil.addCustomStat(heldItem, "durability", itemDurab-1);
+        GatheringUtil.generateToolLore(heldItem, durability);
+        if (itemDurab - 1 <= 0) {
+
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.RED + "Your tool broke!");
+            pl.getInventory().setItem(slot, null);
+        } else {
+            pl.getInventory().setItem(slot, heldItem);
+        }
+
+        // gather the material
         gatherMaterial(pl, loc, block,
                 placeHolderType, itemType, holoString, itemName, desc,
                 "You fail to gather any resources.", chance, durability);
@@ -245,43 +264,5 @@ public class WCListener implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    public static ItemStack getGatheringAxe(int tier) {
-
-        ItemStack item = new ItemStack(Material.IRON_AXE);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-
-        String dispName = "";
-        String desc = "";
-        switch (tier) {
-            case 5:
-                break;
-            case 4:
-                break;
-            case 3:
-                break;
-            case 2:
-                break;
-            case 1:
-            default:
-                dispName = ColorUtil.format("&7Basic Woodcutting Axe"); // white crafted, gray common, green uncommon, blue rare, purple elite, gold legendary
-                desc = "\n&7Durability: &f100&7/100\n&7Success Rate: &c25%\n\n&7Common";
-                break;
-        }
-
-        for (String s : desc.split("\n")) {
-            lore.add(ColorUtil.format(s));
-        }
-        meta.setDisplayName(dispName);
-        meta.setLore(lore);
-
-        ((Damageable) meta).setDamage(tier);
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
-        return item;
     }
 }
