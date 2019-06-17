@@ -28,6 +28,7 @@ import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -38,7 +39,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class FishingListener implements Listener {
 
-    private double fishSuccessRate = 85.0;
     private double nuggetRate = 5.0;
 
     @EventHandler
@@ -86,22 +86,45 @@ public class FishingListener implements Listener {
                 holoString = "+ Pufferfish";
             }
 
-//            // reduce items durability
-//            double itemDurab = AttributeUtil.getCustomDouble(heldItem, "durability");
-//            heldItem = AttributeUtil.addCustomStat(heldItem, "durability", itemDurab-1);
-//            GatheringUtil.generateToolLore(heldItem, durability);
-//            if (itemDurab - 1 <= 0) {
-//
-//                pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
-//                pl.sendMessage(ChatColor.RED + "Your tool broke!");
-//                pl.getInventory().setItem(slot, null);
-//            } else {
-//                pl.getInventory().setItem(slot, heldItem);
-//            }
+            if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
+                pl.sendMessage(ChatColor.RED + "You need a fishing rod to do that!");
+                return;
+            }
+
+            // make sure player has harvesting tool
+            // this will always be a hoe, so we check for the staff enum
+            // we also ensure it has durability 100, arbitrarily chosen.
+            ItemStack heldItem = pl.getInventory().getItemInMainHand();
+            int slot = pl.getInventory().getHeldItemSlot();
+            ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
+            int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
+
+            if (heldItem.getType() != Material.FISHING_ROD
+                    && durability != 1
+                    && durability != 2
+                    && durability != 3
+                    && durability != 4
+                    && durability != 5) {
+                pl.sendMessage(ChatColor.RED + "You need a fishing rod to do that!");
+                return;
+            }
+
+            // reduce items durability
+            double itemDurab = AttributeUtil.getCustomDouble(heldItem, "durability");
+            heldItem = AttributeUtil.addCustomStat(heldItem, "durability", itemDurab-1);
+            GatheringUtil.generateToolLore(heldItem, durability);
+            if (itemDurab - 1 <= 0) {
+
+                pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
+                pl.sendMessage(ChatColor.RED + "Your tool broke!");
+                pl.getInventory().setItem(slot, null);
+            } else {
+                pl.getInventory().setItem(slot, heldItem);
+            }
 
             // gather material
             gatherMaterial(pl, hookLoc, hookLoc.add(0, 1.5, 0), itemType, holoString,
-                    itemName, desc, "The fish got away!", chance, fishPath);
+                    itemName, desc, "The fish got away!", chance, fishPath, durability);
         }
     }
 
@@ -193,9 +216,29 @@ public class FishingListener implements Listener {
 
     private void gatherMaterial(Player pl, Location loc, Location fishLoc, Material gathered,
                                 String name, String itemName, String desc, String failMssg,
-                                double chance, Vector fishPath) {
+                                double chance, Vector fishPath, int tier) {
 
-        if (chance < (100 - this.fishSuccessRate)) {
+        double successRate;
+        switch (tier) {
+            case 5:
+                successRate = 75;
+                break;
+            case 4:
+                successRate = 62.5;
+                break;
+            case 3:
+                successRate = 50;
+                break;
+            case 2:
+                successRate = 37.5;
+                break;
+            case 1:
+            default:
+                successRate = 25;
+                break;
+        }
+
+        if (chance < (100 - successRate)) {
             pl.sendMessage(ChatColor.RED + failMssg);
             return;
         }
@@ -233,27 +276,10 @@ public class FishingListener implements Listener {
         item.setItemMeta(meta);
         return item;
     }
-    public double getFishSuccessRate() {
-        return this.fishSuccessRate;
-    }
-    public void setFishSuccessRate(double value) {
-        this.fishSuccessRate = value;
-    }
     public double getNuggetRate() {
         return this.nuggetRate;
     }
     public void setNuggetRate(double value) {
         this.nuggetRate = value;
     }
-
-//    public static ItemStack getGatheringRod(int tier) {
-//        ItemStack item = new ItemStack(Material.FISHING_ROD);
-//        ItemMeta meta = item.getItemMeta();
-//        ((Damageable) meta).setDamage(tier);
-//        meta.setUnbreakable(true);
-//        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-//        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-//        item.setItemMeta(meta);
-//        return item;
-//    }
 }

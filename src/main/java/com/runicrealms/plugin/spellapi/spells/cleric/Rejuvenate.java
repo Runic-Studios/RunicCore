@@ -78,22 +78,12 @@ public class Rejuvenate extends Spell {
                 (location.getWorld()).getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
 
             if (!e.getType().isAlive()) return;
-
             LivingEntity le = (LivingEntity) e;
-
-            //if (le.getLocation().distance(location) <= BEAM_WIDTH) {
 
                 if (le != (pl)) {
 
                     // only listen for players
                     if (!(le instanceof Player)) return;
-
-                    // heal nobody if we don't have a party
-                    if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
-
-                    // skip the player if they're not in the party
-                    if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                            && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) { continue; }
 
                     // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                     // multiple times
@@ -112,16 +102,6 @@ public class Rejuvenate extends Spell {
                         hasBeenHit.put(ally.getUniqueId(), uuids);
                     }
 
-                    // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                            uuids.remove(pl.getUniqueId());
-                            hasBeenHit.put(ally.getUniqueId(), uuids);
-                        }
-                    }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
-
                     // ignore NPCs, additional check for tutorial island
                     if (le.hasMetadata("NPC")) {
                         if (!pl.hasPermission("tutorial.complete.cleric") || pl.isOp()) {
@@ -131,6 +111,23 @@ public class Rejuvenate extends Spell {
                         }
                         continue;
                     }
+
+                    // heal nobody if we don't have a party
+                    if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
+
+                    // skip the player if they're not in the party
+                    if (RunicCore.getPartyManager().getPlayerParty(pl) != null
+                            && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) { continue; }
+
+                    // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                            uuids.remove(pl.getUniqueId());
+                            hasBeenHit.put(ally.getUniqueId(), uuids);
+                        }
+                    }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
                     if (ally.getHealth() == ally.getMaxHealth()) {
                         ally.sendMessage(

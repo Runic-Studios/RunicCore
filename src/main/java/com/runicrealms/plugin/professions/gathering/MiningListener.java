@@ -38,7 +38,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class MiningListener implements Listener {
 
-    private double oreSuccessRate = 75.0;
     private double nuggetRate = 5.0;
 
     @EventHandler
@@ -99,6 +98,13 @@ public class MiningListener implements Listener {
                 itemName = "Iron Ore";
                 subPath = "ORES";
                 break;
+            case GOLD_ORE:
+                placeHolderType = Material.COBBLESTONE;
+                itemType = Material.GOLD_ORE;
+                holoString = "+ Gold";
+                itemName = "Gold Ore";
+                subPath = "ORES";
+                break;
             case REDSTONE_ORE:
                 placeHolderType = Material.COBBLESTONE;
                 itemType = Material.REDSTONE_ORE;
@@ -140,42 +146,18 @@ public class MiningListener implements Listener {
 
         e.setCancelled(true);
 
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
+            pl.sendMessage(ChatColor.RED + "You need a mining pick to do that!");
+            return;
+        }
+
         // make sure player has harvesting tool, corresponding to the tier.
         // with durability magic, a durability 1 iron axe will display as wood, 5 as diamond, etc.
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
         int slot = pl.getInventory().getHeldItemSlot();
         ItemMeta meta = heldItem.getItemMeta();
         int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
-        //int durability;
-//        switch (heldItem.getType()) {
-//            case DIAMOND_PICKAXE:
-//                tier = 5;
-//                break;
-//            case GOLDEN_PICKAXE:
-//                tier = 4;
-//                break;
-//            case IRON_PICKAXE:
-//                tier = 3;
-//                break;
-//            case STONE_PICKAXE:
-//                tier = 2;
-//                break;
-//            case WOODEN_PICKAXE:
-//            default:
-//                tier = 1;
-//                break;
-//        }
 
-        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
-            pl.sendMessage(ChatColor.RED + "You need a mining pick to do that!");
-            return;
-        }
-
-//        if (heldItem.getType() != Material.WOODEN_PICKAXE
-//                && heldItem.getType() != Material.STONE_PICKAXE
-//                && heldItem.getType() != Material.IRON_PICKAXE
-//                && heldItem.getType() != Material.GOLDEN_PICKAXE
-//                && heldItem.getType() != Material.DIAMOND_PICKAXE) {
         if (heldItem.getType() != Material.IRON_PICKAXE
                 && durability != 1
                 && durability != 2
@@ -238,7 +220,9 @@ public class MiningListener implements Listener {
         }
 
         // give the player the gathered item
-        HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
+        if (loc.clone().add(0, 1.5, 0).getBlock().getType() == Material.AIR) {
+            HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
+        }
         if (pl.getInventory().firstEmpty() != -1) {
             pl.getInventory().addItem(gatheredItem(gathered, itemName, desc));
         } else {
@@ -266,12 +250,6 @@ public class MiningListener implements Listener {
         item.setItemMeta(meta);
         return item;
     }
-    public double getOreSuccessRate() {
-        return this.oreSuccessRate;
-    }
-    public void setOreSuccessRate(double value) {
-        this.oreSuccessRate = value;
-    }
     public double getNuggetRate() {
         return this.nuggetRate;
     }
@@ -295,30 +273,5 @@ public class MiningListener implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    public static ItemStack getGatheringPick(int tier) {
-        Material material = Material.WOODEN_PICKAXE;
-        switch (tier) {
-            case 2:
-                material = Material.STONE_PICKAXE;
-                break;
-            case 3:
-                material = Material.IRON_PICKAXE;
-                break;
-            case 4:
-                material = Material.GOLDEN_PICKAXE;
-                break;
-            case 5:
-                material = Material.DIAMOND_PICKAXE;
-                break;
-        }
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
-        return item;
     }
 }

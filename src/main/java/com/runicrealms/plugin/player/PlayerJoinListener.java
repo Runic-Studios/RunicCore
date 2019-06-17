@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.UUID;
 
@@ -78,6 +79,19 @@ public class PlayerJoinListener implements Listener {
             HealthUtils.setBaseHealth(player);
             player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             player.setFoodLevel(20);
+        }
+    }
+
+    /**
+     * Allows donator ranks to enter a full server
+     */
+    @EventHandler
+    public void onJoinFullServer(PlayerLoginEvent e) {
+
+        if (e.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            if (e.getPlayer().hasPermission("core.full.join")) {
+                e.allow();
+            }
         }
     }
 

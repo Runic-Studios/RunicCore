@@ -143,17 +143,17 @@ public class WCListener implements Listener {
 
         e.setCancelled(true);
 
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
+            pl.sendMessage(ChatColor.RED + "You need a woodcutting axe to do that!");
+            return;
+        }
+
         // make sure player has harvesting tool, iron axe of durability 1, 2, 3, 4, or 5, corresponding to the tier.
         // with durability magic, a durability 1 iron axe will display as wood, 5 as diamond, etc.
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
         int slot = pl.getInventory().getHeldItemSlot();
         ItemMeta meta = heldItem.getItemMeta();
         int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
-
-        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
-            pl.sendMessage(ChatColor.RED + "You need a woodcutting axe to do that!");
-            return;
-        }
 
         if (heldItem.getType() != Material.IRON_AXE
                 && durability != 1
@@ -218,7 +218,9 @@ public class WCListener implements Listener {
         }
 
         // give the player the gathered item
-        HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
+        if (loc.clone().add(0, 1.5, 0).getBlock().getType() == Material.AIR) {
+            HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
+        }
         if (pl.getInventory().firstEmpty() != -1) {
             pl.getInventory().addItem(gatheredItem(gathered, itemName, desc));
         } else {

@@ -110,7 +110,7 @@ public class UnholyGround extends Spell {
             z = Math.sin(angle) * radius;
             loc.add(x, 0, z);
             pl.getWorld().spawnParticle(Particle.SLIME, loc, 1, 0, 0, 0, 0);//,new Particle.DustOptions(Color.GREEN, 1)
-            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
+            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0,
                     new Particle.DustOptions(Color.YELLOW, 1));
             loc.subtract(x, 0, z);
         }

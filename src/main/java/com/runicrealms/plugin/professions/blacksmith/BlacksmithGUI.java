@@ -21,22 +21,20 @@ public class BlacksmithGUI extends Workstation {
 
     public ItemGUI openMenu(Player pl) {
 
+        // name the menu
         ItemGUI blackSmithMenu = super.openWorkstation(pl);
         blackSmithMenu.setName("&f&l" + pl.getName() + "'s &e&lAnvil");
+
+        //set the visual items
         blackSmithMenu.setOption(3, new ItemStack(Material.IRON_CHESTPLATE),
                 "&fCraft Armor", "&7Forge mail, guilded or plate armor!", 0);
+
+        // set the handler
         blackSmithMenu.setHandler(event -> {
 
             if (event.getSlot() == 3) {
 
                 // open the forging menu
-                pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                ArmorGUI.CRAFT_ARMOR.open(pl);
-                event.setWillClose(false);
-                event.setWillDestroy(true);
-            } else if (event.getSlot() == 7) {
-
-                // open the NEW forging menu
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 ItemGUI forge = openForgeMenu(pl);
                 forge.open(pl);
@@ -52,8 +50,6 @@ public class BlacksmithGUI extends Workstation {
             }
         });
 
-        blackSmithMenu.setOption(7, new ItemStack(Material.SLIME_BALL), "new menu", "test", 0);
-
         return blackSmithMenu;
     }
 
@@ -62,8 +58,13 @@ public class BlacksmithGUI extends Workstation {
         // grab the player's current profession level, progress toward that level
         int currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
+        // create three hashmaps for the reagents, set to 0 since we've only got 1 reagent
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
         chainLinkReqs.put(Material.IRON_BARS, 0);
+        LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
+        chainLinkReqs.put(Material.GOLD_INGOT, 0);
+        LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
+        chainLinkReqs.put(Material.IRON_INGOT, 0);
 
         ItemGUI forgeMenu = super.craftingMenu(pl, 36);
         forgeMenu.setHandler(event -> {
@@ -81,20 +82,81 @@ public class BlacksmithGUI extends Workstation {
 
                 int mult = 1;
                 if (event.isRightClick()) mult = 5;
+                ItemMeta meta = Objects.requireNonNull(event.getCurrentItem()).getItemMeta();
+                if (meta == null) return;
 
-                    switch (event.getSlot()) {
+                int slot = event.getSlot();
+                int health;
+                int reqLevel = 0;
+                int reagentAmt = 0;
+                int exp = 0;
+                LinkedHashMap<Material, Integer> reqHashMap;
 
-                        case 9:
-                            ItemMeta meta = Objects.requireNonNull(event.getCurrentItem()).getItemMeta();
-                            if (meta == null) return;
-                            super.startCrafting(pl, chainLinkReqs, 5 * mult, 0, event.getCurrentItem().getType(),
-                                    meta.getDisplayName(), currentLvl, "Mail", 5 * mult,
-                                    mult, ((Damageable) meta).getDamage(), Particle.FIREWORKS_SPARK,
-                                    Sound.BLOCK_ANVIL_BREAK, Sound.BLOCK_ANVIL_BREAK);
-                            break;
-                        case 10:
-                            break;
+                if (event.getSlot() < 13) {
+                    reqHashMap = chainLinkReqs;
+                } else if (event.getSlot() < 27) {
+                    reqHashMap = goldBarReqs;
+                } else {
+                    reqHashMap = ironBarReqs;
+                }
+
+                // helmets
+                if (slot == 9 || slot == 18 || slot == 27) {
+                    reagentAmt = 5;
+                    exp = 5;
+                // chestplates
+                } else if (slot == 10 || slot == 19 || slot == 28) {
+                    reqLevel = 40;
+                    reagentAmt = 8;
+                    exp = 30;
+                // leggings
+                } else if (slot == 11 || slot == 20 || slot == 29) {
+                    reqLevel = 20;
+                    reagentAmt = 7;
+                    exp = 25;
+                // boots
+                } else if (slot == 12 || slot == 21 || slot == 30) {
+                    reqLevel = 10;
+                    reagentAmt = 4;
+                    exp = 10;
+                }
+
+                // mail
+                if (slot == 9 || slot == 10 || slot == 11 || slot == 12) {
+                    if (currentLvl < 30) {
+                        health = 5;
+                    } else if (currentLvl < 50) {
+                        health = 12;
+                    } else {
+                        health = 20;
                     }
+
+                // guilded
+                } else if (slot == 18 || slot == 19 || slot == 20 || slot == 21) {
+                    if (currentLvl < 30) {
+                        health = 7;
+                    } else if (currentLvl < 50) {
+                        health = 15;
+                    } else {
+                        health = 30;
+                    }
+
+                // plate
+                } else if (slot == 27 || slot == 28 || slot == 29 || slot == 30) {
+                    if (currentLvl < 30) {
+                        health = 10;
+                    } else if (currentLvl < 50) {
+                        health = 30;
+                    } else {
+                        health = 50;
+                    }
+                }
+
+                // craft item based on experience and reagent amount
+                super.startCrafting(pl, reqHashMap, reagentAmt * mult, reqLevel, event.getCurrentItem().getType(),
+                        meta.getDisplayName(), currentLvl, "Mail", exp * mult,
+                        mult, ((Damageable) meta).getDamage(), Particle.FIREWORKS_SPARK,
+                        Sound.BLOCK_ANVIL_PLACE, Sound.BLOCK_ANVIL_USE);
             }});
 
         forgeMenu.setOption(4, new ItemStack(Material.ANVIL), "&eAnvil",
@@ -107,7 +169,7 @@ public class BlacksmithGUI extends Workstation {
         } else if (currentLvl < 50) {
             bestStat += "&c+ 10❤";
         } else {
-            bestStat += "&c+ 15❤";
+            bestStat += "&c+ 45❤";
         }
 
         setupItems(forgeMenu, pl, bestStat);

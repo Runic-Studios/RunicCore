@@ -42,6 +42,8 @@ import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.commands.CaptainDefeated;
 import com.runicrealms.plugin.tutorial.commands.TutorialSC;
+import com.runicrealms.plugin.utilities.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import com.runicrealms.plugin.player.ExpListener;
 import com.runicrealms.plugin.player.CombatManager;
@@ -86,19 +88,25 @@ public class RunicCore extends JavaPlugin {
         tabListManager = new TabListManager(this);
 
         // enable message
-        getLogger().info(" §aFTRCore has been enabled.");
+        getLogger().info(" §aRunicCore has been enabled.");
 
         // register our events, config, commands
         this.registerEvents();
         this.loadConfig();
         this.registerCommands();
 
-        // clean any stray healthbars
+        // register placeholder tags
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new PlaceholderAPI().register();
+        }
+
+        // clean any stray armor stands
         mobHealthManager.fullClean();
     }
     
     public void onDisable() {
-        getLogger().info(" §cFTRCore has been disabled.");
+
+        getLogger().info(" §cRunicCore has been disabled.");
         // let's prevent memory leaks, shall we?
         instance = null;
         combatManager = null;

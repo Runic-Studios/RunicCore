@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -13,7 +15,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -23,6 +29,7 @@ import com.runicrealms.plugin.utilities.HologramUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -34,7 +41,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class FarmingListener implements Listener {
 
-    private double cropSuccessRate = 75.0;
     private double nuggetRate = 5.0;
 
     @EventHandler
@@ -67,7 +73,7 @@ public class FarmingListener implements Listener {
             return;
         }
 
-        if (e.getBlock().getType() == null) return;
+        if (e.getBlock().getType() == Material.AIR) return;
         if (pl.getGameMode() == GameMode.CREATIVE) return;
 
         double chance = ThreadLocalRandom.current().nextDouble(0, 100);
@@ -119,44 +125,83 @@ public class FarmingListener implements Listener {
 
         e.setCancelled(true);
 
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) {
+            pl.sendMessage(ChatColor.RED + "You need a harvesting tool to do that!");
+            return;
+        }
+
         // make sure player has harvesting tool
         // this will always be a hoe, so we check for the staff enum
         // we also ensure it has durability 100, arbitrarily chosen.
-        if (pl.getInventory().getItemInMainHand() == null) return;
-        //WeaponEnum heldItem = WeaponEnum.matchType(pl.getInventory().getItemInMainHand());
-        Material heldItem = pl.getInventory().getItemInMainHand().getType();
+        ItemStack heldItem = pl.getInventory().getItemInMainHand();
+        int slot = pl.getInventory().getHeldItemSlot();
         ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
-        int durability = ((Damageable) meta).getDamage();
+        int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
 
-        if (heldItem == null) {
+        if (heldItem.getType() != Material.IRON_HOE
+                && durability != 1
+                && durability != 2
+                && durability != 3
+                && durability != 4
+                && durability != 5) {
             pl.sendMessage(ChatColor.RED + "You need a harvesting tool to do that!");
             return;
         }
 
-        if (heldItem != Material.WOODEN_HOE) {
-            pl.sendMessage(ChatColor.RED + "You need a harvesting tool to do that!");
-            return;
+        // reduce items durability
+        double itemDurab = AttributeUtil.getCustomDouble(heldItem, "durability");
+        heldItem = AttributeUtil.addCustomStat(heldItem, "durability", itemDurab-1);
+        GatheringUtil.generateToolLore(heldItem, durability);
+        if (itemDurab - 1 <= 0) {
+
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.RED + "Your tool broke!");
+            pl.getInventory().setItem(slot, null);
+        } else {
+            pl.getInventory().setItem(slot, heldItem);
         }
 
         gatherMaterial(pl, loc, block, placeHolderType, itemType, holoString,
-                itemName, desc, "You fail to gather any resources.", chance);
+                itemName, desc, "You fail to gather any resources.", chance, durability);
         saveBlockLocation(regenBlocks, blockLocations, subPath, block, oldType);
     }
 
 
     private void gatherMaterial(Player pl, Location loc, Block b,
                                 Material placeholder, Material gathered, String name, String itemName,
-                                String desc, String failMssg, double chance) {
+                                String desc, String failMssg, double chance, int tier) {
 
         b.setType(placeholder);
 
-        if (chance < (100 - this.cropSuccessRate)) {
+        double successRate;
+        switch (tier) {
+            case 5:
+                successRate = 75;
+                break;
+            case 4:
+                successRate = 62.5;
+                break;
+            case 3:
+                successRate = 50;
+                break;
+            case 2:
+                successRate = 37.5;
+                break;
+            case 1:
+            default:
+                successRate = 25;
+                break;
+        }
+
+        if (chance < (100 - successRate)) {
             pl.sendMessage(ChatColor.RED + failMssg);
             return;
         }
 
         // give the player the gathered item
-        HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
+        if (loc.clone().add(0, 1.5, 0).getBlock().getType() == Material.AIR) {
+            HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
+        }
         if (pl.getInventory().firstEmpty() != -1) {
             pl.getInventory().addItem(gatheredItem(gathered, itemName, desc));
         } else {
@@ -168,9 +213,9 @@ public class FarmingListener implements Listener {
             b.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 2.0f);
             HologramUtil.createStaticHologram(pl, loc, ChatColor.GOLD + "" + ChatColor.BOLD + "+ Coin", 0, 1.25, 0);
             if (pl.getInventory().firstEmpty() != -1) {
-                pl.getInventory().addItem(goldNugget());
+                pl.getInventory().addItem(CurrencyUtil.goldCoin());
             } else {
-                pl.getWorld().dropItem(pl.getLocation(), goldNugget());
+                pl.getWorld().dropItem(pl.getLocation(), CurrencyUtil.goldCoin());
             }
         }
     }
@@ -184,22 +229,7 @@ public class FarmingListener implements Listener {
         item.setItemMeta(meta);
         return item;
     }
-    private ItemStack goldNugget() {
-        ItemStack item = new ItemStack(Material.GOLD_NUGGET);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        meta.setDisplayName(ChatColor.GOLD + "Gold");
-        lore.add(ChatColor.GRAY + "Currency");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    public double getCropSuccessRate() {
-        return this.cropSuccessRate;
-    }
-    public void setCropSuccessRate(double value) {
-        this.cropSuccessRate = value;
-    }
+
     public double getNuggetRate() {
         return this.nuggetRate;
     }
@@ -223,18 +253,5 @@ public class FarmingListener implements Listener {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    public static ItemStack getGatheringHoe(int tier) {
-        ItemStack gatheringHoe = new ItemStack(Material.IRON_HOE);
-        ItemMeta meta = gatheringHoe.getItemMeta();
-//        ArrayList<String> lore = gatheringHoe.getItemMeta().getLore();
-//        lore.add()
-        ((Damageable) meta).setDamage(tier);
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        gatheringHoe.setItemMeta(meta);
-        return gatheringHoe;
     }
 }

@@ -37,26 +37,6 @@ public class GathertoolGive implements SubCommand {
         String toolName = args[2];
         int tier = Integer.parseInt(args[3]);
 
-//        Material pickType;
-//        switch (tier) {
-//            case 5:
-//                pickType = Material.DIAMOND_PICKAXE;
-//                break;
-//            case 4:
-//                pickType = Material.GOLDEN_PICKAXE;
-//                break;
-//            case 3:
-//                pickType = Material.IRON_PICKAXE;
-//                break;
-//            case 2:
-//                pickType = Material.STONE_PICKAXE;
-//                break;
-//            case 1:
-//            default:
-//                pickType = Material.WOODEN_PICKAXE;
-//                break;
-//        }
-
         switch (toolName.toLowerCase()) {
             case "axe":
                 pl.getInventory().addItem(GatheringUtil.getGatheringTool(Material.IRON_AXE, tier));

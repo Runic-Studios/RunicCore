@@ -115,13 +115,13 @@ public class PlayerMenuListener implements Listener {
         // did not click on their own inventory
         if (isPlayerCraftingInv(view) &&
                 event.getClickedInventory() != event.getWhoClicked().getInventory()) {
-            if (event.getSlot() < 5) {
+            if (event.getSlot() < 5 && event.getSlot() > 0) {
 
                 event.setCancelled(true);
                 Player pl = (Player) event.getWhoClicked();
                 pl.updateInventory();
 
-                if (event.getSlot() == 2) {
+                if (event.getSlot() == 2 && pl.getGameMode() != GameMode.CREATIVE) {
                     pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                     pl.performCommand("quest");
                 }

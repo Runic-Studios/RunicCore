@@ -41,7 +41,7 @@ public abstract class Workstation {
     public void createCraftableItem(ItemGUI gui, Player pl, int slot, Material itemType, String name,
                                     String armorType, LinkedHashMap<Material, Integer> itemReqs,
                                     String reqsToString, int itemAmt, int exp, int reqLevel, int durability,
-                                    String bestStat) {
+                                    String itemStats) {
 
         // grab the player's current profession level, progress toward that level
         int currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
@@ -63,7 +63,7 @@ public abstract class Workstation {
             desc += "&cUnlock by reaching lv. " + reqLevel + "!\n";
         }
 
-        desc += "\n&7Best Stat:\n" + bestStat;
+        desc += "\n&7Item Stats:\n" + itemStats;
         desc += "\n\n&7Material(s) Required:\n";
 
         String[] reqsAsList = reqsToString.split("\n");
@@ -104,6 +104,8 @@ public abstract class Workstation {
                                int currentLvl, String type, int exp, int craftedAmt, /*int rate,*/
                                int durability, Particle particle, Sound soundCraft, Sound soundDone) {
 
+        if (RunicCore.getProfManager().getCurrentCrafters().contains(pl)) return;
+
         // grab the location of the anvil
         Location stationLoc = WorkstationListener.getStationLocation().get(pl.getUniqueId());
 
@@ -122,7 +124,7 @@ public abstract class Workstation {
             if (itemReqs.size() <= 1) {
                 amt = itemAmt;
             }
-            if (!pl.getInventory().contains(reagent, itemAmt * craftedAmt)) {
+            if (!pl.getInventory().contains(reagent, amt)) {
                 pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                 pl.sendMessage(ChatColor.RED + "You don't have the items to craft this!");
                 return;
@@ -156,11 +158,15 @@ public abstract class Workstation {
         RunicCore.getProfManager().getCurrentCrafters().add(pl);
         pl.sendMessage(ChatColor.GRAY + "Crafting...");
         //int j = 0;
-        for (Material req : itemReqs.keySet()) {
+        for (Material reagent : itemReqs.keySet()) {
+            int amt = itemReqs.get(reagent);
+            if (itemReqs.size() <= 1) {
+                amt = itemAmt;
+            }
             for (int i = 0; i < inv.length; i++) {
                 if (pl.getInventory().getItem(i) == null) continue;
-                if (pl.getInventory().getItem(i).getType() == req) {
-                    pl.getInventory().getItem(i).setAmount(pl.getInventory().getItem(i).getAmount()-itemReqs.get(req)*craftedAmt);
+                if (pl.getInventory().getItem(i).getType() == reagent) {
+                    pl.getInventory().getItem(i).setAmount(pl.getInventory().getItem(i).getAmount()-amt);
                     break;
                 }
             }
@@ -182,12 +188,12 @@ public abstract class Workstation {
                 if (count > 3) {
                     this.cancel();
                     RunicCore.getProfManager().getCurrentCrafters().remove(pl);
-                    pl.playSound(pl.getLocation(), soundCraft, 0.5f, 1.0f);
+                    pl.playSound(pl.getLocation(), soundDone, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
                     produceResult(pl, craftedItemType, itemName, currentLvl, craftedAmt, rate, durability);
                 } else {
-                    pl.playSound(pl.getLocation(), soundDone, 0.5f, 2.0f);
+                    pl.playSound(pl.getLocation(), soundCraft, 0.5f, 2.0f);
                     pl.spawnParticle(particle, stationLoc, 5, 0.25, 0.25, 0.25, 0.01);
                     count = count + 1;
                 }
@@ -225,17 +231,17 @@ public abstract class Workstation {
             }
 
             // item will have a random health value that increases w/ prof lv
-            int minHP = 1;
-            int maxHP;
-            if (currentLvl == 0) {
-                maxHP = 2;
+            int health;
+            if (currentLvl < 30) {
+                health = 5;
+            } else if (currentLvl < 50) {
+                health = 15;
             } else {
-                maxHP = currentLvl+1;
+                health = 25;
             }
-            int range = ThreadLocalRandom.current().nextInt(minHP, maxHP + 1);
 
             craftedItem = AttributeUtil.addGenericStat
-                    (craftedItem, "generic.maxHealth", range, itemSlot);
+                    (craftedItem, "generic.maxHealth", health, itemSlot);
 
             // item can be socketed once
             craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.socketCount", 1);
