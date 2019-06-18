@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import com.runicrealms.plugin.RunicCore;
@@ -17,7 +18,7 @@ import com.runicrealms.plugin.enums.ItemTypeEnum;
  */
 public class ArmorTypeListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onArmorEquip(ArmorEquipEvent e) {
 
         if (e.getType() == null) return;

@@ -20,17 +20,7 @@ public class GathertoolGive implements SubCommand {
     }
 
     @Override
-    public void onConsoleCommand(CommandSender sender, String[] args) {
-
-    }
-
-    @Override
-    public void onOPCommand(Player sender, String[] args) {
-
-        if(args.length != 4) {
-            sender.sendMessage(ChatColor.YELLOW + "Command usage: /gathertool give [player] [tool] [tier]");
-            return;
-        }
+    public void onConsoleCommand(CommandSender sender, String[] args)  {
 
         Player pl = Bukkit.getPlayer(args[1]);
         if (pl == null) return;
@@ -53,6 +43,17 @@ public class GathertoolGive implements SubCommand {
             default:
                 pl.sendMessage(ChatColor.DARK_RED + "Please choose a tool: axe, hoe, pickaxe, or rod");
         }
+    }
+
+    @Override
+    public void onOPCommand(Player sender, String[] args) {
+
+        if(args.length != 4) {
+            sender.sendMessage(ChatColor.YELLOW + "Command usage: /gathertool give [player] [tool] [tier]");
+            return;
+        }
+
+        this.onConsoleCommand(sender, args);
     }
 
     @Override

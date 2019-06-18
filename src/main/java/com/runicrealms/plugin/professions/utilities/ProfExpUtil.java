@@ -24,6 +24,8 @@ public class ProfExpUtil {
         int currentLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
         int currentExp = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
 
+        if (currentLv >= maxLevel) return;
+
         RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.prof.exp", currentExp + expGained);
         RunicCore.getInstance().saveConfig();
         RunicCore.getInstance().reloadConfig();

@@ -70,6 +70,7 @@ public class WCListener implements Listener {
 
         if (!canChop) {
             //pl.sendMessage(ChatColor.RED + "You can't chop this here.");
+            e.setCancelled(true);
             return;
         }
 

@@ -178,6 +178,11 @@ public class LoreGenerator {
             lore.add(ChatColor.GRAY + "[" + currentSockets + "/" + socketCount + "] Gems");
         }
 
+        int reqLv = (int) AttributeUtil.getCustomDouble(item, "required.level");
+        if (reqLv != 0) {
+            lore.add(ChatColor.DARK_GRAY + "Lv. Min: " + reqLv);
+        }
+
         lore.add("");
 
         // for armor/items

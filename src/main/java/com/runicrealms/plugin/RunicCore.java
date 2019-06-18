@@ -24,6 +24,7 @@ import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.commands.Mana;
 import com.runicrealms.plugin.player.commands.SetLevelCMD;
+import com.runicrealms.plugin.player.commands.SetProfLevelCMD;
 import com.runicrealms.plugin.player.commands.SetSC;
 import com.runicrealms.plugin.professions.ProfManager;
 import com.runicrealms.plugin.professions.WorkstationListener;
@@ -162,6 +163,8 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new PlayerRegenListener(), this);
         pm.registerEvents(new PlayerMenuListener(), this);
         pm.registerEvents(new SpellShieldListener(), this);
+        pm.registerEvents(new BlockBreakListener(), this);
+        pm.registerEvents(new MinLevelListener(), this);
     }
     
     private void registerCommands() {
@@ -222,5 +225,6 @@ public class RunicCore extends JavaPlugin {
         getCommand("set").setExecutor(setSC);
         setSC.addCommand(Arrays.asList("class"), new SetClassCMD(setSC));
         setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
+        setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));
     }
 }

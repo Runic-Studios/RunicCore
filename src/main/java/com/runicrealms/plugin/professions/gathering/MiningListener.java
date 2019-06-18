@@ -67,6 +67,7 @@ public class MiningListener implements Listener {
 
         if (!canMine) {
             //pl.sendMessage(ChatColor.RED + "You can't mine this here.");
+            e.setCancelled(true);
             return;
         }
 

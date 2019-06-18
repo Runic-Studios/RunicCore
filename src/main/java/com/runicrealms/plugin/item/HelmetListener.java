@@ -2,11 +2,13 @@ package com.runicrealms.plugin.item;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.codingforcookies.armorequip.ArmorType;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -26,7 +28,7 @@ public class HelmetListener implements Listener {
 
         Player pl = e.getPlayer();
 
-        if (pl.getInventory().getItemInMainHand() == null) return;
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         ItemStack helmet = pl.getInventory().getItemInMainHand();
         Material material = pl.getInventory().getItemInMainHand().getType();
@@ -94,10 +96,13 @@ public class HelmetListener implements Listener {
         if (pl.getInventory().getHelmet() != null) return;
 
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
-            pl.getInventory().setHelmet(helmet);
-            pl.getInventory().setItem(slot, new ItemStack(Material.AIR));
-            Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.HOTBAR, ArmorType.HELMET, null, helmet));
+            ArmorEquipEvent newEvent = new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.HOTBAR, ArmorType.HELMET, null, helmet);
+            Bukkit.getPluginManager().callEvent(newEvent);
+            if (!newEvent.isCancelled()) {
+                pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
+                pl.getInventory().setHelmet(helmet);
+                pl.getInventory().setItem(slot, new ItemStack(Material.AIR));
+            }
         }
     }
 
@@ -173,10 +178,13 @@ public class HelmetListener implements Listener {
         }
 
         e.setCancelled(true);
-        Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.HELMET, null, helmet));
-        pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
-        e.setCurrentItem(new ItemStack(Material.AIR));
-        pl.getInventory().setHelmet(helmet);
+        ArmorEquipEvent newEvent = new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.HELMET, null, helmet);
+        Bukkit.getPluginManager().callEvent(newEvent);
+        if (!newEvent.isCancelled()) {
+            pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
+            e.setCurrentItem(new ItemStack(Material.AIR));
+            pl.getInventory().setHelmet(helmet);
+        }
     }
 
     /**
@@ -243,14 +251,21 @@ public class HelmetListener implements Listener {
         e.setCancelled(true);
         pl.playSound(pl.getLocation(), sound, 0.5f, 1.0f);
         if (pl.getInventory().getHelmet() == null) {
-            e.setCursor(new ItemStack(Material.AIR));
-            pl.getInventory().setHelmet(helmet);
-            Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, null, helmet));
+            ArmorEquipEvent newEvent = new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, null, helmet);
+            Bukkit.getPluginManager().callEvent(newEvent);
+            if (!newEvent.isCancelled()) {
+                e.setCursor(new ItemStack(Material.AIR));
+                pl.getInventory().setHelmet(helmet);
+            }
+
         } else {
             ItemStack currentHelm = pl.getInventory().getHelmet();
-            e.setCursor(currentHelm);
-            pl.getInventory().setHelmet(helmet);
-            Bukkit.getPluginManager().callEvent(new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, currentHelm, helmet));
+            ArmorEquipEvent newEvent = new ArmorEquipEvent(pl, ArmorEquipEvent.EquipMethod.DRAG, ArmorType.HELMET, currentHelm, helmet);
+            Bukkit.getPluginManager().callEvent(newEvent);
+            if (!newEvent.isCancelled()) {
+                e.setCursor(currentHelm);
+                pl.getInventory().setHelmet(helmet);
+            }
         }
     }
 

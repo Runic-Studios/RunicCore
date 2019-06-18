@@ -99,10 +99,9 @@ public abstract class Workstation {
                 name, desc, durability);
     }
 
-    public void startCrafting(Player pl, LinkedHashMap<Material, Integer> itemReqs, int itemAmt, int reqLevel,
-                               /*.Location stationLoc,*/ Material craftedItemType, String itemName,
-                               int currentLvl, String type, int exp, int craftedAmt, /*int rate,*/
-                               int durability, Particle particle, Sound soundCraft, Sound soundDone) {
+    protected void startCrafting(Player pl, LinkedHashMap<Material, Integer> itemReqs, int itemAmt, int reqLevel,
+                                 Material craftedItemType, String itemName, int currentLvl, int exp, int craftedAmt,
+                                 int durability, Particle particle, Sound soundCraft, Sound soundDone, int health) {
 
         if (RunicCore.getProfManager().getCurrentCrafters().contains(pl)) return;
 
@@ -170,10 +169,6 @@ public abstract class Workstation {
                     break;
                 }
             }
-//            if (j == 0) {
-//                dispItem = req;
-//            }
-            //j += 1;
         }
 
         // spawn item on workstation for visual
@@ -191,7 +186,7 @@ public abstract class Workstation {
                     pl.playSound(pl.getLocation(), soundDone, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
                     ProfExpUtil.giveExperience(pl, exp);
-                    produceResult(pl, craftedItemType, itemName, currentLvl, craftedAmt, rate, durability);
+                    produceResult(pl, craftedItemType, itemName, currentLvl, craftedAmt, rate, durability, health);
                 } else {
                     pl.playSound(pl.getLocation(), soundCraft, 0.5f, 2.0f);
                     pl.spawnParticle(particle, stationLoc, 5, 0.25, 0.25, 0.25, 0.01);
@@ -202,9 +197,15 @@ public abstract class Workstation {
     }
 
     private void produceResult(Player pl, Material material, String dispName,
-                            int currentLvl, int amt, int rate, int durability) {
+                            int currentLvl, int amt, int rate, int durability, int health) {
 
         // create a new item up to the amount
+        int reqLv = 0;
+        if (currentLvl >= 30 && currentLvl < 50) {
+            reqLv = 30;
+        } else if (currentLvl >= 50) {
+            reqLv = 50;
+        }
         int failCount = 0;
         for (int i = 0; i < amt; i++) {
 
@@ -230,15 +231,7 @@ public abstract class Workstation {
                     break;
             }
 
-            // item will have a random health value that increases w/ prof lv
-            int health;
-            if (currentLvl < 30) {
-                health = 5;
-            } else if (currentLvl < 50) {
-                health = 15;
-            } else {
-                health = 25;
-            }
+            craftedItem = AttributeUtil.addCustomStat(craftedItem, "required.level", reqLv);
 
             craftedItem = AttributeUtil.addGenericStat
                     (craftedItem, "generic.maxHealth", health, itemSlot);

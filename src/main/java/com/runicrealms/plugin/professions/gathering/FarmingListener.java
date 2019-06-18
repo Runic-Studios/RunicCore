@@ -70,6 +70,7 @@ public class FarmingListener implements Listener {
 
         if (!canFarm) {
             //pl.sendMessage(ChatColor.RED + "You can't harvest this here.");
+            e.setCancelled(true);
             return;
         }
 
@@ -100,7 +101,7 @@ public class FarmingListener implements Listener {
                 itemType = Material.WHEAT;
                 holoString = "+ Wheat";
                 itemName = "Wheat";
-                desc = "Crafting Reagent";
+                desc = "Raw Material";
                 subPath = "FARMS";
                 break;
             case CARROTS:
@@ -108,7 +109,7 @@ public class FarmingListener implements Listener {
                 itemType = Material.CARROT;
                 holoString = "+ Carrot";
                 itemName = "Carrot";
-                desc = "Crafting Reagent";
+                desc = "Raw Material";
                 subPath = "FARMS";
                 break;
             case POTATOES:
@@ -116,7 +117,7 @@ public class FarmingListener implements Listener {
                 itemType = Material.POTATO;
                 holoString = "+ Potato";
                 itemName = "Potato";
-                desc = "Crafting Reagent";
+                desc = "Raw Material";
                 subPath = "FARMS";
                 break;
             default:
@@ -199,9 +200,7 @@ public class FarmingListener implements Listener {
         }
 
         // give the player the gathered item
-        if (loc.clone().add(0, 1.5, 0).getBlock().getType() == Material.AIR) {
-            HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
-        }
+        HologramUtil.createStaticHologram(pl, loc, ChatColor.GREEN + "" + ChatColor.BOLD + name, 0, 2, 0);
         if (pl.getInventory().firstEmpty() != -1) {
             pl.getInventory().addItem(gatheredItem(gathered, itemName, desc));
         } else {
