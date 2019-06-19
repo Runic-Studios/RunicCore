@@ -65,27 +65,30 @@ public class SetClassCMD implements SubCommand {
         }
 
         Player pl = Bukkit.getPlayer(args[1]);
+        if (pl == null) return;
 
         if (args.length == 2) {
             ClassGUI.CLASS_SELECTION.open(pl);
         } else {
 
-            String classStr = args[2];
-            if (!(classStr.equals("Archer")
-                    || classStr.equals("Cleric")
-                    || classStr.equals("Mage")
-                    || classStr.equals("Rogue")
-                    || classStr.equals("Warrior"))) {
+            String classStr = args[2].toLowerCase();
+            if (!(classStr.equals("archer")
+                    || classStr.equals("cleric")
+                    || classStr.equals("mage")
+                    || classStr.equals("rogue")
+                    || classStr.equals("warrior"))) {
 
                 sender.sendMessage(ChatColor.RED
-                        + "Available classes: Archer, Cleric, Mage, Rogue, Warrior (case-sensitive)");
+                        + "Available classes: archer, cleric, mage, rogue, warrior");
                 return;
             }
 
-            setupArtifact(pl, classStr, true);
+            String formattedStr = classStr.substring(0, 1).toUpperCase() + classStr.substring(1);
+
+            setupArtifact(pl, formattedStr, true);
             setupRune(pl);
             setupHearthstone(pl);
-            setConfig(pl, classStr);
+            setConfig(pl, formattedStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);
 

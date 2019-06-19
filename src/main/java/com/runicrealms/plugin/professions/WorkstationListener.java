@@ -1,13 +1,8 @@
 package com.runicrealms.plugin.professions;
 
 import com.runicrealms.plugin.item.ItemGUI;
-import com.runicrealms.plugin.item.artifact.ArtifactGUI;
 import com.runicrealms.plugin.professions.alchemist.CauldronGUI;
-import com.runicrealms.plugin.professions.blacksmith.AnvilGUI;
-import com.runicrealms.plugin.professions.blacksmith.BlacksmithGUI;
-import com.runicrealms.plugin.professions.blacksmith.FurnaceGUI;
-import com.runicrealms.plugin.professions.leatherworker.TanningRackGUI;
-import com.runicrealms.plugin.professions.tailor.SpinningWheelGUI;
+import com.runicrealms.plugin.professions.crafting.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.professions.jeweler.BenchGUI;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,8 +101,7 @@ public class WorkstationListener implements Listener {
             case "anvil":
                 if (className.equals("Blacksmith")) {
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1.0f);
-                    //AnvilGUI.ANVIL_GUI.open(pl);
-                    BlacksmithGUI blacksmithGUI = new BlacksmithGUI();//ArtifactGUI.artifactEditor(pl, artifact, durability);
+                    BSAnvilGUI blacksmithGUI = new BSAnvilGUI();
                     ItemGUI bMenu = blacksmithGUI.openMenu(pl);
                     bMenu.open(pl);
                 } else {
@@ -120,12 +113,21 @@ public class WorkstationListener implements Listener {
                 pl.playSound(pl.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 0.25f);
                 CauldronGUI.CAULDRON_GUI.open(pl);
                 break;
+            case "cooking fire":
+                pl.playSound(pl.getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 0.5f);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.5f);
+                CookingGUI cookingGUI = new CookingGUI();
+                ItemGUI cMenu = cookingGUI.openMenu(pl);
+                cMenu.open(pl);
+                break;
             case "furnace":
                 if (className.equals("Blacksmith")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
                     pl.playSound(pl.getLocation(), Sound.ITEM_BUCKET_FILL_LAVA, 0.5f, 1.0f);
                     pl.playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1.0f);
-                    FurnaceGUI.FURNACE_GUI.open(pl);
+                    BSFurnaceGUI furnaceGUI = new BSFurnaceGUI();
+                    ItemGUI fMenu = furnaceGUI.openMenu(pl);
+                    fMenu.open(pl);
                 } else {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.RED + "A blacksmith would know how to use this.");
@@ -141,12 +143,26 @@ public class WorkstationListener implements Listener {
                 }
                 break;
             case "spinning wheel":
-                pl.playSound(pl.getLocation(), Sound.BLOCK_WET_GRASS_BREAK, 2.0f, 1.2f);
-                SpinningWheelGUI.SPINNING_WHEEL_GUI.open(pl);
+                if (className.equals("Tailor")) {
+                    pl.playSound(pl.getLocation(), Sound.BLOCK_WET_GRASS_BREAK, 2.0f, 1.2f);
+                    TailorGUI tailorGUI = new TailorGUI();
+                    ItemGUI tMenu = tailorGUI.openMenu(pl);
+                    tMenu.open(pl);
+                } else {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                    pl.sendMessage(ChatColor.RED + "A tailor would know how to use this.");
+                }
                 break;
             case "tanning rack":
-                pl.playSound(pl.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 2.0f, 0.8f);
-                TanningRackGUI.TANNING_RACK_GUI.open(pl);
+                if (className.equals("Leatherworker")) {
+                    pl.playSound(pl.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 2.0f, 0.8f);
+                    LWGUI lwGUI = new LWGUI();
+                    ItemGUI lMenu = lwGUI.openMenu(pl);
+                    lMenu.open(pl);
+                } else {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                    pl.sendMessage(ChatColor.RED + "A leatherworker would know how to use this.");
+                }
                 break;
         }
 
@@ -196,7 +212,7 @@ public class WorkstationListener implements Listener {
         stationConfig.set("Workstations.Locations." + nextID + ".y", b.getLocation().getBlockY());
         stationConfig.set("Workstations.Locations." + nextID + ".z", b.getLocation().getBlockZ());
         pl.sendMessage(ChatColor.GREEN + "Workstation saved! Now please specify the type of this workstation:\n"
-                + "Anvil, cauldron, furnace, gemcutting bench, spinning wheel, or tanning rack?");
+                + "Anvil, cauldron, cooking fire, furnace, gemcutting bench, spinning wheel, or tanning rack?");
         chatters.add(pl.getUniqueId());
 
         // save data file
@@ -220,6 +236,7 @@ public class WorkstationListener implements Listener {
             // verify input
             if (!(stationType.equals("anvil")
                     || stationType.equals("cauldron")
+                    || stationType.equals("cooking fire")
                     || stationType.equals("furnace")
                     || stationType.equals("gemcutting bench")
                     || stationType.equals("spinning wheel")

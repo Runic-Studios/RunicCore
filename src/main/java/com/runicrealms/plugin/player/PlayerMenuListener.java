@@ -48,6 +48,9 @@ public class PlayerMenuListener implements Listener {
         ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
                 "\n&fClick here &7to view\n&7the quest journal!");
 
+        ItemStack lootChests = item(pl, Material.CHEST, "&dLoot Chests",
+                "\n&aFeature Coming Soon!");
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
             // item 3 must update dynamically
@@ -78,10 +81,12 @@ public class PlayerMenuListener implements Listener {
                 PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
                 PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(questJournal));
                 PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gemMenu));
+                PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
 
                 ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet1);
                 ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet2);
                 ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet3);
+                ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet4);
 
             }
         }, 0L, 5L);

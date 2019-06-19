@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.professions;
 
-import com.herocraftonline.heroes.characters.Hero;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -21,7 +20,7 @@ public class ProfGUI implements InventoryProvider {
     public static final SmartInventory PROF_SELECTION = SmartInventory.builder()
             .id("profSelection")
             .provider(new ProfGUI())
-            .size(1, 9)
+            .size(4, 9)
             .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Profession!")
             .build();
 
@@ -31,7 +30,7 @@ public class ProfGUI implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
 
         // select blacksmith
-        contents.set(0, 0, ClickableItem.of
+        contents.set(0, 1, ClickableItem.of
                 (menuItem(Material.ANVIL,
                         ChatColor.GREEN,
                         "Blacksmith",
@@ -39,11 +38,13 @@ public class ProfGUI implements InventoryProvider {
                         "Barrage"),
                         e -> {
                             setConfig(player, "Blacksmith");
+                            sbh.updatePlayerInfo(player);
+                            sbh.updateSideInfo(player);
                             player.closeInventory();
                         }));
 
         // select jeweler
-        contents.set(0, 1, ClickableItem.of
+        contents.set(0, 2, ClickableItem.of
                 (menuItem(Material.REDSTONE,
                         ChatColor.GREEN,
                         "Jeweler",
@@ -51,6 +52,36 @@ public class ProfGUI implements InventoryProvider {
                         "Barrage"),
                         e -> {
                             setConfig(player, "Jeweler");
+                            sbh.updatePlayerInfo(player);
+                            sbh.updateSideInfo(player);
+                            player.closeInventory();
+                        }));
+
+        // select leatherworker
+        contents.set(0, 3, ClickableItem.of
+                (menuItem(Material.RABBIT_HIDE,
+                        ChatColor.GREEN,
+                        "Leatherworker",
+                        "An agile, long-range artillary.",
+                        "Barrage"),
+                        e -> {
+                            setConfig(player, "Leatherworker");
+                            sbh.updatePlayerInfo(player);
+                            sbh.updateSideInfo(player);
+                            player.closeInventory();
+                        }));
+
+        // select tailor
+        contents.set(0, 4, ClickableItem.of
+                (menuItem(Material.PAPER,
+                        ChatColor.GREEN,
+                        "Tailor",
+                        "An agile, long-range artillary.",
+                        "Barrage"),
+                        e -> {
+                            setConfig(player, "Tailor");
+                            sbh.updatePlayerInfo(player);
+                            sbh.updateSideInfo(player);
                             player.closeInventory();
                         }));
     }
@@ -82,13 +113,13 @@ public class ProfGUI implements InventoryProvider {
         return item;
     }
 
-    private void setConfig(Player player, String profName) {
+    public static void setConfig(Player player, String profName) {
         RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.name", profName);
         RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", 0);
         RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", 0);
         RunicCore.getInstance().saveConfig();
         RunicCore.getInstance().reloadConfig();
-        sbh.updatePlayerInfo(player);
-        sbh.updateSideInfo(player);
+//        sbh.updatePlayerInfo(player);
+//        sbh.updateSideInfo(player);
     }
 }

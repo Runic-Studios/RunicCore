@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.professions.blacksmith;
+package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.ItemGUI;
@@ -14,9 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
-public class BlacksmithGUI extends Workstation {
+public class BSAnvilGUI extends Workstation {
 
-    public BlacksmithGUI() {
+    public BSAnvilGUI() {
     }
 
     public ItemGUI openMenu(Player pl) {
@@ -60,11 +60,11 @@ public class BlacksmithGUI extends Workstation {
 
         // create three hashmaps for the reagents, set to 0 since we've only got 1 reagent
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
-        chainLinkReqs.put(Material.IRON_BARS, 0);
+        chainLinkReqs.put(Material.IRON_BARS, 999);
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
-        chainLinkReqs.put(Material.GOLD_INGOT, 0);
+        goldBarReqs.put(Material.GOLD_INGOT, 999);
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
-        chainLinkReqs.put(Material.IRON_INGOT, 0);
+        ironBarReqs.put(Material.IRON_INGOT, 999);
 
         ItemGUI forgeMenu = super.craftingMenu(pl, 36);
 
@@ -138,7 +138,7 @@ public class BlacksmithGUI extends Workstation {
                         health = 20;
                     }
 
-                    // guilded
+                // guilded
                 } else if (slot == 18 || slot == 19 || slot == 20 || slot == 21) {
                     if (currentLvl < 30) {
                         health = 7;
@@ -148,7 +148,7 @@ public class BlacksmithGUI extends Workstation {
                         health = 30;
                     }
 
-                    // plate
+                // plate
                 } else if (slot == 27 || slot == 28 || slot == 29 || slot == 30) {
                     if (currentLvl < 30) {
                         health = 10;
@@ -160,10 +160,10 @@ public class BlacksmithGUI extends Workstation {
                 }
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, reqHashMap, reagentAmt * mult, reqLevel, event.getCurrentItem().getType(),
-                        meta.getDisplayName(), currentLvl, exp * mult,
-                        mult, ((Damageable) meta).getDamage(), Particle.FIREWORKS_SPARK,
-                        Sound.BLOCK_ANVIL_PLACE, Sound.BLOCK_ANVIL_USE, health);
+                super.startCrafting(pl, reqHashMap, reagentAmt, reqLevel, event.getCurrentItem().getType(),
+                        meta.getDisplayName(), currentLvl, exp,
+                        ((Damageable) meta).getDamage(), Particle.FIREWORKS_SPARK,
+                        Sound.BLOCK_ANVIL_PLACE, Sound.BLOCK_ANVIL_USE, health, mult);
             }});
 
         return forgeMenu;
@@ -190,38 +190,50 @@ public class BlacksmithGUI extends Workstation {
 
         // mail
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
-        chainLinkReqs.put(Material.IRON_BARS, 0);
-        super.createCraftableItem(forgeMenu, pl, 9, Material.SHEARS, "&fForged Mail Helmet",
-                "Mail", chainLinkReqs, "Chain Link", 5, 5, 0, 15, "&c+ " + mailStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 10, Material.CHAINMAIL_CHESTPLATE, "&fForged Mail Body",
-                "Mail", chainLinkReqs, "Chain Link", 8, 5, 40, 0, "&c+ " + mailStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 11, Material.CHAINMAIL_LEGGINGS, "&fForged Mail Legs",
-                "Mail", chainLinkReqs, "Chain Link", 7, 5, 20, 0, "&c+ " + mailStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 12, Material.CHAINMAIL_BOOTS, "&fForged Mail Boots",
-                "Mail", chainLinkReqs, "Chain Link", 4, 5, 10, 0, "&c+ " + mailStr + "❤");
+        chainLinkReqs.put(Material.IRON_BARS, 999);
+        super.createMenuItem(forgeMenu, pl, 9, Material.SHEARS, "&fForged Mail Helmet", chainLinkReqs,
+                "Chain Link", 5, 5, 0, 15, "&c+ " + mailStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 10, Material.CHAINMAIL_CHESTPLATE, "&fForged Mail Body", chainLinkReqs,
+                "Chain Link", 8, 30, 40, 0, "&c+ " + mailStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 11, Material.CHAINMAIL_LEGGINGS, "&fForged Mail Legs", chainLinkReqs,
+                "Chain Link", 7, 25, 20, 0, "&c+ " + mailStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 12, Material.CHAINMAIL_BOOTS, "&fForged Mail Boots", chainLinkReqs,
+                "Chain Link", 4, 10, 10, 0, "&c+ " + mailStr + "❤",
+                false);
 
         // guilded
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
-        goldBarReqs.put(Material.GOLD_INGOT, 0);
-        super.createCraftableItem(forgeMenu, pl, 18, Material.SHEARS, "&fForged Guilded Helmet",
-                "Guilded", goldBarReqs, "Gold Bar", 5, 5, 0, 20, "&c+ " + guildedStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 19, Material.GOLDEN_CHESTPLATE, "&fForged Guilded Body",
-                "Guilded", goldBarReqs, "Gold Bar", 8, 5, 40, 0, "&c+ " + guildedStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 20, Material.GOLDEN_LEGGINGS, "&fForged Guilded Legs",
-                "Guilded", goldBarReqs, "Gold Bar", 7, 5, 20, 0, "&c+ " + guildedStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 21, Material.GOLDEN_BOOTS, "&fForged Guilded Boots",
-                "Guilded", goldBarReqs, "Gold Bar", 4, 5, 10, 0, "&c+ " + guildedStr + "❤");
+        goldBarReqs.put(Material.GOLD_INGOT, 999);
+        super.createMenuItem(forgeMenu, pl, 18, Material.SHEARS, "&fForged Guilded Helmet", goldBarReqs,
+                "Gold Bar", 5, 5, 0, 20, "&c+ " + guildedStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 19, Material.GOLDEN_CHESTPLATE, "&fForged Guilded Body", goldBarReqs,
+                "Gold Bar", 8, 30, 40, 0, "&c+ " + guildedStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 20, Material.GOLDEN_LEGGINGS, "&fForged Guilded Legs", goldBarReqs,
+                "Gold Bar", 7, 25, 20, 0, "&c+ " + guildedStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 21, Material.GOLDEN_BOOTS, "&fForged Guilded Boots", goldBarReqs,
+                "Gold Bar", 4, 10, 10, 0, "&c+ " + guildedStr + "❤",
+                false);
 
         // plate
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
-        ironBarReqs.put(Material.IRON_INGOT, 0);
-        super.createCraftableItem(forgeMenu, pl, 27, Material.SHEARS, "&fForged Iron Helmet",
-                "Plate", ironBarReqs, "Iron Bar", 5, 5, 0, 25, "&c+ " + plateStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 28, Material.IRON_CHESTPLATE, "&fForged Iron Body",
-                "Plate", ironBarReqs, "Iron Bar", 8, 5, 40, 0, "&c+ " + plateStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 29, Material.IRON_LEGGINGS, "&fForged Iron Legs",
-                "Plate", ironBarReqs, "Iron Bar", 7, 5, 20, 0, "&c+ " + plateStr + "❤");
-        super.createCraftableItem(forgeMenu, pl, 30, Material.IRON_BOOTS, "&fForged Iron Boots",
-                "Plate", ironBarReqs, "Iron Bar", 4, 5, 10, 0, "&c+ " + plateStr + "❤");
+        ironBarReqs.put(Material.IRON_INGOT, 999);
+        super.createMenuItem(forgeMenu, pl, 27, Material.SHEARS, "&fForged Iron Helmet", ironBarReqs,
+                "Iron Bar", 5, 5, 0, 25, "&c+ " + plateStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 28, Material.IRON_CHESTPLATE, "&fForged Iron Body", ironBarReqs,
+                "Iron Bar", 8, 30, 40, 0, "&c+ " + plateStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 29, Material.IRON_LEGGINGS, "&fForged Iron Legs", ironBarReqs,
+                "Iron Bar", 7, 25, 20, 0, "&c+ " + plateStr + "❤",
+                false);
+        super.createMenuItem(forgeMenu, pl, 30, Material.IRON_BOOTS, "&fForged Iron Boots", ironBarReqs,
+                "Iron Bar", 4, 10, 10, 0, "&c+ " + plateStr + "❤",
+                false);
     }
 }

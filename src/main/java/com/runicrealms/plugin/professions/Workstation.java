@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -23,7 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public abstract class Workstation {
 
-    public ItemGUI openWorkstation(Player pl) {
+    protected ItemGUI openWorkstation(Player pl) {
 
         return new ItemGUI("&f&l" + pl.getName() + "'s &e&lWorkstation", 9, event -> {
         },
@@ -31,17 +32,16 @@ public abstract class Workstation {
                 "&cClose", "&7Close the menu", 0);
     }
 
-    public ItemGUI craftingMenu(Player pl, int size) {
+    protected ItemGUI craftingMenu(Player pl, int size) {
 
         return new ItemGUI("&f&l" + pl.getName() + "'s Crafting Menu", size, event -> {
         },
                 RunicCore.getInstance());
     }
 
-    public void createCraftableItem(ItemGUI gui, Player pl, int slot, Material itemType, String name,
-                                    String armorType, LinkedHashMap<Material, Integer> itemReqs,
-                                    String reqsToString, int itemAmt, int exp, int reqLevel, int durability,
-                                    String itemStats) {
+    protected void createMenuItem(ItemGUI gui, Player pl, int slot, Material itemType, String name,
+                                  LinkedHashMap<Material, Integer> itemReqs, String reqsToString, int itemAmt,
+                                  int exp, int reqLevel, int durability, String itemStats, boolean cantFail) {
 
         // grab the player's current profession level, progress toward that level
         int currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
@@ -57,14 +57,20 @@ public abstract class Workstation {
             rateToStr = ChatColor.GREEN + "" + rate;
         }
 
-        // build the menu display
-        String desc = "";
-        if (currentLvl < reqLevel) {
-            desc += "&cUnlock by reaching lv. " + reqLevel + "!\n";
+        if (cantFail) {
+            rateToStr = ChatColor.GREEN + "100";
         }
 
-        desc += "\n&7Item Stats:\n" + itemStats;
-        desc += "\n\n&7Material(s) Required:\n";
+        // build the menu display
+        StringBuilder desc = new StringBuilder();
+        if (currentLvl < reqLevel) {
+            desc.append("&cUnlock by reaching lv. ").append(reqLevel).append("!\n");
+        }
+
+        if (!itemStats.equals("")) {
+            desc.append("\n&7Item Stats:\n").append(itemStats).append("\n");
+        }
+        desc.append("\n&7Material(s) Required:\n");
 
         String[] reqsAsList = reqsToString.split("\n");
         if (pl.isOp() || currentLvl >= reqLevel) {
@@ -79,29 +85,34 @@ public abstract class Workstation {
                         amt = itemAmt;
                     }
                     if (pl.getInventory().contains(reagent, amt)) {
-                        desc += "&a" + reqsAsList[i] + "&7, &f" + amt;
+                        desc.append("&a").append(reqsAsList[i]).append("&7, &f").append(amt).append("\n");
                     } else {
-                        desc += ("&c" + reqsAsList[i] + "&7, &f" + amt);
+                        desc.append("&c").append(reqsAsList[i]).append("&7, &f").append(amt).append("\n");
                     }
                     i += 1;
                 }
 
 
-            desc += "\n\n&7Success Rate:\n" + rateToStr + "%\n\n"
-                    + ChatColor.WHITE + "Left Click " + ChatColor.DARK_GRAY + "to craft\n"
-                    + ChatColor.WHITE + "Right Click " + ChatColor.DARK_GRAY + "to craft 5\n\n"
-                    + "&7&oRewards &f&o" + exp + " &7&oExperience";
+                desc.append("\n&7Success Rate:\n")
+                        .append(rateToStr).append("%\n\n")
+                        .append(ChatColor.WHITE).append("Left Click ")
+                        .append(ChatColor.DARK_GRAY).append("to craft\n")
+                        .append(ChatColor.WHITE).append("Right Click ")
+                        .append(ChatColor.DARK_GRAY).append("to craft 5");
+                if (exp > 0) {
+                    desc.append("\n\n&7&oRewards &f&o").append(exp).append(" &7&oExperience");
+                }
         }
 
-        desc = ColorUtil.format(desc);
+        desc = new StringBuilder(ColorUtil.format(desc.toString()));
 
         gui.setOption(slot, new ItemStack(itemType),
-                name, desc, durability);
+                name, desc.toString(), durability);
     }
 
     protected void startCrafting(Player pl, LinkedHashMap<Material, Integer> itemReqs, int itemAmt, int reqLevel,
-                                 Material craftedItemType, String itemName, int currentLvl, int exp, int craftedAmt,
-                                 int durability, Particle particle, Sound soundCraft, Sound soundDone, int health) {
+                                 Material craftedItemType, String itemName, int currentLvl, int exp, int durability,
+                                 Particle particle, Sound soundCraft, Sound soundDone, int health, int multiplier) {
 
         if (RunicCore.getProfManager().getCurrentCrafters().contains(pl)) return;
 
@@ -111,7 +122,7 @@ public abstract class Workstation {
         int rate = (40+currentLvl);
 
         // check that the player has reached the req. lv
-        if (!(pl.isOp()) && currentLvl < reqLevel) {
+        if (currentLvl < reqLevel) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             pl.sendMessage(ChatColor.RED + "You haven't learned to craft this yet!");
             return;
@@ -119,9 +130,9 @@ public abstract class Workstation {
 
         // check that the player has the reagents
         for (Material reagent : itemReqs.keySet()) {
-            int amt = itemReqs.get(reagent);
+            int amt = itemReqs.get(reagent)*multiplier;
             if (itemReqs.size() <= 1) {
-                amt = itemAmt;
+                amt = itemAmt*multiplier;
             }
             if (!pl.getInventory().contains(reagent, amt)) {
                 pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -142,8 +153,8 @@ public abstract class Workstation {
         if (pl.getInventory().firstEmpty() == -1 && craftedItemType.getMaxStackSize() != 1) {
             for (int i = 0; i < inv.length; i++) {
                 if (pl.getInventory().getItem(i) == null) continue;
-                if (pl.getInventory().getItem(i).getType() == craftedItemType
-                        && pl.getInventory().getItem(i).getAmount() + craftedAmt > craftedItemType.getMaxStackSize()) {
+                if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == craftedItemType
+                        && Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() + 1 > craftedItemType.getMaxStackSize()) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     pl.sendMessage(ChatColor.RED + "You don't have any inventory space!");
                     return;
@@ -156,16 +167,17 @@ public abstract class Workstation {
         pl.closeInventory();
         RunicCore.getProfManager().getCurrentCrafters().add(pl);
         pl.sendMessage(ChatColor.GRAY + "Crafting...");
-        //int j = 0;
         for (Material reagent : itemReqs.keySet()) {
-            int amt = itemReqs.get(reagent);
+            int amt = itemReqs.get(reagent)*multiplier;
             if (itemReqs.size() <= 1) {
-                amt = itemAmt;
+                amt = itemAmt*multiplier;
             }
+            // take items from player
             for (int i = 0; i < inv.length; i++) {
                 if (pl.getInventory().getItem(i) == null) continue;
-                if (pl.getInventory().getItem(i).getType() == reagent) {
-                    pl.getInventory().getItem(i).setAmount(pl.getInventory().getItem(i).getAmount()-amt);
+                if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == reagent) {
+                    Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+                            (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount()-(amt));
                     break;
                 }
             }
@@ -185,8 +197,10 @@ public abstract class Workstation {
                     RunicCore.getProfManager().getCurrentCrafters().remove(pl);
                     pl.playSound(pl.getLocation(), soundDone, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.GREEN + "Done!");
-                    ProfExpUtil.giveExperience(pl, exp);
-                    produceResult(pl, craftedItemType, itemName, currentLvl, craftedAmt, rate, durability, health);
+                    if (exp > 0) {
+                        ProfExpUtil.giveExperience(pl, exp * multiplier);
+                    }
+                    produceResult(pl, craftedItemType, itemName, currentLvl, multiplier, rate, durability, health);
                 } else {
                     pl.playSound(pl.getLocation(), soundCraft, 0.5f, 2.0f);
                     pl.spawnParticle(particle, stationLoc, 5, 0.25, 0.25, 0.25, 0.01);
@@ -196,7 +210,7 @@ public abstract class Workstation {
         }.runTaskTimer(RunicCore.getInstance(), 0, 20);
     }
 
-    private void produceResult(Player pl, Material material, String dispName,
+    protected void produceResult(Player pl, Material material, String dispName,
                             int currentLvl, int amt, int rate, int durability, int health) {
 
         // create a new item up to the amount
@@ -211,7 +225,7 @@ public abstract class Workstation {
 
             ItemStack craftedItem = new ItemStack(material);
             ItemMeta meta = craftedItem.getItemMeta();
-            ((Damageable) meta).setDamage(durability);
+            ((Damageable) Objects.requireNonNull(meta)).setDamage(durability);
             craftedItem.setItemMeta(meta);
 
             String itemSlot = "";

@@ -1,5 +1,8 @@
 package com.runicrealms.plugin.player.commands;
 
+import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
+import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -40,16 +43,44 @@ public class SetProfLevelCMD implements SubCommand {
             sender.sendMessage(ChatColor.RED + "Correct usage: /set proflevel [level] or /set proflevel [player] [level]");
         } else if (args.length == 2) {
             RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.prof.level", Integer.parseInt(args[1]));
-            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.prof.exp", 0);
+            // ----------------------
+            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
+            int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
+            // ----------------------
+            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.prof.exp", expAtLevel);
             RunicCore.getInstance().saveConfig();
             RunicCore.getInstance().reloadConfig();
+
+            String profName = RunicCore.getInstance().getConfig().getString(sender.getUniqueId() + ".info.prof.name");
+            if (Integer.parseInt(args[1]) == 30) {
+
+                sender.sendMessage("\n");
+                ChatUtils.sendCenteredMessage(sender, ChatColor.GREEN + "" + ChatColor.BOLD + "PROFESSION UPGRADE!");
+                ChatUtils.sendCenteredMessage(sender, ChatColor.WHITE + "" + ChatColor.BOLD + "You are now a Refined " + profName + "!");
+                ChatUtils.sendCenteredMessage(sender, ChatColor.GRAY + "        Your crafted goods have become more powerful!");
+                sender.sendMessage("\n");
+
+            } else if (Integer.parseInt(args[1]) == 50) {
+
+                sender.sendMessage("\n");
+                ChatUtils.sendCenteredMessage(sender, ChatColor.GREEN + "" + ChatColor.BOLD + "PROFESSION UPGRADE!");
+                ChatUtils.sendCenteredMessage(sender, ChatColor.WHITE + "" + ChatColor.BOLD + "You are now an Artisan " + profName + "!");
+                ChatUtils.sendCenteredMessage(sender, ChatColor.GRAY + "        Your crafted goods have become more powerful!");
+                sender.sendMessage("\n");
+
+            }
+
             RunicCore.getScoreboardHandler().updatePlayerInfo(sender);
             RunicCore.getScoreboardHandler().updateSideInfo(sender);
         } else if (args.length == 3) {
             Player player = Bukkit.getPlayer(args[1]);
             if (player == null) return;
             RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", Integer.parseInt(args[1]));
-            RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", 0);
+            // ----------------------
+            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
+            int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
+            // ----------------------
+            RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", expAtLevel);
             RunicCore.getInstance().saveConfig();
             RunicCore.getInstance().reloadConfig();
             RunicCore.getScoreboardHandler().updatePlayerInfo(player);

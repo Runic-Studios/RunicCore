@@ -18,6 +18,7 @@ public class BlockBreakListener implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
 
         Material type = e.getBlock().getType();
+        if (e.getBlock().getType() == Material.AIR) return;
         switch (type) {
 
             // farming materials

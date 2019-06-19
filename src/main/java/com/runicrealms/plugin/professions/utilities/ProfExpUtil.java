@@ -92,7 +92,7 @@ public class ProfExpUtil {
         return expectedLv;
     }
 
-    private static int calculateTotalExperience(int currentLv) {
+    public static int calculateTotalExperience(int currentLv) {
         int totalExp;
         if (currentLv < 17) {
             totalExp = (currentLv*currentLv)+6*currentLv;
