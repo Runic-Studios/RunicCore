@@ -27,7 +27,7 @@ public class BSAnvilGUI extends Workstation {
 
         //set the visual items
         blackSmithMenu.setOption(3, new ItemStack(Material.IRON_CHESTPLATE),
-                "&fCraft Armor", "&7Forge mail, guilded or plate armor!", 0);
+                "&fCraft Armor", "&7Forge mail, gilded or plate armor!", 0);
 
         // set the handler
         blackSmithMenu.setHandler(event -> {
@@ -138,7 +138,7 @@ public class BSAnvilGUI extends Workstation {
                         health = 20;
                     }
 
-                // guilded
+                // gilded
                 } else if (slot == 18 || slot == 19 || slot == 20 || slot == 21) {
                     if (currentLvl < 30) {
                         health = 7;
@@ -172,19 +172,19 @@ public class BSAnvilGUI extends Workstation {
     private void setupItems(ItemGUI forgeMenu, Player pl, int currentLv) {
 
         String mailStr; // 5, 12, 20
-        String guildedStr; // 7, 15, 30
+        String gildedStr; // 7, 15, 30
         String plateStr; // 10, 30, 50
         if (currentLv < 30) {
             mailStr = "5";
-            guildedStr = "7";
+            gildedStr = "7";
             plateStr = "10";
         } else if (currentLv < 50) {
             mailStr = "12";
-            guildedStr = "15";
+            gildedStr = "15";
             plateStr = "30";
         } else {
             mailStr = "20";
-            guildedStr = "30";
+            gildedStr = "30";
             plateStr = "50";
         }
 
@@ -204,20 +204,20 @@ public class BSAnvilGUI extends Workstation {
                 "Chain Link", 4, 10, 10, 0, "&c+ " + mailStr + "❤",
                 false);
 
-        // guilded
+        // gilded
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
         goldBarReqs.put(Material.GOLD_INGOT, 999);
-        super.createMenuItem(forgeMenu, pl, 18, Material.SHEARS, "&fForged Guilded Helmet", goldBarReqs,
-                "Gold Bar", 5, 5, 0, 20, "&c+ " + guildedStr + "❤",
+        super.createMenuItem(forgeMenu, pl, 18, Material.SHEARS, "&fForged Gilded Helmet", goldBarReqs,
+                "Gold Bar", 5, 5, 0, 20, "&c+ " + gildedStr + "❤",
                 false);
-        super.createMenuItem(forgeMenu, pl, 19, Material.GOLDEN_CHESTPLATE, "&fForged Guilded Body", goldBarReqs,
-                "Gold Bar", 8, 30, 40, 0, "&c+ " + guildedStr + "❤",
+        super.createMenuItem(forgeMenu, pl, 19, Material.GOLDEN_CHESTPLATE, "&fForged Gilded Body", goldBarReqs,
+                "Gold Bar", 8, 30, 40, 0, "&c+ " + gildedStr + "❤",
                 false);
-        super.createMenuItem(forgeMenu, pl, 20, Material.GOLDEN_LEGGINGS, "&fForged Guilded Legs", goldBarReqs,
-                "Gold Bar", 7, 25, 20, 0, "&c+ " + guildedStr + "❤",
+        super.createMenuItem(forgeMenu, pl, 20, Material.GOLDEN_LEGGINGS, "&fForged Gilded Legs", goldBarReqs,
+                "Gold Bar", 7, 25, 20, 0, "&c+ " + gildedStr + "❤",
                 false);
-        super.createMenuItem(forgeMenu, pl, 21, Material.GOLDEN_BOOTS, "&fForged Guilded Boots", goldBarReqs,
-                "Gold Bar", 4, 10, 10, 0, "&c+ " + guildedStr + "❤",
+        super.createMenuItem(forgeMenu, pl, 21, Material.GOLDEN_BOOTS, "&fForged Gilded Boots", goldBarReqs,
+                "Gold Bar", 4, 10, 10, 0, "&c+ " + gildedStr + "❤",
                 false);
 
         // plate

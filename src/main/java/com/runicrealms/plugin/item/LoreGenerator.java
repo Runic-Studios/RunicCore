@@ -244,8 +244,8 @@ public class LoreGenerator {
             case PLATE:
                 type = "Plate"; // (iron)
                 break;
-            case GUILDED:
-                type = "Guilded"; // (gold)
+            case GILDED:
+                type = "Gilded"; // (gold)
                 break;
             case MAIL:
                 type = "Mail"; // (chainmail)

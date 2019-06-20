@@ -32,6 +32,10 @@ public class CombatListener implements Listener {
             damager = (Player) e.getDamager();
         }
 
+        if (damager == null) return;
+        int slot = damager.getInventory().getHeldItemSlot();
+        if (slot != 0) return;
+
         // ignore party members
         if (e.getEntity() instanceof Player &&
                 RunicCore.getPartyManager().getPlayerParty(damager) != null

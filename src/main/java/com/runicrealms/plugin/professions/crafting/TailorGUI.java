@@ -188,11 +188,11 @@ public class TailorGUI extends Workstation {
 
     @Override
     public void produceResult(Player pl, Material material, String dispName,
-                              int currentLvl, int amt, int rate, int durability, int health) {
+                              int currentLvl, int amt, int rate, int durability, int someVar) {
 
         // we're only gonna mess w/ the mechanics for processed leather
         if (material != Material.PAPER) {
-            super.produceResult(pl, material, dispName, currentLvl, amt, rate, durability, health);
+            super.produceResult(pl, material, dispName, currentLvl, amt, rate, durability, someVar);
             return;
         }
 

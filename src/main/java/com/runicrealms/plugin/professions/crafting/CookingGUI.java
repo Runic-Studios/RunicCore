@@ -107,7 +107,7 @@ public class CookingGUI extends Workstation {
 
     @Override
     public void produceResult(Player pl, Material material, String dispName,
-                              int currentLvl, int amt, int rate, int durability, int health) {
+                              int currentLvl, int amt, int rate, int durability, int someVar) {
 
         for (int i = 0; i < amt; i++) {
             ItemStack craftedItem = new ItemStack(material);

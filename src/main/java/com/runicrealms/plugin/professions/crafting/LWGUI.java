@@ -29,7 +29,7 @@ public class LWGUI extends Workstation {
 
         //set the visual items
         leatherMenu.setOption(3, new ItemStack(Material.RABBIT_HIDE),
-                "&fCraft Armor", "&7Create leather goods!", 0);
+                "&fCraft Armor", "&7Tan hides and create leather goods!", 0);
 
         // set the handler
         leatherMenu.setHandler(event -> {
@@ -186,11 +186,11 @@ public class LWGUI extends Workstation {
 
     @Override
     public void produceResult(Player pl, Material material, String dispName,
-                              int currentLvl, int amt, int rate, int durability, int health) {
+                              int currentLvl, int amt, int rate, int durability, int someVar) {
 
         // we're only gonna mess w/ the mechanics for processed leather
         if (material != Material.RABBIT_HIDE) {
-            super.produceResult(pl, material, dispName, currentLvl, amt, rate, durability, health);
+            super.produceResult(pl, material, dispName, currentLvl, amt, rate, durability, someVar);
             return;
         }
 

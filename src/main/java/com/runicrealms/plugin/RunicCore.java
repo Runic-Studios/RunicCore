@@ -4,6 +4,7 @@ import com.runicrealms.plugin.command.subcommands.CurrencyGive;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
+import com.runicrealms.plugin.command.subcommands.set.SetProfCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.command.supercommands.SpellpointSC;
@@ -27,14 +28,15 @@ import com.runicrealms.plugin.player.commands.SetLevelCMD;
 import com.runicrealms.plugin.player.commands.SetProfLevelCMD;
 import com.runicrealms.plugin.player.commands.SetSC;
 import com.runicrealms.plugin.professions.ProfManager;
-import com.runicrealms.plugin.professions.WorkstationListener;
+import com.runicrealms.plugin.professions.listeners.PotionListener;
+import com.runicrealms.plugin.professions.listeners.WorkstationListener;
 import com.runicrealms.plugin.professions.commands.GathertoolGive;
 import com.runicrealms.plugin.professions.commands.GathertoolSC;
 import com.runicrealms.plugin.professions.gathering.FarmingListener;
 import com.runicrealms.plugin.professions.gathering.FishingListener;
 import com.runicrealms.plugin.professions.gathering.MiningListener;
 import com.runicrealms.plugin.professions.gathering.WCListener;
-import com.runicrealms.plugin.professions.jeweler.SocketListener;
+import com.runicrealms.plugin.professions.listeners.SocketListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
@@ -165,6 +167,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new SpellShieldListener(), this);
         pm.registerEvents(new BlockBreakListener(), this);
         pm.registerEvents(new MinLevelListener(), this);
+        pm.registerEvents(new PotionListener(), this);
     }
     
     private void registerCommands() {
@@ -215,8 +218,6 @@ public class RunicCore extends JavaPlugin {
         partySC.addCommand(Arrays.asList("join", "accept"), new Join(partySC));
         partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
-
-        partySC.addCommand(Arrays.asList("prof", "profession"), new Prof(partySC));
     }
 
     private void registerSetCommands() {
@@ -225,6 +226,7 @@ public class RunicCore extends JavaPlugin {
         getCommand("set").setExecutor(setSC);
         setSC.addCommand(Arrays.asList("class"), new SetClassCMD(setSC));
         setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
+        setSC.addCommand(Arrays.asList("prof"), new SetProfCMD(setSC));
         setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));
     }
 }

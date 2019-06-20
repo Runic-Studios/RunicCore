@@ -1,6 +1,7 @@
-package com.runicrealms.plugin.professions.jeweler;
+package com.runicrealms.plugin.professions.listeners;
 
 import com.runicrealms.plugin.item.LoreGenerator;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -45,6 +46,15 @@ public class SocketListener implements Listener {
         String isGemstone = AttributeUtil.getCustomString(heldItem, "custom.isGemstone");
         if (!isGemstone.equals("true")) return;
 
+        switch (socketItemType) {
+            case REDSTONE:
+            case LAPIS_LAZULI:
+            case EMERALD:
+            case QUARTZ:
+            case DIAMOND:
+                return;
+        }
+
         // verify that the item to be socketed has open slots
         int socketCount = (int) AttributeUtil.getCustomDouble(socketItem, "custom.socketCount");
         int currentSockets = (int) AttributeUtil.getCustomDouble(socketItem, "custom.currentSockets");
@@ -54,7 +64,7 @@ public class SocketListener implements Listener {
             return;
         }
 
-        // retrive the custom values of the two items
+        // retrive the current custom values of the two items
         double itemHealth = AttributeUtil.getGenericDouble(socketItem, "generic.maxHealth");
         double gemHealth = AttributeUtil.getCustomDouble(heldItem, "custom.maxHealth");
         double itemMana = AttributeUtil.getCustomDouble(socketItem, "custom.manaBoost");
@@ -65,6 +75,7 @@ public class SocketListener implements Listener {
         double gemHealing = AttributeUtil.getCustomDouble(heldItem, "custom.healingBoost");
         double itemMagDmg = AttributeUtil.getCustomDouble(socketItem, "custom.magicDamage");
         double gemMagDmg = AttributeUtil.getCustomDouble(heldItem, "custom.magicDamage");
+        double reqLv = AttributeUtil.getCustomDouble(socketItem, "required.level");
 
         // create a new item with updated attributes, update its durability
         ItemStack newItem = new ItemStack(socketItemType);
@@ -104,12 +115,14 @@ public class SocketListener implements Listener {
         newItem = AttributeUtil.addCustomStat(newItem, "custom.attackDamage", itemDmg + gemDmg); // opal
         newItem = AttributeUtil.addCustomStat(newItem, "custom.healingBoost", itemHealing + gemHealing); // emerald
         newItem = AttributeUtil.addCustomStat(newItem, "custom.magicDamage", itemMagDmg + gemMagDmg); // diamond
+        newItem = AttributeUtil.addCustomStat(newItem, "required.level", reqLv); // required level
         LoreGenerator.generateItemLore(newItem, ChatColor.WHITE, socketItemName, "");
 
         // remove the gemstone from inventory, update the item in inventory
         e.setCancelled(true);
         e.setCurrentItem(newItem);
-        e.setCursor(null);
+        heldItem.setAmount(heldItem.getAmount()-1);
+        e.setCursor(heldItem);
         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.5f);
         pl.sendMessage(ChatColor.GREEN + "You placed your gemstone into this item's socket!");
     }

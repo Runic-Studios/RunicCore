@@ -66,7 +66,6 @@ public class SetProfCMD implements SubCommand {
         if (pl == null) return;
 
         if (args.length == 2) {
-            //ClassGUI.CLASS_SELECTION.open(pl);
             ProfGUI.PROF_SELECTION.open(pl);
         } else {
 
@@ -84,15 +83,9 @@ public class SetProfCMD implements SubCommand {
 
             String formattedStr = profStr.substring(0, 1).toUpperCase() + profStr.substring(1);
 
-            //setupArtifact(pl, profStr, true);
-            //setupRune(pl);
-            //setupHearthstone(pl);
             ProfGUI.setConfig(pl, formattedStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);
-
-            // set the player's slot to 0 (the artifact)
-            //pl.getInventory().setHeldItemSlot(0);
         }
     }
 }

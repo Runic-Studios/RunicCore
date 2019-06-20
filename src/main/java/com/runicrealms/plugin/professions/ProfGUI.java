@@ -21,7 +21,8 @@ public class ProfGUI implements InventoryProvider {
             .id("profSelection")
             .provider(new ProfGUI())
             .size(4, 9)
-            .title(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Choose Your Profession!")
+            .title(ChatColor.GREEN + "" + ChatColor.BOLD + "Choose your profession!")
+            .closeable(false)
             .build();
 
     private ScoreboardHandler sbh = RunicCore.getScoreboardHandler();
@@ -29,60 +30,89 @@ public class ProfGUI implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
 
+        // select alchemist
+        contents.set(1, 2, ClickableItem.of
+                (menuItem(Material.POTION,
+                        ChatColor.GREEN,
+                        "Alchemist",
+                        "Brew useful potions for your journey!"),
+                        e -> {
+                            setConfig(player, "Alchemist");
+                            sbh.updatePlayerInfo(player);
+                            sbh.updateSideInfo(player);
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                            player.sendTitle(
+                                    ChatColor.GREEN + "You've Chosen",
+                                    ChatColor.WHITE + "Alchemist!", 10, 100, 10);
+                            contents.inventory().close(player);
+                        }));
+
         // select blacksmith
-        contents.set(0, 1, ClickableItem.of
-                (menuItem(Material.ANVIL,
+        contents.set(1, 4, ClickableItem.of
+                (menuItem(Material.IRON_INGOT,
                         ChatColor.GREEN,
                         "Blacksmith",
-                        "An agile, long-range artillary.",
-                        "Barrage"),
+                        "Forge mail, gilded or plate armor!"),
                         e -> {
                             setConfig(player, "Blacksmith");
                             sbh.updatePlayerInfo(player);
                             sbh.updateSideInfo(player);
-                            player.closeInventory();
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                            player.sendTitle(
+                                    ChatColor.GREEN + "You've Chosen",
+                                    ChatColor.WHITE + "Blacksmith!", 10, 100, 10);
+                            contents.inventory().close(player);
                         }));
 
         // select jeweler
-        contents.set(0, 2, ClickableItem.of
+        contents.set(1, 6, ClickableItem.of
                 (menuItem(Material.REDSTONE,
                         ChatColor.GREEN,
                         "Jeweler",
-                        "An agile, long-range artillary.",
-                        "Barrage"),
+                        "Cut gemstones and enhance equipment!"),
                         e -> {
                             setConfig(player, "Jeweler");
                             sbh.updatePlayerInfo(player);
                             sbh.updateSideInfo(player);
-                            player.closeInventory();
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                            player.sendTitle(
+                                    ChatColor.GREEN + "You've Chosen",
+                                    ChatColor.WHITE + "Jeweler!", 10, 100, 10);
+                            contents.inventory().close(player);
                         }));
 
         // select leatherworker
-        contents.set(0, 3, ClickableItem.of
+        contents.set(2, 3, ClickableItem.of
                 (menuItem(Material.RABBIT_HIDE,
                         ChatColor.GREEN,
                         "Leatherworker",
-                        "An agile, long-range artillary.",
-                        "Barrage"),
+                        "Tan hides and create leather goods!"),
                         e -> {
                             setConfig(player, "Leatherworker");
                             sbh.updatePlayerInfo(player);
                             sbh.updateSideInfo(player);
-                            player.closeInventory();
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                            player.sendTitle(
+                                    ChatColor.GREEN + "You've Chosen",
+                                    ChatColor.WHITE + "Leatherworker!", 10, 100, 10);
+                            contents.inventory().close(player);
                         }));
 
         // select tailor
-        contents.set(0, 4, ClickableItem.of
+        contents.set(2, 5, ClickableItem.of
                 (menuItem(Material.PAPER,
                         ChatColor.GREEN,
                         "Tailor",
-                        "An agile, long-range artillary.",
-                        "Barrage"),
+                        "Weave cloth and linen goods!"),
                         e -> {
                             setConfig(player, "Tailor");
                             sbh.updatePlayerInfo(player);
                             sbh.updateSideInfo(player);
-                            player.closeInventory();
+                            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                            player.sendTitle(
+                                    ChatColor.GREEN + "You've Chosen",
+                                    ChatColor.WHITE + "Tailor!", 10, 100, 10);
+                            contents.inventory().close(player);
                         }));
     }
 
@@ -92,19 +122,16 @@ public class ProfGUI implements InventoryProvider {
     }
 
     // creates the visual menu
-    private ItemStack menuItem(Material material, ChatColor color, String displayName, String description, String spell) {
+    private ItemStack menuItem(Material material, ChatColor color, String displayName, String description) {
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(color + displayName);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GOLD + "-> Select this class");
-        lore.add(ChatColor.GRAY + ""); // blank line
+        lore.add(ChatColor.GRAY + "");
         lore.add(ChatColor.GRAY + "Info:");
         lore.add(ChatColor.GOLD + description);
-        lore.add(ChatColor.GRAY + ""); // blank line
-        lore.add(ChatColor.GRAY + "Starter Spell:");
-        lore.add(ChatColor.GRAY + " - " + color + spell);
         meta.setLore(lore);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -119,7 +146,5 @@ public class ProfGUI implements InventoryProvider {
         RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", 0);
         RunicCore.getInstance().saveConfig();
         RunicCore.getInstance().reloadConfig();
-//        sbh.updatePlayerInfo(player);
-//        sbh.updateSideInfo(player);
     }
 }

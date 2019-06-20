@@ -6,7 +6,7 @@ import org.bukkit.inventory.meta.Damageable;
 
 public enum ItemTypeEnum {
 
-    CLOTH, LEATHER, GUILDED, MAIL, PLATE, GEMSTONE, AIR;
+    CLOTH, LEATHER, GILDED, MAIL, PLATE, GEMSTONE, AIR;
 
     public static ItemTypeEnum matchType(final ItemStack itemStack){
         if(itemStack == null) { return null; }
@@ -15,7 +15,7 @@ public enum ItemTypeEnum {
                 case 25:
                     return PLATE; // (iron)
                 case 20:
-                    return GUILDED; // (gold)
+                    return GILDED; // (gold)
                 case 15:
                     return MAIL; // (chainmail)
                 case 10:
@@ -36,7 +36,7 @@ public enum ItemTypeEnum {
                 case GOLDEN_CHESTPLATE:
                 case GOLDEN_LEGGINGS:
                 case GOLDEN_BOOTS:
-                    return GUILDED;
+                    return GILDED;
                 case CHAINMAIL_HELMET:
                 case CHAINMAIL_CHESTPLATE:
                 case CHAINMAIL_LEGGINGS:

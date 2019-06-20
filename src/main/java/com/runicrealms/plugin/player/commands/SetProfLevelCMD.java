@@ -5,6 +5,7 @@ import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,6 +56,7 @@ public class SetProfLevelCMD implements SubCommand {
             if (Integer.parseInt(args[1]) == 30) {
 
                 sender.sendMessage("\n");
+                sender.playSound(sender.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 ChatUtils.sendCenteredMessage(sender, ChatColor.GREEN + "" + ChatColor.BOLD + "PROFESSION UPGRADE!");
                 ChatUtils.sendCenteredMessage(sender, ChatColor.WHITE + "" + ChatColor.BOLD + "You are now a Refined " + profName + "!");
                 ChatUtils.sendCenteredMessage(sender, ChatColor.GRAY + "        Your crafted goods have become more powerful!");
@@ -63,6 +65,7 @@ public class SetProfLevelCMD implements SubCommand {
             } else if (Integer.parseInt(args[1]) == 50) {
 
                 sender.sendMessage("\n");
+                sender.playSound(sender.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 ChatUtils.sendCenteredMessage(sender, ChatColor.GREEN + "" + ChatColor.BOLD + "PROFESSION UPGRADE!");
                 ChatUtils.sendCenteredMessage(sender, ChatColor.WHITE + "" + ChatColor.BOLD + "You are now an Artisan " + profName + "!");
                 ChatUtils.sendCenteredMessage(sender, ChatColor.GRAY + "        Your crafted goods have become more powerful!");

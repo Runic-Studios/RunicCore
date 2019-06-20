@@ -1,7 +1,6 @@
-package com.runicrealms.plugin.professions;
+package com.runicrealms.plugin.professions.listeners;
 
 import com.runicrealms.plugin.item.ItemGUI;
-import com.runicrealms.plugin.professions.alchemist.CauldronGUI;
 import com.runicrealms.plugin.professions.crafting.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -16,7 +15,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.professions.jeweler.BenchGUI;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,8 +108,15 @@ public class WorkstationListener implements Listener {
                 }
                 break;
             case "cauldron":
-                pl.playSound(pl.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 0.25f);
-                CauldronGUI.CAULDRON_GUI.open(pl);
+                if (className.equals("Alchemist")) {
+                    pl.playSound(pl.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 0.25f);
+                    AlchemistGUI alchemistGUI = new AlchemistGUI();
+                    ItemGUI aMenu = alchemistGUI.openMenu(pl);
+                    aMenu.open(pl);
+                } else {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                    pl.sendMessage(ChatColor.RED + "An alchemist would know how to use this.");
+                }
                 break;
             case "cooking fire":
                 pl.playSound(pl.getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 0.5f);
@@ -136,7 +141,9 @@ public class WorkstationListener implements Listener {
             case "gemcutting bench":
                 if (className.equals("Jeweler")) {
                     pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
-                    BenchGUI.BENCH_GUI.open(pl);
+                    JewelerGUI jewelerGUI = new JewelerGUI();
+                    ItemGUI jMenu = jewelerGUI.openMenu(pl);
+                    jMenu.open(pl);
                 } else {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.RED + "A jeweler would know how to use this.");
@@ -183,7 +190,7 @@ public class WorkstationListener implements Listener {
         Player pl = e.getPlayer();
         if (!pl.isOp()) return;
 
-        if (pl.getInventory().getItemInMainHand() == null) return;
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
         Material heldItemType = pl.getInventory().getItemInMainHand().getType();
         if (heldItemType != Material.GREEN_WOOL) return;
         if (!e.hasBlock()) return;
@@ -201,8 +208,6 @@ public class WorkstationListener implements Listener {
             ex.printStackTrace();
         }
 
-
-        // todo: change to first available ID
         if (!stationConfig.isSet("Workstations.NEXT_ID")) {
             stationConfig.set("Workstations.NEXT_ID", 0);
         }
@@ -279,6 +284,7 @@ public class WorkstationListener implements Listener {
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (!e.hasBlock()) return;
         Block b = e.getClickedBlock();
+        if (b == null) return;
         if (b.getType() == Material.ANVIL
                 || b.getType() == Material.BREWING_STAND
                 || b.getType() == Material.CAULDRON

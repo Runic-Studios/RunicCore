@@ -5,16 +5,21 @@ import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.ArmorSlotEnum;
 import com.runicrealms.plugin.item.ItemGUI;
 import com.runicrealms.plugin.item.LoreGenerator;
+import com.runicrealms.plugin.professions.listeners.WorkstationListener;
 import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -48,6 +53,9 @@ public abstract class Workstation {
 
         // determine the success rate, based on level
         int rate = (40+currentLvl);
+        if (itemType == Material.POTION) {
+            rate = (50+currentLvl);
+        }
         String rateToStr;
         if (rate < 50) {
             rateToStr = ChatColor.RED + "" + rate;
@@ -106,8 +114,24 @@ public abstract class Workstation {
 
         desc = new StringBuilder(ColorUtil.format(desc.toString()));
 
-        gui.setOption(slot, new ItemStack(itemType),
-                name, desc.toString(), durability);
+        if (itemType == Material.POTION) {
+            Color color = Color.WHITE;
+            if (name.toLowerCase().contains("healing")) {
+                color = Color.RED;
+            } else if (name.toLowerCase().contains("mana")) {
+                color = Color.AQUA;
+            } else if (name.toLowerCase().contains("slaying")) {
+                color = Color.BLACK;
+            } else if (name.toLowerCase().contains("looting")) {
+                color = Color.ORANGE;
+            }
+            gui.setOption(slot,
+                    potionItem(color, name, desc.toString()),
+                    name, desc.toString(), durability);
+        } else {
+            gui.setOption(slot, new ItemStack(itemType),
+                    name, desc.toString(), durability);
+        }
     }
 
     protected void startCrafting(Player pl, LinkedHashMap<Material, Integer> itemReqs, int itemAmt, int reqLevel,
@@ -200,6 +224,7 @@ public abstract class Workstation {
                     if (exp > 0) {
                         ProfExpUtil.giveExperience(pl, exp * multiplier);
                     }
+
                     produceResult(pl, craftedItemType, itemName, currentLvl, multiplier, rate, durability, health);
                 } else {
                     pl.playSound(pl.getLocation(), soundCraft, 0.5f, 2.0f);
@@ -211,7 +236,7 @@ public abstract class Workstation {
     }
 
     protected void produceResult(Player pl, Material material, String dispName,
-                            int currentLvl, int amt, int rate, int durability, int health) {
+                            int currentLvl, int amt, int rate, int durability, int someVar) {
 
         // create a new item up to the amount
         int reqLv = 0;
@@ -248,7 +273,7 @@ public abstract class Workstation {
             craftedItem = AttributeUtil.addCustomStat(craftedItem, "required.level", reqLv);
 
             craftedItem = AttributeUtil.addGenericStat
-                    (craftedItem, "generic.maxHealth", health, itemSlot);
+                    (craftedItem, "generic.maxHealth", someVar, itemSlot);
 
             // item can be socketed once
             craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.socketCount", 1);
@@ -273,5 +298,30 @@ public abstract class Workstation {
         // display fail message
         if (failCount == 0) return;
         pl.sendMessage(ChatColor.RED + "You fail to craft this item. [x" + failCount + "]");
+    }
+
+
+    private ItemStack potionItem(Color color, String displayName, String description) {
+
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta pMeta = (PotionMeta) potion.getItemMeta();
+        Objects.requireNonNull(pMeta).setColor(color);//Color.fromRGB(255,0,180)
+
+        pMeta.setDisplayName(ColorUtil.format(displayName));
+        String[] desc = description.split("\n");
+        ArrayList<String> lore = new ArrayList<>();
+        for (String line : desc) {
+            lore.add(ColorUtil.format(line));
+        }
+        pMeta.setLore(lore);
+
+        pMeta.setUnbreakable(true);
+        pMeta.addEnchant(Enchantment.DURABILITY, 1, true);
+        pMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        pMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        pMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        pMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        potion.setItemMeta(pMeta);
+        return potion;
     }
 }

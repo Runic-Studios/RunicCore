@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Warsong extends Spell {
 
     private static final int DURATION = 7;
-    private static double PERCENT = 20;
+    private static double PERCENT = 40;
     private static final int RADIUS = 10;
     private List<UUID> singers = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class Warsong extends Spell {
         super("Warsong",
                 "For " + DURATION + " seconds, you sing a song of" +
                         "\nbattle! Each time an ally strikes an" +
-                        "\nenemy with their artifact, if they" +
+                        "\nenemy with their weapon⚔, if they" +
                         "\nare within " + RADIUS + " blocks of you," +
                         "\ntheir attacks deal an additional " + (int) PERCENT + "%" +
                         "\ndamage!", ChatColor.WHITE,14, 15);

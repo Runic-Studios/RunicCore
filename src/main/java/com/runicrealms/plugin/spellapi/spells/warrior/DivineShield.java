@@ -37,7 +37,7 @@ public class DivineShield extends Spell {
     public DivineShield() {
         super("Divine Shield",
                 "For " + DURATION + " seconds, you gain a shield" +
-                        "\nof holy magic, reducing all ʔspell" +
+                        "\nof holy magic, reducing all spellʔ" +
                         "\ndamage you take by " + (int) PERCENT + "%!", ChatColor.WHITE,10, 10);
     }
 

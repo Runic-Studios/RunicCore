@@ -177,6 +177,7 @@ public class ArtifactGUI {
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Polished Silver Hammer", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Victorious Gilded Mace", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Ancient Crystal Maul", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
+        clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Gleaming Hammer of Justice", "&aUnlocked!\n&7Reward from &dLoot Chests&7!", 50));
         return clericSkins;
     }
 
@@ -187,7 +188,7 @@ public class ArtifactGUI {
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Polished Silver Scepter", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Victorious Gilded Staff", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Ancient Crystal Greatstaff", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
-        mageSkins.add(menuItem(Material.WOODEN_HOE, "Primal Arcane Rod", "&aUnlocked!\n&7Unlocked by purchasing the Alpha+ rank!", 5));
+        mageSkins.add(menuItem(Material.WOODEN_HOE, "Primal Arcane Rod", "&aUnlocked!\n&7Unlocked by purchasing the &dAlpha+ &7rank!", 5));
         return mageSkins;
     }
 
@@ -198,6 +199,7 @@ public class ArtifactGUI {
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Polished Silver Broadsword", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Victorious Gilded Longsword", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Ancient Crystal Greatsword", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
+        rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Bane of the Frost Lords", "&aUnlocked!\n&7Reward from the &4Frozen Fortress &7raid!", 50));
         return rogueSkins;
     }
 

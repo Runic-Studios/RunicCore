@@ -39,11 +39,11 @@ public class ArmorTypeListener implements Listener {
                     pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip plate armor!");
                 }
                 break;
-            case GUILDED:
+            case GILDED:
                 if (!className.equals("Cleric")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip guilded armor!");
+                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip gilded armor!");
                 }
                 break;
             case MAIL:

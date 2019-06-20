@@ -41,7 +41,7 @@ public class ArcaneOrb extends Spell {
     public ArcaneOrb() {
         super("Arcane Orb",
                 "You summon an orb of arcane magic!" +
-                        "\nFor the next " + DURATION + " seconds, all ʔspell" +
+                        "\nFor the next " + DURATION + " seconds, all spellʔ" +
                         "\ndamage you deal is increased by " + (int) PERCENT + "%" +
                         "\nif you stand within " + RADIUS + " blocks" +
                         "\nof the orb!", ChatColor.WHITE,15, 20);
