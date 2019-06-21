@@ -13,6 +13,8 @@ import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBars;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.artifact.ArtifactListener;
+import com.runicrealms.plugin.item.commands.ItemCMD;
+import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.rune.RuneListener;
 import com.runicrealms.plugin.listeners.*;
@@ -23,10 +25,7 @@ import com.runicrealms.plugin.parties.PartyDamageListener;
 import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
-import com.runicrealms.plugin.player.commands.Mana;
-import com.runicrealms.plugin.player.commands.SetLevelCMD;
-import com.runicrealms.plugin.player.commands.SetProfLevelCMD;
-import com.runicrealms.plugin.player.commands.SetSC;
+import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.professions.ProfManager;
 import com.runicrealms.plugin.professions.listeners.PotionListener;
 import com.runicrealms.plugin.professions.listeners.WorkstationListener;
@@ -96,6 +95,11 @@ public class RunicCore extends JavaPlugin {
         // register our events, config, commands
         this.registerEvents();
         this.loadConfig();
+
+        // register custom yml files
+        this.saveResource("item_prefixes.yml", true);
+
+        // register commands
         this.registerCommands();
 
         // register placeholder tags
@@ -186,9 +190,16 @@ public class RunicCore extends JavaPlugin {
         getCommand("mana").setExecutor(mana);
 
         // gathertool commands
+        // todo: fix these and the in-game merchants
         GathertoolSC toolSC = new GathertoolSC();
         getCommand("gathertool").setExecutor(toolSC);
         toolSC.addCommand(Arrays.asList("give"), new GathertoolGive(toolSC));
+
+        // runic give commands
+        RunicGiveSC giveItemSC = new RunicGiveSC();
+        getCommand("runicgive").setExecutor(giveItemSC);
+        giveItemSC.addCommand(Arrays.asList("experience", "exp"), new ClassExpCMD(giveItemSC));
+        giveItemSC.addCommand(Arrays.asList("item"), new ItemCMD(giveItemSC));
 
         // npc build
         NPCBuilderSC builderSC = new NPCBuilderSC();

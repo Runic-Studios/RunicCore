@@ -48,7 +48,7 @@ public class PlayerMenuListener implements Listener {
         ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
                 "\n&fClick here &7to view\n&7the quest journal!");
 
-        ItemStack lootChests = item(pl, Material.CHEST, "&dLoot Chests",
+        ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
                 "\n&aFeature Coming Soon!");
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {

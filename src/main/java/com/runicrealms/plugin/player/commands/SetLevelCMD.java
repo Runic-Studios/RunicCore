@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.player.commands;
 
+import com.runicrealms.plugin.player.PlayerLevelUtil;
+import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -41,10 +43,25 @@ public class SetLevelCMD implements SubCommand {
         } else if (args.length == 2) {
             sender.setLevel(Integer.parseInt(args[1]));
             sender.setExp(0);
+            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.level", Integer.parseInt(args[1]));
+            // ----------------------
+            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
+            int expAtLevel = PlayerLevelUtil.calculateTotalExp(Integer.parseInt(args[1]));
+            // ----------------------
+            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.exp", expAtLevel);
+            RunicCore.getInstance().saveConfig();
+            RunicCore.getInstance().reloadConfig();
         } else if (args.length == 3) {
-            Player player = Bukkit.getPlayer(args[1]);
-            player.setLevel(Integer.parseInt(args[2]));
+            sender.setLevel(Integer.parseInt(args[1]));
             sender.setExp(0);
+            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.level", Integer.parseInt(args[1]));
+            // ----------------------
+            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
+            int expAtLevel = PlayerLevelUtil.calculateTotalExp(Integer.parseInt(args[1]));
+            // ----------------------
+            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.exp", expAtLevel);
+            RunicCore.getInstance().saveConfig();
+            RunicCore.getInstance().reloadConfig();
         }
     }
 

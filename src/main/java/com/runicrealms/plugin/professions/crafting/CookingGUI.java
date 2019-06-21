@@ -56,7 +56,7 @@ public class CookingGUI extends Workstation {
         // create three hashmaps for the reagents, set to 0 since we've only got 1 reagent
         LinkedHashMap<Material, Integer> breadReqs = new LinkedHashMap<>();
         breadReqs.put(Material.WHEAT, 3);
-        breadReqs.put(Material.SPRUCE_LOG, 2);
+        breadReqs.put(Material.SPRUCE_LOG, 1);
 
         ItemGUI cookingMenu = super.craftingMenu(pl, 18);
 
@@ -99,7 +99,7 @@ public class CookingGUI extends Workstation {
         // chain link
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
         chainLinkReqs.put(Material.WHEAT, 3);
-        chainLinkReqs.put(Material.SPRUCE_LOG, 2);
+        chainLinkReqs.put(Material.SPRUCE_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.BREAD, "&fBread", chainLinkReqs,
                 "Wheat\nSpruce Log", 999, 0, 0, 0, "",
                 true);

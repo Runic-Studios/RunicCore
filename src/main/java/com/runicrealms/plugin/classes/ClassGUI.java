@@ -315,6 +315,7 @@ public class ClassGUI implements InventoryProvider {
         player.setExp(0);
         RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.class.name", className);
         RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.class.level", 0);
+        RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.class.exp", 0);
         RunicCore.getInstance().saveConfig();
         RunicCore.getInstance().reloadConfig();
     }

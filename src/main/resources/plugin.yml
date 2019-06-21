@@ -28,6 +28,9 @@ commands:
   gathertool:
     usage: /<commands>
     description: give yourself a gathering tool
+  runicgive:
+    usage: /<commands>
+    description: give yourself something
   npcbuilder:
     usage: /<commands>
     description: make an npc!

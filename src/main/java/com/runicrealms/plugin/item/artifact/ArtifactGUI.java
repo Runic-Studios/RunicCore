@@ -177,7 +177,7 @@ public class ArtifactGUI {
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Polished Silver Hammer", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Victorious Gilded Mace", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Ancient Crystal Maul", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
-        clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Gleaming Hammer of Justice", "&aUnlocked!\n&7Reward from &dLoot Chests&7!", 50));
+        clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Gleaming Hammer of Justice", "&aUnlocked!\n&7Reward from &dMystery Boxes&7!", 50));
         return clericSkins;
     }
 

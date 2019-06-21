@@ -5,6 +5,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
+
 public class KnockbackUtil {
 
     private static final double POWER = 0.35;
@@ -17,10 +19,13 @@ public class KnockbackUtil {
         t.setVelocity(v);
     }
 
+    // todo: fix this
     public static void knockback(Entity damager, Entity t) {
         Location l = t.getLocation().subtract(damager.getLocation());
         double distance = t.getLocation().distance(damager.getLocation());
-        Vector v = l.toVector().multiply(POWER/distance);
+        Vector v = l.toVector().normalize().multiply(POWER/distance);
+//        DecimalFormat decimalFormat = new DecimalFormat("#.####");
+//        v.setX(Float.parseFloat(decimalFormat.format(v.getX())));
         v.setY(0.3333);
         t.setVelocity(v);
     }

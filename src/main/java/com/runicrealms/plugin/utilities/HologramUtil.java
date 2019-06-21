@@ -111,7 +111,7 @@ public class HologramUtil {
 
             @Override
             public void run() {
-                if (ticks >= 20 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
+                if (ticks >= 30 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
                     cancel();
                     removeDamageHologram(createFor, stand);
                     return;

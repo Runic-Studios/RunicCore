@@ -136,6 +136,12 @@ public class Invite implements SubCommand {
                 return;
             }
 
+            // if the specified player is more than 15 levels away from the inviter
+            if (Math.abs(sender.getLevel()-target.getLevel()) > 15) {
+                sender.sendMessage(ChatColor.RED + "Specified player is outside party level range [15].");
+                return;
+            }
+
             // if the inviter is an outlaw and the invitee is NOT an outlaw
             if (OutlawManager.isOutlaw(sender) && !OutlawManager.isOutlaw(target)) {
                 sender.sendMessage(ChatColor.RED + "Outlaws may only party with other outlaws.");

@@ -59,7 +59,7 @@ public class ProfExpUtil {
         int totalExpAtLevel = calculateTotalExperience(currentLv);
         int totalExpToLevel = calculateTotalExperience(currentLv+1);
 
-        double progress = (double) (currentExp-totalExpAtLevel) / (totalExpToLevel-totalExpAtLevel);
+        double progress = (double) (currentExp-totalExpAtLevel) / (totalExpToLevel-totalExpAtLevel); // 60 - 55 = 5 / 75 - 55 = 20, 5 /20
         int progressRounded = (int) NumRounder.round(progress * 100);
 
         pl.sendMessage(ChatColor.GREEN + "Progress towards next lv: " + progressRounded + "% "
