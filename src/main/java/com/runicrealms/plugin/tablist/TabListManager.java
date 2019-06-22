@@ -5,6 +5,11 @@ import com.keenant.tabbed.item.TextTabItem;
 import com.keenant.tabbed.tablist.TabList;
 import com.keenant.tabbed.tablist.TableTabList;
 import com.keenant.tabbed.util.Skins;
+import me.glaremasters.guilds.Guilds;
+import me.glaremasters.guilds.api.events.GuildCreateEvent;
+import me.glaremasters.guilds.api.events.GuildJoinEvent;
+import me.glaremasters.guilds.api.events.GuildLeaveEvent;
+import me.glaremasters.guilds.guild.Guild;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -39,13 +44,13 @@ public class TabListManager implements Listener {
         }
     }
 
-    public void setupTab(Player player) {
+    public void setupTab(Player pl) {
 
         // make sure we're starting with a clean slate
-        if (tabbed.getTabList(player) != null) { tabbed.destroyTabList(player); }
+        if (tabbed.getTabList(pl) != null) { tabbed.destroyTabList(pl); }
 
         // build new tablist
-        TableTabList tab = tabbed.newTableTabList(player);
+        TableTabList tab = tabbed.newTableTabList(pl);
 
         // header, footer
         tab.setHeaderFooter
@@ -57,34 +62,41 @@ public class TabListManager implements Listener {
         tab.set(0, 0, new TextTabItem
                 (ChatColor.YELLOW + "" + ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]",0, Skins.getDot(ChatColor.YELLOW)));
 
-        // fill column with online players
+        // fill column with online players, stop after first column
         int i = 0;
         for (Player online : Bukkit.getOnlinePlayers()) {
+            if (i > 19) break;
             if (online.hasMetadata("NPC")) continue;
-            if (online.getName() != null) {
-                tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
-            } else {
-                tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
-            }
+            tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
             i++;
         }
 
         // Column 2 (Guild)
-        tab.set(1, 0, new TextTabItem
-                (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]" , 0, Skins.getDot(ChatColor.GOLD)));
+        Guild guild = Guilds.getApi().getGuild(Bukkit.getOfflinePlayer(pl.getUniqueId()));
+        if (guild == null) {
+            tab.set(1, 0, new TextTabItem
+                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));
+        } else {
+            tab.set(1, 0, new TextTabItem
+                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + guild.getOnlineAsPlayers().size() + "]", 0, Skins.getDot(ChatColor.GOLD)));
+            int j = 0;
+            for (Player guildy : guild.getOnlineAsPlayers()) {
+                tab.set(1, j + 1, new TextTabItem(guildy.getName(), 0, Skins.getPlayer(guildy)));
+                j++;
+            }
+        }
 
         // Column 3 (Party)
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+        if (RunicCore.getPartyManager().getPlayerParty(pl) == null) {
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [0]", 0, Skins.getDot(ChatColor.GREEN)));
         } else {
-            Party party = RunicCore.getPartyManager().getPlayerParty(player);
+            Party party = RunicCore.getPartyManager().getPlayerParty(pl);
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getPartySize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
-            int j = 0;
+            int k = 0;
             for (Player member : party.getPlayerMembers()) {
-                tab.set(2, j+1, new TextTabItem(member.getName(), 0, Skins.getPlayer(member)));
-                j++;
+                tab.set(2, k + 1, new TextTabItem(member.getName(), 0, Skins.getPlayer(member)));
             }
         }
 

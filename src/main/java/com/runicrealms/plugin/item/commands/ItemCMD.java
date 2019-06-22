@@ -7,6 +7,7 @@ import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.LoreGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -63,6 +64,23 @@ public class ItemCMD implements SubCommand {
         String itemSlot = "";
         Random random = new Random();
         int randomNum = random.nextInt(5) + 1;
+        if (itemType.toLowerCase().equals("armor")) {
+            int type = random.nextInt(4) + 1;
+            switch (type) {
+                case 1:
+                    itemType = "helmet";
+                    break;
+                case 2:
+                    itemType = "chestplate";
+                    break;
+                case 3:
+                    itemType = "leggings";
+                    break;
+                case 4:
+                    itemType = "boots";
+                    break;
+            }
+        }
         switch (itemType.toLowerCase()) {
             case "helmet":
                 material = Material.SHEARS;
@@ -213,11 +231,20 @@ public class ItemCMD implements SubCommand {
 
         // check that the player has an open inventory space
         // this method prevents items from stacking if the player crafts 5
-        if (pl.getInventory().firstEmpty() != -1) {
-            int firstEmpty = pl.getInventory().firstEmpty();
-            pl.getInventory().setItem(firstEmpty, craftedItem);
-        } else {
-            pl.getWorld().dropItem(pl.getLocation(), craftedItem);
+
+        // quests, or directly in inventory
+        if (args.length == 4) {
+            if (pl.getInventory().firstEmpty() != -1) {
+                int firstEmpty = pl.getInventory().firstEmpty();
+                pl.getInventory().setItem(firstEmpty, craftedItem);
+            } else {
+                pl.getWorld().dropItem(pl.getLocation(), craftedItem);
+            }
+
+        // mob drops
+        } else if (args.length == 7) {
+            Location loc = new Location(pl.getWorld(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]));
+            pl.getWorld().dropItem(loc, craftedItem);
         }
     }
 
@@ -497,7 +524,7 @@ public class ItemCMD implements SubCommand {
         return className;
     }
 
-    public List<Integer> determineWhichStats(int totalNumOfStats, int statUpTo) {
+    private List<Integer> determineWhichStats(int totalNumOfStats, int statUpTo) {
 
         // ex: if statUpTo is 3, it will add 1, 2, and 3, corresponding to +health, +mana, and +healing (order of gemstones)
         List<Integer> howManyDiffStatsDoWeHave = new ArrayList<>();

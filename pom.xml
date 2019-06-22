@@ -120,19 +120,14 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/MythicMobs-4.5.5.jar</systemPath>
         </dependency>
-
-
-
-        <!-- Heroes -->
+        <!-- Guilds -->
         <dependency>
-            <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>heroes</artifactId>
-            <version>4.5.5</version>
+            <groupId>me.glaremasters</groupId>
+            <artifactId>guilds</artifactId>
+            <version>3.4.7</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Heroes 1.12.x.jar</systemPath>
+            <systemPath>${project.basedir}/lib/Guilds-3.4.7-RELEASE.jar</systemPath>
         </dependency>
-
-
         <!-- NBT Api -->
         <dependency>
             <groupId>com.github.tr7zw</groupId>

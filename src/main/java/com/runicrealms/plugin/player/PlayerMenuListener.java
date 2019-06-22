@@ -132,6 +132,11 @@ public class PlayerMenuListener implements Listener {
                 }
             }
         }
+
+        // prevent question marks from dropping out of quest journal
+        if (event.getInventory().getTitle().toLowerCase().contains("quest journal")) {
+            event.setCancelled(true);
+        }
     }
 
     private static boolean isPlayerCraftingInv(InventoryView view) {

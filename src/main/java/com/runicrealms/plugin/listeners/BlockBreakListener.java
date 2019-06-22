@@ -3,10 +3,14 @@ package com.runicrealms.plugin.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 
 /**
  * Prevents players from breaking blocks on the server, but doesn't listen for gathering materials, since those
@@ -64,9 +68,36 @@ public class BlockBreakListener implements Listener {
         }
     }
 
+    /**
+     * Prevent players from ever placing blocks
+     */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
         if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            e.setCancelled(true);
+        }
+    }
+
+    /**
+     * Prevent item frame destruction
+     */
+    @EventHandler
+    public void onItemFrameBreak(HangingBreakByEntityEvent e) {
+        if (e.getRemover() == null) return;
+        if (!(e.getRemover() instanceof Player)) e.setCancelled(true);
+        if (e.getEntity() instanceof ItemFrame
+                && e.getRemover() instanceof Player
+                && !e.getRemover().isOp()) {
+            e.setCancelled(true);
+        }
+    }
+
+    /**
+     * Prevents item frame item removal
+     */
+    @EventHandler
+    public void itemFrameItemRemoval(EntityDamageEvent e) {
+        if (e.getEntity() instanceof ItemFrame) {
             e.setCancelled(true);
         }
     }

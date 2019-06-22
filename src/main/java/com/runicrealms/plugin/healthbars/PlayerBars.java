@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.healthbars;
 
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -27,22 +29,16 @@ public class PlayerBars implements Listener {
     private HashMap<UUID, BukkitRunnable> currentRunnables = new HashMap<>();
 
     @EventHandler
-    public void onCombat(EntityDamageByEntityEvent e) {
+    public void onCombat(WeaponDamageEvent e) {
 
         // only listen for two players, or arrows
-        if (!(e.getDamager() instanceof Player) && !(e.getDamager() instanceof Arrow)) return;
         if (!(e.getEntity() instanceof Player)) return;
 
         // ignore NPCs
         if (e.getEntity().hasMetadata("NPC")) return;
 
         // grab our variables
-        Player damager;
-        if (e.getDamager() instanceof Arrow) {
-            damager = (Player) ((Arrow) e.getDamager()).getShooter();
-        } else {
-            damager = (Player) e.getDamager();
-        }
+        Player damager = e.getPlayer();
         Player victim = (Player) e.getEntity();
 
         // ignore party members
@@ -58,14 +54,98 @@ public class PlayerBars implements Listener {
         UUID victimID = victim.getUniqueId();
 
         // set bar's display to enemy's health
-        double health = victim.getHealth() - e.getDamage();
+        double health = victim.getHealth() - e.getAmount();
 
         if (health <= 0) return;
+
+        if (damager.getInventory().getHeldItemSlot() != 0) return;
 
         // -------------------------------------------------------------------------
         // display the bar, add the player to our hashmap so we can remove 'em later, set the progress, title
         BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
-        //String name = RunicCore.getInstance().getConfig().get(victim.getUniqueId() + ".info.name").toString();
+        String name = victim.getName();
+        bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        bossBar.setTitle(name + " " + ChatColor.RED + (int) (health) + ChatColor.DARK_RED + " ❤");
+
+        // remove the player from the map to prevent duplicate health bars
+        if (bossBarHashMap.containsKey(damagerID)) {
+            bossBarHashMap.get(damagerID).removePlayer(damager);
+        }
+
+        bossBar.addPlayer(damager);
+        bossBarHashMap.put(damagerID, bossBar);
+        // -------------------------------------------------------------------------
+
+        // set the victim to the damager's current target (so their health can be tracked by the method below)
+        if (currentTarget.containsValue(damagerID)) {
+            currentTarget.values().remove(damagerID);
+        }
+        currentTarget.put(victimID, damagerID);
+
+//        if (currentRunnables.containsKey(damagerID)) {
+//            currentRunnables.get(damagerID).cancel();
+//            currentRunnables.remove(damagerID);
+//        }
+
+        // start the repeating task to remove the healthbar
+        if (!currentRunnables.containsKey(damagerID)) {
+            BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+
+                    if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
+                        if (bossBarHashMap.containsKey(damagerID)) {
+                            bossBarHashMap.get(damagerID).removePlayer(damager);
+                            bossBarHashMap.remove(damagerID);
+                        }
+                        currentRunnables.remove(damagerID);
+                        currentTarget.remove(victimID);
+                        this.cancel();
+                    }
+                }
+            };
+            runnable.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20);
+
+            // prevent multiple runnables from happening
+            currentRunnables.put(damagerID, runnable);
+        }
+    }
+
+    @EventHandler
+    public void onCombat(SpellDamageEvent e) {
+
+        // only listen for two players, or arrows
+        if (!(e.getEntity() instanceof Player)) return;
+
+        // ignore NPCs
+        if (e.getEntity().hasMetadata("NPC")) return;
+
+        // grab our variables
+        Player damager = e.getPlayer();
+        Player victim = (Player) e.getEntity();
+
+        // ignore party members
+        if (RunicCore.getPartyManager().getPlayerParty(damager) != null
+                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim)) {
+            return;
+        }
+
+        // player can't enter combat with themselves
+        if (damager == victim) return;
+
+        UUID damagerID = damager.getUniqueId();
+        UUID victimID = victim.getUniqueId();
+
+        // set bar's display to enemy's health
+        double health = victim.getHealth() - e.getAmount();
+
+        if (health <= 0) return;
+
+        if (damager.getInventory().getHeldItemSlot() != 0) return;
+
+        // -------------------------------------------------------------------------
+        // display the bar, add the player to our hashmap so we can remove 'em later, set the progress, title
+        BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
         String name = victim.getName();
         bossBar.setProgress(health / victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         bossBar.setTitle(name + " " + ChatColor.RED + (int) (health) + ChatColor.DARK_RED + " ❤");

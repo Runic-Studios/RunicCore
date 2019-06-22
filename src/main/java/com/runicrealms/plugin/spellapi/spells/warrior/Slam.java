@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -87,6 +88,10 @@ public class Slam extends Spell {
                     for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
 
                         if (en == (pl)) continue;
+
+                        if (en instanceof Player && !OutlawManager.isOutlaw(((Player) en)) || !OutlawManager.isOutlaw(pl)) {
+                            continue;
+                        }
 
                         if (en.getType().isAlive()) {
 
