@@ -119,6 +119,12 @@ public class DamageListener implements Listener {
 
                 // call our successful hit event, ensure that the item is the artifact
                 if (slot != 0) return;
+
+                // outlaw check
+                if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
+                    return;
+                }
+
                 WeaponDamageEvent event = new WeaponDamageEvent(randomNum, (Player) damager, victim);
                 Bukkit.getPluginManager().callEvent(event);
 

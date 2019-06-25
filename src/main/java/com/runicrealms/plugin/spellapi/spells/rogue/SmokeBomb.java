@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -84,6 +85,11 @@ public class SmokeBomb extends Spell {
 
                             // ignore the caster
                             if (entity == player) {
+                                continue;
+                            }
+
+                            // outlaw check
+                            if (entity instanceof Player && (!OutlawManager.isOutlaw(((Player) entity)) || !OutlawManager.isOutlaw(player))) {
                                 continue;
                             }
 

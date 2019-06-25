@@ -25,16 +25,6 @@ public class CurrencyGive implements SubCommand {
 
     @Override
     public void onConsoleCommand(CommandSender sender, String[] args) {
-        this.onUserCommand((Player) sender, args);
-    }
-
-    @Override
-    public void onOPCommand(Player sender, String[] args) {
-        this.onUserCommand(sender, args);
-    }
-
-    @Override
-    public void onUserCommand(Player sender, String[] args) {
 
         // if the sender does not specify the correct arguments
         if (args.length != 3) {
@@ -53,6 +43,16 @@ public class CurrencyGive implements SubCommand {
                 pl.getWorld().dropItem(pl.getLocation(), CurrencyUtil.goldCoin());
             }
         }
+    }
+
+    @Override
+    public void onOPCommand(Player sender, String[] args) {
+        this.onConsoleCommand(sender, args);
+    }
+
+    @Override
+    public void onUserCommand(Player sender, String[] args) {
+        this.onConsoleCommand(sender, args);
     }
 
     @Override

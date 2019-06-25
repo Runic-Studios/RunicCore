@@ -171,11 +171,15 @@ public class JewelerGUI extends Workstation {
                     }
                 }
 
+                // destroy instance of inventory to prevent bugs
+                event.setWillClose(true);
+                event.setWillDestroy(true);
+
                 // craft item based on experience and reagent amount
                 super.startCrafting(pl, reqHashMap, 1, reqLevel, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
-                        ((Damageable) meta).getDamage(), Particle.WATER_SPLASH,
-                        Sound.BLOCK_BREWING_STAND_BREW, Sound.ENTITY_GENERIC_DRINK, dummyVar, mult);
+                        ((Damageable) meta).getDamage(), Particle.FIREWORKS_SPARK,
+                        Sound.BLOCK_ANVIL_PLACE, Sound.BLOCK_ANVIL_USE, dummyVar, mult);
             }
         });
 

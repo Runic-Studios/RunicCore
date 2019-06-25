@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -104,11 +105,14 @@ public class Rejuvenate extends Spell {
 
                     // ignore NPCs, additional check for tutorial island
                     if (le.hasMetadata("NPC")) {
-                        if (!pl.hasPermission("tutorial.complete.cleric") || pl.isOp()) {
-                            pl.chat("healpass");
+                        SpellCastEvent sce = new SpellCastEvent(pl, this, le);
+                        Bukkit.getPluginManager().callEvent(sce);
+                        if (sce.isCancelled()) return;
+//                        if (//todo: tap into quest objective) {
+//                            pl.chat("healpass");
                             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
                             le.getWorld().spawnParticle(Particle.HEART, le.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
-                        }
+//                        }
                         continue;
                     }
 

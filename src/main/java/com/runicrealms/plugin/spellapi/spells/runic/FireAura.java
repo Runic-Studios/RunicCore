@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.runic;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -54,13 +55,18 @@ public class FireAura extends Spell {
 
                         LivingEntity victim = (LivingEntity) en;
 
+                        // outlaw check
+                        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
+                            continue;
+                        }
+
                         // skip NPCs
-                        if (victim.hasMetadata("NPC")) return;
+                        if (victim.hasMetadata("NPC")) continue;
 
                         // skip party members
                         if (RunicCore.getPartyManager().getPlayerParty(player) != null
                                 && RunicCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) {
-                            return;
+                            continue;
                         }
 
                         // damage enemies

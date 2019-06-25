@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
@@ -86,6 +87,11 @@ public class ArcaneShackles extends Spell {
 
                                     // ignore NPCs
                                     if (entity.hasMetadata("NPC")) continue;
+
+                                    // outlaw check
+                                    if (entity instanceof Player && (!OutlawManager.isOutlaw(((Player) entity)) || !OutlawManager.isOutlaw(pl))) {
+                                        return;
+                                    }
 
                                     // skip party members
                                     if (RunicCore.getPartyManager().getPlayerParty(pl) != null

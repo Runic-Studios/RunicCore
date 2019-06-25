@@ -89,7 +89,7 @@ public class Slam extends Spell {
 
                         if (en == (pl)) continue;
 
-                        if (en instanceof Player && !OutlawManager.isOutlaw(((Player) en)) || !OutlawManager.isOutlaw(pl)) {
+                        if (en instanceof Player && (!OutlawManager.isOutlaw(((Player) en)) || !OutlawManager.isOutlaw(pl))) {
                             continue;
                         }
 

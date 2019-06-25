@@ -53,7 +53,7 @@ public class FishingListener implements Listener {
         Material itemType;
         String itemName;
         String holoString;
-        String desc = "Raw Material";
+        String desc = "Crafting Reagent";
 
         PlayerFishEvent.State state = e.getState();
         if (state == PlayerFishEvent.State.CAUGHT_ENTITY || state == PlayerFishEvent.State.CAUGHT_FISH) {

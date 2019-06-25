@@ -36,8 +36,11 @@ commands:
     usage: /<commands>
     description: make an npc!
   spellpoint:
-    usage:
+    usage: /<commands>
     description: add a spellpoint to a player
+  travel:
+    usage: /<commands>
+    description: travel to location
   tutorial:
     usage: /<commands>
     description: used for tutorial-related commands

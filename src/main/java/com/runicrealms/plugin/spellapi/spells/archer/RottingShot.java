@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -81,6 +82,11 @@ public class RottingShot extends Spell {
 
         // ignore NPCs
         if (le.hasMetadata("NPC")) {
+            return;
+        }
+
+        // outlaw check
+        if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
             return;
         }
 

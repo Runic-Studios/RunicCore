@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.runic;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
@@ -52,10 +53,16 @@ public class Fireball extends Spell {
 
         // grab our variables
         Player player = (Player) fireball.getShooter();
+        if (player == null) return;
         LivingEntity victim = (LivingEntity) event.getEntity();
 
         // skip NPCs
         if (victim.hasMetadata("NPC")) return;
+
+        // outlaw check
+        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
+            return;
+        }
 
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(player) != null

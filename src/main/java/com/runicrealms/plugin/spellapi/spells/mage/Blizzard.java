@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.DirectionUtil;
@@ -92,12 +94,13 @@ public class Blizzard extends Spell {
         Set<ProtectedRegion> regions = set.getRegions();
         if (regions == null) return;
         for (ProtectedRegion region : regions) {
-            if (region.getId().contains("tutorial_mage")
-                    && (!pl.hasPermission("tutorial.complete.mage") || pl.isOp())) {
+            if (region.getId().contains("tutorial_mage")) {
 
                 // ensure player is facing the flames
                 if (!DirectionUtil.getDirection(pl).equals("S")) return;
-                pl.chat("blizzpass");
+                SpellCastEvent sce = new SpellCastEvent(pl, this);
+                Bukkit.getPluginManager().callEvent(sce);
+                if (sce.isCancelled()) return;
                 pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1);
                 pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2336, 37, 1738), Material.ICE.createBlockData());
                 pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2335, 37, 1738), Material.ICE.createBlockData());
@@ -128,6 +131,11 @@ public class Blizzard extends Spell {
 
             // skip the caster
             if (victim.getUniqueId() == shooter.getUniqueId()) return;
+
+            // outlaw check
+            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(shooter))) {
+                return;
+            }
 
             // skip party members
             if (RunicCore.getPartyManager().getPlayerParty(shooter) != null

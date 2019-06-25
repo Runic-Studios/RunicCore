@@ -2,19 +2,17 @@ package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.command.subcommands.CurrencyGive;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
+import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.subcommands.set.SetProfCMD;
-import com.runicrealms.plugin.command.supercommands.CurrencySC;
-import com.runicrealms.plugin.command.supercommands.PartySC;
-import com.runicrealms.plugin.command.supercommands.SpellpointSC;
+import com.runicrealms.plugin.command.supercommands.*;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBars;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.artifact.ArtifactListener;
 import com.runicrealms.plugin.item.commands.ItemCMD;
-import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.rune.RuneListener;
 import com.runicrealms.plugin.listeners.*;
@@ -211,6 +209,11 @@ public class RunicCore extends JavaPlugin {
         SpellpointSC spellpointSC = new SpellpointSC();
         getCommand("spellpoint").setExecutor(spellpointSC);
         spellpointSC.addCommand(Arrays.asList("give"), new Spellpoint(spellpointSC));
+
+        // travel
+        TravelSC travelSC = new TravelSC();
+        getCommand("travel").setExecutor(travelSC);
+        travelSC.addCommand(Arrays.asList("fast"), new FastTravel(travelSC));
 
         // tutorial
         TutorialSC tutorialSC = new TutorialSC();

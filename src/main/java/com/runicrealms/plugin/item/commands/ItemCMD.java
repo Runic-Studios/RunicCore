@@ -282,12 +282,11 @@ public class ItemCMD implements SubCommand {
         int health = rand.nextInt(maxHealth) + 1;
         int mana = rand.nextInt(maxMana) + 1;
 
-        List<Integer> stats = determineWhichStats(numOfStats, 2);
+        //List<Integer> stats = determineWhichStats(numOfStats, 2); // 1 or 2
 
-        if (stats.contains(1)) {
-            item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
-        }
-        if (stats.contains(2)) {
+        item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
+
+        if (numOfStats == 1) {
             item = AttributeUtil.addCustomStat(item, "custom.manaBoost", mana);
         }
 
@@ -335,11 +334,11 @@ public class ItemCMD implements SubCommand {
         int mana = rand.nextInt(maxMana) + 7;
         int meleeDamage = rand.nextInt(weapDamage) + 1;
 
-        List<Integer> stats = determineWhichStats(numOfStats, 3);
+        List<Integer> stats = determineWhichStats(numOfStats, 3); // 1 or 2 stats in addition to health
 
-        if (stats.contains(1)) {
-            item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
-        }
+
+        item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
+
         if (stats.contains(2)) {
             item = AttributeUtil.addCustomStat(item, "custom.manaBoost", mana);
         }
@@ -364,11 +363,13 @@ public class ItemCMD implements SubCommand {
         int maxMana = 0;
         int weapDamage = 2;
         int maxHealing = 8;
+        int spellDamage = 4;
         String className = determineClass(item, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 10;
                 maxMana = 30;
+                spellDamage = 6;
                 break;
             case "rogue":
                 maxHealth = 12;
@@ -392,11 +393,11 @@ public class ItemCMD implements SubCommand {
         int mana = rand.nextInt(maxMana) + 12;
         int healing = rand.nextInt(maxHealing) + 1;
 
-        List<Integer> stats = determineWhichStats(2, 4);
+        List<Integer> stats = determineWhichStats(2, 5);
 
-        if (stats.contains(1)) {
+      //  if (stats.contains(1)) {
             item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
-        }
+       // }
         if (stats.contains(2)) {
             item = AttributeUtil.addCustomStat(item, "custom.manaBoost", mana);
         }
@@ -405,6 +406,9 @@ public class ItemCMD implements SubCommand {
         }
         if (stats.contains(4)) {
             item = AttributeUtil.addCustomStat(item, "custom.healingBoost", healing);
+        }
+        if (stats.contains(5)) {
+            item = AttributeUtil.addCustomStat(item, "custom.magicDamage", spellDamage);
         }
 
 
@@ -425,11 +429,13 @@ public class ItemCMD implements SubCommand {
         int maxMana = 0;
         int weapDamage = 3;
         int maxHealing = 12;
+        int spellDamage = 8;
         String className = determineClass(item, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 12;
                 maxMana = 35;
+                spellDamage = 10;
                 break;
             case "rogue":
                 maxHealth = 15;
@@ -455,9 +461,9 @@ public class ItemCMD implements SubCommand {
 
         List<Integer> stats = determineWhichStats(2, 5);
 
-        if (stats.contains(1)) {
+       // if (stats.contains(1)) {
             item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
-        }
+      //  }
         if (stats.contains(2)) {
             item = AttributeUtil.addCustomStat(item, "custom.manaBoost", mana);
         }
@@ -466,6 +472,9 @@ public class ItemCMD implements SubCommand {
         }
         if (stats.contains(4)) {
             item = AttributeUtil.addCustomStat(item, "custom.healingBoost", healing);
+        }
+        if (stats.contains(5)) {
+            item = AttributeUtil.addCustomStat(item, "custom.magicDamage", spellDamage);
         }
 
 
@@ -528,7 +537,7 @@ public class ItemCMD implements SubCommand {
 
         // ex: if statUpTo is 3, it will add 1, 2, and 3, corresponding to +health, +mana, and +healing (order of gemstones)
         List<Integer> howManyDiffStatsDoWeHave = new ArrayList<>();
-        for (int i = 1; i <=statUpTo; i++) {
+        for (int i = 1; i <= statUpTo; i++) {
             howManyDiffStatsDoWeHave.add(i);
         }
 
@@ -541,7 +550,11 @@ public class ItemCMD implements SubCommand {
 
             // take a raundom index between 0 to size
             // of given List
-            int randomIndex = rand.nextInt(howManyDiffStatsDoWeHave.size());
+            int bound = howManyDiffStatsDoWeHave.size() - 1;
+            if (bound <= 0) {
+                bound = 1;
+            }
+            int randomIndex = rand.nextInt(bound) + 1;
 
             // add element in temporary list
             newList.add(howManyDiffStatsDoWeHave.get(randomIndex));

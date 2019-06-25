@@ -97,6 +97,7 @@ public class TabListManager implements Listener {
             int k = 0;
             for (Player member : party.getPlayerMembers()) {
                 tab.set(2, k + 1, new TextTabItem(member.getName(), 0, Skins.getPlayer(member)));
+                k++;
             }
         }
 

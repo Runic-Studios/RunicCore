@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
@@ -80,6 +81,11 @@ public class Discharge extends Spell {
 
                                     // ignore NPCs
                                     if (entity.hasMetadata("NPC")) continue;
+
+                                    // outlaw check
+                                    if (entity instanceof Player && (!OutlawManager.isOutlaw(((Player) entity)) || !OutlawManager.isOutlaw(pl))) {
+                                        continue;
+                                    }
 
                                     // skip party members
                                     if (RunicCore.getPartyManager().getPlayerParty(pl) != null

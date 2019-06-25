@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
+import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -64,12 +66,15 @@ public class Barrage extends Spell {
         Set<ProtectedRegion> regions = set.getRegions();
         if (regions == null) return;
         for (ProtectedRegion region : regions) {
-            if (region.getId().contains("tutorial_archer")
-                    && (!pl.hasPermission("tutorial.complete.archer") || pl.isOp())) {
+            if (region.getId().contains("tutorial_archer")) {
 
                 // ensure player is facing the targets
                 if (!DirectionUtil.getDirection(pl).equals("S")) return;
-                pl.chat("barragepass");
+                SpellCastEvent sce = new SpellCastEvent(pl, this);
+                Bukkit.getPluginManager().callEvent(sce);
+                if (sce.isCancelled()) return;
+                pl.spawnParticle(Particle.SMOKE_LARGE, new Location(Bukkit.getWorld("Alterra"), -2279, 38, 1829), 15, 0, 0, 0, 0); // left target
+                pl.spawnParticle(Particle.SMOKE_LARGE, new Location(Bukkit.getWorld("Alterra"), -2386, 38, 1825), 15, 0, 0, 0, 0); // right target
             }
         }
         // -----------------------------------------------------------------------------------------
@@ -125,6 +130,11 @@ public class Barrage extends Spell {
 
             // ignore NPCs
             if (le.hasMetadata("NPC")) {
+                return;
+            }
+
+            // outlaw check
+            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
                 return;
             }
 

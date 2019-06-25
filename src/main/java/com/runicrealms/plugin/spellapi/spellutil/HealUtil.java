@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -26,11 +27,11 @@ public class HealUtil  {
         SpellHealEvent event = new SpellHealEvent((int) healAmt, recipient, caster);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
+
         healAmt = event.getAmount();
 
         double newHP = recipient.getHealth() + healAmt;
         double difference = recipient.getMaxHealth() - recipient.getHealth();
-
         // if they are missing less than healAmt
         if (newHP > recipient.getMaxHealth()) {
 

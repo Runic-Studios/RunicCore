@@ -84,6 +84,10 @@ public class CookingGUI extends Workstation {
                 ItemMeta meta = Objects.requireNonNull(event.getCurrentItem()).getItemMeta();
                 if (meta == null) return;
 
+                // destroy instance of inventory to prevent bugs
+                event.setWillClose(true);
+                event.setWillDestroy(true);
+
                 // craft item based on experience and reagent amount
                 super.startCrafting(pl, breadReqs, 0, 0, event.getCurrentItem().getType(),
                         meta.getDisplayName(), 0, 0,

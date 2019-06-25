@@ -81,36 +81,34 @@ public abstract class Workstation {
         desc.append("\n&7Material(s) Required:\n");
 
         String[] reqsAsList = reqsToString.split("\n");
-        if (pl.isOp() || currentLvl >= reqLevel) {
 
-            // add every item in the reagents keyset with its associated amount.
-            // if there is only one reagent in the keyset, it uses the 'itemAmt' field instead.
-            int i = 0;
+        // add every item in the reagents keyset with its associated amount.
+        // if there is only one reagent in the keyset, it uses the 'itemAmt' field instead.
+        int i = 0;
 
-                for (Material reagent : itemReqs.keySet()) {
-                    int amt = itemReqs.get(reagent);
-                    if (reqsAsList.length <= 1) {
-                        amt = itemAmt;
-                    }
-                    if (pl.getInventory().contains(reagent, amt)) {
-                        desc.append("&a").append(reqsAsList[i]).append("&7, &f").append(amt).append("\n");
-                    } else {
-                        desc.append("&c").append(reqsAsList[i]).append("&7, &f").append(amt).append("\n");
-                    }
-                    i += 1;
+            for (Material reagent : itemReqs.keySet()) {
+                int amt = itemReqs.get(reagent);
+                if (reqsAsList.length <= 1) {
+                    amt = itemAmt;
                 }
-
-
-                desc.append("\n&7Success Rate:\n")
-                        .append(rateToStr).append("%\n\n")
-                        .append(ChatColor.WHITE).append("Left Click ")
-                        .append(ChatColor.DARK_GRAY).append("to craft\n")
-                        .append(ChatColor.WHITE).append("Right Click ")
-                        .append(ChatColor.DARK_GRAY).append("to craft 5");
-                if (exp > 0) {
-                    desc.append("\n\n&7&oRewards &f&o").append(exp).append(" &7&oExperience");
+                if (pl.getInventory().contains(reagent, amt)) {
+                    desc.append("&a").append(reqsAsList[i]).append("&7, &f").append(amt).append("\n");
+                } else {
+                    desc.append("&c").append(reqsAsList[i]).append("&7, &f").append(amt).append("\n");
                 }
-        }
+                i += 1;
+            }
+
+
+            desc.append("\n&7Success Rate:\n")
+                    .append(rateToStr).append("%\n\n")
+                    .append(ChatColor.WHITE).append("Left Click ")
+                    .append(ChatColor.DARK_GRAY).append("to craft\n")
+                    .append(ChatColor.WHITE).append("Right Click ")
+                    .append(ChatColor.DARK_GRAY).append("to craft 5");
+            if (exp > 0) {
+                desc.append("\n\n&7&oRewards &f&o").append(exp).append(" &7&oExperience");
+            }
 
         desc = new StringBuilder(ColorUtil.format(desc.toString()));
 

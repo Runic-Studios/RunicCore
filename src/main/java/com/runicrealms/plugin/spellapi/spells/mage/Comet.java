@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -79,6 +80,11 @@ public class Comet extends Spell {
 
                         // skip our caster
                         if (entity.equals(pl)) {
+                            continue;
+                        }
+
+                        // outlaw check
+                        if (entity instanceof Player && (!OutlawManager.isOutlaw(((Player) entity)) || !OutlawManager.isOutlaw(pl))) {
                             continue;
                         }
 

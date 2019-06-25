@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.runic;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
@@ -69,6 +70,11 @@ public class Harpoon extends Spell {
 
         // skip NPCs
         if (victim.hasMetadata("NPC")) return;
+
+        // outlaw check
+        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
+            return;
+        }
 
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(player) != null

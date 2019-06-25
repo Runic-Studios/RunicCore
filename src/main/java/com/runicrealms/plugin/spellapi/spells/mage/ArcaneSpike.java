@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -78,6 +79,11 @@ public class ArcaneSpike extends Spell {
                 // ignore NPCs
                 if (victim.hasMetadata("NPC")) {
                     continue;
+                }
+
+                // outlaw check
+                if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
+                    return;
                 }
 
                 // skip party members

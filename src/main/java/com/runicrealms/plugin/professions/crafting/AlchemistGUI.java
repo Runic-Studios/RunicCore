@@ -178,6 +178,10 @@ public class AlchemistGUI extends Workstation {
                     }
                 }
 
+                // destroy instance of inventory to prevent bugs
+                event.setWillClose(true);
+                event.setWillDestroy(true);
+
                 // craft item based on experience and reagent amount
                 super.startCrafting(pl, reqHashMap, 999, reqLevel, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
@@ -301,12 +305,10 @@ public class AlchemistGUI extends Workstation {
             lore.add(ColorUtil.format("&7Consumable"));
             pMeta.setLore(lore);
 
-            pMeta.setUnbreakable(true);
             pMeta.addEnchant(Enchantment.DURABILITY, 1, true);
             pMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
             pMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             pMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            pMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
             potion.setItemMeta(pMeta);
 
             // ----------------------------------------------
