@@ -39,7 +39,6 @@ public class HearthstoneListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandSendEvent e) {
 
-        Bukkit.broadcastMessage("called");
         if (!HearthstoneCMD.getHearthstoneChangers().contains(e.getPlayer().getUniqueId())) return;
 
         for (String s : e.getCommands()) {
