@@ -131,7 +131,7 @@ public class ArtifactGUI {
             // check for permissions, based on position. So a wood staff needs:
             // ftr.skins.mage.20
             String desc;
-            if (!pl.hasPermission("core.skins." + className + (20+i)) && i != 0) {
+            if (!pl.hasPermission("core.skins." + className + "." + (20+i)) && i != 0) {
                 String desc2 = skins.get(i).getItemMeta().getLore().get(0).split("\n")[1];
                 desc = "&cYou haven't unlocked this appearance yet" + "\n" + desc2;
             } else {
@@ -146,7 +146,7 @@ public class ArtifactGUI {
         for (int j = 5; j < skins.size(); j++) {
 
             String desc;
-            if (!pl.hasPermission("core.skins." + className + (29+(j-5)))) {
+            if (!pl.hasPermission("core.skins." + className + "." + (29+(j-5)))) {
                 String desc2 = skins.get(j).getItemMeta().getLore().get(0).split("\n")[1];
                 desc = "&cYou haven't unlocked this appearance yet" + "\n" + desc2;
             } else {
@@ -218,7 +218,7 @@ public class ArtifactGUI {
     private static void applySkin(Player pl, String className, int position,
                                   Material material, String name, int durab) {
 
-        if (!pl.hasPermission("ftr.skins." + className + position) && position != 20) {
+        if (!pl.hasPermission("core.skins." + className + "." + position) && position != 20) {
             pl.sendMessage(ColorUtil.format("&cYou haven't unlocked this appearance yet!"));
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             return;

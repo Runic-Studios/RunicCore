@@ -87,7 +87,7 @@ public class SetClassCMD implements SubCommand {
 
             setupArtifact(pl, formattedStr, true);
             setupRune(pl);
-            setupHearthstone(pl);
+            setupHearthstone(pl, "General Tso's Camp");
             setConfig(pl, formattedStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);

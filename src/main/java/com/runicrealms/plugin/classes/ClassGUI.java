@@ -26,11 +26,11 @@ public class ClassGUI implements InventoryProvider {
     // base attack speed, damage values for each class' artifact
     // max attack speed is 24.0, so 24+(-23.0) = 1.0 attack speed
     // bows use a different NBT tag.
-    private static final double archerBaseBowSpeed = -23.25;
-    private static final double clericBaseSpeed = -23.4;
-    private static final double mageBaseSpeed = -23.4;
-    private static final double rogueBaseSpeed = -22.8;
-    private static final double warriorBaseSpeed = -23.25;
+    private static final double archerBaseBowSpeed = -23.2; // 0.8
+    private static final double clericBaseSpeed = -23.0; // 1.0
+    private static final double mageBaseSpeed = -23.2; // 0.8
+    private static final double rogueBaseSpeed = -22.6; // 1.4
+    private static final double warriorBaseSpeed = -22.8; // 1.2
 
     private static final double archerBaseDamage = 4;
     private static final double clericBaseDamage = 8;
@@ -111,7 +111,7 @@ public class ClassGUI implements InventoryProvider {
     private void setupPlayer(Player pl, String className, InventoryContents contents) {
         setupArtifact(pl, className, false);
         setupRune(pl);
-        setupHearthstone(pl);
+        setupHearthstone(pl, "General Tso's Camp");
         setConfig(pl, className);
         contents.inventory().close(pl);
         sbh.updatePlayerInfo(pl);
@@ -232,7 +232,7 @@ public class ClassGUI implements InventoryProvider {
                     player.sendTitle(
                             ChatColor.GOLD + "Try",
                             ChatColor.YELLOW + "Sneak + Left-Click!", 10, 100, 10);
-                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Left-Click " + ChatColor.GRAY + "to cast charge!");
+                    player.sendMessage(ChatColor.GOLD + "Try " + ChatColor.YELLOW + "Sneak + Left-Click " + ChatColor.GRAY + "to cast slam!");
                 } else {
                     player.sendTitle(
                             ChatColor.DARK_RED + "You selected",
@@ -300,9 +300,10 @@ public class ClassGUI implements InventoryProvider {
         pl.getInventory().setItem(1, rune);
     }
 
-    public static void setupHearthstone(Player pl) {
+    public static void setupHearthstone(Player pl, String location) {
+        location = location.replace("_", " ");
         ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
-        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", "Tutorial Island");
+        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", location);
         hearthstone = AttributeUtil.addCustomStat(hearthstone, "soulbound", "true");
         LoreGenerator.generateHearthstoneLore(hearthstone);
         pl.getInventory().setItem(2, hearthstone);

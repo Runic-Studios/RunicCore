@@ -1,9 +1,12 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.event.EventPriority;
@@ -154,18 +157,24 @@ public class BowListener implements Listener {
             }
         }.runTaskLater(RunicCore.getInstance(), 3);
 
-        // apply attack effects, random damage amount
-        //if (maxDamage != 0) {
-            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            //e.setDamage(randomNum);
-        //}// else {
-           // e.setDamage(minDamage);
-       // }
+        int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
 
         // spawn the damage indicator if the arrow is an autoattack
         if (arrow.getCustomName() == null) return;
 
         e.setCancelled(true);
+
+        // outlaw check
+        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(damager))) {
+            return;
+        }
+
+        WeaponDamageEvent event = new WeaponDamageEvent(randomNum, damager, victim);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
 
         DamageUtil.damageEntityWeapon(randomNum, victim, damager);
 

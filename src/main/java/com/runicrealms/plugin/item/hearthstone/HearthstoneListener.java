@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.hearthstone;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.item.commands.HearthstoneCMD;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -35,6 +37,18 @@ public class HearthstoneListener implements Listener {
     private List<UUID> currentlyUsing = new ArrayList<>();
 
     @EventHandler
+    public void onCommand(PlayerCommandSendEvent e) {
+
+        Bukkit.broadcastMessage("called");
+        if (!HearthstoneCMD.getHearthstoneChangers().contains(e.getPlayer().getUniqueId())) return;
+
+        for (String s : e.getCommands()) {
+            Bukkit.broadcastMessage(s);
+        }
+
+    }
+
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
         Player pl = (Player) e.getWhoClicked();
@@ -55,7 +69,7 @@ public class HearthstoneListener implements Listener {
         Player pl = e.getPlayer();
         UUID uuid = pl.getUniqueId();
 
-        if (pl.getInventory().getItemInMainHand() == null) return;
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
         if (pl.getGameMode() == GameMode.CREATIVE) return;
 
         int slot = pl.getInventory().getHeldItemSlot();
@@ -68,12 +82,6 @@ public class HearthstoneListener implements Listener {
         // cancel the event if the hearthstone has no location
         String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(2), "location");
         if (itemLoc == null || itemLoc.equals("")) {
-            return;
-        }
-
-        // cancel the event if the player doesn't have the permission (still in tut1)
-        if (!pl.hasPermission("hearthstone.canUse")) {
-            pl.sendMessage(ChatColor.RED + "You can't use this yet.");
             return;
         }
 
@@ -111,10 +119,23 @@ public class HearthstoneListener implements Listener {
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
         currentlyUsing.add(pl.getUniqueId());
 
+        double originalX = pl.getLocation().getX();
+        double originalZ = pl.getLocation().getZ();
+
         new BukkitRunnable() {
             int count = 0;
             @Override
             public void run() {
+
+                double x = pl.getLocation().getX();
+                double z = pl.getLocation().getZ();
+
+                if (x != originalX || z != originalZ) {
+                    this.cancel();
+                    currentlyUsing.remove(pl.getUniqueId());
+                    pl.sendMessage(ChatColor.RED + "Teleportation cancelled due to movement!");
+                    return;
+                }
 
                 if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(pl.getUniqueId())) {
                     this.cancel();
@@ -128,7 +149,7 @@ public class HearthstoneListener implements Listener {
                     hsCooldowns.put(pl.getUniqueId(), System.currentTimeMillis());
                     currentlyUsing.remove(pl.getUniqueId());
                     pl.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2));
-                    teleportToLocation(pl, pl.getInventory().getItem(2));
+                    teleportToLocation(pl);
                     pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your hearthstone location.");
                     return;
@@ -159,9 +180,9 @@ public class HearthstoneListener implements Listener {
         }
     }
 
-    private void teleportToLocation(Player pl, ItemStack item) {
+    public static void teleportToLocation(Player pl) {
 
-        String itemLoc = AttributeUtil.getCustomString(item, "location");
+        String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(2), "location");
 
         if (itemLoc.equals("")) {
             pl.sendMessage(ChatColor.DARK_RED + "Error: location not found");
@@ -171,19 +192,69 @@ public class HearthstoneListener implements Listener {
         // attempt to match the player's hearthstone to a location
         Location loc;
         World world = Bukkit.getWorld("Alterra");
-        double x = 0;
-        double y = 0;
-        double z = 0;
-        int yaw = 0;
+        double x;
+        double y;
+        double z;
+        int yaw;
         switch (itemLoc.toLowerCase()) {
 
-            case "tutorial island":
+            case "naz'mora": // 9
+                x = 2587.5;
+                y = 33;
+                z = 979.5;
+                yaw = 270;
+                break;
+            case "naheen": // 8
+                x = 1962.5;
+                y = 42;
+                z = 349.5;
+                yaw = 270;
+                break;
+            case "zenyth": // 7
+                x = 1569.5;
+                y = 38;
+                z = -161.5;
+                yaw = 90;
+                break;
+            //case "hilstead": // 6
+                //break;
+            case "wintervale": // 5
+                x = -1672.5;
+                y = 37;
+                z = -2639.5;
+                yaw = 90;
+                break;
+            //case "isfodar": // 4
+                //break;
+            case "dead man's rest": // 3
+                x = -24.5;
+                y = 32;
+                z = -475.5;
+                yaw = 90;
+                break;
+            case "koldore": // 2
+                x = -1616.5;
+                y = 43;
+                z = 305.5;
+                yaw = 0;
+                break;
+            case "azana": // 1
+                x = -825.5;
+                y = 38;
+                z = 167.5;
+                yaw = 180;
+                break;
+            case "tutorial island": // tutorial 2
                 x = -1927.5;
-                y = 41;
+                y = 42;
                 z = 2012.5;
                 yaw = 180;
                 break;
             default:
+                x = -2205.0; // tutorial 1
+                y = 39;
+                z = 1903;
+                yaw = 325;
                 break;
         }
 

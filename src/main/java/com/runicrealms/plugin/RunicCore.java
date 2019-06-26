@@ -12,6 +12,7 @@ import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBars;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.artifact.ArtifactListener;
+import com.runicrealms.plugin.item.commands.HearthstoneCMD;
 import com.runicrealms.plugin.item.commands.ItemCMD;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.rune.RuneListener;
@@ -184,6 +185,11 @@ public class RunicCore extends JavaPlugin {
         getCommand("currency").setExecutor(currencySC);
         currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
 
+        // experience
+        CheckExpCMD checkExpCMD = new CheckExpCMD();
+        getCommand("experience").setExecutor(checkExpCMD);
+        getCommand("exp").setExecutor(checkExpCMD);
+
         // mana commands
         Mana mana = new Mana();
         getCommand("mana").setExecutor(mana);
@@ -240,6 +246,7 @@ public class RunicCore extends JavaPlugin {
         SetSC setSC = new SetSC();
         getCommand("set").setExecutor(setSC);
         setSC.addCommand(Arrays.asList("class"), new SetClassCMD(setSC));
+        setSC.addCommand(Arrays.asList("hearthstone"), new HearthstoneCMD(setSC));
         setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
         setSC.addCommand(Arrays.asList("prof"), new SetProfCMD(setSC));
         setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));

@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -46,7 +48,7 @@ public class StaffListener implements Listener {
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
         // only listen for items that can be artifact weapons
-        if (artifactType == null) return;
+        if (artifactType == Material.AIR) return;
 
         // IGNORE NON-STAFF ITEMS
         if (artifactType != Material.WOODEN_HOE) return;
@@ -121,7 +123,17 @@ public class StaffListener implements Listener {
                         if (e != (pl)) {
                             if (e.getType().isAlive()) {
 
+                                // bugfix for armor stands
+                                if (e instanceof ArmorStand && e.getVehicle() != null) {
+                                    e = e.getVehicle();
+                                }
+
                                 LivingEntity victim = (LivingEntity) e;
+
+                                // outlaw check
+                                if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
+                                    continue;
+                                }
 
                                 // skip party members
                                 if (RunicCore.getPartyManager().getPlayerParty(pl) != null
@@ -129,8 +141,7 @@ public class StaffListener implements Listener {
                                     continue;
                                 }
 
-                                // skip armor stands, npcs
-                                if (victim instanceof ArmorStand) continue;
+                                // skip NPCs
                                 if (victim.hasMetadata("NPC")) continue;
 
                                 // prevent player from being hit by the same attack
@@ -161,8 +172,19 @@ public class StaffListener implements Listener {
                                 // apply attack effects, random damage amount
                                 if (maxDamage != 0) {
                                     int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+                                    WeaponDamageEvent event = new WeaponDamageEvent(randomNum, pl, victim);
+                                    Bukkit.getPluginManager().callEvent(event);
+                                    if (event.isCancelled()) {
+                                        return;
+                                    }
                                     DamageUtil.damageEntityWeapon(randomNum, victim, pl);
                                 } else {
+                                    WeaponDamageEvent event = new WeaponDamageEvent(maxDamage, pl, victim);
+                                    Bukkit.getPluginManager().callEvent(event);
+
+                                    if (event.isCancelled()) {
+                                        return;
+                                    }
                                     DamageUtil.damageEntityWeapon(minDamage, victim, pl);
                                 }
 

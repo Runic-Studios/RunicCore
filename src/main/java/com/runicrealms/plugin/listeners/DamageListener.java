@@ -4,6 +4,7 @@ import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -165,16 +166,16 @@ public class DamageListener implements Listener {
 
         // initialize event variables
         Player victim = (Player) e.getEntity();
-        Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
+        //Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // cancel the event
         e.setCancelled(true);
 
         // apply new death mechanics
-        applyDeathMechanics(victim, respawnLocation);
+        applyDeathMechanics(victim);
     }
 
-    public void applyDeathMechanics(Player victim, Location respawnLocation) {
+    public void applyDeathMechanics(Player victim) {
 
         // broadcast the death message
         broadcastDeathMessage(victim);
@@ -202,7 +203,8 @@ public class DamageListener implements Listener {
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.RED, 3));
-        victim.teleport(respawnLocation);
+        //victim.teleport(respawnLocation);
+        HearthstoneListener.teleportToLocation(victim);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
@@ -219,10 +221,10 @@ public class DamageListener implements Listener {
         }
 
         // todo: change this to the killed player's hearthstone location
-        Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
+        //Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // apply new death mechanics
-        applyDeathMechanics(victim, respawnLocation);
+        applyDeathMechanics(victim);
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
@@ -260,21 +262,13 @@ public class DamageListener implements Listener {
                     && plugin.getConfig().getBoolean(p2 + ".outlaw.enabled", true)) {
                 nameDam = ChatColor.RED + "[" + (int) ratingP1 + "] " + ChatColor.WHITE + nameDam;
                 nameVic = ChatColor.RED + "[" + (int) ratingP2 + "] " + ChatColor.WHITE + nameVic;
+                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
             }
-
-            // display death message
-            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
-        } else {
-            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + damager.getName());
         }
     }
 
     private void broadcastDeathMessage(Player victim) {
-
-        // initialize method variables
-        //String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
         String nameVic = victim.getName();
-
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " died!");
     }
