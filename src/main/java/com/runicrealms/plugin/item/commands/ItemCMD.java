@@ -1,26 +1,29 @@
 package com.runicrealms.plugin.item.commands;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.enums.ArmorSlotEnum;
 import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.LoreGenerator;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import com.runicrealms.plugin.utilities.ColorUtil;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemCMD implements SubCommand {
 
@@ -34,10 +37,15 @@ public class ItemCMD implements SubCommand {
     public void onConsoleCommand(CommandSender sender, String[] args)  {
 
         // runicgive item [player] [itemType] [tier] ([x] [y] [z])
+        // runicgive item [player] [potion] [type] [someVar]
         ItemNameGenerator nameGen = new ItemNameGenerator();
 
-        String name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf(args[3].toUpperCase()));
-        if (name == null) return;
+        String name = "";
+        if (!args[2].equals("gemstone") && !args[2].equals("potion")) {
+            Bukkit.broadcastMessage(args[2]);
+            name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf(args[3].toUpperCase()));
+            if (name == null) return;
+        }
 
         Player pl = Bukkit.getPlayer(args[1]);
         if (pl == null) return;
@@ -202,8 +210,11 @@ public class ItemCMD implements SubCommand {
                         break;
                 }
                 break;
+            case "potion":
+                givePotion(pl, args[3], Integer.parseInt(args[4]));
+                return;
             default:
-                pl.sendMessage(ChatColor.DARK_RED + "Please specify correct input: helmet, chestplate, leggings, boots, or gemstone");
+                pl.sendMessage(ChatColor.DARK_RED + "Please specify correct input: helmet, chestplate, leggings, boots, gemstone, or potion");
                 break;
         }
 
@@ -567,9 +578,7 @@ public class ItemCMD implements SubCommand {
     @Override
     public void onOPCommand(Player sender, String[] args) {
 
-        if(args.length == 4) {
-            this.onConsoleCommand(sender, args);
-        } else if (args.length == 7) {
+        if(args.length == 4 || args.length == 5 || args.length == 7) {
             this.onConsoleCommand(sender, args);
         } else {
             sender.sendMessage(ChatColor.YELLOW + "Command usage: /giveitem generator [itemType] [tier] ([x] [y] [z])");
@@ -589,5 +598,90 @@ public class ItemCMD implements SubCommand {
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
         //return TabCompleteUtil.getPlayers(commandSender, strings, RunicCore.getInstance());
+    }
+
+    /**
+     * Taken from Alchemy profession
+     * @param pl player to give items to
+     * @param type display name of the item, accepts color codes
+     * @param someVar whatever variable the potion takes goes here (health, mana, duration. the system knows)
+     */
+    private void givePotion(Player pl, String type, int someVar) {
+
+        String dispName = "";
+        switch (type) {
+            case "healing":
+                dispName = "&cPotion of Healing";
+                break;
+            case "mana":
+                dispName = "&3Potion of Mana";
+                break;
+            case "slaying":
+                dispName = "&b&oPotion of Slaying";
+                break;
+            case "looting":
+                dispName = "&6Potion of Looting";
+                break;
+        }
+
+
+        ItemStack potion = new ItemStack(Material.POTION);
+        PotionMeta pMeta = (PotionMeta) potion.getItemMeta();
+        Color color;
+        String desc;
+        if (dispName.toLowerCase().contains("healing")) {
+            color = Color.RED;
+            desc = "\n&eRestores &c" + someVar + "❤ &eon use";
+        } else if (dispName.toLowerCase().contains("mana")) {
+            color = Color.AQUA;
+            desc = "\n&eRestores &3" + someVar + "✸ &eon use";
+        } else if (dispName.toLowerCase().contains("slaying")) {
+            color = Color.BLACK;
+            desc = "\n&eIncreases spellʔ and weapon⚔ damage" +
+                    "\n&evs. monsters by &f20% &efor &f" + someVar + " &eminutes";
+        } else {
+            color = Color.ORANGE;
+            desc = "\n&eIncreases looting chance by &f20%" +
+                    "\n&efor &f" + someVar + " &eminutes";
+        }
+        Objects.requireNonNull(pMeta).setColor(color);
+
+        pMeta.setDisplayName(ColorUtil.format(dispName));
+        ArrayList<String> lore = new ArrayList<>();
+        for (String s : desc.split("\n")) {
+            lore.add(ColorUtil.format(s));
+        }
+        lore.add("");
+        lore.add(ColorUtil.format("&7Consumable"));
+        pMeta.setLore(lore);
+
+        pMeta.addEnchant(Enchantment.DURABILITY, 1, true);
+        pMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        pMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        pMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        potion.setItemMeta(pMeta);
+
+        // ----------------------------------------------
+        // must be set AFTER meta is set
+        if (dispName.toLowerCase().contains("healing")) {
+            potion = AttributeUtil.addCustomStat(potion, "potion.healing", someVar);
+        } else if (dispName.toLowerCase().contains("mana")) {
+            potion = AttributeUtil.addCustomStat(potion, "potion.mana", someVar);
+        } else if (dispName.toLowerCase().contains("slaying")) {
+            potion = AttributeUtil.addCustomStat(potion, "potion.slaying", someVar);
+        } else {
+            potion = AttributeUtil.addCustomStat(potion, "potion.looting", someVar);
+        }
+        // ----------------------------------------------
+
+
+        // check that the player has an open inventory space
+        // this method prevents items from stacking if the player crafts 5
+        if (pl.getInventory().firstEmpty() != -1) {
+            int firstEmpty = pl.getInventory().firstEmpty();
+            pl.getInventory().setItem(firstEmpty, potion);
+        } else {
+            pl.getWorld().dropItem(pl.getLocation(), potion);
+        }
     }
 }

@@ -37,17 +37,6 @@ public class HearthstoneListener implements Listener {
     private List<UUID> currentlyUsing = new ArrayList<>();
 
     @EventHandler
-    public void onCommand(PlayerCommandSendEvent e) {
-
-        if (!HearthstoneCMD.getHearthstoneChangers().contains(e.getPlayer().getUniqueId())) return;
-
-        for (String s : e.getCommands()) {
-            Bukkit.broadcastMessage(s);
-        }
-
-    }
-
-    @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
         Player pl = (Player) e.getWhoClicked();

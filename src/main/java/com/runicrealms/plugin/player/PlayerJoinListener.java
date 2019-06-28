@@ -26,7 +26,6 @@ public class PlayerJoinListener implements Listener {
         // set join message
         // TODO: inform players if their guild mate or friend logs in.
         e.setJoinMessage("");
-        pl.sendMessage(ChatColor.GRAY + "Loading resource pack, this may take a moment...");
 
         // set their hp to stored value from last logout
         int storedHealth = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");

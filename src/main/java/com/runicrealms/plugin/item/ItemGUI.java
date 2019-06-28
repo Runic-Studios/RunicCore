@@ -32,7 +32,7 @@ public class ItemGUI implements Listener {
     private ItemStack[] optionIcons;
     private Inventory inventory;
 
-    protected ItemGUI() {
+    public ItemGUI() {
         this.name = ColorUtil.format("&7Default Menu");
         this.size = 9;
         this.handler = (OptionClickEvent event) -> {};

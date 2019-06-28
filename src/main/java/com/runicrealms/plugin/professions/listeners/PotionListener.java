@@ -6,11 +6,14 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ public class PotionListener implements Listener {
     /**
      * Handles custom potions
      */
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void onPotionUse(PlayerItemConsumeEvent e) {
 
@@ -36,6 +40,12 @@ public class PotionListener implements Listener {
         int manaAmt = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.mana");
         int slayingDuration = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.slaying");
         int lootingDuration = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.looting");
+
+        // remove glass bottle from inventory
+        if (e.getItem().getType() == Material.POTION) {
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                    () -> pl.setItemInHand(new ItemStack(Material.AIR)), 1L);
+        }
 
         if (healAmt > 0) {
             HealUtil.healPlayer(healAmt, pl, pl);

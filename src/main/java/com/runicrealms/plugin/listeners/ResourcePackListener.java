@@ -36,8 +36,8 @@ public class ResourcePackListener implements Listener {
 //            },100L);
         }
 
-        if (status == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
-            player.sendMessage(ChatColor.GREEN + "Resource pack loaded!");
-        }
+//        if (status == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
+//            player.sendMessage(ChatColor.GREEN + "Resource pack loaded!");
+//        }
     }
 }

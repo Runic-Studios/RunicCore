@@ -42,13 +42,14 @@ public class CheckExpCMD extends SuperCommand {
             double progress = (double) (profExp-profExpAtLevel) / (profTotalExpToLevel-profExpAtLevel);
             String profProgress = toDecimal.format(progress);
 
+            sender.sendMessage("");
             sender.sendMessage(ColorUtil.format
-                    ("\n&a&lPlayer " + sender.getName() +
+                    ("&a&lPlayer " + sender.getName() +
                     "\n&7Class: &f" + classExp + " &7total exp, &f" + (classExp - totalExpAtLevel) + "&7/&f"
                     + (totalExpToLevel-totalExpAtLevel) + " &7exp to level &a(" + classProgressFormatted + "%)" +
                     "\n&7Profession: &f" + profExp + " &7total exp, &f" + (profExp - profExpAtLevel) + "&7/&f"
-                    + (profTotalExpToLevel-profExpAtLevel) + " &7to level &a(" + profProgress + "%)" +
-                    "\n\n"));
+                    + (profTotalExpToLevel-profExpAtLevel) + " &7to level &a(" + profProgress + "%)"));
+            sender.sendMessage("");
         }
     }
 }
