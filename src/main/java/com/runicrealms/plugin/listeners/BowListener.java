@@ -141,15 +141,6 @@ public class BowListener implements Listener {
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
-        // grab player's armor, offhand (check for gem bonuses)
-        ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(damager);
-
-        // calculate the player's total damage boost
-        for (ItemStack item : armorAndOffhand) {
-            int damageBoost = (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
-            maxDamage = maxDamage + damageBoost;
-        }
-
         // remove the arrow with nms magic
         new BukkitRunnable() {
             public void run() {

@@ -207,7 +207,7 @@ public class PlayerLevelListener implements Listener {
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
                         + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLevel() + "✸");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact efficiency improves!");
+        ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact speed increases!");
         pl.sendMessage("\n");
     }
 

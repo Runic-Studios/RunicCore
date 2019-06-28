@@ -50,7 +50,7 @@ public class DamageUtil {
                 && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
 
         // scan the gems
-        dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
+        dmgAmt = dmgAmt + GearScanner.getAttackDamage(caster);
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }

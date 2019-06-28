@@ -78,18 +78,9 @@ public class StaffListener implements Listener {
 
     private void staffAttack(ItemStack artifact, Player pl) {
 
-        // grab player's armor, offhand (check for gem bonuses)
-        ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(pl);
-
-        // calculate the player's total damage boost
-        int damageBoost = 0;
-        for (ItemStack item : armorAndOffhand) {
-            damageBoost += (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
-        }
-
         // retrieve the weapon damage, cooldown
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage") + damageBoost;
+        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
         // create our vector to be used later
         Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);
@@ -188,7 +179,7 @@ public class StaffListener implements Listener {
                                     DamageUtil.damageEntityWeapon(minDamage, victim, pl);
                                 }
 
-                                pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+                                pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
                                 this.cancel();
                             }
                         }

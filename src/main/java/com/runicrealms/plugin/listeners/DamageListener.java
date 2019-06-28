@@ -91,15 +91,6 @@ public class DamageListener implements Listener {
             }
             // -------------------
 
-            // grab player's armor, offhand (check for gem bonuses)
-            ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(pl);
-
-            // calculate the player's total damage boost
-            for (ItemStack item : armorAndOffhand) {
-                int damageBoost = (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
-                maxDamage = maxDamage + damageBoost;
-            }
-
             // don't fire attack if they're sneaking, since they're casting a spell
             if (((Player) damager).isSneaking() && slot == 0) {
                 e.setCancelled(true);

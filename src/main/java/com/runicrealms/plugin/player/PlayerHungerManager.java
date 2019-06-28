@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Date: 6/26/2019
  * Time: 2:19 PM
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class PlayerHungerManager implements Listener {
 
     // tick time in seconds
@@ -26,17 +27,19 @@ public class PlayerHungerManager implements Listener {
             @Override
             public void run() {
                 for(Player player : Bukkit.getOnlinePlayers()) {
-                    if(!player.hasPermission("runic.hunger.exempt") || (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR)) {
-                        if (player.getFoodLevel() <= 0) {
-                            player.damage(1);
-                        } else {
-                            player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 2.0f);
-                            player.setFoodLevel(player.getFoodLevel() - 1);
-                        }
+                    if (!player.hasPermission("runic.hunger.exempt")
+                            || (player.getGameMode() != GameMode.CREATIVE
+                            && player.getGameMode() != GameMode.SPECTATOR)) {
+
+                        if (player.getFoodLevel() <= 1) return;
+
+                        //player.damage(1);
+                        player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 2.0f);
+                        player.setFoodLevel(player.getFoodLevel() - 1);
                     }
                 }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 30 * 20, PLAYER_HUNGER_TIME * 20);
+        }.runTaskTimer(RunicCore.getInstance(), 30 * 20, PLAYER_HUNGER_TIME * 20L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

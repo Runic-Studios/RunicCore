@@ -48,7 +48,7 @@ public class CheckExpCMD extends SuperCommand {
                     + (totalExpToLevel-totalExpAtLevel) + " &7exp to level &a(" + classProgressFormatted + "%)" +
                     "\n&7Profession: &f" + profExp + " &7total exp, &f" + (profExp - profExpAtLevel) + "&7/&f"
                     + (profTotalExpToLevel-profExpAtLevel) + " &7to level &a(" + profProgress + "%)" +
-                    "\n"));
+                    "\n\n"));
         }
     }
 }

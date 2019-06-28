@@ -53,10 +53,20 @@ public class CookingGUI extends Workstation {
 
     private ItemGUI openCookingMenu(Player pl) {
 
-        // create three hashmaps for the reagents, set to 0 since we've only got 1 reagent
+        // bread
         LinkedHashMap<Material, Integer> breadReqs = new LinkedHashMap<>();
         breadReqs.put(Material.WHEAT, 3);
         breadReqs.put(Material.SPRUCE_LOG, 1);
+
+        // cod
+        LinkedHashMap<Material, Integer> codReqs = new LinkedHashMap<>();
+        codReqs.put(Material.COD, 1);
+        codReqs.put(Material.OAK_LOG, 1);
+
+        // salmon
+        LinkedHashMap<Material, Integer> salmonReqs = new LinkedHashMap<>();
+        salmonReqs.put(Material.SALMON, 1);
+        salmonReqs.put(Material.OAK_LOG, 1);
 
         ItemGUI cookingMenu = super.craftingMenu(pl, 18);
 
@@ -79,6 +89,16 @@ public class CookingGUI extends Workstation {
 
             } else {
 
+                LinkedHashMap<Material, Integer> reqs = new LinkedHashMap<>();
+
+                if (event.getSlot() == 9) {
+                    reqs = breadReqs;
+                } else if (event.getSlot() == 10) {
+                    reqs = codReqs;
+                } else if (event.getSlot() == 11) {
+                    reqs = salmonReqs;
+                }
+
                 int mult = 1;
                 if (event.isRightClick()) mult = 5;
                 ItemMeta meta = Objects.requireNonNull(event.getCurrentItem()).getItemMeta();
@@ -89,7 +109,7 @@ public class CookingGUI extends Workstation {
                 event.setWillDestroy(true);
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, breadReqs, 0, 0, event.getCurrentItem().getType(),
+                super.startCrafting(pl, reqs, 0, 0, event.getCurrentItem().getType(),
                         meta.getDisplayName(), 0, 0,
                         ((Damageable) meta).getDamage(), Particle.SMOKE_NORMAL,
                         Sound.ENTITY_GHAST_SHOOT, Sound.BLOCK_LAVA_EXTINGUISH, 0, mult);
@@ -100,12 +120,28 @@ public class CookingGUI extends Workstation {
 
     private void setupItems(ItemGUI forgeMenu, Player pl) {
 
-        // chain link
-        LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
-        chainLinkReqs.put(Material.WHEAT, 3);
-        chainLinkReqs.put(Material.SPRUCE_LOG, 1);
-        super.createMenuItem(forgeMenu, pl, 9, Material.BREAD, "&fBread", chainLinkReqs,
+        // bread
+        LinkedHashMap<Material, Integer> breadReqs = new LinkedHashMap<>();
+        breadReqs.put(Material.WHEAT, 3);
+        breadReqs.put(Material.SPRUCE_LOG, 1);
+        super.createMenuItem(forgeMenu, pl, 9, Material.BREAD, "&fBread", breadReqs,
                 "Wheat\nSpruce Log", 999, 0, 0, 0, "",
+                true);
+
+        // cod
+        LinkedHashMap<Material, Integer> codReqs = new LinkedHashMap<>();
+        codReqs.put(Material.COD, 1);
+        codReqs.put(Material.OAK_LOG, 1);
+        super.createMenuItem(forgeMenu, pl, 10, Material.COOKED_COD, "&fCooked Cod", codReqs,
+                "Cod\nOak Log", 999, 0, 0, 0, "",
+                true);
+
+        // salmon
+        LinkedHashMap<Material, Integer> salmonReqs = new LinkedHashMap<>();
+        salmonReqs.put(Material.SALMON, 1);
+        salmonReqs.put(Material.OAK_LOG, 1);
+        super.createMenuItem(forgeMenu, pl, 11, Material.COOKED_SALMON, "&fCooked Salmon", salmonReqs,
+                "Salmon\nOak Log", 999, 0, 0, 0, "",
                 true);
     }
 

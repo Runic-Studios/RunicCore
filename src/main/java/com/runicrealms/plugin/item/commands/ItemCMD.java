@@ -297,9 +297,6 @@ public class ItemCMD implements SubCommand {
 
         item = AttributeUtil.addCustomStat(item, "required.level", 10);
 
-        // item can be socketed once
-        item = AttributeUtil.addCustomStat(item, "custom.socketCount", 1);
-
         Random rand = new Random();
         int numOfStats = rand.nextInt(2) + 1;
 
@@ -363,13 +360,13 @@ public class ItemCMD implements SubCommand {
         int maxMana = 0;
         int weapDamage = 2;
         int maxHealing = 8;
-        int spellDamage = 4;
+        int maxSpellDamage = 4;
         String className = determineClass(item, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 10;
                 maxMana = 30;
-                spellDamage = 6;
+                maxSpellDamage = 6;
                 break;
             case "rogue":
                 maxHealth = 12;
@@ -392,6 +389,7 @@ public class ItemCMD implements SubCommand {
         int health = rand.nextInt(maxHealth) + 6;
         int mana = rand.nextInt(maxMana) + 12;
         int healing = rand.nextInt(maxHealing) + 1;
+        int spellDamage = rand.nextInt(maxSpellDamage) + 1;
 
         List<Integer> stats = determineWhichStats(2, 5);
 
@@ -429,13 +427,13 @@ public class ItemCMD implements SubCommand {
         int maxMana = 0;
         int weapDamage = 3;
         int maxHealing = 12;
-        int spellDamage = 8;
+        int maxSpellDamage = 8;
         String className = determineClass(item, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 12;
                 maxMana = 35;
-                spellDamage = 10;
+                maxSpellDamage = 10;
                 break;
             case "rogue":
                 maxHealth = 15;
@@ -458,6 +456,7 @@ public class ItemCMD implements SubCommand {
         int health = rand.nextInt(maxHealth) + 10;
         int mana = rand.nextInt(maxMana) + 20;
         int healing = rand.nextInt(maxHealing) + 8;
+        int spellDamage = rand.nextInt(maxSpellDamage) + 1;
 
         List<Integer> stats = determineWhichStats(2, 5);
 
