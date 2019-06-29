@@ -270,11 +270,16 @@ public class GuildListeners implements Listener {
         if(reason.equals(ActionReason.NAME)) {
             if(length > 16 || length < 5) return false;
             if(filterString(string)) return false;
+            if(Guilds.getApi().getGuild(string) != null) return false;
             return true;
         }
         else if(reason.equals(ActionReason.PREFIX)) {
             if(length != 3) return false;
             if(filterString(string)) return false;
+
+            for(Guild guild : Guilds.getApi().getGuildHandler().getGuilds())
+                if(guild.getPrefix() == string) return false;
+
             return true;
         }
         return true;
