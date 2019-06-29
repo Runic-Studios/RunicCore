@@ -1,0 +1,280 @@
+package com.runicrealms.plugin.guild;
+
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.FilterUtil;
+import me.glaremasters.guilds.Guilds;
+import me.glaremasters.guilds.api.events.GuildCreateEvent;
+import me.glaremasters.guilds.api.events.GuildJoinEvent;
+import me.glaremasters.guilds.api.events.GuildLeaveEvent;
+import me.glaremasters.guilds.guild.Guild;
+import me.glaremasters.guilds.guild.GuildMember;
+import me.glaremasters.guilds.guild.GuildSkull;
+import net.citizensnpcs.api.event.NPCRightClickEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.Arrays;
+
+public class GuildListeners implements Listener {
+
+    private List<Integer> guildNPCList;
+    private HashMap<UUID, ActionReason> chatActionMap;
+    private final String heraldPrefix = ChatColor.GRAY + "[1/1]" + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
+    private final ItemStack license = new ItemStack(Material.PAPER);
+
+    private enum ActionReason {
+        PURCHASE,
+        NAME,
+        PREFIX
+    }
+
+    public GuildListeners() {
+        this.guildNPCList = new ArrayList<>();
+        this.chatActionMap = new HashMap<>();
+
+        // ------------------------------------
+        // ADD NPCS IDS FOR GUILD VENDORS HERE
+        // ------------------------------------
+        guildNPCList.add(313); // Azana
+
+        // ------------------------------------
+
+        ItemMeta meta = license.getItemMeta();
+        meta.setDisplayName(ChatColor.YELLOW + "Guild Master's License");
+        meta.setLore(Arrays.asList("", ChatColor.GRAY + "Give this paper to a " + ChatColor.YELLOW + "Guild Herald" + ChatColor.GRAY + " to create a guild!", "", ChatColor.GRAY + "If you lose this, you must buy another!"));
+        license.setItemMeta(meta);
+    }
+
+    // ------------------------------------------------------------------
+    // GUILD EVENTS
+    // ------------------------------------------------------------------
+
+    @EventHandler
+    public void onGuildCreate(GuildCreateEvent e) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                RunicCore.getTabListManager().setupTab(e.getPlayer());
+            }
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+    }
+
+    @EventHandler
+    public void onGuildJoin(GuildJoinEvent e) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player guildy : Guilds.getApi().getGuild(e.getPlayer().getUniqueId()).getOnlineAsPlayers()) {
+                    RunicCore.getTabListManager().setupTab(guildy);
+                }
+            }
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+    }
+
+    @EventHandler
+    public void onGuildLeave(GuildLeaveEvent e) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player guildy : e.getGuild().getOnlineAsPlayers()) {
+                    RunicCore.getTabListManager().setupTab(guildy);
+                }
+                RunicCore.getTabListManager().setupTab(e.getPlayer());
+            }
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+    }
+
+    // ------------------------------------------------------------------
+    // CITIZENS EVENTS
+    // ------------------------------------------------------------------
+
+    @EventHandler
+    public void onGuildClick(NPCRightClickEvent event) {
+        if (guildNPCList.contains(event.getNPC().getId())) {
+            int moneyCount = 0;
+            Player player = event.getClicker();
+
+            if(player.getInventory().getItemInMainHand().equals(license)) {
+                player.sendMessage(heraldPrefix + "It seems you have a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + "! What would you like your Guild to be named?");
+                player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.DARK_GRAY + "> " + ChatColor.GRAY + "Type the desired Guild name (Limits: 16 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+                chatActionMap.put(player.getUniqueId(), ActionReason.NAME);
+            } else {
+                for (ItemStack itemStack : player.getInventory().getContents()) {
+                    if (itemStack.getData().getItemType() == Material.GOLD_NUGGET) {
+                        moneyCount += itemStack.getAmount();
+                    }
+                }
+
+                if (moneyCount >= 1000) {
+                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + "for " + ChatColor.WHITE + "1000" + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
+                    player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.DARK_GRAY + "> " + ChatColor.GRAY + "Type \"" + ChatColor.GREEN + "Yes" + ChatColor.GRAY + "\" or \"" + ChatColor.RED + "No" + ChatColor.GRAY + "\" to purchase or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+
+                    chatActionMap.put(player.getUniqueId(), ActionReason.PURCHASE);
+                } else {
+                    player.sendMessage(heraldPrefix + ChatColor.RED + "Sorry! You don't have enough coins to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.RED + ".");
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // PLAYER EVENTS
+    // ------------------------------------------------------------------
+
+    private String finalName = "";
+
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        if (chatActionMap.containsKey(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+            ActionReason reason = chatActionMap.get(event.getPlayer().getUniqueId());
+
+            switch (reason) {
+                case PURCHASE:
+                    if (event.getMessage().equalsIgnoreCase("yes"))
+                    {
+                        event.getPlayer().sendMessage(heraldPrefix + ChatColor.GREEN + "Ah! Great Choice lad, may you and your allies have a bountiful run and grow ever stronger!");
+                        chatActionMap.remove(event.getPlayer().getUniqueId());
+
+                        event.getPlayer().getInventory().addItem(license);
+                    }
+                    else if (event.getMessage().equalsIgnoreCase("no"))
+                    {
+                        event.getPlayer().sendMessage(heraldPrefix + ChatColor.RED + "Alright then, come back to me when you are ready lad!");
+                        chatActionMap.remove(event.getPlayer().getUniqueId());
+                    }
+                    else if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("exit"))
+                    {
+                       chatActionMap.remove(event.getPlayer().getUniqueId());
+                       event.getPlayer().sendMessage(heraldPrefix + ChatColor.RED + "Alright then, come back to me when you are ready lad!");
+                    }
+                    else
+                    {
+                        event.getPlayer().sendMessage(heraldPrefix + ChatColor.GRAY + "I'm sorry lad, I didn't catch that, what did you say?");
+                    }
+                    break;
+                case NAME:
+               if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("exit"))
+                {
+                    chatActionMap.remove(event.getPlayer().getUniqueId());
+                    event.getPlayer().sendMessage(heraldPrefix + ChatColor.RED + "Alright then, come back to me when you are ready lad!");
+                }
+                    String name = event.getMessage();
+
+                    if(!filterInput(name, ActionReason.NAME)) {
+                        event.getPlayer().sendMessage(heraldPrefix + ChatColor.RED + "You cannot have this as your guild name, please choose another!");
+                        return;
+                    }
+
+                    chatActionMap.remove(event.getPlayer().getUniqueId());
+
+                    event.getPlayer().sendMessage(heraldPrefix + "You have registered a Guild with the name " + ChatColor.WHITE + name + ChatColor.GOLD + ", what would you like your Guild Prefix to be?");
+                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.DARK_GRAY + "> " + ChatColor.GRAY + "Type the desired Guild prefix (Limits: 3 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+
+                    this.finalName = name;
+
+                    chatActionMap.put(event.getPlayer().getUniqueId(), ActionReason.PREFIX);
+                    break;
+                case PREFIX:
+                    if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("exit"))
+                    {
+                        chatActionMap.remove(event.getPlayer().getUniqueId());
+                        event.getPlayer().sendMessage(heraldPrefix + ChatColor.RED + "Alright then, come back to me when you are ready lad!");
+                    }
+                    String prefix = event.getMessage();
+
+                    if(!filterInput(prefix, ActionReason.PREFIX)) {
+                        event.getPlayer().sendMessage(heraldPrefix + ChatColor.RED + "You cannot have this as your guild prefix, please choose another!");
+                        return;
+                    }
+
+                    chatActionMap.remove(event.getPlayer().getUniqueId());
+
+                    event.getPlayer().sendMessage(heraldPrefix + "You have chose the prefix " + ChatColor.WHITE + prefix.toUpperCase() + ChatColor.GOLD + "!");
+                    createGuild(event.getPlayer(), finalName, prefix.toUpperCase());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        if(chatActionMap.containsKey(event.getPlayer().getUniqueId())) {
+            chatActionMap.remove(event.getPlayer().getUniqueId());
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // HELPER METHODS
+    // ------------------------------------------------------------------
+
+    private boolean filterInput(String string, ActionReason reason) {
+        int length = string.length();
+        if(reason.equals(ActionReason.NAME)) {
+            if(length > 16 || length < 5) return false;
+            if(!filterString(string)) return false;
+            return true;
+        }
+        else if(reason.equals(ActionReason.PREFIX)) {
+            if(length != 3) return false;
+            if(!filterString(string)) return false;
+            return true;
+        }
+        return true;
+    }
+
+    private boolean filterString(String string) {
+        return FilterUtil.hasFilterWord(string);
+    }
+
+    private void createGuild(Player player, String name, String prefix) {
+        Guild.GuildBuilder gb = Guild.builder();
+        gb.id(UUID.randomUUID());
+        gb.name(name);
+        gb.prefix(prefix);
+        gb.status(Guild.Status.Private);
+        gb.guildSkull(new GuildSkull(player));
+
+        GuildMember master = new GuildMember(player.getUniqueId(), Guilds.getApi().getGuildHandler().getGuildRole(0), 0);
+        gb.guildMaster(master);
+
+        List<GuildMember> members = new ArrayList<>();
+        members.add(master);
+
+        gb.members(members);
+        gb.home(null);
+        gb.balance(0);
+        gb.tier(Guilds.getApi().getGuildHandler().getGuildTier(1));
+
+        gb.invitedMembers(new ArrayList<>());
+        gb.allies(new ArrayList<>());
+        gb.pendingAllies(new ArrayList<>());
+
+        gb.vaults(new ArrayList<>());
+        gb.codes(new ArrayList<>());
+
+        Guild guild = gb.build();
+
+        GuildCreateEvent event = new GuildCreateEvent(player, guild);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if(!event.isCancelled()) {
+            Guilds.getApi().getGuildHandler().addGuild(guild);
+        }
+    }
+}

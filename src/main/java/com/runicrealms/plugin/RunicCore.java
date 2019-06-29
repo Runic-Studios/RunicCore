@@ -7,6 +7,7 @@ import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.subcommands.set.SetProfCMD;
 import com.runicrealms.plugin.command.supercommands.*;
+import com.runicrealms.plugin.guild.GuildListeners;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBars;
@@ -43,6 +44,7 @@ import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.commands.CaptainDefeated;
 import com.runicrealms.plugin.tutorial.commands.TutorialSC;
+import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -50,6 +52,7 @@ import com.runicrealms.plugin.player.ExpListener;
 import com.runicrealms.plugin.player.CombatManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class RunicCore extends JavaPlugin {
@@ -90,6 +93,12 @@ public class RunicCore extends JavaPlugin {
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
+
+        // save filter txt
+        this.saveResource("swearWords.txt", false);
+
+        // load filter
+        FilterUtil.loadFromFile(new File(this.getDataFolder(), "swearWords.txt"));
 
         // register our events, config, commands
         this.registerEvents();
