@@ -42,7 +42,6 @@ public class ItemCMD implements SubCommand {
 
         String name = "";
         if (!args[2].equals("gemstone") && !args[2].equals("potion")) {
-            Bukkit.broadcastMessage(args[2]);
             name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf(args[3].toUpperCase()));
             if (name == null) return;
         }

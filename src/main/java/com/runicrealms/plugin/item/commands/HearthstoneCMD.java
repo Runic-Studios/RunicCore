@@ -25,6 +25,7 @@ import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class HearthstoneCMD implements SubCommand {
@@ -91,13 +92,15 @@ public class HearthstoneCMD implements SubCommand {
 
     private ItemGUI hearthstoneMenu(Player pl, String location, int cost) {
 
-        ItemGUI hearthMenu = new ItemGUI("&f&l" + pl.getName() + "'s &eInnkeeper Menu", 9, event -> {
+        ItemGUI hearthMenu = new ItemGUI("&f" + pl.getName() + "'s &eInnkeeper Menu", 9, event -> {
         }, RunicCore.getInstance());
+
+        String locSpaced = location.replace("_", " ");
 
         // hearthstone button
         hearthMenu.setOption(0, new ItemStack(Material.CLAY_BALL),
-                "&bSet Hearthstone to &a" + location,
-                "&7Change your hearthstone location!" +
+                "&b&lChange Hearthstone",
+                "\n&7Change hearthstone to: &a" + locSpaced +
                         "\n\n&6Price: &f" + cost + " &6Coins", 0);
 
         // close button
@@ -109,9 +112,31 @@ public class HearthstoneCMD implements SubCommand {
 
             if (event.getSlot() == 0) {
 
-                Bukkit.broadcastMessage("here");
                 event.setWillClose(true);
                 event.setWillDestroy(true);
+
+                // check that the player has the reagents
+                if (!pl.getInventory().contains(Material.GOLD_NUGGET, cost)) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    pl.sendMessage(ChatColor.RED + "You don't have enough gold!");
+                    return;
+                }
+
+                // take items from player
+                ItemStack[] inv = pl.getInventory().getContents();
+                for (int i = 0; i < inv.length; i++) {
+                    if (pl.getInventory().getItem(i) == null) continue;
+                    if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == Material.GOLD_NUGGET) {
+                        Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+                                (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount()-(cost));
+                        break;
+                    }
+                }
+
+                // dispatch command
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "set hearthstone " + pl.getName() + " " + location);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
+                pl.sendMessage(ChatColor.AQUA + "You've changed your hearthstone location!");
 
             } else if (event.getSlot() == 8) {
 

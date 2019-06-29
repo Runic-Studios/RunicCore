@@ -156,7 +156,10 @@ public class WCListener implements Listener {
         ItemMeta meta = heldItem.getItemMeta();
         int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
 
-        if (heldItem.getType() != Material.IRON_AXE
+        if (heldItem.getType() != Material.IRON_AXE) {
+            pl.sendMessage(ChatColor.RED + "You need a woodcutting axe to do that!");
+            return;
+        } else if (heldItem.getType() == Material.IRON_AXE
                 && durability != 1
                 && durability != 2
                 && durability != 3

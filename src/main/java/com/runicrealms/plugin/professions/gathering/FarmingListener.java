@@ -139,7 +139,10 @@ public class FarmingListener implements Listener {
         ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
         int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
 
-        if (heldItem.getType() != Material.IRON_HOE
+        if (heldItem.getType() != Material.IRON_HOE) {
+            pl.sendMessage(ChatColor.RED + "You need a harvesting tool to do that!");
+            return;
+        } else if (heldItem.getType() == Material.IRON_HOE
                 && durability != 1
                 && durability != 2
                 && durability != 3

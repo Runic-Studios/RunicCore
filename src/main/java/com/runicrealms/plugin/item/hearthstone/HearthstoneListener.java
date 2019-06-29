@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 public class HearthstoneListener implements Listener {
 
-    private static final int cooldownTime = 15;
+    private static final int cooldownTime = 900;
     private static final int teleportTime = 5;
     private HashMap<UUID, Long> hsCooldowns = new HashMap<>();
     private List<UUID> currentlyUsing = new ArrayList<>();
@@ -90,11 +90,11 @@ public class HearthstoneListener implements Listener {
             } else {
 
                 double rawTime = (double) ((cooldownTime*1000) - (System.currentTimeMillis()-hsCooldowns.get(uuid))) / 1000;
-                NumberFormat toDecimal = new DecimalFormat("#0.00");
-                String timeLeft = toDecimal.format(rawTime);
+                //NumberFormat toDecimal = new DecimalFormat("#0.00");
+                //String timeLeft = toDecimal.format(rawTime);
                 pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                 pl.sendMessage(ChatColor.RED + "You must wait "
-                        + ChatColor.YELLOW + timeLeft + "s"
+                        + ChatColor.YELLOW + (int) rawTime + "s"
                         + ChatColor.RED + " before using your hearthstone.");
             }
         } else {

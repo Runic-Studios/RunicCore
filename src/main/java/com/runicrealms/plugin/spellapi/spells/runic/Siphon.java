@@ -28,8 +28,8 @@ public class Siphon extends Spell {
     public Siphon() {
         super ("Siphon",
                 "For " + DURATION + " seconds, your melee weapon" +
-                        "\nattacks drain " + AMOUNT + " mana from your" +
-                        "\nenemies!",
+                        "\nattacks drain " + AMOUNT + " mana from enemy" +
+                        "\nplayers!",
                 ChatColor.WHITE, 1, 1);
         drainers = new ArrayList<>();
     }

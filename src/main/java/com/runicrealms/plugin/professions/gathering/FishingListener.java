@@ -8,9 +8,12 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import net.minecraft.server.v1_13_R2.EntityFishingHook;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fish;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,8 +30,10 @@ import org.bukkit.util.Vector;
 import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -192,9 +197,6 @@ public class FishingListener implements Listener {
         if (m == Material.COD || m == Material.SALMON) {
             e.getPlayer().sendMessage(ChatColor.RED + "I need to cook that first.");
             e.setCancelled(true);
-//        } else if (m == Material.PUFFERFISH || m == Material.TROPICAL_FISH) {
-//            e.getPlayer().sendMessage(ChatColor.RED + "I shouldn't eat that.");
-//            e.setCancelled(true);
         }
     }
 
@@ -276,10 +278,37 @@ public class FishingListener implements Listener {
         item.setItemMeta(meta);
         return item;
     }
-    public double getNuggetRate() {
-        return this.nuggetRate;
+
+    /**
+     * Reduces fishing time using NMS
+     * Time for a 'bite' will be between 5-15 seconds
+     */
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent e) {
+
+        FishHook plHook = e.getHook();
+        Random rand = new Random();
+        int time = rand.nextInt(25 - 5) + 5;
+        setBiteTime(plHook, time);
     }
-    public void setNuggetRate(double value) {
-        this.nuggetRate = value;
+
+    private void setBiteTime(FishHook hook, int time) {
+        net.minecraft.server.v1_13_R2.EntityFishingHook hookCopy = (EntityFishingHook) ((CraftEntity) hook).getHandle();
+
+        Field fishCatchTime = null;
+
+        try {
+            fishCatchTime = net.minecraft.server.v1_13_R2.EntityFishingHook.class.getDeclaredField("h");
+        } catch (NoSuchFieldException | SecurityException e) {
+            e.printStackTrace();
+        }
+
+        Objects.requireNonNull(fishCatchTime).setAccessible(true);
+
+        try {
+            fishCatchTime.setInt(hookCopy, time);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -159,7 +159,10 @@ public class MiningListener implements Listener {
         ItemMeta meta = heldItem.getItemMeta();
         int durability = ((Damageable) Objects.requireNonNull(meta)).getDamage();
 
-        if (heldItem.getType() != Material.IRON_PICKAXE
+        if (heldItem.getType() != Material.IRON_PICKAXE) {
+            pl.sendMessage(ChatColor.RED + "You need a mining pick to do that!");
+            return;
+        } else if (heldItem.getType() == Material.IRON_PICKAXE
                 && durability != 1
                 && durability != 2
                 && durability != 3

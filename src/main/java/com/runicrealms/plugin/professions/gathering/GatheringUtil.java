@@ -3,6 +3,7 @@ package com.runicrealms.plugin.professions.gathering;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -87,11 +88,7 @@ public class GatheringUtil {
             case IRON_HOE:
                 weapType = "Farming Hoe";
             break;
-            //case DIAMOND_PICKAXE:
-            //case GOLDEN_PICKAXE:
             case IRON_PICKAXE:
-            //case STONE_PICKAXE:
-            //case WOODEN_PICKAXE:
                 weapType = "Mining Pick";
                 break;
         }

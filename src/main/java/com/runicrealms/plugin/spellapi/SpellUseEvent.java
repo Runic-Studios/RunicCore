@@ -25,6 +25,10 @@ public class SpellUseEvent implements Listener {
 
         if (pl.getGameMode() == GameMode.CREATIVE) return;
         if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
+        if (pl.getInventory().getItem(0) == null) return;
+        if (pl.getInventory().getItem(1) == null) return;
+        if (pl.getInventory().getItem(0).getType() == Material.AIR) return;
+        if (pl.getInventory().getItem(1).getType() == Material.AIR) return;
 
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
 
