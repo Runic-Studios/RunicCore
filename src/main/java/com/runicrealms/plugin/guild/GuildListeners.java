@@ -110,14 +110,17 @@ public class GuildListeners implements Listener {
 
                 if (player.getInventory().contains(Material.GOLD_NUGGET, 1000)) {
                     player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + "1000" + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
-                    player.sendMessage(ChatColor.DARK_AQUA + "Tip "
+                    player.sendMessage(
+                              ChatColor.DARK_AQUA + "Tip "
                             + ChatColor.GOLD + "» "
                             + ChatColor.GRAY + "Type \""
                             + ChatColor.GREEN + "Yes"
                             + ChatColor.GRAY + "\" or \""
-                            + ChatColor.RED + "No" + ChatColor.GRAY
-                            + "\" to purchase or type \"" + ChatColor.RED
-                            + "cancel" + ChatColor.GRAY + "\" to leave!");
+                            + ChatColor.RED + "No"
+                            + ChatColor.GRAY + "\" to purchase or type \""
+                            + ChatColor.RED + "cancel"
+                            + ChatColor.GRAY + "\" to leave!"
+                                      );
 
                     chatActionMap.put(player.getUniqueId(), ActionReason.PURCHASE);
                 } else {
@@ -149,17 +152,25 @@ public class GuildListeners implements Listener {
                         // take items from player
                         // todo: FIX
                         ItemStack[] inv = pl.getInventory().getContents();
+                        int toRemove = 1000;
                         for (int i = 0; i < inv.length; i++) {
                             if (pl.getInventory().getItem(i) == null) continue;
                             if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == Material.GOLD_NUGGET) {
-                                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
-                                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount()-(1000));
+                                if(toRemove - 64 > 0) {
+                                    Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+                                            (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (64));
+                                    toRemove -= 64;
+                                } else if(toRemove > 0 && toRemove < 64) {
+                                    Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+                                            (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (toRemove));
+                                }
                                 break;
                             }
                         }
 
                         event.getPlayer().sendMessage(heraldPrefix + ChatColor.GREEN + "Ah! Great Choice lad, may you and your allies have a bountiful run and grow ever stronger!");
                         chatActionMap.remove(event.getPlayer().getUniqueId());
+
 
                         event.getPlayer().getInventory().addItem(license);
                     }
@@ -239,12 +250,12 @@ public class GuildListeners implements Listener {
         int length = string.length();
         if(reason.equals(ActionReason.NAME)) {
             if(length > 16 || length < 5) return false;
-            if(!filterString(string)) return false;
+            if(filterString(string)) return false;
             return true;
         }
         else if(reason.equals(ActionReason.PREFIX)) {
             if(length != 3) return false;
-            if(!filterString(string)) return false;
+            if(filterString(string)) return false;
             return true;
         }
         return true;
