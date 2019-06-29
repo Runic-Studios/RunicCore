@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -75,6 +76,9 @@ public class HolyNova extends Spell {
 
             // skip NPCs
             if (le.hasMetadata("NPC")) { continue; }
+
+            // outlaw check
+            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) continue;
 
             // skip the caster
             if(le.equals(pl)) { continue; }

@@ -20,9 +20,9 @@ public class Rejuvenate extends Spell {
     // grab our globals
     private HashMap<UUID, List<UUID>> hasBeenHit;
     private static final int HEAL_AMT = 20;
-    private final int RADIUS = 1;
+    private final double RADIUS = 1.5;
     private final int RANGE = 15;
-    private final int SPEED = 2;
+    private final int SPEED = 3;
 
     // in seconds
     private final int SUCCESSIVE_COOLDOWN = 2;
@@ -108,11 +108,8 @@ public class Rejuvenate extends Spell {
                         SpellCastEvent sce = new SpellCastEvent(pl, this, le);
                         Bukkit.getPluginManager().callEvent(sce);
                         if (sce.isCancelled()) return;
-//                        if (//todo: tap into quest objective) {
-//                            pl.chat("healpass");
                             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
                             le.getWorld().spawnParticle(Particle.HEART, le.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
-//                        }
                         continue;
                     }
 
@@ -142,7 +139,6 @@ public class Rejuvenate extends Spell {
                     } else {
                         HealUtil.healPlayer(HEAL_AMT, ally, pl);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-                        //ally.getWorld().spawnParticle(Particle.HEART, ally.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 
                         // stop the beam if it hits a player
                         break;

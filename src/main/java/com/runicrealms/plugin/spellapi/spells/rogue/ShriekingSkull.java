@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
@@ -74,9 +75,15 @@ public class ShriekingSkull extends Spell {
         // grab our variables
         Player player = (Player) skull.getShooter();
         LivingEntity victim = (LivingEntity) event.getEntity();
+        if (player == null) return;
 
         // skip NPCs
         if (victim.hasMetadata("NPC")) return;
+
+        // outlaw check
+        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
+            return;
+        }
 
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(player) != null
