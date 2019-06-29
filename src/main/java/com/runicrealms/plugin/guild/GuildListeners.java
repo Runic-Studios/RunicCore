@@ -33,7 +33,7 @@ public class GuildListeners implements Listener {
     private final String heraldPrefix = ChatColor.GRAY + "[1/1] " + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
     private final ItemStack license = new ItemStack(Material.PAPER);
     private final int TIME_BETWEEN_TALK = 60; // seconds
-    private static final int COST = 1000;
+    private static final int COST = 2500;
 
     private enum ActionReason {
         PURCHASE,
@@ -114,7 +114,7 @@ public class GuildListeners implements Listener {
 
             if(player.getInventory().getItemInMainHand().equals(license)) {
                 player.sendMessage(heraldPrefix + "It seems you have a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + "! What would you like your Guild to be named?");
-                player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.GOLD + "» " + ChatColor.GRAY + "Type the desired Guild name (Limits: 16 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+                player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.GOLD + "» " + ChatColor.GRAY + "Type the desired Guild name (Limits: 16 characters, No Spaces) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
                 chatActionMap.put(player.getUniqueId(), ActionReason.NAME);
             } else {
 
@@ -221,7 +221,7 @@ public class GuildListeners implements Listener {
                     chatActionMap.remove(event.getPlayer().getUniqueId());
 
                     event.getPlayer().sendMessage(heraldPrefix + "You have registered a Guild with the name " + ChatColor.WHITE + name + ChatColor.GOLD + ", what would you like your Guild Prefix to be?");
-                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.GOLD + "» " + ChatColor.GRAY + "Type the desired Guild prefix (Limits: 3 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.GOLD + "» " + ChatColor.GRAY + "Type the desired Guild prefix (Limits: 3 characters, No Spaces) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
 
                     this.finalName = name;
 
@@ -277,6 +277,7 @@ public class GuildListeners implements Listener {
         else if(reason.equals(ActionReason.PREFIX)) {
             if(length != 3) return false;
             if(filterString(string)) return false;
+            if(string.contains(" ")) return false;
 
             for(Guild guild : Guilds.getApi().getGuildHandler().getGuilds())
                 if(guild.getPrefix() == string) return false;
@@ -293,7 +294,7 @@ public class GuildListeners implements Listener {
     private void createGuild(Player player, String name, String prefix) {
         Guild.GuildBuilder gb = Guild.builder();
         gb.id(UUID.randomUUID());
-        gb.name(name);
+        gb.name(name.replace(" ", ""));
         gb.prefix(prefix);
         gb.status(Guild.Status.Private);
         gb.guildSkull(new GuildSkull(player));
