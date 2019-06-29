@@ -27,9 +27,11 @@ import java.util.*;
 public class GuildListeners implements Listener {
 
     private List<Integer> guildNPCList;
+    private List<Player> hasTalked;
     private HashMap<UUID, ActionReason> chatActionMap;
     private final String heraldPrefix = ChatColor.GRAY + "[1/1] " + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
     private final ItemStack license = new ItemStack(Material.PAPER);
+    private final int TIME_BETWEEN_TALK = 60; // seconds
 
     private enum ActionReason {
         PURCHASE,
@@ -39,6 +41,7 @@ public class GuildListeners implements Listener {
 
     public GuildListeners() {
         this.guildNPCList = new ArrayList<>();
+        this.hasTalked = new ArrayList<>();
         this.chatActionMap = new HashMap<>();
 
         // ------------------------------------
@@ -53,6 +56,7 @@ public class GuildListeners implements Listener {
         meta.setLore(Arrays.asList("", ChatColor.GRAY + "Give this paper to a " + ChatColor.YELLOW + "Guild Herald" + ChatColor.GRAY + " to create a guild!", "", ChatColor.GRAY + "If you lose this, you must buy another!"));
         license.setItemMeta(meta);
     }
+
 
     // ------------------------------------------------------------------
     // GUILD EVENTS
@@ -123,8 +127,17 @@ public class GuildListeners implements Listener {
                                       );
 
                     chatActionMap.put(player.getUniqueId(), ActionReason.PURCHASE);
+                } else if(hasTalked.contains(player)) {
+                    player.sendMessage(heraldPrefix + ChatColor.RED + "Sorry! You don't have enough gold coins to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.RED + ".");
                 } else {
-                    player.sendMessage(heraldPrefix + ChatColor.RED + "Sorry! You don't have enough coins to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.RED + ".");
+                    player.sendMessage(heraldPrefix + ChatColor.GOLD + "Hey there lad! Would you be interested in a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + "1000" + ChatColor.GOLD + " gold coins");
+                    hasTalked.add(player);
+
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+                        if(hasTalked.contains(player)) {
+                            hasTalked.remove(player);
+                        }
+                    }, 20 * TIME_BETWEEN_TALK);
                 }
             }
         }
@@ -227,6 +240,7 @@ public class GuildListeners implements Listener {
                     chatActionMap.remove(event.getPlayer().getUniqueId());
 
                     event.getPlayer().sendMessage(heraldPrefix + "You have chose the prefix " + ChatColor.WHITE + prefix.toUpperCase() + ChatColor.GOLD + "!");
+                    event.getPlayer().getInventory().remove(license);
                     createGuild(event.getPlayer(), finalName, prefix.toUpperCase());
                     break;
                 default:
@@ -239,6 +253,9 @@ public class GuildListeners implements Listener {
     public void onLeave(PlayerQuitEvent event) {
         if(chatActionMap.containsKey(event.getPlayer().getUniqueId())) {
             chatActionMap.remove(event.getPlayer().getUniqueId());
+        }
+        if(hasTalked.contains(event.getPlayer())) {
+            hasTalked.remove(event.getPlayer());
         }
     }
 
@@ -301,3 +318,4 @@ public class GuildListeners implements Listener {
         }
     }
 }
+
