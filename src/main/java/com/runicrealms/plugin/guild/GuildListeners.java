@@ -22,17 +22,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.Arrays;
+import java.util.*;
 
 public class GuildListeners implements Listener {
 
     private List<Integer> guildNPCList;
     private HashMap<UUID, ActionReason> chatActionMap;
-    private final String heraldPrefix = ChatColor.GRAY + "[1/1]" + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
+    private final String heraldPrefix = ChatColor.GRAY + "[1/1] " + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
     private final ItemStack license = new ItemStack(Material.PAPER);
 
     private enum ActionReason {
@@ -53,7 +49,7 @@ public class GuildListeners implements Listener {
         // ------------------------------------
 
         ItemMeta meta = license.getItemMeta();
-        meta.setDisplayName(ChatColor.YELLOW + "Guild Master's License");
+        Objects.requireNonNull(meta).setDisplayName(ChatColor.YELLOW + "Guild Master's License");
         meta.setLore(Arrays.asList("", ChatColor.GRAY + "Give this paper to a " + ChatColor.YELLOW + "Guild Herald" + ChatColor.GRAY + " to create a guild!", "", ChatColor.GRAY + "If you lose this, you must buy another!"));
         license.setItemMeta(meta);
     }
@@ -104,23 +100,24 @@ public class GuildListeners implements Listener {
     @EventHandler
     public void onGuildClick(NPCRightClickEvent event) {
         if (guildNPCList.contains(event.getNPC().getId())) {
-            int moneyCount = 0;
             Player player = event.getClicker();
 
             if(player.getInventory().getItemInMainHand().equals(license)) {
                 player.sendMessage(heraldPrefix + "It seems you have a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + "! What would you like your Guild to be named?");
-                player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.DARK_GRAY + "> " + ChatColor.GRAY + "Type the desired Guild name (Limits: 16 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+                player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.GOLD + "» " + ChatColor.GRAY + "Type the desired Guild name (Limits: 16 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
                 chatActionMap.put(player.getUniqueId(), ActionReason.NAME);
             } else {
-                for (ItemStack itemStack : player.getInventory().getContents()) {
-                    if (itemStack.getData().getItemType() == Material.GOLD_NUGGET) {
-                        moneyCount += itemStack.getAmount();
-                    }
-                }
 
-                if (moneyCount >= 1000) {
-                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + "for " + ChatColor.WHITE + "1000" + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
-                    player.sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.DARK_GRAY + "> " + ChatColor.GRAY + "Type \"" + ChatColor.GREEN + "Yes" + ChatColor.GRAY + "\" or \"" + ChatColor.RED + "No" + ChatColor.GRAY + "\" to purchase or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+                if (player.getInventory().contains(Material.GOLD_NUGGET, 1000)) {
+                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + "1000" + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
+                    player.sendMessage(ChatColor.DARK_AQUA + "Tip "
+                            + ChatColor.GOLD + "» "
+                            + ChatColor.GRAY + "Type \""
+                            + ChatColor.GREEN + "Yes"
+                            + ChatColor.GRAY + "\" or \""
+                            + ChatColor.RED + "No" + ChatColor.GRAY
+                            + "\" to purchase or type \"" + ChatColor.RED
+                            + "cancel" + ChatColor.GRAY + "\" to leave!");
 
                     chatActionMap.put(player.getUniqueId(), ActionReason.PURCHASE);
                 } else {
@@ -146,6 +143,21 @@ public class GuildListeners implements Listener {
                 case PURCHASE:
                     if (event.getMessage().equalsIgnoreCase("yes"))
                     {
+
+                        Player pl = event.getPlayer();
+
+                        // take items from player
+                        // todo: FIX
+                        ItemStack[] inv = pl.getInventory().getContents();
+                        for (int i = 0; i < inv.length; i++) {
+                            if (pl.getInventory().getItem(i) == null) continue;
+                            if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == Material.GOLD_NUGGET) {
+                                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+                                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount()-(1000));
+                                break;
+                            }
+                        }
+
                         event.getPlayer().sendMessage(heraldPrefix + ChatColor.GREEN + "Ah! Great Choice lad, may you and your allies have a bountiful run and grow ever stronger!");
                         chatActionMap.remove(event.getPlayer().getUniqueId());
 
@@ -182,7 +194,7 @@ public class GuildListeners implements Listener {
                     chatActionMap.remove(event.getPlayer().getUniqueId());
 
                     event.getPlayer().sendMessage(heraldPrefix + "You have registered a Guild with the name " + ChatColor.WHITE + name + ChatColor.GOLD + ", what would you like your Guild Prefix to be?");
-                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.DARK_GRAY + "> " + ChatColor.GRAY + "Type the desired Guild prefix (Limits: 3 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
+                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Tip " + ChatColor.GOLD + "» " + ChatColor.GRAY + "Type the desired Guild prefix (Limits: 3 characters) or type \"" + ChatColor.RED + "cancel" + ChatColor.GRAY + "\" to leave!");
 
                     this.finalName = name;
 

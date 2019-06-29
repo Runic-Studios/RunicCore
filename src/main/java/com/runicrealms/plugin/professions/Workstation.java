@@ -141,7 +141,15 @@ public abstract class Workstation {
         // grab the location of the anvil
         Location stationLoc = WorkstationListener.getStationLocation().get(pl.getUniqueId());
 
-        int rate = (40+currentLvl);
+        // --------------------------------------
+        // fix for tutorial island
+        int rate;
+        if (currentLvl == 0 || currentLvl == 1) {
+            rate = 100;
+        } else {
+            rate = (40 + currentLvl);
+        }
+        // --------------------------------------
 
         // check that the player has reached the req. lv
         if (currentLvl < reqLevel) {
