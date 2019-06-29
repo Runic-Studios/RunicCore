@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.guild;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.GuildCreateEvent;
@@ -10,14 +11,14 @@ import me.glaremasters.guilds.guild.Guild;
 import me.glaremasters.guilds.guild.GuildMember;
 import me.glaremasters.guilds.guild.GuildSkull;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,6 +31,7 @@ public class GuildListeners implements Listener {
     private HashMap<UUID, ActionReason> chatActionMap;
     private final String heraldPrefix = ChatColor.GRAY + "[1/1] " + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
     private final ItemStack license = new ItemStack(Material.PAPER);
+    private static final int COST = 1000;
 
     private enum ActionReason {
         PURCHASE,
@@ -50,7 +52,12 @@ public class GuildListeners implements Listener {
 
         ItemMeta meta = license.getItemMeta();
         Objects.requireNonNull(meta).setDisplayName(ChatColor.YELLOW + "Guild Master's License");
-        meta.setLore(Arrays.asList("", ChatColor.GRAY + "Give this paper to a " + ChatColor.YELLOW + "Guild Herald" + ChatColor.GRAY + " to create a guild!", "", ChatColor.GRAY + "If you lose this, you must buy another!"));
+        meta.setLore(Arrays.asList("", ChatColor.GRAY + "Give this to a "
+                + ChatColor.YELLOW + "Guild Herald", ChatColor.GRAY + "to create a guild!", "",
+                ChatColor.DARK_RED + "" + ChatColor.ITALIC + "If you lose this, you must",
+                ChatColor.DARK_RED + "" + ChatColor.ITALIC + "buy another!"));
+        meta.addEnchant(Enchantment.DURABILITY, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         license.setItemMeta(meta);
     }
 
@@ -108,8 +115,8 @@ public class GuildListeners implements Listener {
                 chatActionMap.put(player.getUniqueId(), ActionReason.NAME);
             } else {
 
-                if (player.getInventory().contains(Material.GOLD_NUGGET, 1000)) {
-                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + "1000" + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
+                if (player.getInventory().contains(Material.GOLD_NUGGET, COST)) {
+                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + COST + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
                     player.sendMessage(
                               ChatColor.DARK_AQUA + "Tip "
                             + ChatColor.GOLD + "» "
@@ -148,23 +155,20 @@ public class GuildListeners implements Listener {
                     {
 
                         Player pl = event.getPlayer();
+                        ItemStack[] inv = pl.getInventory().getContents();
 
                         // take items from player
-                        // todo: FIX
-                        ItemStack[] inv = pl.getInventory().getContents();
-                        int toRemove = 1000;
+                        int goldAmtToRemove = COST;
                         for (int i = 0; i < inv.length; i++) {
+                            if (goldAmtToRemove <= 0) break;
                             if (pl.getInventory().getItem(i) == null) continue;
                             if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == Material.GOLD_NUGGET) {
-                                if(toRemove - 64 > 0) {
-                                    Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
-                                            (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (64));
-                                    toRemove -= 64;
-                                } else if(toRemove > 0 && toRemove < 64) {
-                                    Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
-                                            (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (toRemove));
-                                }
-                                break;
+                                int amt = Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount();
+
+                                if (goldAmtToRemove < 64) amt = goldAmtToRemove;
+                                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+                                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (amt));
+                                goldAmtToRemove -= amt;
                             }
                         }
 
@@ -297,6 +301,8 @@ public class GuildListeners implements Listener {
         Bukkit.getPluginManager().callEvent(event);
 
         if(!event.isCancelled()) {
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.5f);
+            player.sendMessage(ChatColor.GREEN + "Your guild has been registered!");
             Guilds.getApi().getGuildHandler().addGuild(guild);
         }
     }

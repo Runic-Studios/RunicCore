@@ -167,6 +167,7 @@ public class ArtifactGUI {
         archerSkins.add(menuItem(Material.BOW, "Polished Silver Shortbow", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 10));
         archerSkins.add(menuItem(Material.BOW, "Victorious Gilded Shortbow", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 15));
         archerSkins.add(menuItem(Material.BOW, "Ancient Crystal Shortbow", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 20));
+        archerSkins.add(menuItem(Material.BOW, "Twisted Isfodari Warbow", "&aUnlocked!\n&cAppearance not yet available.", 25));
         return archerSkins;
     }
 
@@ -189,6 +190,7 @@ public class ArtifactGUI {
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Victorious Gilded Staff", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Ancient Crystal Greatstaff", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Primal Arcane Rod", "&aUnlocked!\n&7Unlocked by purchasing the &dAlpha+ &7rank!", 5));
+        mageSkins.add(menuItem(Material.WOODEN_HOE, "Twisted Isfodari Scythe", "&aUnlocked!\n&7Reward from &dMystery Boxes&7!", 6));
         return mageSkins;
     }
 
@@ -199,7 +201,8 @@ public class ArtifactGUI {
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Polished Silver Broadsword", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Victorious Gilded Longsword", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Ancient Crystal Greatsword", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
-        rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Bane of the Frost Lords", "&aUnlocked!\n&7Reward from the &4Frozen Fortress &7raid!", 50));
+        rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Bane of the Frost Lords", "&aUnlocked!\n&7Reward from the &4Frozen Fortress &7raid!", 5));
+        rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Twisted Isfodari Dagger", "&aUnlocked!\n&7Reward from &dMystery Boxes&7!", 6));
         return rogueSkins;
     }
 
@@ -210,7 +213,7 @@ public class ArtifactGUI {
         warriorSkins.add(menuItem(Material.WOODEN_AXE, "Polished Silver Broadaxe", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         warriorSkins.add(menuItem(Material.WOODEN_AXE, "Victorious Gilded Reaver", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         warriorSkins.add(menuItem(Material.WOODEN_AXE, "Ancient Crystal Battleaxe", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
-        warriorSkins.add(menuItem(Material.WOODEN_AXE, "Ancient Crystal Battleaxe", "&aUnlocked!\n&7Unlock by achieving True Outlaw Season 1!", 5));
+        warriorSkins.add(menuItem(Material.WOODEN_AXE, "True Outlaw's Ravager", "&aUnlocked!\n&7Unlock by achieving True Outlaw Season 1!", 5));
         return warriorSkins;
     }
 
