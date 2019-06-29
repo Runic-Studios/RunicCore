@@ -143,6 +143,7 @@ public class AlchemistGUI extends Workstation {
                     }
                     // mana potion
                 } else if (slot == 10) {
+                    reqLevel = 10;
                     reqHashMap = manaPotReqs;
                     exp = 10;
                     if (currentLvl < 30) {
@@ -154,8 +155,8 @@ public class AlchemistGUI extends Workstation {
                     }
                     // slaying potion
                 } else if (slot == 11) {
-                    reqHashMap = slayPotReqs;
                     reqLevel = 20;
+                    reqHashMap = slayPotReqs;
                     exp = 25;
                     if (currentLvl < 30) {
                         dummyVar = 5;
@@ -166,8 +167,8 @@ public class AlchemistGUI extends Workstation {
                     }
                     // looting potion
                 } else if (slot == 12) {
-                    reqHashMap = lootPotReqs;
                     reqLevel = 40;
+                    reqHashMap = lootPotReqs;
                     exp = 35;
                     if (currentLvl < 30) {
                         dummyVar = 5;
@@ -271,7 +272,12 @@ public class AlchemistGUI extends Workstation {
         // grab the player's current profession level, progress toward that level
         currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
-        rate = (50+currentLvl);
+        if (currentLvl == 0 || currentLvl == 1) {
+            rate = 100;
+        } else {
+            rate = (50 + currentLvl);
+        }
+
         int failCount = 0;
 
         for (int i = 0; i < amt; i++) {

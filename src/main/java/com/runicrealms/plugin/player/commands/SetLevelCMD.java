@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.player.commands;
 
-import com.runicrealms.plugin.player.PlayerLevelUtil;
-import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
-import org.bukkit.Bukkit;
+import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

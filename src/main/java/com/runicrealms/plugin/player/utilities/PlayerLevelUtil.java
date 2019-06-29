@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player;
+package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;

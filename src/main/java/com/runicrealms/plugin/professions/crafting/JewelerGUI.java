@@ -124,6 +124,7 @@ public class JewelerGUI extends Workstation {
                     }
                     // sapphire
                 } else if (slot == 10) {
+                    reqLevel = 10;
                     reqHashMap = cutSapphireReqs;
                     exp = 10;
                     if (currentLvl < 30) {
@@ -135,8 +136,8 @@ public class JewelerGUI extends Workstation {
                     }
                     // emerald
                 } else if (slot == 11) {
-                    reqHashMap = cutEmeraldReqs;
                     reqLevel = 20;
+                    reqHashMap = cutEmeraldReqs;
                     exp = 15;
                     if (currentLvl < 30) {
                         dummyVar = 5;
@@ -147,8 +148,8 @@ public class JewelerGUI extends Workstation {
                     }
                     // opal
                 } else if (slot == 12) {
-                    reqHashMap = cutOpalReqs;
                     reqLevel = 40;
+                    reqHashMap = cutOpalReqs;
                     exp = 25;
                     if (currentLvl < 30) {
                         dummyVar = 1;
@@ -159,8 +160,8 @@ public class JewelerGUI extends Workstation {
                     }
                     // diamond
                 } else if (slot == 13) {
-                    reqHashMap = cutDiamondReqs;
                     reqLevel = 40;
+                    reqHashMap = cutDiamondReqs;
                     exp = 35;
                     if (currentLvl < 30) {
                         dummyVar = 3;
