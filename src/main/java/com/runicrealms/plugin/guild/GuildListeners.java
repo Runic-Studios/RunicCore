@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.guild;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.GuildCreateEvent;
@@ -133,19 +132,21 @@ public class GuildListeners implements Listener {
                                       );
 
                     chatActionMap.put(player.getUniqueId(), ActionReason.PURCHASE);
+                } else if(hasTalked.contains(player)) {
+                    player.sendMessage(heraldPrefix + ChatColor.RED + "Sorry! You don't have enough gold coins to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.RED + ".");
                 } else {
-                    player.sendMessage(heraldPrefix + ChatColor.GOLD + "Hey there lad! Would you be interested in a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + COST + ChatColor.GOLD + " gold coins?");
-                    hasTalked.add(player);
+                        player.sendMessage(heraldPrefix + ChatColor.GOLD + "Hey there lad! Would you be interested in a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + COST + ChatColor.GOLD + " gold coins?");
+                        hasTalked.add(player);
 
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                        if(hasTalked.contains(player)) {
-                            hasTalked.remove(player);
-                        }
-                    }, 20 * TIME_BETWEEN_TALK);
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+                            if(hasTalked.contains(player)) {
+                                hasTalked.remove(player);
+                            }
+                        }, 20 * TIME_BETWEEN_TALK);
+                    }
                 }
             }
         }
-    }
 
     // ------------------------------------------------------------------
     // PLAYER EVENTS
