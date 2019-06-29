@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.scoreboard;
 
+import me.glaremasters.guilds.Guilds;
+import me.glaremasters.guilds.guild.Guild;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -145,7 +147,7 @@ public class ScoreboardHandler implements Listener {
         playerClass.setScore(6);
         Score playerProfession = sidebar.getScore(playerProf(pl));
         playerProfession.setScore(5);
-        Score playerGuild = sidebar.getScore(playerGuild());
+        Score playerGuild = sidebar.getScore(playerGuild(pl));
         playerGuild.setScore(4);
     }
 
@@ -191,8 +193,17 @@ public class ScoreboardHandler implements Listener {
         return display;
     }
 
-    private String playerGuild() {
-        String plGuild = ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None";
-        return plGuild;
+    private String playerGuild(Player pl) {
+
+        String display;
+        String guildID = Guilds.getApi().getGuildId(pl);
+
+        if(guildID != null) {
+            Guild guild = Guilds.getApi().getGuild(guildID);
+            display = ChatColor.GRAY + "Guild: " + ChatColor.GOLD + guild.getName();
+        } else {
+            display = ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None";
+        }
+        return display;
     }
 }

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.guild;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.GuildCreateEvent;
