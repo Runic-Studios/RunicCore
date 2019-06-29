@@ -2,15 +2,20 @@ package com.runicrealms.plugin.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * Prevents players from breaking blocks on the server, but doesn't listen for gathering materials, since those
@@ -99,6 +104,33 @@ public class BlockBreakListener implements Listener {
     public void itemFrameItemRemoval(EntityDamageEvent e) {
         if (e.getEntity() instanceof ItemFrame) {
             e.setCancelled(true);
+        }
+    }
+
+    /**
+     * Prevents players from breaking fires
+     */
+    @EventHandler
+    public void onFireBreak(PlayerInteractEvent e) {
+
+        if (e.getPlayer().isOp()) return;
+        if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        if (e.getClickedBlock() == null) return;
+
+        Block target = e.getClickedBlock();
+
+        Block[] adjacent = {
+                target.getRelative(BlockFace.NORTH),
+                target.getRelative(BlockFace.SOUTH),
+                target.getRelative(BlockFace.WEST),
+                target.getRelative(BlockFace.EAST),
+                target.getRelative(BlockFace.UP),
+                target.getRelative(BlockFace.DOWN)};
+
+        for (Block source : adjacent) {
+            if (source.getType() == Material.FIRE) {
+                e.setCancelled(true);
+            }
         }
     }
 }

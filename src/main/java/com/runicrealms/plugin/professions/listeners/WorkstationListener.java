@@ -286,6 +286,8 @@ public class WorkstationListener implements Listener {
         Block b = e.getClickedBlock();
         if (b == null) return;
         if (b.getType() == Material.ANVIL
+                || b.getType() == Material.CHIPPED_ANVIL
+                || b.getType() == Material.DAMAGED_ANVIL
                 || b.getType() == Material.BREWING_STAND
                 || b.getType() == Material.CAULDRON
                 || b.getType() == Material.CRAFTING_TABLE

@@ -55,7 +55,7 @@ public class OutlawManager implements Listener {
                         ScoreboardHandler.updateNamesFor(on, pl.getScoreboard().getTeam("outlaw"),
                                 Collections.singletonList(pl.getName()));
                         } catch (Exception e) {
-                            Bukkit.broadcastMessage("fuck u");
+                            //Bukkit.broadcastMessage("fuck u");
                             e.printStackTrace();
                         }
                     }
@@ -65,7 +65,7 @@ public class OutlawManager implements Listener {
                         ScoreboardHandler.updateNamesFor(on, pl.getScoreboard().getTeam("white"),
                                 Collections.singletonList(pl.getName()));
                         } catch (Exception e) {
-                            Bukkit.broadcastMessage("fuck u");
+                            //Bukkit.broadcastMessage("fuck u");
                             e.printStackTrace();
                         }
                     }
@@ -78,7 +78,7 @@ public class OutlawManager implements Listener {
                         ScoreboardHandler.updateNamesFor(pl, pl.getScoreboard().getTeam("outlaw"),
                                 Collections.singletonList(on.getName()));
                         } catch (Exception e) {
-                            Bukkit.broadcastMessage("fuck u");
+                            //Bukkit.broadcastMessage("fuck u");
                             e.printStackTrace();
                         }
                     }

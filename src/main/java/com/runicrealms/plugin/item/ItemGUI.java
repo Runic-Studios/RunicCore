@@ -7,12 +7,11 @@ import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -106,7 +105,16 @@ public class ItemGUI implements Listener {
         this.clickType = event.getClick();
 
         if (event.getInventory().getTitle().equals(this.name)) {
+
+            if(event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                event.setCancelled(true);
+                event.setResult(Event.Result.DENY);
+                event.getWhoClicked().closeInventory();
+                ((Player) event.getWhoClicked()).updateInventory();
+            }
+
             event.setCancelled(true);
+            event.setResult(Event.Result.DENY);
             int slot = event.getRawSlot();
             if (slot >= 0 && slot < size && optionNames[slot] != null) {
                 Plugin plugin = this.plugin;
@@ -124,6 +132,7 @@ public class ItemGUI implements Listener {
             }
         }
     }
+
 
     public interface OptionClickEventHandler {
         public void onOptionClick(OptionClickEvent event);

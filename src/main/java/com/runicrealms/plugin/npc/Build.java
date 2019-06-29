@@ -56,7 +56,7 @@ public class Build implements SubCommand {
                 tagString = ChatColor.GOLD + "Quest";
                 break;
             case "merchant":
-                tagString = ChatColor.GRAY + "Merchant";
+                tagString = ChatColor.GREEN + "Merchant";
                 break;
             case "banker":
                 tagString = ChatColor.GRAY + "Banker";

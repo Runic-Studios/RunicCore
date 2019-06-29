@@ -182,6 +182,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new PotionListener(), this);
         pm.registerEvents(new GuildListeners(), this);
         pm.registerEvents(new PlayerHungerManager(), this);
+        pm.registerEvents(new KeyClickListener(), this);
     }
     
     private void registerCommands() {

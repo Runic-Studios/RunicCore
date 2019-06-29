@@ -108,8 +108,11 @@ public class RuneGUI {
                     updateRuneSpell(pl, rune, "secondarySpell",
                             event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName());
 
-                } else if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                } else if (event.getClick() == ClickType.SHIFT_LEFT) {
 
+                    event.setCancelled(true);
+                    event.setWillClose(false);
+                    event.setWillDestroy(true);
                     // unlock spell
                     if (!pl.hasPermission("core.spells." + spellName)) {
 
@@ -128,6 +131,8 @@ public class RuneGUI {
                                     + ChatColor.GREEN + "!");
                         }
                     }
+                } else {
+                    event.setCancelled(true);
                 }
 
                 event.setWillClose(true);
@@ -145,7 +150,7 @@ public class RuneGUI {
                         "\n&7Secondary: &a" + secondarySpell +
                         "\n" +
                         "\n&fLeft Click &7a spell to set your primary!" +
-                        "\n&fShift + Click &7a spell to set your secondary!" +
+                        "\n&fShift + Left Click &7a spell to set your secondary!" +
                         "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
 
         int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
@@ -225,7 +230,7 @@ public class RuneGUI {
 
             status = "&a[ Unlocked ]";
         } else {
-            status = "&c[Locked] &8(&fShift + Click &8to unlock)";
+            status = "&c[Locked] &8(&fShift + Left Click &8to unlock)";
         }
 
         editor.setOption(position, new ItemStack(Material.ENCHANTED_BOOK), spellName,
