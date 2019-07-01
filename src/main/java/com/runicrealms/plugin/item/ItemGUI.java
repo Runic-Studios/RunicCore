@@ -8,16 +8,15 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ItemGUI implements Listener {
 
@@ -133,6 +132,29 @@ public class ItemGUI implements Listener {
                     destroy();
                 }
             }
+        }
+    }
+
+    /**
+     * This method is called when a player closes a GUI.
+     * This fixed all kinds of bugs with inventory GUIS.
+     * IMPORTANT: NEVER call closeInventory. Always wrap it in a delayed task by 1 tick.
+     * Contact Spigot Devs to explain this, I don't got the time ;)
+     * @author Skyfallin_
+     */
+    @EventHandler
+    public void onClose(InventoryCloseEvent e) {
+        if (e.getInventory().getTitle().equals(this.name)) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    InventoryView view = e.getPlayer().getOpenInventory();
+                    if (view.getTopInventory().toString().contains("CraftInventoryCrafting")) {
+                        e.getPlayer().closeInventory();
+                        destroy();
+                    }
+                }
+            }.runTaskLater(plugin, 1L);
         }
     }
 
