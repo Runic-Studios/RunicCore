@@ -140,11 +140,11 @@ public class JewelerGUI extends Workstation {
                     reqHashMap = cutEmeraldReqs;
                     exp = 15;
                     if (currentLvl < 30) {
-                        dummyVar = 5;
+                        dummyVar = 2;
                     } else if (currentLvl < 50) {
-                        dummyVar = 10;
+                        dummyVar = 4;
                     } else {
-                        dummyVar = 15;
+                        dummyVar = 6;
                     }
                     // opal
                 } else if (slot == 12) {
@@ -164,11 +164,11 @@ public class JewelerGUI extends Workstation {
                     reqHashMap = cutDiamondReqs;
                     exp = 35;
                     if (currentLvl < 30) {
-                        dummyVar = 3;
+                        dummyVar = 2;
                     } else if (currentLvl < 50) {
-                        dummyVar = 6;
+                        dummyVar = 4;
                     } else {
-                        dummyVar = 12;
+                        dummyVar = 6;
                     }
                 }
 
@@ -211,7 +211,7 @@ public class JewelerGUI extends Workstation {
             manaStr = "30";
             healingStr = "9";
             weaponStr = "3";
-            spellStr = "12";
+            spellStr = "9";
         }
 
         // ruby (+health)

@@ -32,6 +32,17 @@ public class GearScanner {
         return armorAndOffhand;
     }
 
+    public static int getHealthBoost(Player pl) {
+
+        int healthBoost = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            healthBoost += (int) AttributeUtil.getGenericDouble(item, "generic.maxHealth");
+        }
+        return healthBoost;
+    }
+
     public static int getManaBoost(Player pl) {
 
         int manaBoost = 0;

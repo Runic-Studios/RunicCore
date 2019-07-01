@@ -16,6 +16,7 @@ import com.runicrealms.plugin.command.subcommands.SubCommand;
 
 import java.util.List;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class ClassExpCMD implements SubCommand {
 
     private RunicGiveSC giveItemSC;
@@ -30,8 +31,16 @@ public class ClassExpCMD implements SubCommand {
     public void onConsoleCommand(CommandSender sender, String[] args)  {
 
         // runicgive exp [player] [amount] [x] [y] [z]
+        // runicgive exp [player] [amount] [quest]
         Player pl = Bukkit.getPlayer(args[1]);
         if (pl == null) return;
+
+        // skip all other calculations for quest exp
+        if (args.length == 4) {
+            int exp = Integer.parseInt(args[2]);
+            PlayerLevelUtil.giveExperience(pl, exp);
+            return;
+        }
 
         // if the player doesn't have a party or they're in there by themself, give them regular exp.
         if (RunicCore.getPartyManager().getPlayerParty(pl) == null
@@ -82,12 +91,11 @@ public class ClassExpCMD implements SubCommand {
     @Override
     public void onOPCommand(Player sender, String[] args) {
 
-        if (args.length == 3) {
-            this.onConsoleCommand(sender, args);
-        } else if(args.length == 6) {
+        if (args.length == 3 || args.length == 4 || args.length == 6) {
             this.onConsoleCommand(sender, args);
         } else {
             sender.sendMessage(ChatColor.YELLOW + "Command usage: /runicgive exp [player] [amount] ([x] [y] [z])");
+            sender.sendMessage(ChatColor.YELLOW + "Command usage: /runicgive exp [player] [amount] (quest)");
         }
     }
 

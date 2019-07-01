@@ -2,9 +2,11 @@ package com.runicrealms.plugin.command.subcommands.set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassGUI;
@@ -14,6 +16,7 @@ import com.runicrealms.plugin.player.commands.SetSC;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.runicrealms.plugin.classes.ClassGUI.*;
 
@@ -87,7 +90,14 @@ public class SetClassCMD implements SubCommand {
 
             setupArtifact(pl, formattedStr, true);
             setupRune(pl);
-            setupHearthstone(pl, "General Tso's Camp");
+
+            // only setup their hearthstone if they don't have one already
+            if (pl.getInventory().getItem(2) == null
+                    || (pl.getInventory().getItem(2) != null
+                    && pl.getInventory().getItem(2).getType() != Material.CLAY_BALL)) {
+                setupHearthstone(pl, "General Tso's Camp");
+            }
+
             setConfig(pl, formattedStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);

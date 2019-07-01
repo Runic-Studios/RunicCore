@@ -106,12 +106,15 @@ public class ItemGUI implements Listener {
 
         if (event.getInventory().getTitle().equals(this.name)) {
 
+            // ----------------------------------------------------------------------
+            // FIXES A SUBSTANTIAL BUG: STEALING ARTIFACT SKINS FOR MAX ATTACK SPEED
             if(event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                event.getWhoClicked().closeInventory();
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
-                event.getWhoClicked().closeInventory();
                 ((Player) event.getWhoClicked()).updateInventory();
             }
+            // ----------------------------------------------------------------------
 
             event.setCancelled(true);
             event.setResult(Event.Result.DENY);

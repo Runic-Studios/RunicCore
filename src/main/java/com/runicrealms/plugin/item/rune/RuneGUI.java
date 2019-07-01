@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,7 +14,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.ItemGUI;
 import com.runicrealms.plugin.item.LoreGenerator;
-import com.runicrealms.plugin.utilities.ColorUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +81,6 @@ public class RuneGUI {
                 if (event.getClick() == ClickType.LEFT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)) {
-                        pl.closeInventory();
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -97,7 +94,6 @@ public class RuneGUI {
                 } else if (event.getClick() == ClickType.RIGHT) {
 
                     if (!pl.hasPermission("core.spells." + spellName)) {
-                        pl.closeInventory();
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -249,36 +245,13 @@ public class RuneGUI {
 
         if (!otherSpell.equals(spellName)) {
             item = AttributeUtil.addSpell(item, spellSlot, spellName);
-            int durability = ((Damageable) item.getItemMeta()).getDamage();
             LoreGenerator.generateRuneLore(item);
             pl.getInventory().setItem(1, item);
-            pl.closeInventory();
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
             pl.sendMessage(ChatColor.GREEN + "You imbued your rune with " + spellName + "!");
         } else {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             pl.sendMessage(ChatColor.RED + "You can't imbue the same spell in two slots.");
         }
-    }
-
-    public static ItemStack menuItem(Material material, String name, String desc,
-                                     int durability) {
-
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(desc);
-
-        if (meta != null) {
-            meta.setLore(lore);
-            meta.setDisplayName(ColorUtil.format("&e" + name));
-            ((Damageable) meta).setDamage(durability);
-            meta.setUnbreakable(true);
-            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            item.setItemMeta(meta);
-        }
-
-        return item;
     }
 }

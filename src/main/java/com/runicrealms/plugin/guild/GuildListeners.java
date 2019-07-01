@@ -26,6 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class GuildListeners implements Listener {
 
     private List<Integer> guildNPCList;

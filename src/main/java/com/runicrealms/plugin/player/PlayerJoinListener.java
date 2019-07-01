@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
@@ -24,24 +26,24 @@ public class PlayerJoinListener implements Listener {
         Player pl = e.getPlayer();
 
         // set join message
-        // TODO: inform players if their guild mate or friend logs in.
         e.setJoinMessage("");
 
-        // set their hp to stored value from last logout
-        int storedHealth = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
 
-        if (storedHealth == 0) {
-            storedHealth = 50;
-        }
+                // set their hp to stored value from last logout
+                int storedHealth = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
 
-        if (storedHealth > pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
-            pl.setHealth(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        } else {
-            pl.setHealth(storedHealth);
-        }
+                // new players or corrupted data
+                if (storedHealth == 0) {
+                    storedHealth = 50;
+                }
 
-        // set the amount of hearts to display
-        HealthUtils.setHeartDisplay(pl);
+                HealthUtils.setPlayerMaxHealth(pl);
+                pl.setHealth(storedHealth);
+            }
+        }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

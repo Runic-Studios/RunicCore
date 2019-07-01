@@ -288,7 +288,6 @@ public class ArtifactGUI {
                             && !spellName.equals("slam")
                             && !spellName.equals("rejuvenate")
                             && !spellName.equals("smokebomb")) {
-                        pl.closeInventory();
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -315,7 +314,6 @@ public class ArtifactGUI {
                             && !spellName.equals("slam")
                             && !spellName.equals("rejuvenate")
                             && !spellName.equals("smokebomb")) {
-                        pl.closeInventory();
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -528,7 +526,6 @@ public class ArtifactGUI {
             int durability = ((Damageable) item.getItemMeta()).getDamage();
             LoreGenerator.generateArtifactLore(item, itemName, className, durability);
             pl.getInventory().setItem(0, item);
-            pl.closeInventory();
             pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
             pl.sendMessage(ChatColor.GREEN + "You imbued your artifact with " + spellName + "!");
 
@@ -539,7 +536,7 @@ public class ArtifactGUI {
         }
     }
 
-    public static ItemStack menuItem(Material material, String name, String desc,
+    private static ItemStack menuItem(Material material, String name, String desc,
                                       int durability) {
 
         ItemStack item = new ItemStack(material);

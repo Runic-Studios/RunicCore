@@ -32,7 +32,6 @@ public class ArcaneOrb extends Spell {
 
     // global variables
     private static final int DURATION = 10;
-    private static final int MAX_DIST = 5;
     private static final double PERCENT = 25;
     private static final int RADIUS = 10;
     private HashMap<UUID, Location> buffed = new HashMap<>();
@@ -51,8 +50,8 @@ public class ArcaneOrb extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        Location loc = pl.getTargetBlock(null, MAX_DIST).getLocation().add(0, 3, 0);
-        Location circleLoc = loc.clone().subtract(0, 3, 0);
+        Location loc = pl.getLocation().clone().add(0, 2, 0);
+        Location circleLoc = loc.clone().subtract(0, 2, 0);
         buffed.put(pl.getUniqueId(), circleLoc);
         new BukkitRunnable() {
             int count = 1;

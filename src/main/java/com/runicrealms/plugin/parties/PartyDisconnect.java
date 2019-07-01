@@ -85,7 +85,6 @@ public class PartyDisconnect implements Listener {
                         (leaver, member.getScoreboard().getTeam(team),
                                 Collections.singletonList(member.getName()));
             } catch (Exception e) {
-                //Bukkit.broadcastMessage("fuck u");
                 e.printStackTrace();
             }
         }
@@ -101,7 +100,6 @@ public class PartyDisconnect implements Listener {
                         (member, leaver.getScoreboard().getTeam(team),
                                 Collections.singletonList(leaver.getName()));
             } catch (Exception e) {
-                //Bukkit.broadcastMessage("fuck u");
                 e.printStackTrace();
             }
         }

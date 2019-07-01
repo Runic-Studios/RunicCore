@@ -194,7 +194,6 @@ public abstract class Workstation {
 
         // if player has everything, take player's items, display first reagent visually
         // add player to currently crafting ArrayList
-        pl.closeInventory();
         RunicCore.getProfManager().getCurrentCrafters().add(pl);
         pl.sendMessage(ChatColor.GRAY + "Crafting...");
         for (Material reagent : itemReqs.keySet()) {
@@ -281,8 +280,8 @@ public abstract class Workstation {
             craftedItem = AttributeUtil.addGenericStat
                     (craftedItem, "generic.maxHealth", someVar, itemSlot);
 
-            // item can be socketed once
-            craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.socketCount", 1);
+            // item can be socketed TWICE
+            craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.socketCount", 2);
 
             LoreGenerator.generateItemLore(craftedItem, ChatColor.WHITE, dispName, "");
 

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.classes.ClassGUI;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.utilities.ChatUtils;
@@ -42,28 +43,10 @@ public class PlayerLevelListener implements Listener {
         if (className == null) return;
         int classLevel = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
 
-        // save player hp, restore hp.food
-        int hpPerLevel = 0;
-        switch (className.toLowerCase()) {
-            case "archer":
-                hpPerLevel = 1;
-                break;
-            case "cleric":
-                hpPerLevel = 2;
-                break;
-            case "mage":
-                hpPerLevel = 1;
-                break;
-            case "rogue":
-                hpPerLevel = 1;
-                break;
-            case "warrior":
-                hpPerLevel = 2;
-                break;
-        }
-        HealthUtils.setPlayerHealth(pl, 50+(hpPerLevel*classLevel));
+        HealthUtils.setPlayerMaxHealth(pl);
         HealthUtils.setHeartDisplay(pl);
-        pl.setHealth(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        pl.setHealth(playerHealth);
         RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.currentHP", (int) pl.getHealth());
         pl.setFoodLevel(20);
 
@@ -86,62 +69,8 @@ public class PlayerLevelListener implements Listener {
 
         // scale artifact
         ItemStack artifact = pl.getInventory().getItem(0);
-        ItemStack rune = pl.getInventory().getItem(1);
+        if (artifact == null) return;
         scaleArtifact(artifact, pl, className);
-
-        // send a basic leveling message for all the levels that aren't milestones.
-        // (10, 20, etc.)
-        if (pl.getLevel() % 10 != 0) {
-            sendLevelMessage(pl, hpPerLevel + "");
-        }
-
-        switch (pl.getLevel()) {
-            case 1:
-                break;
-            case 10:
-                sendUnlockMessage(pl, 10, className, classLevel);
-                giveSpellpoint(pl);
-                unlockSpell(rune, "primarySpell", pl, 1, className);
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                        "lp user " + pl.getName() + " permission set core.skins." + className + ".21" + " true");
-                break;
-            case 20:
-                sendUnlockMessage(pl, 20, className, classLevel);
-                giveSpellpoint(pl);
-                unlockSpell(rune, "secondarySpell", pl, 1, className);
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                        "lp user " + pl.getName() + " permission set core.skins." + className + ".22" + " true");
-                break;
-            case 30:
-                sendUnlockMessage(pl, 30, className, classLevel);
-                giveSpellpoint(pl);
-                unlockSpell(artifact, "secondarySpell", pl, 0, className);
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                        "lp user " + pl.getName() + " permission set core.skins." + className + ".23" + " true");
-                break;
-            case 40:
-                giveSpellpoint(pl);
-                pl.sendMessage("\n");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
-                pl.sendMessage("\n");
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                        "lp user " + pl.getName() + " permission set core.skins." + className + ".24" + " true");
-                break;
-            case 50:
-                giveSpellpoint(pl);
-                Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
-                         + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + pl.getLevel() + " " + className + "!");
-                pl.sendMessage("\n");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + pl.getLevel() + "!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "  You can now access RAIDS!");
-                pl.sendMessage("\n");
-                ClassUtil.launchFirework(pl, className);
-                break;
-        }
     }
 
     /**
@@ -183,50 +112,6 @@ public class PlayerLevelListener implements Listener {
 
         // set the player's artifact
         pl.getInventory().setItem(0, artifact);
-    }
-
-    private void giveSpellpoint(Player pl) {
-        int spellpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
-        RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
-        saveConfig(pl);
-    }
-    private void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot, String className) {
-        int durab = ((Damageable) item.getItemMeta()).getDamage();
-        item = AttributeUtil.addSpell(item, slot, ChatColor.GREEN + "UNLOCKED");
-        if (itemSlot == 0) {
-            LoreGenerator.generateArtifactLore(item, item.getItemMeta().getDisplayName(), className, durab);
-        } else {
-            LoreGenerator.generateRuneLore(item);
-        }
-        pl.getInventory().setItem(itemSlot, item);
-    }
-
-    private void sendLevelMessage(Player pl, String hpPerLevel) {
-        pl.sendMessage("\n");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
-        ChatUtils.sendCenteredMessage(pl,
-                ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLevel() + "✸");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact speed increases!");
-        pl.sendMessage("\n");
-    }
-
-    private void sendUnlockMessage(Player pl, int lvl, String className, int classLevel) {
-        pl.sendTitle(
-                ChatColor.GREEN + "Level Up!",
-                ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
-        pl.sendMessage("\n");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "NEW SPELL SLOT UNLOCKED!");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
-        String item = "";
-        if (lvl == 10 || lvl == 20) {
-            item = "Rune";
-        } else if (lvl == 30) {
-            item = "Artifact";
-        }
-        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your " + item + " to add a spell!");
-        pl.sendMessage("\n");
     }
 
     /**

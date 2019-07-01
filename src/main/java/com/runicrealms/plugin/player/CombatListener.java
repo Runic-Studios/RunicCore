@@ -12,7 +12,10 @@ import com.runicrealms.plugin.RunicCore;
 
 import java.util.UUID;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class CombatListener implements Listener {
+
+    private static int RANGE = 100;
 
     @EventHandler
     public void onCombat(EntityDamageByEntityEvent e) {
@@ -80,6 +83,10 @@ public class CombatListener implements Listener {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
 
             for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
+
+                // only tag players in 100 block range
+                if (pl.getLocation().distance(member.getLocation()) > RANGE) continue;
+
                 if (member == pl) continue;
                 if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
                     member.sendMessage(ChatColor.RED + "Your party has entered combat!");

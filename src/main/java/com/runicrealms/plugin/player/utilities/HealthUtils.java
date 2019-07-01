@@ -1,11 +1,17 @@
 package com.runicrealms.plugin.player.utilities;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.item.GearScanner;
 import de.tr7zw.itemnbtapi.NBTEntity;
 import de.tr7zw.itemnbtapi.NBTList;
 import de.tr7zw.itemnbtapi.NBTListCompound;
 import de.tr7zw.itemnbtapi.NBTType;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+
+import java.util.Objects;
 
 /**
  * This class controls the changing of the player's health,
@@ -16,17 +22,52 @@ import org.bukkit.entity.Player;
 public class HealthUtils {
 
     private static final int baseHealth = 50;
-    private static final double divisor = 12.5;
 
     public static void setBaseHealth(Player pl) {
-        setHealth(pl, baseHealth);
+        setHealthAttribute(pl, baseHealth);
     }
 
-    public static void setPlayerHealth(Player pl, double amt) {
-        setHealth(pl, amt);
+    public static void setPlayerMaxHealth(Player pl) {
+
+        // grab the player's new info
+        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+
+        // for new players
+        if (className == null) {
+            setBaseHealth(pl);
+            return;
+        }
+
+        // grab player's level
+        int classLevel = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+
+        // save player hp
+        int hpPerLevel = 0;
+        switch (className.toLowerCase()) {
+            case "archer":
+                hpPerLevel = 1;
+                break;
+            case "cleric":
+                hpPerLevel = 2;
+                break;
+            case "mage":
+                hpPerLevel = 1;
+                break;
+            case "rogue":
+                hpPerLevel = 1;
+                break;
+            case "warrior":
+                hpPerLevel = 2;
+                break;
+        }
+
+        int total = baseHealth+(hpPerLevel*classLevel);
+
+        HealthUtils.setHealthAttribute(pl, total);
+        HealthUtils.setHeartDisplay(pl);
     }
 
-    private static void setHealth(Player pl, double amt) {
+    private static void setHealthAttribute(Player pl, double amt) {
         NBTEntity nbtPlayer = new NBTEntity(pl);
         NBTList list = nbtPlayer.getList("Attributes", NBTType.NBTTagCompound);
         for (int i = 0; i < list.size(); i++) {
@@ -38,15 +79,23 @@ public class HealthUtils {
     }
 
     public static void setHeartDisplay(Player pl) {
+
+        // retrieve player health
+        int playerHealth = (int) Objects.requireNonNull(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
+
+        // a half-heart per 12.5 health
+        int numOfHalfHearts = (playerHealth / 25) * 2;
+
         // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
-        int scale = (int) (pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / divisor);
-        if (scale % 2 != 0) {
-            scale = scale-1;
+        if (numOfHalfHearts % 2 != 0) {
+            numOfHalfHearts = numOfHalfHearts - 1;
         }
+
         // insurance to prevent "greater than 0" errors on first join
-        if (scale <= 0) {
-            scale=4;
+        if (numOfHalfHearts <= 0) {
+            numOfHalfHearts=4;
         }
-        pl.setHealthScale(scale);
+
+        pl.setHealthScale(numOfHalfHearts);
     }
 }

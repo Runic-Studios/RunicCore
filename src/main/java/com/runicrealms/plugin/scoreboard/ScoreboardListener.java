@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -56,11 +57,7 @@ public class ScoreboardListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                HealthUtils.setHeartDisplay(pl);
-                double maxHealth = pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-                if (pl.getHealth() > maxHealth) {
-                    pl.setHealth(maxHealth);
-                }
+                HealthUtils.setPlayerMaxHealth(pl);
                 updateHealth(pl);
             }
         }.runTaskLater(plugin, 1L);

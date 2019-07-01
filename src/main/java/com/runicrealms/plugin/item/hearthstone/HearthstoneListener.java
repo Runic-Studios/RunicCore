@@ -212,8 +212,12 @@ public class HearthstoneListener implements Listener {
                 z = -2639.5;
                 yaw = 90;
                 break;
-            //case "isfodar": // 4
-                //break;
+            case "isfodar": // 4
+                x = 744.5;
+                y = 94;
+                z = -137.5;
+                yaw = 90;
+                break;
             case "dead man's rest": // 3
                 x = -24.5;
                 y = 32;

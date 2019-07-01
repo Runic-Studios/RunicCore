@@ -1,9 +1,7 @@
 package com.runicrealms.plugin.item.commands;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
-import com.runicrealms.plugin.enums.ArmorSlotEnum;
 import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -23,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class ItemCMD implements SubCommand {
 
     private RunicGiveSC giveItemSC;
@@ -337,9 +335,9 @@ public class ItemCMD implements SubCommand {
                 break;
         }
 
-        int health = rand.nextInt(maxHealth) + 4;
-        int mana = rand.nextInt(maxMana) + 7;
-        int meleeDamage = rand.nextInt(weapDamage) + 1;
+        int health = rand.nextInt(maxHealth-4) + 4;
+        int mana = rand.nextInt(maxMana-7) + 7;
+        int meleeDamage = rand.nextInt(weapDamage-1) + 1;
 
         List<Integer> stats = determineWhichStats(numOfStats, 3); // 1 or 2 stats in addition to health
 
@@ -369,14 +367,13 @@ public class ItemCMD implements SubCommand {
         int maxHealth = 0;
         int maxMana = 0;
         int weapDamage = 2;
-        int maxHealing = 8;
-        int maxSpellDamage = 4;
+        int maxHealing = 3;
+        int maxSpellDamage = 3;
         String className = determineClass(item, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 10;
                 maxMana = 30;
-                maxSpellDamage = 6;
                 break;
             case "rogue":
                 maxHealth = 12;
@@ -396,10 +393,10 @@ public class ItemCMD implements SubCommand {
                 break;
         }
 
-        int health = rand.nextInt(maxHealth) + 6;
-        int mana = rand.nextInt(maxMana) + 12;
-        int healing = rand.nextInt(maxHealing) + 1;
-        int spellDamage = rand.nextInt(maxSpellDamage) + 1;
+        int health = rand.nextInt(maxHealth-6) + 6;
+        int mana = rand.nextInt(maxMana-12) + 12;
+        int healing = rand.nextInt(maxHealing-1) + 1;
+        int spellDamage = rand.nextInt(maxSpellDamage-1) + 1;
 
         List<Integer> stats = determineWhichStats(2, 5);
 
@@ -436,14 +433,13 @@ public class ItemCMD implements SubCommand {
         int maxHealth = 0;
         int maxMana = 0;
         int weapDamage = 3;
-        int maxHealing = 12;
-        int maxSpellDamage = 8;
+        int maxHealing = 6;
+        int maxSpellDamage = 6;
         String className = determineClass(item, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 12;
                 maxMana = 35;
-                maxSpellDamage = 10;
                 break;
             case "rogue":
                 maxHealth = 15;
@@ -463,10 +459,10 @@ public class ItemCMD implements SubCommand {
                 break;
         }
 
-        int health = rand.nextInt(maxHealth) + 10;
-        int mana = rand.nextInt(maxMana) + 20;
-        int healing = rand.nextInt(maxHealing) + 8;
-        int spellDamage = rand.nextInt(maxSpellDamage) + 1;
+        int health = rand.nextInt(maxHealth-10) + 10;
+        int mana = rand.nextInt(maxMana-20) + 20;
+        int healing = rand.nextInt(maxHealing-3) + 3;
+        int spellDamage = rand.nextInt(maxSpellDamage-3) + 3;
 
         List<Integer> stats = determineWhichStats(2, 5);
 

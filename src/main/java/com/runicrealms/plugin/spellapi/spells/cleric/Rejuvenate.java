@@ -34,7 +34,7 @@ public class Rejuvenate extends Spell {
                 "\nrestoring " + HEAL_AMT + " health to all party members" +
                 "\nit passes through. Rejuvenate will also" +
                 "\nheal you for half its effect!",
-                ChatColor.WHITE, 10, 15);
+                ChatColor.WHITE, 7, 15);
         this.hasBeenHit = new HashMap<>();
     }
 
