@@ -19,7 +19,7 @@ public class Rejuvenate extends Spell {
 
     // grab our globals
     private HashMap<UUID, List<UUID>> hasBeenHit;
-    private static final int HEAL_AMT = 20;
+    private static int HEAL_AMT = 25;
     private final double RADIUS = 1.5;
     private final int RANGE = 15;
     private final int SPEED = 3;
@@ -32,7 +32,8 @@ public class Rejuvenate extends Spell {
         super("Rejuvenate",
                 "You launch a beam of healing magic," +
                 "\nrestoring " + HEAL_AMT + " health to all party members" +
-                "\nit passes through.",
+                "\nit passes through. Rejuvenate will also" +
+                "\nheal you for half its effect!",
                 ChatColor.WHITE, 10, 15);
         this.hasBeenHit = new HashMap<>();
     }
@@ -40,6 +41,9 @@ public class Rejuvenate extends Spell {
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
+
+        // heal the caster
+        HealUtil.healPlayer(HEAL_AMT, pl, pl);
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -63,8 +67,8 @@ public class Rejuvenate extends Spell {
                     if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                         this.cancel();
                     }
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, location, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
-                    pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 5, 0, 0, 0, 0);
+                    pl.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
+                    pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 10, 0, 0, 0, 0);
                     allyCheck(pl, location);
                 }
             }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
@@ -81,69 +85,60 @@ public class Rejuvenate extends Spell {
             if (!e.getType().isAlive()) return;
             LivingEntity le = (LivingEntity) e;
 
-                if (le != (pl)) {
+            if (le == (pl)) { continue; }
 
-                    // only listen for players
-                    if (!(le instanceof Player)) return;
+            // only listen for players
+            if (!(le instanceof Player)) return;
 
-                    // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
-                    // multiple times
-                    Player ally = (Player) le;
-                    if (hasBeenHit.containsKey(ally.getUniqueId())) {
-                        List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                        if (uuids.contains(pl.getUniqueId())) {
-                            break;
-                        } else {
-                            uuids.add(pl.getUniqueId());
-                            hasBeenHit.put(ally.getUniqueId(), uuids);
-                        }
-                    } else {
-                        List<UUID> uuids = new ArrayList<>();
-                        uuids.add(pl.getUniqueId());
-                        hasBeenHit.put(ally.getUniqueId(), uuids);
-                    }
+            // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
+            // multiple times
+            Player ally = (Player) le;
+            if (hasBeenHit.containsKey(ally.getUniqueId())) {
+                List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                if (uuids.contains(pl.getUniqueId())) {
+                    break;
+                } else {
+                    uuids.add(pl.getUniqueId());
+                    hasBeenHit.put(ally.getUniqueId(), uuids);
+                }
+            } else {
+                List<UUID> uuids = new ArrayList<>();
+                uuids.add(pl.getUniqueId());
+                hasBeenHit.put(ally.getUniqueId(), uuids);
+            }
 
-                    // ignore NPCs, additional check for tutorial island
-                    if (le.hasMetadata("NPC")) {
-                        SpellCastEvent sce = new SpellCastEvent(pl, this, le);
-                        Bukkit.getPluginManager().callEvent(sce);
-                        if (sce.isCancelled()) return;
-                            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
-                            le.getWorld().spawnParticle(Particle.HEART, le.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
-                        continue;
-                    }
+            // ignore NPCs, additional check for tutorial island
+            if (le.hasMetadata("NPC")) {
+                SpellCastEvent sce = new SpellCastEvent(pl, this, le);
+                Bukkit.getPluginManager().callEvent(sce);
+                if (sce.isCancelled()) return;
+                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
+                le.getWorld().spawnParticle(Particle.HEART, le.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
+                continue;
+            }
 
-                    // heal nobody if we don't have a party
-                    if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
+            // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                    uuids.remove(pl.getUniqueId());
+                    hasBeenHit.put(ally.getUniqueId(), uuids);
+                }
+            }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
-                    // skip the player if they're not in the party
-                    if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                            && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) { continue; }
+            if (ally.getHealth() == ally.getMaxHealth()) {
+                ally.sendMessage(
+                        ChatColor.WHITE + pl.getName()
+                                + ChatColor.GRAY + " tried to heal you, but you are at full health.");
+                ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
-                    // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                            uuids.remove(pl.getUniqueId());
-                            hasBeenHit.put(ally.getUniqueId(), uuids);
-                        }
-                    }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
+            } else {
+                HealUtil.healPlayer(HEAL_AMT, ally, pl);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
 
-                    if (ally.getHealth() == ally.getMaxHealth()) {
-                        ally.sendMessage(
-                                ChatColor.WHITE + pl.getName()
-                                        + ChatColor.GRAY + " tried to heal you, but you are at full health.");
-                        ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-
-                    } else {
-                        HealUtil.healPlayer(HEAL_AMT, ally, pl);
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-
-                        // stop the beam if it hits a player
-                        break;
-                    }
-               // }
+                // stop the beam if it hits a player
+                break;
             }
         }
     }

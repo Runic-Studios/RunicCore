@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlessedRain extends Spell {
 
     private static final int HEALING_AMT = 5;
-    private static final int DURATION = 6;
+    private static final int DURATION = 4;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
 
@@ -24,8 +24,10 @@ public class BlessedRain extends Spell {
     public BlessedRain() {
         super("Blessed Rain", "For " + DURATION + " seconds, you summon healing" +
                         "\nwaters, conjuring a ring of light magic" +
-                        "\nwhich restores " + HEALING_AMT + " health to allies within" +
-                        "\n" + RADIUS + " blocks every " + PERIOD + " second(s)!",
+                        "\nwhich restores " + HEALING_AMT + " health to party members" +
+                        "\nwithin " + RADIUS + " blocks every " + PERIOD + " second(s)!" +
+                        "\nBlessed rain will also heal you for" +
+                        "\nhalf its effect!",
                 ChatColor.WHITE, 12, 20);
     }
 
@@ -87,22 +89,12 @@ public class BlessedRain extends Spell {
         // heal people
         for (Entity entity : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
-            // skip the caster
-            if(entity.equals(pl)) { continue; }
-
-            // heal nobody if we don't have a party
-            if (RunicCore.getPartyManager().getPlayerParty(pl) == null) return;
-
-            // skip non-party members
-            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                    && !RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
-
             // skip non-players
             if (!(entity instanceof Player)) {
                 continue;
             }
 
-            // heal allies
+            // heal party members and the caster
             Player ally = (Player) entity;
             HealUtil.healPlayer(HEALING_AMT, ally, pl);
         }

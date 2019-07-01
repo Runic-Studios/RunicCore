@@ -194,12 +194,9 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String playerGuild(Player pl) {
-
         String display;
-        String guildID = Guilds.getApi().getGuildId(pl);
-
-        if(guildID != null) {
-            Guild guild = Guilds.getApi().getGuild(guildID);
+        Guild guild = Guilds.getApi().getGuild(Bukkit.getOfflinePlayer(pl.getUniqueId()));
+        if(guild != null) {
             display = ChatColor.GRAY + "Guild: " + ChatColor.GOLD + guild.getName();
         } else {
             display = ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None";

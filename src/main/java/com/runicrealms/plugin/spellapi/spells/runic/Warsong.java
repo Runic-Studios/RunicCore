@@ -28,11 +28,12 @@ public class Warsong extends Spell {
     public Warsong() {
         super("Warsong",
                 "For " + DURATION + " seconds, you sing a song of" +
-                        "\nbattle! Each time an ally strikes an" +
-                        "\nenemy with their weapon⚔, if they" +
+                        "\nbattle! Each time a party member strikes" +
+                        "\nan enemy with their weapon⚔, if they" +
                         "\nare within " + RADIUS + " blocks of you," +
                         "\ntheir attacks deal an additional " + (int) PERCENT + "%" +
-                        "\ndamage!", ChatColor.WHITE,14, 15);
+                        "\ndamage! This spell has no effect on" +
+                        "\nyourself.", ChatColor.WHITE,14, 15);
     }
 
     // spell execute code

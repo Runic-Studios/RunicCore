@@ -7,6 +7,7 @@ import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.GuildCreateEvent;
 import me.glaremasters.guilds.api.events.GuildJoinEvent;
 import me.glaremasters.guilds.api.events.GuildLeaveEvent;
+import me.glaremasters.guilds.api.events.GuildRemoveEvent;
 import me.glaremasters.guilds.guild.Guild;
 import me.glaremasters.guilds.guild.GuildMember;
 import me.glaremasters.guilds.guild.GuildSkull;
@@ -74,8 +75,10 @@ public class GuildListeners implements Listener {
             @Override
             public void run() {
                 RunicCore.getTabListManager().setupTab(e.getPlayer());
+                RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer());
+                RunicCore.getScoreboardHandler().updateSideInfo(e.getPlayer());
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+        }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
     @EventHandler
@@ -85,9 +88,11 @@ public class GuildListeners implements Listener {
             public void run() {
                 for (Player guildy : Guilds.getApi().getGuild(e.getPlayer().getUniqueId()).getOnlineAsPlayers()) {
                     RunicCore.getTabListManager().setupTab(guildy);
+                    RunicCore.getScoreboardHandler().updatePlayerInfo(guildy);
+                    RunicCore.getScoreboardHandler().updateSideInfo(guildy);
                 }
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+        }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
     @EventHandler
@@ -96,11 +101,36 @@ public class GuildListeners implements Listener {
             @Override
             public void run() {
                 for (Player guildy : e.getGuild().getOnlineAsPlayers()) {
-                    RunicCore.getTabListManager().setupTab(guildy);
+                    if (guildy.getUniqueId() != e.getPlayer().getUniqueId()) {
+                        RunicCore.getTabListManager().setupTab(guildy);
+                        RunicCore.getScoreboardHandler().updatePlayerInfo(guildy);
+                        RunicCore.getScoreboardHandler().updateSideInfo(guildy);
+                    }
                 }
                 RunicCore.getTabListManager().setupTab(e.getPlayer());
+                RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer());
+                RunicCore.getScoreboardHandler().updateSideInfo(e.getPlayer());
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+        }.runTaskLater(RunicCore.getInstance(), 1L);
+    }
+
+    @EventHandler
+    public void onGuildRemove(GuildRemoveEvent e) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player guildy : e.getGuild().getOnlineAsPlayers()) {
+                    if (guildy.getUniqueId() != e.getPlayer().getUniqueId()) {
+                        RunicCore.getTabListManager().setupTab(guildy);
+                        RunicCore.getScoreboardHandler().updatePlayerInfo(guildy);
+                        RunicCore.getScoreboardHandler().updateSideInfo(guildy);
+                    }
+                }
+                RunicCore.getTabListManager().setupTab(e.getPlayer());
+                RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer());
+                RunicCore.getScoreboardHandler().updateSideInfo(e.getPlayer());
+            }
+        }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
     // ------------------------------------------------------------------

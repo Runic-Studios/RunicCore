@@ -31,10 +31,10 @@ import static java.lang.Math.sin;
 public class ArcaneOrb extends Spell {
 
     // global variables
-    private static final int DURATION = 7;
+    private static final int DURATION = 10;
     private static final int MAX_DIST = 5;
     private static final double PERCENT = 25;
-    private static final int RADIUS = 5;
+    private static final int RADIUS = 10;
     private HashMap<UUID, Location> buffed = new HashMap<>();
 
     // constructor

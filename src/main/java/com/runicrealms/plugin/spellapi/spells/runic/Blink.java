@@ -1,11 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.runic;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
@@ -13,7 +15,7 @@ import org.bukkit.util.Vector;
 public class Blink extends Spell {
 
     // instance variables
-    private static int MAX_DIST = 7;
+    private static int MAX_DIST = 8;
 
     // constructor
     public Blink() {
@@ -69,6 +71,18 @@ public class Blink extends Spell {
 
         // teleport the player to the blink location
         pl.teleport(teleportLoc);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                if (pl.isOnGround()) {
+                    this.cancel();
+                } else {
+                    pl.setFallDistance(-8.0F);
+                }
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
     }
 }
 

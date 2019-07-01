@@ -285,7 +285,7 @@ public class ArtifactGUI {
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
                             && !spellName.equals("blizzard")
-                            && !spellName.equals("charge")
+                            && !spellName.equals("slam")
                             && !spellName.equals("rejuvenate")
                             && !spellName.equals("smokebomb")) {
                         pl.closeInventory();
@@ -312,7 +312,7 @@ public class ArtifactGUI {
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
                             && !spellName.equals("blizzard")
-                            && !spellName.equals("charge")
+                            && !spellName.equals("slam")
                             && !spellName.equals("rejuvenate")
                             && !spellName.equals("smokebomb")) {
                         pl.closeInventory();
@@ -340,7 +340,7 @@ public class ArtifactGUI {
                     if (!pl.hasPermission("core.spells." + spellName)
                             && !spellName.equals("barrage")
                             && !spellName.equals("blizzard")
-                            && !spellName.equals("charge")
+                            && !spellName.equals("slam")
                             && !spellName.equals("rejuvenate")
                             && !spellName.equals("smokebomb")) {
 
@@ -387,10 +387,7 @@ public class ArtifactGUI {
                         "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
 
         int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
-        if (numPoints == 0) {
-            numPoints = 1;
-        }
-        spellEditor.setOption(14, new ItemStack(Material.BONE_MEAL, numPoints), "&f&lSpell Points",
+        spellEditor.setOption(14, new ItemStack(Material.BONE_MEAL), "&f&lSpell Points: &a&l" + numPoints,
                 "\n&7Use spell points to unlock new spells!" +
                         "\n&aEarn spell points by completing quests" +
                         "\n&aand leveling-up!", 0);

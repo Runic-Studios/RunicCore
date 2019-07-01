@@ -40,7 +40,7 @@ public class ShriekingSkull extends Spell {
                 "You launch a projectile skull of shadow," +
                         "\nlaunching the first enemy hit into the air and" +
                         "\nforcing them to fall slowly to the ground!",
-                ChatColor.WHITE, 5, 15);
+                ChatColor.WHITE, 8, 15);
     }
 
     // spell execute code

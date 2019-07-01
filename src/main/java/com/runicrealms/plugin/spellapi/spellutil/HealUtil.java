@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.item.GearScanner;
@@ -22,6 +23,17 @@ public class HealUtil  {
 
         // scan for gem values
         healAmt = healAmt + GearScanner.getHealingBoost(caster);
+
+        // spells are half effective on the caster
+        if (recipient == caster) {
+            healAmt = (healAmt/2);
+        }
+
+        // skip the player if they're not in the party
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
+                && !RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) {
+            return;
+        }
 
         // call our custom heal event for interaction with buffs/debuffs
         SpellHealEvent event = new SpellHealEvent((int) healAmt, recipient, caster);

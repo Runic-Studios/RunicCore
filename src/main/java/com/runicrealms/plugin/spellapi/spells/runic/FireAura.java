@@ -14,8 +14,8 @@ import com.runicrealms.plugin.RunicCore;
 @SuppressWarnings("FieldCanBeLocal")
 public class FireAura extends Spell {
 
-    private static final int DURATION = 5;
-    private static final int DAMAGE_AMT = 3;
+    private static final int DURATION = 4;
+    private static final int DAMAGE_AMT = 2;
     private static final int PERIOD = 1;
     private static final int RADIUS = 3;
 

@@ -30,7 +30,7 @@ public class Siphon extends Spell {
                 "For " + DURATION + " seconds, your melee weapon" +
                         "\nattacks drain " + AMOUNT + " mana from enemy" +
                         "\nplayers!",
-                ChatColor.WHITE, 1, 1);
+                ChatColor.WHITE, 10, 15);
         drainers = new ArrayList<>();
     }
 

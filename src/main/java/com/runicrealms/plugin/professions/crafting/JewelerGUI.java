@@ -197,19 +197,19 @@ public class JewelerGUI extends Workstation {
         if (currentLv < 30) {
             healthStr = "5";
             manaStr = "10";
-            healingStr = "5";
+            healingStr = "3";
             weaponStr = "1";
             spellStr = "3";
         } else if (currentLv < 50) {
             healthStr = "10";
             manaStr = "20";
-            healingStr = "10";
+            healingStr = "6";
             weaponStr = "2";
             spellStr = "6";
         } else {
             healthStr = "15";
             manaStr = "30";
-            healingStr = "15";
+            healingStr = "9";
             weaponStr = "3";
             spellStr = "12";
         }
