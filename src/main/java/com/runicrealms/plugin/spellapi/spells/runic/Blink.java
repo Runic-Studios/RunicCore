@@ -41,8 +41,14 @@ public class Blink extends Spell {
             pl.sendMessage(ChatColor.RED + "You cannot blink here!");
         }
         while (iter.hasNext()) {
+
             currentBlock = iter.next();
             Material currentBlockType = currentBlock.getType();
+
+            if (currentBlockType == Material.BARRIER
+                    || currentBlock.getRelative(BlockFace.UP).getType() == Material.BARRIER) {
+                break;
+            }
 
             if (currentBlockType.isTransparent()) {
                 if (currentBlock.getRelative(BlockFace.UP).getType().isTransparent()) {

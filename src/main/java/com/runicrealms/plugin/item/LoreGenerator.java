@@ -295,4 +295,34 @@ public class LoreGenerator {
         lore.add(ChatColor.RED + "Att Speed: " + roundedSpeed);
         lore.add(ChatColor.RED + "DMG: " + (int) min + "-" + (int) max);
     }
+
+    public static void generateGoldPouchLore(ItemStack goldPouch) {
+
+        // grab our material, ItemMeta, ItemLore
+        ItemMeta meta = goldPouch.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+
+        int currentAmount = (int) AttributeUtil.getCustomDouble(goldPouch, "goldAmount");
+        int pouchSize = (int) AttributeUtil.getCustomDouble(goldPouch, "pouchSize");
+
+        String prefix = "";
+        if (pouchSize < 256) {
+            prefix = "Small ";
+        } else if (pouchSize > 256) {
+            prefix = "Large ";
+        }
+
+        meta.setDisplayName(ChatColor.GOLD + prefix + "Gold Pouch " + ChatColor.GREEN + ChatColor.BOLD + currentAmount + "c");
+        lore.add(ChatColor.GRAY + "A pouch that holds " + ChatColor.WHITE + pouchSize + ChatColor.GRAY + " coins");
+
+        // set other flags
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
+        // update lore, meta
+        meta.setLore(lore);
+        ((Damageable) meta).setDamage(234);
+        goldPouch.setItemMeta(meta);
+    }
 }

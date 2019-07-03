@@ -1,18 +1,21 @@
 package com.runicrealms.plugin;
 
-import com.runicrealms.plugin.command.subcommands.CurrencyGive;
+import com.runicrealms.plugin.item.GoldPouchListener;
+import com.runicrealms.plugin.item.commands.CurrencyGive;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.subcommands.set.SetProfCMD;
 import com.runicrealms.plugin.command.supercommands.*;
+import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.guild.GuildListeners;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBars;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.artifact.ArtifactListener;
+import com.runicrealms.plugin.item.commands.CurrencyPouch;
 import com.runicrealms.plugin.item.commands.HearthstoneCMD;
 import com.runicrealms.plugin.item.commands.ItemCMD;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
@@ -183,6 +186,8 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new GuildListeners(), this);
         pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
+        pm.registerEvents(new WorldChangeListener(), this);
+        pm.registerEvents(new GoldPouchListener(), this);
     }
     
     private void registerCommands() {
@@ -195,6 +200,7 @@ public class RunicCore extends JavaPlugin {
         CurrencySC currencySC = new CurrencySC();
         getCommand("currency").setExecutor(currencySC);
         currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
+        currencySC.addCommand(Arrays.asList("pouch"), new CurrencyPouch(currencySC));
 
         // experience
         CheckExpCMD checkExpCMD = new CheckExpCMD();

@@ -27,4 +27,17 @@ public class CurrencyUtil {
         }
         return coin;
     }
+
+    public static ItemStack goldCoin(int stackSize) {
+        ItemStack coin = new ItemStack(Material.GOLD_NUGGET, stackSize);
+        ItemMeta meta = coin.getItemMeta();
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Currency of Alterra");
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
+            meta.setLore(lore);
+            coin.setItemMeta(meta);
+        }
+        return coin;
+    }
 }

@@ -6,6 +6,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
@@ -80,6 +81,11 @@ public class ItemGUI implements Listener {
         return this;
     }
 
+    public ItemGUI setOption(int position, ItemStack icon) {
+        optionIcons[position] = icon;
+        return this;
+    }
+
     public void open(Player player) {
         inventory = Bukkit.createInventory(player, size, name);
         for (int i = 0; i < optionIcons.length; i++) {
@@ -105,18 +111,30 @@ public class ItemGUI implements Listener {
 
         if (event.getInventory().getTitle().equals(this.name)) {
 
-            // ----------------------------------------------------------------------
-            // FIXES A SUBSTANTIAL BUG: STEALING ARTIFACT SKINS FOR MAX ATTACK SPEED
-            if(event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-                event.getWhoClicked().closeInventory();
+            // handle gold pouch separately
+            if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
+                    && event.getCurrentItem() != null
+                    && (event.getCurrentItem().getType() == Material.GOLD_NUGGET
+                    || event.getCursor().getType() == Material.GOLD_NUGGET)) {
+                event.setCancelled(false);
+
+                // all items other than gold pouch
+            } else {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
-                ((Player) event.getWhoClicked()).updateInventory();
-            }
-            // ----------------------------------------------------------------------
 
-            event.setCancelled(true);
-            event.setResult(Event.Result.DENY);
+                // ----------------------------------------------------------------------
+                // FIXES A SUBSTANTIAL BUG: STEALING ARTIFACT SKINS FOR MAX ATTACK SPEED
+                if(event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                    event.getWhoClicked().closeInventory();
+                    event.setCancelled(true);
+                    event.setResult(Event.Result.DENY);
+                    ((Player) event.getWhoClicked()).updateInventory();
+                }
+                // ----------------------------------------------------------------------
+
+            }
+
             int slot = event.getRawSlot();
             if (slot >= 0 && slot < size && optionNames[slot] != null) {
                 Plugin plugin = this.plugin;
@@ -174,10 +192,12 @@ public class ItemGUI implements Listener {
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
 
-        for (String line : desc.split("\n")) {
+        if (!desc.equals("")) {
+            for (String line : desc.split("\n")) {
 
-            line = ColorUtil.format(line);
-            lore.add(line);
+                line = ColorUtil.format(line);
+                lore.add(line);
+            }
         }
 
         if (meta != null) {
