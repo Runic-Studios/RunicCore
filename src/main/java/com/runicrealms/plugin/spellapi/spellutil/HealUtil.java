@@ -19,13 +19,13 @@ public class HealUtil  {
     private static HashMap<UUID, Integer> shieldedPlayers = new HashMap<>();
 
     @SuppressWarnings("deprecation")
-    public static void healPlayer(double healAmt, Player recipient, Player caster) {
+    public static void healPlayer(double healAmt, Player recipient, Player caster, boolean isReducedOnCaster) {
 
         // scan for gem values
         healAmt = healAmt + GearScanner.getHealingBoost(caster);
 
         // spells are half effective on the caster
-        if (recipient == caster) {
+        if (isReducedOnCaster && recipient == caster) {
             healAmt = (healAmt/2);
         }
 

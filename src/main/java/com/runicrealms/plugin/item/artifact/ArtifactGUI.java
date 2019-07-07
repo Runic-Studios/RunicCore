@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.item.artifact;
 
-import com.runicrealms.plugin.item.OptionClickEvent;
+import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.utilities.ColorUtil;
 

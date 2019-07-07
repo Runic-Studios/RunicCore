@@ -31,7 +31,7 @@ public class Rejuvenate extends Spell {
     public Rejuvenate() {
         super("Rejuvenate",
                 "You launch a beam of healing magic," +
-                "\nrestoring " + HEAL_AMT + " health to all party members" +
+                "\nrestoring✦ " + HEAL_AMT + " health to all party members" +
                 "\nit passes through. Rejuvenate will also" +
                 "\nheal you for half its effect!",
                 ChatColor.WHITE, 7, 15);
@@ -43,7 +43,7 @@ public class Rejuvenate extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl);
+        HealUtil.healPlayer(HEAL_AMT, pl, pl, true);
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -134,7 +134,7 @@ public class Rejuvenate extends Spell {
                 ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
             } else {
-                HealUtil.healPlayer(HEAL_AMT, ally, pl);
+                HealUtil.healPlayer(HEAL_AMT, ally, pl, true);
                 pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
 
                 // stop the beam if it hits a player

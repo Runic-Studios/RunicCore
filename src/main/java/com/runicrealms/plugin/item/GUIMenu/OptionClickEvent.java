@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.item;
+package com.runicrealms.plugin.item.GUIMenu;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

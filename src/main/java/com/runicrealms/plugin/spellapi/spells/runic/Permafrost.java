@@ -54,6 +54,11 @@ public class Permafrost extends Spell {
     @EventHandler
     public void onIcyHit(WeaponDamageEvent e) {
 
+        // ignore ranged attacks
+        if (e.getIsRanged()) {
+            return;
+        }
+
         Player pl = e.getPlayer();
         Entity en = e.getEntity();
 

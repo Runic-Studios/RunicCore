@@ -48,7 +48,7 @@ public class PotionListener implements Listener {
         }
 
         if (healAmt > 0) {
-            HealUtil.healPlayer(healAmt, pl, pl);
+            HealUtil.healPlayer(healAmt, pl, pl, false);
         }
 
         if (manaAmt > 0) {

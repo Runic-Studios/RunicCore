@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.RunicCore;
@@ -28,7 +29,7 @@ public class Manabolt extends Spell {
     public Manabolt() {
         super("Manabolt",
                 "You launch a beam of soothing magic," +
-                        "\nrestoring " + MANA_AMT + " mana to all party members" +
+                        "\nrestoring✦ " + MANA_AMT + " mana to all party members" +
                         "\nit passes through.",
                 ChatColor.WHITE, 10, 10);
         this.hasBeenHit = new HashMap<>();
@@ -131,7 +132,7 @@ public class Manabolt extends Spell {
                 ally.getWorld().spawnParticle(Particle.REDSTONE, ally.getEyeLocation(),
                         1, 0.25f, 0.25f, 0.25f, new Particle.DustOptions(Color.NAVY, 2));
 
-                RunicCore.getManaManager().addMana(ally, MANA_AMT);
+                RunicCore.getManaManager().addMana(ally, MANA_AMT + GearScanner.getHealingBoost(pl));
            // }
         }
     }

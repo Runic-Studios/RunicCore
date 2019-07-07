@@ -8,20 +8,23 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This custom event is called when a player successfully melee attacks an enemy with their artifact,
+ * This custom event is called when a player successfully weapon attacks an enemy with their artifact,
  * i.e., it is not on cooldown. Called in DamageListener, rather than the util.
+ * Can specify the cause of the event, ranged or melee, for use with on-hit runic spells.
  */
 public class WeaponDamageEvent extends Event implements Cancellable {
 
     private int amount;
     private Player player;
     private Entity entity;
+    private boolean isRanged;
     private boolean isCancelled;
 
-    public WeaponDamageEvent(int amount, Player damager, Entity victim) {
+    public WeaponDamageEvent(int amount, Player damager, Entity victim, boolean isRanged) {
         this.amount = amount;
         this.player = damager;
         this.entity = victim;
+        this.isRanged = isRanged;
         this.isCancelled = false;
     }
 
@@ -39,6 +42,10 @@ public class WeaponDamageEvent extends Event implements Cancellable {
 
     public Entity getEntity() {
         return this.entity;
+    }
+
+    public boolean getIsRanged() {
+        return this.isRanged;
     }
 
     @Override

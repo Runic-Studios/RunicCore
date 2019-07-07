@@ -24,7 +24,7 @@ public class BlessedRain extends Spell {
     public BlessedRain() {
         super("Blessed Rain", "For " + DURATION + " seconds, you summon healing" +
                         "\nwaters, conjuring a ring of light magic" +
-                        "\nwhich restores " + HEALING_AMT + " health to party members" +
+                        "\nwhich restores✦ " + HEALING_AMT + " health to party members" +
                         "\nwithin " + RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\nBlessed rain will also heal you for" +
                         "\nhalf its effect!",
@@ -96,7 +96,7 @@ public class BlessedRain extends Spell {
 
             // heal party members and the caster
             Player ally = (Player) entity;
-            HealUtil.healPlayer(HEALING_AMT, ally, pl);
+            HealUtil.healPlayer(HEALING_AMT, ally, pl, true);
         }
     }
 }

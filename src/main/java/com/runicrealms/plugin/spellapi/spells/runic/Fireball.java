@@ -20,15 +20,16 @@ public class Fireball extends Spell {
 
     // globals
     private static final double FIREBALL_SPEED = 2;
-    private static final int DAMAGE_AMOUNT = 15;
+    private static final int DAMAGE_AMOUNT = 20;
     private SmallFireball fireball;
 
     // constructor
     public Fireball() {
         super ("Fireball",
                 "You launch a projectile fireball" +
-                        "\nwhich deals " + DAMAGE_AMOUNT + " damage on impact" +
-                        "\nand knocks your enemy back!",
+                        "\nwhich deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
+                        "\nimpact and knocks your enemy" +
+                        "\nback!",
                 ChatColor.WHITE, 5, 15);
     }
 

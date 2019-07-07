@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.item.rune;
 
-import com.runicrealms.plugin.item.OptionClickEvent;
+import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.LoreGenerator;
 
 import java.util.ArrayList;
@@ -160,6 +160,7 @@ public class RuneGUI {
         spells.add("Arcane Orb");
         spells.add("Blessing");
         spells.add("Blink");
+        spells.add("Cleave");
         spells.add("Fire Aura");
         spells.add("Fireball");
         spells.add("Frostbolt");
@@ -168,40 +169,41 @@ public class RuneGUI {
         spells.add("Permafrost");
         spells.add("Petrify");
         spells.add("Reflect");
+        spells.add("Shadow Strike");
         spells.add("Siphon");
         spells.add("Sprint");
         spells.add("Taunt");
         spells.add("Warsong");
 
         // first row of spells
-        for (int i = 0; i < spells.size() && i < 5; i++) {
+        for (int i = 0; i < spells.size() && i < 7; i++) {
 
             // check for permissions, ex: ftr.spells.blessedrain
             boolean unlocked= false;
             if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
                 unlocked = true;
             }
-            displaySpell(spellEditor, 20 + i, spells.get(i), unlocked);
+            displaySpell(spellEditor, 19 + i, spells.get(i), unlocked);
         }
 
         // second row of spells
-        for (int i = 5; i < spells.size() && i < 10; i++) {
+        for (int i = 7; i < spells.size() && i < 14; i++) {
 
             boolean unlocked= false;
             if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
                 unlocked = true;
             }
-            displaySpell(spellEditor, 24 + i, spells.get(i), unlocked);
+            displaySpell(spellEditor, 21 + i, spells.get(i), unlocked);
         }
 
         // third row of spells
-        for (int i = 10; i < spells.size() && i < 15; i++) {
+        for (int i = 14; i < spells.size() && i < 21; i++) {
 
             boolean unlocked= false;
             if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
                 unlocked = true;
             }
-            displaySpell(spellEditor, 28 + i, spells.get(i), unlocked);
+            displaySpell(spellEditor, 23 + i, spells.get(i), unlocked);
         }
 
         return spellEditor;

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.professions.Workstation;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

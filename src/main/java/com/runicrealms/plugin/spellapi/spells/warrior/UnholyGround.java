@@ -19,7 +19,7 @@ import java.util.*;
 public class UnholyGround extends Spell {
 
     private static final int DURATION = 6;
-    private static final double PERCENT = 50;
+    private static final double PERCENT = 65;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
     private List<LivingEntity> taunted = new ArrayList<>();

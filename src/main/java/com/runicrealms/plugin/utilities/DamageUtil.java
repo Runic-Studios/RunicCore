@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
@@ -25,6 +26,11 @@ public class DamageUtil {
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null
                 && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
 
+        // outlaw check
+        if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
+            return;
+        }
+
         // update amount with gem values
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
 
@@ -48,6 +54,11 @@ public class DamageUtil {
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null
                 && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+
+        // outlaw check
+        if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
+            return;
+        }
 
         // scan the gems
         dmgAmt = dmgAmt + GearScanner.getAttackDamage(caster);

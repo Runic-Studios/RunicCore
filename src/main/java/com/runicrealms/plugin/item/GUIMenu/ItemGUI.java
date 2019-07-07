@@ -1,9 +1,8 @@
-package com.runicrealms.plugin.item;
+package com.runicrealms.plugin.item.GUIMenu;
 
 import java.util.ArrayList;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -115,7 +114,9 @@ public class ItemGUI implements Listener {
             if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
                     && event.getCurrentItem() != null
                     && (event.getCurrentItem().getType() == Material.GOLD_NUGGET
-                    || event.getCursor().getType() == Material.GOLD_NUGGET)) {
+                    || (event.getCursor().getType() == Material.GOLD_NUGGET
+                    && event.getCurrentItem().getType() == Material.AIR
+                    || event.getCurrentItem().getType() == Material.GOLD_NUGGET))) {
                 event.setCancelled(false);
 
                 // all items other than gold pouch

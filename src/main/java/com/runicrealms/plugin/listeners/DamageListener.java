@@ -2,6 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
@@ -117,7 +118,7 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                WeaponDamageEvent event = new WeaponDamageEvent(randomNum, (Player) damager, victim);
+                WeaponDamageEvent event = new WeaponDamageEvent(randomNum, (Player) damager, victim, false);
                 Bukkit.getPluginManager().callEvent(event);
 
                 if (event.isCancelled()) {
@@ -167,6 +168,14 @@ public class DamageListener implements Listener {
     }
 
     public void applyDeathMechanics(Player victim) {
+
+        // call runic death event
+        RunicDeathEvent event = new RunicDeathEvent(victim);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
 
         // broadcast the death message
         broadcastDeathMessage(victim);
@@ -226,7 +235,6 @@ public class DamageListener implements Listener {
 
         // broadcast the death message
         broadcastSlainDeathMessage(damager, victim);
-        victim.sendMessage(ChatColor.RED + "You have been slain!");
 
         // apply outlaw mechanics if the player is an outlaw AND the killer is an outlaw
         if (damager instanceof Player && OutlawManager.isOutlaw((Player) damager) && OutlawManager.isOutlaw(victim)) {
@@ -261,6 +269,6 @@ public class DamageListener implements Listener {
     private void broadcastDeathMessage(Player victim) {
         String nameVic = victim.getName();
         // display death message
-        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " died!");
+        Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
     }
 }

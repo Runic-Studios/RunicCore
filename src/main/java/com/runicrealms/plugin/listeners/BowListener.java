@@ -160,7 +160,7 @@ public class BowListener implements Listener {
             return;
         }
 
-        WeaponDamageEvent event = new WeaponDamageEvent(randomNum, damager, victim);
+        WeaponDamageEvent event = new WeaponDamageEvent(randomNum, damager, victim, true);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {

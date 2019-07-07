@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item.rune;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;

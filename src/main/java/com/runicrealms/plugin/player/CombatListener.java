@@ -1,6 +1,10 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.mounts.MountListener;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -56,6 +60,9 @@ public class CombatListener implements Listener {
             damager.sendMessage(ChatColor.RED + "You have entered combat!");
         }
 
+        dismount(damager);
+
+
         // add/refresh their combat timer every hit
         RunicCore.getCombatManager().addPlayer(damagerID, System.currentTimeMillis());
         if (e.getEntity() instanceof Player) {
@@ -74,6 +81,8 @@ public class CombatListener implements Listener {
             victim.sendMessage(ChatColor.RED + "You have entered combat!");
         }
 
+        dismount(victim);
+
         RunicCore.getCombatManager().addPlayer(victimID, System.currentTimeMillis());
 
         tagPartyCombat(victim, victim);
@@ -91,11 +100,24 @@ public class CombatListener implements Listener {
                 if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
                     member.sendMessage(ChatColor.RED + "Your party has entered combat!");
                 }
+
+                dismount(member);
+
                 RunicCore.getCombatManager().addPlayer(member.getUniqueId(), System.currentTimeMillis());
                 if (e instanceof Player) {
                     RunicCore.getCombatManager().getPvPers().add(member.getUniqueId());
                 }
             }
+        }
+    }
+
+    private void dismount(Player pl) {
+        if (MountListener.mounted.containsKey(pl.getUniqueId())) {
+            MountListener.mounted.get(pl.getUniqueId()).remove();
+            MountListener.mounted.remove(pl.getUniqueId());
+            pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_HURT, 0.5f, 1.0f);
+            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
+                    25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
         }
     }
 }

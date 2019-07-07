@@ -2,7 +2,7 @@ package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.professions.Workstation;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.*;

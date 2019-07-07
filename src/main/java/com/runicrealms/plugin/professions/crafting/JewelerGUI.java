@@ -2,7 +2,7 @@ package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.professions.Workstation;
 import org.bukkit.*;
@@ -116,11 +116,11 @@ public class JewelerGUI extends Workstation {
                     reqHashMap = cutRubyReqs;
                     exp = 5;
                     if (currentLvl < 30) {
-                        dummyVar = 5;
-                    } else if (currentLvl < 50) {
                         dummyVar = 10;
+                    } else if (currentLvl < 50) {
+                        dummyVar = 20;
                     } else {
-                        dummyVar = 15;
+                        dummyVar = 30;
                     }
                     // sapphire
                 } else if (slot == 10) {
@@ -128,11 +128,11 @@ public class JewelerGUI extends Workstation {
                     reqHashMap = cutSapphireReqs;
                     exp = 10;
                     if (currentLvl < 30) {
-                        dummyVar = 10;
+                        dummyVar = 15;
                     } else if (currentLvl < 50) {
-                        dummyVar = 20;
+                        dummyVar = 25;
                     } else {
-                        dummyVar = 30;
+                        dummyVar = 35;
                     }
                     // emerald
                 } else if (slot == 11) {
@@ -195,23 +195,23 @@ public class JewelerGUI extends Workstation {
         String weaponStr;
         String spellStr;
         if (currentLv < 30) {
-            healthStr = "5";
-            manaStr = "10";
-            healingStr = "3";
-            weaponStr = "1";
-            spellStr = "3";
-        } else if (currentLv < 50) {
             healthStr = "10";
-            manaStr = "20";
-            healingStr = "6";
+            manaStr = "15";
+            healingStr = "2";
+            weaponStr = "1";
+            spellStr = "2";
+        } else if (currentLv < 50) {
+            healthStr = "20";
+            manaStr = "25";
+            healingStr = "4";
             weaponStr = "2";
-            spellStr = "6";
+            spellStr = "4";
         } else {
-            healthStr = "15";
-            manaStr = "30";
-            healingStr = "9";
+            healthStr = "30";
+            manaStr = "35";
+            healingStr = "6";
             weaponStr = "3";
-            spellStr = "9";
+            spellStr = "6";
         }
 
         // ruby (+health)

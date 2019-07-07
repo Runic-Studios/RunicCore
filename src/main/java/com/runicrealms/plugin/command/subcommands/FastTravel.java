@@ -2,7 +2,7 @@ package com.runicrealms.plugin.command.subcommands;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.*;
 import org.bukkit.command.Command;

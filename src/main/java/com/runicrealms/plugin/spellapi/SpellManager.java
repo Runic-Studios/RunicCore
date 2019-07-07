@@ -101,6 +101,7 @@ public class SpellManager {
         this.spellList.add(new Sprint());
         this.spellList.add(new Parry());
         this.spellList.add(new Blink());
+        this.spellList.add(new Cleave());
         this.spellList.add(new Comet());
         this.spellList.add(new Windstride());
         this.spellList.add(new ArcaneSpike());
@@ -136,6 +137,7 @@ public class SpellManager {
         this.spellList.add(new Reflect());
         this.spellList.add(new Siphon());
         this.spellList.add(new ShadowStep());
+        this.spellList.add(new ShadowStrike());
     }
 
     // starts the repeating task to manage player cooldowns

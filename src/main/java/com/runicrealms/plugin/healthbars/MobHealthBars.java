@@ -24,6 +24,7 @@ public final class MobHealthBars implements Listener {
     public void onMobSpawn(EntitySpawnEvent e) {
         if (e.getEntity() instanceof Player) return;
         if (e.getEntity().hasMetadata("NPC")) return;
+        if (e.getEntity() instanceof Horse) return;
         if (e.getEntity() instanceof ArmorStand) return;
         if (!(e.getEntity() instanceof LivingEntity)) return;
         LivingEntity mob = (LivingEntity) e.getEntity();
@@ -79,6 +80,7 @@ public final class MobHealthBars implements Listener {
         if (!(e.getEntity() instanceof LivingEntity)) return;
         if (e.getEntity() instanceof Player) return;
         if (e.getEntity().hasMetadata("NPC")) return;
+        if (e.getEntity() instanceof Horse) return;
 
         LivingEntity mob = (LivingEntity) e.getEntity();
 
@@ -125,6 +127,7 @@ public final class MobHealthBars implements Listener {
         if (e.getEntity() instanceof ArmorStand) return;
         if (e.getEntity() instanceof Player) return;
         if (e.getEntity().getPassengers().size() == 0) return;
+        if (e.getEntity() instanceof Horse) return;
 
         LivingEntity le = (LivingEntity) e.getEntity();
 

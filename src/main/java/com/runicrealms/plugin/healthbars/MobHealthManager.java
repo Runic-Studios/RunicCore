@@ -1,10 +1,7 @@
 package com.runicrealms.plugin.healthbars;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
@@ -48,6 +45,10 @@ public class MobHealthManager {
                     String world = Bukkit.getWorlds().get(i).getName();
 
                     for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
+                        // remove stuck horses
+                        if (en instanceof Horse && en.getPassengers().size() == 0) {
+                            en.remove();
+                        }
                         if (en.hasMetadata("healthbar") && en.getVehicle() == null) {
                             en.remove();
                         }
@@ -91,6 +92,8 @@ public class MobHealthManager {
                         if (en.hasMetadata("NPC")) continue;
 
                         if (!(en instanceof LivingEntity)) continue;
+
+                        if (en instanceof Horse) continue;
 
                         LivingEntity le = (LivingEntity) en;
 

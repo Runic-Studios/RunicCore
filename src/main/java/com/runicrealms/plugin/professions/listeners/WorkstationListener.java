@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.professions.listeners;
 
-import com.runicrealms.plugin.item.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.professions.crafting.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;

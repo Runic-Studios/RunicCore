@@ -1,5 +1,6 @@
 package com.runicrealms.plugin;
 
+import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.item.GoldPouchListener;
 import com.runicrealms.plugin.item.commands.CurrencyGive;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
@@ -21,6 +22,7 @@ import com.runicrealms.plugin.item.commands.ItemCMD;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.rune.RuneListener;
 import com.runicrealms.plugin.listeners.*;
+import com.runicrealms.plugin.mounts.MountListener;
 import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.outlaw.OutlawManager;
@@ -188,6 +190,8 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
         pm.registerEvents(new GoldPouchListener(), this);
+        pm.registerEvents(new BossKillListener(), this);
+        pm.registerEvents(new MountListener(), this);
     }
     
     private void registerCommands() {

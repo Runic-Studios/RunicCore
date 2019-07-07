@@ -22,14 +22,14 @@ import org.bukkit.util.Vector;
 public class Frostbolt extends Spell {
 
     private static final double SPEED = 2;
-    private static final int DAMAGE_AMT = 8;
+    private static final int DAMAGE_AMT = 14;
     private Snowball snowball;
 
     public Frostbolt() {
         super("Frostbolt",
                 "You launch a projectile bolt of ice" +
-                        "\nthat deals " + DAMAGE_AMT + " damage on impact" +
-                        "\nand slows its target!",
+                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage on" +
+                        "\nimpact and slows its target!",
                 ChatColor.WHITE, 5, 15);
     }
 

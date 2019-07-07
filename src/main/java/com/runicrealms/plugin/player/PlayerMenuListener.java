@@ -42,7 +42,8 @@ public class PlayerMenuListener implements Listener {
 
         // item 1
         // todo: fix
-        ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info", "\n&7Title: &aNone");
+        ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
+                "\n&7Title: &aNone");
 
         //item 2
         ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",

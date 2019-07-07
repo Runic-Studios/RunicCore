@@ -1,30 +1,45 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ShadowStep extends Spell {
 
-    private static final int DURATION = 10;
+    private static final int DURATION = 6;
+    private static int HEALING_AMT = 20;
+    private HashMap<UUID, BukkitTask> activeSteppers;
 
     public ShadowStep() {
         super("Shadow Step",
                 "You mark your current location" +
                         "\nin shadow! After " + DURATION + " seconds, you" +
                         "\nteleport back to the marked" +
-                        "\nlocation!", ChatColor.WHITE,20, 15);
+                        "\nlocation, restoring✦ " + HEALING_AMT + " health!",
+                ChatColor.WHITE,12, 15);
+        activeSteppers = new HashMap<>();
+    }
+
+    /**
+     * Cancel teleportation on death to prevent exploits
+     */
+    @EventHandler
+    public void onDeath(RunicDeathEvent e) {
+        if (activeSteppers.containsKey(e.getVictim().getUniqueId())) {
+            activeSteppers.get(e.getVictim().getUniqueId()).cancel();
+            activeSteppers.remove(e.getVictim().getUniqueId());
+        }
     }
 
     @Override
@@ -33,7 +48,7 @@ public class ShadowStep extends Spell {
         Location loc = pl.getLocation();
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.0f);
 
-        new BukkitRunnable() {
+        BukkitTask teleportTask = new BukkitRunnable() {
             int count = 1;
             @Override
             public void run() {
@@ -47,13 +62,16 @@ public class ShadowStep extends Spell {
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 2.0f);
                     pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                             new Particle.DustOptions(Color.PURPLE, 3));
+                    HealUtil.healPlayer(HEALING_AMT, pl, pl, false);
                 } else {
                     count += 1;
                     createCircle(pl, loc, 1f);
                 }
 
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
+
+        activeSteppers.put(pl.getUniqueId(), teleportTask);
     }
 
     private void createCircle(Player pl, Location loc, float radius) {

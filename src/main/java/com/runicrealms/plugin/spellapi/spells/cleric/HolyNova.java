@@ -24,8 +24,8 @@ public class HolyNova extends Spell {
     public HolyNova() {
         super("Holy Nova", "For " + DURATION + " seconds, you pulse with holy" +
                         "\npower, conjuring rings of light magic" +
-                        "\nwhich deal " + DAMAGE_AMT + " damage to enemies and" +
-                        "\nrestore " + HEAL_AMT + " health to party members!" +
+                        "\nwhich deal " + DAMAGE_AMT + " spellʔ damage to enemies and" +
+                        "\nrestore✦ " + HEAL_AMT + " health to party members!" +
                         "\nThis spell will not heal yourself.",
                 ChatColor.WHITE, 12, 20);
     }
@@ -84,7 +84,7 @@ public class HolyNova extends Spell {
             // heal party members
             if (le instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl) != null
                     && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
-                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl);
+                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true);
                 continue;
             }
 
