@@ -20,6 +20,8 @@ import com.runicrealms.plugin.item.commands.CurrencyPouch;
 import com.runicrealms.plugin.item.commands.HearthstoneCMD;
 import com.runicrealms.plugin.item.commands.ItemCMD;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
+import com.runicrealms.plugin.item.lootchests.LootChestListener;
+import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.rune.RuneListener;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.mounts.MountListener;
@@ -65,6 +67,7 @@ public class RunicCore extends JavaPlugin {
     // handlers
     private static RunicCore instance;
     private static CombatManager combatManager;
+    private static LootChestManager lootChestManager;
     private static ManaManager manaManager;
     private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
@@ -77,6 +80,7 @@ public class RunicCore extends JavaPlugin {
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
     public static ManaManager getManaManager() { return manaManager; }
+    public static LootChestManager getLootChestManager() { return lootChestManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
@@ -88,6 +92,7 @@ public class RunicCore extends JavaPlugin {
         // instantiate everything we need
         instance = this;
         combatManager = new CombatManager();
+        lootChestManager = new LootChestManager();
         manaManager = new ManaManager();
         mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
@@ -128,11 +133,13 @@ public class RunicCore extends JavaPlugin {
 
         getLogger().info(" §cRunicCore has been disabled.");
         // let's prevent memory leaks, shall we?
-        instance = null;
         combatManager = null;
+        instance = null;
+        lootChestManager = null;
         manaManager = null;
         mobHealthManager = null;
         partyManager = null;
+        profManager = null;
         scoreboardHandler = null;
         spellManager = null;
         tabListManager = null;
@@ -192,6 +199,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new GoldPouchListener(), this);
         pm.registerEvents(new BossKillListener(), this);
         pm.registerEvents(new MountListener(), this);
+        pm.registerEvents(new LootChestListener(), this);
     }
     
     private void registerCommands() {

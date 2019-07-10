@@ -31,7 +31,7 @@ public class Barrage extends Spell {
     // globals
     private HashMap<Arrow, UUID> bArrows;
     private HashMap<UUID, UUID> hasBeenHit;
-    private static final int DAMAGE = 10;
+    private static final int DAMAGE = 20;
 
     // in seconds
     private final int SUCCESSIVE_COOLDOWN = 1;
@@ -39,8 +39,8 @@ public class Barrage extends Spell {
     // constructor
     public Barrage() {
         super("Barrage",
-                "You launch a volley of five magical arrows\n"
-                        + "that deal " + DAMAGE + " damage!",
+                "You launch a spread of five magical\n"
+                        + "arrows that deal " + DAMAGE + " spellʔ damage!",
                 ChatColor.WHITE, 6, 15);
         this.bArrows = new HashMap<>();
         this.hasBeenHit = new HashMap<>();
@@ -92,8 +92,7 @@ public class Barrage extends Spell {
                 @Override
                 public void run() {
                     Location arrowLoc = arrow.getLocation();
-                    arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
-                            5, 0, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1));
+                    arrowLoc.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 5, 0, 0, 0, 0);
                     if (arrow.isDead() || arrow.isOnGround()) {
                         this.cancel();
                     }

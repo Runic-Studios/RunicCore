@@ -17,7 +17,7 @@ import java.util.*;
 public class ArcaneSpike extends Spell {
 
     // globals
-    private static final int DAMAGE_AMOUNT = 10;
+    private static final int DAMAGE_AMOUNT = 20;
     private static final int BEAM_LENGTH = 24;
     private static final int RADIUS = 1;
     private HashMap<UUID, List<UUID>> hasBeenHit;
@@ -26,8 +26,8 @@ public class ArcaneSpike extends Spell {
     public ArcaneSpike() {
         super("Arcane Spike",
                 "You launch three beams of arcane magic!" +
-                "\nEach beam deals " + DAMAGE_AMOUNT + " damage to enemies " +
-                "\nit passes through.",
+                "\nEach beam deals " + DAMAGE_AMOUNT + " spellʔ damage to" +
+                "\nenemies it passes through.",
                 ChatColor.WHITE, 6, 10);
         this.hasBeenHit = new HashMap<>();
     }
@@ -83,7 +83,7 @@ public class ArcaneSpike extends Spell {
 
                 // outlaw check
                 if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
-                    return;
+                    continue;
                 }
 
                 // skip party members
@@ -95,7 +95,7 @@ public class ArcaneSpike extends Spell {
                 if (this.hasBeenHit.containsKey(victim.getUniqueId())) {
                     List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
                     if (uuids.contains(player.getUniqueId())) {
-                        break;
+                        continue;
                     } else {
                         uuids.add(player.getUniqueId());
                         hasBeenHit.put(victim.getUniqueId(), uuids);
@@ -119,7 +119,7 @@ public class ArcaneSpike extends Spell {
                 DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player);
                 //KnockbackUtil.knockback(player, victim, 1);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-                break;
+                continue;
             }
         }
     }

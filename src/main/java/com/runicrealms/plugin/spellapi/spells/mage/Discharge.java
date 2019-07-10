@@ -31,10 +31,11 @@ public class Discharge extends Spell {
     // constructor
     public Discharge() {
         super("Discharge",
-                "You launch an electric spark! Upon impact,\n"
-                        + "it summons a lightning bolt, dealing " + DAMAGE_AMT + "\n"
-                        + "damage to enemies within " + BLAST_RADIUS + " blocks.",
-                ChatColor.WHITE, 10, 20);
+                "You launch an electric spark!" +
+                        "\nUpon impact, it summons a lightning bolt," +
+                        "\ndealing " + DAMAGE_AMT + " spellʔ damage to enemies" +
+                        "\nwithin " + BLAST_RADIUS + " blocks.",
+                ChatColor.WHITE, 8, 15);
     }
 
     // spell execute code

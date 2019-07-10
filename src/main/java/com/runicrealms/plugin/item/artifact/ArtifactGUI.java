@@ -254,12 +254,33 @@ public class ArtifactGUI {
         // grab player's artifact
         ItemMeta meta = artifact.getItemMeta();
 
-        int size = 36;
-//        if (skins.size() <= 5) {
-//            size = 36;
-//        } else {
-//            size = 45;
-//        }
+        List<String> spells = new ArrayList<>();
+
+        // spell displays are class-specific for the artifact
+        switch (className) {
+            case "Archer":
+                spells = displaySpellsArcher();
+                break;
+            case "Cleric":
+                spells = displaySpellsCleric();
+                break;
+            case "Mage":
+                spells = displaySpellsMage();
+                break;
+            case "Rogue":
+                spells = displaySpellsRogue();
+                break;
+            case "Warrior":
+                spells = displaySpellsWarrior();
+                break;
+        }
+
+        int size;
+        if (spells.size() <= 5) {
+            size = 36;
+        } else {
+            size = 45;
+        }
 
         ItemGUI spellEditor = new ItemGUI("&f&l" + pl.getName() + "'s &e&lSpell Editor", size, event -> {
 
@@ -390,27 +411,6 @@ public class ArtifactGUI {
                         "\n&aEarn spell points by completing quests" +
                         "\n&aand leveling-up!", 0);
 
-        List<String> spells = new ArrayList<>();
-
-        // spell displays are class-specific for the artifact
-        switch (className) {
-            case "Archer":
-                spells = displaySpellsArcher();
-                break;
-            case "Cleric":
-                spells = displaySpellsCleric();
-                break;
-            case "Mage":
-                spells = displaySpellsMage();
-                break;
-            case "Rogue":
-                spells = displaySpellsRogue();
-                break;
-            case "Warrior":
-                spells = displaySpellsWarrior();
-                break;
-        }
-
         // first row of spells
         for (int i = 0; i < spells.size() && i < 5; i++) {
 
@@ -422,6 +422,16 @@ public class ArtifactGUI {
             displaySpell(spellEditor, 20 + i, spells.get(i), unlocked);
         }
 
+        // second row of spells
+        for (int i = 5; i < spells.size() && i < 10; i++) {
+
+            boolean unlocked= false;
+            if (pl.hasPermission("core.spells." + spells.get(i).replace(" ", "").toLowerCase())) {
+                unlocked = true;
+            }
+            displaySpell(spellEditor, 24 + i, spells.get(i), unlocked);
+        }
+
         return spellEditor;
     }
 
@@ -429,9 +439,9 @@ public class ArtifactGUI {
         List<String> spells = new ArrayList<>();
         spells.add("Barrage");
         spells.add("Grapple");
-        spells.add("Parry");
         spells.add("Rotting Shot");
         spells.add("Wounding Shot");
+        spells.add("Volley");
         return spells;
     }
 

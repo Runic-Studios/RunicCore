@@ -110,8 +110,17 @@ public class ItemGUI implements Listener {
 
         if (event.getInventory().getTitle().equals(this.name)) {
 
-            // handle gold pouch separately
-            if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
+            // handle gold pouch, loot chests separately
+            if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
+                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)
+                        && event.getInventory().getType().equals(InventoryType.CHEST))
+                        || event.getClickedInventory() != null
+                        && event.getClickedInventory().getType().equals(InventoryType.CHEST)
+                        && event.getWhoClicked().getItemOnCursor().getType() != Material.AIR) {
+                    event.setCancelled(true);
+                }
+
+            } else if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
                     && event.getCurrentItem() != null
                     && (event.getCurrentItem().getType() == Material.GOLD_NUGGET
                     || (event.getCursor().getType() == Material.GOLD_NUGGET

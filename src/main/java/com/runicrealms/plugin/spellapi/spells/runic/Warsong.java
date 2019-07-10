@@ -20,27 +20,25 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Warsong extends Spell {
 
-    private static final int DURATION = 7;
+    private static final int DURATION = 6;
     private static double PERCENT = 40;
     private static final int RADIUS = 10;
-    private List<UUID> singers = new ArrayList<>();
+    private List<UUID> singers;
 
     public Warsong() {
         super("Warsong",
-                "For " + DURATION + " seconds, you sing a song of" +
-                        "\nbattle! Each time a party member strikes" +
-                        "\nan enemy with their weapon⚔, if they" +
-                        "\nare within " + RADIUS + " blocks of you," +
-                        "\ntheir attacks deal an additional " + (int) PERCENT + "%" +
-                        "\ndamage! This spell has no effect on" +
-                        "\nyourself.", ChatColor.WHITE,14, 15);
+                "You sing a song of battle, granting a buff" +
+                        "\nto all party members within " + RADIUS + " blocks!" +
+                        "\nFor " + DURATION + " seconds, the buff increases the" +
+                        "\nweapon⚔ damage of your allies by " + (int) PERCENT + "%!" +
+                        "\nThis spell has no effect on yourself.",
+                ChatColor.WHITE, 15, 15);
     }
 
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        singers.add(pl.getUniqueId());
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 2.0F);
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
@@ -48,10 +46,19 @@ public class Warsong extends Spell {
         pl.getWorld().spawnParticle
                 (Particle.NOTE, pl.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
 
+        // buff all players within 10 blocks
+        if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
+            for (Player memeber : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
+                if (pl.getLocation().distance(memeber.getLocation()) > RADIUS) continue;
+                this.singers = new ArrayList<>();
+                this.singers.add(memeber.getUniqueId());
+            }
+        }
+
         new BukkitRunnable() {
             @Override
             public void run() {
-                singers.remove(pl.getUniqueId());
+                singers.clear();
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
     }
@@ -60,29 +67,19 @@ public class Warsong extends Spell {
     public void onArtfactHit(WeaponDamageEvent e) {
 
         Player damager = e.getPlayer();
+        if (this.singers == null) return;
+        if (!singers.contains(damager.getUniqueId())) return;
 
-
-        if (RunicCore.getPartyManager().getPlayerParty(damager) == null) return;
-
-        // check singers, if the damager has a buffer in the party, check the distance.
-        // if it's short enough, (< radius), buff the damage.
-        for (UUID id : singers) {
-
-            if (RunicCore.getPartyManager().getPlayerParty(damager).hasMember(id)
-                    && damager.getLocation().distance(Bukkit.getPlayer(id).getLocation()) <= RADIUS) {
-
-                double percent = PERCENT / 100;
-                int extraAmt = (int) (e.getAmount() * percent);
-                if (extraAmt < 1) {
-                    extraAmt = 1;
-                }
-                e.setAmount(e.getAmount() + extraAmt);
-                damager.playSound(damager.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.4F);
-                e.getEntity().getWorld().spawnParticle
-                        (Particle.NOTE, e.getEntity().getLocation().add(0, 1.5, 0),
-                                3, 0.3F, 0.3F, 0.3F, 0);
-            }
+        double percent = PERCENT / 100;
+        int extraAmt = (int) (e.getAmount() * percent);
+        if (extraAmt < 1) {
+            extraAmt = 1;
         }
+        e.setAmount(e.getAmount() + extraAmt);
+        damager.getWorld().playSound(damager.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
+        e.getEntity().getWorld().spawnParticle
+                (Particle.NOTE, e.getEntity().getLocation().add(0, 1.5, 0),
+                        5, 0.3F, 0.3F, 0.3F, 0);
     }
 }
 

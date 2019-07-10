@@ -116,7 +116,7 @@ public class MountListener implements Listener {
         Horse test = (Horse) Objects.requireNonNull(pl.getLocation().getWorld()).spawnEntity(pl.getLocation(), EntityType.HORSE);
 
         // todo: read NBT tag
-        HorseType type = HorseType.NORMAL;
+        HorseTypeEnum type = HorseTypeEnum.NORMAL;
         // horsetype type = horsetype.valueof(NBT tag)
         // horsetype.color.valueof(NBT tag)
         test.setColor(Horse.Color.CHESTNUT);

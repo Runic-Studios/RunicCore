@@ -1,12 +1,12 @@
 package com.runicrealms.plugin.mounts;
 
-public enum HorseType {
+public enum HorseTypeEnum {
 
     NORMAL(0.25f),
     EPIC(0.5f);
 
     private float speed;
-    HorseType(float speed) {
+    HorseTypeEnum(float speed) {
         this.speed = speed;
     }
 

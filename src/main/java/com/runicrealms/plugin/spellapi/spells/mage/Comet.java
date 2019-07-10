@@ -20,18 +20,18 @@ public class Comet extends Spell {
     // global variables
     private FallingBlock comet;
     private static final double COMET_SPEED = 0.1;
-    private static final int DAMAGE_AMT = 10;
-    private static final int BLAST_RADIUS = 5;
+    private static final int DAMAGE_AMT = 30;
+    private static final int BLAST_RADIUS = 3;
     private static final int MAX_DIST = 10;
-    private static final double KNOCKBACK_MULT = -0.5;
-    private static final double KNOCKUP_AMT = 1.0;
+    private static final double KNOCKUP_AMT = 0.4;
 
     // constructor
     public Comet() {
         super("Comet",
                 "You call a comet to fall from the sky!" +
-                        "\nUpon impact, the comet deals " + DAMAGE_AMT + " damage" +
-                        "\nto all enemies within " + BLAST_RADIUS + " blocks!",
+                        "\nUpon impact, the comet deals " + DAMAGE_AMT + " spellʔ" +
+                        "\ndamage to all enemies within " + BLAST_RADIUS + " blocks" +
+                        "\nand knocking them up!",
                 ChatColor.WHITE, 15, 20);
     }
 
@@ -42,7 +42,7 @@ public class Comet extends Spell {
         // play effects, spawn the comet
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
         Block targetBlock = pl.getTargetBlock(null, MAX_DIST);
-        Location targetLoc = targetBlock.getLocation().clone().add(0, 30, 0);
+        Location targetLoc = targetBlock.getLocation().clone().add(0, 15, 0);
         comet = targetLoc.getWorld().spawnFallingBlock(targetLoc, Material.DRAGON_EGG, (byte) 0);//FallingBlock
         comet.setDropItem(false);
 
@@ -96,8 +96,9 @@ public class Comet extends Spell {
                         if (entity.getType().isAlive()) {
                             LivingEntity victim = (LivingEntity) entity;
                             DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
-                            Vector force = (comet.getLocation().toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
-                            victim.setVelocity(force);
+                            Vector force = (pl.getLocation().toVector().subtract
+                                    (victim.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
+                            victim.setVelocity(force.normalize());
                         }
                     }
                 }

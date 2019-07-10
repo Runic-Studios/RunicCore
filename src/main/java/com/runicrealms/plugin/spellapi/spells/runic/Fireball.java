@@ -30,7 +30,7 @@ public class Fireball extends Spell {
                         "\nwhich deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact and knocks your enemy" +
                         "\nback!",
-                ChatColor.WHITE, 5, 15);
+                ChatColor.WHITE, 5, 10);
     }
 
     // spell execute code

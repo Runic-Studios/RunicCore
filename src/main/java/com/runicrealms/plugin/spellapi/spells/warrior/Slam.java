@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Slam extends Spell {
 
-    private static final double KNOCKUP_AMT = 0.3;
+    private static final double KNOCKUP_AMT = 0.2;
     private static final int DAMAGE_AMT = 6;
     private static final double HEIGHT = 1.2;
     private static final int RADIUS = 5;

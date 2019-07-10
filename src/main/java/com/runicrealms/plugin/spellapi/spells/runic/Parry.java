@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.archer;
+package com.runicrealms.plugin.spellapi.spells.runic;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -17,23 +17,18 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Parry extends Spell {
 
-    // globals (eventually I'd like to move the events back in here)
-    private HashMap<UUID, Long> noFall = new HashMap<>();
     private static final double LAUNCH_PATH_MULT = 1.5;
-    private static final int DURATION = 2;
 
     // constructor
     public Parry() {
-        super("Parry", "You launch yourself backwards in the air!" +
-                "\nFor the next " + DURATION + " seconds, you are protected" +
-                "\nfrom fall damage.", ChatColor.WHITE, 8, 10);
+        super("Parry", "You launch yourself backwards in the air!",
+                ChatColor.WHITE, 8, 10);
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
         // spell variables, vectors
-        UUID uuid = pl.getUniqueId();
         Vector look = pl.getLocation().getDirection();
         Vector launchPath = new Vector(-look.getX(), 1.0, -look.getZ()).normalize();
 
@@ -43,33 +38,18 @@ public class Parry extends Spell {
                 25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
 
         pl.setVelocity(launchPath.multiply(LAUNCH_PATH_MULT));
-        noFall.put(uuid, System.currentTimeMillis());
 
-        // remove the pl from the noFall hashmap
+        // protect player from fall damage
         new BukkitRunnable() {
             @Override
             public void run() {
-                noFall.remove(uuid);
-                pl.sendMessage(ChatColor.GRAY + "You lost safefall!");
-            }
-        }.runTaskLater(RunicCore.getInstance(), (DURATION*20));
-    }
 
-    // prevent fall damage if the pl is parrying
-    @EventHandler
-    public void onFallDamage(EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player && e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-            UUID uuid = e.getEntity().getUniqueId();
-            if (noFall.containsKey(uuid)) {
-                e.setCancelled(true);
+                if (pl.isOnGround()) {
+                    this.cancel();
+                } else {
+                    pl.setFallDistance(-8.0F);
+                }
             }
-        }
-    }
-
-    // remove pl from the hashmap on logout
-    @EventHandler
-    public void onQuit(PlayerQuitEvent e) {
-        UUID uuid = e.getPlayer().getUniqueId();
-        noFall.remove(uuid);
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
     }
 }

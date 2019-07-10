@@ -30,7 +30,7 @@ public class Frostbolt extends Spell {
                 "You launch a projectile bolt of ice" +
                         "\nthat deals " + DAMAGE_AMT + " spellʔ damage on" +
                         "\nimpact and slows its target!",
-                ChatColor.WHITE, 5, 15);
+                ChatColor.WHITE, 5, 10);
     }
 
     // spell execute code

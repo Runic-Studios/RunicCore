@@ -166,12 +166,14 @@ public class RuneGUI {
         spells.add("Frostbolt");
         spells.add("Harpoon");
         spells.add("Lunge");
+        spells.add("Parry");
         spells.add("Permafrost");
         spells.add("Petrify");
         spells.add("Reflect");
         spells.add("Shadow Strike");
         spells.add("Siphon");
         spells.add("Sprint");
+        spells.add("Starfall");
         spells.add("Taunt");
         spells.add("Warsong");
 

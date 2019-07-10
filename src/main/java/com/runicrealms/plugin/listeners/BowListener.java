@@ -167,7 +167,7 @@ public class BowListener implements Listener {
             return;
         }
 
-        DamageUtil.damageEntityWeapon(randomNum, victim, damager);
+        DamageUtil.damageEntityWeapon(event.getAmount(), victim, damager);
 
 //        // spawn the damage indicator if the arrow is an autoattack
 //        if (arrow.getCustomName() == null) return;

@@ -168,7 +168,7 @@ public class StaffListener implements Listener {
                                     if (event.isCancelled()) {
                                         return;
                                     }
-                                    DamageUtil.damageEntityWeapon(randomNum, victim, pl);
+                                    DamageUtil.damageEntityWeapon(event.getAmount(), victim, pl);
                                 } else {
                                     WeaponDamageEvent event = new WeaponDamageEvent(maxDamage, pl, victim, true);
                                     Bukkit.getPluginManager().callEvent(event);
@@ -176,7 +176,7 @@ public class StaffListener implements Listener {
                                     if (event.isCancelled()) {
                                         return;
                                     }
-                                    DamageUtil.damageEntityWeapon(minDamage, victim, pl);
+                                    DamageUtil.damageEntityWeapon(event.getAmount(), victim, pl);
                                 }
 
                                 pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

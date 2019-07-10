@@ -208,7 +208,15 @@ public class ItemCMD implements SubCommand {
                 }
                 break;
             case "potion":
-                givePotion(pl, args[3], Integer.parseInt(args[4]));
+                ItemStack potion = generatePotion(args[3], Integer.parseInt(args[4]));
+                // check that the player has an open inventory space
+                // this method prevents items from stacking if the player crafts 5
+                if (pl.getInventory().firstEmpty() != -1) {
+                    int firstEmpty = pl.getInventory().firstEmpty();
+                    pl.getInventory().setItem(firstEmpty, potion);
+                } else {
+                    pl.getWorld().dropItem(pl.getLocation(), potion);
+                }
                 return;
             default:
                 pl.sendMessage(ChatColor.DARK_RED + "Please specify correct input: helmet, chestplate, leggings, boots, gemstone, or potion");
@@ -222,20 +230,20 @@ public class ItemCMD implements SubCommand {
 
         switch (args[3].toLowerCase()) {
             case "common":
-                craftedItem = generateCommonStats(craftedItem, itemSlot, material);
+                craftedItem = generateCommonItem();
                 break;
             case "uncommon":
-                craftedItem = generateUncommonStats(craftedItem, itemSlot, material);
+                craftedItem = generateUncommonItem(craftedItem, itemSlot, material);
                 break;
             case "rare":
-                craftedItem = generateRareStats(craftedItem, itemSlot, material);
+                craftedItem = generateRareItem(craftedItem, itemSlot, material);
                 break;
             case "epic":
-                craftedItem = generateEpicStats(craftedItem, itemSlot, material);
+                craftedItem = generateEpicItem(craftedItem, itemSlot, material);
                 break;
         }
 
-        LoreGenerator.generateItemLore(craftedItem, color, name + " " + itemTypeName, "");
+        //LoreGenerator.generateItemLore(craftedItem, color, name + " " + itemTypeName, "");
 
         // check that the player has an open inventory space
         // this method prevents items from stacking if the player crafts 5
@@ -256,14 +264,148 @@ public class ItemCMD implements SubCommand {
         }
     }
 
-    private ItemStack generateCommonStats(ItemStack item, String itemSlot, Material material) {
+    public static ItemStack generateCommonItem() {
 
         Random rand = new Random();
+
+        String itemType = "";
+        int type = rand.nextInt(4) + 1;
+        switch (type) {
+            case 1:
+                itemType = "helmet";
+                break;
+            case 2:
+                itemType = "chestplate";
+                break;
+            case 3:
+                itemType = "leggings";
+                break;
+            case 4:
+                itemType = "boots";
+                break;
+        }
+
+        // setup info for item
+        String itemTypeName = "";
+        Material material = Material.STICK;
+        int durability = 0;
+        String itemSlot = "";
+
+        int randomNum = rand.nextInt(5) + 1;
+        switch (itemType.toLowerCase()) {
+            case "helmet":
+                material = Material.SHEARS;
+                itemSlot = "head";
+                switch (randomNum) {
+                    case 1:
+                        durability = 5;
+                        itemTypeName = "Hood";
+                        break;
+                    case 2:
+                        durability = 10;
+                        itemTypeName = "Cowl";
+                        break;
+                    case 3:
+                        durability = 15;
+                        itemTypeName = "Coif";
+                        break;
+                    case 4:
+                        durability = 20;
+                        itemTypeName = "Crown";
+                        break;
+                    case 5:
+                        durability = 25;
+                        itemTypeName = "Helm";
+                        break;
+                }
+                break;
+            case "chestplate":
+                itemSlot = "chest";
+                switch (randomNum) {
+                    case 1:
+                        material = Material.DIAMOND_CHESTPLATE;
+                        itemTypeName = "Robe";
+                        break;
+                    case 2:
+                        material = Material.LEATHER_CHESTPLATE;
+                        itemTypeName = "Tunic";
+                        break;
+                    case 3:
+                        material = Material.CHAINMAIL_CHESTPLATE;
+                        itemTypeName = "Chest";
+                        break;
+                    case 4:
+                        material = Material.GOLDEN_CHESTPLATE;
+                        itemTypeName = "Chestplate";
+                        break;
+                    case 5:
+                        material = Material.IRON_CHESTPLATE;
+                        itemTypeName = "Chestplate";
+                        break;
+                }
+                break;
+            case "leggings":
+                itemSlot = "legs";
+                switch (randomNum) {
+                    case 1:
+                        material = Material.DIAMOND_LEGGINGS;
+                        itemTypeName = "Legs";
+                        break;
+                    case 2:
+                        material = Material.LEATHER_LEGGINGS;
+                        itemTypeName = "Chaps";
+                        break;
+                    case 3:
+                        material = Material.CHAINMAIL_LEGGINGS;
+                        itemTypeName = "Tassets";
+                        break;
+                    case 4:
+                        material = Material.GOLDEN_LEGGINGS;
+                        itemTypeName = "Platelegs";
+                        break;
+                    case 5:
+                        material = Material.IRON_LEGGINGS;
+                        itemTypeName = "Platelegs";
+                        break;
+                }
+                break;
+            case "boots":
+                itemSlot = "feet";
+                switch (randomNum) {
+                    case 1:
+                        material = Material.DIAMOND_BOOTS;
+                        itemTypeName = "Boots";
+                        break;
+                    case 2:
+                        material = Material.LEATHER_BOOTS;
+                        itemTypeName = "Boots";
+                        break;
+                    case 3:
+                        material = Material.CHAINMAIL_BOOTS;
+                        itemTypeName = "Greaves";
+                        break;
+                    case 4:
+                        material = Material.GOLDEN_BOOTS;
+                        itemTypeName = "Boots";
+                        break;
+                    case 5:
+                        material = Material.IRON_BOOTS;
+                        itemTypeName = "Boots";
+                        break;
+                }
+                break;
+        }
+
+        ItemStack commonItem = new ItemStack(material);
+        ItemMeta meta = commonItem.getItemMeta();
+        ((Damageable) Objects.requireNonNull(meta)).setDamage(durability);
+        commonItem.setItemMeta(meta);
+
         int numOfStats = rand.nextInt(2) + 1;
 
         int maxHealth = 0;
         int maxMana = 0;
-        String className = determineClass(item, material);
+        String className = determineClass(commonItem, material);
         switch (className.toLowerCase()) {
             case "mage":
                 maxHealth = 4;
@@ -290,18 +432,20 @@ public class ItemCMD implements SubCommand {
         int health = rand.nextInt(maxHealth) + 1;
         int mana = rand.nextInt(maxMana) + 1;
 
-        //List<Integer> stats = determineWhichStats(numOfStats, 2); // 1 or 2
-
-        item = AttributeUtil.addGenericStat(item, "generic.maxHealth", health, itemSlot);
+        commonItem = AttributeUtil.addGenericStat(commonItem, "generic.maxHealth", health, itemSlot);
 
         if (numOfStats == 1) {
-            item = AttributeUtil.addCustomStat(item, "custom.manaBoost", mana);
+            commonItem = AttributeUtil.addCustomStat(commonItem, "custom.manaBoost", mana);
         }
 
-        return item;
+        ItemNameGenerator nameGen = new ItemNameGenerator();
+        String name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf("COMMON"));
+        LoreGenerator.generateItemLore(commonItem, ChatColor.GRAY, name + " " + itemTypeName, "");
+
+        return commonItem;
     }
 
-    private ItemStack generateUncommonStats(ItemStack item, String itemSlot, Material material) {
+    private ItemStack generateUncommonItem(ItemStack item, String itemSlot, Material material) {
 
         item = AttributeUtil.addCustomStat(item, "required.level", 10);
 
@@ -354,7 +498,7 @@ public class ItemCMD implements SubCommand {
         return item;
     }
 
-    private ItemStack generateRareStats(ItemStack item, String itemSlot, Material material) {
+    private ItemStack generateRareItem(ItemStack item, String itemSlot, Material material) {
 
         item = AttributeUtil.addCustomStat(item, "required.level", 20);
 
@@ -420,7 +564,7 @@ public class ItemCMD implements SubCommand {
         return item;
     }
 
-    private ItemStack generateEpicStats(ItemStack item, String itemSlot, Material material) {
+    private ItemStack generateEpicItem(ItemStack item, String itemSlot, Material material) {
 
         item = AttributeUtil.addCustomStat(item, "required.level", 30);
 
@@ -486,7 +630,7 @@ public class ItemCMD implements SubCommand {
         return item;
     }
 
-    private String determineClass(ItemStack item, Material material) {
+    private static String determineClass(ItemStack item, Material material) {
 
         String className = "";
         if (material == Material.SHEARS) {
@@ -597,11 +741,10 @@ public class ItemCMD implements SubCommand {
 
     /**
      * Taken from Alchemy profession
-     * @param pl player to give items to
      * @param type display name of the item, accepts color codes
      * @param someVar whatever variable the potion takes goes here (health, mana, duration. the system knows)
      */
-    private void givePotion(Player pl, String type, int someVar) {
+    public static ItemStack generatePotion(String type, int someVar) {
 
         String dispName = "";
         switch (type) {
@@ -670,13 +813,14 @@ public class ItemCMD implements SubCommand {
         // ----------------------------------------------
 
 
-        // check that the player has an open inventory space
-        // this method prevents items from stacking if the player crafts 5
-        if (pl.getInventory().firstEmpty() != -1) {
-            int firstEmpty = pl.getInventory().firstEmpty();
-            pl.getInventory().setItem(firstEmpty, potion);
-        } else {
-            pl.getWorld().dropItem(pl.getLocation(), potion);
-        }
+//        // check that the player has an open inventory space
+//        // this method prevents items from stacking if the player crafts 5
+//        if (pl.getInventory().firstEmpty() != -1) {
+//            int firstEmpty = pl.getInventory().firstEmpty();
+//            pl.getInventory().setItem(firstEmpty, potion);
+//        } else {
+//            pl.getWorld().dropItem(pl.getLocation(), potion);
+//        }
+        return potion;
     }
 }

@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.healthbars;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
@@ -46,8 +48,16 @@ public class MobHealthManager {
 
                     for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
                         // remove stuck horses
-                        if (en instanceof Horse && en.getPassengers().size() == 0) {
+                        if (en instanceof Horse && en.getPassengers().size() == 0 && !en.hasMetadata("NPC")) {
                             en.remove();
+                        } else if (en instanceof Horse) {
+                            Horse horse = (Horse) en;
+                            if (horse.getColor() == Horse.Color.CREAMY) {
+                                horse.getWorld().spawnParticle(Particle.FLAME, horse.getEyeLocation(), 15, 0.6f, 0.5f, 0.6f, 0);
+                            } else if (horse.getColor() == Horse.Color.DARK_BROWN) {
+                                horse.getWorld().spawnParticle(Particle.BLOCK_DUST, horse.getEyeLocation(),
+                                        5, 0.6F, 0.5F, 0.6F, 0, Material.PACKED_ICE.createBlockData());
+                            }
                         }
                         if (en.hasMetadata("healthbar") && en.getVehicle() == null) {
                             en.remove();

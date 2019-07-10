@@ -27,7 +27,7 @@ public class Blessing extends Spell {
     private static final int RADIUS = 1;
     private static final int RING_DURATION = 7;
     private static final int SHIELD_DURATION = 10;
-    private static final int SHIELD_AMT = 10;
+    private static final int SHIELD_AMT = 30;
 
     public Blessing() {
         super("Blessing",
@@ -36,7 +36,7 @@ public class Blessing extends Spell {
                         "\n" + RING_DURATION + " seconds. The first ally who steps" +
                         "\nover the ring gains a holy" +
                         "\nshield for " + SHIELD_DURATION + " seconds, blocking" +
-                        "\nup to " + SHIELD_AMT + " damage!", ChatColor.WHITE,15, 15);
+                        "\nup to " + SHIELD_AMT + " damage!", ChatColor.WHITE,15, 12);
     }
 
     // spell execute code
