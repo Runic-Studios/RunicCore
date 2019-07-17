@@ -75,10 +75,10 @@ public class LootChestListener implements Listener {
             }
         }
 
-        e.setCancelled(true);
-
         // if we've found a location and a chest, open the associated ItemGUI
         if (!chestTier.equals("") && block.getType() != Material.AIR) {
+
+            e.setCancelled(true);
 
             // verify player level
             if (chestTier.equals("uncommon") && pl.getLevel() < 10) {

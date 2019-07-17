@@ -97,9 +97,10 @@ public class ChestLootTableUtil {
         ItemStack oakWood = mythicItem("OakWood", rand, 3, 5);
         ItemStack thread = mythicItem("Thread", rand, 3, 5);
         ItemStack animalHide = mythicItem("AnimalHide", rand, 3, 5);
-        //ItemStack uncutRuby = mythicItem("UncutRuby", rand, 2, 3); sapphire
+        ItemStack uncutRuby = mythicItem("UncutRuby", rand, 2, 3);
+        ItemStack uncutSapphire = mythicItem("UncutSapphire", rand, 2, 3);
         ItemStack bottle = mythicItem("Bottle", rand, 3, 5);
-        //ItemStack salmon = mythicItem("Salmon", rand, 2, 3); cod
+        ItemStack cod = mythicItem("Cod", rand, 2, 3);
 
         // gatherting tools (tier 2)
         ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 2);
@@ -112,7 +113,7 @@ public class ChestLootTableUtil {
         ItemStack manaPotion = ItemUtils.generatePotion("mana", 20);
 
         // add entries to table
-        uncommonLootTable.addEntry(uncommonItem,  35.0);
+        uncommonLootTable.addEntry(uncommonItem,  25.0);
         uncommonLootTable.addEntry(coin, 50.0);
         uncommonLootTable.addEntry(bread, 35.0);
 
@@ -120,9 +121,10 @@ public class ChestLootTableUtil {
         uncommonLootTable.addEntry(oakWood, 8.0);
         uncommonLootTable.addEntry(thread, 8.0);
         uncommonLootTable.addEntry(animalHide, 8.0);
-        //uncommonLootTable.addEntry(uncutRuby, 8.0);
+        uncommonLootTable.addEntry(uncutRuby, 8.0);
+        uncommonLootTable.addEntry(uncutSapphire, 8.0);
         uncommonLootTable.addEntry(bottle, 8.0);
-        //uncommonLootTable.addEntry(salmon, 8.0);
+        uncommonLootTable.addEntry(cod, 8.0);
 
         uncommonLootTable.addEntry(gatheringAxe, 3.0);
         uncommonLootTable.addEntry(gathertingHoe, 3.0);
@@ -151,14 +153,16 @@ public class ChestLootTableUtil {
         // food
         ItemStack bread = mythicItem("Bread", rand, 2, 4);
 
-        // materials
+        // crafting materials
         ItemStack spruceWood = mythicItem("SpruceWood", rand, 3, 5);
         ItemStack oakWood = mythicItem("OakWood", rand, 3, 5);
         ItemStack thread = mythicItem("Thread", rand, 3, 5);
         ItemStack animalHide = mythicItem("AnimalHide", rand, 3, 5);
-        //ItemStack uncutRuby = mythicItem("UncutRuby", rand, 2, 3); opal
+        ItemStack uncutRuby = mythicItem("UncutRuby", rand, 2, 3);
+        ItemStack uncutSapphire = mythicItem("UncutSapphire", rand, 2, 3);
+        ItemStack uncutOpal = mythicItem("UncutOpal", rand, 2, 3);
         ItemStack bottle = mythicItem("Bottle", rand, 3, 5);
-        //ItemStack salmon = mythicItem("Salmon", rand, 2, 3); tropical
+        ItemStack tropical = mythicItem("Tropical", rand, 2, 3);
 
         // gatherting tools (tier 3)
         ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 3);
@@ -171,7 +175,7 @@ public class ChestLootTableUtil {
         ItemStack manaPotion = ItemUtils.generatePotion("mana", 40);
 
         // add entries to table
-        rareLootTable.addEntry(rareItem,  35.0);
+        rareLootTable.addEntry(rareItem,  25.0);
         rareLootTable.addEntry(coin, 50.0);
         rareLootTable.addEntry(bread, 35.0);
 
@@ -179,9 +183,11 @@ public class ChestLootTableUtil {
         rareLootTable.addEntry(oakWood, 8.0);
         rareLootTable.addEntry(thread, 8.0);
         rareLootTable.addEntry(animalHide, 8.0);
-        //rareLootTable.addEntry(uncutRuby, 8.0);
+        rareLootTable.addEntry(uncutRuby, 8.0);
+        rareLootTable.addEntry(uncutSapphire, 8.0);
+        rareLootTable.addEntry(uncutOpal, 8.0);
         rareLootTable.addEntry(bottle, 8.0);
-        //rareLootTable.addEntry(salmon, 8.0);
+        rareLootTable.addEntry(tropical, 8.0);
 
         rareLootTable.addEntry(gatheringAxe, 2.0);
         rareLootTable.addEntry(gathertingHoe, 2.0);
@@ -215,9 +221,13 @@ public class ChestLootTableUtil {
         ItemStack oakWood = mythicItem("OakWood", rand, 3, 5);
         ItemStack thread = mythicItem("Thread", rand, 3, 5);
         ItemStack animalHide = mythicItem("AnimalHide", rand, 3, 5);
-        //ItemStack uncutRuby = mythicItem("UncutRuby", rand, 2, 3); opal
+        ItemStack uncutRuby = mythicItem("UncutRuby", rand, 2, 3);
+        ItemStack uncutSapphire = mythicItem("UncutSapphire", rand, 2, 3);
+        ItemStack uncutOpal = mythicItem("UncutOpal", rand, 2, 3);
+        ItemStack uncutEmerald = mythicItem("UncutEmerald", rand, 2, 3);
+        ItemStack uncutDiamond = mythicItem("UncutDiamond", rand, 2, 3);
         ItemStack bottle = mythicItem("Bottle", rand, 3, 5);
-        //ItemStack salmon = mythicItem("Salmon", rand, 2, 3); tropical
+        ItemStack pufferfish = mythicItem("Pufferfish", rand, 2, 3);
 
         // gatherting tools (tier 4)
         ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 4);
@@ -230,7 +240,7 @@ public class ChestLootTableUtil {
         ItemStack manaPotion = ItemUtils.generatePotion("mana", 60);
 
         // add entries to table
-        epicLootTable.addEntry(epicItem,  35.0);
+        epicLootTable.addEntry(epicItem,  15.0);
         epicLootTable.addEntry(coin, 50.0);
         epicLootTable.addEntry(bread, 35.0);
 
@@ -238,9 +248,14 @@ public class ChestLootTableUtil {
         epicLootTable.addEntry(oakWood, 8.0);
         epicLootTable.addEntry(thread, 8.0);
         epicLootTable.addEntry(animalHide, 8.0);
-        //epicLootTable.addEntry(uncutRuby, 8.0);
+        epicLootTable.addEntry(uncutRuby, 8.0);
+        epicLootTable.addEntry(uncutSapphire, 8.0);
+        epicLootTable.addEntry(uncutOpal, 8.0);
+        epicLootTable.addEntry(uncutEmerald, 8.0);
+        epicLootTable.addEntry(uncutDiamond, 8.0);
+
         epicLootTable.addEntry(bottle, 8.0);
-        //epicLootTable.addEntry(salmon, 8.0);
+        epicLootTable.addEntry(pufferfish, 8.0);
 
         epicLootTable.addEntry(gatheringAxe, 2.0);
         epicLootTable.addEntry(gathertingHoe, 2.0);

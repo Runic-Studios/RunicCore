@@ -16,6 +16,7 @@ import java.util.Objects;
 public class LootChestManager {
 
     private RunicCore plugin = RunicCore.getInstance();
+    private static final int RESPAWN_TIME = 15; // minutes
 
     public LootChestManager() {
 
@@ -24,7 +25,7 @@ public class LootChestManager {
             public void run() {
                 regenChests();
             }
-        }.runTaskTimer(this.plugin, 100, 60L);
+        }.runTaskTimer(this.plugin, 100, RESPAWN_TIME*60*20L); // time * seconds / ticks
 
         new BukkitRunnable() {
             @Override

@@ -2,11 +2,11 @@ package com.runicrealms.plugin.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -84,13 +84,13 @@ public class BlockBreakListener implements Listener {
     }
 
     /**
-     * Prevent item frame destruction
+     * Prevent item frame, painting destruction
      */
     @EventHandler
     public void onItemFrameBreak(HangingBreakByEntityEvent e) {
         if (e.getRemover() == null) return;
         if (!(e.getRemover() instanceof Player)) e.setCancelled(true);
-        if (e.getEntity() instanceof ItemFrame
+        if ((e.getEntity() instanceof ItemFrame || e.getEntity() instanceof Painting)
                 && e.getRemover() instanceof Player
                 && !e.getRemover().isOp()) {
             e.setCancelled(true);
@@ -102,7 +102,7 @@ public class BlockBreakListener implements Listener {
      */
     @EventHandler
     public void itemFrameItemRemoval(EntityDamageEvent e) {
-        if (e.getEntity() instanceof ItemFrame) {
+        if (e.getEntity() instanceof ItemFrame && e.getEntity() instanceof Painting) {
             e.setCancelled(true);
         }
     }
