@@ -69,6 +69,7 @@ public class ClassExpCMD implements SubCommand {
 
             int nearbyMembers = 0;
             for (Player member : party.getPlayerMembers()) {
+                if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
                     nearbyMembers += 1;
                 }
@@ -76,6 +77,7 @@ public class ClassExpCMD implements SubCommand {
 
             for (Player member : party.getPlayerMembers()) {
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
+                    if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                     PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
                 }
             }

@@ -2,13 +2,17 @@ package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class LootChestManager {
 
     private RunicCore plugin = RunicCore.getInstance();
@@ -18,9 +22,36 @@ public class LootChestManager {
         new BukkitRunnable() {
             @Override
             public void run() {
+                regenChests();
+            }
+        }.runTaskTimer(this.plugin, 100, 60L);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
                 particleTask();
             }
         }.runTaskTimer(this.plugin, 20, 3*20L);
+    }
+
+    private void regenChests() {
+
+        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
+                "chests.yml");
+        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
+        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
+
+        for (String id : locations.getKeys(false)) {
+            World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
+            double x = locations.getDouble(id + ".x");
+            double y = locations.getDouble(id + ".y");
+            double z = locations.getDouble(id + ".z");
+            Location loc = new Location(world, x, y, z);
+            if (loc.getBlock().getType() == Material.CHEST) continue;
+            loc.getBlock().setType(Material.CHEST);
+            loc.getBlock().getWorld().spawnParticle(Particle.VILLAGER_HAPPY,
+                    loc.getBlock().getLocation().add(0.5, 0, 0.5), 25, 0.5, 0.5, 0.5, 0.01);
+        }
     }
 
     private void particleTask() {

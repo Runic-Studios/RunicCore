@@ -135,11 +135,11 @@ public class AlchemistGUI extends Workstation {
                     reqHashMap = healthPotReqs;
                     exp = 5;
                     if (currentLvl < 30) {
-                        dummyVar = 15;
-                    } else if (currentLvl < 50) {
                         dummyVar = 25;
+                    } else if (currentLvl < 50) {
+                        dummyVar = 50;
                     } else {
-                        dummyVar = 45;
+                        dummyVar = 75;
                     }
                     // mana potion
                 } else if (slot == 10) {
@@ -147,11 +147,11 @@ public class AlchemistGUI extends Workstation {
                     reqHashMap = manaPotReqs;
                     exp = 10;
                     if (currentLvl < 30) {
-                        dummyVar = 15;
-                    } else if (currentLvl < 50) {
                         dummyVar = 25;
+                    } else if (currentLvl < 50) {
+                        dummyVar = 50;
                     } else {
-                        dummyVar = 45;
+                        dummyVar = 75;
                     }
                     // slaying potion
                 } else if (slot == 11) {
@@ -202,23 +202,23 @@ public class AlchemistGUI extends Workstation {
         String lootingStr;
         String tierStr;
         if (currentLv < 30) {
-            healthStr = "15";
-            manaStr = "15";
-            slayingStr = "5";
-            lootingStr = "5";
-            tierStr = "Minor";
-        } else if (currentLv < 50) {
             healthStr = "25";
             manaStr = "25";
+            slayingStr = "5";
+            lootingStr = "5";
+            tierStr = "Minor Crafted";
+        } else if (currentLv < 50) {
+            healthStr = "50";
+            manaStr = "50";
             slayingStr = "10";
             lootingStr = "10";
-            tierStr = "Major";
+            tierStr = "Major Crafted";
         } else {
-            healthStr = "45";
-            manaStr = "45";
+            healthStr = "75";
+            manaStr = "75";
             slayingStr = "15";
             lootingStr = "15";
-            tierStr = "Greater";
+            tierStr = "Greater Crafted";
         }
 
         // health potion

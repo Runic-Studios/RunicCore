@@ -3,7 +3,6 @@ package com.runicrealms.plugin.player;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,8 +32,6 @@ public class PlayerHungerManager implements Listener {
 
                         if (player.getFoodLevel() <= 1) return;
 
-                        //player.damage(1);
-                        player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 2.0f);
                         player.setFoodLevel(player.getFoodLevel() - 1);
                     }
                 }

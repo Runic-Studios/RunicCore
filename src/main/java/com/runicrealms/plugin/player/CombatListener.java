@@ -93,6 +93,8 @@ public class CombatListener implements Listener {
 
             for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
 
+                if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
+
                 // only tag players in 100 block range
                 if (pl.getLocation().distance(member.getLocation()) > RANGE) continue;
 

@@ -3,9 +3,12 @@ package com.runicrealms.plugin.item.GUIMenu;
 import java.util.ArrayList;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
@@ -112,12 +115,17 @@ public class ItemGUI implements Listener {
 
             // handle gold pouch, loot chests separately
             if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
-                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)
-                        && event.getInventory().getType().equals(InventoryType.CHEST))
-                        || event.getClickedInventory() != null
-                        && event.getClickedInventory().getType().equals(InventoryType.CHEST)
-                        && event.getWhoClicked().getItemOnCursor().getType() != Material.AIR) {
-                    event.setCancelled(true);
+
+                // cancel moving soulbound items to chest
+                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY))) {
+
+                    String soulbound = AttributeUtil.getCustomString(event.getCurrentItem(), "soulbound");
+                    if (soulbound.equals("true")) {
+                        Player pl = (Player) event.getWhoClicked();
+                        event.setCancelled(true);
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(ChatColor.GRAY + "This item is soulbound.");
+                    }
                 }
 
             } else if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")

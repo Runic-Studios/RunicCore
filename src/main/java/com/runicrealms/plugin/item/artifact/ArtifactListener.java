@@ -79,8 +79,8 @@ public class ArtifactListener implements Listener {
 
         Player pl = e.getPlayer();
         boolean isSoulbound = false;
-        String souldbound = AttributeUtil.getCustomString(e.getItemDrop().getItemStack(), "soulbound");
-        if (souldbound.equals("true")) {
+        String soulbound = AttributeUtil.getCustomString(e.getItemDrop().getItemStack(), "soulbound");
+        if (soulbound.equals("true")) {
             isSoulbound = true;
         }
 
