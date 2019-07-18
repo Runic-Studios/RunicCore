@@ -21,7 +21,7 @@ public class Cleave extends Spell {
 
     private static final int DAMAGE_AMT = 10;
     private static final int RADIUS = 4;
-    private List<UUID> cleavers;
+    private static List<UUID> cleavers;
 
     public Cleave() {
         super ("Cleave",
@@ -38,6 +38,11 @@ public class Cleave extends Spell {
     public void executeSpell(Player player, SpellItemType type) {
 
         UUID uuid = player.getUniqueId();
+
+        // check to ensure no stacking of spell
+        cleavers.remove(uuid);
+        // ------------------------------------
+
         cleavers.add(uuid);
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 0.5f);
     }
@@ -65,7 +70,7 @@ public class Cleave extends Spell {
         victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
 
         // damage victim
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, pl);
+        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, pl, false);
 
         // damage nearby victims
         for (Entity nearby : victim.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {

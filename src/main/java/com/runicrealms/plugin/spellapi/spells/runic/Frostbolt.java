@@ -82,7 +82,7 @@ public class Frostbolt extends Spell {
 
         // cancel the event, apply spell mechanics
         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
-        KnockbackUtil.knockback(pl, victim);
+        KnockbackUtil.knockbackPlayer(pl, victim);
 
         // slow
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));

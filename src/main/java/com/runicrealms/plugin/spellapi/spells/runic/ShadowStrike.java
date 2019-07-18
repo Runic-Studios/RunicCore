@@ -21,7 +21,7 @@ public class ShadowStrike extends Spell {
 
     private static final int DAMAGE_AMT = 25;
     private static final int DURATION = 2;
-    private List<UUID> strikers;
+    private static List<UUID> strikers;
 
     public ShadowStrike() {
         super ("Shadow Strike",
@@ -39,6 +39,11 @@ public class ShadowStrike extends Spell {
     public void executeSpell(Player player, SpellItemType type) {
 
         UUID uuid = player.getUniqueId();
+
+        // check to ensure no stacking of spell
+        strikers.remove(uuid);
+        // ------------------------------------
+
         strikers.add(uuid);
         player.playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.5f, 0.5f);
     }

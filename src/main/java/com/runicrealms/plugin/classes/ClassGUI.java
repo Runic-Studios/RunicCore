@@ -26,9 +26,9 @@ public class ClassGUI implements InventoryProvider {
     // base attack speed, damage values for each class' artifact
     // max attack speed is 24.0, so 24+(-23.0) = 1.0 attack speed
     // bows use a different NBT tag.
-    private static final double archerBaseBowSpeed = -23.2; // 0.8
-    private static final double clericBaseSpeed = -23.0; // 1.0
-    private static final double mageBaseSpeed = -23.2; // 0.8
+    private static final double archerBaseBowSpeed = -23.0; // 1.0
+    private static final double clericBaseSpeed = -22.8; // 1.2
+    private static final double mageBaseSpeed = -23.0; // 1.0
     private static final double rogueBaseSpeed = -22.6; // 1.4
     private static final double warriorBaseSpeed = -22.8; // 1.2
 

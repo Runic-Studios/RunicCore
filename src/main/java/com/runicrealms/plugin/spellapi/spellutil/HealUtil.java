@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -29,18 +28,17 @@ public class HealUtil  {
             healAmt = (healAmt/2);
         }
 
+        // call our custom heal event for interaction with buffs/debuffs
+        SpellHealEvent event = new SpellHealEvent((int) healAmt, recipient, caster);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        healAmt = event.getAmount();
+
         // skip the player if they're not in the party
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null
                 && !RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) {
             return;
         }
-
-        // call our custom heal event for interaction with buffs/debuffs
-        SpellHealEvent event = new SpellHealEvent((int) healAmt, recipient, caster);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
-
-        healAmt = event.getAmount();
 
         double newHP = recipient.getHealth() + healAmt;
         double difference = recipient.getMaxHealth() - recipient.getHealth();

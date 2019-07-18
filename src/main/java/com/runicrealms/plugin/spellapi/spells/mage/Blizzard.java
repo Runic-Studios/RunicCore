@@ -142,7 +142,7 @@ public class Blizzard extends Spell {
             if (RunicCore.getPartyManager().getPlayerParty(shooter) != null
                     && RunicCore.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
 
-            // apply damage, knockback
+            // apply damage, knockbackPlayer
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter);
             victim.setLastDamageCause(e);
 

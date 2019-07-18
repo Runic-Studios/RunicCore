@@ -11,7 +11,7 @@ public class KnockbackUtil {
 
     private static final double POWER = 0.35;
 
-    public static void knockback(Player p, Entity t) {
+    public static void knockbackPlayer(Player p, Entity t) {
         Location l = t.getLocation().subtract(p.getLocation());
         double distance = t.getLocation().distance(p.getLocation());
         Vector v = l.toVector().multiply(POWER/distance);
@@ -20,25 +20,23 @@ public class KnockbackUtil {
     }
 
     // todo: fix this
-    public static void knockback(Entity damager, Entity t) {
+    public static void knockbackPlayer(Entity damager, Entity t) {
         Location l = t.getLocation().subtract(damager.getLocation());
         double distance = t.getLocation().distance(damager.getLocation());
         Vector v = l.toVector().normalize().multiply(POWER/distance);
-//        DecimalFormat decimalFormat = new DecimalFormat("#.####");
-//        v.setX(Float.parseFloat(decimalFormat.format(v.getX())));
         v.setY(0.3333);
         t.setVelocity(v);
     }
 
     public static void knockbackMob(Entity attacker, Entity t) {
         Location l = t.getLocation().subtract(attacker.getLocation());
-        double distance = t.getLocation().distance(attacker.getLocation());
-        Vector v = l.toVector().multiply(POWER/(distance * 2.5));
+        //double distance = t.getLocation().distance(attacker.getLocation());
+        Vector v = l.toVector().multiply(.1);
         v.setY(0.25);
         t.setVelocity(v);
     }
 
-    public static void knockback(Player p, Entity t, double mult) {
+    public static void knockbackPlayer(Player p, Entity t, double mult) {
         Location l = t.getLocation().subtract(p.getLocation());
         double distance = t.getLocation().distance(p.getLocation());
         Vector v = l.toVector().multiply(mult/distance);

@@ -118,14 +118,7 @@ public class DamageListener implements Listener {
                     return;
                 }
 
-                WeaponDamageEvent event = new WeaponDamageEvent(randomNum, (Player) damager, victim, false);
-                Bukkit.getPluginManager().callEvent(event);
-
-                if (event.isCancelled()) {
-                    return;
-                }
-
-                DamageUtil.damageEntityWeapon(event.getAmount(), victim, (Player) damager);
+                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false);
 
             } else {
                 e.setCancelled(true);

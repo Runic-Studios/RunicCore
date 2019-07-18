@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
@@ -18,19 +19,6 @@ public class DamageUtil {
 
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster) {
 
-        // ignore NPCs
-        if (recipient.hasMetadata("NPC")) return;
-        if (recipient instanceof ArmorStand) return;
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
-                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
-
-        // outlaw check
-        if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
-            return;
-        }
-
         // update amount with gem values
         dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
 
@@ -40,12 +28,34 @@ public class DamageUtil {
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
 
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
+
+        // skip party members
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
+                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+
+        // outlaw check
+        if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
+            return;
+        }
+
         // apply the damage
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
-    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster) {
+    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
+
+        // scan the gems
+        dmgAmt = dmgAmt + GearScanner.getAttackDamage(caster);
+
+        // call an event, apply modifiers if necessary
+        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isRanged);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        dmgAmt = event.getAmount();
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -60,8 +70,6 @@ public class DamageUtil {
             return;
         }
 
-        // scan the gems
-        dmgAmt = dmgAmt + GearScanner.getAttackDamage(caster);
         damageEntity(dmgAmt, recipient, caster);
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
@@ -86,7 +94,7 @@ public class DamageUtil {
         recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player) {
-            KnockbackUtil.knockback(damager, recipient);
+            KnockbackUtil.knockbackPlayer(damager, recipient);
         }
 
         // apply custom mechanics if the player were to die
@@ -127,8 +135,8 @@ public class DamageUtil {
         recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player) {
-            KnockbackUtil.knockback(caster, recipient);
-        } else if (recipient instanceof Monster) {
+            KnockbackUtil.knockbackPlayer(caster, recipient);
+        } else {
             KnockbackUtil.knockbackMob(caster, recipient);
         }
 

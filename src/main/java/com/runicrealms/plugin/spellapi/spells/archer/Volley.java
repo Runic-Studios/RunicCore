@@ -111,7 +111,7 @@ public class Volley extends Spell {
                 return;
             }
 
-            DamageUtil.damageEntityWeapon(DAMAGE, le, pl);
+            DamageUtil.damageEntityWeapon(DAMAGE, le, pl, true);
             e.getEntity().getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
             e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 2.0f);
         }

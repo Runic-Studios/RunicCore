@@ -163,20 +163,9 @@ public class StaffListener implements Listener {
                                 // apply attack effects, random damage amount
                                 if (maxDamage != 0) {
                                     int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-                                    WeaponDamageEvent event = new WeaponDamageEvent(randomNum, pl, victim, true);
-                                    Bukkit.getPluginManager().callEvent(event);
-                                    if (event.isCancelled()) {
-                                        return;
-                                    }
-                                    DamageUtil.damageEntityWeapon(event.getAmount(), victim, pl);
+                                    DamageUtil.damageEntityWeapon(randomNum, victim, pl, false);
                                 } else {
-                                    WeaponDamageEvent event = new WeaponDamageEvent(maxDamage, pl, victim, true);
-                                    Bukkit.getPluginManager().callEvent(event);
-
-                                    if (event.isCancelled()) {
-                                        return;
-                                    }
-                                    DamageUtil.damageEntityWeapon(event.getAmount(), victim, pl);
+                                    DamageUtil.damageEntityWeapon(maxDamage, victim, pl, false);
                                 }
 
                                 pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

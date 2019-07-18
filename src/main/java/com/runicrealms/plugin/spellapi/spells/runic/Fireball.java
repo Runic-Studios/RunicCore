@@ -71,7 +71,7 @@ public class Fireball extends Spell {
 
         // cancel the event, apply spell mechanics
         DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player);
-        KnockbackUtil.knockback(player, victim, 1.5);
+        KnockbackUtil.knockbackPlayer(player, victim, 1.5);
 
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

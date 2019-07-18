@@ -9,8 +9,9 @@ import org.bukkit.event.HandlerList;
 
 /**
  * This custom event is called when a player successfully weapon attacks an enemy with their artifact,
- * i.e., it is not on cooldown. Called in DamageListener, rather than the util.
- * Can specify the cause of the event, ranged or melee, for use with on-hit runic spells.
+ * i.e., it is not on cooldown. Called in the DamageUtil.
+ * Can specify the cause of the event, ranged or melee, for use with on-hit runic spells,
+ * or applying different knockback for ranged spells, etc.
  */
 public class WeaponDamageEvent extends Event implements Cancellable {
 

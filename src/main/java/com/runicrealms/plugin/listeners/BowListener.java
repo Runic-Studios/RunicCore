@@ -160,18 +160,7 @@ public class BowListener implements Listener {
             return;
         }
 
-        WeaponDamageEvent event = new WeaponDamageEvent(randomNum, damager, victim, true);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return;
-        }
-
-        DamageUtil.damageEntityWeapon(event.getAmount(), victim, damager);
-
-//        // spawn the damage indicator if the arrow is an autoattack
-//        if (arrow.getCustomName() == null) return;
-//        HologramUtil.createDamageHologram(damager, victim.getLocation().add(0,1.5,0), e.getDamage());
+        DamageUtil.damageEntityWeapon(randomNum, victim, damager, true);
     }
 
     // removes arrows stuck in bodies

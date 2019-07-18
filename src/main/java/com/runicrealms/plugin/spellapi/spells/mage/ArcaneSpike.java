@@ -117,7 +117,7 @@ public class ArcaneSpike extends Spell {
                 }.runTaskLater(RunicCore.getInstance(), 100L);
 
                 DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player);
-                //KnockbackUtil.knockback(player, victim, 1);
+                //KnockbackUtil.knockbackPlayer(player, victim, 1);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
                 continue;
             }
