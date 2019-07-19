@@ -19,7 +19,7 @@ public class Starfall extends Spell {
 
     // globals
     private static final int DAMAGE_AMOUNT = 15;
-    private static final int DURATION = 2;
+    private static final int DURATION = 1;
     private static final int RADIUS = 2;
     private static final double STAR_SPEED = 0.6;
     private static final int MAX_DIST = 10;

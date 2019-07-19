@@ -130,11 +130,11 @@ public class LWGUI extends Workstation {
                 // armor
                 if (slot == 10 || slot == 11 || slot == 12 || slot == 13) {
                     if (currentLvl < 30) {
-                        health = 5;
+                        health = 8;
                     } else if (currentLvl < 50) {
-                        health = 10;
+                        health = 24;
                     } else {
-                        health = 15;
+                        health = 30;
                     }
                 }
 
@@ -156,11 +156,11 @@ public class LWGUI extends Workstation {
 
         String healthStr;
         if (currentLv < 30) {
-            healthStr = "5";
+            healthStr = "8";
         } else if (currentLv < 50) {
-            healthStr = "10";
+            healthStr = "24";
         } else {
-            healthStr = "15";
+            healthStr = "30";
         }
 
         // to make processed leather

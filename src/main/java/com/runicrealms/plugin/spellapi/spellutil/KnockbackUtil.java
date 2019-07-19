@@ -5,27 +5,26 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.text.DecimalFormat;
-
 public class KnockbackUtil {
 
     private static final double POWER = 0.35;
 
-    public static void knockbackPlayer(Player p, Entity t) {
-        Location l = t.getLocation().subtract(p.getLocation());
-        double distance = t.getLocation().distance(p.getLocation());
-        Vector v = l.toVector().multiply(POWER/distance);
-        v.setY(0.3333);
-        t.setVelocity(v);
-    }
+//    public static void knockbackPlayer(Player p, Entity t) {
+//        Location l = t.getLocation().subtract(p.getLocation());
+//        double distance = t.getLocation().distance(p.getLocation());
+//        Vector v = l.toVector().multiply(POWER/distance);
+//        v.setY(0.3333);
+//        t.setVelocity(v);
+//    }
 
     // todo: fix this
-    public static void knockbackPlayer(Entity damager, Entity t) {
-        Location l = t.getLocation().subtract(damager.getLocation());
-        double distance = t.getLocation().distance(damager.getLocation());
-        Vector v = l.toVector().normalize().multiply(POWER/distance);
-        v.setY(0.3333);
-        t.setVelocity(v);
+    // damager can be mob
+    public static void knockbackPlayer(Entity damager, Player victim) {
+        Location l = victim.getLocation().subtract(damager.getLocation());
+        double distance = victim.getLocation().distance(damager.getLocation());
+        Vector vec = l.toVector().normalize().multiply(POWER/distance);
+        vec.setY(0.3333);
+        victim.setVelocity(vec);
     }
 
     public static void knockbackMob(Entity attacker, Entity t) {
@@ -44,13 +43,12 @@ public class KnockbackUtil {
         t.setVelocity(v);
     }
 
-//    public static void arrowKnockback(Player p, Entity t)
-//    {
-//        Location l = t.getLocation().subtract(p.getLocation());
-//        double distance = t.getLocation().distance(p.getLocation());
-//        Vector v = l.toVector().multiply(1/(2*distance));
-//        v.setY(0.3333/2);
-//        t.setVelocity(v);
-//    }
+    public static void knockbackRanged(Player p, Entity t) {
+        Location l = t.getLocation().subtract(p.getLocation());
+        double distance = t.getLocation().distance(p.getLocation());
+        Vector v = l.toVector().multiply(1/(2*distance));
+        v.setY(0.3333/2);
+        t.setVelocity(v);
+    }
 }
 

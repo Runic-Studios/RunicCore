@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.runic;
 
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
@@ -36,9 +37,9 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Taunt extends Spell {
 
-    private static final int DAMAGE = 5;
+    private static final int DAMAGE = 10;
     private static double PERCENT = 50;
-    private HashMap<UUID, UUID> markedEntities;
+    private List<UUID> markedEntities;
     private List<Entity> hasHit;
 
     // constructor
@@ -47,9 +48,9 @@ public class Taunt extends Spell {
                 "You throw your artifact in front of you," +
                         "\ndealing " + DAMAGE + " damage to the first monster hit" +
                         "\nand taunting it, forcing it to attack you!" +
-                        "\nThe monster is then marked, increasing" +
-                        "\nall damage you deal to it by " + (int) PERCENT + "%!", ChatColor.WHITE,8, 10);
-        markedEntities = new HashMap<>();
+                        "\nThe monster is then marked, reducing its" +
+                        "\ndamage dealt by " + (int) PERCENT + "%!", ChatColor.WHITE,15, 10);
+        markedEntities = new ArrayList<>();
         hasHit = new ArrayList<>();
     }
 
@@ -88,7 +89,7 @@ public class Taunt extends Spell {
                         hasHit.add(projectile);
                         projectile.remove();
                         DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl);
-                        markedEntities.put(pl.getUniqueId(), en.getUniqueId());
+                        markedEntities.add(en.getUniqueId());
                         ((Monster) en).setTarget(pl);
                         MythicMobs.inst().getAPIHelper().taunt(en, pl);
                         en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
@@ -101,33 +102,15 @@ public class Taunt extends Spell {
     }
 
     /**
-     * Deal extra damage to our marked entity
+     * Debuff our enemy
      */
     @EventHandler
-    public void onWeapDamage(WeaponDamageEvent e) {
+    public void onMobDamage(MobDamageEvent e) {
 
-        if (markedEntities.containsKey(e.getPlayer().getUniqueId())
-                && markedEntities.get(e.getPlayer().getUniqueId()) == e.getEntity().getUniqueId()) {
+        if (markedEntities.contains(e.getDamager().getUniqueId())) {
             double percent = PERCENT / 100;
-            int extraAmt = (int) (e.getAmount() * percent);
-            if (extraAmt < 1) {
-                extraAmt = 1;
-            }
-            e.setAmount(e.getAmount() + extraAmt);
-        }
-    }
-
-    @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-
-        if (markedEntities.containsKey(e.getPlayer().getUniqueId())
-                && markedEntities.get(e.getPlayer().getUniqueId()) == e.getEntity().getUniqueId()) {
-            double percent = PERCENT / 100;
-            int extraAmt = (int) (e.getAmount() * percent);
-            if (extraAmt < 1) {
-                extraAmt = 1;
-            }
-            e.setAmount(e.getAmount() + extraAmt);
+            int reducedAmount = (int) (e.getAmount() * percent);
+            e.setAmount(reducedAmount);
         }
     }
 }

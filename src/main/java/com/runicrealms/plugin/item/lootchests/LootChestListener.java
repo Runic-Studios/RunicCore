@@ -32,7 +32,8 @@ import java.util.*;
  */
 public class LootChestListener implements Listener {
 
-    private static final double OPEN_RADIUS = 10;
+    // only used if we need to protect chests from nearby mobs
+    //private static final double OPEN_RADIUS = 10;
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onChestInteract(PlayerInteractEvent e) {
@@ -97,16 +98,16 @@ public class LootChestListener implements Listener {
             }
 
             // check for nearby entities
-            for (Entity en : Objects.requireNonNull(blockLoc.getWorld()).getNearbyEntities(blockLoc, OPEN_RADIUS, OPEN_RADIUS, OPEN_RADIUS)) {
-
-                if (!(en instanceof LivingEntity)) continue;
-                if (en instanceof Player) continue;
-                if (en instanceof Horse) continue;
-
-                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                pl.sendMessage(ChatColor.RED + "It isn't safe to open that! Defeat monsters nearby.");
-                return;
-            }
+//            for (Entity en : Objects.requireNonNull(blockLoc.getWorld()).getNearbyEntities(blockLoc, OPEN_RADIUS, OPEN_RADIUS, OPEN_RADIUS)) {
+//
+//                if (!(en instanceof LivingEntity)) continue;
+//                if (en instanceof Player) continue;
+//                if (en instanceof Horse) continue;
+//
+//                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+//                pl.sendMessage(ChatColor.RED + "It isn't safe to open that! Defeat monsters nearby.");
+//                return;
+//            }
 
             // destroy chest, open inv if all conditions are met
 

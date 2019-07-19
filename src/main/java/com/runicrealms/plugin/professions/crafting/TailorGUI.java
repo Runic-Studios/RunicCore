@@ -133,11 +133,11 @@ public class TailorGUI extends Workstation {
                 // armor
                 if (slot == 10 || slot == 11 || slot == 12 || slot == 13) {
                     if (currentLvl < 30) {
-                        health = 4;
-                    } else if (currentLvl < 50) {
                         health = 8;
+                    } else if (currentLvl < 50) {
+                        health = 24;
                     } else {
-                        health = 12;
+                        health = 30;
                     }
                 }
 
@@ -159,11 +159,11 @@ public class TailorGUI extends Workstation {
 
         String healthStr;
         if (currentLv < 30) {
-            healthStr = "4";
-        } else if (currentLv < 50) {
             healthStr = "8";
+        } else if (currentLv < 50) {
+            healthStr = "24";
         } else {
-            healthStr = "12";
+            healthStr = "30";
         }
 
         // to make processed leather

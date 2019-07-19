@@ -70,24 +70,24 @@ public class ProfExpUtil {
 
         int expectedLv = 0;
 
-        if (experience < 394) { // lv 0-16
-            for (int x = 0; x < 17 ; x++) {
-                if (((x*x)+6*x) <= experience) {
-                    expectedLv = x;
-                }
+//        if (experience < 394) { // lv 0-16
+//            for (int x = 0; x < 17 ; x++) {
+//                if (((x*x)+6*x) <= experience) {
+//                    expectedLv = x;
+//                }
+//            }
+//        } else if (experience < 1628) { // lv 17-31
+//            for (int x = 17; x < 32; x++) {
+//                if ((2.5*x*x)-40.5*x+360 <= experience) {
+//                    expectedLv = x;
+//                }
+//            }
+//        } else {
+        for (int x = 0; x <= maxLevel; x++) { // lv 32+
+            if ((4.5*x*x)-162.5*x+2220 <= experience) {
+                expectedLv = x;
             }
-        } else if (experience < 1628) { // lv 17-31
-            for (int x = 17; x < 32; x++) {
-                if ((2.5*x*x)-40.5*x+360 <= experience) {
-                    expectedLv = x;
-                }
-            }
-        } else {
-            for (int x = 32; x <= maxLevel; x++) { // lv 32+
-                if ((4.5*x*x)-162.5*x+2220 <= experience) {
-                    expectedLv = x;
-                }
-            }
+            //}
         }
         return expectedLv;
     }

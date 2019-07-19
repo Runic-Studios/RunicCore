@@ -60,14 +60,18 @@ public class DamageListener implements Listener {
         if (!(entity instanceof LivingEntity)) return;
         LivingEntity victim = (LivingEntity) entity;
 
-        if (damager instanceof Monster) {
+        // mobs
+        if (!(damager instanceof Player)) {
+            if (damager instanceof Arrow) {
+                damager = (Entity) ((Arrow) damager).getShooter();
+            }
             e.setCancelled(true);
             MobDamageEvent event = new MobDamageEvent((int) Math.ceil(e.getDamage()), e.getDamager(), victim);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return;
             } else {
-                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), victim, (LivingEntity) damager);
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), victim, damager);
             }
         }
 

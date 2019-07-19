@@ -23,20 +23,22 @@ public class BossKillListener implements Listener {
             boolean inDungeonPl = HearthstoneListener.checkForDungeon(pl, e.getKiller().getLocation());
             if (inDungeonPl) {
                 pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "DUNGEON COMPLETE!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.RED + "Sunken Library");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "+ 2 Uncommon");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.AQUA + "+ 1 Rare");
+                pl.sendMessage("");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "DUNGEON COMPLETE: SUNKEN LIBRARY!");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "+ Experience");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "+ 3 Uncommon");
+                pl.sendMessage("");
             }
             if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
                 for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
                     if (member == pl) continue;
                     boolean inDungeon = HearthstoneListener.checkForDungeon(member, member.getLocation());
                     if (inDungeon) {
-                        ChatUtils.sendCenteredMessage(member, ChatColor.GREEN + "" + ChatColor.BOLD + "DUNGEON COMPLETE: SUNKEN LIBRARY");
+                        member.sendMessage("");
+                        ChatUtils.sendCenteredMessage(member, ChatColor.GREEN + "" + ChatColor.BOLD + "DUNGEON COMPLETE: SUNKEN LIBRARY!");
                         ChatUtils.sendCenteredMessage(member, ChatColor.GRAY + "+ Experience");
-                        ChatUtils.sendCenteredMessage(member, ChatColor.GREEN + "+ 2 Uncommon");
-                        ChatUtils.sendCenteredMessage(member, ChatColor.AQUA + "+ 1 Rare");
+                        ChatUtils.sendCenteredMessage(member, ChatColor.GREEN + "+ 3 Uncommon");
+                        member.sendMessage("");
                     }
                 }
             }

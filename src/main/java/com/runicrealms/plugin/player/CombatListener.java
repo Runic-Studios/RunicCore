@@ -25,6 +25,7 @@ public class CombatListener implements Listener {
     public void onCombat(EntityDamageByEntityEvent e) {
 
         // only listen for two players, or arrows
+        if (!(e.getDamager() instanceof Player)) return;
         if (!(e.getDamager() instanceof Player) && !(e.getDamager() instanceof Arrow)) return;
         if (!(e.getEntity() instanceof LivingEntity)) return;
 

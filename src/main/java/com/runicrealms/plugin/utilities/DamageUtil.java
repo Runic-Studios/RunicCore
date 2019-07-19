@@ -4,10 +4,7 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import com.runicrealms.plugin.RunicCore;
@@ -42,7 +39,7 @@ public class DamageUtil {
         }
 
         // apply the damage
-        damageEntity(dmgAmt, recipient, caster);
+        damageEntity(dmgAmt, recipient, caster, false);
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
@@ -70,11 +67,11 @@ public class DamageUtil {
             return;
         }
 
-        damageEntity(dmgAmt, recipient, caster);
+        damageEntity(dmgAmt, recipient, caster, isRanged);
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
-    public static void damageEntityMob(double dmgAmt, LivingEntity recipient, LivingEntity damager) {
+    public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -83,7 +80,7 @@ public class DamageUtil {
         mobDamage(dmgAmt, recipient, damager);
     }
 
-    private static void mobDamage(double dmgAmt, LivingEntity recipient, LivingEntity damager) {
+    private static void mobDamage(double dmgAmt, LivingEntity recipient, Entity damager) {
         DamageListener damageListener = new DamageListener();
 
         int newHP = (int) (recipient.getHealth() - dmgAmt);
@@ -94,14 +91,16 @@ public class DamageUtil {
         recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player) {
-            KnockbackUtil.knockbackPlayer(damager, recipient);
+            KnockbackUtil.knockbackPlayer(damager, (Player) recipient);
         }
 
         // apply custom mechanics if the player were to die
         if (newHP >= 1) {
             if (recipient instanceof Monster) {
                 Monster monster = (Monster) recipient;
-                monster.setTarget(damager);
+                if (damager instanceof LivingEntity) {
+                    monster.setTarget((LivingEntity) damager);
+                }
             }
             recipient.setHealth(newHP);
             recipient.damage(0.0000000000001);
@@ -112,7 +111,7 @@ public class DamageUtil {
         }
     }
 
-    private static void damageEntity(double dmgAmt, LivingEntity recipient, Player caster) {
+    private static void damageEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -135,9 +134,17 @@ public class DamageUtil {
         recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player) {
-            KnockbackUtil.knockbackPlayer(caster, recipient);
+            if (isRanged) {
+                KnockbackUtil.knockbackRanged(caster, recipient);
+            } else {
+                KnockbackUtil.knockbackPlayer(caster, (Player) recipient);
+            }
         } else {
-            KnockbackUtil.knockbackMob(caster, recipient);
+            if (isRanged) {
+                KnockbackUtil.knockbackRanged(caster, recipient);
+            } else {
+                KnockbackUtil.knockbackMob(caster, recipient);
+            }
         }
 
         // apply custom mechanics if the player were to die

@@ -20,7 +20,7 @@ import java.util.UUID;
 public class ShadowStrike extends Spell {
 
     private static final int DAMAGE_AMT = 25;
-    private static final int DURATION = 2;
+    private static final int DURATION = 3;
     private static List<UUID> strikers;
 
     public ShadowStrike() {

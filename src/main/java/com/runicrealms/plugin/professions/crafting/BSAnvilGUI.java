@@ -131,29 +131,29 @@ public class BSAnvilGUI extends Workstation {
                 // mail
                 if (slot == 9 || slot == 10 || slot == 11 || slot == 12) {
                     if (currentLvl < 30) {
-                        health = 5;
+                        health = 8;
                     } else if (currentLvl < 50) {
-                        health = 12;
+                        health = 24;
                     } else {
-                        health = 20;
+                        health = 30;
                     }
 
                 // gilded
                 } else if (slot == 18 || slot == 19 || slot == 20 || slot == 21) {
                     if (currentLvl < 30) {
-                        health = 7;
+                        health = 25;
                     } else if (currentLvl < 50) {
-                        health = 15;
+                        health = 40;
                     } else {
-                        health = 30;
+                        health = 50;
                     }
 
                 // plate
                 } else if (slot == 27 || slot == 28 || slot == 29 || slot == 30) {
                     if (currentLvl < 30) {
-                        health = 10;
+                        health = 25;
                     } else if (currentLvl < 50) {
-                        health = 30;
+                        health = 40;
                     } else {
                         health = 50;
                     }
@@ -175,20 +175,20 @@ public class BSAnvilGUI extends Workstation {
 
     private void setupItems(ItemGUI forgeMenu, Player pl, int currentLv) {
 
-        String mailStr; // 5, 12, 20
-        String gildedStr; // 7, 15, 30
-        String plateStr; // 10, 30, 50
+        String mailStr;
+        String gildedStr;
+        String plateStr;
         if (currentLv < 30) {
-            mailStr = "5";
-            gildedStr = "7";
-            plateStr = "10";
+            mailStr = "8";
+            gildedStr = "25";
+            plateStr = "25";
         } else if (currentLv < 50) {
-            mailStr = "12";
-            gildedStr = "15";
-            plateStr = "30";
+            mailStr = "24";
+            gildedStr = "40";
+            plateStr = "40";
         } else {
-            mailStr = "20";
-            gildedStr = "30";
+            mailStr = "30";
+            gildedStr = "50";
             plateStr = "50";
         }
 
