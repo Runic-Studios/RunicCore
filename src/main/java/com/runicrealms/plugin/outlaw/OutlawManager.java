@@ -85,11 +85,7 @@ public class OutlawManager implements Listener {
     }
 
     public static boolean isOutlaw(Player pl) {
-        if (RunicCore.getInstance().getConfig().getBoolean(pl.getUniqueId() + ".info.outlaw.enabled")) {
-            return true;
-        } else {
-            return false;
-        }
+        return RunicCore.getInstance().getConfig().getBoolean(pl.getUniqueId() + ".info.outlaw.enabled");
     }
 
     // uses the rating calculator to apply ratings between two outlaws

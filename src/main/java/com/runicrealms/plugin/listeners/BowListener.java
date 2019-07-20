@@ -1,11 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -66,7 +63,6 @@ public class BowListener implements Listener {
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
 
-
         // don't fire arrow if they're sneaking, since they're casting a spell
         if (pl.isSneaking()) return;
 
@@ -105,8 +101,8 @@ public class BowListener implements Listener {
     }
 
     // method to handle custom damage for bows
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onDamage(final EntityDamageByEntityEvent e) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDamage(EntityDamageByEntityEvent e) {
 
         // only listen for arrows
         if (!(e.getDamager() instanceof Arrow)) return;

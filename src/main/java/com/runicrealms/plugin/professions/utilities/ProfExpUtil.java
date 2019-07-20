@@ -9,9 +9,7 @@ import com.runicrealms.plugin.utilities.NumRounder;
 /**
  * Utility to grant player profession experience and keep track of it.
  * Since switching between the class lv / proff lv on the actual exp bar
- * proved to be too vulnerable to bugs, I included some math to mimic the
- * vanilla (class) leveling experience for professions.
- * Values taken from: https://minecraft.gamepedia.com/Experience
+ * proved to be too vulnerable to bugs, I created a brand new leveling curve.
  * @author Skyfallin_
  */
 public class ProfExpUtil {
@@ -66,41 +64,13 @@ public class ProfExpUtil {
                 + "(" + (currentExp-totalExpAtLevel) + "/" + (totalExpToLevel-totalExpAtLevel) + ")");
     }
 
+
     private static int calculateExpectedLv(int experience) {
-
-        int expectedLv = 0;
-
-//        if (experience < 394) { // lv 0-16
-//            for (int x = 0; x < 17 ; x++) {
-//                if (((x*x)+6*x) <= experience) {
-//                    expectedLv = x;
-//                }
-//            }
-//        } else if (experience < 1628) { // lv 17-31
-//            for (int x = 17; x < 32; x++) {
-//                if ((2.5*x*x)-40.5*x+360 <= experience) {
-//                    expectedLv = x;
-//                }
-//            }
-//        } else {
-        for (int x = 0; x <= maxLevel; x++) { // lv 32+
-            if ((4.5*x*x)-162.5*x+2220 <= experience) {
-                expectedLv = x;
-            }
-            //}
-        }
-        return expectedLv;
+        return (int) (Math.cbrt((15*(experience+75))/3)) - 5;
     }
 
-    public static int calculateTotalExperience(int currentLv) {
-        int totalExp;
-        if (currentLv < 17) {
-            totalExp = (currentLv*currentLv)+6*currentLv;
-        } else if (currentLv < 32) {
-            totalExp = (int) ((2.5*(currentLv*currentLv))-(40.5*currentLv)+360);
-        } else {
-            totalExp = (int) ((4.5*(currentLv*currentLv))-(162.5*currentLv)+2220);
-        }
-        return totalExp;
+    private static int calculateTotalExperience(int currentLv) {
+        int cubed = (int) Math.pow((currentLv+5), 3);
+        return ((3*cubed)/15)-75;
     }
 }

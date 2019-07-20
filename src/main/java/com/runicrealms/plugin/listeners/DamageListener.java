@@ -49,6 +49,10 @@ public class DamageListener implements Listener {
         if (e.getDamage() <= 0) return;
 
         Entity damager = e.getDamager();
+        if (damager instanceof Arrow && ((Arrow) damager).getShooter() != null) {
+            damager = (Entity) ((Arrow) damager).getShooter();
+        }
+
         Entity entity = e.getEntity();
 
         // bugfix for armor stands
@@ -75,8 +79,9 @@ public class DamageListener implements Listener {
             }
         }
 
+        // todo: fix this. might need to properly listen for arrow, might need new outlaw checks.
         // only listen for when a player swings or fires an arrow
-        if (damager instanceof Player) {
+        if (damager instanceof Player) {// || (damager instanceof Arrow && ((Arrow) damager).getShooter() instanceof Player)
 
             Player pl = (Player) damager;
 
@@ -155,7 +160,6 @@ public class DamageListener implements Listener {
 
         // initialize event variables
         Player victim = (Player) e.getEntity();
-        //Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // cancel the event
         e.setCancelled(true);
@@ -164,7 +168,7 @@ public class DamageListener implements Listener {
         applyDeathMechanics(victim);
     }
 
-    public void applyDeathMechanics(Player victim) {
+    private void applyDeathMechanics(Player victim) {
 
         // call runic death event
         RunicDeathEvent event = new RunicDeathEvent(victim);
@@ -216,9 +220,6 @@ public class DamageListener implements Listener {
                 damager = (Player) arrow.getShooter();
             }
         }
-
-        // todo: change this to the killed player's hearthstone location
-        //Location respawnLocation = new Location(victim.getWorld(), -732, 34, 111);
 
         // apply new death mechanics
         applyDeathMechanics(victim);

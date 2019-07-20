@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -98,26 +97,38 @@ public class BlockBreakListener implements Listener {
     }
 
     /**
-     * Prevents item frame item removal
+     * Prevents item frame, painting item removal
      */
     @EventHandler
     public void itemFrameItemRemoval(EntityDamageEvent e) {
-        if (e.getEntity() instanceof ItemFrame && e.getEntity() instanceof Painting) {
+        if (e.getEntity() instanceof ItemFrame || e.getEntity() instanceof Painting) {
             e.setCancelled(true);
         }
     }
 
     /**
-     * Prevents players from breaking fires
+     * Prevents players from breaking fires, switching trapdoors
      */
     @EventHandler
     public void onFireBreak(PlayerInteractEvent e) {
 
-        if (e.getPlayer().isOp()) return;
-        if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
         if (e.getClickedBlock() == null) return;
-
         Block target = e.getClickedBlock();
+        if (e.getPlayer().isOp()) return;
+
+        // disable trapdoor switching
+        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (target.getType() == Material.OAK_TRAPDOOR
+                    || target.getType() == Material.SPRUCE_TRAPDOOR
+                    || target.getType() == Material.BIRCH_TRAPDOOR
+                    || target.getType() == Material.JUNGLE_TRAPDOOR
+                    || target.getType() == Material.ACACIA_TRAPDOOR
+                    || target.getType() == Material.DARK_OAK_TRAPDOOR) {
+                e.setCancelled(true);
+            }
+        }
+
+        if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 
         Block[] adjacent = {
                 target.getRelative(BlockFace.NORTH),

@@ -63,7 +63,6 @@ public class CombatListener implements Listener {
 
         dismount(damager);
 
-
         // add/refresh their combat timer every hit
         RunicCore.getCombatManager().addPlayer(damagerID, System.currentTimeMillis());
         if (e.getEntity() instanceof Player) {
