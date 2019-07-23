@@ -60,13 +60,13 @@ public class BSFurnaceGUI extends Workstation {
         // create three hashmaps for the reagents, set to 0 since we've only got 1 reagent
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
         chainLinkReqs.put(Material.IRON_ORE, 1);
-        chainLinkReqs.put(Material.SPRUCE_LOG, 2);
+        chainLinkReqs.put(Material.SPRUCE_LOG, 1);
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
         goldBarReqs.put(Material.GOLD_ORE, 1);
-        goldBarReqs.put(Material.OAK_LOG, 2);
+        goldBarReqs.put(Material.OAK_LOG, 1);
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
         ironBarReqs.put(Material.IRON_ORE, 1);
-        ironBarReqs.put(Material.OAK_LOG, 2);
+        ironBarReqs.put(Material.OAK_LOG, 1);
 
         ItemGUI forgeMenu = super.craftingMenu(pl, 18);
 
@@ -94,7 +94,7 @@ public class BSFurnaceGUI extends Workstation {
                 ItemMeta meta = Objects.requireNonNull(event.getCurrentItem()).getItemMeta();
                 if (meta == null) return;
 
-                int exp = 5;
+                int exp = 10;
                 LinkedHashMap<Material, Integer> reqHashMap;
                 if (event.getSlot() == 9) {
                     reqHashMap = chainLinkReqs;
@@ -123,26 +123,26 @@ public class BSFurnaceGUI extends Workstation {
         // chain link
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
         chainLinkReqs.put(Material.IRON_ORE, 1);
-        chainLinkReqs.put(Material.SPRUCE_LOG, 2);
+        chainLinkReqs.put(Material.SPRUCE_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.IRON_BARS, "&fChain Link", chainLinkReqs,
-                "Iron Ore\nSpruce Log", 999, 5, 0, 0, "",
-                true);
+                "Iron Ore\nSpruce Log", 999, 10, 0, 0, "",
+                true, false);
 
         // gold bar
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
         goldBarReqs.put(Material.GOLD_ORE, 1);
-        goldBarReqs.put(Material.OAK_LOG, 2);
+        goldBarReqs.put(Material.OAK_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 10, Material.GOLD_INGOT, "&fGold Bar", goldBarReqs,
-                "Gold Ore\nOak Log", 999, 5, 0, 0, "",
-                true);
+                "Gold Ore\nOak Log", 999, 10, 0, 0, "",
+                true, false);
 
         // iron bar
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
         ironBarReqs.put(Material.IRON_ORE, 1);
-        ironBarReqs.put(Material.OAK_LOG, 2);
+        ironBarReqs.put(Material.OAK_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 11, Material.IRON_INGOT, "&fIron Bar",ironBarReqs,
-                "Iron Ore\nOak Log", 999, 5, 0, 0, "",
-                true);
+                "Iron Ore\nOak Log", 999, 10, 0, 0, "",
+                true, false);
     }
 
     @Override

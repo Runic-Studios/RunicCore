@@ -126,7 +126,7 @@ public class CookingGUI extends Workstation {
         breadReqs.put(Material.SPRUCE_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.BREAD, "&fBread", breadReqs,
                 "Wheat\nSpruce Log", 999, 0, 0, 0, "",
-                true);
+                true, false);
 
         // cod
         LinkedHashMap<Material, Integer> codReqs = new LinkedHashMap<>();
@@ -134,7 +134,7 @@ public class CookingGUI extends Workstation {
         codReqs.put(Material.OAK_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 10, Material.COOKED_COD, "&fCooked Cod", codReqs,
                 "Cod\nOak Log", 999, 0, 0, 0, "",
-                true);
+                true, false);
 
         // salmon
         LinkedHashMap<Material, Integer> salmonReqs = new LinkedHashMap<>();
@@ -142,7 +142,7 @@ public class CookingGUI extends Workstation {
         salmonReqs.put(Material.OAK_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 11, Material.COOKED_SALMON, "&fCooked Salmon", salmonReqs,
                 "Salmon\nOak Log", 999, 0, 0, 0, "",
-                true);
+                true, false);
     }
 
     @Override

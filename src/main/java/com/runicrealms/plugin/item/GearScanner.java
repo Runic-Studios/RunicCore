@@ -10,6 +10,23 @@ import java.util.ArrayList;
 
 public class GearScanner {
 
+    public static ArrayList<ItemStack> armor(Player pl) {
+
+        ArrayList<ItemStack> armor = new ArrayList<>();
+        PlayerInventory inv = pl.getInventory();
+        ItemStack helmet = inv.getHelmet();
+        ItemStack chestplate = inv.getChestplate();
+        ItemStack leggings = inv.getLeggings();
+        ItemStack boots = inv.getBoots();
+
+        // add all the items to arraylist
+        if (helmet != null) armor.add(pl.getInventory().getHelmet());
+        if (chestplate != null) armor.add(pl.getInventory().getChestplate());
+        if (leggings != null) armor.add(pl.getInventory().getLeggings());
+        if (boots != null) armor.add(pl.getInventory().getBoots());
+        return armor;
+    }
+
     public static ArrayList<ItemStack> armorAndOffHand(Player pl) {
 
         ArrayList<ItemStack> armorAndOffhand = new ArrayList<>();

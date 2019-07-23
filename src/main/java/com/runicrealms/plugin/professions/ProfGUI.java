@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions;
 
+import com.runicrealms.plugin.utilities.ColorUtil;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -11,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
+import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.ArrayList;
 
@@ -35,7 +37,7 @@ public class ProfGUI implements InventoryProvider {
                 (menuItem(Material.POTION,
                         ChatColor.GREEN,
                         "Alchemist",
-                        "Brew useful potions for your journey!"),
+                        "&6Brew useful potions for your journey!"),
                         e -> {
                             setConfig(player, "Alchemist");
                             sbh.updatePlayerInfo(player);
@@ -52,7 +54,7 @@ public class ProfGUI implements InventoryProvider {
                 (menuItem(Material.IRON_INGOT,
                         ChatColor.GREEN,
                         "Blacksmith",
-                        "Forge mail, gilded or plate armor!"),
+                        "&6Forge mail, gilded or plate armor!\n&7(Worn by Archers, Clerics, and Warriors)"),
                         e -> {
                             setConfig(player, "Blacksmith");
                             sbh.updatePlayerInfo(player);
@@ -69,7 +71,7 @@ public class ProfGUI implements InventoryProvider {
                 (menuItem(Material.REDSTONE,
                         ChatColor.GREEN,
                         "Jeweler",
-                        "Cut gemstones and enhance equipment!"),
+                        "&6Cut gemstones and enhance equipment!"),
                         e -> {
                             setConfig(player, "Jeweler");
                             sbh.updatePlayerInfo(player);
@@ -86,7 +88,7 @@ public class ProfGUI implements InventoryProvider {
                 (menuItem(Material.RABBIT_HIDE,
                         ChatColor.GREEN,
                         "Leatherworker",
-                        "Tan hides and create leather goods!"),
+                        "&6Tan hides and create leather goods!\n&7(Worn by Rogues)"),
                         e -> {
                             setConfig(player, "Leatherworker");
                             sbh.updatePlayerInfo(player);
@@ -103,7 +105,7 @@ public class ProfGUI implements InventoryProvider {
                 (menuItem(Material.PAPER,
                         ChatColor.GREEN,
                         "Tailor",
-                        "Weave cloth and linen goods!"),
+                        "&6Weave cloth and linen goods!\n&7(Worn by Mages)"),
                         e -> {
                             setConfig(player, "Tailor");
                             sbh.updatePlayerInfo(player);
@@ -125,13 +127,34 @@ public class ProfGUI implements InventoryProvider {
     private ItemStack menuItem(Material material, ChatColor color, String displayName, String description) {
 
         ItemStack item = new ItemStack(material);
+
+        if (material == Material.POTION) {
+            PotionMeta pMeta = (PotionMeta) item.getItemMeta();
+            if (pMeta != null) {
+                pMeta.setDisplayName(color + displayName);
+                ArrayList<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GOLD + "-> Select this class");
+                lore.add(ChatColor.GRAY + "");
+                lore.add(ChatColor.GRAY + "Info:");
+                lore.add(ChatColor.GOLD + description);
+                pMeta.setLore(lore);
+                pMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+                pMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                pMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                pMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+                item.setItemMeta(pMeta);
+            }
+        }
+
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(color + displayName);
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GOLD + "-> Select this class");
         lore.add(ChatColor.GRAY + "");
         lore.add(ChatColor.GRAY + "Info:");
-        lore.add(ChatColor.GOLD + description);
+        for (String s : description.split("\n")) {
+            lore.add(ColorUtil.format(s));
+        }
         meta.setLore(lore);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

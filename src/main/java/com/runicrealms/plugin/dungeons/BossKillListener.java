@@ -20,8 +20,8 @@ public class BossKillListener implements Listener {
 
             if (!(e.getKiller() instanceof Player)) return;
             Player pl = (Player) e.getKiller();
-            boolean inDungeonPl = HearthstoneListener.checkForDungeon(pl, e.getKiller().getLocation());
-            if (inDungeonPl) {
+            String inDungeonPl = HearthstoneListener.checkForDungeon(pl, e.getKiller().getLocation());
+            if (inDungeonPl.equals("library")) {
                 pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 pl.sendMessage("");
                 ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "DUNGEON COMPLETE: SUNKEN LIBRARY!");
@@ -32,13 +32,17 @@ public class BossKillListener implements Listener {
             if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
                 for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
                     if (member == pl) continue;
-                    boolean inDungeon = HearthstoneListener.checkForDungeon(member, member.getLocation());
-                    if (inDungeon) {
+                    String inDungeon = HearthstoneListener.checkForDungeon(member, member.getLocation());
+                    if (inDungeon.equals("library")) {
                         member.sendMessage("");
                         ChatUtils.sendCenteredMessage(member, ChatColor.GREEN + "" + ChatColor.BOLD + "DUNGEON COMPLETE: SUNKEN LIBRARY!");
                         ChatUtils.sendCenteredMessage(member, ChatColor.GRAY + "+ Experience");
                         ChatUtils.sendCenteredMessage(member, ChatColor.GREEN + "+ 3 Uncommon");
                         member.sendMessage("");
+                    } else if (inDungeon.equals("crypts")) {
+
+                    } else if (inDungeon.equals("fortress")) {
+
                     }
                 }
             }

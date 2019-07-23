@@ -174,8 +174,8 @@ public class HearthstoneListener implements Listener {
 
     public static void teleportToLocation(Player pl) {
 
-        boolean isDungeon = checkForDungeon(pl, pl.getLocation());
-        if (isDungeon) return;
+        String isDungeon = checkForDungeon(pl, pl.getLocation());
+        if (!isDungeon.equals("")) return;
 
         String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(2), "location");
 
@@ -261,7 +261,7 @@ public class HearthstoneListener implements Listener {
         pl.teleport(loc);
     }
 
-    public static boolean checkForDungeon(Player pl, Location plLoc) {
+    public static String checkForDungeon(Player pl, Location plLoc) {
 
         // grab all regions the player is standing in
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -269,7 +269,7 @@ public class HearthstoneListener implements Listener {
         ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(plLoc));
         Set<ProtectedRegion> regions = set.getRegions();
 
-        if (regions == null) return false;
+        if (regions == null) return "";
 
         // check the region for the keyword 'mine'
         // ignore the rest of this event if the player cannot mine
@@ -277,15 +277,17 @@ public class HearthstoneListener implements Listener {
             if (region.getId().contains("library")) {
                 Location loc = new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0);
                 pl.teleport(loc);
-                return true;
+                return "library";
             } else if (region.getId().contains("crypts")) {
 
+                return "crypts";
             } else if (region.getId().contains("fortress")) {
 
+                return "fortress";
             }
         }
 
-        return false;
+        return "";
     }
 }
 

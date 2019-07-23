@@ -93,8 +93,8 @@ public class BSAnvilGUI extends Workstation {
                 if (meta == null) return;
 
                 int slot = event.getSlot();
-                int health = 0;
-                int reqLevel = 0;
+                int stat = 0;
+                //int reqLevel = 0;
                 int reagentAmt = 0;
                 int exp = 0;
                 LinkedHashMap<Material, Integer> reqHashMap;
@@ -110,52 +110,52 @@ public class BSAnvilGUI extends Workstation {
                 // helmets
                 if (slot == 9 || slot == 18 || slot == 27) {
                     reagentAmt = 5;
-                    exp = 5;
+                    exp = 50;
                     // chestplates
                 } else if (slot == 10 || slot == 19 || slot == 28) {
-                    reqLevel = 40;
+                    //reqLevel = 40;
                     reagentAmt = 8;
-                    exp = 30;
+                    exp = 80;
                     // leggings
                 } else if (slot == 11 || slot == 20 || slot == 29) {
-                    reqLevel = 20;
+                    //reqLevel = 20;
                     reagentAmt = 7;
-                    exp = 25;
+                    exp = 70;
                     // boots
                 } else if (slot == 12 || slot == 21 || slot == 30) {
-                    reqLevel = 10;
+                    //reqLevel = 10;
                     reagentAmt = 4;
-                    exp = 10;
+                    exp = 40;
                 }
 
                 // mail
                 if (slot == 9 || slot == 10 || slot == 11 || slot == 12) {
                     if (currentLvl < 30) {
-                        health = 8;
+                        stat = 12;
                     } else if (currentLvl < 50) {
-                        health = 24;
+                        stat = 24;
                     } else {
-                        health = 30;
+                        stat = 30;
                     }
 
                 // gilded
                 } else if (slot == 18 || slot == 19 || slot == 20 || slot == 21) {
                     if (currentLvl < 30) {
-                        health = 25;
+                        stat = 25;
                     } else if (currentLvl < 50) {
-                        health = 40;
+                        stat = 40;
                     } else {
-                        health = 50;
+                        stat = 50;
                     }
 
                 // plate
                 } else if (slot == 27 || slot == 28 || slot == 29 || slot == 30) {
                     if (currentLvl < 30) {
-                        health = 25;
+                        stat = 25;
                     } else if (currentLvl < 50) {
-                        health = 40;
+                        stat = 40;
                     } else {
-                        health = 50;
+                        stat = 50;
                     }
                 }
 
@@ -164,10 +164,10 @@ public class BSAnvilGUI extends Workstation {
                 event.setWillDestroy(true);
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, reqHashMap, reagentAmt, reqLevel, event.getCurrentItem().getType(),
+                super.startCrafting(pl, reqHashMap, reagentAmt, 0, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
                         ((Damageable) meta).getDamage(), Particle.FIREWORKS_SPARK,
-                        Sound.BLOCK_ANVIL_PLACE, Sound.BLOCK_ANVIL_USE, health, mult);
+                        Sound.BLOCK_ANVIL_PLACE, Sound.BLOCK_ANVIL_USE, stat, mult);
             }});
 
         return forgeMenu;
@@ -179,7 +179,7 @@ public class BSAnvilGUI extends Workstation {
         String gildedStr;
         String plateStr;
         if (currentLv < 30) {
-            mailStr = "8";
+            mailStr = "12";
             gildedStr = "25";
             plateStr = "25";
         } else if (currentLv < 50) {
@@ -196,48 +196,60 @@ public class BSAnvilGUI extends Workstation {
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
         chainLinkReqs.put(Material.IRON_BARS, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.SHEARS, "&fForged Mail Helmet", chainLinkReqs,
-                "Chain Link", 5, 5, 0, 15, "&c+ " + mailStr + "❤",
-                false);
+                "Chain Link", 5, 50, 0, 15,
+                "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 10, Material.CHAINMAIL_CHESTPLATE, "&fForged Mail Body", chainLinkReqs,
-                "Chain Link", 8, 30, 40, 0, "&c+ " + mailStr + "❤",
-                false);
+                "Chain Link", 8, 80, 0, 0,
+                "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 11, Material.CHAINMAIL_LEGGINGS, "&fForged Mail Legs", chainLinkReqs,
-                "Chain Link", 7, 25, 20, 0, "&c+ " + mailStr + "❤",
-                false);
+                "Chain Link", 7, 70, 0, 0,
+                "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 12, Material.CHAINMAIL_BOOTS, "&fForged Mail Boots", chainLinkReqs,
-                "Chain Link", 4, 10, 10, 0, "&c+ " + mailStr + "❤",
-                false);
+                "Chain Link", 4, 40, 0, 0,
+                "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
+                false, true);
 
         // gilded
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
         goldBarReqs.put(Material.GOLD_INGOT, 999);
         super.createMenuItem(forgeMenu, pl, 18, Material.SHEARS, "&fForged Gilded Helmet", goldBarReqs,
-                "Gold Bar", 5, 5, 0, 20, "&c+ " + gildedStr + "❤",
-                false);
+                "Gold Bar", 5, 50, 0, 20,
+                "&c+ " + gildedStr + "❤\n&3+ " + gildedStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 19, Material.GOLDEN_CHESTPLATE, "&fForged Gilded Body", goldBarReqs,
-                "Gold Bar", 8, 30, 40, 0, "&c+ " + gildedStr + "❤",
-                false);
+                "Gold Bar", 8, 80, 0, 0,
+                "&c+ " + gildedStr + "❤\n&3+ " + gildedStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 20, Material.GOLDEN_LEGGINGS, "&fForged Gilded Legs", goldBarReqs,
-                "Gold Bar", 7, 25, 20, 0, "&c+ " + gildedStr + "❤",
-                false);
+                "Gold Bar", 7, 70, 0, 0,
+                "&c+ " + gildedStr + "❤\n&3+ " + gildedStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 21, Material.GOLDEN_BOOTS, "&fForged Gilded Boots", goldBarReqs,
-                "Gold Bar", 4, 10, 10, 0, "&c+ " + gildedStr + "❤",
-                false);
+                "Gold Bar", 4, 40, 0, 0,
+                "&c+ " + gildedStr + "❤\n&3+ " + gildedStr + "✸",
+                false, true);
 
         // plate
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
         ironBarReqs.put(Material.IRON_INGOT, 999);
         super.createMenuItem(forgeMenu, pl, 27, Material.SHEARS, "&fForged Iron Helmet", ironBarReqs,
-                "Iron Bar", 5, 5, 0, 25, "&c+ " + plateStr + "❤",
-                false);
+                "Iron Bar", 5, 50, 0, 25,
+                "&c+ " + plateStr + "❤\n&3+ " + plateStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 28, Material.IRON_CHESTPLATE, "&fForged Iron Body", ironBarReqs,
-                "Iron Bar", 8, 30, 40, 0, "&c+ " + plateStr + "❤",
-                false);
+                "Iron Bar", 8, 80, 0, 0,
+                "&c+ " + plateStr + "❤\n&3+ " + plateStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 29, Material.IRON_LEGGINGS, "&fForged Iron Legs", ironBarReqs,
-                "Iron Bar", 7, 25, 20, 0, "&c+ " + plateStr + "❤",
-                false);
+                "Iron Bar", 7, 70, 0, 0,
+                "&c+ " + plateStr + "❤\n&3+ " + plateStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 30, Material.IRON_BOOTS, "&fForged Iron Boots", ironBarReqs,
-                "Iron Bar", 4, 10, 10, 0, "&c+ " + plateStr + "❤",
-                false);
+                "Iron Bar", 4, 40, 0, 0,
+                "&c+ " + plateStr + "❤\n&3+ " + plateStr + "✸",
+                false, true);
     }
 }

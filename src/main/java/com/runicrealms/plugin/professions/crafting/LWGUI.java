@@ -63,7 +63,7 @@ public class LWGUI extends Workstation {
         // create three hashmaps for the reagents, set to 0 since we've only got 1 reagent
         LinkedHashMap<Material, Integer> processedReqs = new LinkedHashMap<>();
         processedReqs.put(Material.LEATHER, 1);
-        processedReqs.put(Material.SPRUCE_LOG, 2);
+        processedReqs.put(Material.SPRUCE_LOG, 1);
         LinkedHashMap<Material, Integer> leatherReqs = new LinkedHashMap<>();
         leatherReqs.put(Material.RABBIT_HIDE, 999);
 
@@ -95,7 +95,7 @@ public class LWGUI extends Workstation {
 
                 int slot = event.getSlot();
                 int health = 0;
-                int reqLevel = 0;
+                //int reqLevel = 0;
                 int reagentAmt = 0;
                 int exp = 0;
                 LinkedHashMap<Material, Integer> reqHashMap;
@@ -106,31 +106,34 @@ public class LWGUI extends Workstation {
                     reqHashMap = leatherReqs;
                 }
 
+                // leather
+                if (slot == 9) {
+                    exp = 10;
                 // helmet
-                if (slot == 10) {
+                } if (slot == 10) {
                     reagentAmt = 5;
-                    exp = 5;
+                    exp = 50;
                 // chestplate
                 } else if (slot == 11) {
-                    reqLevel = 40;
+                    //reqLevel = 40;
                     reagentAmt = 8;
-                    exp = 30;
+                    exp = 80;
                 // leggings
                 } else if (slot == 12) {
-                    reqLevel = 20;
+                    //reqLevel = 20;
                     reagentAmt = 7;
-                    exp = 25;
+                    exp = 70;
                 // boots
                 } else if (slot == 13) {
-                    reqLevel = 10;
+                    //reqLevel = 10;
                     reagentAmt = 4;
-                    exp = 10;
+                    exp = 40;
                 }
 
                 // armor
                 if (slot == 10 || slot == 11 || slot == 12 || slot == 13) {
                     if (currentLvl < 30) {
-                        health = 8;
+                        health = 12;
                     } else if (currentLvl < 50) {
                         health = 24;
                     } else {
@@ -143,7 +146,7 @@ public class LWGUI extends Workstation {
                 event.setWillDestroy(true);
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, reqHashMap, reagentAmt, reqLevel, event.getCurrentItem().getType(),
+                super.startCrafting(pl, reqHashMap, reagentAmt, 0, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
                         ((Damageable) meta).getDamage(), Particle.SMOKE_NORMAL,
                         Sound.ENTITY_GHAST_SHOOT, Sound.ITEM_ARMOR_EQUIP_LEATHER, health, mult);
@@ -156,7 +159,7 @@ public class LWGUI extends Workstation {
 
         String healthStr;
         if (currentLv < 30) {
-            healthStr = "8";
+            healthStr = "12";
         } else if (currentLv < 50) {
             healthStr = "24";
         } else {
@@ -166,26 +169,30 @@ public class LWGUI extends Workstation {
         // to make processed leather
         LinkedHashMap<Material, Integer> processedReqs = new LinkedHashMap<>();
         processedReqs.put(Material.LEATHER, 1);
-        processedReqs.put(Material.SPRUCE_LOG, 2);
+        processedReqs.put(Material.SPRUCE_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.RABBIT_HIDE, "&fProcessed Leather", processedReqs,
-                "Animal Hide\nSpruce Log", 5, 0, 0, 0, "",
-                true);
+                "Animal Hide\nSpruce Log", 5, 10, 0, 0, "",
+                true, false);
 
         // to make leather goods
         LinkedHashMap<Material, Integer> leatherReqs = new LinkedHashMap<>();
         leatherReqs.put(Material.RABBIT_HIDE, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.SHEARS, "&fCrafted Leather Helmet", leatherReqs,
-                "Processed Leather", 5, 5, 0, 10, "&c+ " + healthStr + "❤",
-                false);
+                "Processed Leather", 5, 50, 0, 10,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 11, Material.LEATHER_CHESTPLATE, "&fCrafted Leather Tunic", leatherReqs,
-                "Processed Leather", 8, 30, 40, 0, "&c+ " + healthStr + "❤",
-                false);
+                "Processed Leather", 8, 80, 0, 0,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 12, Material.LEATHER_LEGGINGS, "&fCrafted Leather Legs", leatherReqs,
-                "Processed Leather", 7, 25, 20, 0, "&c+ " + healthStr + "❤",
-                false);
+                "Processed Leather", 7, 70, 0, 0,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 13, Material.LEATHER_BOOTS, "&fCrafted Leather Boots", leatherReqs,
-                "Processed Leather", 4, 10, 10, 0, "&c+ " + healthStr + "❤",
-                false);
+                "Processed Leather", 4, 40, 0, 0,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
     }
 
     @Override

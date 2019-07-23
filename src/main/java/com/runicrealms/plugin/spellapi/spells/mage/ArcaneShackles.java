@@ -23,7 +23,7 @@ import java.util.*;
 public class ArcaneShackles extends Spell {
 
     // globals variables
-    private static final int DURATION = 6;
+    private static final int DURATION = 4;
     private static final int RADIUS = 4;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
     private List<LivingEntity> victims = new ArrayList<>();
@@ -34,7 +34,7 @@ public class ArcaneShackles extends Spell {
                 "You launch a stream of arcane magic!" +
                         "\nUpon impact, enemies within " + RADIUS +  " blocks" +
                         "\nare rooted for " + DURATION + " seconds.",
-                ChatColor.WHITE, 1, 20);
+                ChatColor.WHITE, 16, 20);
     }
 
     // spell execute code

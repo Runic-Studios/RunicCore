@@ -247,7 +247,7 @@ public class ClassGUI implements InventoryProvider {
 
         // add default spells, souldbound
         artifact = AttributeUtil.addSpell(artifact, "primarySpell", spell);
-        artifact = AttributeUtil.addSpell(artifact, "secondarySpell", ChatColor.RED + "LOCKED");
+        artifact = AttributeUtil.addSpell(artifact, "secondarySpell", ChatColor.GRAY + "None Set");
         artifact = AttributeUtil.addCustomStat(artifact, "soulbound", "true");
 
         // --------------------------------------------------------------------------------------------------------
@@ -293,8 +293,8 @@ public class ClassGUI implements InventoryProvider {
     // creates the player's rune
     public static void setupRune(Player pl) {
         ItemStack rune = new ItemStack(Material.POPPED_CHORUS_FRUIT);
-        rune = AttributeUtil.addSpell(rune, "primarySpell", ChatColor.RED + "LOCKED");
-        rune = AttributeUtil.addSpell(rune, "secondarySpell", ChatColor.RED + "LOCKED");
+        rune = AttributeUtil.addSpell(rune, "primarySpell", ChatColor.GRAY + "None Set");
+        rune = AttributeUtil.addSpell(rune, "secondarySpell", ChatColor.GRAY + "None Set");
         rune = AttributeUtil.addCustomStat(rune, "soulbound", "true");
         LoreGenerator.generateRuneLore(rune);
         pl.getInventory().setItem(1, rune);

@@ -114,7 +114,7 @@ public class JewelerGUI extends Workstation {
                 // ruby
                 if (slot == 9) {
                     reqHashMap = cutRubyReqs;
-                    exp = 5;
+                    exp = 10;
                     if (currentLvl < 30) {
                         dummyVar = 10;
                     } else if (currentLvl < 50) {
@@ -122,11 +122,10 @@ public class JewelerGUI extends Workstation {
                     } else {
                         dummyVar = 30;
                     }
-                    // sapphire
+                // sapphire
                 } else if (slot == 10) {
-                    reqLevel = 10;
                     reqHashMap = cutSapphireReqs;
-                    exp = 10;
+                    exp = 20;
                     if (currentLvl < 30) {
                         dummyVar = 15;
                     } else if (currentLvl < 50) {
@@ -134,23 +133,11 @@ public class JewelerGUI extends Workstation {
                     } else {
                         dummyVar = 35;
                     }
-                    // emerald
+                // opal
                 } else if (slot == 11) {
-                    reqLevel = 20;
-                    reqHashMap = cutEmeraldReqs;
-                    exp = 15;
-                    if (currentLvl < 30) {
-                        dummyVar = 2;
-                    } else if (currentLvl < 50) {
-                        dummyVar = 4;
-                    } else {
-                        dummyVar = 6;
-                    }
-                    // opal
-                } else if (slot == 12) {
-                    reqLevel = 40;
+                    reqLevel = 10;
                     reqHashMap = cutOpalReqs;
-                    exp = 25;
+                    exp = 30;
                     if (currentLvl < 30) {
                         dummyVar = 1;
                     } else if (currentLvl < 50) {
@@ -158,11 +145,23 @@ public class JewelerGUI extends Workstation {
                     } else {
                         dummyVar = 3;
                     }
-                    // diamond
+                // emerald
+                } else if (slot == 1221) {
+                    reqLevel = 25;
+                    reqHashMap = cutEmeraldReqs;
+                    exp = 40;
+                    if (currentLvl < 30) {
+                        dummyVar = 2;
+                    } else if (currentLvl < 50) {
+                        dummyVar = 4;
+                    } else {
+                        dummyVar = 6;
+                    }
+                // diamond
                 } else if (slot == 13) {
-                    reqLevel = 40;
+                    reqLevel = 25;
                     reqHashMap = cutDiamondReqs;
-                    exp = 35;
+                    exp = 50;
                     if (currentLvl < 30) {
                         dummyVar = 2;
                     } else if (currentLvl < 50) {
@@ -218,36 +217,36 @@ public class JewelerGUI extends Workstation {
         LinkedHashMap<Material, Integer> cutRubyReqs = new LinkedHashMap<>();
         cutRubyReqs.put(Material.REDSTONE_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.REDSTONE, "&fCut Ruby", cutRubyReqs,
-                "Uncut Ruby", 1, 5, 0, 0, "&c+" + healthStr + "❤ (Health)",
-                false);
+                "Uncut Ruby", 1, 10, 0, 0, "&c+" + healthStr + "❤ (Health)",
+                false, true);
 
         // sapphire (+mana)
         LinkedHashMap<Material, Integer> cutSapphireReqs = new LinkedHashMap<>();
         cutSapphireReqs.put(Material.LAPIS_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.LAPIS_LAZULI, "&fCut Sapphire", cutSapphireReqs,
-                "Uncut Sapphire", 1, 10, 10, 0, "&3+" + manaStr + "✸ (Mana)",
-                false);
-
-        // emerald (+healing)
-        LinkedHashMap<Material, Integer> cutEmeraldReqs = new LinkedHashMap<>();
-        cutEmeraldReqs.put(Material.EMERALD_ORE, 999);
-        super.createMenuItem(forgeMenu, pl, 11, Material.EMERALD, "&fCut Emerald", cutEmeraldReqs,
-                "Uncut Emerald", 1, 15, 20, 0, "&a+" + healingStr + "✦ (Healing)",
-                false);
+                "Uncut Sapphire", 1, 20, 0, 0, "&3+" + manaStr + "✸ (Mana)",
+                false, true);
 
         // opal (+weapon dmg)
         LinkedHashMap<Material, Integer> cutOpalReqs = new LinkedHashMap<>();
         cutOpalReqs.put(Material.NETHER_QUARTZ_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 12, Material.QUARTZ, "&fCut Opal", cutOpalReqs,
-                "Uncut Opal", 1, 25, 40, 0, "&c+" + weaponStr + "⚔ (Weapon Dmg)",
-                false);
+                "Uncut Opal", 1, 30, 10, 0, "&c+" + weaponStr + "⚔ (Weapon Dmg)",
+                false, true);
+
+        // emerald (+healing)
+        LinkedHashMap<Material, Integer> cutEmeraldReqs = new LinkedHashMap<>();
+        cutEmeraldReqs.put(Material.EMERALD_ORE, 999);
+        super.createMenuItem(forgeMenu, pl, 11, Material.EMERALD, "&fCut Emerald", cutEmeraldReqs,
+                "Uncut Emerald", 1, 40, 25, 0, "&a+" + healingStr + "✦ (Healing)",
+                false, true);
 
         // diamond (+spell dmg)
         LinkedHashMap<Material, Integer> cutDiamondReqs = new LinkedHashMap<>();
         cutDiamondReqs.put(Material.DIAMOND_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 13, Material.DIAMOND, "&fCut Diamond", cutDiamondReqs,
-                "Uncut Diamond", 1, 35, 40, 0, "&3+" + spellStr + "ʔ (Spell Dmg)",
-                false);
+                "Uncut Diamond", 1, 50, 25, 0, "&3+" + spellStr + "ʔ (Spell Dmg)",
+                false, true);
     }
 
     @Override

@@ -44,9 +44,9 @@ public class PlayerHungerManager implements Listener {
         if(event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if(event.getFoodLevel() < player.getFoodLevel()) {
-                if (!player.hasPermission("runic.hunger.exempt")) {
+                //if (!player.hasPermission("runic.hunger.exempt")) {
                     event.setCancelled(true);
-                }
+                //}
             }
         }
     }

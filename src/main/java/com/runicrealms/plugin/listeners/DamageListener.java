@@ -5,10 +5,13 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
+import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,6 +29,7 @@ import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -49,6 +53,7 @@ public class DamageListener implements Listener {
         if (e.getDamage() <= 0) return;
 
         Entity damager = e.getDamager();
+        if (damager instanceof Arrow && damager.getCustomName() == null) return;
         if (damager instanceof Arrow && ((Arrow) damager).getShooter() != null) {
             damager = (Entity) ((Arrow) damager).getShooter();
         }
@@ -197,14 +202,16 @@ public class DamageListener implements Listener {
 
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
-        // set their current mana to 0
-        RunicCore.getManaManager().getCurrentManaList().put(victim.getUniqueId(), 0);
+        // set their current mana to max
+        int maxMana = RunicCore.getInstance().getConfig().getInt(victim.getUniqueId() + ".info.maxMana");
+        RunicCore.getManaManager().getCurrentManaList().put(victim.getUniqueId(), maxMana);
         RunicCore.getScoreboardHandler().updateSideInfo(victim);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.RED, 3));
         //victim.teleport(respawnLocation);
+        tryDropItems(victim);
         HearthstoneListener.teleportToLocation(victim);
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
@@ -268,5 +275,61 @@ public class DamageListener implements Listener {
         String nameVic = victim.getName();
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
+    }
+
+    /**
+     * This method controls the dropping of items. It rolls a dice for each item in the player's inventory, and
+     * it skips soulbound items. It removes protections from protected items.
+     * @param pl player whose items may drop
+     */
+    private void tryDropItems(Player pl) {
+
+        // don't drop items in dungeon world.
+        if (pl.getWorld().getName().toLowerCase().equals("dungeons")) return;
+
+        Random rand = new Random();
+
+        ItemStack[] inv = pl.getInventory().getContents();
+        int currentLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        //ArrayList<ItemStack> armor = GearScanner.armor(pl);
+
+        int numDroppedItems = 0;
+        boolean hasSeenProtMessage = false;
+        for (ItemStack is : inv) {
+
+            // skip null items
+            if (is == null) continue;
+
+            // skip soulbound items
+            String soulbound = AttributeUtil.getCustomString(is, "soulbound");
+            if (soulbound.equals("true")) continue;
+
+            // remove protection from items
+            String isProtected = AttributeUtil.getCustomString(is, "protected");
+            if (isProtected.equals("true")) {
+                is = AttributeUtil.addCustomStat(is, "protected", "false");
+                removeGlow(is);
+                if (!hasSeenProtMessage) {
+                    pl.sendMessage(ChatColor.GRAY + "Your item(s) have lost their protection!");
+                    hasSeenProtMessage = true;
+                }
+                continue;
+            }
+
+            // 25% drop chance at 50
+            int chance =  rand.nextInt(100);
+            if ((chance*2) < currentLv) {
+                pl.getWorld().dropItemNaturally(pl.getLocation(), is);
+                is.setAmount(0);
+                numDroppedItems+=1;
+            }
+        }
+        pl.sendMessage(ChatColor.RED + "You dropped " + numDroppedItems + " items!");
+    }
+
+    private void removeGlow(ItemStack is) {
+        for (Enchantment enchantment : is.getEnchantments().keySet()) {
+            is.removeEnchantment(enchantment);
+        }
     }
 }

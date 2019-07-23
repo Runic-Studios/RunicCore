@@ -133,7 +133,7 @@ public class AlchemistGUI extends Workstation {
                 // health potion
                 if (slot == 9) {
                     reqHashMap = healthPotReqs;
-                    exp = 5;
+                    exp = 10;
                     if (currentLvl < 30) {
                         dummyVar = 25;
                     } else if (currentLvl < 50) {
@@ -145,7 +145,7 @@ public class AlchemistGUI extends Workstation {
                 } else if (slot == 10) {
                     reqLevel = 10;
                     reqHashMap = manaPotReqs;
-                    exp = 10;
+                    exp = 25;
                     if (currentLvl < 30) {
                         dummyVar = 25;
                     } else if (currentLvl < 50) {
@@ -155,9 +155,9 @@ public class AlchemistGUI extends Workstation {
                     }
                     // slaying potion
                 } else if (slot == 11) {
-                    reqLevel = 20;
+                    reqLevel = 25;
                     reqHashMap = slayPotReqs;
-                    exp = 25;
+                    exp = 50;
                     if (currentLvl < 30) {
                         dummyVar = 5;
                     } else if (currentLvl < 50) {
@@ -169,7 +169,7 @@ public class AlchemistGUI extends Workstation {
                 } else if (slot == 12) {
                     reqLevel = 40;
                     reqHashMap = lootPotReqs;
-                    exp = 35;
+                    exp = 70;
                     if (currentLvl < 30) {
                         dummyVar = 5;
                     } else if (currentLvl < 50) {
@@ -227,9 +227,9 @@ public class AlchemistGUI extends Workstation {
         healthPotReqs.put(Material.REDSTONE_ORE, 1);
         healthPotReqs.put(Material.SALMON, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.POTION, "&c" + tierStr + " Potion of Healing", healthPotReqs,
-                "Glass Bottle\nUncut Ruby\nSalmon", 5, 5, 0, 5,
+                "Glass Bottle\nUncut Ruby\nSalmon", 5, 10, 0, 5,
                 "&eRestores &c" + healthStr + "❤ &eon use",
-                false);
+                false, true);
 
         // mana potion
         LinkedHashMap<Material, Integer> manaPotReqs = new LinkedHashMap<>();
@@ -237,9 +237,9 @@ public class AlchemistGUI extends Workstation {
         manaPotReqs.put(Material.LAPIS_ORE, 1);
         manaPotReqs.put(Material.COD, 1);
         super.createMenuItem(forgeMenu, pl, 10, Material.POTION, "&3" + tierStr + " Potion of Mana", manaPotReqs,
-                "Glass Bottle\nUncut Sapphire\nCod", 8, 10, 10, 0,
+                "Glass Bottle\nUncut Sapphire\nCod", 8, 25, 0, 0,
                 "&eRestores &3" + manaStr + "✸ &eon use",
-                false);
+                false, true);
 
         // slaying potion
         LinkedHashMap<Material, Integer> slayPotReqs = new LinkedHashMap<>();
@@ -248,10 +248,10 @@ public class AlchemistGUI extends Workstation {
         slayPotReqs.put(Material.DIAMOND_ORE, 1);
         slayPotReqs.put(Material.TROPICAL_FISH, 1);
         super.createMenuItem(forgeMenu, pl, 11, Material.POTION, "&f" + tierStr + " Potion of Slaying", slayPotReqs,
-                "Glass Bottle\nUncut Opal\nUncut Diamond\nTropical Fish", 7, 25, 20, 0,
+                "Glass Bottle\nUncut Opal\nUncut Diamond\nTropical Fish", 7, 50, 25, 0,
                 "&eIncreases spellʔ and weapon⚔ damage" +
                         "\n&evs. monsters by &f20% &efor &f" + lootingStr + " &eminutes",
-                false);
+                false, true);
 
         // looting potion
         LinkedHashMap<Material, Integer> lootPotReqs = new LinkedHashMap<>();
@@ -259,10 +259,10 @@ public class AlchemistGUI extends Workstation {
         lootPotReqs.put(Material.GOLDEN_CARROT, 1);
         lootPotReqs.put(Material.PUFFERFISH, 1);
         super.createMenuItem(forgeMenu, pl, 12, Material.POTION, "&6" + tierStr + " Potion of Looting", lootPotReqs,
-                "Glass Bottle\nAmbrosia Root\nPufferfish", 4, 35, 40, 0,
+                "Glass Bottle\nAmbrosia Root\nPufferfish", 4, 70, 40, 0,
                 "&eIncreases looting chance by &f20%" +
                         "\n&efor &f" + slayingStr + " &eminutes",
-                false);
+                false, true);
     }
 
     @Override

@@ -95,7 +95,7 @@ public class TailorGUI extends Workstation {
 
                 int slot = event.getSlot();
                 int health = 0;
-                int reqLevel = 0;
+                //int reqLevel = 0;
                 int reagentAmt = 0;
                 int exp = 0;
                 LinkedHashMap<Material, Integer> reqHashMap;
@@ -108,32 +108,33 @@ public class TailorGUI extends Workstation {
 
                 // cloth
                 if (slot == 9) {
-                    reagentAmt = 9;
+                    reagentAmt = 2;
+                    exp = 10;
                 // helmet
                 } else if (slot == 10) {
                     reagentAmt = 5;
-                    exp = 5;
+                    exp = 100;
                 // chestplate
                 } else if (slot == 11) {
-                    reqLevel = 40;
+                    //reqLevel = 40;
                     reagentAmt = 8;
-                    exp = 30;
+                    exp = 160;
                 // leggings
                 } else if (slot == 12) {
-                    reqLevel = 20;
+                    //reqLevel = 20;
                     reagentAmt = 7;
-                    exp = 25;
+                    exp = 140;
                 // boots
                 } else if (slot == 13) {
-                    reqLevel = 10;
+                    //reqLevel = 10;
                     reagentAmt = 4;
-                    exp = 10;
+                    exp = 80;
                 }
 
                 // armor
                 if (slot == 10 || slot == 11 || slot == 12 || slot == 13) {
                     if (currentLvl < 30) {
-                        health = 8;
+                        health = 12;
                     } else if (currentLvl < 50) {
                         health = 24;
                     } else {
@@ -146,7 +147,7 @@ public class TailorGUI extends Workstation {
                 event.setWillDestroy(true);
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, reqHashMap, reagentAmt, reqLevel, event.getCurrentItem().getType(),
+                super.startCrafting(pl, reqHashMap, reagentAmt, 0, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
                         ((Damageable) meta).getDamage(), Particle.CRIT,
                         Sound.BLOCK_SAND_BREAK, Sound.ITEM_ARMOR_EQUIP_LEATHER, health, mult);
@@ -159,7 +160,7 @@ public class TailorGUI extends Workstation {
 
         String healthStr;
         if (currentLv < 30) {
-            healthStr = "8";
+            healthStr = "12";
         } else if (currentLv < 50) {
             healthStr = "24";
         } else {
@@ -170,24 +171,28 @@ public class TailorGUI extends Workstation {
         LinkedHashMap<Material, Integer> makeClothReqs = new LinkedHashMap<>();
         makeClothReqs.put(Material.STRING, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.PAPER, "&fCloth", makeClothReqs,
-                "Thread", 9, 0, 0, 0, "",
-                true);
+                "Thread", 2, 10, 0, 0, "",
+                true, false);
 
         // to make leather goods
         LinkedHashMap<Material, Integer> gearReqs = new LinkedHashMap<>();
         gearReqs.put(Material.PAPER, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.SHEARS, "&fWoven Cloth Hood", gearReqs,
-                "Cloth", 5, 5, 0, 5, "&c+ " + healthStr + "❤",
-                false);
+                "Cloth", 5, 50, 0, 5,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 11, Material.DIAMOND_CHESTPLATE, "&fWoven Cloth Robe", gearReqs,
-                "Cloth", 8, 30, 40, 0, "&c+ " + healthStr + "❤",
-                false);
+                "Cloth", 8, 80, 0, 0,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 12, Material.DIAMOND_LEGGINGS, "&fWoven Cloth Legs", gearReqs,
-                "Cloth", 7, 25, 20, 0, "&c+ " + healthStr + "❤",
-                false);
+                "Cloth", 7, 70, 0, 0,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
         super.createMenuItem(forgeMenu, pl, 13, Material.DIAMOND_BOOTS, "&fWoven Cloth Boots", gearReqs,
-                "Cloth", 4, 10, 10, 0, "&c+ " + healthStr + "❤",
-                false);
+                "Cloth", 4, 40, 0, 0,
+                "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
+                false, true);
     }
 
     @Override

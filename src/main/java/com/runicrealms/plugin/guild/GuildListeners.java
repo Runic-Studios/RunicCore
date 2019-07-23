@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.guild;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
+import com.runicrealms.plugin.professions.Workstation;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.api.events.GuildCreateEvent;
@@ -35,7 +35,7 @@ public class GuildListeners implements Listener {
     private final String heraldPrefix = ChatColor.GRAY + "[1/1] " + ChatColor.YELLOW + "Guild Herald: " + ChatColor.GOLD;
     private final ItemStack license = new ItemStack(Material.PAPER);
     private final int TIME_BETWEEN_TALK = 60; // seconds
-    private static final int COST = 2500;
+    private static final int COST = 1000;
 
     private enum ActionReason {
         PURCHASE,
@@ -52,6 +52,14 @@ public class GuildListeners implements Listener {
         // ADD NPCS IDS FOR GUILD VENDORS HERE
         // ------------------------------------
         guildNPCList.add(313); // Azana
+        guildNPCList.add(476); // Koldore
+        guildNPCList.add(477); // DMR
+        // Isfodar
+        // Hilstead
+        guildNPCList.add(478); // Wintervale
+        guildNPCList.add(479); // Zenyth
+        guildNPCList.add(480); // Naheen
+        guildNPCList.add(481); // Naz'mora
 
         // ------------------------------------
 
@@ -150,7 +158,7 @@ public class GuildListeners implements Listener {
             } else {
 
                 if (player.getInventory().contains(Material.GOLD_NUGGET, COST)) {
-                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + COST + ChatColor.GOLD + " gold coins" + ChatColor.GOLD + "?");
+                    player.sendMessage(heraldPrefix + "You seem like a trustworthy fellow, would you like to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.GREEN + "" + ChatColor.BOLD + COST + "c" + ChatColor.GOLD + "?");
                     player.sendMessage(
                               ChatColor.DARK_AQUA + "Tip "
                             + ChatColor.GOLD + "» "
@@ -167,7 +175,8 @@ public class GuildListeners implements Listener {
                 } else if(hasTalked.contains(player)) {
                     player.sendMessage(heraldPrefix + ChatColor.RED + "Sorry! You don't have enough gold coins to purchase a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.RED + ".");
                 } else {
-                        player.sendMessage(heraldPrefix + ChatColor.GOLD + "Hey there lad! Would you be interested in a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.WHITE + COST + ChatColor.GOLD + " gold coins?");
+                        player.sendMessage(heraldPrefix + ChatColor.GOLD + "Hey there lad! Would you be interested in a " + ChatColor.YELLOW + "Guild Master's License" + ChatColor.GOLD + " for " + ChatColor.GREEN + "" + ChatColor.BOLD + COST + "c" + ChatColor.GOLD + "?");
+                        player.sendMessage(heraldPrefix + ChatColor.RED + "...oh, it doesn't look like you can afford it.");
                         hasTalked.add(player);
 
                         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
@@ -201,19 +210,21 @@ public class GuildListeners implements Listener {
                         ItemStack[] inv = pl.getInventory().getContents();
 
                         // take items from player
-                        int goldAmtToRemove = COST;
-                        for (int i = 0; i < inv.length; i++) {
-                            if (goldAmtToRemove <= 0) break;
-                            if (pl.getInventory().getItem(i) == null) continue;
-                            if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == Material.GOLD_NUGGET) {
-                                int amt = Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount();
+//                        int goldAmtToRemove = COST;
+//                        for (int i = 0; i < inv.length; i++) {
+//                            if (goldAmtToRemove <= 0) break;
+//                            if (pl.getInventory().getItem(i) == null) continue;
+//                            if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == Material.GOLD_NUGGET) {
+//                                int amt = Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount();
+//
+//                                if (goldAmtToRemove < 64) amt = goldAmtToRemove;
+//                                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+//                                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (amt));
+//                                goldAmtToRemove -= amt;
+//                            }
+//                        }
 
-                                if (goldAmtToRemove < 64) amt = goldAmtToRemove;
-                                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
-                                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (amt));
-                                goldAmtToRemove -= amt;
-                            }
-                        }
+                        Workstation.takeItem(pl, Material.GOLD_NUGGET, COST);
 
                         event.getPlayer().sendMessage(heraldPrefix + ChatColor.GREEN + "Ah! Great Choice lad, may you and your allies have a bountiful run and grow ever stronger!");
                         chatActionMap.remove(event.getPlayer().getUniqueId());

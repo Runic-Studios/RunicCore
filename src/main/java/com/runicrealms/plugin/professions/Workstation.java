@@ -12,6 +12,7 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -46,7 +47,8 @@ public abstract class Workstation {
 
     protected void createMenuItem(ItemGUI gui, Player pl, int slot, Material itemType, String name,
                                   LinkedHashMap<Material, Integer> itemReqs, String reqsToString, int itemAmt,
-                                  int exp, int reqLevel, int durability, String itemStats, boolean cantFail) {
+                                  int exp, int reqLevel, int durability, String itemStats, boolean cantFail,
+                                  boolean canUpgrade) {
 
         // grab the player's current profession level, progress toward that level
         int currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
@@ -71,6 +73,14 @@ public abstract class Workstation {
 
         // build the menu display
         StringBuilder desc = new StringBuilder();
+        if (canUpgrade) {
+            if (currentLvl < 30) {
+                desc.append("&eNext upgrade at lv. 30!\n");
+            } else if (currentLvl < 50) {
+                desc.append("&eNext upgrade at lv. 50!\n");
+            }
+        }
+
         if (currentLvl < reqLevel) {
             desc.append("&cUnlock by reaching lv. ").append(reqLevel).append("!\n");
         }
@@ -201,15 +211,7 @@ public abstract class Workstation {
             if (itemReqs.size() <= 1) {
                 amt = itemAmt*multiplier;
             }
-            // take items from player
-            for (int i = 0; i < inv.length; i++) {
-                if (pl.getInventory().getItem(i) == null) continue;
-                if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == reagent) {
-                    Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
-                            (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount()-(amt));
-                    break;
-                }
-            }
+            takeItem(pl, reagent, amt);
         }
 
         // spawn item on workstation for visual
@@ -243,13 +245,15 @@ public abstract class Workstation {
     protected void produceResult(Player pl, Material material, String dispName,
                             int currentLvl, int amt, int rate, int durability, int someVar) {
 
-        // create a new item up to the amount
+        // set our minimum level
         int reqLv = 0;
         if (currentLvl >= 30 && currentLvl < 50) {
-            reqLv = 30;
+            reqLv = 25;
         } else if (currentLvl >= 50) {
             reqLv = 50;
         }
+
+        // create a new item up to the amount
         int failCount = 0;
         for (int i = 0; i < amt; i++) {
 
@@ -279,9 +283,11 @@ public abstract class Workstation {
 
             craftedItem = AttributeUtil.addGenericStat
                     (craftedItem, "generic.maxHealth", someVar, itemSlot);
+            craftedItem = AttributeUtil.addCustomStat
+                    (craftedItem, "custom.manaBoost", someVar);
 
-            // item can be socketed TWICE
-            craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.socketCount", 2);
+            // item can be socketed ONCE
+            craftedItem = AttributeUtil.addCustomStat(craftedItem, "custom.socketCount", 1);
 
             LoreGenerator.generateItemLore(craftedItem, ChatColor.WHITE, dispName, "");
 
@@ -328,5 +334,69 @@ public abstract class Workstation {
         pMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         potion.setItemMeta(pMeta);
         return potion;
+    }
+
+//    public static void takeItem(Player pl, Material material, int amount) {
+//
+//        ItemStack[] inv = pl.getInventory().getContents();
+//
+//        // take items from player
+//        int itemAmtToRemove = amount;
+//        Bukkit.broadcastMessage(itemAmtToRemove + "");
+//        for (int i = 0; i < inv.length; i++) {
+//            if (itemAmtToRemove <= 0) break;
+//            if (pl.getInventory().getItem(i) == null) continue;
+//
+//            // todo: add gold pouch calculator
+//            //ItemStack is = pl.getInventory().getItem(i);
+////            // gold pouches
+////            if (material == Material.GOLD_NUGGET) {
+////                int currentAmount = (int) AttributeUtil.getCustomDouble(is, "goldAmount");
+////                if (currentAmount > 0) {
+////
+////                }
+////                //is = AttributeUtil.addCustomStat(is, "goldAmount", event.getAmount());
+////                LoreGenerator.generateGoldPouchLore(pouch);
+////                pl.getInventory().getItem(i).get.setItem(pl.getInventory().getHeldItemSlot(), is);
+////            }
+//
+//            if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == material) {
+//                int amt = Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount();
+//
+//                if (itemAmtToRemove < 64) amt = itemAmtToRemove;
+//                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
+//                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (amt));
+//                itemAmtToRemove -= amt;
+//                Bukkit.broadcastMessage(ChatColor.YELLOW + "" + itemAmtToRemove + "");
+//            }
+//        }
+//    }
+
+    public static void takeItem(Player pl, Material material, int amount) {
+
+        int to_take = amount;
+        //int slot = -1;
+
+        for (ItemStack player_item : pl.getInventory().getContents()) {
+            //slot++;
+            if (player_item != null) {
+
+                if (player_item.getType() == material) {
+                    int take_next = Math.min(to_take, player_item.getAmount());
+                    remove(pl, player_item, take_next);
+                    to_take -= take_next;
+                    if (to_take <= 0) { //Reached amount. Can stop!
+                        break;
+                    }
+                }
+            }
+        }
+        //return;
+    }
+    private static void remove(Player p, ItemStack toR, int amount){
+        ItemStack i = toR.clone();
+        i.setAmount(amount);
+        p.getInventory().removeItem(i);
+        //return;
     }
 }

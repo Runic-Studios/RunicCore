@@ -67,6 +67,7 @@ public class PlayerLevelUtil {
         return (int) Math.cbrt((((5 * experience)+375) / 3)) - 5;
     }
 
+    // 99750 at 50
     public static int calculateTotalExp(int currentLv) {
         int cubed = (int) Math.pow((currentLv+5), 3);
         return ((3*cubed)/5)-75;
@@ -132,7 +133,7 @@ public class PlayerLevelUtil {
     }
     private static void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot, String className) {
         int durab = ((Damageable) Objects.requireNonNull(item.getItemMeta())).getDamage();
-        item = AttributeUtil.addSpell(item, slot, ChatColor.GREEN + "UNLOCKED");
+        //item = AttributeUtil.addSpell(item, slot, ChatColor.GREEN + "UNLOCKED");
         if (itemSlot == 0) {
             LoreGenerator.generateArtifactLore(item, Objects.requireNonNull(item.getItemMeta()).getDisplayName(), className, durab);
         } else {
@@ -179,16 +180,9 @@ public class PlayerLevelUtil {
                 ChatColor.GREEN + "Level Up!",
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         pl.sendMessage("\n");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "NEW SPELL SLOT UNLOCKED!");
         ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
         ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
-        String item = "";
-        if (lvl == 10 || lvl == 20) {
-            item = "Rune";
-        } else if (lvl == 30) {
-            item = "Artifact";
-        }
-        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your " + item + " to add a spell!");
+        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your Artifact or Rune to add a spell!");
         pl.sendMessage("\n");
     }
 }
