@@ -128,7 +128,7 @@
         <dependency>
             <groupId>me.glaremasters</groupId>
             <artifactId>guilds</artifactId>
-            <version>3.4.7</version>
+            <version>3.5.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Guilds-3.5.1-RELEASE.jar</systemPath>
         </dependency>

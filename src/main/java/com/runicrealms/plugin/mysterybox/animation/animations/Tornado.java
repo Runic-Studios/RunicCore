@@ -2,7 +2,6 @@ package com.runicrealms.plugin.mysterybox.animation.animations;
 
 import com.runicrealms.plugin.mysterybox.MysteryItem;
 import com.runicrealms.plugin.mysterybox.animation.MysteryAnimation;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -28,10 +27,19 @@ public class Tornado extends MysteryAnimation {
     }
 
     @Override
+    public void start() {
+
+    }
+
+    @Override
     public void onTick(Player player, Location location) {
         if(this._stacks == null) return;
 
-        Bukkit.broadcastMessage("Tick Called");
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
     }
 
 }
