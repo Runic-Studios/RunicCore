@@ -32,7 +32,7 @@ public class WoundingShot extends Spell {
     // constructor
     public WoundingShot() {
         super("Wounding Shot", "You launch an enchanted arrow which" +
-                "\ndeals " + DAMAGE + " damage to its target and reduces" +
+                "\ndeals " + DAMAGE + " spellʔ damage to its target and reduces" +
                 "\nall ✦spell healing on the target by " + (int) PERCENT + "%" +
                 "\nfor " + DURATION + " seconds!", ChatColor.WHITE, 15, 20);
     }
@@ -103,7 +103,7 @@ public class WoundingShot extends Spell {
 
         // spell effect
         crippledPlrs.add(le.getUniqueId());
-        DamageUtil.damageEntitySpell(DAMAGE, le, pl);
+        DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
 
         // particles, sounds
         le.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "wounded! "

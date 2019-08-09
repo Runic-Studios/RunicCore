@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
+import com.runicrealms.plugin.outlaw.OutlawManager;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 import com.runicrealms.plugin.RunicCore;
 import net.md_5.bungee.api.ChatMessageType;
@@ -54,6 +56,27 @@ public abstract class Spell implements ISpell, Listener {
         RunicCore.getScoreboardHandler().updateSideInfo(player);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
         RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
+        return true;
+    }
+
+    @Override
+    public boolean testTarget(Player caster, Entity victim) {
+
+        // ignore NPCs
+        if (victim.hasMetadata("NPC")) {
+            return false;
+        }
+
+        // outlaw check
+        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(caster))) {
+            return false;
+        }
+
+        // skip party members
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
+                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(victim.getUniqueId())) {
+            return false;
+        }
         return true;
     }
 

@@ -136,7 +136,7 @@ public class Starfall extends Spell {
             }.runTaskLater(RunicCore.getInstance(), 60L);
 
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 0.5F, 1.0F);
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, false);
             if (victim instanceof Player) {
                 victim.addPotionEffect
                         (new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 0));

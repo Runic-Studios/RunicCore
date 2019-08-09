@@ -2,7 +2,9 @@ package com.runicrealms.plugin.item.commands;
 
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.item.ItemNameGenerator;
+import com.runicrealms.plugin.item.util.ItemScrapsUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
+import com.runicrealms.plugin.item.LegendaryManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,6 +30,33 @@ public class ItemCMD implements SubCommand {
     @Override
     public void onConsoleCommand(CommandSender sender, String[] args)  {
 
+        Player pl = Bukkit.getPlayer(args[1]);
+        if (pl == null) return;
+
+        // mounts
+        if (args[2].equals("mount")) {
+            ItemScrapsUtil.giveScrap(pl, Integer.parseInt(args[3]));
+            return;
+        }
+
+        // item scraps
+        if (args[2].equals("scrap")) {
+            ItemScrapsUtil.giveScrap(pl, Integer.parseInt(args[3]));
+            return;
+        }
+
+        // todo: create legendary command or clean this up. if we do, remember to change frost's end questline
+        if (args[2].equals("flame")) {
+            ItemStack tomb = LegendaryManager.eternalFlame();
+            if (pl.getInventory().firstEmpty() != -1) {
+                int firstEmpty = pl.getInventory().firstEmpty();
+                pl.getInventory().setItem(firstEmpty, tomb);
+            } else {
+                pl.getWorld().dropItem(pl.getLocation(), tomb);
+            }
+            return;
+        }
+
         // runicgive item [player] [itemType] [tier] ([x] [y] [z])
         // runicgive item [player] [potion] [type] [someVar]
         ItemNameGenerator nameGen = new ItemNameGenerator();
@@ -38,8 +67,7 @@ public class ItemCMD implements SubCommand {
             if (name == null) return;
         }
 
-        Player pl = Bukkit.getPlayer(args[1]);
-        if (pl == null) return;
+
         String itemType = args[2];
 
         Material material = Material.STICK;
@@ -137,7 +165,7 @@ public class ItemCMD implements SubCommand {
     @Override
     public void onOPCommand(Player sender, String[] args) {
 
-        if(args.length == 4 || args.length == 5 || args.length == 7) {
+        if(args.length == 3 || args.length == 4 || args.length == 5 || args.length == 7) {
             this.onConsoleCommand(sender, args);
         } else {
             sender.sendMessage(ChatColor.YELLOW + "Command usage: /giveitem generator [itemType] [tier] ([x] [y] [z])");

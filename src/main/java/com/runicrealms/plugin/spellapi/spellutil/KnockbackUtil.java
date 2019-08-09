@@ -5,25 +5,23 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
+
 public class KnockbackUtil {
 
     private static final double POWER = 0.35;
-
-//    public static void knockbackPlayer(Player p, Entity t) {
-//        Location l = t.getLocation().subtract(p.getLocation());
-//        double distance = t.getLocation().distance(p.getLocation());
-//        Vector v = l.toVector().multiply(POWER/distance);
-//        v.setY(0.3333);
-//        t.setVelocity(v);
-//    }
 
     // todo: fix this
     // damager can be mob
     public static void knockbackPlayer(Entity damager, Player victim) {
         Location l = victim.getLocation().subtract(damager.getLocation());
         double distance = victim.getLocation().distance(damager.getLocation());
-        Vector vec = l.toVector().normalize().multiply(POWER/distance);
+        DecimalFormat finite = new DecimalFormat("#.####");
+        double multiplier = Double.parseDouble(finite.format(POWER/distance));
+        Vector vec = l.toVector().normalize().multiply(multiplier);
+        vec.setX(Double.parseDouble(finite.format(vec.getX())));
         vec.setY(0.3333);
+        vec.setZ(Double.parseDouble(finite.format(vec.getZ())));
         victim.setVelocity(vec);
     }
 

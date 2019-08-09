@@ -30,15 +30,15 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class DivineShield extends Spell {
 
-    private static final int DURATION = 5;
-    private static final double PERCENT = 50;
+    private static final int DURATION = 7;
     private List<UUID> shielded = new ArrayList<>();
 
     public DivineShield() {
         super("Divine Shield",
-                "For " + DURATION + " seconds, you gain a shield" +
-                        "\nof holy magic, reducing all spellʔ" +
-                        "\ndamage you take by " + (int) PERCENT + "%!", ChatColor.WHITE,10, 10);
+                "For " + DURATION + " seconds, you gain a shield of holy" +
+                        "\nmagic, causing you to become immune" +
+                        "\nto all spellʔ damage! This ability has" +
+                        "\nno effect versus monsters.", ChatColor.WHITE,20, 20);
     }
 
     // spell execute code
@@ -64,12 +64,8 @@ public class DivineShield extends Spell {
      */
     @EventHandler
     public void onMagicDamage(SpellDamageEvent e) {
-
         if (!shielded.contains(e.getEntity().getUniqueId())) return;
-
-        double percent = PERCENT/100;
-        int newamt = (int) (e.getAmount()*percent);
-        e.setAmount(newamt);
+        e.setCancelled(true);
     }
 }
 

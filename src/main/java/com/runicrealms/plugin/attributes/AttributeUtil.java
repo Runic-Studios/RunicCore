@@ -53,8 +53,11 @@ public class AttributeUtil {
             case "feet":
                 maxUUID = 9;
                 break;
-            default:
+            case "offhand":
                 maxUUID = 11;
+                break;
+            default:
+                maxUUID = 13;
                 break;
         }
         attribute.setInteger("UUIDMost", maxUUID);

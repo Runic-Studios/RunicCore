@@ -16,7 +16,7 @@ import com.runicrealms.plugin.RunicCore;
 public class HolyNova extends Spell {
 
     private static final int DAMAGE_AMT = 5;
-    private static final int DURATION = 3;
+    private static final int DURATION = 5;
     private static final int HEAL_AMT = 3;
     private static final float RADIUS = 5f;
 
@@ -26,7 +26,8 @@ public class HolyNova extends Spell {
                         "\npower, conjuring rings of light magic" +
                         "\nwhich deal " + DAMAGE_AMT + " spellʔ damage to enemies and" +
                         "\nrestore✦ " + HEAL_AMT + " health to party members!" +
-                        "\nThis spell will not heal yourself.",
+                        "\nThis spell will not heal yourself." +
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 12, 20);
     }
 
@@ -84,7 +85,7 @@ public class HolyNova extends Spell {
             // heal party members
             if (le instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl) != null
                     && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
-                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true);
+                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, true);
                 continue;
             }
 
@@ -92,7 +93,7 @@ public class HolyNova extends Spell {
             if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) continue;
 
             // Executes the damage aspect of spell
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
         }
     }
 }

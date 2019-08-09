@@ -2,12 +2,16 @@ package com.runicrealms.plugin.player;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -48,6 +52,40 @@ public class ManaListener implements Listener {
         Player pl = e.getPlayer();
 
         // delay by 1 tick to calculate new armor values, not old
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                calculateMana(pl);
+            }
+        }.runTaskLater(plugin, 1L);
+    }
+
+    /**
+     * Updates mana on offhand equip
+     */
+    @EventHandler
+    public void onOffhandEquip(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Player pl = (Player) e.getWhoClicked();
+        if (e.getCurrentItem() == null) return;
+        if (e.getClickedInventory() == null) return;
+        if (e.getSlot() != 40) return;
+        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    calculateMana(pl);
+                }
+            }.runTaskLater(plugin, 1L);
+        }
+    }
+
+    /**
+     * Updates mana on off-hand swap
+     */
+    @EventHandler
+    public void onOffhandSwap(PlayerSwapHandItemsEvent e) {
+        Player pl = e.getPlayer();
         new BukkitRunnable() {
             @Override
             public void run() {

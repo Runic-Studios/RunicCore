@@ -31,7 +31,7 @@ public class Barrage extends Spell {
     // globals
     private HashMap<Arrow, UUID> bArrows;
     private HashMap<UUID, UUID> hasBeenHit;
-    private static final int DAMAGE = 20;
+    private static final int DAMAGE = 25;
 
     // in seconds
     private final int SUCCESSIVE_COOLDOWN = 1;
@@ -143,7 +143,7 @@ public class Barrage extends Spell {
 
             if (!hasBeenHit.containsKey(le.getUniqueId())) {
 
-                DamageUtil.damageEntitySpell(DAMAGE, le, pl);
+                DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
                 e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
                 e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
 

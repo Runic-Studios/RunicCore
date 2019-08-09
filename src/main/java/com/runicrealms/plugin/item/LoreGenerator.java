@@ -199,6 +199,7 @@ public class LoreGenerator {
         double damageBoost = AttributeUtil.getCustomDouble(item, "custom.attackDamage");
         double healingBoost = AttributeUtil.getCustomDouble(item, "custom.healingBoost");
         double magicBoost = AttributeUtil.getCustomDouble(item, "custom.magicDamage");
+        double shieldAmt = AttributeUtil.getCustomDouble(item, "custom.shield");
         // -------------------------------------------------------------------------------------------
 
         if (customHealth != 0) {
@@ -219,6 +220,9 @@ public class LoreGenerator {
         }
         if (magicBoost != 0) {
             lore.add(ChatColor.DARK_AQUA + "+ " + (int) magicBoost + "ʔ");
+        }
+        if (shieldAmt != 0) {
+            lore.add(ChatColor.WHITE + "+ " + (int) shieldAmt + "■");
         }
 
         lore.add("");
@@ -259,11 +263,19 @@ public class LoreGenerator {
             case GEMSTONE:
                 type = "Gemstone";
                 break;
+            case OFFHAND:
+                type = "Offhand";
+                break;
             default:
                 type = "Something went wrong";
                 break;
         }
         lore.add(ChatColor.GRAY + type);
+
+        if (AttributeUtil.getCustomString(item, "soulbound").equals("true")) {
+            lore.add("");
+            lore.add(ChatColor.DARK_GRAY + "Soulbound");
+        }
 
         // add additional lore if necessary
         if (!extra.equals("")) {

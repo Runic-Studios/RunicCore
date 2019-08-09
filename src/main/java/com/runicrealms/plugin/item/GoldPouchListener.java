@@ -64,7 +64,7 @@ public class GoldPouchListener implements Listener {
         // fill black glass panes
         for (int i = slotSize; i < menuSize; i++) {
             coinMenu.setOption(i, new ItemStack(Material.BLACK_STAINED_GLASS_PANE),
-                    "&7", "", 0);
+                    "&7", "", 0, false);
         }
 
         coinMenu.setHandler(event -> {

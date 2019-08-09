@@ -28,7 +28,7 @@ public class JewelerGUI extends Workstation {
 
         //set the visual items
         jewelerMenu.setOption(3, new ItemStack(Material.REDSTONE),
-                "&fCut Gems", "&7Create gemstones and enhance armor!", 0);
+                "&fCut Gems", "&7Create gemstones and enhance armor!", 0, false);
 
         // set the handler
         jewelerMenu.setHandler(event -> {
@@ -83,7 +83,7 @@ public class JewelerGUI extends Workstation {
 
         benchMenu.setOption(4, new ItemStack(Material.COBBLESTONE_STAIRS), "&eGemcutting Bench",
                 "&fClick &7an item to start crafting!"
-                        + "\n&fClick &7here to return to the station", 0);
+                        + "\n&fClick &7here to return to the station", 0, false);
 
         setupItems(benchMenu, pl, currentLvl);
 
@@ -146,7 +146,7 @@ public class JewelerGUI extends Workstation {
                         dummyVar = 3;
                     }
                 // emerald
-                } else if (slot == 1221) {
+                } else if (slot == 12) {
                     reqLevel = 25;
                     reqHashMap = cutEmeraldReqs;
                     exp = 40;
@@ -218,35 +218,35 @@ public class JewelerGUI extends Workstation {
         cutRubyReqs.put(Material.REDSTONE_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.REDSTONE, "&fCut Ruby", cutRubyReqs,
                 "Uncut Ruby", 1, 10, 0, 0, "&c+" + healthStr + "❤ (Health)",
-                false, true);
+                false, true, false);
 
         // sapphire (+mana)
         LinkedHashMap<Material, Integer> cutSapphireReqs = new LinkedHashMap<>();
         cutSapphireReqs.put(Material.LAPIS_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.LAPIS_LAZULI, "&fCut Sapphire", cutSapphireReqs,
                 "Uncut Sapphire", 1, 20, 0, 0, "&3+" + manaStr + "✸ (Mana)",
-                false, true);
+                false, true, false);
 
         // opal (+weapon dmg)
         LinkedHashMap<Material, Integer> cutOpalReqs = new LinkedHashMap<>();
         cutOpalReqs.put(Material.NETHER_QUARTZ_ORE, 999);
-        super.createMenuItem(forgeMenu, pl, 12, Material.QUARTZ, "&fCut Opal", cutOpalReqs,
+        super.createMenuItem(forgeMenu, pl, 11, Material.QUARTZ, "&fCut Opal", cutOpalReqs,
                 "Uncut Opal", 1, 30, 10, 0, "&c+" + weaponStr + "⚔ (Weapon Dmg)",
-                false, true);
+                false, true, false);
 
         // emerald (+healing)
         LinkedHashMap<Material, Integer> cutEmeraldReqs = new LinkedHashMap<>();
         cutEmeraldReqs.put(Material.EMERALD_ORE, 999);
-        super.createMenuItem(forgeMenu, pl, 11, Material.EMERALD, "&fCut Emerald", cutEmeraldReqs,
+        super.createMenuItem(forgeMenu, pl, 12, Material.EMERALD, "&fCut Emerald", cutEmeraldReqs,
                 "Uncut Emerald", 1, 40, 25, 0, "&a+" + healingStr + "✦ (Healing)",
-                false, true);
+                false, true, false);
 
         // diamond (+spell dmg)
         LinkedHashMap<Material, Integer> cutDiamondReqs = new LinkedHashMap<>();
         cutDiamondReqs.put(Material.DIAMOND_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 13, Material.DIAMOND, "&fCut Diamond", cutDiamondReqs,
                 "Uncut Diamond", 1, 50, 25, 0, "&3+" + spellStr + "ʔ (Spell Dmg)",
-                false, true);
+                false, true, false);
     }
 
     @Override

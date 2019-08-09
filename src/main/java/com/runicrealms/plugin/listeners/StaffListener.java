@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -10,7 +8,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;

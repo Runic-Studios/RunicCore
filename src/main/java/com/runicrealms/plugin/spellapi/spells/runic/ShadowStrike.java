@@ -72,7 +72,7 @@ public class ShadowStrike extends Spell {
                 new Particle.DustOptions(Color.PURPLE, 3));
 
         // damage victim
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
 
         // blind
         if (victim instanceof Player) {

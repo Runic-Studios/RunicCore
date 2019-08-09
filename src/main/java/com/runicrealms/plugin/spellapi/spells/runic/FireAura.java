@@ -15,7 +15,7 @@ import com.runicrealms.plugin.RunicCore;
 public class FireAura extends Spell {
 
     private static final int DURATION = 4;
-    private static final int DAMAGE_AMT = 2;
+    private static final int DAMAGE_AMT = 3;
     private static final int PERIOD = 1;
     private static final int RADIUS = 3;
 
@@ -23,7 +23,8 @@ public class FireAura extends Spell {
         super ("Fire Aura",
                 "For " + DURATION + " seconds, you emit an aura of" +
                         "\nflame, damaging enemies within " + RADIUS + " blocks" +
-                        "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " damage.",
+                        "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage." +
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 10, 12);
     }
 
@@ -70,7 +71,7 @@ public class FireAura extends Spell {
                         }
 
                         // damage enemies
-                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player);
+                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, true);
                     }
                 }
             }

@@ -32,7 +32,7 @@ public class SmokeBomb extends Spell {
     public SmokeBomb() {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke that" +
-                        "\ndeals " + DAMAGE_AMT + " damage and blinds enemies" +
+                        "\ndeals " + DAMAGE_AMT + " spellʔ damage and blinds enemies" +
                         "\nwithin " + RADIUS + " blocks for " + DURATION + " seconds!",
                 ChatColor.WHITE, 6, 15);
     }
@@ -105,7 +105,7 @@ public class SmokeBomb extends Spell {
                             // damage the entity, blind them if they're a player
                             if (entity.getType().isAlive()) {
                                 LivingEntity victim = (LivingEntity) entity;
-                                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player);
+                                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, false);
                                 if (victim instanceof Player) {
                                     victim.addPotionEffect
                                             (new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 0));

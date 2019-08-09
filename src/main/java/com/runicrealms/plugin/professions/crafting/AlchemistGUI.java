@@ -42,7 +42,7 @@ public class AlchemistGUI extends Workstation {
         }
 
         tailorMenu.setOption(3, menuPotion,
-                "&fBrew Potions", "&7Brew useful potions for your journey!", 0);
+                "&fBrew Potions", "&7Brew useful potions for your journey!", 0, false);
 
         // set the handler
         tailorMenu.setHandler(event -> {
@@ -102,7 +102,7 @@ public class AlchemistGUI extends Workstation {
 
         wheelMenu.setOption(4, new ItemStack(Material.CAULDRON), "&eCauldron",
                 "&fClick &7an item to start crafting!"
-                        + "\n&fClick &7here to return to the station", 0);
+                        + "\n&fClick &7here to return to the station", 0, false);
 
         setupItems(wheelMenu, pl, currentLvl);
 
@@ -229,7 +229,7 @@ public class AlchemistGUI extends Workstation {
         super.createMenuItem(forgeMenu, pl, 9, Material.POTION, "&c" + tierStr + " Potion of Healing", healthPotReqs,
                 "Glass Bottle\nUncut Ruby\nSalmon", 5, 10, 0, 5,
                 "&eRestores &c" + healthStr + "❤ &eon use",
-                false, true);
+                false, true, false);
 
         // mana potion
         LinkedHashMap<Material, Integer> manaPotReqs = new LinkedHashMap<>();
@@ -239,7 +239,7 @@ public class AlchemistGUI extends Workstation {
         super.createMenuItem(forgeMenu, pl, 10, Material.POTION, "&3" + tierStr + " Potion of Mana", manaPotReqs,
                 "Glass Bottle\nUncut Sapphire\nCod", 8, 25, 0, 0,
                 "&eRestores &3" + manaStr + "✸ &eon use",
-                false, true);
+                false, true, false);
 
         // slaying potion
         LinkedHashMap<Material, Integer> slayPotReqs = new LinkedHashMap<>();
@@ -251,7 +251,7 @@ public class AlchemistGUI extends Workstation {
                 "Glass Bottle\nUncut Opal\nUncut Diamond\nTropical Fish", 7, 50, 25, 0,
                 "&eIncreases spellʔ and weapon⚔ damage" +
                         "\n&evs. monsters by &f20% &efor &f" + lootingStr + " &eminutes",
-                false, true);
+                false, true, false);
 
         // looting potion
         LinkedHashMap<Material, Integer> lootPotReqs = new LinkedHashMap<>();
@@ -262,7 +262,7 @@ public class AlchemistGUI extends Workstation {
                 "Glass Bottle\nAmbrosia Root\nPufferfish", 4, 70, 40, 0,
                 "&eIncreases looting chance by &f20%" +
                         "\n&efor &f" + slayingStr + " &eminutes",
-                false, true);
+                false, true, false);
     }
 
     @Override
@@ -272,7 +272,7 @@ public class AlchemistGUI extends Workstation {
         // grab the player's current profession level, progress toward that level
         currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
 
-        if (currentLvl == 0 || currentLvl == 1) {
+        if (currentLvl < 3) {
             rate = 100;
         } else {
             rate = (50 + currentLvl);

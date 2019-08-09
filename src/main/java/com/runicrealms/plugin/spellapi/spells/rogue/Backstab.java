@@ -24,7 +24,7 @@ public class Backstab extends Spell {
         super("Backstab",
                 "For " + DURATION + " seconds, striking enemies from" +
                         "\nbehind with your weapon deals " + DAMAGE_AMT +
-                        "\nadditional spell damage!",
+                        "\nadditional spellʔ damage!",
                 ChatColor.WHITE, 15, 10);
     }
 
@@ -59,7 +59,7 @@ public class Backstab extends Spell {
         if (!(pl.getLocation().getDirection().dot(e.getEntity().getLocation().getDirection()) >= 0.0D)) return;
 
         // execute skill effects
-        DamageUtil.damageEntitySpell((DAMAGE_AMT), le, pl);
+        DamageUtil.damageEntitySpell((DAMAGE_AMT), le, pl, false);
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }

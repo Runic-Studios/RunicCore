@@ -135,11 +135,11 @@ public class FastTravel implements SubCommand {
         travelMenu.setOption(0, new ItemStack(material),
                 "&a&lFast Travel",
                 "\n&7Fast travel to: &a" + locSpaced +
-                        "\n\n&6Price: &f" + cost + " &6Coins", 0);
+                        "\n\n&6Price: &f" + cost + " &6Coins", 0, false);
 
         // close button
         travelMenu.setOption(8, new ItemStack(Material.BARRIER),
-                "&cClose", "&7Close the menu", 0);
+                "&cClose", "&7Close the menu", 0, false);
 
         // set the handler
         travelMenu.setHandler(event -> {

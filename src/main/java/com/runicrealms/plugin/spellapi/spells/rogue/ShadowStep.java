@@ -62,7 +62,7 @@ public class ShadowStep extends Spell {
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 2.0f);
                     pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                             new Particle.DustOptions(Color.PURPLE, 3));
-                    HealUtil.healPlayer(HEALING_AMT, pl, pl, false);
+                    HealUtil.healPlayer(HEALING_AMT, pl, pl, true, false, false);
                 } else {
                     count += 1;
                     createCircle(pl, loc, 1f);

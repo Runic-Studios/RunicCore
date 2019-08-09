@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * This class manages player vs. player health bars using Minecraft's boss bar system.
  */
-public class PlayerBars implements Listener {
+public class PlayerBossBars implements Listener {
 
     private HashMap<UUID, BossBar> bossBarHashMap = new HashMap<>();
     private HashMap<UUID, UUID> currentTarget = new HashMap<>();

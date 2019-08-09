@@ -1,9 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
@@ -18,47 +20,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class RottingShot extends Spell {
+public class SearingShot extends Spell {
 
-    private static final int DAMAGE = 3;
-    private static final int PERIOD = 2;
-    private static final int DURATION = 8;
-    private List<Arrow> poisonedArrs = new ArrayList<>();
+    private static final int DAMAGE = 35;
+    private List<Arrow> searingArrows;
 
     // constructor
-    public RottingShot() {
-        super("Rotting Shot", "You launch an unholy arrow which" +
-                "\ndeals " + DAMAGE + " spellʔ damage every " + PERIOD + " seconds" +
-                "\nfor " + DURATION + " seconds to its target." +
-                "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%", ChatColor.WHITE, 16, 15);
+    public SearingShot() {
+        super("Searing Shot", "You launch an enchanted, flaming arrow" +
+                "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!", ChatColor.WHITE, 8, 12);
+        searingArrows = new ArrayList<>();
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
-        Arrow poisoned = pl.launchProjectile(Arrow.class);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
+
+        Arrow searing = pl.launchProjectile(Arrow.class);
         Vector vec = pl.getEyeLocation().getDirection().normalize().multiply(2);
-        poisoned.setVelocity(vec);
-        poisoned.setShooter(pl);
-        poisonedArrs.add(poisoned);
+        searing.setVelocity(vec);
+        searing.setShooter(pl);
+        searingArrows.add(searing);
         new BukkitRunnable() {
             @Override
             public void run() {
-                Location arrowLoc = poisoned.getLocation();
-                pl.getWorld().spawnParticle(Particle.SLIME, arrowLoc, 5, 0, 0, 0, 0);
-                pl.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0,
-                        new Particle.DustOptions(Color.YELLOW, 1));
-                if (poisoned.isDead() || poisoned.isOnGround()) {
+                Location arrowLoc = searing.getLocation();
+                arrowLoc.getWorld().spawnParticle(Particle.FLAME, arrowLoc,
+                        10, 0, 0, 0, 0);
+                if (searing.isDead() || searing.isOnGround()) {
                     this.cancel();
+                    pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
+                    arrowLoc.getWorld().spawnParticle(Particle.LAVA, arrowLoc, 10, 0, 0, 0, 0);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
     }
 
     @EventHandler
-    public void onPoisArrowHit(EntityDamageByEntityEvent e) {
+    public void onSearingArrowHit(EntityDamageByEntityEvent e) {
 
         // only listen for arrows
         if (!(e.getDamager() instanceof Arrow)) {
@@ -72,7 +74,7 @@ public class RottingShot extends Spell {
         }
 
         // deal magic damage if arrow in in the barrage hashmap
-        if (!poisonedArrs.contains(arrow)) return;
+        if (!searingArrows.contains(arrow)) return;
 
         e.setCancelled(true);
 
@@ -95,23 +97,7 @@ public class RottingShot extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
 
-        new BukkitRunnable() {
-            int count = 1;
-            @Override
-            public void run() {
-
-                if (count > DURATION) {
-                    this.cancel();
-
-                } else {
-
-                    count += PERIOD;
-                    DamageUtil.damageEntitySpell(DAMAGE, le, pl, true);
-                    le.getWorld().spawnParticle(Particle.SLIME, le.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-                    le.getWorld().playSound(le.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 1);
-
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
+        // spell effect
+        DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
     }
 }

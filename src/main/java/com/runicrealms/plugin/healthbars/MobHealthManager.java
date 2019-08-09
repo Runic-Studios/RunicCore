@@ -77,7 +77,7 @@ public class MobHealthManager {
             for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
 
                 // remove stray armorstands
-                if (en instanceof ArmorStand && !en.hasMetadata("healthbar")) {
+                if (en instanceof ArmorStand && !en.hasMetadata("healthbar") && !en.hasMetadata("indicator")) {
                     en.remove();
                 }
             }
@@ -108,7 +108,7 @@ public class MobHealthManager {
                         LivingEntity le = (LivingEntity) en;
 
                         if (en.getPassengers().size() == 0) {
-                            MobHealthBars.setupMob(le);
+                            MobHealthBars.setupEntityHealthbar(le);
                         }
                     }
                 }

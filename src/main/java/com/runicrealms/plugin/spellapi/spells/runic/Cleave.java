@@ -80,7 +80,7 @@ public class Cleave extends Spell {
             if (nearby == victim) continue;
 
             nearby.getWorld().spawnParticle(Particle.CRIT, ((LivingEntity) nearby).getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, ((LivingEntity) nearby), pl);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, ((LivingEntity) nearby), pl, false);
         }
     }
 }

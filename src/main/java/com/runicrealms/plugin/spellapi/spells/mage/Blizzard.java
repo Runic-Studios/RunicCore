@@ -41,7 +41,8 @@ public class Blizzard extends Spell {
                 "You summon a cloud of snow up to " +
                         "\n" + MAX_DIST + " blocks away that rains down snowballs" +
                         "\nfor " + DURATION + " seconds, each dealing " + DAMAGE_AMOUNT + " spellʔ" +
-                        "\ndamage to enemies and slowing them.",
+                        "\ndamage to enemies and slowing them." +
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 10, 15);
         this.snowballMap = new HashMap<>();
     }
@@ -143,7 +144,7 @@ public class Blizzard extends Spell {
                     && RunicCore.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
 
             // apply damage, knockbackPlayer
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, true);
             victim.setLastDamageCause(e);
 
             // apply slow

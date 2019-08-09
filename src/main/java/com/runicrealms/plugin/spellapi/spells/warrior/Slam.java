@@ -24,7 +24,7 @@ public class Slam extends Spell {
     public Slam() {
         super("Slam", "You charge fearlessly into the air!" +
                         "\nUpon hitting the ground, you deal " +
-                        "\n" + DAMAGE_AMT + " damage to enemies within" +
+                        "\n" + DAMAGE_AMT + " spellʔ damage to enemies within" +
                         "\n" + RADIUS + " blocks and knock them up!",
                 ChatColor.WHITE, 8, 15);
     }
@@ -106,7 +106,7 @@ public class Slam extends Spell {
                                 continue;
                             }
 
-                            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl);
+                            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
                             Vector force = (pl.getLocation().toVector().subtract
                                     (victim.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             victim.setVelocity(force.normalize());

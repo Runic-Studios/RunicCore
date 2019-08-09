@@ -2,6 +2,7 @@ package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.item.LegendaryManager;
 import com.runicrealms.plugin.professions.Workstation;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ public class TailorGUI extends Workstation {
 
         //set the visual items
         tailorMenu.setOption(3, new ItemStack(Material.PAPER),
-                "&fWeave Cloth", "&7Weave cloth and linen goods!", 0);
+                "&fWeave Cloth", "&7Weave cloth and linen goods!", 0, false);
 
         // set the handler
         tailorMenu.setHandler(event -> {
@@ -66,12 +67,17 @@ public class TailorGUI extends Workstation {
         // to make leather goods
         LinkedHashMap<Material, Integer> gearReqs = new LinkedHashMap<>();
         gearReqs.put(Material.PAPER, 999);
+        // legendary
+        LinkedHashMap<Material, Integer> tomeReqs = new LinkedHashMap<>();
+        tomeReqs.put(Material.NETHER_STAR, 1);
+        tomeReqs.put(Material.PAPER, 7);
+        tomeReqs.put(Material.LAPIS_ORE, 1);
 
         ItemGUI wheelMenu = super.craftingMenu(pl, 18);
 
         wheelMenu.setOption(4, new ItemStack(Material.LIGHT_GRAY_WOOL), "&eSpinning Wheel",
                 "&fClick &7an item to start crafting!"
-                        + "\n&fClick &7here to return to the station", 0);
+                        + "\n&fClick &7here to return to the station", 0, false);
 
         setupItems(wheelMenu, pl, currentLvl);
 
@@ -95,13 +101,16 @@ public class TailorGUI extends Workstation {
 
                 int slot = event.getSlot();
                 int health = 0;
-                //int reqLevel = 0;
+                int reqLevel = 0;
                 int reagentAmt = 0;
                 int exp = 0;
                 LinkedHashMap<Material, Integer> reqHashMap;
 
                 if (event.getSlot() < 10) {
                     reqHashMap = makeClothReqs;
+                } else if (event.getSlot() == 14) {
+                    reqHashMap = tomeReqs;
+                    reqLevel = 50;
                 } else {
                     reqHashMap = gearReqs;
                 }
@@ -147,7 +156,7 @@ public class TailorGUI extends Workstation {
                 event.setWillDestroy(true);
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, reqHashMap, reagentAmt, 0, event.getCurrentItem().getType(),
+                super.startCrafting(pl, reqHashMap, reagentAmt, reqLevel, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
                         ((Damageable) meta).getDamage(), Particle.CRIT,
                         Sound.BLOCK_SAND_BREAK, Sound.ITEM_ARMOR_EQUIP_LEATHER, health, mult);
@@ -172,7 +181,7 @@ public class TailorGUI extends Workstation {
         makeClothReqs.put(Material.STRING, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.PAPER, "&fCloth", makeClothReqs,
                 "Thread", 2, 10, 0, 0, "",
-                true, false);
+                true, false, false);
 
         // to make leather goods
         LinkedHashMap<Material, Integer> gearReqs = new LinkedHashMap<>();
@@ -180,19 +189,28 @@ public class TailorGUI extends Workstation {
         super.createMenuItem(forgeMenu, pl, 10, Material.SHEARS, "&fWoven Cloth Hood", gearReqs,
                 "Cloth", 5, 50, 0, 5,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
         super.createMenuItem(forgeMenu, pl, 11, Material.DIAMOND_CHESTPLATE, "&fWoven Cloth Robe", gearReqs,
                 "Cloth", 8, 80, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
         super.createMenuItem(forgeMenu, pl, 12, Material.DIAMOND_LEGGINGS, "&fWoven Cloth Legs", gearReqs,
                 "Cloth", 7, 70, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
         super.createMenuItem(forgeMenu, pl, 13, Material.DIAMOND_BOOTS, "&fWoven Cloth Boots", gearReqs,
                 "Cloth", 4, 40, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
+        // legendary
+        LinkedHashMap<Material, Integer> tomeReqs = new LinkedHashMap<>();
+        tomeReqs.put(Material.NETHER_STAR, 1);
+        tomeReqs.put(Material.PAPER, 7);
+        tomeReqs.put(Material.LAPIS_ORE, 1);
+        super.createMenuItem(forgeMenu, pl, 14, Material.BOOK, "&6Tome of the Frost Lords", tomeReqs,
+                "Token of Valor\nCloth\nUncut Sapphire", 999, 0, 50, 0,
+                "&3+ 100✸\n&3+ 3ʔ",
+                true, false, false);
     }
 
     @Override
@@ -200,7 +218,7 @@ public class TailorGUI extends Workstation {
                               int currentLvl, int amt, int rate, int durability, int someVar) {
 
         // we're only gonna mess w/ the mechanics for processed leather
-        if (material != Material.PAPER) {
+        if (material != Material.PAPER && material != Material.BOOK) {
             super.produceResult(pl, material, dispName, currentLvl, amt, rate, durability, someVar);
             return;
         }
@@ -216,6 +234,10 @@ public class TailorGUI extends Workstation {
             meta.setLore(lore);
             meta.setDisplayName(ChatColor.WHITE + dispName);
             craftedItem.setItemMeta(meta);
+
+            if (material == Material.BOOK) {
+                craftedItem = LegendaryManager.tomeOfTheFrostLords();
+            }
 
             // check that the player has an open inventory space
             // this method prevents items from stacking if the player crafts 5

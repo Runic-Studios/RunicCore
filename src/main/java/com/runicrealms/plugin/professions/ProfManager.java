@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.professions;
 
+import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.professions.crafting.*;
 import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +19,7 @@ public class ProfManager {
 
     // globals
     private RunicCore plugin = RunicCore.getInstance();
+    private List<Workstation> workstations;
     private ArrayList<Player> currentCrafters = new ArrayList<>();
     public ArrayList<Player> getCurrentCrafters() {
         return currentCrafters;
@@ -24,6 +27,8 @@ public class ProfManager {
 
     // constructor
     public ProfManager() {
+        this.workstations = new ArrayList<>();
+        this.registerListeners();
         this.startRegenTask();
     }
 
@@ -117,5 +122,16 @@ public class ProfManager {
                     loc.getBlock().getLocation().add(0.5, 0, 0.5), 25, 0.5, 0.5, 0.5, 0.01);
         }
         return false;
+    }
+
+    // register listeners for each workstation
+    private void registerListeners() {
+        this.workstations.add(new AlchemistGUI());
+        this.workstations.add(new BSAnvilGUI());
+        this.workstations.add(new BSFurnaceGUI());
+        this.workstations.add(new CookingGUI());
+        this.workstations.add(new JewelerGUI());
+        this.workstations.add(new LWGUI());
+        this.workstations.add(new TailorGUI());
     }
 }

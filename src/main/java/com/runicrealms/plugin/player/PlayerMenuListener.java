@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.player;
 
-import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.mysterybox.MysteryLoot;
+import com.runicrealms.plugin.mysterybox.animation.Animation;
+import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
@@ -43,7 +45,8 @@ public class PlayerMenuListener implements Listener {
         // item 1
         // todo: fix
         ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
-                "\n&7Title: &aNone");
+                "\n&7Title: &aNone" +
+                        "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
 
         //item 2
         ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
@@ -130,6 +133,9 @@ public class PlayerMenuListener implements Listener {
                 if (event.getSlot() == 2 && pl.getGameMode() != GameMode.CREATIVE) {
                     pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                     pl.performCommand("quest");
+                } else if (event.getSlot() == 4) {
+                    Animation animation = new Tornado(MysteryLoot.getMysteryItems());
+                    animation.spawn(pl, pl.getLocation());
                 }
             }
         }

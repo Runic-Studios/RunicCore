@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.item.hearthstone;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.item.commands.HearthstoneCMD;
-import com.runicrealms.plugin.utilities.ChatUtils;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -16,18 +14,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -174,9 +168,6 @@ public class HearthstoneListener implements Listener {
 
     public static void teleportToLocation(Player pl) {
 
-        String isDungeon = checkForDungeon(pl, pl.getLocation());
-        if (!isDungeon.equals("")) return;
-
         String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(2), "location");
 
         if (itemLoc.equals("")) {
@@ -259,35 +250,6 @@ public class HearthstoneListener implements Listener {
 
         loc = new Location(world, x, y, z, yaw, 0);
         pl.teleport(loc);
-    }
-
-    public static String checkForDungeon(Player pl, Location plLoc) {
-
-        // grab all regions the player is standing in
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(plLoc));
-        Set<ProtectedRegion> regions = set.getRegions();
-
-        if (regions == null) return "";
-
-        // check the region for the keyword 'mine'
-        // ignore the rest of this event if the player cannot mine
-        for (ProtectedRegion region : regions) {
-            if (region.getId().contains("library")) {
-                Location loc = new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0);
-                pl.teleport(loc);
-                return "library";
-            } else if (region.getId().contains("crypts")) {
-
-                return "crypts";
-            } else if (region.getId().contains("fortress")) {
-
-                return "fortress";
-            }
-        }
-
-        return "";
     }
 }
 

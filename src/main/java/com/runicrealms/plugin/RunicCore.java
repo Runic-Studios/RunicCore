@@ -2,6 +2,7 @@ package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.item.GoldPouchListener;
+import com.runicrealms.plugin.item.LegendaryManager;
 import com.runicrealms.plugin.item.commands.CurrencyGive;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
@@ -13,7 +14,7 @@ import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.guild.GuildListeners;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
-import com.runicrealms.plugin.healthbars.PlayerBars;
+import com.runicrealms.plugin.healthbars.PlayerBossBars;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.artifact.ArtifactListener;
 import com.runicrealms.plugin.item.commands.CurrencyPouch;
@@ -34,6 +35,7 @@ import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.professions.ProfManager;
+import com.runicrealms.plugin.professions.listeners.CookingListener;
 import com.runicrealms.plugin.professions.listeners.PotionListener;
 import com.runicrealms.plugin.professions.listeners.WorkstationListener;
 import com.runicrealms.plugin.professions.commands.GathertoolGive;
@@ -171,7 +173,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SpellUseEvent(), this);
         pm.registerEvents(new WeaponCDListener(), this);
-        pm.registerEvents(new PlayerBars(), this);
+        pm.registerEvents(new PlayerBossBars(), this);
         pm.registerEvents(new WorkstationListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new MiningListener(), this);
@@ -200,6 +202,8 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new BossKillListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
+        pm.registerEvents(new CookingListener(), this);
+        pm.registerEvents(new LegendaryManager(), this);
     }
     
     private void registerCommands() {
@@ -224,7 +228,6 @@ public class RunicCore extends JavaPlugin {
         getCommand("mana").setExecutor(mana);
 
         // gathertool commands
-        // todo: fix these and the in-game merchants
         GathertoolSC toolSC = new GathertoolSC();
         getCommand("gathertool").setExecutor(toolSC);
         toolSC.addCommand(Arrays.asList("give"), new GathertoolGive(toolSC));
@@ -268,6 +271,7 @@ public class RunicCore extends JavaPlugin {
         partySC.addCommand(Arrays.asList("join", "accept"), new Join(partySC));
         partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
         partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
+        partySC.addCommand(Arrays.asList("teleport", "tp"), new Teleport(partySC));
     }
 
     private void registerSetCommands() {

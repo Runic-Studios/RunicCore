@@ -88,7 +88,7 @@ public class Taunt extends Spell {
                     if (en instanceof Monster && !hasHit.contains(projectile)) {
                         hasHit.add(projectile);
                         projectile.remove();
-                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl);
+                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl, false);
                         markedEntities.add(en.getUniqueId());
                         ((Monster) en).setTarget(pl);
                         MythicMobs.inst().getAPIHelper().taunt(en, pl);

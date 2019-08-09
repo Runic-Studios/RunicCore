@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
@@ -77,9 +78,9 @@ public class ItemGUI implements Listener {
         this.handler = handler;
     }
 
-    public ItemGUI setOption(int position, ItemStack icon, String name, String desc, int durability) {
+    public ItemGUI setOption(int position, ItemStack icon, String name, String desc, int durability, boolean isGlowing) {
         optionNames[position] = name;
-        optionIcons[position] = setItemNameAndLore(icon, name, desc, durability);
+        optionIcons[position] = setItemNameAndLore(icon, name, desc, durability, isGlowing);
         return this;
     }
 
@@ -205,7 +206,7 @@ public class ItemGUI implements Listener {
      * @param desc - split lines with "\n", accepts color codes
      * @param durability - of the item
      */
-    private ItemStack setItemNameAndLore(ItemStack item, String name, String desc, int durability) {
+    private ItemStack setItemNameAndLore(ItemStack item, String name, String desc, int durability, boolean isGlowing) {
 
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
@@ -225,6 +226,10 @@ public class ItemGUI implements Listener {
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            if (isGlowing) {
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             item.setItemMeta(meta);
         }
 

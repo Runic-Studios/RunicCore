@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Consumer;
 
 /**
@@ -14,6 +16,7 @@ public class InvisStandSpawner implements Consumer<ArmorStand> {
     @Override
     public void accept(ArmorStand armorStand) {
 
+        armorStand.setMetadata("indicator", new FixedMetadataValue(RunicCore.getInstance(), "indicator"));
         armorStand.setVisible(false);
         armorStand.setCollidable(false);
         armorStand.setCustomNameVisible(true);

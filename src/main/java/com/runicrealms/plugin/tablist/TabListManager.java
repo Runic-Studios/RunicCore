@@ -2,13 +2,9 @@ package com.runicrealms.plugin.tablist;
 
 import com.keenant.tabbed.Tabbed;
 import com.keenant.tabbed.item.TextTabItem;
-import com.keenant.tabbed.tablist.TabList;
 import com.keenant.tabbed.tablist.TableTabList;
 import com.keenant.tabbed.util.Skins;
 import me.glaremasters.guilds.Guilds;
-import me.glaremasters.guilds.api.events.GuildCreateEvent;
-import me.glaremasters.guilds.api.events.GuildJoinEvent;
-import me.glaremasters.guilds.api.events.GuildLeaveEvent;
 import me.glaremasters.guilds.guild.Guild;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,20 +21,31 @@ import com.runicrealms.plugin.parties.Party;
 // TODO: fix flickering, fix pings in text component always being '0'
 public class TabListManager implements Listener {
 
-    // globals
     private Tabbed tabbed;
 
     // constructor
     public TabListManager(Plugin plugin) {
         this.tabbed = new Tabbed(plugin);
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, plugin);
+        updateTablists();
+    }
+
+    /**
+     * Keeps party column updated w/ player health.
+     */
+    private void updateTablists() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers().forEach(p -> updatePartyColumn(p));
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 200L, 5L);
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.hasMetadata("NPC")) continue;
-            TabList test = tabbed.getTabList(online);
             RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
                     (RunicCore.getInstance(), () -> setupTab(online), 1);
         }
@@ -86,7 +93,16 @@ public class TabListManager implements Listener {
             }
         }
 
-        // Column 3 (Party)
+        // Column 4 (Friends)
+        tab.set(3, 0, new TextTabItem
+                (ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.DARK_GREEN)));
+    }
+
+    /**
+     * Used in the running task to keep party health displays accurate.
+     */
+    private void updatePartyColumn(Player pl) {
+        TableTabList tab = (TableTabList) tabbed.getTabList(pl);
         if (RunicCore.getPartyManager().getPlayerParty(pl) == null) {
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [0]", 0, Skins.getDot(ChatColor.GREEN)));
@@ -96,14 +112,10 @@ public class TabListManager implements Listener {
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getPartySize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int k = 0;
             for (Player member : party.getPlayerMembers()) {
-                tab.set(2, k + 1, new TextTabItem(member.getName(), 0, Skins.getPlayer(member)));
+                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(member)));
                 k++;
             }
         }
-
-        // Column 4 (Friends)
-        tab.set(3, 0, new TextTabItem
-                (ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.DARK_GREEN)));
     }
 
     // update tablist on player quit

@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlessedRain extends Spell {
 
     private static final int HEALING_AMT = 5;
-    private static final int DURATION = 4;
+    private static final int DURATION = 5;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
 
@@ -27,7 +27,8 @@ public class BlessedRain extends Spell {
                         "\nwhich restores✦ " + HEALING_AMT + " health to party members" +
                         "\nwithin " + RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\nBlessed rain will also heal you for" +
-                        "\nhalf its effect!",
+                        "\nhalf its effect!" +
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 12, 20);
     }
 
@@ -96,7 +97,7 @@ public class BlessedRain extends Spell {
 
             // heal party members and the caster
             Player ally = (Player) entity;
-            HealUtil.healPlayer(HEALING_AMT, ally, pl, true);
+            HealUtil.healPlayer(HEALING_AMT, ally, pl, true, true, true);
         }
     }
 }

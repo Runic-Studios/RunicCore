@@ -107,7 +107,7 @@ public class BlockBreakListener implements Listener {
     }
 
     /**
-     * Prevents players from breaking fires, switching trapdoors
+     * Prevents players from breaking fires, switching trapdoors, prevents fire charge use
      */
     @EventHandler
     public void onFireBreak(PlayerInteractEvent e) {
@@ -115,6 +115,13 @@ public class BlockBreakListener implements Listener {
         if (e.getClickedBlock() == null) return;
         Block target = e.getClickedBlock();
         if (e.getPlayer().isOp()) return;
+
+        // offhand items
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK
+                && e.getMaterial() == Material.FIRE_CHARGE) {
+            e.setCancelled(true);
+        }
+
 
         // disable trapdoor switching
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {

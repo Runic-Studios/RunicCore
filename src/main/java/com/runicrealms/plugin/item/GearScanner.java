@@ -103,4 +103,15 @@ public class GearScanner {
         }
         return magicBoost;
     }
+
+    public static int getShieldAmt(Player pl) {
+
+        int shieldAmt = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            shieldAmt += (int) AttributeUtil.getCustomDouble(item, "custom.shield");
+        }
+        return shieldAmt;
+    }
 }

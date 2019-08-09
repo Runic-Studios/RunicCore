@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,5 +20,7 @@ public interface ISpell {
     double getCooldown();
 
     int getManaCost();
+
+    boolean testTarget(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
 }
 

@@ -58,11 +58,11 @@ public class ArtifactGUI {
         // setup items
         }, RunicCore.getInstance())
                 .setOption(2+9, new ItemStack(artifact.getType()), "&eSkin Editor",
-                        "&fClick &7to customize your artifact skin", durability)
+                        "&fClick &7to customize your artifact skin", durability, false)
                 .setOption(4+9, new ItemStack(Material.FIRE_CHARGE), "&aSpell Editor",
-                        "&fClick &7to customize your artifact abilities", 0)
+                        "&fClick &7to customize your artifact abilities", 0, false)
                 .setOption(6+9, new ItemStack(Material.BARRIER), "&cClose",
-                        "&7Exit the editor", 0);
+                        "&7Exit the editor", 0, false);
     }
 
     private static ItemGUI skinEditor(Player pl, ItemStack artifact, int durability) {
@@ -123,7 +123,7 @@ public class ArtifactGUI {
         }, RunicCore.getInstance());
 
         skinEditor.setOption(13, new ItemStack(artifact.getType()), artifact.getItemMeta().getDisplayName(),
-                "\n&fClick &7an appearance to change your skin!\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
+                "\n&fClick &7an appearance to change your skin!\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage(), false);
 
         // first row of skins
         for (int i = 0; i < skins.size() && i < 5; i++) {
@@ -139,7 +139,7 @@ public class ArtifactGUI {
             }
             skinEditor.setOption(20 + i, skins.get(i),
                     skins.get(i).getItemMeta().getDisplayName(),
-                    desc, ((Damageable) skins.get(i).getItemMeta()).getDamage());
+                    desc, ((Damageable) skins.get(i).getItemMeta()).getDamage(), false);
         }
 
         // second row of skins
@@ -154,7 +154,7 @@ public class ArtifactGUI {
             }
             skinEditor.setOption(29 + (j-5), skins.get(j),
                     skins.get(j).getItemMeta().getDisplayName(),
-                    desc, ((Damageable) skins.get(j).getItemMeta()).getDamage());
+                    desc, ((Damageable) skins.get(j).getItemMeta()).getDamage(), false);
         }
 
         return skinEditor;
@@ -167,7 +167,7 @@ public class ArtifactGUI {
         archerSkins.add(menuItem(Material.BOW, "Polished Silver Shortbow", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 10));
         archerSkins.add(menuItem(Material.BOW, "Victorious Gilded Shortbow", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 15));
         archerSkins.add(menuItem(Material.BOW, "Ancient Crystal Shortbow", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 20));
-        archerSkins.add(menuItem(Material.BOW, "Twisted Isfodari Warbow", "&aUnlocked!\n&cAppearance not yet available.", 25));
+        archerSkins.add(menuItem(Material.BOW, "Twisted Isfodari Warbow", "&aUnlocked!\n&7Reward from the &dRunic Realms Store&7!", 25));
         return archerSkins;
     }
 
@@ -178,7 +178,7 @@ public class ArtifactGUI {
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Polished Silver Hammer", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Victorious Gilded Mace", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Ancient Crystal Maul", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
-        clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Gleaming Hammer of Justice", "&aUnlocked!\n&7Reward from &dMystery Boxes&7!", 50));
+        clericSkins.add(menuItem(Material.WOODEN_SHOVEL, "Gleaming Hammer of Justice", "&aUnlocked!\n&7Reward from the &dRunic Realms Store&7!", 50));
         return clericSkins;
     }
 
@@ -190,7 +190,7 @@ public class ArtifactGUI {
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Victorious Gilded Staff", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Ancient Crystal Greatstaff", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
         mageSkins.add(menuItem(Material.WOODEN_HOE, "Primal Arcane Rod", "&aUnlocked!\n&7Unlocked by purchasing the &dAlpha+ &7rank!", 5));
-        mageSkins.add(menuItem(Material.WOODEN_HOE, "Twisted Isfodari Scythe", "&aUnlocked!\n&7Reward from &dMystery Boxes&7!", 6));
+        mageSkins.add(menuItem(Material.WOODEN_HOE, "Twisted Isfodari Scythe", "&aUnlocked!\n&7Reward from the &dRunic Realms Store&7!", 6));
         return mageSkins;
     }
 
@@ -202,7 +202,7 @@ public class ArtifactGUI {
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Victorious Gilded Longsword", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Ancient Crystal Greatsword", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
         rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Bane of the Frost Lords", "&aUnlocked!\n&7Reward from the &4Frozen Fortress &7raid!", 5));
-        rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Twisted Isfodari Dagger", "&aUnlocked!\n&7Reward from &dMystery Boxes&7!", 6));
+        rogueSkins.add(menuItem(Material.WOODEN_SWORD, "Twisted Isfodari Dagger", "&aUnlocked!\n&7Reward from the &dRunic Realms Store&7!", 6));
         return rogueSkins;
     }
 
@@ -213,7 +213,7 @@ public class ArtifactGUI {
         warriorSkins.add(menuItem(Material.WOODEN_AXE, "Polished Silver Broadaxe", "&aUnlocked!\n&7Unlock by reaching lv. 20!", 2));
         warriorSkins.add(menuItem(Material.WOODEN_AXE, "Victorious Gilded Reaver", "&aUnlocked!\n&7Unlock by reaching lv. 30!", 3));
         warriorSkins.add(menuItem(Material.WOODEN_AXE, "Ancient Crystal Battleaxe", "&aUnlocked!\n&7Unlock by reaching lv. 40!", 4));
-        warriorSkins.add(menuItem(Material.WOODEN_AXE, "True Outlaw's Ravager", "&aUnlocked!\n&7Unlock by achieving True Outlaw Season 1!", 5));
+        warriorSkins.add(menuItem(Material.WOODEN_AXE, "Berserker's Ravager", "&aUnlocked!\n&7Reward from the &dRunic Realms Store&7!", 5));
         return warriorSkins;
     }
 
@@ -312,7 +312,7 @@ public class ArtifactGUI {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet.");
+                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet." + ChatColor.WHITE + " Shift + Left-click" + ChatColor.GRAY + " a spell to unlock it.");
                         return;
                     }
 
@@ -338,7 +338,7 @@ public class ArtifactGUI {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet.");
+                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet." + ChatColor.WHITE + " Shift + Left-click" + ChatColor.GRAY + " a spell to unlock it.");
                         return;
                     }
 
@@ -403,13 +403,13 @@ public class ArtifactGUI {
                         "\n" +
                         spellSlot1 +
                         spellSlot2 +
-                        "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
+                        "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage(), false);
 
         int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
         spellEditor.setOption(14, new ItemStack(Material.BONE_MEAL), "&f&lSpell Points: &a&l" + numPoints,
                 "\n&7Use spell points to unlock new spells!" +
                         "\n&aEarn spell points by completing quests" +
-                        "\n&aand leveling-up!", 0);
+                        "\n&aand leveling-up!", 0, false);
 
         // first row of spells
         for (int i = 0; i < spells.size() && i < 5; i++) {
@@ -437,9 +437,11 @@ public class ArtifactGUI {
 
     private static List<String> displaySpellsArcher() {
         List<String> spells = new ArrayList<>();
+        spells.add("Arrow Bomb");
         spells.add("Barrage");
         spells.add("Grapple");
         spells.add("Rotting Shot");
+        spells.add("Searing Shot");
         spells.add("Wounding Shot");
         spells.add("Volley");
         return spells;
@@ -469,6 +471,8 @@ public class ArtifactGUI {
         List<String> spells = new ArrayList<>();
         spells.add("Backstab");
         spells.add("Cloak");
+        spells.add("Envenom");
+        spells.add("Evasion");
         spells.add("Shadow Step");
         spells.add("Shrieking Skull");
         spells.add("Smoke Bomb");
@@ -513,7 +517,7 @@ public class ArtifactGUI {
                 status +
                         "\n\n" + spellDesc +
                         "\n&cCooldown: &e" + cooldown + "s" +
-                        "\n&3Mana Cost: &f" + manaCost, 0);
+                        "\n&3Mana Cost: &f" + manaCost, 0, false);
     }
 
     private static void updateArtifactSpell(Player pl, ItemStack item, String spellSlot, String spellName, String itemName, String className) {

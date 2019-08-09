@@ -19,7 +19,7 @@ import java.util.*;
 public class UnholyGround extends Spell {
 
     private static final int DURATION = 6;
-    private static final double PERCENT = 65;
+    private static final double PERCENT = 75;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
     private List<LivingEntity> taunted = new ArrayList<>();
@@ -32,7 +32,7 @@ public class UnholyGround extends Spell {
                         "\nwhich taunts enemy monsters within " + (int) RADIUS +
                         "\nblocks every " + PERIOD + " seconds(s)! While standing" +
                         "\non the unholy ground, you take " + (int) PERCENT + "%" +
-                        "\ndamage from monsters!"
+                        "\nless damage from monsters!"
                         , ChatColor.WHITE,12, 15);
     }
 
@@ -127,7 +127,7 @@ public class UnholyGround extends Spell {
 
         Location loc = taunters.get(pl.getUniqueId());
         if (pl.getLocation().distance(loc) <= RADIUS) {
-            double percent = PERCENT / 100;
+            double percent = (100-PERCENT) / 100;
             int amt = (int) (e.getAmount() * percent);
             e.setAmount(amt);
         }

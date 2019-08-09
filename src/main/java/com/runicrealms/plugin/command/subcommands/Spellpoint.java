@@ -26,16 +26,6 @@ public class Spellpoint implements SubCommand {
 
     @Override
     public void onConsoleCommand(CommandSender sender, String[] args) {
-        this.onUserCommand((Player) sender, args);
-    }
-
-    @Override
-    public void onOPCommand(Player sender, String[] args) {
-        this.onUserCommand(sender, args);
-    }
-
-    @Override
-    public void onUserCommand(Player sender, String[] args) {
 
         // if the sender does not specify the correct arguments
         if (args.length != 2) {
@@ -51,7 +41,18 @@ public class Spellpoint implements SubCommand {
             RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
             RunicCore.getInstance().saveConfig();
             RunicCore.getInstance().reloadConfig();
+            pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "You've earned a spellpoint!");
         }
+    }
+
+    @Override
+    public void onOPCommand(Player sender, String[] args) {
+        this.onConsoleCommand(sender, args);
+    }
+
+    @Override
+    public void onUserCommand(Player sender, String[] args) {
+        this.onConsoleCommand(sender, args);
     }
 
     @Override

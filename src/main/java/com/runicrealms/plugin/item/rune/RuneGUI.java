@@ -47,9 +47,9 @@ public class RuneGUI {
             // setup items
         }, RunicCore.getInstance())
                 .setOption(3+9, new ItemStack(Material.FIRE_CHARGE), "&aSpell Editor",
-                        "&fClick &7to customize your runic abilities", 0)
+                        "&fClick &7to customize your runic abilities", 0, false)
                 .setOption(5+9, new ItemStack(Material.BARRIER), "&cClose",
-                        "&7Exit the editor", 0);
+                        "&7Exit the editor", 0, false);
     }
 
     private static ItemGUI spellEditor(Player pl, ItemStack rune, int durability) {
@@ -84,7 +84,7 @@ public class RuneGUI {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet.");
+                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet." + ChatColor.WHITE + " Shift + Left-click" + ChatColor.GRAY + " a spell to unlock it.");
                         return;
                     }
 
@@ -97,7 +97,7 @@ public class RuneGUI {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
                         pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet.");
+                        pl.sendMessage(ChatColor.RED + "You haven't unlocked that spell yet." + ChatColor.WHITE + " Shift + Left-click" + ChatColor.GRAY + " a spell to unlock it.");
                         return;
                     }
 
@@ -146,14 +146,14 @@ public class RuneGUI {
                         "\n&7Secondary: &a" + secondarySpell +
                         "\n" +
                         "\n&fLeft Click &7a spell to set your primary!" +
-                        "\n&fShift + Left Click &7a spell to set your secondary!" +
-                        "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage());
+                        "\n&fRight Click &7a spell to set your secondary!" +
+                        "\n&fClick here &7to return to the editor", ((Damageable) meta).getDamage(), false);
 
         int numPoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
         spellEditor.setOption(14, new ItemStack(Material.BONE_MEAL), "&f&lSpell Points: &a&l" + numPoints,
                 "\n&7Use spell points to unlock new spells!" +
                         "\n&aEarn spell points by completing quests" +
-                        "\n&aand leveling-up!", 0);
+                        "\n&aand leveling-up!", 0, false);
 
         List<String> spells = new ArrayList<>();
 
@@ -234,7 +234,7 @@ public class RuneGUI {
                 status +
                         "\n\n" + spellDesc +
                         "\n&cCooldown: &e" + cooldown + "s" +
-                        "\n&3Mana Cost: &f" + manaCost, 0);
+                        "\n&3Mana Cost: &f" + manaCost, 0, false);
     }
 
     private static void updateRuneSpell(Player pl, ItemStack item, String spellSlot, String spellName) {

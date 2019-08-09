@@ -7,11 +7,13 @@ import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -35,46 +37,55 @@ public class PotionListener implements Listener {
     @EventHandler
     public void onPotionUse(PlayerItemConsumeEvent e) {
 
-        Player pl = e.getPlayer();
-        int healAmt = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.healing");
-        int manaAmt = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.mana");
-        int slayingDuration = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.slaying");
-        int lootingDuration = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.looting");
-
-        // remove glass bottle from inventory
         if (e.getItem().getType() == Material.POTION) {
-            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> pl.setItemInHand(new ItemStack(Material.AIR)), 1L);
-        }
 
-        if (healAmt > 0) {
-            HealUtil.healPlayer(healAmt, pl, pl, false);
-        }
+            Player pl = e.getPlayer();
+            int healAmt = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.healing");
+            int manaAmt = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.mana");
+            int slayingDuration = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.slaying");
+            int lootingDuration = (int) AttributeUtil.getCustomDouble(e.getItem(), "potion.looting");
 
-        if (manaAmt > 0) {
-            RunicCore.getManaManager().addMana(pl, manaAmt);
-        }
-
-        if (slayingDuration > 0) {
-            slayers.add(pl.getUniqueId());
-            pl.sendMessage(ColorUtil.format("&eYou've gained a &f20% &edamage bonus vs. monsters for &f" + slayingDuration + " &eminutes!"));
+            // remove glass bottle from inventory, main hand or offhand
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    slayers.remove(pl.getUniqueId());
+                    if (pl.getInventory().getItemInOffHand().getType() == Material.GLASS_BOTTLE) {
+                        pl.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                    } else {
+                        pl.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                    }
                 }
-            }.runTaskLaterAsynchronously(RunicCore.getInstance(), slayingDuration*60*20L);
-        }
+            }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
 
-        if (lootingDuration > 0) {
-            looters.add(pl.getUniqueId());
-            pl.sendMessage(ColorUtil.format("&eYou've gained a &f20% &elooting bonus for &f" + lootingDuration + " &eminutes!"));
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    looters.remove(pl.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(RunicCore.getInstance(), lootingDuration*60*20L);
+            if (healAmt > 0) {
+                HealUtil.healPlayer(healAmt, pl, pl, false, false, false);
+            }
+
+            if (manaAmt > 0) {
+                RunicCore.getManaManager().addMana(pl, manaAmt);
+            }
+
+            if (slayingDuration > 0) {
+                slayers.add(pl.getUniqueId());
+                pl.sendMessage(ColorUtil.format("&eYou've gained a &f20% &edamage bonus vs. monsters for &f" + slayingDuration + " &eminutes!"));
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        slayers.remove(pl.getUniqueId());
+                    }
+                }.runTaskLaterAsynchronously(RunicCore.getInstance(), slayingDuration*60*20L);
+            }
+
+            if (lootingDuration > 0) {
+                looters.add(pl.getUniqueId());
+                pl.sendMessage(ColorUtil.format("&eYou've gained a &f20% &elooting bonus for &f" + lootingDuration + " &eminutes!"));
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        looters.remove(pl.getUniqueId());
+                    }
+                }.runTaskLaterAsynchronously(RunicCore.getInstance(), lootingDuration*60*20L);
+            }
         }
     }
 

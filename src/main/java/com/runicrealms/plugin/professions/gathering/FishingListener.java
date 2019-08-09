@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.professions.gathering;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -22,10 +23,10 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -42,6 +43,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * randomizes which fish they receive
  * Checks name of WG region for "pond" to perform tasks
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class FishingListener implements Listener {
 
     private double nuggetRate = 5.0;
@@ -127,6 +129,16 @@ public class FishingListener implements Listener {
                 pl.getInventory().setItem(slot, heldItem);
             }
 
+            // pull back fishing rod
+            int currentSlot = pl.getInventory().getHeldItemSlot();
+            pl.getInventory().setHeldItemSlot(2);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    pl.getInventory().setHeldItemSlot(currentSlot);
+                }
+            }.runTaskLaterAsynchronously(RunicCore.getInstance(), 1L);
+
             // gather material
             gatherMaterial(pl, hookLoc, hookLoc.add(0, 1.5, 0), itemType, holoString,
                     itemName, desc, "The fish got away!", chance, fishPath, durability);
@@ -162,8 +174,6 @@ public class FishingListener implements Listener {
         Material mainHand = pl.getInventory().getItemInMainHand().getType();
         Material offHand = pl.getInventory().getItemInOffHand().getType();
 
-        if (mainHand == null && offHand == null) return;
-
         if (mainHand != Material.FISHING_ROD && offHand != Material.FISHING_ROD) return;
 
         if (!canFish) {
@@ -178,11 +188,8 @@ public class FishingListener implements Listener {
      */
     @EventHandler
     public void onFishSpawn(CreatureSpawnEvent e) {
-
         Entity spawned = e.getEntity();
-
         if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
-
         if (spawned instanceof Fish) e.setCancelled(true);
     }
 
@@ -191,10 +198,7 @@ public class FishingListener implements Listener {
      */
     @EventHandler
     public void onRawFishEat(PlayerItemConsumeEvent e) {
-
-        Material m = e.getItem().getType();
-
-        if (m == Material.COD || m == Material.SALMON) {
+        if (e.getItem().getType() == Material.COD || e.getItem().getType() == Material.SALMON) {
             e.getPlayer().sendMessage(ChatColor.RED + "I need to cook that first.");
             e.setCancelled(true);
         }
@@ -205,11 +209,8 @@ public class FishingListener implements Listener {
      */
     @EventHandler
     public void onPufferTropFishEat(PlayerInteractEvent e) {
-
         if (e.getItem() == null) return;
-
         Material m = e.getItem().getType();
-
         if (m == Material.PUFFERFISH || m == Material.TROPICAL_FISH) {
             e.getPlayer().sendMessage(ChatColor.RED + "I shouldn't eat that.");
             e.setCancelled(true);
@@ -281,7 +282,7 @@ public class FishingListener implements Listener {
 
     /**
      * Reduces fishing time using NMS
-     * Time for a 'bite' will be between 5-15 seconds
+     * Time for a 'bite' will be between 5-25 seconds
      */
     @EventHandler
     public void onPlayerFish(PlayerFishEvent e) {

@@ -52,7 +52,7 @@ public class MountListener implements Listener {
 
         boolean onCooldown = isOnCooldown(pl);
         if (!onCooldown) {
-            spawnHorse(pl);
+            spawnHorse(pl, pl.getInventory().getItemInMainHand());
         }
     }
 
@@ -103,7 +103,7 @@ public class MountListener implements Listener {
         return ((int) cooldownRemaining / 1000);
     }
 
-    private void spawnHorse(Player pl) {
+    private void spawnHorse(Player pl, ItemStack saddle) {
 
         // remove old horse, if applicable
         if (mounted.containsKey(pl.getUniqueId())) {
@@ -116,7 +116,7 @@ public class MountListener implements Listener {
         Horse test = (Horse) Objects.requireNonNull(pl.getLocation().getWorld()).spawnEntity(pl.getLocation(), EntityType.HORSE);
 
         // todo: read NBT tag
-        HorseTypeEnum type = HorseTypeEnum.NORMAL;
+        HorseTypeEnum type = HorseTypeEnum.valueOf("NORMAL");
         // horsetype type = horsetype.valueof(NBT tag)
         // horsetype.color.valueof(NBT tag)
         test.setColor(Horse.Color.CHESTNUT);

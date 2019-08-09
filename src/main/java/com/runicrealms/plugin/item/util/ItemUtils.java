@@ -252,30 +252,30 @@ public class ItemUtils {
 
         int health = 0;
         int mana = 0;
-        int weapDamage = rand.nextInt(3-2) + 2; // 2-3
+        int weapDamage = rand.nextInt(5-3) + 3; // 3-5
         int healing = 4;
         int spellDamage = rand.nextInt(5-3) + 3; // 3-5
         String className = TieredItemGenerator.determineClass(epicItem, material);
         switch (className.toLowerCase()) {
             case "mage":
-                health = rand.nextInt(40-30) + 30;
-                mana = rand.nextInt(40-30) + 30;
+                health = rand.nextInt(50-30) + 30;
+                mana = rand.nextInt(50-30) + 30;
                 break;
             case "rogue":
-                health = rand.nextInt(40-30) + 30;
-                mana = rand.nextInt(40-30) + 30;
+                health = rand.nextInt(50-30) + 30;
+                mana = rand.nextInt(50-30) + 30;
                 break;
             case "archer":
-                health = rand.nextInt(40-30) + 30;
-                mana = rand.nextInt(40-30) + 30;
+                health = rand.nextInt(50-30) + 30;
+                mana = rand.nextInt(50-30) + 30;
                 break;
             case "cleric":
-                health = rand.nextInt(60-50) + 50;
-                mana = rand.nextInt(40-30) + 30;
+                health = rand.nextInt(80-50) + 50;
+                mana = rand.nextInt(50-30) + 30;
                 break;
             case "warrior":
-                health = rand.nextInt(60-50) + 50;
-                mana = rand.nextInt(40-30) + 30;
+                health = rand.nextInt(80-50) + 50;
+                mana = rand.nextInt(50-30) + 30;
                 break;
         }
 

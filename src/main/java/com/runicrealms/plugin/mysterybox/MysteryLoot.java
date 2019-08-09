@@ -44,4 +44,32 @@ public class MysteryLoot {
     public static List<MysteryItem> getMysteryItems() {
         return mysteryItems;
     }
+
+    // lobby particles
+    // heart
+    // flame
+    // 3
+    // 4
+
+    // mount skins
+//    private ItemStack blazingHorse() {}
+//    private ItemStack frozenHorse() {}
+//    private ItemStack skeletonHorse() {}
+//    private ItemStack undeadHorse() {}
+//
+//    // pets
+//    // dragon
+//    // sheep
+//    // lizard
+//
+//    // titles
+//    private ItemStack;
+//    // title 2
+//    // title 3
+//    // title 4
+//
+//    // weapon skins
+//    private ItemStack twistedIsfodariWarbow() {}
+//    private ItemStack twistedIsfodariScepter() {}
+//    private ItemStack twistedIsfodariDagger() {}
 }

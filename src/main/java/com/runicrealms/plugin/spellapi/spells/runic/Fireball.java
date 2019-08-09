@@ -70,7 +70,7 @@ public class Fireball extends Spell {
                 && RunicCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
 
         // cancel the event, apply spell mechanics
-        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player);
+        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, false);
         KnockbackUtil.knockbackPlayer(player, victim, 1.5);
 
         // particles, sounds

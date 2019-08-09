@@ -3,7 +3,11 @@ package com.runicrealms.plugin.utilities;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.outlaw.OutlawManager;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -14,10 +18,20 @@ import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 
 public class DamageUtil {
 
-    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster) {
+    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, boolean halveGemBoost) {
 
         // update amount with gem values
-        dmgAmt = dmgAmt + GearScanner.getMagicBoost(caster);
+        int gemBoost = GearScanner.getMagicBoost(caster);
+        if (halveGemBoost) {
+            gemBoost = gemBoost / 2;
+        }
+        dmgAmt = dmgAmt + gemBoost;
+
+        // update w/ shield
+        if (recipient instanceof Player) {
+            int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
+            dmgAmt = dmgAmt - shieldAmt;
+        }
 
         // call our custom event, apply modifiers if necessary
         SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster);
@@ -47,6 +61,12 @@ public class DamageUtil {
 
         // scan the gems
         dmgAmt = dmgAmt + GearScanner.getAttackDamage(caster);
+
+        // update w/ shield
+        if (recipient instanceof Player) {
+            int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
+            dmgAmt = dmgAmt - shieldAmt;
+        }
 
         // call an event, apply modifiers if necessary
         WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isRanged);
@@ -81,10 +101,21 @@ public class DamageUtil {
     }
 
     private static void mobDamage(double dmgAmt, LivingEntity recipient, Entity damager) {
+
         DamageListener damageListener = new DamageListener();
 
-        int newHP = (int) (recipient.getHealth() - dmgAmt);
+        if (MythicMobs.inst().getMobManager().isActiveMob(damager.getUniqueId())) {
+            ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
+            dmgAmt = mm.getDamage();
+        }
 
+        // update w/ shield
+        if (recipient instanceof Player) {
+            int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
+            dmgAmt = dmgAmt - shieldAmt;
+        }
+
+        // todo: they can heal. stop the shield at 0. ensure it works w/ players. add player health bars. fix crafting tooltips for legendaries
         // call a custom damage event to communicate with other listeners/plugins
         EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(damager, recipient, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
         Bukkit.getPluginManager().callEvent(e);
@@ -95,6 +126,7 @@ public class DamageUtil {
         }
 
         // apply custom mechanics if the player were to die
+        int newHP = (int) (recipient.getHealth() - dmgAmt);
         if (newHP >= 1) {
             if (recipient instanceof Monster) {
                 Monster monster = (Monster) recipient;

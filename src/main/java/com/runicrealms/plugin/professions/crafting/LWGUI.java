@@ -2,6 +2,7 @@ package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.item.LegendaryManager;
 import com.runicrealms.plugin.professions.Workstation;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ public class LWGUI extends Workstation {
 
         //set the visual items
         leatherMenu.setOption(3, new ItemStack(Material.RABBIT_HIDE),
-                "&fCraft Armor", "&7Tan hides and create leather goods!", 0);
+                "&fCraft Armor", "&7Tan hides and create leather goods!", 0, false);
 
         // set the handler
         leatherMenu.setHandler(event -> {
@@ -66,12 +67,16 @@ public class LWGUI extends Workstation {
         processedReqs.put(Material.SPRUCE_LOG, 1);
         LinkedHashMap<Material, Integer> leatherReqs = new LinkedHashMap<>();
         leatherReqs.put(Material.RABBIT_HIDE, 999);
+        // legendary
+        LinkedHashMap<Material, Integer> reaverReqs = new LinkedHashMap<>();
+        reaverReqs.put(Material.NETHER_STAR, 1);
+        reaverReqs.put(Material.NETHER_QUARTZ_ORE, 2);
 
         ItemGUI forgeMenu = super.craftingMenu(pl, 18);
 
         forgeMenu.setOption(4, new ItemStack(Material.BROWN_TERRACOTTA), "&eTanning Rack",
                 "&fClick &7an item to start crafting!"
-                        + "\n&fClick &7here to return to the station", 0);
+                        + "\n&fClick &7here to return to the station", 0, false);
 
         setupItems(forgeMenu, pl, currentLvl);
 
@@ -95,13 +100,16 @@ public class LWGUI extends Workstation {
 
                 int slot = event.getSlot();
                 int health = 0;
-                //int reqLevel = 0;
+                int reqLevel = 0;
                 int reagentAmt = 0;
                 int exp = 0;
                 LinkedHashMap<Material, Integer> reqHashMap;
 
                 if (event.getSlot() < 10) {
                     reqHashMap = processedReqs;
+                } else if (event.getSlot() == 14) {
+                    reqHashMap = reaverReqs;
+                    reqLevel = 50;
                 } else {
                     reqHashMap = leatherReqs;
                 }
@@ -146,7 +154,7 @@ public class LWGUI extends Workstation {
                 event.setWillDestroy(true);
 
                 // craft item based on experience and reagent amount
-                super.startCrafting(pl, reqHashMap, reagentAmt, 0, event.getCurrentItem().getType(),
+                super.startCrafting(pl, reqHashMap, reagentAmt, reqLevel, event.getCurrentItem().getType(),
                         meta.getDisplayName(), currentLvl, exp,
                         ((Damageable) meta).getDamage(), Particle.SMOKE_NORMAL,
                         Sound.ENTITY_GHAST_SHOOT, Sound.ITEM_ARMOR_EQUIP_LEATHER, health, mult);
@@ -172,7 +180,7 @@ public class LWGUI extends Workstation {
         processedReqs.put(Material.SPRUCE_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.RABBIT_HIDE, "&fProcessed Leather", processedReqs,
                 "Animal Hide\nSpruce Log", 5, 10, 0, 0, "",
-                true, false);
+                true, false, false);
 
         // to make leather goods
         LinkedHashMap<Material, Integer> leatherReqs = new LinkedHashMap<>();
@@ -180,19 +188,27 @@ public class LWGUI extends Workstation {
         super.createMenuItem(forgeMenu, pl, 10, Material.SHEARS, "&fCrafted Leather Helmet", leatherReqs,
                 "Processed Leather", 5, 50, 0, 10,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
         super.createMenuItem(forgeMenu, pl, 11, Material.LEATHER_CHESTPLATE, "&fCrafted Leather Tunic", leatherReqs,
                 "Processed Leather", 8, 80, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
         super.createMenuItem(forgeMenu, pl, 12, Material.LEATHER_LEGGINGS, "&fCrafted Leather Legs", leatherReqs,
                 "Processed Leather", 7, 70, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
         super.createMenuItem(forgeMenu, pl, 13, Material.LEATHER_BOOTS, "&fCrafted Leather Boots", leatherReqs,
                 "Processed Leather", 4, 40, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
-                false, true);
+                false, true, false);
+        // legendary
+        LinkedHashMap<Material, Integer> reaverReqs = new LinkedHashMap<>();
+        reaverReqs.put(Material.NETHER_STAR, 1);
+        reaverReqs.put(Material.NETHER_QUARTZ_ORE, 2);
+        super.createMenuItem(forgeMenu, pl, 14, Material.IRON_SWORD, "&6Frostforged Reaver", reaverReqs,
+                "Token of Valor\nUncut Opal", 999, 0, 50, 0,
+                "&c+ 8⚔",
+                true, false, false);
     }
 
     @Override
@@ -200,7 +216,7 @@ public class LWGUI extends Workstation {
                               int currentLvl, int amt, int rate, int durability, int someVar) {
 
         // we're only gonna mess w/ the mechanics for processed leather
-        if (material != Material.RABBIT_HIDE) {
+        if (material != Material.RABBIT_HIDE && material != Material.IRON_SWORD) {
             super.produceResult(pl, material, dispName, currentLvl, amt, rate, durability, someVar);
             return;
         }
@@ -216,6 +232,10 @@ public class LWGUI extends Workstation {
             meta.setLore(lore);
             meta.setDisplayName(ChatColor.WHITE + dispName);
             craftedItem.setItemMeta(meta);
+
+            if (material == Material.IRON_SWORD) {
+                craftedItem = LegendaryManager.frostforgedReaver();
+            }
 
             // check that the player has an open inventory space
             // this method prevents items from stacking if the player crafts 5

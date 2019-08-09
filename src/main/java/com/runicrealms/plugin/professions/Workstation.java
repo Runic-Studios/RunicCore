@@ -12,7 +12,7 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -28,14 +28,16 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Basic workstation class with some handy methods
  */
-public abstract class Workstation {
+public abstract class Workstation implements Listener {
+
+    public Workstation() {}
 
     protected ItemGUI openWorkstation(Player pl) {
 
         return new ItemGUI("&f&l" + pl.getName() + "'s &e&lWorkstation", 9, event -> {
         },
                 RunicCore.getInstance()).setOption(5, new ItemStack(Material.BARRIER),
-                "&cClose", "&7Close the menu", 0);
+                "&cClose", "&7Close the menu", 0, false);
     }
 
     protected ItemGUI craftingMenu(Player pl, int size) {
@@ -48,7 +50,7 @@ public abstract class Workstation {
     protected void createMenuItem(ItemGUI gui, Player pl, int slot, Material itemType, String name,
                                   LinkedHashMap<Material, Integer> itemReqs, String reqsToString, int itemAmt,
                                   int exp, int reqLevel, int durability, String itemStats, boolean cantFail,
-                                  boolean canUpgrade) {
+                                  boolean canUpgrade, boolean isGlowing) {
 
         // grab the player's current profession level, progress toward that level
         int currentLvl = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
@@ -135,10 +137,10 @@ public abstract class Workstation {
             }
             gui.setOption(slot,
                     potionItem(color, name, desc.toString()),
-                    name, desc.toString(), durability);
+                    name, desc.toString(), durability, isGlowing);
         } else {
             gui.setOption(slot, new ItemStack(itemType),
-                    name, desc.toString(), durability);
+                    name, desc.toString(), durability, isGlowing);
         }
     }
 
@@ -336,49 +338,11 @@ public abstract class Workstation {
         return potion;
     }
 
-//    public static void takeItem(Player pl, Material material, int amount) {
-//
-//        ItemStack[] inv = pl.getInventory().getContents();
-//
-//        // take items from player
-//        int itemAmtToRemove = amount;
-//        Bukkit.broadcastMessage(itemAmtToRemove + "");
-//        for (int i = 0; i < inv.length; i++) {
-//            if (itemAmtToRemove <= 0) break;
-//            if (pl.getInventory().getItem(i) == null) continue;
-//
-//            // todo: add gold pouch calculator
-//            //ItemStack is = pl.getInventory().getItem(i);
-////            // gold pouches
-////            if (material == Material.GOLD_NUGGET) {
-////                int currentAmount = (int) AttributeUtil.getCustomDouble(is, "goldAmount");
-////                if (currentAmount > 0) {
-////
-////                }
-////                //is = AttributeUtil.addCustomStat(is, "goldAmount", event.getAmount());
-////                LoreGenerator.generateGoldPouchLore(pouch);
-////                pl.getInventory().getItem(i).get.setItem(pl.getInventory().getHeldItemSlot(), is);
-////            }
-//
-//            if (Objects.requireNonNull(pl.getInventory().getItem(i)).getType() == material) {
-//                int amt = Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount();
-//
-//                if (itemAmtToRemove < 64) amt = itemAmtToRemove;
-//                Objects.requireNonNull(pl.getInventory().getItem(i)).setAmount
-//                        (Objects.requireNonNull(pl.getInventory().getItem(i)).getAmount() - (amt));
-//                itemAmtToRemove -= amt;
-//                Bukkit.broadcastMessage(ChatColor.YELLOW + "" + itemAmtToRemove + "");
-//            }
-//        }
-//    }
-
     public static void takeItem(Player pl, Material material, int amount) {
 
+        // todo: add gold pouch calculator
         int to_take = amount;
-        //int slot = -1;
-
         for (ItemStack player_item : pl.getInventory().getContents()) {
-            //slot++;
             if (player_item != null) {
 
                 if (player_item.getType() == material) {
@@ -391,12 +355,10 @@ public abstract class Workstation {
                 }
             }
         }
-        //return;
     }
     private static void remove(Player p, ItemStack toR, int amount){
         ItemStack i = toR.clone();
         i.setAmount(amount);
         p.getInventory().removeItem(i);
-        //return;
     }
 }

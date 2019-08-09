@@ -9,6 +9,12 @@ import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
@@ -30,6 +36,7 @@ import com.runicrealms.plugin.outlaw.OutlawManager;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -210,9 +217,12 @@ public class DamageListener implements Listener {
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.RED, 3));
-        //victim.teleport(respawnLocation);
+        // teleport them to their hearthstone location, or the front of the dungeon
         tryDropItems(victim);
-        HearthstoneListener.teleportToLocation(victim);
+        String isDungeon = checkForDungeon(victim);
+        if (isDungeon.equals("")) {
+            HearthstoneListener.teleportToLocation(victim);
+        }
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
@@ -325,6 +335,44 @@ public class DamageListener implements Listener {
             }
         }
         pl.sendMessage(ChatColor.RED + "You dropped " + numDroppedItems + " items!");
+    }
+
+    public static String checkForDungeon(Player pl) {
+
+        // grab all regions the player is standing in
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(pl.getLocation()));
+        Set<ProtectedRegion> regions = set.getRegions();
+
+        if (regions == null) return "";
+
+        // check the region for the keyword 'mine'
+        // ignore the rest of this event if the player cannot mine
+        for (ProtectedRegion region : regions) {
+            if (region.getId().contains("library")) {
+                Location libraryEntrance = new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0);
+                pl.teleport(libraryEntrance);
+                return "library";
+            } else if (region.getId().contains("crypts")) {
+                Location cryptsEntrance = new Location(Bukkit.getWorld("dungeons"), 298.5, 87, 6.5, 0, 0);
+                pl.teleport(cryptsEntrance);
+                return "crypts";
+            } else if (region.getId().contains("fortress")) {
+                Location fortressEntrace = new Location(Bukkit.getWorld("dungeons"), 32.5, 73, 87.5, 0, 0);
+                if (region.getId().contains("d3_parkour")){
+                    fortressEntrace = new Location(Bukkit.getWorld("dungeons"), 32.5, 67, 379.5, 0, 0);
+                } else if (region.getId().contains("d3_alkyr")){
+                    fortressEntrace = new Location(Bukkit.getWorld("dungeons"), -9.5, 67, 503.5, 0, 0);
+                } else if (region.getId().contains("eldrid")) {
+                    fortressEntrace = new Location(Bukkit.getWorld("dungeons"), -9.5, 67, 623.5, 0, 0);
+                }
+                pl.teleport(fortressEntrace);
+                return "fortress";
+            }
+        }
+
+        return "";
     }
 
     private void removeGlow(ItemStack is) {

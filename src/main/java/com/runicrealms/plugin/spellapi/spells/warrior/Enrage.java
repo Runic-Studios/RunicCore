@@ -32,7 +32,7 @@ public class Enrage extends Spell {
                 "For " + CHANNEL_DURATION + " seconds, you channel a powerful rage," +
                         "\nslowing your movement speed. After, you gain" +
                         "\nan immense boost of speed and your melee" +
-                        "\nweapon attacks deal " + DAMAGE_AMT + " additional spell damage" +
+                        "\nweapon attacks deal " + DAMAGE_AMT + " additional spellʔ damage" +
                         "\nfor " + BUFF_DURATION + " seconds!",
                 ChatColor.WHITE, 10, 15);
     }
@@ -108,7 +108,7 @@ public class Enrage extends Spell {
 
         LivingEntity le = (LivingEntity) en;
 
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, false);
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }

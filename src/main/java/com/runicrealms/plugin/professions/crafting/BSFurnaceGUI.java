@@ -26,7 +26,7 @@ public class BSFurnaceGUI extends Workstation {
 
         //set the visual items
         furnaceMenu.setOption(3, new ItemStack(Material.IRON_INGOT),
-                "&fSmelt Ores", "&7Smelt raw ores into crafting materials!", 0);
+                "&fSmelt Ores", "&7Smelt raw ores into crafting materials!", 0, false);
 
         // set the handler
         furnaceMenu.setHandler(event -> {
@@ -72,7 +72,7 @@ public class BSFurnaceGUI extends Workstation {
 
         forgeMenu.setOption(4, new ItemStack(Material.FURNACE), "&eFurnace",
                 "&fClick &7an item to start crafting!"
-                        + "\n&fClick &7here to return to the station", 0);
+                        + "\n&fClick &7here to return to the station", 0, false);
 
         setupItems(forgeMenu, pl);
 
@@ -126,7 +126,7 @@ public class BSFurnaceGUI extends Workstation {
         chainLinkReqs.put(Material.SPRUCE_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 9, Material.IRON_BARS, "&fChain Link", chainLinkReqs,
                 "Iron Ore\nSpruce Log", 999, 10, 0, 0, "",
-                true, false);
+                true, false, false);
 
         // gold bar
         LinkedHashMap<Material, Integer> goldBarReqs = new LinkedHashMap<>();
@@ -134,7 +134,7 @@ public class BSFurnaceGUI extends Workstation {
         goldBarReqs.put(Material.OAK_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 10, Material.GOLD_INGOT, "&fGold Bar", goldBarReqs,
                 "Gold Ore\nOak Log", 999, 10, 0, 0, "",
-                true, false);
+                true, false, false);
 
         // iron bar
         LinkedHashMap<Material, Integer> ironBarReqs = new LinkedHashMap<>();
@@ -142,7 +142,7 @@ public class BSFurnaceGUI extends Workstation {
         ironBarReqs.put(Material.OAK_LOG, 1);
         super.createMenuItem(forgeMenu, pl, 11, Material.IRON_INGOT, "&fIron Bar",ironBarReqs,
                 "Iron Ore\nOak Log", 999, 10, 0, 0, "",
-                true, false);
+                true, false, false);
     }
 
     @Override
