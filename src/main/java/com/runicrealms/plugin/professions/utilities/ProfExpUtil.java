@@ -14,7 +14,7 @@ import com.runicrealms.plugin.utilities.NumRounder;
  */
 public class ProfExpUtil {
 
-    private static final int maxLevel = 50;
+    private static final int maxLevel = 60;
 
     public static void giveExperience(Player pl, int expGained) {
 
@@ -70,6 +70,7 @@ public class ProfExpUtil {
     }
 
     // 33250 at 50
+    // 54900 at 60
     public static int calculateTotalExperience(int currentLv) {
         int cubed = (int) Math.pow((currentLv+5), 3);
         return ((3*cubed)/15)-25;

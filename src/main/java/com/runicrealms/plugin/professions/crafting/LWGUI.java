@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.LegendaryManager;
 import com.runicrealms.plugin.professions.Workstation;
@@ -207,7 +208,9 @@ public class LWGUI extends Workstation {
         reaverReqs.put(Material.NETHER_QUARTZ_ORE, 2);
         super.createMenuItem(forgeMenu, pl, 14, Material.IRON_SWORD, "&6Frostforged Reaver", reaverReqs,
                 "Token of Valor\nUncut Opal", 999, 0, 50, 0,
-                "&c+ 8⚔",
+                "&c+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.frostforgedReaver(), "custom.attackDamage")
+                        + "⚔",
                 true, false, false);
     }
 

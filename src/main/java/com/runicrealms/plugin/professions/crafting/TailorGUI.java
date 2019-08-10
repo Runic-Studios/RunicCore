@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.LegendaryManager;
 import com.runicrealms.plugin.professions.Workstation;
@@ -209,7 +210,11 @@ public class TailorGUI extends Workstation {
         tomeReqs.put(Material.LAPIS_ORE, 1);
         super.createMenuItem(forgeMenu, pl, 14, Material.BOOK, "&6Tome of the Frost Lords", tomeReqs,
                 "Token of Valor\nCloth\nUncut Sapphire", 999, 0, 50, 0,
-                "&3+ 100✸\n&3+ 3ʔ",
+                "&3+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.tomeOfTheFrostLords(), "custom.manaBoost")
+                        + "✸\n&3+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.tomeOfTheFrostLords(), "custom.magicDamage")
+                        + "ʔ",
                 true, false, false);
     }
 

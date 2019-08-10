@@ -45,7 +45,6 @@ public class LegendaryManager implements Listener {
             if (Objects.requireNonNull(current).hasItemMeta()
                     && legendaries.containsKey(Objects.requireNonNull(current.getItemMeta()).getDisplayName())) {
                 player.getInventory().setItem(i, legendaries.get(current.getItemMeta().getDisplayName()));
-                player.sendMessage(ChatColor.GREEN + "Your " + ChatColor.GOLD + "Legendary " + ChatColor.GREEN + "item has been updated.");
             }
         }
     }
@@ -82,7 +81,6 @@ public class LegendaryManager implements Listener {
         shield = AttributeUtil.addCustomStat(shield, "required.level", 50);
         shield = AttributeUtil.addGenericStat(shield, "generic.maxHealth", 125, "offhand");
         shield = AttributeUtil.addCustomStat(shield, "custom.shield", 5);
-        // todo: add shield stat to the game
         LoreGenerator.generateItemLore(shield, ChatColor.GOLD, "Frostforged Bulwark", "");
         return shield;
     }

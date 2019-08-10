@@ -15,7 +15,7 @@ import java.util.Objects;
 
 public class PlayerLevelUtil {
 
-    private static final int maxLevel = 50;
+    private static final int maxLevel = 60;
 
     public static void giveExperience(Player pl, int expGained) {
 
@@ -77,7 +77,7 @@ public class PlayerLevelUtil {
         ItemStack artifact = pl.getInventory().getItem(0);
         ItemStack rune = pl.getInventory().getItem(1);
         if (artifact == null || rune == null) return false;
-        if (classLevel == 50) {
+        if (classLevel == 60) {
             giveSpellpoint(pl);
             Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
                     + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + classLevel + " " + className + "!");
@@ -85,9 +85,16 @@ public class PlayerLevelUtil {
             ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
             ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "  You can now access RAIDS!");
+            //ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "  You can now access The Flaming Volanco!"); // WIP name
             pl.sendMessage("\n");
             ClassUtil.launchFirework(pl, className);
+        } else if (classLevel == 50) {
+            giveSpellpoint(pl);
+            pl.sendMessage("\n");
+            ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
+            ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
+            ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Frozen Fortress!");
+            pl.sendMessage("\n");
             return true;
         } else if (classLevel >= 10  && oldLevel < 10) {
             sendUnlockMessage(pl, 10, className, classLevel);

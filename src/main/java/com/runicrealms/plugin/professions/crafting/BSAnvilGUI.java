@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.professions.crafting;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.LegendaryManager;
 import com.runicrealms.plugin.professions.Workstation;
@@ -241,7 +242,11 @@ public class BSAnvilGUI extends Workstation {
         arrowHeadReqs.put(Material.IRON_INGOT, 3);
         super.createMenuItem(forgeMenu, pl, 13, Material.FLINT, "&6Frostforged Arrowhead", arrowHeadReqs,
                 "Token of Valor\nIron Bar", 999, 0, 50, 0,
-                "&c+ 4⚔\n&3+ 4ʔ",
+                "&c+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.frostforgedArrowhead(), "custom.attackDamage")
+                        + "⚔\n&3+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.frostforgedArrowhead(), "custom.magicDamage")
+                        + "ʔ",
                 true, false, false);
 
         // gilded
@@ -269,7 +274,11 @@ public class BSAnvilGUI extends Workstation {
         powderReqs.put(Material.GOLDEN_CARROT, 1);
         super.createMenuItem(forgeMenu, pl, 22, Material.RABBIT_FOOT, "&6Ambrosian Powder", powderReqs,
                 "Token of Valor\nAmbrosia Root", 999, 0, 50, 0,
-                "&a+ 20✦",
+                "&3+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.ambrosianPowder(), "custom.manaBoost")
+                        + "✸\n&a+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.ambrosianPowder(), "custom.healingBoost")
+                        + "✦",
                 true, false, false);
 
         // plate
@@ -298,7 +307,11 @@ public class BSAnvilGUI extends Workstation {
         shieldReqs.put(Material.OAK_LOG, 4);
         super.createMenuItem(forgeMenu, pl, 31, Material.SHIELD, "&6Frostforged Bulwark", shieldReqs,
                 "Token of Valor\nIron Bar\nOak Log", 999, 0, 50, 0,
-                "&c+ 100❤",
+                "&c+ "
+                        + (int) AttributeUtil.getGenericDouble(LegendaryManager.frostforgedBulwark(), "generic.maxHealth")
+                        + "❤\n&f+ "
+                        + (int) AttributeUtil.getCustomDouble(LegendaryManager.frostforgedBulwark(), "custom.shield")
+                        + "■",
                 true, false, false);
     }
 
