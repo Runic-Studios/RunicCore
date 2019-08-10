@@ -33,6 +33,11 @@ public class DamageUtil {
             dmgAmt = dmgAmt - shieldAmt;
         }
 
+        // prevent healing
+        if (dmgAmt < 0) {
+            dmgAmt = 0;
+        }
+
         // call our custom event, apply modifiers if necessary
         SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster);
         Bukkit.getPluginManager().callEvent(event);
@@ -66,6 +71,11 @@ public class DamageUtil {
         if (recipient instanceof Player) {
             int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
             dmgAmt = dmgAmt - shieldAmt;
+        }
+
+        // prevent healing
+        if (dmgAmt < 0) {
+            dmgAmt = 0;
         }
 
         // call an event, apply modifiers if necessary
@@ -115,7 +125,12 @@ public class DamageUtil {
             dmgAmt = dmgAmt - shieldAmt;
         }
 
-        // todo: they can heal. stop the shield at 0. ensure it works w/ players. add player health bars. fix crafting tooltips for legendaries
+        // prevent healing
+        if (dmgAmt < 0) {
+            dmgAmt = 0;
+        }
+
+        // todo: ensure it works w/ players. fix crafting tooltips for legendaries
         // call a custom damage event to communicate with other listeners/plugins
         EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(damager, recipient, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
         Bukkit.getPluginManager().callEvent(e);

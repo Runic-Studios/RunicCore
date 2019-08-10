@@ -2,23 +2,41 @@ package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
-import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
+import java.util.*;
 
+// todo: make lootchest its own object, map a lootchest to the current system time to have per-chest respawns.
 @SuppressWarnings("FieldCanBeLocal")
 public class LootChestManager {
 
     private RunicCore plugin = RunicCore.getInstance();
     private static final int RESPAWN_TIME = 15; // minutes
+    private HashMap<Location, String> chestLocs = new HashMap<>();
 
     public LootChestManager() {
+
+        // store all chest locations in a hashmap
+        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
+                "chests.yml");
+        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
+        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
+
+        if (locations == null) return;
+
+        for (String id : locations.getKeys(false)) {
+            String tier = locations.getString(id + ".tier");
+            World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
+            double x = locations.getDouble(id + ".x");
+            double y = locations.getDouble(id + ".y");
+            double z = locations.getDouble(id + ".z");
+            Location loc = new Location(world, x, y, z);
+            chestLocs.put(loc, tier);
+        }
 
         new BukkitRunnable() {
             @Override
@@ -35,19 +53,11 @@ public class LootChestManager {
         }.runTaskTimer(this.plugin, 20, 3*20L);
     }
 
+    /**
+     * This method generates green particles when a chest respawns and sets the material to a chest.
+     */
     private void regenChests() {
-
-        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-                "chests.yml");
-        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
-        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
-
-        for (String id : locations.getKeys(false)) {
-            World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
-            double x = locations.getDouble(id + ".x");
-            double y = locations.getDouble(id + ".y");
-            double z = locations.getDouble(id + ".z");
-            Location loc = new Location(world, x, y, z);
+        for (Location loc : chestLocs.keySet()) {
             if (loc.getBlock().getType() == Material.CHEST) continue;
             loc.getBlock().setType(Material.CHEST);
             loc.getBlock().getWorld().spawnParticle(Particle.VILLAGER_HAPPY,
@@ -57,26 +67,10 @@ public class LootChestManager {
 
     private void particleTask() {
 
-        // retrieve the data file
-        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-                "chests.yml");
-        FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
-        ConfigurationSection chestLocs = chestConfig.getConfigurationSection("Chests.Locations");
-
-        if (chestLocs == null) return;
-
-        for (String id : chestLocs.getKeys(false)) {
-            String tier = chestLocs.getString(id + ".tier");
-            String world = chestLocs.getString(id + ".world");
-            double x = chestLocs.getDouble(id + ".x");
-            double y = chestLocs.getDouble(id + ".y");
-            double z = chestLocs.getDouble(id + ".z");
-            Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-
+        for (Location loc : chestLocs.keySet()) {
             if (loc.getBlock().getType() != Material.CHEST) continue;
-
             Color color;
-            switch (tier) {
+            switch (chestLocs.get(loc)) {
                 case "common":
                     color = Color.WHITE;
                     break;
@@ -91,7 +85,7 @@ public class LootChestManager {
                     break;
             }
 
-            Bukkit.getWorld(world).spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
+            Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
                     10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(color, 3));
         }
     }

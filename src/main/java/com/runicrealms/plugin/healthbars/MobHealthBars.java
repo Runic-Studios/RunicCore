@@ -8,7 +8,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Consumer;
@@ -18,13 +17,6 @@ import com.runicrealms.plugin.utilities.InvisStandSpawner;
 // todo: only update the mob healthbars if players are nearby to see them, to prevent client-side lag for low-end PCs.
 @SuppressWarnings({"unchecked", "deprecation"})
 public final class MobHealthBars implements Listener {
-
-//    @EventHandler
-//    public void onLogin(PlayerJoinEvent e) {
-//        setupEntityHealthbar(e.getPlayer(), ChatColor.WHITE + e.getPlayer().getName());
-//    }
-
-    // todo: remove healthbar on logout, manager cleanup, parties
 
     /**
      * Creates mob healthbars.
@@ -78,40 +70,6 @@ public final class MobHealthBars implements Listener {
             }
         }.runTaskLater(RunicCore.getInstance(), 1);
     }
-
-//    public static void setupEntityHealthbar(LivingEntity mob, String name) {
-//
-//        // stack two armor stands
-//        Consumer consumer = new InvisStandSpawner();
-//        ArmorStand stand = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
-//        stand.setMarker(false);
-//        stand.setSmall(true);
-//        stand.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
-//        mob.addPassenger(stand);
-//
-//        // second stand
-//        ArmorStand stand2 = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
-//        stand2.setMarker(true);
-//        stand2.setSmall(true);
-//        stand2.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
-//        stand.addPassenger(stand2);
-//
-//        Entity top = mob.getPassengers().get(mob.getPassengers().size() - 1);
-//        Entity bottom = top.getPassengers().get(top.getPassengers().size() - 1);
-//
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//
-//                String healthBar = ChatColor.YELLOW + "" + "["
-//                        + createHealthDisplay(mob, 0)
-//                        + ChatColor.YELLOW + "]";
-//
-//                top.setCustomName(name);
-//                bottom.setCustomName(healthBar);
-//            }
-//        }.runTaskLater(RunicCore.getInstance(), 1);
-//    }
 
     /**
      * Updates mob health bar on damage.

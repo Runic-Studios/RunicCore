@@ -37,7 +37,11 @@ public class TabListManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                Bukkit.getOnlinePlayers().forEach(p -> updatePartyColumn(p));
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    if (tabbed.getTabList(online) == null) continue;
+                    updatePartyColumn(online);
+                }
+                //Bukkit.getOnlinePlayers().forEach(p -> updatePartyColumn(p));
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 200L, 5L);
     }
