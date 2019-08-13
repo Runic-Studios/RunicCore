@@ -1,12 +1,9 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.classes.ClassGUI;
-import com.runicrealms.plugin.classes.utilities.ClassUtil;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
-import com.runicrealms.plugin.utilities.ChatUtils;
-import org.bukkit.Bukkit;
+import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -25,8 +22,6 @@ import com.runicrealms.plugin.attributes.AttributeUtil;
  * @author Skyfallin_
  */
 public class PlayerLevelListener implements Listener {
-
-    private static final int maxLevel = 50;
 
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent e) {
@@ -57,7 +52,7 @@ public class PlayerLevelListener implements Listener {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
         // title screen message
-        if (pl.getLevel() == maxLevel) {
+        if (pl.getLevel() == PlayerLevelUtil.getMaxLevel()) {
             pl.sendTitle(
                     ChatColor.GOLD + "Max Level!",
                     ChatColor.GOLD + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);

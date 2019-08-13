@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.Damageable;
 
 import java.util.Objects;
 
+// todo: don't write to config every time someone gets exp, just cache it.
 public class PlayerLevelUtil {
 
     private static final int maxLevel = 60;
@@ -99,21 +100,21 @@ public class PlayerLevelUtil {
         } else if (classLevel >= 10  && oldLevel < 10) {
             sendUnlockMessage(pl, 10, className, classLevel);
             giveSpellpoint(pl);
-            unlockSpell(rune, "primarySpell", pl, 1, className);
+            //unlockSpell(rune, "primarySpell", pl, 1, className);
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                     "lp user " + pl.getName() + " permission set core.skins." + className + ".21" + " true");
             return true;
         } else if (classLevel >= 20 && oldLevel < 20) {
             sendUnlockMessage(pl, 20, className, classLevel);
             giveSpellpoint(pl);
-            unlockSpell(rune, "secondarySpell", pl, 1, className);
+            //unlockSpell(rune, "secondarySpell", pl, 1, className);
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                     "lp user " + pl.getName() + " permission set core.skins." + className + ".22" + " true");
             return true;
         } else if (classLevel >= 30 && oldLevel < 30) {
             sendUnlockMessage(pl, 30, className, classLevel);
             giveSpellpoint(pl);
-            unlockSpell(artifact, "secondarySpell", pl, 0, className);
+            //unlockSpell(artifact, "secondarySpell", pl, 0, className);
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                     "lp user " + pl.getName() + " permission set core.skins." + className + ".23" + " true");
             return true;
@@ -134,20 +135,17 @@ public class PlayerLevelUtil {
     private static void giveSpellpoint(Player pl) {
         int spellpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
         RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
-//        RunicCore.getInstance().saveConfig();
-//        RunicCore.getInstance().reloadConfig();
-//        RunicCore.getScoreboardHandler().updateSideInfo(pl);
     }
-    private static void unlockSpell(ItemStack item, String slot, Player pl, int itemSlot, String className) {
-        int durab = ((Damageable) Objects.requireNonNull(item.getItemMeta())).getDamage();
-        //item = AttributeUtil.addSpell(item, slot, ChatColor.GREEN + "UNLOCKED");
-        if (itemSlot == 0) {
-            LoreGenerator.generateArtifactLore(item, Objects.requireNonNull(item.getItemMeta()).getDisplayName(), className, durab);
-        } else {
-            LoreGenerator.generateRuneLore(item);
-        }
-        pl.getInventory().setItem(itemSlot, item);
-    }
+
+//    private static void unlockSpell(ItemStack item, Player pl, int itemSlot, String className) {
+//        int durab = ((Damageable) Objects.requireNonNull(item.getItemMeta())).getDamage();
+//        if (itemSlot == 0) {
+//            LoreGenerator.generateArtifactLore(item, Objects.requireNonNull(item.getItemMeta()).getDisplayName(), className, durab);
+//        } else {
+//            LoreGenerator.generateRuneLore(item);
+//        }
+//        pl.getInventory().setItem(itemSlot, item);
+//    }
 
     private static void sendLevelMessage(Player pl) {
 
@@ -191,5 +189,9 @@ public class PlayerLevelUtil {
         ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
         ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your Artifact or Rune to add a spell!");
         pl.sendMessage("\n");
+    }
+
+    public static int getMaxLevel() {
+        return maxLevel;
     }
 }
