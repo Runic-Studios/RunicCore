@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -114,21 +115,67 @@ public class ItemGUI implements Listener {
 
         if (event.getInventory().getTitle().equals(this.name)) {
 
-            // handle gold pouch, loot chests separately
-            if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
+            // gold scrapper
+            if (event.getInventory().getTitle().toLowerCase().contains("scrapper")) {
 
-                // cancel moving soulbound items to chest
-                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY))) {
-
-                    String soulbound = AttributeUtil.getCustomString(event.getCurrentItem(), "soulbound");
-                    if (soulbound.equals("true")) {
-                        Player pl = (Player) event.getWhoClicked();
+                // menu items in gold scrapper menu
+                if (event.getCurrentItem() != null
+                        && (event.getCurrentItem().getType() == Material.SLIME_BALL
+                        || event.getCurrentItem().getType() == Material.BARRIER)) {
                         event.setCancelled(true);
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(ChatColor.GRAY + "This item is soulbound.");
+
+                } else if (event.getCurrentItem() != null) {
+
+                    if (event.getCurrentItem().getType() == Material.AIR) {
+                        event.setCancelled(false);
+
+                    } else {
+
+                        ItemTypeEnum itemType = ItemTypeEnum.matchType(event.getCurrentItem());
+                        switch (itemType) {
+                            case PLATE:
+                            case GILDED:
+                            case MAIL:
+                            case LEATHER:
+                            case CLOTH:
+                                if (soulboundCheck(event)) {
+                                    event.setCancelled(false);
+                                } else {
+                                    event.setCancelled(true);
+                                    event.getWhoClicked().sendMessage
+                                            (ChatColor.GRAY + "[1/1] "  +
+                                                    ChatColor.YELLOW + "Armor Scrapper: " +
+                                                    ChatColor.WHITE + "I can only scrap armor!");
+                                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(),
+                                            Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+                                }
+                                break;
+                            default:
+                                event.setCancelled(true);
+                                event.getWhoClicked().sendMessage
+                                        (ChatColor.GRAY + "[1/1] "  +
+                                                ChatColor.YELLOW + "Armor Scrapper: " +
+                                                ChatColor.WHITE + "I can only scrap armor!");
+                                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(),
+                                        Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+                                break;
+                        }
                     }
                 }
 
+                // loot chests
+            } else if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
+
+                // cancel moving soulbound items to chest
+                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) && !soulboundCheck(event)) {
+                    event.setCancelled(true);
+                } else if (!soulboundCheck(event)) {
+                    event.setCancelled(true);
+                } else {
+                    event.setCancelled(false);
+                }
+
+                // gold pouch
             } else if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
                     && event.getCurrentItem() != null
                     && (event.getCurrentItem().getType() == Material.GOLD_NUGGET
@@ -137,7 +184,7 @@ public class ItemGUI implements Listener {
                     || event.getCurrentItem().getType() == Material.GOLD_NUGGET))) {
                 event.setCancelled(false);
 
-                // all items other than gold pouch
+                // all other menus
             } else {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
@@ -192,6 +239,20 @@ public class ItemGUI implements Listener {
                     }
                 }
             }.runTaskLater(plugin, 1L);
+
+            // gold scrapper
+            if (e.getInventory().getTitle().toLowerCase().contains("scrapper")) {
+
+                for (int i = 0; i < 7; i++) {
+                    if (e.getInventory().getItem(i) == null) continue;
+                    ItemStack itemStack = e.getInventory().getItem(i);
+                    if (e.getPlayer().getInventory().firstEmpty() != -1) {
+                        e.getPlayer().getInventory().addItem(itemStack);
+                    } else {
+                        e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), itemStack);
+                    }
+                }
+            }
         }
     }
 
@@ -234,5 +295,17 @@ public class ItemGUI implements Listener {
         }
 
         return item;
+    }
+
+    private boolean soulboundCheck(InventoryClickEvent event) {
+        // cancel moving soulbound items to inventories
+        String soulbound = AttributeUtil.getCustomString(event.getCurrentItem(), "soulbound");
+        if (soulbound.equals("true")) {
+            Player pl = (Player) event.getWhoClicked();
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            pl.sendMessage(ChatColor.GRAY + "This item is soulbound.");
+            return false;
+        }
+        return true;
     }
 }

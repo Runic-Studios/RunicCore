@@ -297,6 +297,7 @@ public abstract class Workstation implements Listener {
             if (chance <= rate) {
                 // check that the player has an open inventory space
                 // this method prevents items from stacking if the player crafts 5
+                // todo: let players stack certain items
                 if (pl.getInventory().firstEmpty() != -1) {
                     int firstEmpty = pl.getInventory().firstEmpty();
                     pl.getInventory().setItem(firstEmpty, craftedItem);

@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.HashMap;
 import java.util.Objects;
 
+// todo: add 5 chestplates w/ 2 gem slots and solid health, mana
 public class LegendaryManager implements Listener {
 
     private HashMap<String, ItemStack> legendaries = new HashMap<>();

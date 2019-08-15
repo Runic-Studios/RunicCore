@@ -3,7 +3,7 @@ package com.runicrealms.plugin;
 import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.item.GoldPouchListener;
 import com.runicrealms.plugin.item.LegendaryManager;
-import com.runicrealms.plugin.item.commands.CurrencyGive;
+import com.runicrealms.plugin.item.commands.*;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
@@ -17,9 +17,6 @@ import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBossBars;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.artifact.ArtifactListener;
-import com.runicrealms.plugin.item.commands.CurrencyPouch;
-import com.runicrealms.plugin.item.commands.HearthstoneCMD;
-import com.runicrealms.plugin.item.commands.ItemCMD;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
@@ -217,6 +214,7 @@ public class RunicCore extends JavaPlugin {
         getCommand("currency").setExecutor(currencySC);
         currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
         currencySC.addCommand(Arrays.asList("pouch"), new CurrencyPouch(currencySC));
+        currencySC.addCommand(Arrays.asList("scrapper"), new GoldScrapperCMD(currencySC));
 
         // experience
         CheckExpCMD checkExpCMD = new CheckExpCMD();
