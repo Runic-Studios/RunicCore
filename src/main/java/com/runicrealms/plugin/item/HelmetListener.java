@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -117,6 +118,10 @@ public class HelmetListener implements Listener {
         if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
         if (!e.getClick().isShiftClick()) return;
         if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
+        InventoryView view = e.getWhoClicked().getOpenInventory();
+        // prevents shift-clicking mechanics on item menus
+        if (!view.getTopInventory().toString().contains("CraftInventoryCrafting")) return;
+
         Player pl = (Player) e.getWhoClicked();
         String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
 
