@@ -76,20 +76,20 @@ public class FishingListener implements Listener {
             e.setCancelled(true);
 
             if (fishType < 50) {
+                itemType = Material.SALMON;
+                itemName = "Salmon";
+                holoString = "+ Salmon";
+            } else if (fishType < 75) {
                 itemType = Material.COD;
                 itemName = "Cod";
                 holoString = "+ Cod";
-            } else if (fishType < 75) {
-                itemName = "Salmon";
-                itemType = Material.SALMON;
-                holoString = "+ Salmon";
             } else if (fishType < 95) {
-                itemName = "Tropical Fish";
                 itemType = Material.TROPICAL_FISH;
+                itemName = "Tropical Fish";
                 holoString = "+ Tropical";
             } else {
-                itemName = "Pufferfish";
                 itemType = Material.PUFFERFISH;
+                itemName = "Pufferfish";
                 holoString = "+ Pufferfish";
             }
 
