@@ -55,6 +55,15 @@ public class ItemCMD implements SubCommand {
                 pl.getWorld().dropItem(pl.getLocation(), tomb);
             }
             return;
+        } else if (args[2].equals("shield")) {
+            ItemStack shield = LegendaryManager.captainsShield();
+            if (pl.getInventory().firstEmpty() != -1) {
+                int firstEmpty = pl.getInventory().firstEmpty();
+                pl.getInventory().setItem(firstEmpty, shield);
+            } else {
+                pl.getWorld().dropItem(pl.getLocation(), shield);
+            }
+            return;
         }
 
         // runicgive item [player] [itemType] [tier] ([x] [y] [z])
