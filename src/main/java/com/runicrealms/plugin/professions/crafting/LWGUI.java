@@ -121,22 +121,22 @@ public class LWGUI extends Workstation {
                 // helmet
                 } if (slot == 10) {
                     reagentAmt = 5;
-                    exp = 50;
+                    exp = 60;
                 // chestplate
                 } else if (slot == 11) {
                     //reqLevel = 40;
                     reagentAmt = 8;
-                    exp = 80;
+                    exp = 96;
                 // leggings
                 } else if (slot == 12) {
                     //reqLevel = 20;
                     reagentAmt = 7;
-                    exp = 70;
+                    exp = 84;
                 // boots
                 } else if (slot == 13) {
                     //reqLevel = 10;
                     reagentAmt = 4;
-                    exp = 40;
+                    exp = 48;
                 }
 
                 // armor
@@ -187,19 +187,19 @@ public class LWGUI extends Workstation {
         LinkedHashMap<Material, Integer> leatherReqs = new LinkedHashMap<>();
         leatherReqs.put(Material.RABBIT_HIDE, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.SHEARS, "&fCrafted Leather Helmet", leatherReqs,
-                "Processed Leather", 5, 50, 0, 10,
+                "Processed Leather", 5, 60, 0, 10,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 11, Material.LEATHER_CHESTPLATE, "&fCrafted Leather Tunic", leatherReqs,
-                "Processed Leather", 8, 80, 0, 0,
+                "Processed Leather", 8, 96, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 12, Material.LEATHER_LEGGINGS, "&fCrafted Leather Legs", leatherReqs,
-                "Processed Leather", 7, 70, 0, 0,
+                "Processed Leather", 7, 84, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 13, Material.LEATHER_BOOTS, "&fCrafted Leather Boots", leatherReqs,
-                "Processed Leather", 4, 40, 0, 0,
+                "Processed Leather", 4, 48, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         // legendary

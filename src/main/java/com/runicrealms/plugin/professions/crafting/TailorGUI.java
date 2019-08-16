@@ -123,22 +123,22 @@ public class TailorGUI extends Workstation {
                 // helmet
                 } else if (slot == 10) {
                     reagentAmt = 5;
-                    exp = 100;
+                    exp = 60;
                 // chestplate
                 } else if (slot == 11) {
                     //reqLevel = 40;
                     reagentAmt = 8;
-                    exp = 160;
+                    exp = 96;
                 // leggings
                 } else if (slot == 12) {
                     //reqLevel = 20;
                     reagentAmt = 7;
-                    exp = 140;
+                    exp = 84;
                 // boots
                 } else if (slot == 13) {
                     //reqLevel = 10;
                     reagentAmt = 4;
-                    exp = 80;
+                    exp = 48;
                 }
 
                 // armor
@@ -188,19 +188,19 @@ public class TailorGUI extends Workstation {
         LinkedHashMap<Material, Integer> gearReqs = new LinkedHashMap<>();
         gearReqs.put(Material.PAPER, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.SHEARS, "&fWoven Cloth Hood", gearReqs,
-                "Cloth", 5, 50, 0, 5,
+                "Cloth", 5, 60, 0, 5,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 11, Material.DIAMOND_CHESTPLATE, "&fWoven Cloth Robe", gearReqs,
-                "Cloth", 8, 80, 0, 0,
+                "Cloth", 8, 96, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 12, Material.DIAMOND_LEGGINGS, "&fWoven Cloth Legs", gearReqs,
-                "Cloth", 7, 70, 0, 0,
+                "Cloth", 7, 84, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 13, Material.DIAMOND_BOOTS, "&fWoven Cloth Boots", gearReqs,
-                "Cloth", 4, 40, 0, 0,
+                "Cloth", 4, 48, 0, 0,
                 "&c+ " + healthStr + "❤\n&3+ " + healthStr + "✸",
                 false, true, false);
         // legendary

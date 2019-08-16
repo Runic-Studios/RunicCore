@@ -114,7 +114,7 @@ public class JewelerGUI extends Workstation {
                 // ruby
                 if (slot == 9) {
                     reqHashMap = cutRubyReqs;
-                    exp = 10;
+                    exp = 15;
                     if (currentLvl < 30) {
                         dummyVar = 10;
                     } else if (currentLvl < 50) {
@@ -125,7 +125,7 @@ public class JewelerGUI extends Workstation {
                 // sapphire
                 } else if (slot == 10) {
                     reqHashMap = cutSapphireReqs;
-                    exp = 20;
+                    exp = 30;
                     if (currentLvl < 30) {
                         dummyVar = 15;
                     } else if (currentLvl < 50) {
@@ -137,7 +137,7 @@ public class JewelerGUI extends Workstation {
                 } else if (slot == 11) {
                     reqLevel = 10;
                     reqHashMap = cutOpalReqs;
-                    exp = 30;
+                    exp = 45;
                     if (currentLvl < 30) {
                         dummyVar = 1;
                     } else if (currentLvl < 50) {
@@ -149,7 +149,7 @@ public class JewelerGUI extends Workstation {
                 } else if (slot == 12) {
                     reqLevel = 25;
                     reqHashMap = cutEmeraldReqs;
-                    exp = 40;
+                    exp = 60;
                     if (currentLvl < 30) {
                         dummyVar = 2;
                     } else if (currentLvl < 50) {
@@ -161,7 +161,7 @@ public class JewelerGUI extends Workstation {
                 } else if (slot == 13) {
                     reqLevel = 25;
                     reqHashMap = cutDiamondReqs;
-                    exp = 50;
+                    exp = 75;
                     if (currentLvl < 30) {
                         dummyVar = 2;
                     } else if (currentLvl < 50) {
@@ -217,35 +217,35 @@ public class JewelerGUI extends Workstation {
         LinkedHashMap<Material, Integer> cutRubyReqs = new LinkedHashMap<>();
         cutRubyReqs.put(Material.REDSTONE_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.REDSTONE, "&fCut Ruby", cutRubyReqs,
-                "Uncut Ruby", 1, 10, 0, 0, "&c+" + healthStr + "❤ (Health)",
+                "Uncut Ruby", 1, 15, 0, 0, "&c+" + healthStr + "❤ (Health)",
                 false, true, false);
 
         // sapphire (+mana)
         LinkedHashMap<Material, Integer> cutSapphireReqs = new LinkedHashMap<>();
         cutSapphireReqs.put(Material.LAPIS_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 10, Material.LAPIS_LAZULI, "&fCut Sapphire", cutSapphireReqs,
-                "Uncut Sapphire", 1, 20, 0, 0, "&3+" + manaStr + "✸ (Mana)",
+                "Uncut Sapphire", 1, 30, 0, 0, "&3+" + manaStr + "✸ (Mana)",
                 false, true, false);
 
         // opal (+weapon dmg)
         LinkedHashMap<Material, Integer> cutOpalReqs = new LinkedHashMap<>();
         cutOpalReqs.put(Material.NETHER_QUARTZ_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 11, Material.QUARTZ, "&fCut Opal", cutOpalReqs,
-                "Uncut Opal", 1, 30, 10, 0, "&c+" + weaponStr + "⚔ (Weapon Dmg)",
+                "Uncut Opal", 1, 45, 10, 0, "&c+" + weaponStr + "⚔ (Weapon Dmg)",
                 false, true, false);
 
         // emerald (+healing)
         LinkedHashMap<Material, Integer> cutEmeraldReqs = new LinkedHashMap<>();
         cutEmeraldReqs.put(Material.EMERALD_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 12, Material.EMERALD, "&fCut Emerald", cutEmeraldReqs,
-                "Uncut Emerald", 1, 40, 25, 0, "&a+" + healingStr + "✦ (Healing)",
+                "Uncut Emerald", 1, 60, 25, 0, "&a+" + healingStr + "✦ (Healing)",
                 false, true, false);
 
         // diamond (+spell dmg)
         LinkedHashMap<Material, Integer> cutDiamondReqs = new LinkedHashMap<>();
         cutDiamondReqs.put(Material.DIAMOND_ORE, 999);
         super.createMenuItem(forgeMenu, pl, 13, Material.DIAMOND, "&fCut Diamond", cutDiamondReqs,
-                "Uncut Diamond", 1, 50, 25, 0, "&3+" + spellStr + "ʔ (Spell Dmg)",
+                "Uncut Diamond", 1, 75, 25, 0, "&3+" + spellStr + "ʔ (Spell Dmg)",
                 false, true, false);
     }
 

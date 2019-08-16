@@ -135,22 +135,19 @@ public class BSAnvilGUI extends Workstation {
                 // helmets
                 if (slot == 9 || slot == 18 || slot == 27) {
                     reagentAmt = 5;
-                    exp = 50;
+                    exp = 60;
                     // chestplates
                 } else if (slot == 10 || slot == 19 || slot == 28) {
-                    //reqLevel = 40;
                     reagentAmt = 8;
-                    exp = 80;
+                    exp = 96;
                     // leggings
                 } else if (slot == 11 || slot == 20 || slot == 29) {
-                    //reqLevel = 20;
                     reagentAmt = 7;
-                    exp = 70;
+                    exp = 84;
                     // boots
                 } else if (slot == 12 || slot == 21 || slot == 30) {
-                    //reqLevel = 10;
                     reagentAmt = 4;
-                    exp = 40;
+                    exp = 48;
                 }
 
                 // mail
@@ -221,19 +218,19 @@ public class BSAnvilGUI extends Workstation {
         LinkedHashMap<Material, Integer> chainLinkReqs = new LinkedHashMap<>();
         chainLinkReqs.put(Material.IRON_BARS, 999);
         super.createMenuItem(forgeMenu, pl, 9, Material.SHEARS, "&fForged Mail Helmet", chainLinkReqs,
-                "Chain Link", 5, 50, 0, 15,
+                "Chain Link", 5, 60, 0, 15,
                 "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 10, Material.CHAINMAIL_CHESTPLATE, "&fForged Mail Body", chainLinkReqs,
-                "Chain Link", 8, 80, 0, 0,
+                "Chain Link", 8, 96, 0, 0,
                 "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 11, Material.CHAINMAIL_LEGGINGS, "&fForged Mail Legs", chainLinkReqs,
-                "Chain Link", 7, 70, 0, 0,
+                "Chain Link", 7, 84, 0, 0,
                 "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
                 false, true, false);
         super.createMenuItem(forgeMenu, pl, 12, Material.CHAINMAIL_BOOTS, "&fForged Mail Boots", chainLinkReqs,
-                "Chain Link", 4, 40, 0, 0,
+                "Chain Link", 4, 48, 0, 0,
                 "&c+ " + mailStr + "❤\n&3+ " + mailStr + "✸",
                 false, true, false);
         // legendary
