@@ -124,7 +124,10 @@ public class RuneGUI {
                             pl.sendMessage(ChatColor.GREEN + "You have unlocked "
                                     + ChatColor.YELLOW + ChatColor.ITALIC
                                     + event.getInventory().getItem(event.getSlot()).getItemMeta().getDisplayName()
-                                    + ChatColor.GREEN + "!");
+                                    + ChatColor.GREEN + "! Now click the spell again to activate it!");
+                        } else {
+                            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                            pl.sendMessage(ChatColor.RED + "You need a spell point to do that!");
                         }
                     }
                 } else {
