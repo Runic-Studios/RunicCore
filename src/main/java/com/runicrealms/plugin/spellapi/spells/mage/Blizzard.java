@@ -99,13 +99,18 @@ public class Blizzard extends Spell {
             if (region.getId().contains("tutorial_mage")) {
 
                 // ensure player is facing the flames
-                if (!DirectionUtil.getDirection(pl).equals("S")) return;
+                if (!DirectionUtil.getDirection(pl).equals("S")
+                        && !DirectionUtil.getDirection(pl).equals("SE")
+                        && !DirectionUtil.getDirection(pl).equals("E")) return;
                 SpellCastEvent sce = new SpellCastEvent(pl, this);
                 Bukkit.getPluginManager().callEvent(sce);
                 if (sce.isCancelled()) return;
                 pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1);
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2336, 37, 1738), Material.ICE.createBlockData());
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2335, 37, 1738), Material.ICE.createBlockData());
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2335, 37, 1726), Material.ICE.createBlockData());
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2333, 38, 1728), Material.ICE.createBlockData());
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2334, 38, 1728), Material.ICE.createBlockData());
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2333, 39, 1730), Material.ICE.createBlockData());
+                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2334, 39, 1731), Material.ICE.createBlockData());
             }
         }
         // -----------------------------------------------------------------------------------------
