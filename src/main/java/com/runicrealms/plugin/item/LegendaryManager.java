@@ -52,9 +52,8 @@ public class LegendaryManager implements Listener {
 
     public static ItemStack captainsShield() {
         ItemStack shield = new ItemStack(Material.SHIELD);
-        shield = AttributeUtil.addCustomStat(shield, "required.level", 50);
         shield = AttributeUtil.addGenericStat(shield, "generic.maxHealth", 15, "offhand");
-        shield = AttributeUtil.addCustomStat(shield, "custom.shield", 4);
+        shield = AttributeUtil.addCustomStat(shield, "custom.shield", 3);
         shield = AttributeUtil.addCustomStat(shield, "soulbound", "true");
         LoreGenerator.generateItemLore(shield, ChatColor.GREEN, "Captain's Shield", "");
         return shield;

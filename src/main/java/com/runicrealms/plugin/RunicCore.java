@@ -234,6 +234,7 @@ public class RunicCore extends JavaPlugin {
         RunicGiveSC giveItemSC = new RunicGiveSC();
         getCommand("runicgive").setExecutor(giveItemSC);
         giveItemSC.addCommand(Arrays.asList("experience", "exp"), new ClassExpCMD(giveItemSC));
+        giveItemSC.addCommand(Arrays.asList("profexperience", "profexp"), new ProfExpCMD(giveItemSC));
         giveItemSC.addCommand(Arrays.asList("item"), new ItemCMD(giveItemSC));
 
         // npc build
