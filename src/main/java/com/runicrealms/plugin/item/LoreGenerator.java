@@ -266,6 +266,9 @@ public class LoreGenerator {
             case OFFHAND:
                 type = "Offhand";
                 break;
+            case CONSUMABLE:
+                type = "Consumable";
+                break;
             default:
                 type = "Something went wrong";
                 break;

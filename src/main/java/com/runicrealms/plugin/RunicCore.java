@@ -31,17 +31,6 @@ import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.commands.*;
-import com.runicrealms.plugin.professions.ProfManager;
-import com.runicrealms.plugin.professions.listeners.CookingListener;
-import com.runicrealms.plugin.professions.listeners.PotionListener;
-import com.runicrealms.plugin.professions.listeners.WorkstationListener;
-import com.runicrealms.plugin.professions.commands.GathertoolGive;
-import com.runicrealms.plugin.professions.commands.GathertoolSC;
-import com.runicrealms.plugin.professions.gathering.FarmingListener;
-import com.runicrealms.plugin.professions.gathering.FishingListener;
-import com.runicrealms.plugin.professions.gathering.MiningListener;
-import com.runicrealms.plugin.professions.gathering.WCListener;
-import com.runicrealms.plugin.professions.listeners.SocketListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
@@ -66,11 +55,10 @@ public class RunicCore extends JavaPlugin {
     // handlers
     private static RunicCore instance;
     private static CombatManager combatManager;
-    private static LootChestManager lootChestManager;
+    //private static LootChestManager lootChestManager;
     private static ManaManager manaManager;
     private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
-    private static ProfManager profManager;
     private static ScoreboardHandler scoreboardHandler;
     private static SpellManager spellManager;
     private static TabListManager tabListManager;
@@ -79,9 +67,8 @@ public class RunicCore extends JavaPlugin {
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
     public static ManaManager getManaManager() { return manaManager; }
-    public static LootChestManager getLootChestManager() { return lootChestManager; }
+    //public static LootChestManager getLootChestManager() { return lootChestManager; }
     public static PartyManager getPartyManager() { return partyManager; }
-    public static ProfManager getProfManager() { return profManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
     public static SpellManager getSpellManager() { return spellManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
@@ -91,11 +78,10 @@ public class RunicCore extends JavaPlugin {
         // instantiate everything we need
         instance = this;
         combatManager = new CombatManager();
-        lootChestManager = new LootChestManager();
+        //lootChestManager = new LootChestManager();
         manaManager = new ManaManager();
         mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
-        profManager = new ProfManager();
         scoreboardHandler = new ScoreboardHandler();
         spellManager = new SpellManager();
         tabListManager = new TabListManager(this);
@@ -134,11 +120,10 @@ public class RunicCore extends JavaPlugin {
         // let's prevent memory leaks, shall we?
         combatManager = null;
         instance = null;
-        lootChestManager = null;
+        //lootChestManager = null;
         manaManager = null;
         mobHealthManager = null;
         partyManager = null;
-        profManager = null;
         scoreboardHandler = null;
         spellManager = null;
         tabListManager = null;
@@ -155,9 +140,9 @@ public class RunicCore extends JavaPlugin {
 
         pm.registerEvents(RunicCore.getScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
-        pm.registerEvents(new ArtifactListener(), this);
-        pm.registerEvents(new RuneListener(), this);
-        pm.registerEvents(new HearthstoneListener(), this);
+        //pm.registerEvents(new ArtifactListener(), this);
+        //pm.registerEvents(new RuneListener(), this);
+        //pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
         pm.registerEvents(new StaffListener(), this);
         pm.registerEvents(new BowListener(), this);
@@ -171,17 +156,11 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new SpellUseEvent(), this);
         pm.registerEvents(new WeaponCDListener(), this);
         pm.registerEvents(new PlayerBossBars(), this);
-        pm.registerEvents(new WorkstationListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
-        pm.registerEvents(new MiningListener(), this);
-        pm.registerEvents(new FarmingListener(), this);
-        pm.registerEvents(new WCListener(), this);
-        pm.registerEvents(new FishingListener(), this);
-        pm.registerEvents(new SocketListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
         pm.registerEvents(new ManaListener(), this);
         pm.registerEvents(new PlayerLevelListener(), this);
-        pm.registerEvents(new HelmetListener(), this);
+        //pm.registerEvents(new HelmetListener(), this);
         pm.registerEvents(new CraftingListener(), this);
         pm.registerEvents(new MobHealthBars(), this);
         pm.registerEvents(new CombatListener(), this);
@@ -190,7 +169,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new SpellShieldListener(), this);
         pm.registerEvents(new BlockBreakListener(), this);
         pm.registerEvents(new MinLevelListener(), this);
-        pm.registerEvents(new PotionListener(), this);
         pm.registerEvents(new GuildListeners(), this);
         pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
@@ -199,7 +177,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new BossKillListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
-        pm.registerEvents(new CookingListener(), this);
         pm.registerEvents(new LegendaryManager(), this);
     }
     
@@ -224,11 +201,6 @@ public class RunicCore extends JavaPlugin {
         // mana commands
         Mana mana = new Mana();
         getCommand("mana").setExecutor(mana);
-
-        // gathertool commands
-        GathertoolSC toolSC = new GathertoolSC();
-        getCommand("gathertool").setExecutor(toolSC);
-        toolSC.addCommand(Arrays.asList("give"), new GathertoolGive(toolSC));
 
         // runic give commands
         RunicGiveSC giveItemSC = new RunicGiveSC();

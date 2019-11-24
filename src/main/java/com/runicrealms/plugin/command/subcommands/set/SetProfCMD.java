@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.command.subcommands.set;
 
-import com.runicrealms.plugin.professions.ProfGUI;
+//import com.runicrealms.plugin.professions.ProfGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -66,7 +66,7 @@ public class SetProfCMD implements SubCommand {
         if (pl == null) return;
 
         if (args.length == 2) {
-            ProfGUI.PROF_SELECTION.open(pl);
+            //ProfGUI.PROF_SELECTION.open(pl);
         } else {
 
             String profStr = args[2].toLowerCase();
@@ -83,7 +83,7 @@ public class SetProfCMD implements SubCommand {
 
             String formattedStr = profStr.substring(0, 1).toUpperCase() + profStr.substring(1);
 
-            ProfGUI.setConfig(pl, formattedStr);
+            //ProfGUI.setConfig(pl, formattedStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);
         }

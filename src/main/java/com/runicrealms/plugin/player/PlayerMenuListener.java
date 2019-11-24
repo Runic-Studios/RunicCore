@@ -64,13 +64,15 @@ public class PlayerMenuListener implements Listener {
             String attackDamage = statBoost(GearScanner.getAttackDamage(pl));
             String healingBoost = statBoost(GearScanner.getHealingBoost(pl));
             String magicBoost = statBoost(GearScanner.getMagicBoost(pl));
+            String shieldAmt = statBoost(GearScanner.getShieldAmt(pl));
 
             ItemStack gemMenu = item(pl, Material.REDSTONE, "&aCharacter Stats",
-                    "\n&7Total &c❤ &7bonus: " + healthBonus +
-                            "\n&7Total &3✸ &7bonus: " + manaBoost +
-                            "\n&7Total &c⚔ &7bonus: " + attackDamage +
-                            "\n&7Total &a✦ &7bonus: " + healingBoost +
-                            "\n&7Total &3ʔ &7bonus: " + magicBoost);
+                    "\n&c❤ (Health) &7bonus: " + healthBonus +
+                            "\n&3✸ (Mana) &7bonus: " + manaBoost +
+                            "\n&c⚔ (DMG) &7bonus: " + attackDamage +
+                            "\n&a✦ (Heal) &7bonus: " + healingBoost +
+                            "\n&3ʔ (Magic) &7bonus: " + magicBoost +
+                            "\n&f■ (Shield) &7bonus: " + shieldAmt);
 
             InventoryView view = pl.getOpenInventory();
 
