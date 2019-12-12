@@ -28,7 +28,7 @@ public class RunicItem {
     private int reqLevel;
 
     /*
-    Stat bonuses of item
+    Stat bonuses of item (gems and the like)
      */
     private int healthBonus;
     private int manaBonus;
@@ -36,6 +36,14 @@ public class RunicItem {
     private int healingBonus;
     private int magicBonus;
     private int shield;
+
+    /*
+    If you give this to an item, holding/equipping it will directly increase health of player.
+    (For armor/offhands only in most cases)
+    If you add it, you must specify a vanilla Minecraft slot to apply it to. (e.g. "offhand)
+     */
+    private int maxHealth;
+    private String slot;
 
     /*
     Damage range for item (if weapon)
@@ -55,7 +63,7 @@ public class RunicItem {
 
     public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
                      int healthBonus, int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
-                     int minDamage, int maxDamage, String spell) {
+                     int maxHealth, String slot, int minDamage, int maxDamage, String spell) {
         this.mat = mat;
         this.tier = tier;
         this.name = name;
@@ -67,6 +75,8 @@ public class RunicItem {
         this.healingBonus = healingBonus;
         this.magicBonus = magicBonus;
         this.shield = shield;
+        this.maxHealth = maxHealth;
+        this.slot = slot;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.spell = spell;
@@ -94,6 +104,7 @@ public class RunicItem {
         if (healingBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.healingBoost", healthBonus);
         if (magicBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.magicDamage", healthBonus);
         if (shield != 0) item = AttributeUtil.addCustomStat(item, "custom.shield", healthBonus);
+        if (maxHealth != 0) item = AttributeUtil.addGenericStat(item, "generic.maxHealth", maxHealth, slot);
         if (minDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.minDamage", minDamage);
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);
         if (!spell.equals("")) item = AttributeUtil.addSpell(item, "custom.maxDamage", spell);
