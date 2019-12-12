@@ -5,9 +5,7 @@ import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -65,7 +63,7 @@ public class DamageUtil {
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
 
         // scan the gems
-        dmgAmt = dmgAmt + GearScanner.getAttackDamage(caster);
+        dmgAmt = dmgAmt + GearScanner.getAttackBoost(caster);
 
         // update w/ shield
         if (recipient instanceof Player) {

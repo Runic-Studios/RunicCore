@@ -70,6 +70,7 @@ public class RunicItem {
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.spell = spell;
+        this.buildItem();
     }
 
     /**

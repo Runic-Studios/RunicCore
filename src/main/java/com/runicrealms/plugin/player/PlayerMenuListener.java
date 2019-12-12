@@ -27,7 +27,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Controls the player menu in the inventory crafting slots
@@ -61,18 +60,21 @@ public class PlayerMenuListener implements Listener {
             String healthBonus = statBoost(
                     (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -PlayerLevelListener.getHpAtLevel(pl));
             String manaBoost = statBoost(GearScanner.getManaBoost(pl));
-            String attackDamage = statBoost(GearScanner.getAttackDamage(pl));
+
             String healingBoost = statBoost(GearScanner.getHealingBoost(pl));
             String magicBoost = statBoost(GearScanner.getMagicBoost(pl));
             String shieldAmt = statBoost(GearScanner.getShieldAmt(pl));
 
-            ItemStack gemMenu = item(pl, Material.REDSTONE, "&aCharacter Stats",
-                    "\n&c❤ (Health) &7bonus: " + healthBonus +
-                            "\n&3✸ (Mana) &7bonus: " + manaBoost +
-                            "\n&c⚔ (DMG) &7bonus: " + attackDamage +
-                            "\n&a✦ (Heal) &7bonus: " + healingBoost +
-                            "\n&3ʔ (Magic) &7bonus: " + magicBoost +
-                            "\n&f■ (Shield) &7bonus: " + shieldAmt);
+            String minDamage = statBoost(GearScanner.getMinDamage(pl) + GearScanner.getAttackBoost(pl));
+            int maxDamage = (GearScanner.getMaxDamage(pl) + GearScanner.getAttackBoost(pl));
+
+            ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
+                    "\n&c❤ (Health) &ebonus: " + healthBonus +
+                            "\n&3✸ (Mana) &ebonus: " + manaBoost +
+                            "\n&c⚔ (DMG) &ebonus: " + minDamage + "-" + maxDamage +
+                            "\n&a✦ (Heal) &ebonus: " + healingBoost +
+                            "\n&3ʔ (Magic) &ebonus: " + magicBoost +
+                            "\n&f■ (Shield) &ebonus: " + shieldAmt);
 
             InventoryView view = pl.getOpenInventory();
 
@@ -156,7 +158,7 @@ public class PlayerMenuListener implements Listener {
         if (stat > 0) {
             return "&a+" + stat;
         } else {
-            return  "&f+" + stat;
+            return  "&7+" + stat;
         }
     }
 

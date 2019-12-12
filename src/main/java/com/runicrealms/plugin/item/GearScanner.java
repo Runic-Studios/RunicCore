@@ -71,7 +71,7 @@ public class GearScanner {
         return manaBoost;
     }
 
-    public static int getAttackDamage(Player pl) {
+    public static int getAttackBoost(Player pl) {
 
         int attackDamage = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
@@ -80,6 +80,16 @@ public class GearScanner {
             attackDamage += (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
         }
         return attackDamage;
+    }
+
+    public static int getMinDamage(Player pl) {
+        ItemStack item = pl.getInventory().getItemInMainHand();
+        return (int) AttributeUtil.getCustomDouble(item, "custom.minDamage");
+    }
+
+    public static int getMaxDamage(Player pl) {
+        ItemStack item = pl.getInventory().getItemInMainHand();
+        return (int) AttributeUtil.getCustomDouble(item, "custom.maxDamage");
     }
 
     public static int getHealingBoost(Player pl) {
