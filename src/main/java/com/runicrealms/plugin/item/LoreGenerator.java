@@ -192,7 +192,9 @@ public class LoreGenerator {
         }
 
         // -------------------------------------------------------------------------------------------
-        // for gemstones/custom boosts
+        // for weapons/gemstones/custom boosts
+        int minDamage = (int) AttributeUtil.getCustomDouble(item, "custom.minDamage");
+        int maxDamage = (int) AttributeUtil.getCustomDouble(item, "custom.maxDamage");
         int customHealth = (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
         double customAttSpeed = AttributeUtil.getCustomDouble(item, "custom.attackSpeed");
         int manaBoost = (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
@@ -202,6 +204,9 @@ public class LoreGenerator {
         double shieldAmt = AttributeUtil.getCustomDouble(item, "custom.shield");
         // -------------------------------------------------------------------------------------------
 
+        if (minDamage != 0 && maxDamage != 0) {
+            lore.add(ChatColor.RED + "+ " + minDamage + "-" + maxDamage + "⚔");
+        }
         if (customHealth != 0) {
             lore.add(ChatColor.RED + "+ " + customHealth + "❤");
         }
@@ -263,11 +268,22 @@ public class LoreGenerator {
             case GEMSTONE:
                 type = "Gemstone";
                 break;
+            case MAINHAND:
+                type = "Main Hand";
+                break;
             case OFFHAND:
-                type = "Offhand";
+                type = "Off-Hand";
                 break;
             case CONSUMABLE:
                 type = "Consumable";
+                break;
+            case ARCHER:
+            case CLERIC:
+            case MAGE:
+            case ROGUE:
+            case WARRIOR:
+                String s = itemType.toString();
+                type = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
                 break;
             default:
                 type = "Something went wrong";

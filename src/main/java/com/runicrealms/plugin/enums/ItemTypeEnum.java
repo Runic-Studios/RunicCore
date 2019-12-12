@@ -6,7 +6,7 @@ import org.bukkit.inventory.meta.Damageable;
 
 public enum ItemTypeEnum {
 
-    CLOTH, LEATHER, GILDED, MAIL, PLATE, GEMSTONE, OFFHAND, CONSUMABLE, AIR;
+    CLOTH, LEATHER, GILDED, MAIL, PLATE, GEMSTONE, MAINHAND, OFFHAND, CONSUMABLE, ARCHER, CLERIC, MAGE, ROGUE, WARRIOR, AIR;
 
     public static ItemTypeEnum matchType(final ItemStack itemStack){
         if(itemStack == null) { return null; }
@@ -58,14 +58,25 @@ public enum ItemTypeEnum {
                 case EMERALD:
                 case DIAMOND:
                     return GEMSTONE;
+                case IRON_SWORD:
+                    return MAINHAND;
                 case BOOK:
                 case FIRE_CHARGE:
                 case RABBIT_FOOT:
                 case SHIELD:
-                case IRON_SWORD:
                     return OFFHAND;
                 case FLINT:
                     return CONSUMABLE;
+                case BOW:
+                    return ARCHER;
+                case WOODEN_SHOVEL:
+                    return CLERIC;
+                case WOODEN_HOE:
+                    return MAGE;
+                case WOODEN_SWORD:
+                    return ROGUE;
+                case WOODEN_AXE:
+                    return WARRIOR;
                 default:
                     return AIR;
             }
