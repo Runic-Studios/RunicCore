@@ -61,9 +61,33 @@ public class RunicItem {
      */
     private ItemStack item;
 
+    /*
+    Use this constructor for ARMOR and OFFHANDS
+     */
     public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
-                     int healthBonus, int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
-                     int maxHealth, String slot, int minDamage, int maxDamage, String spell) {
+                     int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
+                     int maxHealth, String slot) {
+        this.mat = mat;
+        this.tier = tier;
+        this.name = name;
+        this.durability = durability;
+        this.reqLevel = reqLevel;
+        this.manaBonus = manaBonus;
+        this.damageBonus = damageBonus;
+        this.healingBonus = healingBonus;
+        this.magicBonus = magicBonus;
+        this.shield = shield;
+        this.maxHealth = maxHealth;
+        this.slot = slot;
+        this.buildItem();
+    }
+
+    /*
+    Use this constructor for WEAPONS
+     */
+    public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
+                     int healthBonus, int manaBonus, int damageBonus, int healingBonus, int magicBonus,
+                     int minDamage, int maxDamage, String spell) {
         this.mat = mat;
         this.tier = tier;
         this.name = name;
@@ -74,12 +98,27 @@ public class RunicItem {
         this.damageBonus = damageBonus;
         this.healingBonus = healingBonus;
         this.magicBonus = magicBonus;
-        this.shield = shield;
-        this.maxHealth = maxHealth;
-        this.slot = slot;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.spell = spell;
+        this.buildItem();
+    }
+
+    /*
+    Use this constructor for GEMSTONES
+     */
+    public RunicItem(Material mat, ChatColor tier, String name, int reqLevel, int healthBonus, int manaBonus,
+                     int damageBonus, int healingBonus, int magicBonus, int shield) {
+        this.mat = mat;
+        this.tier = tier;
+        this.name = name;
+        this.reqLevel = reqLevel;
+        this.healthBonus = healthBonus;
+        this.manaBonus = manaBonus;
+        this.damageBonus = damageBonus;
+        this.healingBonus = healingBonus;
+        this.magicBonus = magicBonus;
+        this.shield = shield;
         this.buildItem();
     }
 
