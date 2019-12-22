@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.commands;
 
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
+import com.runicrealms.plugin.events.LootEvent;
 import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.util.ItemScrapsUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
@@ -152,6 +153,13 @@ public class ItemCMD implements SubCommand {
                 craftedItem = ItemUtils.generateEpicItem();
                 break;
         }
+
+        /*
+        run our custom event for purposes of loot bonuses, potions, etc.
+         */
+        LootEvent event = new LootEvent(pl, craftedItem);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
 
         // check that the player has an open inventory space
         // this method prevents items from stacking if the player crafts 5
