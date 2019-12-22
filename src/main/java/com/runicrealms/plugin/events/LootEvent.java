@@ -27,7 +27,7 @@ public class LootEvent extends Event implements Cancellable {
         return this.player;
     }
 
-    public ItemStack getCommand() {
+    public ItemStack getItemStack() {
         return this.itemStack;
     }
 

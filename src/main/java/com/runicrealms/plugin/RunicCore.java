@@ -16,11 +16,7 @@ import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBossBars;
 import com.runicrealms.plugin.item.HelmetListener;
-import com.runicrealms.plugin.item.artifact.ArtifactListener;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
-import com.runicrealms.plugin.item.lootchests.LootChestManager;
-import com.runicrealms.plugin.item.rune.RuneListener;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.mounts.MountListener;
 import com.runicrealms.plugin.npc.Build;
@@ -140,9 +136,6 @@ public class RunicCore extends JavaPlugin {
 
         pm.registerEvents(RunicCore.getScoreboardHandler(), this);
         pm.registerEvents(new ScoreboardListener(), this);
-        //pm.registerEvents(new ArtifactListener(), this);
-        //pm.registerEvents(new RuneListener(), this);
-        //pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
         pm.registerEvents(new StaffListener(), this);
         pm.registerEvents(new BowListener(), this);
