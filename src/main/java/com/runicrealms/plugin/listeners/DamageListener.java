@@ -139,6 +139,9 @@ public class DamageListener implements Listener {
                     return;
                 }
 
+                // ensure correct class/weapon combo (archers and bows, etc)
+                if (!matchClass(pl)) return;
+
                 DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false);
 
             } else {
@@ -154,6 +157,77 @@ public class DamageListener implements Listener {
         if (!((victim.getHealth() - e.getFinalDamage() <= 0))) return;
 
         applySlainMechanics(e.getDamager(), ((Player) victim));
+    }
+
+    // todo: move to RunicArtifacts plugin
+    private boolean matchClass(Player pl) {
+        ItemStack mainHand = pl.getInventory().getItemInMainHand();
+        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        switch (mainHand.getType()) {
+            case BOW:
+                if (!className.equals("Archer")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    pl.sendMessage(weaponMessage(className));
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_SHOVEL:
+                if (!className.equals("Cleric")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    pl.sendMessage(weaponMessage(className));
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_HOE:
+                if (!className.equals("Mage")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    pl.sendMessage(weaponMessage(className));
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_SWORD:
+                if (!className.equals("Rogue")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    pl.sendMessage(weaponMessage(className));
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_AXE:
+                if (!className.equals("Warrior")) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    pl.sendMessage(weaponMessage(className));
+                    return false;
+                } else {
+                    return true;
+                }
+        }
+        return false;
+    }
+
+    private String weaponMessage(String className) {
+        String s = "";
+        switch (className) {
+            case "Archer":
+                s = (ChatColor.RED + "Archers can only wield bows.");
+                break;
+            case "Cleric":
+                s = (ChatColor.RED + "Clerics can only wield maces.");
+                break;
+            case "Mage":
+                s = (ChatColor.RED + "Mages can only wield staves.");
+                break;
+            case "Rogue":
+                s = (ChatColor.RED + "Rogues can only wield swords.");
+                break;
+            case "Warrior":
+                s = (ChatColor.RED + "Warriors can only wield axes.");
+                break;
+        }
+        return s;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

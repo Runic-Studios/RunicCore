@@ -278,12 +278,21 @@ public class LoreGenerator {
                 type = "Consumable";
                 break;
             case ARCHER:
+                type = "Bow";
+                break;
             case CLERIC:
+                type = "Mace";
+                break;
             case MAGE:
+                type = "Staff";
+                break;
             case ROGUE:
+                type = "Sword";
+                break;
             case WARRIOR:
-                String s = itemType.toString();
-                type = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+                type = "Axe";
+//                String s = itemType.toString();
+//                type = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
                 break;
             default:
                 type = "Something went wrong";

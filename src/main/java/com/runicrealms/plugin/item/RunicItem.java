@@ -99,11 +99,11 @@ public class RunicItem {
     private ItemStack applyStats(ItemStack item) {
         if (reqLevel != 0) item = AttributeUtil.addCustomStat(item, "required.level", reqLevel);
         if (healthBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.maxHealth", healthBonus);
-        if (manaBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.manaBoost", healthBonus);
-        if (damageBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.attackDamage", healthBonus);
-        if (healingBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.healingBoost", healthBonus);
-        if (magicBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.magicDamage", healthBonus);
-        if (shield != 0) item = AttributeUtil.addCustomStat(item, "custom.shield", healthBonus);
+        if (manaBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.manaBoost", manaBonus);
+        if (damageBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.attackDamage", damageBonus);
+        if (healingBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.healingBoost", healingBonus);
+        if (magicBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.magicDamage", magicBonus);
+        if (shield != 0) item = AttributeUtil.addCustomStat(item, "custom.shield", shield);
         if (maxHealth != 0) item = AttributeUtil.addGenericStat(item, "generic.maxHealth", maxHealth, slot);
         if (minDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.minDamage", minDamage);
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);

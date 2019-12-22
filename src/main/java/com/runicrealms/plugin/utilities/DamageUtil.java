@@ -62,6 +62,9 @@ public class DamageUtil {
 
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
 
+        // no damage ticks delay
+        if (recipient.getNoDamageTicks() > 0) return;
+
         // scan the gems
         dmgAmt = dmgAmt + GearScanner.getAttackBoost(caster);
 

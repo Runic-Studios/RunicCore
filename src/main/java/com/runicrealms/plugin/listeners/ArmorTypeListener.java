@@ -36,37 +36,59 @@ public class ArmorTypeListener implements Listener {
                 if (!className.equals("Warrior")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip plate armor!");
+                    pl.sendMessage(armorMessage(className));
                 }
                 break;
             case GILDED:
                 if (!className.equals("Cleric")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip gilded armor!");
+                    pl.sendMessage(armorMessage(className));
                 }
                 break;
             case MAIL:
                 if (!className.equals("Archer")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip mail armor!");
+                    pl.sendMessage(armorMessage(className));
                 }
                 break;
             case LEATHER:
                 if (!className.equals("Rogue")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip leather armor!");
+                    pl.sendMessage(armorMessage(className));
                 }
                 break;
             case CLOTH:
                 if (!className.equals("Mage")) {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(ChatColor.RED + className + "s aren't trained to equip cloth armor!");
+                    pl.sendMessage(armorMessage(className));
                 }
                 break;
         }
+    }
+
+    private String armorMessage(String className) {
+        String s = "";
+        switch (className) {
+            case "Archer":
+                s = (ChatColor.RED + "Archers can only equip mail armor.");
+                break;
+            case "Cleric":
+                s = (ChatColor.RED + "Clerics can only equip gilded armor.");
+                break;
+            case "Mage":
+                s = (ChatColor.RED + "Mages can only equip cloth armor.");
+                break;
+            case "Rogue":
+                s = (ChatColor.RED + "Rogues can only equip leather armor.");
+                break;
+            case "Warrior":
+                s = (ChatColor.RED + "Warriors can only equip plate armor.");
+                break;
+        }
+        return s;
     }
 }
