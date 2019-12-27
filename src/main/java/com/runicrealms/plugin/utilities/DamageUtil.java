@@ -41,6 +41,7 @@ public class DamageUtil {
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
+        Bukkit.broadcastMessage("the damage im getting is: " + dmgAmt);
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
