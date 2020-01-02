@@ -147,7 +147,7 @@ public class RunicItem {
         if (minDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.minDamage", minDamage);
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);
         // todo: fix the spell thing (left click or right click slot)
-        if (spell != null && !spell.equals("")) item = AttributeUtil.addSpell(item, "custom.maxDamage", spell);
+        if (spell != null && !spell.equals("")) item = AttributeUtil.addSpell(item, "spellslot", spell);
         return item;
     }
 
