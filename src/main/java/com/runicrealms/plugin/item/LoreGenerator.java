@@ -1,5 +1,9 @@
 package com.runicrealms.plugin.item;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.NumRounder;
 import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.ChatColor;
@@ -202,6 +206,8 @@ public class LoreGenerator {
         double healingBoost = AttributeUtil.getCustomDouble(item, "custom.healingBoost");
         double magicBoost = AttributeUtil.getCustomDouble(item, "custom.magicDamage");
         double shieldAmt = AttributeUtil.getCustomDouble(item, "custom.shield");
+        String spellStr = "";
+        if (AttributeUtil.getSpell(item, "secondarySpell") != null) spellStr = AttributeUtil.getSpell(item, "secondarySpell");
         // -------------------------------------------------------------------------------------------
 
         if (minDamage != 0 && maxDamage != 0) {
@@ -231,6 +237,22 @@ public class LoreGenerator {
         }
 
         lore.add("");
+
+        if (!spellStr.equals("")) {
+            try {
+                Spell spell = RunicCore.getSpellManager().getSpellByName(spellStr);
+                String command = "RIGHT CLICK";
+                if (item.getType() == Material.BOW) command = "LEFT CLICK";
+                lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + command + " " + ChatColor.GREEN + spell.getName());
+                for (String s : spell.getDescription().split("\n")) {
+                    lore.add(ChatColor.GRAY + s);
+                }
+                lore.add(ChatColor.DARK_AQUA + "Costs " + spell.getManaCost() + "✸");
+                lore.add("");
+            } catch (NullPointerException e) {
+                RunicCore.getInstance().getLogger().info(" §4Error: spell not found... " + spellStr); // debug
+            }
+        }
 
         // add rarity
         if (dispColor == ChatColor.WHITE) {
