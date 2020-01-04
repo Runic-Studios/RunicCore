@@ -267,6 +267,8 @@ public class LoreGenerator {
             lore.add(ChatColor.LIGHT_PURPLE + "Epic");
         } else if (dispColor == ChatColor.GOLD) {
             lore.add(ChatColor.GOLD + "Legendary");
+        } else if (dispColor == ChatColor.YELLOW) {
+            lore.add(ChatColor.YELLOW + "Unique");
         }
 
         // add type of item lore
