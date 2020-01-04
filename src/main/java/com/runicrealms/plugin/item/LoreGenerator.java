@@ -325,7 +325,6 @@ public class LoreGenerator {
         lore.add(ChatColor.GRAY + type);
 
         if (AttributeUtil.getCustomString(item, "soulbound").equals("true")) {
-            lore.add("");
             lore.add(ChatColor.DARK_GRAY + "Soulbound");
         }
 

@@ -57,6 +57,11 @@ public class RunicItem {
     private String spell;
 
     /*
+    Bind artifact to player
+     */
+    private boolean soulbound;
+
+    /*
      Used to get the final itemstack
      */
     private ItemStack item;
@@ -66,7 +71,7 @@ public class RunicItem {
      */
     public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
                      int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
-                     int maxHealth, String slot) {
+                     int maxHealth, String slot, boolean soulbound) {
         this.mat = mat;
         this.tier = tier;
         this.name = name;
@@ -79,6 +84,7 @@ public class RunicItem {
         this.shield = shield;
         this.maxHealth = maxHealth;
         this.slot = slot;
+        this.soulbound = soulbound;
         this.buildItem();
     }
 
@@ -87,7 +93,7 @@ public class RunicItem {
      */
     public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
                      int healthBonus, int manaBonus, int damageBonus, int healingBonus, int magicBonus,
-                     int minDamage, int maxDamage, String spell) {
+                     int minDamage, int maxDamage, String spell, boolean soulbound) {
         this.mat = mat;
         this.tier = tier;
         this.name = name;
@@ -101,6 +107,7 @@ public class RunicItem {
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.spell = spell;
+        this.soulbound = soulbound;
         this.buildItem();
     }
 
@@ -147,6 +154,7 @@ public class RunicItem {
         if (minDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.minDamage", minDamage);
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);
         if (spell != null && !spell.equals("")) item = AttributeUtil.addSpell(item, "secondarySpell", spell);
+        if (soulbound) item = AttributeUtil.addCustomStat(item, "soulbound", "true");
         return item;
     }
 
