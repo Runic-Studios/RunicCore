@@ -18,49 +18,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SearingShot extends Spell {
+public class PowerShot extends Spell {
 
-    private static final int DAMAGE = 35;
-    private List<Arrow> searingArrows;
+    private static final int DAMAGE = 3;
+    private static final int PERIOD = 2;
+    private static final int DURATION = 6;
+    private List<Arrow> powerArrs = new ArrayList<>();
 
     // constructor
-    public SearingShot() {
-        super("Searing Shot",
-                "You launch an enchanted, flaming arrow" +
-                "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, 8, 12);
-        searingArrows = new ArrayList<>();
+    public PowerShot() {
+        super("Power Shot",
+                "You launch an empowered arrow which" +
+                "\ndeals " + DAMAGE + " weapon⚔ damage every " + PERIOD + " seconds" +
+                "\nfor " + DURATION + " seconds to its target.",
+                ChatColor.WHITE, 8, 15);
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1f);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
-
-        Arrow searing = pl.launchProjectile(Arrow.class);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 0.5f);
+        Arrow poisoned = pl.launchProjectile(Arrow.class);
         Vector vec = pl.getEyeLocation().getDirection().normalize().multiply(2);
-        searing.setVelocity(vec);
-        searing.setShooter(pl);
-        searingArrows.add(searing);
+        poisoned.setVelocity(vec);
+        poisoned.setShooter(pl);
+        powerArrs.add(poisoned);
         new BukkitRunnable() {
             @Override
             public void run() {
-                Location arrowLoc = searing.getLocation();
-                arrowLoc.getWorld().spawnParticle(Particle.FLAME, arrowLoc,
-                        10, 0, 0, 0, 0);
-                if (searing.isDead() || searing.isOnGround()) {
+                Location arrowLoc = poisoned.getLocation();
+                pl.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0,
+                        new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1));
+                if (poisoned.isDead() || poisoned.isOnGround()) {
                     this.cancel();
-                    pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
-                    arrowLoc.getWorld().spawnParticle(Particle.LAVA, arrowLoc, 10, 0, 0, 0, 0);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
     }
 
     @EventHandler
-    public void onSearingArrowHit(EntityDamageByEntityEvent e) {
+    public void onPoisArrowHit(EntityDamageByEntityEvent e) {
 
         // only listen for arrows
         if (!(e.getDamager() instanceof Arrow)) {
@@ -74,7 +71,7 @@ public class SearingShot extends Spell {
         }
 
         // deal magic damage if arrow in in the barrage hashmap
-        if (!searingArrows.contains(arrow)) return;
+        if (!powerArrs.contains(arrow)) return;
 
         e.setCancelled(true);
 
@@ -97,7 +94,23 @@ public class SearingShot extends Spell {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
 
-        // spell effect
-        DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
+        new BukkitRunnable() {
+            int count = 1;
+            @Override
+            public void run() {
+
+                if (count > DURATION) {
+                    this.cancel();
+
+                } else {
+
+                    count += PERIOD;
+                    DamageUtil.damageEntityWeapon(DAMAGE, le, pl, true);
+                    le.getWorld().spawnParticle(Particle.CRIT, le.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
+                    le.getWorld().playSound(le.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
     }
 }

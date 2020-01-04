@@ -138,14 +138,13 @@ public class SpellManager {
         this.spellList.add(new Siphon());
         this.spellList.add(new ShadowStep());
         this.spellList.add(new ShadowStrike());
-        this.spellList.add(new Volley());
+        this.spellList.add(new IceVolley());
         this.spellList.add(new Starfall());
         this.spellList.add(new ArrowBomb());
         this.spellList.add(new SearingShot());
         this.spellList.add(new Evasion());
         this.spellList.add(new Envenom());
-        //this.spellList.add(new PiercingStrikes());
-        //this.spellList.add(new InvertMagic());
+        this.spellList.add(new PowerShot());
     }
 
     // starts the repeating task to manage player cooldowns

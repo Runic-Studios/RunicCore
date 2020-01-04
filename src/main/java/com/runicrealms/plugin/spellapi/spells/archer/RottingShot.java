@@ -27,10 +27,12 @@ public class RottingShot extends Spell {
 
     // constructor
     public RottingShot() {
-        super("Rotting Shot", "You launch an unholy arrow which" +
+        super("Rotting Shot",
+                "You launch an unholy arrow which" +
                 "\ndeals " + DAMAGE + " spellʔ damage every " + PERIOD + " seconds" +
                 "\nfor " + DURATION + " seconds to its target." +
-                "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%", ChatColor.WHITE, 16, 15);
+                "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                ChatColor.WHITE, 16, 15);
     }
 
     @Override

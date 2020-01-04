@@ -153,9 +153,9 @@ public class Blizzard extends Spell {
             victim.setLastDamageCause(e);
 
             // apply slow
-            if (victim instanceof Player) {
-                victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-            }
+            //if (victim instanceof Player) {
+                le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+            //}
         }
     }
 

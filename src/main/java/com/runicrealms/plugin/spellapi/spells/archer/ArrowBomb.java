@@ -27,7 +27,7 @@ public class ArrowBomb extends Spell {
     // constructor
     public ArrowBomb() {
         super("Arrow Bomb",
-                "You launch a flaming arrow that ignites" +
+                "You launch an enchanted arrow that ignites" +
                         "\non-hit, dealing " + DAMAGE + " spellʔ damage to all" +
                         "\nenemies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, 8, 15);
@@ -54,15 +54,13 @@ public class ArrowBomb extends Spell {
             @Override
             public void run() {
                 Location arrowLoc = arrow.getLocation();
-                arrowLoc.getWorld().spawnParticle(Particle.SMOKE_NORMAL, arrowLoc, 5, 0, 0, 0, 0);
+                arrowLoc.getWorld().spawnParticle(Particle.CRIT, arrowLoc,
+                        10, 0, 0, 0, 0);
                 if (arrow.isDead() || arrow.isOnGround()) {
-                    this.cancel();
 
-                    // particles, sounds
-                    arrow.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, arrow.getLocation(), 1, 0, 0, 0, 0);
-                    arrow.getWorld().spawnParticle(Particle.REDSTONE, arrow.getLocation(),
-                            25, 0, 2f, 2f, 2f, new Particle.DustOptions(Color.ORANGE, 20));
-                    arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
+                    this.cancel();
+                    arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
+                    arrowLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 10, 0, 0, 0, 0);
 
                     // hit them baddies
                     for (Entity e : arrow.getWorld().getNearbyEntities(arrow.getLocation(), RADIUS, RADIUS, RADIUS)) {

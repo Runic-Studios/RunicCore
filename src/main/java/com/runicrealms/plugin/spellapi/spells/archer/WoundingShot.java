@@ -31,10 +31,12 @@ public class WoundingShot extends Spell {
 
     // constructor
     public WoundingShot() {
-        super("Wounding Shot", "You launch an enchanted arrow which" +
-                "\ndeals " + DAMAGE + " spellʔ damage to its target and reduces" +
-                "\nall ✦spell healing on the target by " + (int) PERCENT + "%" +
-                "\nfor " + DURATION + " seconds!", ChatColor.WHITE, 15, 20);
+        super("Wounding Shot",
+                "You launch an enchanted arrow which" +
+                "\ndeals " + DAMAGE + " spellʔ damage to its target and" +
+                "\nreduces all ✦spell healing on the target" +
+                "\nby " + (int) PERCENT + "%" + " for " + DURATION + " seconds!",
+                ChatColor.WHITE, 15, 20);
     }
 
     @Override

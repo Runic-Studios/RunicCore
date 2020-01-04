@@ -446,7 +446,7 @@ public class ArtifactGUI {
         spells.add("Rotting Shot");
         spells.add("Searing Shot");
         spells.add("Wounding Shot");
-        spells.add("Volley");
+        spells.add("IceVolley");
         return spells;
     }
 
