@@ -60,10 +60,10 @@ public class DamageUtil {
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
-    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
+    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged, boolean bypassNoTick) {
 
         // no damage ticks delay
-        if (recipient.getNoDamageTicks() > 0) return;
+        if (!bypassNoTick && recipient.getNoDamageTicks() > 0) return;
 
         // scan the gems
         dmgAmt = dmgAmt + GearScanner.getAttackBoost(caster);

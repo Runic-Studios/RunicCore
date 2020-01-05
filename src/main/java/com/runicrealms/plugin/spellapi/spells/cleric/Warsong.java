@@ -1,16 +1,12 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -30,9 +26,10 @@ public class Warsong extends Spell {
                 "You sing a song of battle, granting a buff" +
                         "\nto all party members within " + RADIUS + " blocks!" +
                         "\nFor " + DURATION + " seconds, the buff increases the" +
-                        "\nweapon⚔ damage of your allies by " + (int) PERCENT + "%!" +
-                        "\nThis spell has no effect on yourself.",
+                        "\nweapon⚔ damage of you and your allies" +
+                        "\nby " + (int) PERCENT + "%!",
                 ChatColor.WHITE, 15, 15);
+        singers = new ArrayList<>();
     }
 
     // spell execute code
@@ -46,12 +43,14 @@ public class Warsong extends Spell {
         pl.getWorld().spawnParticle
                 (Particle.NOTE, pl.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
 
+        // buff caster
+        singers.add(pl.getUniqueId());
+
         // buff all players within 10 blocks
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
             for (Player memeber : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
                 if (pl.getLocation().distance(memeber.getLocation()) > RADIUS) continue;
-                this.singers = new ArrayList<>();
-                this.singers.add(memeber.getUniqueId());
+                singers.add(memeber.getUniqueId());
             }
         }
 
@@ -67,7 +66,7 @@ public class Warsong extends Spell {
     public void onArtfactHit(WeaponDamageEvent e) {
 
         Player damager = e.getPlayer();
-        if (this.singers == null) return;
+        if (singers == null) return;
         if (!singers.contains(damager.getUniqueId())) return;
 
         double percent = PERCENT / 100;

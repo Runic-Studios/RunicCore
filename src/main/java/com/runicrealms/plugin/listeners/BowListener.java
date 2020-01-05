@@ -156,7 +156,7 @@ public class BowListener implements Listener {
             return;
         }
 
-        DamageUtil.damageEntityWeapon(randomNum, victim, damager, true);
+        DamageUtil.damageEntityWeapon(randomNum, victim, damager, true, false);
     }
 
     // removes arrows stuck in bodies

@@ -27,8 +27,8 @@ public class ArrowBomb extends Spell {
     // constructor
     public ArrowBomb() {
         super("Arrow Bomb",
-                "You launch an enchanted arrow that ignites" +
-                        "\non-hit, dealing " + DAMAGE + " spellʔ damage to all" +
+                "You launch an enchanted arrow," +
+                        "\ndealing " + DAMAGE + " spellʔ damage to all" +
                         "\nenemies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, 8, 15);
         this.bombArrow = new HashMap<>();
@@ -39,7 +39,7 @@ public class ArrowBomb extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
-        Vector path = pl.getEyeLocation().getDirection().normalize().multiply(2);
+        Vector path = pl.getEyeLocation().getDirection().normalize().multiply(1.5);
         startTask(pl, path);
     }
 

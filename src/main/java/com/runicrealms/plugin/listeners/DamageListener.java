@@ -142,7 +142,7 @@ public class DamageListener implements Listener {
                 // ensure correct class/weapon combo (archers and bows, etc)
                 if (!matchClass(pl)) return;
 
-                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false);
+                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false, false);
 
             } else {
                 e.setCancelled(true);

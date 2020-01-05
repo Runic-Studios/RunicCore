@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -70,7 +70,7 @@ public class Cleave extends Spell {
         victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
 
         // damage victim
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, pl, false);
+        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, pl, false, false);
 
         // damage nearby victims
         for (Entity nearby : victim.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {

@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -12,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
+import java.util.Objects;
+
 @SuppressWarnings("FieldCanBeLocal")
 public class HolyNova extends Spell {
 
@@ -22,11 +23,11 @@ public class HolyNova extends Spell {
 
     // constructor
     public HolyNova() {
-        super("Holy Nova", "For " + DURATION + " seconds, you pulse with holy" +
-                        "\npower, conjuring rings of light magic" +
-                        "\nwhich deal " + DAMAGE_AMT + " spellʔ damage to enemies and" +
-                        "\nrestore✦ " + HEAL_AMT + " health to party members!" +
-                        "\nThis spell will not heal yourself." +
+        super("Holy Nova",
+                "For " + DURATION + " seconds, you pulse with holy" +
+                        "\npower, conjuring rings of light" +
+                        "\nthat deal " + DAMAGE_AMT + " spellʔ damage to enemies" +
+                        "\nand restore✦ " + HEAL_AMT + " health to allies!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 12, 20);
     }
@@ -54,6 +55,7 @@ public class HolyNova extends Spell {
 
     private void spawnRing(Player pl) {
 
+        Location loc = pl.getLocation();
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
 
         Location location1 = pl.getEyeLocation();
@@ -70,30 +72,19 @@ public class HolyNova extends Spell {
             location1.subtract(x, 0, z);
         }
 
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+        for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
             if (!(en instanceof LivingEntity)) continue;
 
             LivingEntity le = (LivingEntity) en;
 
-            // skip NPCs
-            if (le.hasMetadata("NPC")) { continue; }
-
-            // skip the caster
-            if(le.equals(pl)) { continue; }
-
-            // heal party members
-            if (le instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl) != null
-                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
-                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, true);
-                continue;
-            }
-
-            // outlaw check
-            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) continue;
-
             // Executes the damage aspect of spell
             DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
+
+            // heal party members
+            if (en instanceof Player) {
+                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, false);
+            }
         }
     }
 }

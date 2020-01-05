@@ -21,9 +21,9 @@ public class Windstride extends Spell {
     // constructor
     public Windstride() {
         super("Windstride",
-                "For " + BUFF_DURATION + " seconds, you grant a speed boost" +
-                        "\nto yourself and all party members" +
-                        "\nwithin " + RADIUS + " blocks!",
+                "For " + BUFF_DURATION + " seconds, you grant a massive" +
+                        "\nspeed boost to yourself and all" +
+                        "\nallies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, 20, 15);
     }
 

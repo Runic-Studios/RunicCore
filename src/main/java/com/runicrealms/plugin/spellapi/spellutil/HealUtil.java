@@ -7,6 +7,7 @@ import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
@@ -20,6 +21,10 @@ public class HealUtil  {
     @SuppressWarnings("deprecation")
     public static void healPlayer(double healAmt, Player recipient, Player caster,
                                   boolean gemBoosted, boolean halveGemBoost, boolean isReducedOnCaster) {
+
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
 
         // scan for gem values
         if (gemBoosted) {
