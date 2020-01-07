@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;

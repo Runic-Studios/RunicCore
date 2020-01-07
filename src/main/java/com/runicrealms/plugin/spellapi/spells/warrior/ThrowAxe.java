@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Taunt extends Spell {
+public class ThrowAxe extends Spell {
 
     private static final int DAMAGE = 10;
     private static double PERCENT = 50;
@@ -43,8 +43,8 @@ public class Taunt extends Spell {
     private List<Entity> hasHit;
 
     // constructor
-    public Taunt() {
-        super("Taunt",
+    public ThrowAxe() {
+        super("ThrowAxe",
                 "You throw your artifact in front of you," +
                         "\ndealing " + DAMAGE + " damage to the first monster hit" +
                         "\nand taunting it, forcing it to attack you!" +

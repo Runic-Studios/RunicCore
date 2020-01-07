@@ -28,7 +28,7 @@ public class Cleave extends Spell {
                 "You empower your artifact, causing your" +
                         "\nnext melee attack to deal " + DAMAGE_AMT + " spellʔ damage" +
                         "\nto all enemies within " + RADIUS + " blocks. (Does not" +
-                        "\napply to ranged attacks)",
+                        "\napply to ranged attacks)", // todo: change to timed buff, mult. attacks
                 ChatColor.WHITE, 10, 10);
         cleavers = new ArrayList<>();
     }

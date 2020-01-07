@@ -39,6 +39,7 @@ public final class MobHealthBars implements Listener {
         ArmorStand stand = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
         stand.setMarker(false);
         stand.setSmall(true);
+        stand.setInvulnerable(true);
         stand.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
         mob.addPassenger(stand);
 
@@ -46,6 +47,7 @@ public final class MobHealthBars implements Listener {
         ArmorStand stand2 = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
         stand2.setMarker(true);
         stand2.setSmall(true);
+        stand2.setInvulnerable(true);
         stand2.setMetadata("healthbar", new FixedMetadataValue(RunicCore.getInstance(), "healthbar"));
         stand.addPassenger(stand2);
 

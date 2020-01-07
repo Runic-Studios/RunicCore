@@ -32,7 +32,7 @@ public class Discharge extends Spell {
     public Discharge() {
         super("Discharge",
                 "You launch an electric spark!" +
-                        "\nUpon impact, it summons a lightning bolt," +
+                        "\nUpon impact, it summons lightning," +
                         "\ndealing " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + BLAST_RADIUS + " blocks.",
                 ChatColor.WHITE, 8, 15);

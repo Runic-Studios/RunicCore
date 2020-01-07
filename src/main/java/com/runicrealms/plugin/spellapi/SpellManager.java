@@ -102,9 +102,8 @@ public class SpellManager {
         this.spellList.add(new Parry());
         this.spellList.add(new Blink());
         this.spellList.add(new Cleave());
-        this.spellList.add(new Comet());
+        this.spellList.add(new MeteorShower());
         this.spellList.add(new Windstride());
-        this.spellList.add(new ArcaneSpike());
         this.spellList.add(new Rejuvenate());
         this.spellList.add(new Discharge());
         this.spellList.add(new Enrage());
@@ -120,14 +119,13 @@ public class SpellManager {
         this.spellList.add(new BlessedRain());
         this.spellList.add(new FireAura());
         this.spellList.add(new Permafrost());
-        this.spellList.add(new ArcaneShackles());
         this.spellList.add(new RottingShot());
         this.spellList.add(new Petrify());
         this.spellList.add(new UnholyGround());
         this.spellList.add(new DivineShield());
         this.spellList.add(new ShriekingSkull());
         this.spellList.add(new WoundingShot());
-        this.spellList.add(new Taunt());
+        this.spellList.add(new ThrowAxe());
         this.spellList.add(new ArcaneOrb());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());

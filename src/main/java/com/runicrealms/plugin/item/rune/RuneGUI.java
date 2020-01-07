@@ -177,7 +177,7 @@ public class RuneGUI {
         spells.add("Siphon");
         spells.add("Sprint");
         spells.add("Starfall");
-        spells.add("Taunt");
+        spells.add("ThrowAxe");
         spells.add("Warsong");
 
         // first row of spells

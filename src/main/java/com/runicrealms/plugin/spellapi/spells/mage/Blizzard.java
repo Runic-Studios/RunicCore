@@ -1,16 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.plugin.utilities.DirectionUtil;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -23,7 +15,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.UUID;
 
 public class Blizzard extends Spell {
@@ -41,7 +32,7 @@ public class Blizzard extends Spell {
                 "You summon a cloud of snow up to " +
                         "\n" + MAX_DIST + " blocks away that rains down snowballs" +
                         "\nfor " + DURATION + " seconds, each dealing " + DAMAGE_AMOUNT + " spellʔ" +
-                        "\ndamage to enemies and slowing them." +
+                        "\ndamage to enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 10, 15);
         this.snowballMap = new HashMap<>();
@@ -87,33 +78,6 @@ public class Blizzard extends Spell {
 
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 10); // drops a snowball every half second
-
-        // quest code for tutorial island, grab all regions the player is standing in
-        // -----------------------------------------------------------------------------------------
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(pl.getLocation()));
-        Set<ProtectedRegion> regions = set.getRegions();
-        if (regions == null) return;
-        for (ProtectedRegion region : regions) {
-            if (region.getId().contains("tutorial_mage")) {
-
-                // ensure player is facing the flames
-                if (!DirectionUtil.getDirection(pl).equals("S")
-                        && !DirectionUtil.getDirection(pl).equals("SE")
-                        && !DirectionUtil.getDirection(pl).equals("E")) return;
-                SpellCastEvent sce = new SpellCastEvent(pl, this);
-                Bukkit.getPluginManager().callEvent(sce);
-                if (sce.isCancelled()) return;
-                pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1);
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2335, 37, 1726), Material.ICE.createBlockData());
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2333, 38, 1728), Material.ICE.createBlockData());
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2334, 38, 1728), Material.ICE.createBlockData());
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2333, 39, 1730), Material.ICE.createBlockData());
-                pl.sendBlockChange(new Location(Bukkit.getWorld("Alterra"), -2334, 39, 1731), Material.ICE.createBlockData());
-            }
-        }
-        // -----------------------------------------------------------------------------------------
     }
 
     // listener to damage player
@@ -152,10 +116,8 @@ public class Blizzard extends Spell {
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, true);
             victim.setLastDamageCause(e);
 
-            // apply slow
-            //if (victim instanceof Player) {
-                le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-            //}
+            // slow
+            le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
         }
     }
 

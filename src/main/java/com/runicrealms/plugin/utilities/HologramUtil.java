@@ -65,6 +65,7 @@ public class HologramUtil {
 
         // nms
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
+        nmsStand.setInvulnerable(true);
         nmsStand.noclip = true;
         nmsStand.setSmall(true);
         HashMap<ArmorStand, BukkitTask> holograms = HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
@@ -103,6 +104,7 @@ public class HologramUtil {
         EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
         nmsStand.noclip = true;
         nmsStand.setSmall(true);
+        nmsStand.setInvulnerable(true);
         HashMap<ArmorStand, BukkitTask> holograms = HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
 
         // create our runnable

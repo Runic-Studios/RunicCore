@@ -116,6 +116,8 @@ public class StaffListener implements Listener {
                                     e = e.getVehicle();
                                 }
 
+                                if (e instanceof ArmorStand && e.isInvulnerable()) continue;
+
                                 LivingEntity victim = (LivingEntity) e;
 
                                 // outlaw check

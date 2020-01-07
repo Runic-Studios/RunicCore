@@ -3,7 +3,6 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -27,9 +26,8 @@ public class Fireball extends Spell {
     public Fireball() {
         super ("Fireball",
                 "You launch a projectile fireball" +
-                        "\nwhich deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
-                        "\nimpact and knocks your enemy" +
-                        "\nback!",
+                        "\nthat deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
+                        "\nimpact!",
                 ChatColor.WHITE, 5, 10);
     }
 
@@ -71,7 +69,6 @@ public class Fireball extends Spell {
 
         // cancel the event, apply spell mechanics
         DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, false);
-        KnockbackUtil.knockbackPlayer(player, victim, 1.5);
 
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
