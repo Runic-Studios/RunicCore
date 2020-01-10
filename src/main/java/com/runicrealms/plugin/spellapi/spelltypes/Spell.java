@@ -20,7 +20,6 @@ public abstract class Spell implements ISpell, Listener {
     private ChatColor color;
     private double cooldown;
     protected RunicCore plugin = RunicCore.getInstance();
-    protected boolean doCooldown = true;
     private int manaCost;
 
     public Spell(String name, String description, ChatColor color, double cooldown, int manaCost) {
@@ -36,12 +35,20 @@ public abstract class Spell implements ISpell, Listener {
 
     @Override
     public void execute(Player player, SpellItemType type) {
-        if (!RunicCore.getSpellManager().isOnCooldown(player, this)) {
-            if (doCooldown) {
-                // verify enough mana
-                if (!verifyMana(player)) return;
-                this.executeSpell(player, type);
-            }
+
+        if (!RunicCore.getSpellManager().isOnCooldown(player, this)) { // ensure spell is not on cooldown
+
+            if (!verifyMana(player)) return; // verify the mana
+
+            if (!this.attemptToExecute(player)) return; // check additional conditions
+
+            // cast the spell
+            int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
+            RunicCore.getManaManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
+            RunicCore.getScoreboardHandler().updateSideInfo(player);
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
+            RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
+            this.executeSpell(player, type);
         }
     }
 
@@ -52,13 +59,10 @@ public abstract class Spell implements ISpell, Listener {
             player.sendMessage(ChatColor.RED + "You don't have enough mana!");
             return false;
         }
-        RunicCore.getManaManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
-        RunicCore.getScoreboardHandler().updateSideInfo(player);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
-        RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
         return true;
     }
 
+    // todo: fix this method, add it to ALL spells
     @Override
     public boolean testTarget(Player caster, Entity victim) {
 
@@ -104,7 +108,7 @@ public abstract class Spell implements ISpell, Listener {
     public int getManaCost() { return this.manaCost; }
 
 
-    public Vector rotateVectorAroundY(Vector vector, double degrees) {
+    protected Vector rotateVectorAroundY(Vector vector, double degrees) {
         Vector newVector = vector.clone();
         double rad = Math.toRadians(degrees);
         double cos = Math.cos(rad);
@@ -114,6 +118,10 @@ public abstract class Spell implements ISpell, Listener {
         newVector.setX(cos * x - sine * z);
         newVector.setZ(sine * x + cos * z);
         return newVector;
+    }
+
+    public boolean attemptToExecute(Player pl) {
+        return true;
     }
 
     public void executeSpell(Player player, SpellItemType type){}

@@ -2,84 +2,59 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.PlayerSpeedStorage;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import com.runicrealms.plugin.RunicCore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Judgment extends Spell {
 
-    // globals
-    private static List<PlayerSpeedStorage> ahFukAStaticVar = new ArrayList<>();
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
     private static final double UPDATES_PER_SECOND = 10;
+    private List<UUID> judgers;
 
-    // constructor
     public Judgment() {
         super("Judgment",
                 "You summon a barrier of magic" +
                         "\naround yourself for " + BUBBLE_DURATION + " seconds!" +
-                        "\nThe barrier repels enemies and prevents" +
-                        "\nthem from entering, but allies may pass" +
-                        "\nthrough it. During this time, you may not" +
-                        "\nmove.",
+                        "\nThe barrier repels enemies and" +
+                        "\nprevents them from entering, but" +
+                        "\nallies may pass through it. During" +
+                        "\nthis time, you may not move.",
                 ChatColor.WHITE, 9, 25);
+        judgers = new ArrayList<>();
+    }
+
+    @Override
+    public boolean attemptToExecute(Player pl) {
+        if (!pl.isOnGround()) {
+            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast Judgment!");
+            return false;
+        }
+        return true;
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        // This is necessary because players could (theoretically) cast deliverance multiple times
-        // before the first cool down ends
-        // which would result in players initial walk speed appearing to be 0 because that is their
-        // walk speed when this check is done and if initial walk speed is 0, their walk speed when the
-        // spell ends would be set to 0
-        boolean isFound = false;
-        for (PlayerSpeedStorage psStorage : ahFukAStaticVar) {
-            if(!(psStorage.getPlayer().equals(pl)))
-                continue;
-            isFound = true;
-            psStorage.setExpirationTime(System.currentTimeMillis() + (BUBBLE_DURATION * 1000));
-            break;
-        }
-        if (!isFound) {
-            ahFukAStaticVar.add(
-                    new PlayerSpeedStorage(
-                            pl,
-                            pl.getWalkSpeed(),
-                            System.currentTimeMillis() + (BUBBLE_DURATION * 1000)
-                    )
-            );
-            pl.setWalkSpeed(0);
-        }
-
-        // Set player effects
-        pl.addPotionEffect(
-                new PotionEffect(
-                        PotionEffectType.JUMP,
-                        BUBBLE_DURATION*20,
-                        -10,
-                        false,
-                        false
-                )
-        );
-
         // Play sound effects
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-        pl.getLocation().getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
+        pl.getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
+        judgers.add(pl.getUniqueId());
 
         // Begin spell event
         final long startTime = System.currentTimeMillis();
@@ -96,7 +71,7 @@ public class Judgment extends Spell {
                     double y = BUBBLE_SIZE*cos(phi) + 1.5;
                     double z = BUBBLE_SIZE*sin(theta)*sin(phi);
                     loc.add(x,y,z);
-                    loc.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
+                    pl.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
                     loc.subtract(x,y,z);
                 }
 
@@ -104,16 +79,7 @@ public class Judgment extends Spell {
                 long timePassed = System.currentTimeMillis() - startTime;
                 if (timePassed > BUBBLE_DURATION * 1000) {
                     this.cancel();
-                    pl.removePotionEffect(PotionEffectType.SLOW);
-                    for(PlayerSpeedStorage psStorage : ahFukAStaticVar) {
-                        if(!(psStorage.getPlayer().equals(pl)))
-                            continue;
-                        if(System.currentTimeMillis() + 100 < psStorage.getExpirationTime() /* .1 second lag cushion */)
-                            continue;
-                        pl.setWalkSpeed(psStorage.getOriginalSpeed());
-                        ahFukAStaticVar.remove(psStorage);
-                        break;
-                    }
+                    judgers.clear();
                     return;
                 }
 
@@ -122,6 +88,8 @@ public class Judgment extends Spell {
 
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
+
+                    if (entity instanceof ItemStack) continue;
 
                     // ignore NPCs
                     if (entity.hasMetadata("NPC")) { continue; }
@@ -134,12 +102,31 @@ public class Judgment extends Spell {
                             && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
 
                     // Executes the spell
-                    Vector force = (pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.75).setY(0.3));
+                    Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.25).setY(0.3);
                     entity.setVelocity(force);
                     entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20/UPDATES_PER_SECOND));
+    }
+
+    /*
+    Cancel player movement.
+     */
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        if (!judgers.contains(e.getPlayer().getUniqueId())) return;
+        if (e.getTo() == null) return;
+//        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
+        double fromX = e.getFrom().getX();
+        double fromY = e.getFrom().getY();
+        double fromZ = e.getFrom().getZ();
+        double toX = e.getTo().getX();
+        double toY = e.getTo().getY();
+        double toZ = e.getTo().getZ();
+        if (!(fromX == toX)) e.getTo().setX(fromX);
+        if (!(fromY == toY)) e.getTo().setY(fromY);
+        if (!(fromZ == toZ)) e.getTo().setZ(fromZ);
     }
 }
 

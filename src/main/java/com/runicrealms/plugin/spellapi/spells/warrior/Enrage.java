@@ -29,11 +29,11 @@ public class Enrage extends Spell {
     // constructor
     public Enrage() {
         super("Enrage",
-                "For " + CHANNEL_DURATION + " seconds, you channel" +
-                        "\nimmense rage, slowing your speed. After, you gain" +
-                        "\nan immense boost of speed and your weapon⚔ attacks" +
-                        "\ndeal " + DAMAGE_AMT + " extra spellʔ damage for" +
-                        "\n" + BUFF_DURATION + " seconds!",
+                "For " + CHANNEL_DURATION + " seconds, you channel a deep" +
+                        "\nrage, slowing your speed. After," +
+                        "\nyou gain an immense boost of speed" +
+                        "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
+                        "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
                 ChatColor.WHITE, 10, 15);
     }
 
@@ -91,9 +91,9 @@ public class Enrage extends Spell {
         }
     }
 
-            /**
-             * Activate on-hit effects
-             */
+    /*
+     * Activate on-hit effects
+     */
     @EventHandler
     public void onSuccessfulHit(WeaponDamageEvent e) {
 
