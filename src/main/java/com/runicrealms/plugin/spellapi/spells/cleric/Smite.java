@@ -3,13 +3,13 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-
-import java.util.Objects;
 
 public class Smite extends Spell {
 
@@ -18,20 +18,19 @@ public class Smite extends Spell {
 
     public Smite() {
         super("Smite",
-                "You smite all enemies within" +
-                        "\n" + (int) RADIUS + " blocks, dealing " + DAMAGE_AMT + " spellʔ" +
-                        "\ndamage to them.",
+                "You smite all enemies within " + (int) RADIUS + " blocks," +
+                        "\ndealing " + DAMAGE_AMT + " spellʔ damage to them." +
+                        "\nUndead enemies take double damage!",
                 ChatColor.WHITE, 8, 20);
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        Location loc = pl.getLocation();
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
         pl.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, pl.getEyeLocation(), 15, 0.75F, 0.5F, 0.75F, 0);
 
-        for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
+        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
 
             // skip non-living, armor stands
             if (!(en instanceof LivingEntity)) continue;
@@ -40,7 +39,14 @@ public class Smite extends Spell {
             LivingEntity le = (LivingEntity) en;
 
             // heal party members and the caster
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, false);
+            int damage = DAMAGE_AMT;
+            if (MythicMobs.inst().getMobManager().getActiveMob(en.getUniqueId()).isPresent()) {
+                ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(en.getUniqueId()).get();
+                if (am.getFaction() != null && am.getFaction().equalsIgnoreCase("undead")) {
+                    damage = 2*DAMAGE_AMT;
+                }
+            }
+            DamageUtil.damageEntitySpell(damage, le, pl, false);
         }
     }
 }

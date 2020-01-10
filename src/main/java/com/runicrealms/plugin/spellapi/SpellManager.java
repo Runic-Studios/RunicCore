@@ -122,7 +122,7 @@ public class SpellManager {
         this.spellList.add(new RottingShot());
         this.spellList.add(new Petrify());
         this.spellList.add(new UnholyGround());
-        this.spellList.add(new DivineShield());
+        this.spellList.add(new RunicShield());
         this.spellList.add(new ShriekingSkull());
         this.spellList.add(new WoundingShot());
         this.spellList.add(new ThrowAxe());
@@ -132,7 +132,6 @@ public class SpellManager {
         this.spellList.add(new Warsong());
         this.spellList.add(new Reflect());
         this.spellList.add(new Siphon());
-        this.spellList.add(new ShadowStep());
         this.spellList.add(new ShadowStrike());
         this.spellList.add(new IceVolley());
         this.spellList.add(new Starfall());
@@ -142,6 +141,8 @@ public class SpellManager {
         this.spellList.add(new Envenom());
         this.spellList.add(new Heal());
         this.spellList.add(new Smite());
+        this.spellList.add(new Sandstorm());
+        this.spellList.add(new PlagueBomb());
     }
 
     // starts the repeating task to manage player cooldowns

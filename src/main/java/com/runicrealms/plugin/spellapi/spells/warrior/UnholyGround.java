@@ -29,7 +29,7 @@ public class UnholyGround extends Spell {
         super("Unholy Ground",
                 "For " + DURATION + " seconds, you desecrate an area of" +
                         "\nland, conjuring a ring of unholy magic" +
-                        "\nwhich taunts enemy monsters within " + (int) RADIUS +
+                        "\nthat taunts enemy monsters within " + (int) RADIUS +
                         "\nblocks every " + PERIOD + " seconds(s)! While standing" +
                         "\non the unholy ground, you take " + (int) PERCENT + "%" +
                         "\nless damage from monsters!"

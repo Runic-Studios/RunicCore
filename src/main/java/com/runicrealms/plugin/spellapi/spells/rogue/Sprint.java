@@ -1,10 +1,9 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -20,7 +19,7 @@ public class Sprint extends Spell {
     public Sprint() {
         super("Sprint",
                 "For " + DURATION + " seconds, you gain a" +
-                        "\nmassive boost to your speed!", ChatColor.WHITE,10, 10);
+                        "\nmassive boost of speed!", ChatColor.WHITE,10, 10);
     }
 
     // spell execute code

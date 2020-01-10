@@ -29,11 +29,12 @@ public class Judgment extends Spell {
     // constructor
     public Judgment() {
         super("Judgment",
-                "You summon a barrier of holy power" +
-                        "\naround yourself for " + BUBBLE_DURATION + " seconds! The barrier" +
-                        "\njudges all enemies unworthy and repels them," +
-                        "\nbut party members may pass through it freely." +
-                        "\nDuring this time, you may not move.",
+                "You summon a barrier of magic" +
+                        "\naround yourself for " + BUBBLE_DURATION + " seconds!" +
+                        "\nThe barrier repels enemies and prevents" +
+                        "\nthem from entering, but allies may pass" +
+                        "\nthrough it. During this time, you may not" +
+                        "\nmove.",
                 ChatColor.WHITE, 9, 25);
     }
 

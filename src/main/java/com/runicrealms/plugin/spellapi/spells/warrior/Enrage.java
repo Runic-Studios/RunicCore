@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Enrage extends Spell {
 
     // instance variables
-    private static final int CHANNEL_DURATION = 4;
+    private static final int CHANNEL_DURATION = 3;
     private static final int BUFF_DURATION = 10;
     private static final int DAMAGE_AMT = 3;
     private static HashMap<UUID, Long> ragers = new HashMap<>();
@@ -29,11 +29,11 @@ public class Enrage extends Spell {
     // constructor
     public Enrage() {
         super("Enrage",
-                "For " + CHANNEL_DURATION + " seconds, you channel a powerful rage," +
-                        "\nslowing your movement speed. After, you gain" +
-                        "\nan immense boost of speed and your melee" +
-                        "\nweapon attacks deal " + DAMAGE_AMT + " additional spellʔ damage" +
-                        "\nfor " + BUFF_DURATION + " seconds!",
+                "For " + CHANNEL_DURATION + " seconds, you channel" +
+                        "\nimmense rage, slowing your speed. After, you gain" +
+                        "\nan immense boost of speed and your weapon⚔ attacks" +
+                        "\ndeal " + DAMAGE_AMT + " extra spellʔ damage for" +
+                        "\n" + BUFF_DURATION + " seconds!",
                 ChatColor.WHITE, 10, 15);
     }
 

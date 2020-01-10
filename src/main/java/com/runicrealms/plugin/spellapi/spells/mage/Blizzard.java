@@ -29,10 +29,10 @@ public class Blizzard extends Spell {
     // constructor
     public Blizzard() {
         super("Blizzard",
-                "You summon a cloud of snow up to " +
-                        "\n" + MAX_DIST + " blocks away that rains down snowballs" +
-                        "\nfor " + DURATION + " seconds, each dealing " + DAMAGE_AMOUNT + " spellʔ" +
-                        "\ndamage to enemies and slowing them!" +
+                "You summon a cloud of snow that" +
+                        "\nrains down snowballs for " + DURATION + " seconds," +
+                        "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
+                        "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
                 ChatColor.WHITE, 10, 15);
         this.snowballMap = new HashMap<>();

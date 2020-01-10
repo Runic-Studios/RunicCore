@@ -31,9 +31,10 @@ public class SmokeBomb extends Spell {
     // constructor
     public SmokeBomb() {
         super("Smoke Bomb",
-                "You fire a cloud of toxic smoke that" +
-                        "\ndeals " + DAMAGE_AMT + " spellʔ damage and blinds enemies" +
-                        "\nwithin " + RADIUS + " blocks for " + DURATION + " seconds!",
+                "You fire a cloud of toxic smoke" +
+                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
+                        "\nslows enemies within " + RADIUS + " blocks" +
+                        "\nfor " + DURATION + " seconds!",
                 ChatColor.WHITE, 6, 15);
     }
 
@@ -49,10 +50,10 @@ public class SmokeBomb extends Spell {
         // create our vector, arrow, add arrow to hashmap
         Vector direction = player.getEyeLocation().getDirection().normalize().multiply(1);
         Arrow arrow = player.launchProjectile(Arrow.class);
-        arrow.isSilent();
-        UUID uuid = player.getUniqueId();
         arrow.setVelocity(direction);
         arrow.setShooter(player);
+        arrow.isSilent();
+        UUID uuid = player.getUniqueId();
         trails.put(arrow, uuid);
 
         // make our arrow invisible
@@ -102,14 +103,11 @@ public class SmokeBomb extends Spell {
                             // ignore NPCs
                             if (entity.hasMetadata("NPC")) continue;
 
-                            // damage the entity, blind them if they're a player
+                            // damage and slow entity
                             if (entity.getType().isAlive()) {
                                 LivingEntity victim = (LivingEntity) entity;
                                 DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, false);
-                                if (victim instanceof Player) {
-                                    victim.addPotionEffect
-                                            (new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 0));
-                                }
+                                victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
                             }
                         }
                     }

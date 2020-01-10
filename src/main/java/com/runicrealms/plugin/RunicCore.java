@@ -11,7 +11,6 @@ import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.subcommands.set.SetProfCMD;
 import com.runicrealms.plugin.command.supercommands.*;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
-import com.runicrealms.plugin.guild.GuildListeners;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBossBars;
@@ -162,7 +161,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new SpellShieldListener(), this);
         pm.registerEvents(new BlockBreakListener(), this);
         pm.registerEvents(new MinLevelListener(), this);
-        pm.registerEvents(new GuildListeners(), this);
         pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);

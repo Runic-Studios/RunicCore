@@ -6,65 +6,49 @@ import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import io.lumine.xikage.mythicmobs.skills.SkillCaster;
-import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
-import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ThrowAxe extends Spell {
 
     private static final int DAMAGE = 10;
-    private static double PERCENT = 50;
-    private List<UUID> markedEntities;
+    private static final int DURATION = 3;
+    private List<UUID> silenced;
     private List<Entity> hasHit;
 
-    // constructor
     public ThrowAxe() {
-        super("ThrowAxe",
-                "You throw your artifact in front of you," +
-                        "\ndealing " + DAMAGE + " damage to the first monster hit" +
-                        "\nand taunting it, forcing it to attack you!" +
-                        "\nThe monster is then marked, reducing its" +
-                        "\ndamage dealt by " + (int) PERCENT + "%!", ChatColor.WHITE,15, 10);
-        markedEntities = new ArrayList<>();
+        super("Throw Axe",
+                "You throw your artifact, dealing" +
+                        "\n" + DAMAGE + " spellʔ damage to the first enemy" +
+                        "\nhit and silencing it, preventing it" +
+                        "\nfrom dealing damage for " + DURATION + " seconds!",
+                ChatColor.WHITE,15, 10);
+        silenced = new ArrayList<>();
         hasHit = new ArrayList<>();
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        ItemStack artifact = pl.getInventory().getItem(0);
-        if (artifact == null) {
-            return;
-        }
+        ItemStack artifact = pl.getInventory().getItemInMainHand();
 
         Material artifactType = artifact.getType();
-        int durability = ((Damageable) artifact.getItemMeta()).getDamage();
+        int durability = ((Damageable) Objects.requireNonNull(artifact.getItemMeta())).getDamage();
 
         Vector path = pl.getEyeLocation().getDirection().normalize().multiply(1.5);
 
@@ -85,20 +69,26 @@ public class ThrowAxe extends Spell {
                 // prevent multiple hits
                 for (Entity en : projectile.getNearbyEntities(1, 1, 1)) {
                     if (!(en instanceof LivingEntity)) continue;
-                    if (en instanceof Monster && !hasHit.contains(projectile)) {
+                    if (en.equals(pl)) continue;
+                    if (!hasHit.contains(projectile)) {
                         hasHit.add(projectile);
-                        projectile.remove();
                         DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl, false);
-                        markedEntities.add(en.getUniqueId());
-                        ((Monster) en).setTarget(pl);
-                        MythicMobs.inst().getAPIHelper().taunt(en, pl);
+                        silenced.add(en.getUniqueId());
                         en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         en.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        projectile.remove();
                     }
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                silenced.clear();
+            }
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
     }
 
     /**
@@ -107,10 +97,22 @@ public class ThrowAxe extends Spell {
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
 
-        if (markedEntities.contains(e.getDamager().getUniqueId())) {
-            double percent = PERCENT / 100;
-            int reducedAmount = (int) (e.getAmount() * percent);
-            e.setAmount(reducedAmount);
+        if (silenced.contains(e.getDamager().getUniqueId())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        if (silenced.contains(e.getPlayer().getUniqueId())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        if (silenced.contains(e.getPlayer().getUniqueId())) {
+            e.setCancelled(true);
         }
     }
 }

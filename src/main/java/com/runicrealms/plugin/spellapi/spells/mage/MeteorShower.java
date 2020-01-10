@@ -22,6 +22,7 @@ import java.util.UUID;
 public class MeteorShower extends Spell {
 
     // globals
+    private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 20;
     private LargeFireball meteor;
@@ -30,7 +31,7 @@ public class MeteorShower extends Spell {
     // constructor
     public MeteorShower() {
         super ("Meteor Shower",
-                "You launch three projectile meteors" +
+                "You launch four projectile meteors" +
                         "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
                 ChatColor.WHITE, 10, 10);
@@ -44,12 +45,13 @@ public class MeteorShower extends Spell {
             int count = 0;
             @Override
             public void run() {
-                if (count >= 3) {
+                if (count >= AMOUNT) {
                     this.cancel();
                 } else {
                     count += 1;
                     meteor = player.launchProjectile(LargeFireball.class);
                     meteor.setIsIncendiary(false);
+                    meteor.setYield(0F);
                     final Vector velocity = player.getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);
                     meteor.setVelocity(velocity);
                     meteor.setShooter(player);
@@ -57,8 +59,6 @@ public class MeteorShower extends Spell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 20L);
-//        ActiveMob wolf = MythicMobs.inst().getMobManager().spawnMob("GuardWolf", player.getLocation());
-//        wolf.setOwner(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

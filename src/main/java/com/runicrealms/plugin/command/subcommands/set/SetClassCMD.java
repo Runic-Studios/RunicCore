@@ -71,7 +71,7 @@ public class SetClassCMD implements SubCommand {
         if (pl == null) return;
 
         if (args.length == 2) {
-            ClassGUI.CLASS_SELECTION.open(pl);
+            //ClassGUI.CLASS_SELECTION.open(pl);
         } else {
 
             String classStr = args[2].toLowerCase();
