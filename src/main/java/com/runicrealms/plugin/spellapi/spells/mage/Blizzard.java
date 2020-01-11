@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -19,14 +18,12 @@ import java.util.UUID;
 
 public class Blizzard extends Spell {
 
-    // globals
     private static final int DAMAGE_AMOUNT = 5;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
     private HashMap<Snowball, UUID> snowballMap;
 
-    // constructor
     public Blizzard() {
         super("Blizzard",
                 "You summon a cloud of snow that" +
@@ -38,7 +35,6 @@ public class Blizzard extends Spell {
         this.snowballMap = new HashMap<>();
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
@@ -103,21 +99,11 @@ public class Blizzard extends Spell {
             // skip the caster
             if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
-            // outlaw check
-            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(shooter))) {
-                return;
+            if (verifyEnemy(shooter, le)) {
+                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, true);
+                victim.setLastDamageCause(e);
+                le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
             }
-
-            // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(shooter) != null
-                    && RunicCore.getPartyManager().getPlayerParty(shooter).hasMember(victim.getUniqueId())) return;
-
-            // apply damage, knockbackPlayer
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, true);
-            victim.setLastDamageCause(e);
-
-            // slow
-            le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
         }
     }
 

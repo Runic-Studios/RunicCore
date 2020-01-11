@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -15,20 +14,17 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class SmokeBomb extends Spell {
 
-    // globals
     private static final int DAMAGE_AMT = 15;
     private static final int DURATION = 2;
     private static final int RADIUS = 5;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
 
-    // constructor
     public SmokeBomb() {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke" +
@@ -38,7 +34,6 @@ public class SmokeBomb extends Spell {
                 ChatColor.WHITE, 6, 15);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -74,7 +69,7 @@ public class SmokeBomb extends Spell {
                     this.cancel();
 
                     // particle effect
-                    arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
+                    arrow.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
                             50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
 
                     // sound effects
@@ -83,28 +78,7 @@ public class SmokeBomb extends Spell {
 
                     for (Entity entity : arrow.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (entity.getLocation().distance(arrowLoc) <= RADIUS) {
-
-                            // ignore the caster
-                            if (entity == player) {
-                                continue;
-                            }
-
-                            // outlaw check
-                            if (entity instanceof Player && (!OutlawManager.isOutlaw(((Player) entity)) || !OutlawManager.isOutlaw(player))) {
-                                continue;
-                            }
-
-                            // skip party members
-                            if (RunicCore.getPartyManager().getPlayerParty(player) != null
-                                    && RunicCore.getPartyManager().getPlayerParty(player).hasMember(entity.getUniqueId())) {
-                                continue;
-                            }
-
-                            // ignore NPCs
-                            if (entity.hasMetadata("NPC")) continue;
-
-                            // damage and slow entity
-                            if (entity.getType().isAlive()) {
+                            if (verifyEnemy(player, entity)) {
                                 LivingEntity victim = (LivingEntity) entity;
                                 DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, false);
                                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));

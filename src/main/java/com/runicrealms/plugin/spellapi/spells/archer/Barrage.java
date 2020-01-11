@@ -1,17 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.plugin.utilities.DirectionUtil;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -22,21 +13,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Barrage extends Spell {
 
-    // globals
     private HashMap<Arrow, UUID> bArrows;
     private HashMap<UUID, UUID> hasBeenHit;
     private static final int DAMAGE = 25;
 
-    // in seconds
     private final int SUCCESSIVE_COOLDOWN = 1;
 
-    // constructor
     public Barrage() {
         super("Barrage",
                 "You launch a spread of five magical\n"
@@ -57,27 +44,6 @@ public class Barrage extends Spell {
         Vector rightMid = rotateVectorAroundY(middle, 11.25);
         Vector right = rotateVectorAroundY(middle, 22.5);
         startTask(pl, new Vector[]{middle, left, leftMid, rightMid, right});
-
-        // quest code for tutorial island, grab all regions the player is standing in
-        // -----------------------------------------------------------------------------------------
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(pl.getLocation()));
-        Set<ProtectedRegion> regions = set.getRegions();
-        if (regions == null) return;
-        for (ProtectedRegion region : regions) {
-            if (region.getId().contains("tutorial_archer")) {
-
-                // ensure player is facing the targets
-                if (!DirectionUtil.getDirection(pl).equals("S")) return;
-                SpellCastEvent sce = new SpellCastEvent(pl, this);
-                Bukkit.getPluginManager().callEvent(sce);
-                if (sce.isCancelled()) return;
-                pl.spawnParticle(Particle.SMOKE_LARGE, new Location(Bukkit.getWorld("Alterra"), -2279, 38, 1829), 15, 0, 0, 0, 0); // left target
-                pl.spawnParticle(Particle.SMOKE_LARGE, new Location(Bukkit.getWorld("Alterra"), -2386, 38, 1825), 15, 0, 0, 0, 0); // right target
-            }
-        }
-        // -----------------------------------------------------------------------------------------
     }
 
     // vectors, particles
@@ -92,7 +58,7 @@ public class Barrage extends Spell {
                 @Override
                 public void run() {
                     Location arrowLoc = arrow.getLocation();
-                    arrowLoc.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 5, 0, 0, 0, 0);
+                    arrow.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 5, 0, 0, 0, 0);
                     if (arrow.isDead() || arrow.isOnGround()) {
                         this.cancel();
                     }
@@ -127,21 +93,7 @@ public class Barrage extends Spell {
             UUID plID = pl.getUniqueId();
             LivingEntity le = (LivingEntity) e.getEntity();
 
-            // ignore NPCs
-            if (le.hasMetadata("NPC")) {
-                return;
-            }
-
-            // outlaw check
-            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
-                return;
-            }
-
-            // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
-
-            if (!hasBeenHit.containsKey(le.getUniqueId())) {
+            if (verifyEnemy(pl, le) && !hasBeenHit.containsKey(le.getUniqueId())) {
 
                 DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
                 e.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, e.getEntity().getLocation(), 1, 0, 0, 0, 0);

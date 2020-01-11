@@ -22,7 +22,7 @@ public class UnholyGround extends Spell {
     private static final double PERCENT = 75;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
-    private List<LivingEntity> taunted = new ArrayList<>();
+    private List<UUID> taunted = new ArrayList<>();
     private HashMap<UUID, Location> taunters = new HashMap<>();
 
     public UnholyGround() {
@@ -36,7 +36,6 @@ public class UnholyGround extends Spell {
                         , ChatColor.WHITE,12, 15);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
@@ -84,14 +83,10 @@ public class UnholyGround extends Spell {
         // taunt the baddies
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
-            if (!(en instanceof LivingEntity)) continue;
-
-            if (taunted.contains(en)) {
-                continue;
-            }
+            if (taunted.contains(en.getUniqueId())) continue;
 
             if (en instanceof Monster) {
-                taunted.add((LivingEntity) en);
+                taunted.add(en.getUniqueId());
                 ((Monster) en).setTarget(pl);
                 MythicMobs.inst().getAPIHelper().taunt(en, pl);
                 en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);

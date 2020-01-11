@@ -37,7 +37,7 @@ public class ThrowAxe extends Spell {
                         "\n" + DAMAGE + " spellʔ damage to the first enemy" +
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
-                ChatColor.WHITE,15, 10);
+                ChatColor.WHITE,10, 10);
         silenced = new ArrayList<>();
         hasHit = new ArrayList<>();
     }
@@ -52,7 +52,7 @@ public class ThrowAxe extends Spell {
 
         Vector path = pl.getEyeLocation().getDirection().normalize().multiply(1.5);
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 2.0f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 1.0f);
         Entity projectile = FloatingItemUtil.spawnFloatingItem(pl.getEyeLocation(), artifactType, 50, path, durability);
 
         new BukkitRunnable() {
@@ -60,17 +60,20 @@ public class ThrowAxe extends Spell {
             public void run() {
 
                 if (projectile.isOnGround() || projectile.isDead()) {
-                    if (projectile.isOnGround()) {
-                        projectile.remove();
-                    }
+//                    if (projectile.isOnGround()) {
+//                        projectile.remove();
+//                    }
                     this.cancel();
+                    return;
                 }
 
+                Location loc = projectile.getLocation();
+                projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
+
                 // prevent multiple hits
-                for (Entity en : projectile.getNearbyEntities(1, 1, 1)) {
-                    if (!(en instanceof LivingEntity)) continue;
-                    if (en.equals(pl)) continue;
-                    if (!hasHit.contains(projectile)) {
+                for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
+
+                    if (verifyEnemy(pl, en) && !hasHit.contains(projectile)) {
                         hasHit.add(projectile);
                         DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl, false);
                         silenced.add(en.getUniqueId());
@@ -96,8 +99,8 @@ public class ThrowAxe extends Spell {
      */
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
-
         if (silenced.contains(e.getDamager().getUniqueId())) {
+            Bukkit.broadcastMessage("cancelled");
             e.setCancelled(true);
         }
     }
@@ -105,6 +108,7 @@ public class ThrowAxe extends Spell {
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (silenced.contains(e.getPlayer().getUniqueId())) {
+            Bukkit.broadcastMessage("cancelled");
             e.setCancelled(true);
         }
     }
@@ -112,6 +116,7 @@ public class ThrowAxe extends Spell {
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
         if (silenced.contains(e.getPlayer().getUniqueId())) {
+            Bukkit.broadcastMessage("cancelled");
             e.setCancelled(true);
         }
     }

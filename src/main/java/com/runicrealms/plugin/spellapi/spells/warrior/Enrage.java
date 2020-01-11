@@ -20,13 +20,11 @@ import java.util.UUID;
 
 public class Enrage extends Spell {
 
-    // instance variables
     private static final int CHANNEL_DURATION = 3;
     private static final int BUFF_DURATION = 10;
     private static final int DAMAGE_AMT = 3;
     private static HashMap<UUID, Long> ragers = new HashMap<>();
 
-    // constructor
     public Enrage() {
         super("Enrage",
                 "For " + CHANNEL_DURATION + " seconds, you channel a deep" +
@@ -37,7 +35,6 @@ public class Enrage extends Spell {
                 ChatColor.WHITE, 10, 15);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
@@ -79,16 +76,6 @@ public class Enrage extends Spell {
 
             }
         }.runTaskLater(RunicCore.getInstance(), CHANNEL_DURATION * 20);
-    }
-
-    public void createHelix(Player player) {
-        Location loc = player.getLocation();
-        double radius = 0.5;
-        for (double y = 0; y <= 3; y += 0.05) {
-            double x = radius * Math.cos(y);
-            double z = radius * Math.sin(y);
-            player.getWorld().spawnParticle(Particle.FLAME, (float) (loc.getX() + x), (float) (loc.getY() + y), (float) (loc.getZ() + z), 1, 0, 0, 0, 0);
-        }
     }
 
     /*

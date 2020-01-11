@@ -1,12 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,7 +19,6 @@ public class Slam extends Spell {
     private static final double HEIGHT = 1.2;
     private static final int RADIUS = 5;
 
-    // constructor
     public Slam() {
         super("Slam", "You charge fearlessly into the air!" +
                         "\nUpon hitting the ground, you deal " +
@@ -31,20 +28,22 @@ public class Slam extends Spell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public boolean attemptToExecute(Player pl) {
+        if (!pl.isOnGround()) {
+            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
+            return false;
+        }
+        return true;
+    }
 
-//        if (!pl.isOnGround()) {
-//            pl.sendMessage(No!)
-//            this.doCooldown = false;
-//        }
+    @Override
+    public void executeSpell(Player pl, SpellItemType type) {
 
         // sounds, particles
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
 
-        // CHARGEE!!
         // apply effects
         final Vector velocity = pl.getVelocity().setY(HEIGHT);
-
         Vector directionVector = pl.getLocation().getDirection();
         directionVector.setY(0);
         directionVector.normalize();
@@ -85,32 +84,11 @@ public class Slam extends Spell {
                             25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
                     for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-
-                        if (en == (pl)) continue;
-
-                        if (en instanceof Player && (!OutlawManager.isOutlaw(((Player) en)) || !OutlawManager.isOutlaw(pl))) {
-                            continue;
-                        }
-
-                        if (en instanceof ArmorStand) continue;
-
-                        if (en.getType().isAlive()) {
-
-                            LivingEntity victim = (LivingEntity) en;
-
-                            // ignore NPCs
-                            if (victim.hasMetadata("NPC")) continue;
-
-                            // skip party members
-                            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(victim.getUniqueId())) {
-                                continue;
-                            }
-
-                            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
+                        if (verifyEnemy(pl, en)) {
+                            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, false);
                             Vector force = (pl.getLocation().toVector().subtract
-                                    (victim.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
-                            victim.setVelocity(force.normalize());
+                                    (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
+                            en.setVelocity(force.normalize());
                         }
                     }
                 }

@@ -42,9 +42,10 @@ public class DamageUtil {
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
 
+        // todo: this needs to go inside spell, because this is wrong
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
-        if (recipient instanceof ArmorStand) return;
+        //if (recipient instanceof ArmorStand) return;
 
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null

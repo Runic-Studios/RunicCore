@@ -79,10 +79,12 @@ public class HolyNova extends Spell {
             LivingEntity le = (LivingEntity) en;
 
             // Executes the damage aspect of spell
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
+            if (verifyEnemy(pl, en)) {
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
+            }
 
             // heal party members
-            if (en instanceof Player) {
+            if (en instanceof Player && verifyAlly(pl, en)) {
                 HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, false);
             }
         }

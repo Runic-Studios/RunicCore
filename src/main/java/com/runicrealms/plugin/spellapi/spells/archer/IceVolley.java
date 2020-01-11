@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -21,11 +20,9 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class IceVolley extends Spell {
 
-    // globals
     private HashMap<Arrow, UUID> vArrows;
     private static final int DAMAGE = 15;
 
-    // constructor
     public IceVolley() {
         super("Ice Volley",
                 "You rapid-fire a volley of five arrows," +
@@ -63,8 +60,8 @@ public class IceVolley extends Spell {
                         @Override
                         public void run() {
                             Location arrowLoc = arrow.getLocation();
-                            arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.AQUA, 1));
-                            arrowLoc.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
+                            arrow.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.AQUA, 1));
+                            arrow.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
                             if (arrow.isDead() || arrow.isOnGround()) {
                                 this.cancel();
                             }
@@ -100,26 +97,12 @@ public class IceVolley extends Spell {
             assert pl != null;
             LivingEntity le = (LivingEntity) e.getEntity();
 
-            // ignore NPCs
-            if (le.hasMetadata("NPC")) {
-                return;
+            if (verifyEnemy(pl, le)) {
+                e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
+                e.getEntity().getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
+                le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 1));
+                DamageUtil.damageEntitySpell(DAMAGE, le, pl, true);
             }
-
-            // outlaw check
-            if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
-                return;
-            }
-
-            // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
-                return;
-            }
-
-            e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
-            e.getEntity().getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
-            le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 1));
-            DamageUtil.damageEntitySpell(DAMAGE, le, pl, true);
         }
     }
 }

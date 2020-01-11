@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -29,7 +28,6 @@ public class WoundingShot extends Spell {
     private List<Arrow> cripplingArrs = new ArrayList<>();
     private List<UUID> crippledPlrs = new ArrayList<>();
 
-    // constructor
     public WoundingShot() {
         super("Wounding Shot",
                 "You launch an enchanted arrow which" +
@@ -89,19 +87,7 @@ public class WoundingShot extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        // ignore NPCs
-        if (le.hasMetadata("NPC")) {
-            return;
-        }
-
-        // outlaw check
-        if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
+        if (!verifyEnemy(pl, le)) return;
 
         // spell effect
         crippledPlrs.add(le.getUniqueId());

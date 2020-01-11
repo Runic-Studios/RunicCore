@@ -1,23 +1,18 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import com.runicrealms.plugin.RunicCore;
 
@@ -27,23 +22,21 @@ import java.util.List;
 @SuppressWarnings("FieldCanBeLocal")
 public class ShriekingSkull extends Spell {
 
-    // globals
     private static final int POTION_DURATION = 5;
     private static final double LAUNCH_MULT = 1.5;
     private static final double SKULL_SPEED = 0.8;
     private WitherSkull skull;
     private List<WitherSkull> hit = new ArrayList<>();
 
-    // constructor
     public ShriekingSkull() {
         super ("Shrieking Skull",
                 "You launch a projectile skull of shadow," +
-                        "\nlaunching the first enemy hit into the air and" +
-                        "\nforcing them to fall slowly to the ground!",
+                        "\nlaunching the first enemy hit into the air," +
+                        "\nblinding them, and forcing them to fall" +
+                        "\nslowly to the ground!",
                 ChatColor.WHITE, 8, 15);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
@@ -53,6 +46,16 @@ public class ShriekingSkull extends Spell {
         skull.setVelocity(velocity);
         skull.setShooter(player);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.5f, 1);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                skull.getWorld().spawnParticle(Particle.SNOWBALL, skull.getLocation(), 1, 0, 0, 0, 0);
+                if (skull.isDead() || skull.isOnGround()) {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -77,21 +80,13 @@ public class ShriekingSkull extends Spell {
         LivingEntity victim = (LivingEntity) event.getEntity();
         if (player == null) return;
 
-        // skip NPCs
-        if (victim.hasMetadata("NPC")) return;
-
-        // outlaw check
-        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(player) != null
-                && RunicCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
+       if (!verifyEnemy(player, victim)) return;
 
         // cancel the event, apply spell mechanics
         Vector launch = new Vector(0, 10.0f, 0).normalize().multiply(LAUNCH_MULT);
         victim.setVelocity(launch);
+        victim.addPotionEffect
+                (new PotionEffect(PotionEffectType.BLINDNESS, POTION_DURATION * 20, 0));
         victim.addPotionEffect
                 (new PotionEffect(PotionEffectType.SLOW_FALLING, POTION_DURATION * 20, 0));
 

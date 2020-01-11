@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -17,7 +16,6 @@ import java.util.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class Rejuvenate extends Spell {
 
-    // grab our globals
     private HashMap<UUID, List<UUID>> hasBeenHit;
     private static int HEAL_AMT = 35;
     private final double RADIUS = 1.5;
@@ -27,7 +25,6 @@ public class Rejuvenate extends Spell {
     // in seconds
     private final int SUCCESSIVE_COOLDOWN = 2;
 
-    // constructor
     public Rejuvenate() {
         super("Rejuvenate",
                 "You launch a beam of healing magic," +
@@ -42,7 +39,7 @@ public class Rejuvenate extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, true);
+        HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -106,15 +103,8 @@ public class Rejuvenate extends Spell {
                 hasBeenHit.put(ally.getUniqueId(), uuids);
             }
 
-            // ignore NPCs, additional check for tutorial island
-            if (le.hasMetadata("NPC")) {
-                SpellCastEvent sce = new SpellCastEvent(pl, this, le);
-                Bukkit.getPluginManager().callEvent(sce);
-                if (sce.isCancelled()) return;
-                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
-                le.getWorld().spawnParticle(Particle.HEART, le.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
-                continue;
-            }
+            // ignore NPCs
+            if (le.hasMetadata("NPC")) continue;
 
             // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
             new BukkitRunnable() {

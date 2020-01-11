@@ -1,10 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,11 +16,9 @@ import com.runicrealms.plugin.RunicCore;
 @SuppressWarnings("FieldCanBeLocal")
 public class Harpoon extends Spell {
 
-    // globals
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
 
-    // constructor
     public Harpoon() {
         super ("Harpoon",
                 "You launch a projectile harpoon" +
@@ -68,17 +63,7 @@ public class Harpoon extends Spell {
         if (player == null) return;
         LivingEntity victim = (LivingEntity) event.getEntity();
 
-        // skip NPCs
-        if (victim.hasMetadata("NPC")) return;
-
-        // outlaw check
-        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(player))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(player) != null
-                && RunicCore.getPartyManager().getPlayerParty(player).hasMember(victim.getUniqueId())) { return; }
+        if (!verifyEnemy(player, victim)) return;
 
         // apply spell mechanics
         Location playerLoc = player.getLocation();
@@ -89,7 +74,7 @@ public class Harpoon extends Spell {
 
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3.0D;
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
-        final double hPower = 0.5D;
+        //final double hPower = 0.5D;
 
         new BukkitRunnable() {
             @Override

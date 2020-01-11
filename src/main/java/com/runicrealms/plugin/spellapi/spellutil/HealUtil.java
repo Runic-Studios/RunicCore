@@ -1,30 +1,19 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 public class HealUtil  {
-
-    private static HashMap<UUID, Integer> shieldedPlayers = new HashMap<>();
 
     @SuppressWarnings("deprecation")
     public static void healPlayer(double healAmt, Player recipient, Player caster,
                                   boolean gemBoosted, boolean halveGemBoost, boolean isReducedOnCaster) {
-
-        // ignore NPCs
-        if (recipient.hasMetadata("NPC")) return;
-        if (recipient instanceof ArmorStand) return;
 
         // scan for gem values
         if (gemBoosted) {
@@ -45,12 +34,6 @@ public class HealUtil  {
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         healAmt = event.getAmount();
-
-        // skip the player if they're not in the party
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
-                && !RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) {
-            return;
-        }
 
         double newHP = recipient.getHealth() + healAmt;
         double difference = recipient.getMaxHealth() - recipient.getHealth();
@@ -79,23 +62,6 @@ public class HealUtil  {
 
         // call a new health regen event to communicate with all the other events that depend on this.
         Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, healAmt, EntityRegainHealthEvent.RegainReason.CUSTOM));
-    }
-
-    //todo: create shield event
-    public static void shieldPlayer(double shieldAmt, Player recipient, Player caster) {
-
-        // scan for gem values
-        shieldAmt = shieldAmt + GearScanner.getHealingBoost(caster);
-
-        HologramUtil.createShieldHologram(recipient, recipient.getLocation().add(0,1.5,0), shieldAmt);
-        recipient.playSound(recipient.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
-        recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
-        recipient.getWorld().spawnParticle(Particle.SPELL_INSTANT, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
-        shieldedPlayers.put(recipient.getUniqueId(), (int) shieldAmt);
-    }
-
-    public static HashMap<UUID, Integer> getShieldedPlayers() {
-        return shieldedPlayers;
     }
 }
 

@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
@@ -21,14 +20,12 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Discharge extends Spell {
 
-    // globals variables
     private static final int DAMAGE_AMT = 20;
     private static final int BLAST_RADIUS = 3;
     private static final double KNOCKBACK_MULT = -0.2;
     private static final double KNOCKUP_AMT = 0.5;
     private HashMap<Arrow, UUID> trails = new HashMap<>();
 
-    // constructor
     public Discharge() {
         super("Discharge",
                 "You launch an electric spark!" +
@@ -38,7 +35,6 @@ public class Discharge extends Spell {
                 ChatColor.WHITE, 8, 15);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1.0f);
@@ -46,9 +42,8 @@ public class Discharge extends Spell {
         startTask(player, new Vector[]{middle});
     }
 
-    // particles, vectors
     private void startTask(Player pl, Vector[] vectors) {
-        for (Vector vector : vectors) {
+        for (Vector ignored : vectors) {
             Vector direction = pl.getEyeLocation().getDirection().normalize().multiply(1);
             Arrow arrow = pl.launchProjectile(Arrow.class);
             arrow.isSilent();
@@ -70,33 +65,20 @@ public class Discharge extends Spell {
                     if (arrow.isDead() || arrow.isOnGround()) {
                         this.cancel();
                         arrow.getWorld().spigot().strikeLightningEffect(arrowLoc, true);
-                        arrowLoc.getWorld().playSound(arrowLoc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 1.0f);
-                        arrowLoc.getWorld().playSound(arrowLoc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
-                        arrowLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 5, 0.2f, 0.2f, 0.2f, 0);
+                        arrow.getWorld().playSound(arrowLoc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 1.0f);
+                        arrow.getWorld().playSound(arrowLoc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
+                        arrow.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 5, 0.2f, 0.2f, 0.2f, 0);
 
                         // get nearby enemies within blast radius
                         for (Entity entity : arrow.getNearbyEntities(BLAST_RADIUS, BLAST_RADIUS, BLAST_RADIUS)) {
                             if (entity != (pl)) {
                                 if (entity.getType().isAlive()) {
                                     LivingEntity victim = (LivingEntity) entity;
-
-                                    // ignore NPCs
-                                    if (entity.hasMetadata("NPC")) continue;
-
-                                    // outlaw check
-                                    if (entity instanceof Player && (!OutlawManager.isOutlaw(((Player) entity)) || !OutlawManager.isOutlaw(pl))) {
-                                        continue;
+                                    if (verifyEnemy(pl, victim)) {
+                                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
+                                        Vector force = (arrowLoc.toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
+                                        victim.setVelocity(force);
                                     }
-
-                                    // skip party members
-                                    if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                                            && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) {
-                                        continue;
-                                    }
-
-                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
-                                    Vector force = (arrowLoc.toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
-                                    victim.setVelocity(force);
                                 }
                             }
                         }

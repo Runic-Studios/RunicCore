@@ -37,7 +37,9 @@ public class Heal extends Spell {
 
             // heal party members and the caster
             Player ally = (Player) entity;
-            HealUtil.healPlayer(HEALING_AMT, ally, pl, true, false, false);
+            if (verifyAlly(pl, ally)) {
+                HealUtil.healPlayer(HEALING_AMT, ally, pl, true, false, false);
+            }
         }
 
     }

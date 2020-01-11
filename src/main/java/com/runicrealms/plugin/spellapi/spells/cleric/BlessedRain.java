@@ -95,7 +95,9 @@ public class BlessedRain extends Spell {
 
             // heal party members and the caster
             Player ally = (Player) entity;
-            HealUtil.healPlayer(HEALING_AMT, ally, pl, true, true, true);
+            if (verifyAlly(pl, ally)) {
+                HealUtil.healPlayer(HEALING_AMT, ally, pl, true, true, true);
+            }
         }
     }
 }

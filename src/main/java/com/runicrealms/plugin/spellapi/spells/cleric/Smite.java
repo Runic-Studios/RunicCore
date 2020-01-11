@@ -6,7 +6,6 @@ import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,8 +33,6 @@ public class Smite extends Spell {
 
             // skip non-living, armor stands
             if (!(en instanceof LivingEntity)) continue;
-            if (en instanceof ArmorStand) continue;
-
             LivingEntity le = (LivingEntity) en;
 
             // heal party members and the caster
@@ -46,7 +43,9 @@ public class Smite extends Spell {
                     damage = 2*DAMAGE_AMT;
                 }
             }
-            DamageUtil.damageEntitySpell(damage, le, pl, false);
+            if (verifyEnemy(pl, le)) {
+                DamageUtil.damageEntitySpell(damage, le, pl, false);
+            }
         }
     }
 }

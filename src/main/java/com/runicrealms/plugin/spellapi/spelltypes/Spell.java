@@ -1,18 +1,26 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.outlaw.OutlawManager;
-import org.bukkit.Sound;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
+import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 import com.runicrealms.plugin.RunicCore;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import com.runicrealms.plugin.attributes.AttributeUtil;
+
+import java.util.Set;
 
 public abstract class Spell implements ISpell, Listener {
 
@@ -62,26 +70,57 @@ public abstract class Spell implements ISpell, Listener {
         return true;
     }
 
-    // todo: fix this method, add it to ALL spells
     @Override
-    public boolean testTarget(Player caster, Entity victim) {
+    public boolean verifyAlly(Player caster, Entity ally) {
+
+        // target must be alive
+        if (!(ally instanceof LivingEntity)) return false;
+        LivingEntity livingAlly = (LivingEntity) ally;
 
         // ignore NPCs
-        if (victim.hasMetadata("NPC")) {
-            return false;
-        }
+        if (livingAlly.hasMetadata("NPC")) return false;
+        if (livingAlly instanceof ArmorStand) return false;
+
+        // skip the player if they're not in the party
+        return RunicCore.getPartyManager().getPlayerParty(caster) == null
+                || RunicCore.getPartyManager().getPlayerParty(caster).hasMember(ally.getUniqueId());
+    }
+
+    @Override
+    public boolean verifyEnemy(Player caster, Entity victim) {
+
+        // target must be alive
+        if (!(victim instanceof LivingEntity)) return false;
+        LivingEntity livingVictim = (LivingEntity) victim;
+
+        // ignnore caster
+        if (caster.equals(victim)) return false;
+
+        // ignore NPCs
+        if (livingVictim.hasMetadata("NPC")) return false;
 
         // outlaw check
-        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(caster))) {
+        if (livingVictim instanceof Player && (!OutlawManager.isOutlaw(((Player) livingVictim)) || !OutlawManager.isOutlaw(caster))) {
+
+            // for PvP zones, grab all regions the player is standing in
+            // -----------------------------------------------------------------------------------------
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery query = container.createQuery();
+            ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(caster.getLocation()));
+            Set<ProtectedRegion> regions = set.getRegions();
+            if (regions == null) return false;
+            for (ProtectedRegion region : regions) {
+                if (region.getId().contains("pvp")) {
+                    return true;
+                }
+            }
+            // -----------------------------------------------------------------------------------------
             return false;
         }
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
-                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(victim.getUniqueId())) {
-            return false;
-        }
-        return true;
+        return RunicCore.getPartyManager().getPlayerParty(caster) == null
+                || !RunicCore.getPartyManager().getPlayerParty(caster).hasMember(victim.getUniqueId());
     }
 
     @Override

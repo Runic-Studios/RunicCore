@@ -21,6 +21,8 @@ public interface ISpell {
 
     int getManaCost();
 
-    boolean testTarget(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
+    boolean verifyAlly(Player caster, Entity recipient); // checks for valid healing, shielding targets
+
+    boolean verifyEnemy(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
 }
 

@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -99,20 +98,8 @@ public class ArrowBomb extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) victim;
 
-        // ignore NPCs
-        if (le.hasMetadata("NPC")) {
-            return;
+        if (verifyEnemy(pl, le)){
+            DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
         }
-
-        // outlaw check
-        if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
-
-        DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
     }
 }

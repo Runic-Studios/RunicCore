@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -19,14 +18,12 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class PlagueBomb extends Spell {
 
-    // global variables
     private static final int DAMAGE_AMT = 2;
     private static final int DURATION = 6;
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
 
-    // constructor
     public PlagueBomb() {
         super("Plague Bomb",
                 "You launch a magical vial of disease," +
@@ -74,17 +71,9 @@ public class PlagueBomb extends Spell {
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
             LivingEntity le = (LivingEntity) en;
-            // ignore the caster
-            if (en.equals(pl)) continue;
-            // ignore NPCs, armor stands
-            if (en.hasMetadata("NPC")) continue;
-            if (en instanceof ArmorStand) continue;
-            // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                    && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(en.getUniqueId())) continue;
-            // outlaw check
-            if (en instanceof Player && (!OutlawManager.isOutlaw(((Player) en)) || !OutlawManager.isOutlaw(Objects.requireNonNull(pl)))) continue;
-            damageOverTime(le, pl);
+            if (verifyEnemy(pl, le)) {
+                damageOverTime(le, pl);
+            }
         }
     }
 

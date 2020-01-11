@@ -3,40 +3,22 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import io.lumine.xikage.mythicmobs.skills.SkillCaster;
-import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
-import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 @SuppressWarnings("FieldCanBeLocal")
 public class ArcaneOrb extends Spell {
 
-    // global variables
     private static final int DURATION = 10;
     private static final double PERCENT = 25;
     private static final int RADIUS = 10;
     private HashMap<UUID, Location> buffed = new HashMap<>();
 
-    // constructor
     public ArcaneOrb() {
         super("Arcane Orb",
                 "You summon an orb of arcane magic!" +
@@ -46,7 +28,6 @@ public class ArcaneOrb extends Spell {
                         "\nof the orb!", ChatColor.WHITE,15, 20);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
@@ -63,20 +44,19 @@ public class ArcaneOrb extends Spell {
                 } else {
                     count += 1;
                     spawnSphere(loc);
-                    createCircle(pl, circleLoc, RADIUS);
+                    createCircle(pl, circleLoc);
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
     }
 
-    private void createCircle(Player pl, Location loc, float radius) {
-
+    private void createCircle(Player pl, Location loc) {
         int particles = 50;
         for (int i = 0; i < particles; i++) {
             double angle, x, z;
             angle = 2 * Math.PI * i / particles;
-            x = Math.cos(angle) * radius;
-            z = Math.sin(angle) * radius;
+            x = Math.cos(angle) * (float) ArcaneOrb.RADIUS;
+            z = Math.sin(angle) * (float) ArcaneOrb.RADIUS;
             loc.add(x, 0, z);
             pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
                     new Particle.DustOptions(Color.FUCHSIA, 1));
@@ -85,7 +65,6 @@ public class ArcaneOrb extends Spell {
     }
 
     private void spawnSphere(Location loc) {
-
         for (double i = 0; i <= Math.PI; i += Math.PI / 12) {
             double radius = Math.sin(i);
             double y = Math.cos(i);

@@ -137,8 +137,8 @@ public class SpellManager {
         this.spellList.add(new Starfall());
         this.spellList.add(new ArrowBomb());
         this.spellList.add(new SearingShot());
-        this.spellList.add(new Evasion());
-        this.spellList.add(new Envenom());
+        this.spellList.add(new BarkShield());
+        this.spellList.add(new Enflame());
         this.spellList.add(new Heal());
         this.spellList.add(new Smite());
         this.spellList.add(new Sandstorm());

@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -25,7 +24,6 @@ public class RottingShot extends Spell {
     private static final int DURATION = 8;
     private List<Arrow> poisonedArrs = new ArrayList<>();
 
-    // constructor
     public RottingShot() {
         super("Rotting Shot",
                 "You launch an unholy arrow which" +
@@ -83,20 +81,7 @@ public class RottingShot extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        // ignore NPCs
-        if (le.hasMetadata("NPC")) {
-            return;
-        }
-
-        // outlaw check
-        if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
-
+        if (!verifyEnemy(pl, le)) return;
         new BukkitRunnable() {
             int count = 1;
             @Override

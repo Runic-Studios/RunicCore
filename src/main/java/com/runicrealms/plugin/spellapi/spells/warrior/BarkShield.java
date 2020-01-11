@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.rogue;
+package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Evasion extends Spell {
+public class BarkShield extends Spell {
 
     private static final int DURATION = 7;
     private List<UUID> evaders = new ArrayList<>();
 
-    public Evasion() {
-        super("Evasion",
+    public BarkShield() {
+        super("Bark Shield",
                 "For " + DURATION + " seconds, you evade incoming" +
                         "\nattacks, causing you to become immune" +
                         "\nto all weapon⚔ damage! This ability has" +
@@ -31,6 +31,8 @@ public class Evasion extends Spell {
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
+
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 0.5f);
 
         // apply effects
         evaders.add(pl.getUniqueId());
@@ -42,7 +44,7 @@ public class Evasion extends Spell {
                     this.cancel();
                 } else {
                     count += 1;
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_DEATH, 0.5f, 2.0f);
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 2.0f);
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
@@ -65,4 +67,3 @@ public class Evasion extends Spell {
         e.setCancelled(true);
     }
 }
-

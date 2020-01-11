@@ -40,7 +40,6 @@ public class Windstride extends Spell {
             for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
 
                 if (!(en instanceof LivingEntity)) continue;
-
                 LivingEntity le = (LivingEntity) en;
 
                 // skip our player, skip non-player entities

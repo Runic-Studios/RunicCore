@@ -16,16 +16,16 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Envenom extends Spell {
+public class Enflame extends Spell {
 
     private static final int DURATION = 5;
     private static final double PERCENT = 100;
-    private List<UUID> venomers = new ArrayList<>();
+    private List<UUID> flamers = new ArrayList<>();
 
-    public Envenom() {
-        super("Envenom",
-                "For " + DURATION + " seconds, you coat your blade" +
-                        "\nin a deadly venom, causing your weapon⚔" +
+    public Enflame() {
+        super("Enflame",
+                "For " + DURATION + " seconds, you ignite your blade" +
+                        "\nwith pure flame, causing your weapon⚔" +
                         "\nattacks to deal twice the damage for" +
                         "\nthe duration!",
                 ChatColor.WHITE,15, 20);
@@ -36,15 +36,15 @@ public class Envenom extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         // apply effects
-        venomers.add(pl.getUniqueId());
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 0.5f);
-        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
+        flamers.add(pl.getUniqueId());
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
+        Cone.coneEffect(pl, Particle.FLAME, DURATION, 0, 20L, Color.GREEN);
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                venomers.remove(pl.getUniqueId());
+                flamers.remove(pl.getUniqueId());
             }
         }.runTaskLater(RunicCore.getInstance(), DURATION*20L);
     }
@@ -54,15 +54,14 @@ public class Envenom extends Spell {
      */
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!venomers.contains(e.getPlayer().getUniqueId())) return;
+        if (!flamers.contains(e.getPlayer().getUniqueId())) return;
         double percent = PERCENT / 100;
         int extraAmt = (int) (e.getAmount() * percent);
         e.setAmount(e.getAmount() + extraAmt);
         Entity victim = e.getEntity();
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.5f, 1.0f);
-        victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getLocation(),
-                10, 0.5F, 0.5F, 0.5F, 0, new Particle.DustOptions(Color.GREEN, 20));
+        victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1);
+        victim.getWorld().spawnParticle(Particle.FLAME, victim.getLocation(), 10, 0.5F, 0.5F, 0.5F, 0);
     }
 }
 

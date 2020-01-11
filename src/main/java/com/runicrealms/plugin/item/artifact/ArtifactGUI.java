@@ -474,8 +474,8 @@ public class ArtifactGUI {
         List<String> spells = new ArrayList<>();
         spells.add("Backstab");
         spells.add("Cloak");
-        spells.add("Envenom");
-        spells.add("Evasion");
+        spells.add("Enflame");
+        spells.add("BarkShield");
         spells.add("Shadow Step");
         spells.add("Shrieking Skull");
         spells.add("Smoke Bomb");

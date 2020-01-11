@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -23,7 +22,6 @@ public class SearingShot extends Spell {
     private static final int DAMAGE = 35;
     private List<Arrow> searingArrows;
 
-    // constructor
     public SearingShot() {
         super("Searing Shot",
                 "You launch an enchanted, flaming arrow" +
@@ -47,13 +45,13 @@ public class SearingShot extends Spell {
             @Override
             public void run() {
                 Location arrowLoc = searing.getLocation();
-                arrowLoc.getWorld().spawnParticle(Particle.FLAME, arrowLoc,
+                searing.getWorld().spawnParticle(Particle.FLAME, arrowLoc,
                         10, 0, 0, 0, 0);
                 if (searing.isDead() || searing.isOnGround()) {
                     this.cancel();
                     pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
-                    arrowLoc.getWorld().spawnParticle(Particle.LAVA, arrowLoc, 10, 0, 0, 0, 0);
+                    searing.getWorld().spawnParticle(Particle.LAVA, arrowLoc, 10, 0, 0, 0, 0);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
@@ -83,21 +81,8 @@ public class SearingShot extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        // ignore NPCs
-        if (le.hasMetadata("NPC")) {
-            return;
+        if (verifyEnemy(pl, le)) {
+            DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
         }
-
-        // outlaw check
-        if (le instanceof Player && (!OutlawManager.isOutlaw(((Player) le)) || !OutlawManager.isOutlaw(pl))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) { return; }
-
-        // spell effect
-        DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
     }
 }

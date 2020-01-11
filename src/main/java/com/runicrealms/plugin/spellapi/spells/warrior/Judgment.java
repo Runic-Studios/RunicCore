@@ -7,7 +7,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import com.runicrealms.plugin.RunicCore;
@@ -41,7 +40,7 @@ public class Judgment extends Spell {
     @Override
     public boolean attemptToExecute(Player pl) {
         if (!pl.isOnGround()) {
-            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast Judgment!");
+            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
             return false;
         }
         return true;
@@ -88,23 +87,12 @@ public class Judgment extends Spell {
 
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-
-                    if (entity instanceof ItemStack) continue;
-
-                    // ignore NPCs
-                    if (entity.hasMetadata("NPC")) { continue; }
-
-                    // skip the caster
-                    if(entity.equals(pl)) { continue; }
-
-                    // skip party members
-                    if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                            && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(entity.getUniqueId())) { continue; }
-
-                    // Executes the spell
-                    Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.25).setY(0.3);
-                    entity.setVelocity(force);
-                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
+                    //if (entity instanceof ItemStack) continue;
+                    if (verifyEnemy(pl, entity)) {
+                        Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.25).setY(0.3);
+                        entity.setVelocity(force);
+                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
+                    }
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20/UPDATES_PER_SECOND));
@@ -117,16 +105,7 @@ public class Judgment extends Spell {
     public void onMove(PlayerMoveEvent e) {
         if (!judgers.contains(e.getPlayer().getUniqueId())) return;
         if (e.getTo() == null) return;
-//        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
-        double fromX = e.getFrom().getX();
-        double fromY = e.getFrom().getY();
-        double fromZ = e.getFrom().getZ();
-        double toX = e.getTo().getX();
-        double toY = e.getTo().getY();
-        double toZ = e.getTo().getZ();
-        if (!(fromX == toX)) e.getTo().setX(fromX);
-        if (!(fromY == toY)) e.getTo().setY(fromY);
-        if (!(fromZ == toZ)) e.getTo().setZ(fromZ);
+        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
     }
 }
 
