@@ -89,6 +89,9 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public boolean verifyEnemy(Player caster, Entity victim) {
 
+        // bugfix for armor stands
+        if (victim instanceof ArmorStand) return false;
+
         // target must be alive
         if (!(victim instanceof LivingEntity)) return false;
         LivingEntity livingVictim = (LivingEntity) victim;
