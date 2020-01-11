@@ -29,7 +29,6 @@ import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
-import com.runicrealms.plugin.spellapi.SpellShieldListener;
 import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.commands.CaptainDefeated;
@@ -158,7 +157,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new CombatListener(), this);
         pm.registerEvents(new PlayerRegenListener(), this);
         pm.registerEvents(new PlayerMenuListener(), this);
-        pm.registerEvents(new SpellShieldListener(), this);
         pm.registerEvents(new BlockBreakListener(), this);
         pm.registerEvents(new MinLevelListener(), this);
         pm.registerEvents(new PlayerHungerManager(), this);

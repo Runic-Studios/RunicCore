@@ -18,18 +18,15 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ThrowAxe extends Spell {
 
     private static final int DAMAGE = 10;
     private static final int DURATION = 3;
+    private HashMap<UUID, UUID> hasBeenHit;
     private List<UUID> silenced;
-    private List<Entity> hasHit;
 
     public ThrowAxe() {
         super("Throw Axe",
@@ -38,15 +35,14 @@ public class ThrowAxe extends Spell {
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
                 ChatColor.WHITE,10, 10);
+        hasBeenHit = new HashMap<>();
         silenced = new ArrayList<>();
-        hasHit = new ArrayList<>();
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
         ItemStack artifact = pl.getInventory().getItemInMainHand();
-
         Material artifactType = artifact.getType();
         int durability = ((Damageable) Objects.requireNonNull(artifact.getItemMeta())).getDamage();
 
@@ -60,9 +56,9 @@ public class ThrowAxe extends Spell {
             public void run() {
 
                 if (projectile.isOnGround() || projectile.isDead()) {
-//                    if (projectile.isOnGround()) {
-//                        projectile.remove();
-//                    }
+                    if (projectile.isOnGround()) {
+                        projectile.remove();
+                    }
                     this.cancel();
                     return;
                 }
@@ -70,16 +66,15 @@ public class ThrowAxe extends Spell {
                 Location loc = projectile.getLocation();
                 projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
 
-                // prevent multiple hits
-                for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
-
-                    if (verifyEnemy(pl, en) && !hasHit.contains(projectile)) {
-                        hasHit.add(projectile);
-                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl, false);
+                for (Entity en : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
+                    if (verifyEnemy(pl, en)) {
+                        if (hasBeenHit.get(pl.getUniqueId()) == en.getUniqueId()) continue;
+                        hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits
                         silenced.add(en.getUniqueId());
                         en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         en.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl, false);
                         projectile.remove();
                     }
                 }
@@ -89,6 +84,7 @@ public class ThrowAxe extends Spell {
         new BukkitRunnable() {
             @Override
             public void run() {
+                hasBeenHit.clear();
                 silenced.clear();
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
@@ -100,7 +96,6 @@ public class ThrowAxe extends Spell {
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
         if (silenced.contains(e.getDamager().getUniqueId())) {
-            Bukkit.broadcastMessage("cancelled");
             e.setCancelled(true);
         }
     }
@@ -108,7 +103,6 @@ public class ThrowAxe extends Spell {
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (silenced.contains(e.getPlayer().getUniqueId())) {
-            Bukkit.broadcastMessage("cancelled");
             e.setCancelled(true);
         }
     }
@@ -116,7 +110,6 @@ public class ThrowAxe extends Spell {
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
         if (silenced.contains(e.getPlayer().getUniqueId())) {
-            Bukkit.broadcastMessage("cancelled");
             e.setCancelled(true);
         }
     }
