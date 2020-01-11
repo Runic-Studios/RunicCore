@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.commands;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.events.LootEvent;
 import com.runicrealms.plugin.item.ItemNameGenerator;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ItemCMD implements SubCommand {
@@ -46,28 +48,8 @@ public class ItemCMD implements SubCommand {
             return;
         }
 
-        // todo: create legendary command or clean this up. if we do, remember to change frost's end questline
-        if (args[2].equals("flame")) {
-            ItemStack tomb = LegendaryManager.eternalFlame();
-            if (pl.getInventory().firstEmpty() != -1) {
-                int firstEmpty = pl.getInventory().firstEmpty();
-                pl.getInventory().setItem(firstEmpty, tomb);
-            } else {
-                pl.getWorld().dropItem(pl.getLocation(), tomb);
-            }
-            return;
-        } else if (args[2].equals("shield")) {
-            ItemStack shield = LegendaryManager.captainsShield();
-            if (pl.getInventory().firstEmpty() != -1) {
-                int firstEmpty = pl.getInventory().firstEmpty();
-                pl.getInventory().setItem(firstEmpty, shield);
-            } else {
-                pl.getWorld().dropItem(pl.getLocation(), shield);
-            }
-            return;
-        }
-
-        // runicgive item [player] [itemType] [tier] ([x] [y] [z])
+        // runicgive item [player] [itemType] [tier] [uuid] | length = 5
+        // runicgive item [player] [itemType] [tier] ([x] [y] [z]) [uuid] | length = 8
         // runicgive item [player] [potion] [type] [someVar]
         ItemNameGenerator nameGen = new ItemNameGenerator();
 
@@ -154,28 +136,40 @@ public class ItemCMD implements SubCommand {
                 break;
         }
 
+        // ----------------------------------------------------------------
         /*
         run our custom event for purposes of loot bonuses, potions, etc.
          */
         LootEvent event = new LootEvent(pl, craftedItem);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
+        // ----------------------------------------------------------------
 
         // check that the player has an open inventory space
         // this method prevents items from stacking if the player crafts 5
         // quests, or directly in inventory
-        if (args.length == 4) {
+        if (args.length == 5) {
             if (pl.getInventory().firstEmpty() != -1) {
                 int firstEmpty = pl.getInventory().firstEmpty();
                 pl.getInventory().setItem(firstEmpty, craftedItem);
             } else {
-                pl.getWorld().dropItem(pl.getLocation(), craftedItem);
+                UUID mobID = UUID.fromString(args[4]);
+                if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
+                    RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), pl.getLocation(), craftedItem);
+                } else {
+                    pl.getWorld().dropItem(pl.getLocation(), craftedItem); // regular drop
+                }
             }
 
         // mob drops
-        } else if (args.length == 7) {
+        } else if (args.length == 8) {
             Location loc = new Location(pl.getWorld(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]));
-            pl.getWorld().dropItem(loc, craftedItem);
+            UUID mobID = UUID.fromString(args[7]);
+            if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
+                RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), loc, craftedItem);
+            } else {
+                pl.getWorld().dropItem(loc, craftedItem); // regular drop
+            }
         }
     }
 

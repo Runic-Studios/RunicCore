@@ -3,6 +3,7 @@ package com.runicrealms.plugin;
 import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.item.GoldPouchListener;
 import com.runicrealms.plugin.item.LegendaryManager;
+import com.runicrealms.plugin.item.MobTagger;
 import com.runicrealms.plugin.item.commands.*;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
@@ -56,6 +57,7 @@ public class RunicCore extends JavaPlugin {
     private static ScoreboardHandler scoreboardHandler;
     private static SpellManager spellManager;
     private static TabListManager tabListManager;
+    private static MobTagger mobTagger;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -66,6 +68,7 @@ public class RunicCore extends JavaPlugin {
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
     public static SpellManager getSpellManager() { return spellManager; }
     public static TabListManager getTabListManager() { return tabListManager; }
+    public static MobTagger getMobTagger() { return mobTagger; }
 
     public void onEnable() {
 
@@ -79,6 +82,7 @@ public class RunicCore extends JavaPlugin {
         scoreboardHandler = new ScoreboardHandler();
         spellManager = new SpellManager();
         tabListManager = new TabListManager(this);
+        mobTagger = new MobTagger();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
@@ -167,6 +171,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(new LegendaryManager(), this);
+        pm.registerEvents(RunicCore.getMobTagger(), this);
     }
     
     private void registerCommands() {

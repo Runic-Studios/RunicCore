@@ -16,8 +16,10 @@ public class KnockbackUtil {
     public static void knockbackPlayer(Entity damager, Player victim) {
         Location l = victim.getLocation().subtract(damager.getLocation());
         double distance = victim.getLocation().distance(damager.getLocation());
+        if (distance == 0) distance = 1;
         DecimalFormat finite = new DecimalFormat("#.####");
-        double multiplier = Double.parseDouble(finite.format(POWER/distance));
+        //double multiplier = Double.parseDouble(finite.format(POWER/distance));
+        double multiplier = POWER/distance;
         Vector vec = l.toVector().normalize().multiply(multiplier);
         vec.setX(Double.parseDouble(finite.format(vec.getX())));
         vec.setY(0.3333);
