@@ -3,8 +3,8 @@ package com.runicrealms.plugin.item;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.utilities.ColorUtil;
-import com.runicrealms.plugin.utilities.HologramUtil;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -51,9 +51,9 @@ public class MobTagger implements Listener {
             long startTime = taggedTimers.get(plID);
             if (System.currentTimeMillis() - startTime >= TAG_TIME*1000) {
                 taggedTimers.remove(plID);
-                Bukkit.broadcastMessage("player no longer has a tag");
+                //Bukkit.broadcastMessage("player no longer has a tag");
                 taggedMobs.remove(plID);
-                Bukkit.broadcastMessage("mob associated with " + Bukkit.getPlayer(plID).getName() + " is no longer tagged");
+                //Bukkit.broadcastMessage("mob associated with " + Bukkit.getPlayer(plID).getName() + " is no longer tagged");
             }
         }
     }
@@ -62,7 +62,7 @@ public class MobTagger implements Listener {
         for (ItemStack itemStack : prioTimers.keySet()) {
             long startTime = prioTimers.get(itemStack);
             if (System.currentTimeMillis() - startTime >= PRIO_TIME*1000) {
-                Bukkit.broadcastMessage("item no longer has priority");
+                //Bukkit.broadcastMessage("item no longer has priority");
                 prioTimers.remove(itemStack);
                 prioItems.remove(itemStack);
             }
@@ -108,38 +108,47 @@ public class MobTagger implements Listener {
         e.setCancelled(true);
     }
 
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        tagMob(e.getPlayer(), e.getEntity());
+    }
+
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        tagMob(e.getPlayer(), e.getEntity());
+    }
+
     /**
      * Tag mob
      */
-    @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    private void tagMob(Player pl, Entity victim) {
 
-        // todo: ignore players, ignore "Boss" mobs
-        Player pl = e.getPlayer();
-        Entity victim = e.getEntity();
+        if (victim instanceof Player) return;
+
         UUID plID = pl.getUniqueId();
         UUID victimID = victim.getUniqueId();
 
+        if (MythicMobs.inst().getMobManager().getActiveMob(victimID).isPresent()) {
+            ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(victimID).get();
+            if (am.getFaction() != null && am.getFaction().equalsIgnoreCase("boss")) {
+                return;
+            }
+        }
+
         if (taggedMobs.keySet().contains(plID)) { // if player is on the list (has tagged ANY mob)
-            Bukkit.broadcastMessage("this player has a current tag");
+            //Bukkit.broadcastMessage("this player has a current tag");
             if (taggedMobs.get(plID).equals(victimID)) { // if mob is tied to player
-                Bukkit.broadcastMessage("this mob was already tagged by this player, updating tag");
+                //Bukkit.broadcastMessage("this mob was already tagged by this player, updating tag");
                 taggedTimers.put(plID, System.currentTimeMillis()); // update timer
             }
 
         } else {
             if (!taggedMobs.keySet().contains(plID) && !getIsTagged(victimID)) { // player is not on list AND mob is not on list
-                Bukkit.broadcastMessage("this mob has been tagged for first time");
-                HologramUtil.createStaticHologram(pl, pl.getLocation(), ColorUtil.format("&7Tagged by " + pl.getName()), 0, 2.25, 0);
+                //Bukkit.broadcastMessage("this mob has been tagged for first time");
+                //HologramUtil.createStaticHologram(pl, pl.getLocation(), ColorUtil.format("&7Tagged by " + pl.getName()), 0, 2.25, 0);
                 taggedMobs.put(plID, victimID);
                 taggedTimers.put(plID, System.currentTimeMillis());
             }
         }
-    }
-
-    @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-        Player pl = e.getPlayer();
-        Entity victim = e.getEntity();
     }
 }
