@@ -1,46 +1,50 @@
 package com.runicrealms.plugin.item;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class BossTagger {
+public class BossTagger implements Listener {
 
     private static final int DAMAGE_PERCENT = 10;
 
-    private HashMap<UUID, List<UUID>> bossFighters;
-    private HashMap<UUID, List<UUID>> bossLooters;
-    private HashMap<UUID, Integer> damageTracker;
+    private HashMap<UUID, HashMap<UUID, Integer>> bossFighters;
+    private HashMap<UUID, HashSet<UUID>> bossLooters;
 
     public BossTagger() {
         bossFighters = new HashMap<>();
         bossLooters = new HashMap<>();
-        damageTracker = new HashMap<>();
     }
 
     /**
      * Prep boss on spawn
      */
     @EventHandler
-    public void onBossSpawn(EntitySpawnEvent e) {
-        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).isPresent()) return;
-        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
-        if (am.getFaction() == null) return;
-        if (!am.getFaction().equalsIgnoreCase("boss")) return;
-        List<UUID> fighters = new ArrayList<>();
-        List<UUID> looters = new ArrayList<>();
+    public void onBossSpawn(MythicMobSpawnEvent e) {
+        Bukkit.broadcastMessage(ChatColor.GRAY + "mythic mob spawned");
+//        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).isPresent()) return;
+//        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
+        MythicMob boss = e.getMobType();
+        if (!boss.hasFaction()) return;
+        if (!boss.getFaction().equalsIgnoreCase("boss")) return;
+        HashMap<UUID, Integer> fighters = new HashMap<>();
+        HashSet<UUID> looters = new HashSet<>();
         bossFighters.put(e.getEntity().getUniqueId(), fighters);
         bossLooters.put(e.getEntity().getUniqueId(), looters);
+        Bukkit.broadcastMessage(ChatColor.GREEN + "Boss tables initialized");
     }
 
     @EventHandler
@@ -50,17 +54,25 @@ public class BossTagger {
         ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
         if (am.getFaction() == null) return;
         if (!am.getFaction().equalsIgnoreCase("boss")) return;
+        if (bossLooters.get(am.getUniqueId()).contains(e.getPlayer().getUniqueId())) return;
 
-        Player pl = e.getPlayer();
+        UUID plID = e.getPlayer().getUniqueId();
+        UUID bossID = e.getEntity().getUniqueId();
         int maxHP = (int) am.getEntity().getMaxHealth();
         int threshold = maxHP / DAMAGE_PERCENT;
-        bossFighters.get(e.getEntity().getUniqueId()).add(e.getPlayer().getUniqueId());
-        int current = damageTracker.get(pl.getUniqueId());
-        damageTracker.put(pl.getUniqueId(), current+e.getAmount());
+        if (!bossFighters.get(bossID).containsKey(plID)) bossFighters.get(bossID).put(plID, 0);
+        int current = bossFighters.get(bossID).get(plID);
+        bossFighters.get(bossID).put(plID, current+e.getAmount());
 
-        // add to looters list
-        if (damageTracker.get(pl.getUniqueId()) > threshold) bossLooters.get(e.getEntity().getUniqueId()).add(pl.getUniqueId());
+        Bukkit.broadcastMessage(ChatColor.GREEN + "Player has dealt " + (current+e.getAmount()) + " damage to this boss");
+        current = bossFighters.get(e.getEntity().getUniqueId()).get(plID);
+        if (current >= threshold) {
+            bossLooters.get(e.getEntity().getUniqueId()).add(plID);
+            Bukkit.broadcastMessage("player has been added to looters list");
+        }
     }
+
+    // todo: add spell damage event
 
     @EventHandler
     public void onBossDeath(MythicMobDeathEvent e) {
@@ -70,25 +82,27 @@ public class BossTagger {
         if (!bossFighters.containsKey(e.getMob().getUniqueId())) return;
 
         // clear damage tracking
-        for (UUID plID : bossFighters.get(e.getMob().getUniqueId())) {
-            damageTracker.remove(plID);
-        }
+        bossFighters.get(e.getEntity().getUniqueId()).clear();
 
-        // spawn chest
-
-        // todo: debug
-        List<UUID> looters = bossLooters.get(e.getMob().getUniqueId());
+        // todo: debug and ensure correct looters.
+        HashSet<UUID> looters = bossLooters.get(e.getMob().getUniqueId());
         for (UUID id : looters) {
             Bukkit.broadcastMessage(Bukkit.getPlayer(id).getName());
         }
+
+        // delayed task (2) to clear looters, as mob tagger will keep track of prio from here on out.
     }
 
-    // CLEAR LOOTERS LIST AFTER CHEST DESPAWNS OR AFTER 15s (restore landscape if necessary)
-
-    /*
-    A list of players who should
+    /**
+     * This method drops an item in the world with prio
      */
-    public List<UUID> getBossLooters(UUID bossID) {
-        return bossLooters.get(bossID);
+    public void dropTaggedBossLoot(Entity boss, Location loc, ItemStack itemStack) {
+        HashMap<ItemStack, List<UUID>> prioItems = RunicCore.getMobTagger().getPrioItems();
+        HashMap<ItemStack, Long> prioTimers = RunicCore.getMobTagger().getPrioTimers();
+        for (UUID id : bossLooters.get(boss.getUniqueId())) {
+            prioItems.get(itemStack).add(id);
+        }
+        prioTimers.put(itemStack, System.currentTimeMillis());
+        Objects.requireNonNull(loc.getWorld()).dropItem(loc, itemStack);
     }
 }

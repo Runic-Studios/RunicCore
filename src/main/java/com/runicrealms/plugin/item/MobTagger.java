@@ -3,6 +3,8 @@ package com.runicrealms.plugin.item;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.utilities.HologramUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.Bukkit;
@@ -16,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class MobTagger implements Listener {
@@ -25,7 +28,7 @@ public class MobTagger implements Listener {
 
     private HashMap<UUID, UUID> taggedMobs;
     private HashMap<UUID, Long> taggedTimers;
-    private HashMap<ItemStack, UUID> prioItems;
+    private HashMap<ItemStack, List<UUID>> prioItems;
     private HashMap<ItemStack, Long> prioTimers;
 
     public MobTagger() {
@@ -51,9 +54,9 @@ public class MobTagger implements Listener {
             long startTime = taggedTimers.get(plID);
             if (System.currentTimeMillis() - startTime >= TAG_TIME*1000) {
                 taggedTimers.remove(plID);
-                //Bukkit.broadcastMessage("player no longer has a tag");
+                Bukkit.broadcastMessage("player no longer has a tag");
                 taggedMobs.remove(plID);
-                //Bukkit.broadcastMessage("mob associated with " + Bukkit.getPlayer(plID).getName() + " is no longer tagged");
+                Bukkit.broadcastMessage("mob associated with " + Bukkit.getPlayer(plID).getName() + " is no longer tagged");
             }
         }
     }
@@ -62,7 +65,7 @@ public class MobTagger implements Listener {
         for (ItemStack itemStack : prioTimers.keySet()) {
             long startTime = prioTimers.get(itemStack);
             if (System.currentTimeMillis() - startTime >= PRIO_TIME*1000) {
-                //Bukkit.broadcastMessage("item no longer has priority");
+                Bukkit.broadcastMessage("item no longer has priority");
                 prioTimers.remove(itemStack);
                 prioItems.remove(itemStack);
             }
@@ -73,7 +76,7 @@ public class MobTagger implements Listener {
      * This method drops an item in the world with prio
      */
     public void dropTaggedLoot(Player pl, Location loc, ItemStack itemStack) {
-        prioItems.put(itemStack, pl.getUniqueId());
+        prioItems.get(itemStack).add(pl.getUniqueId());
         prioTimers.put(itemStack, System.currentTimeMillis());
         pl.getWorld().dropItem(loc, itemStack);
     }
@@ -97,6 +100,14 @@ public class MobTagger implements Listener {
         return null;
     }
 
+    public HashMap<ItemStack, List<UUID>> getPrioItems() {
+        return prioItems;
+    }
+
+    public HashMap<ItemStack, Long> getPrioTimers() {
+        return prioTimers;
+    }
+
     /**
      * Prevent players from picking up priority items.
      */
@@ -104,7 +115,7 @@ public class MobTagger implements Listener {
     public void onItemPickup(EntityPickupItemEvent e) {
         ItemStack itemStack = e.getItem().getItemStack();
         if (!prioItems.keySet().contains(itemStack)) return;
-        if (e.getEntity().getUniqueId().equals(prioItems.get(itemStack))) return;
+        if (prioItems.get(itemStack).contains(e.getEntity().getUniqueId())) return;
         e.setCancelled(true);
     }
 
@@ -136,16 +147,16 @@ public class MobTagger implements Listener {
         }
 
         if (taggedMobs.keySet().contains(plID)) { // if player is on the list (has tagged ANY mob)
-            //Bukkit.broadcastMessage("this player has a current tag");
+            Bukkit.broadcastMessage("this player has a current tag");
             if (taggedMobs.get(plID).equals(victimID)) { // if mob is tied to player
-                //Bukkit.broadcastMessage("this mob was already tagged by this player, updating tag");
+                Bukkit.broadcastMessage("this mob was already tagged by this player, updating tag");
                 taggedTimers.put(plID, System.currentTimeMillis()); // update timer
             }
 
         } else {
             if (!taggedMobs.keySet().contains(plID) && !getIsTagged(victimID)) { // player is not on list AND mob is not on list
-                //Bukkit.broadcastMessage("this mob has been tagged for first time");
-                //HologramUtil.createStaticHologram(pl, pl.getLocation(), ColorUtil.format("&7Tagged by " + pl.getName()), 0, 2.25, 0);
+                Bukkit.broadcastMessage("this mob has been tagged for first time");
+                HologramUtil.createStaticHologram(pl, pl.getLocation(), ColorUtil.format("&7Tagged by " + pl.getName()), 0, 2.25, 0);
                 taggedMobs.put(plID, victimID);
                 taggedTimers.put(plID, System.currentTimeMillis());
             }
