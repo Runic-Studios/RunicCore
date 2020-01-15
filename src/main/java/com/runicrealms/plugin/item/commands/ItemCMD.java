@@ -168,8 +168,7 @@ public class ItemCMD implements SubCommand {
             if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
                 RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), loc, craftedItem);
             } else if (RunicCore.getBossTagger().isBoss(mobID)) {
-                Bukkit.broadcastMessage("boss loot");
-                RunicCore.getBossTagger().dropTaggedBossLoot(mobID, loc, craftedItem);
+                RunicCore.getBossTagger().dropTaggedBossLoot(mobID, loc, craftedItem); // boss loot
             } else {
                 pl.getWorld().dropItem(loc, craftedItem); // regular drop
             }
