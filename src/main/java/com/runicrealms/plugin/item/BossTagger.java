@@ -1,19 +1,20 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -34,9 +35,6 @@ public class BossTagger implements Listener {
      */
     @EventHandler
     public void onBossSpawn(MythicMobSpawnEvent e) {
-        Bukkit.broadcastMessage(ChatColor.GRAY + "mythic mob spawned");
-//        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).isPresent()) return;
-//        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
         MythicMob boss = e.getMobType();
         if (!boss.hasFaction()) return;
         if (!boss.getFaction().equalsIgnoreCase("boss")) return;
@@ -44,35 +42,17 @@ public class BossTagger implements Listener {
         HashSet<UUID> looters = new HashSet<>();
         bossFighters.put(e.getEntity().getUniqueId(), fighters);
         bossLooters.put(e.getEntity().getUniqueId(), looters);
-        Bukkit.broadcastMessage(ChatColor.GREEN + "Boss tables initialized");
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-
-        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).isPresent()) return;
-        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
-        if (am.getFaction() == null) return;
-        if (!am.getFaction().equalsIgnoreCase("boss")) return;
-        if (bossLooters.get(am.getUniqueId()).contains(e.getPlayer().getUniqueId())) return;
-
-        UUID plID = e.getPlayer().getUniqueId();
-        UUID bossID = e.getEntity().getUniqueId();
-        int maxHP = (int) am.getEntity().getMaxHealth();
-        int threshold = maxHP / DAMAGE_PERCENT;
-        if (!bossFighters.get(bossID).containsKey(plID)) bossFighters.get(bossID).put(plID, 0);
-        int current = bossFighters.get(bossID).get(plID);
-        bossFighters.get(bossID).put(plID, current+e.getAmount());
-
-        Bukkit.broadcastMessage(ChatColor.GREEN + "Player has dealt " + (current+e.getAmount()) + " damage to this boss");
-        current = bossFighters.get(e.getEntity().getUniqueId()).get(plID);
-        if (current >= threshold) {
-            bossLooters.get(e.getEntity().getUniqueId()).add(plID);
-            Bukkit.broadcastMessage("player has been added to looters list");
-        }
+        trackBossDamage(e.getPlayer(), e.getEntity(), e.getAmount());
     }
 
-    // todo: add spell damage event
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        trackBossDamage(e.getPlayer(), e.getEntity(), e.getAmount());
+    }
 
     @EventHandler
     public void onBossDeath(MythicMobDeathEvent e) {
@@ -84,25 +64,57 @@ public class BossTagger implements Listener {
         // clear damage tracking
         bossFighters.get(e.getEntity().getUniqueId()).clear();
 
-        // todo: debug and ensure correct looters.
-        HashSet<UUID> looters = bossLooters.get(e.getMob().getUniqueId());
-        for (UUID id : looters) {
-            Bukkit.broadcastMessage(Bukkit.getPlayer(id).getName());
-        }
-
         // delayed task (2) to clear looters, as mob tagger will keep track of prio from here on out.
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                bossLooters.get(e.getEntity().getUniqueId()).clear();
+            }
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 40L);
+    }
+
+    /**
+     * Keeps track of damage during boss fight to determine who gets loot priority.
+     */
+    private void trackBossDamage(Player pl, Entity en, int eventAmt) {
+
+        if (!MythicMobs.inst().getMobManager().getActiveMob(en.getUniqueId()).isPresent()) return;
+        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(en.getUniqueId()).get();
+        if (am.getFaction() == null) return;
+        if (!am.getFaction().equalsIgnoreCase("boss")) return;
+        if (bossLooters.get(am.getUniqueId()).contains(pl.getUniqueId())) return;
+
+        UUID plID = pl.getUniqueId();
+        UUID bossID = en.getUniqueId();
+        int maxHP = (int) am.getEntity().getMaxHealth();
+        int threshold = maxHP / DAMAGE_PERCENT;
+        if (!bossFighters.get(bossID).containsKey(plID)) bossFighters.get(bossID).put(plID, 0);
+        int current = bossFighters.get(bossID).get(plID);
+        bossFighters.get(bossID).put(plID, current + eventAmt);
+
+        current = bossFighters.get(en.getUniqueId()).get(plID);
+        if (current >= threshold) bossLooters.get(en.getUniqueId()).add(plID);
     }
 
     /**
      * This method drops an item in the world with prio
      */
-    public void dropTaggedBossLoot(Entity boss, Location loc, ItemStack itemStack) {
+    public void dropTaggedBossLoot(UUID bossID, Location loc, ItemStack itemStack) {
         HashMap<ItemStack, List<UUID>> prioItems = RunicCore.getMobTagger().getPrioItems();
         HashMap<ItemStack, Long> prioTimers = RunicCore.getMobTagger().getPrioTimers();
-        for (UUID id : bossLooters.get(boss.getUniqueId())) {
+        List<UUID> bossLootersList = new ArrayList<>();
+        prioItems.put(itemStack, bossLootersList);
+        for (UUID id : bossLooters.get(bossID)) {
             prioItems.get(itemStack).add(id);
         }
         prioTimers.put(itemStack, System.currentTimeMillis());
         Objects.requireNonNull(loc.getWorld()).dropItem(loc, itemStack);
+    }
+
+    public boolean isBoss(UUID entityID) {
+        if (!MythicMobs.inst().getMobManager().getActiveMob(entityID).isPresent()) return false;
+        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entityID).get();
+        if (am.getFaction() == null) return false;
+        return (am.getFaction().equalsIgnoreCase("boss"));
     }
 }
