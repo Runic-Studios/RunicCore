@@ -1,12 +1,6 @@
 package com.runicrealms.plugin.item.hearthstone;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,12 +9,14 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -30,9 +26,9 @@ import java.util.*;
 public class HearthstoneListener implements Listener {
 
     private static final int cooldownTime = 900;
-    private static final int teleportTime = 5;
+    private static final int TEL_TIME = 5;
     private HashMap<UUID, Long> hsCooldowns = new HashMap<>();
-    private List<UUID> currentlyUsing = new ArrayList<>();
+    private HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
@@ -77,13 +73,14 @@ public class HearthstoneListener implements Listener {
             return;
         }
 
-        if (currentlyUsing.contains(pl.getUniqueId())) return;
+        if (currentlyUsing.containsKey(pl.getUniqueId())) return;
 
         if (hsCooldowns.containsKey(uuid)) {
 
             if ((System.currentTimeMillis()-hsCooldowns.get(uuid))/1000 >= cooldownTime) {
                 hsCooldowns.remove(uuid);
-                activateHearthstone(pl);
+                pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+                currentlyUsing.put(pl.getUniqueId(), activateHearthstone(pl));
 
             } else {
 
@@ -96,32 +93,47 @@ public class HearthstoneListener implements Listener {
                         + ChatColor.RED + " before using your hearthstone.");
             }
         } else {
-            activateHearthstone(pl);
+            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+            currentlyUsing.put(pl.getUniqueId(), activateHearthstone(pl));
         }
     }
 
-    private void activateHearthstone(Player pl) {
+    /*
+    Cancel player movement.
+    */
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        if (!currentlyUsing.containsKey(e.getPlayer().getUniqueId())) return;
+        if (e.getTo() == null) return;
+        if (!e.getFrom().toVector().equals(e.getTo().toVector())) {
+            currentlyUsing.get(e.getPlayer().getUniqueId()).cancel();
+            currentlyUsing.remove(e.getPlayer().getUniqueId());
+            e.getPlayer().sendMessage(ChatColor.RED + "Teleportation cancelled due to movement!");
+        }
+    }
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-        currentlyUsing.add(pl.getUniqueId());
+    private BukkitTask activateHearthstone(Player pl) {
 
-        double originalX = pl.getLocation().getX();
-        double originalZ = pl.getLocation().getZ();
+//        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+//        currentlyUsing.add(pl.getUniqueId());
 
-        new BukkitRunnable() {
+//        double originalX = pl.getLocation().getX();
+//        double originalZ = pl.getLocation().getZ();
+
+        return new BukkitRunnable() {
             int count = 0;
             @Override
             public void run() {
 
-                double x = pl.getLocation().getX();
-                double z = pl.getLocation().getZ();
-
-                if (x != originalX || z != originalZ) {
-                    this.cancel();
-                    currentlyUsing.remove(pl.getUniqueId());
-                    pl.sendMessage(ChatColor.RED + "Teleportation cancelled due to movement!");
-                    return;
-                }
+//                double x = pl.getLocation().getX();
+//                double z = pl.getLocation().getZ();
+//
+//                if (x != originalX || z != originalZ) {
+//                    this.cancel();
+//                    currentlyUsing.remove(pl.getUniqueId());
+//                    pl.sendMessage(ChatColor.RED + "Teleportation cancelled due to movement!");
+//                    return;
+//                }
 
                 if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(pl.getUniqueId())) {
                     this.cancel();
@@ -130,7 +142,7 @@ public class HearthstoneListener implements Listener {
                     return;
                 }
 
-                if (count >= teleportTime) {
+                if (count >= TEL_TIME) {
                     this.cancel();
                     hsCooldowns.put(pl.getUniqueId(), System.currentTimeMillis());
                     currentlyUsing.remove(pl.getUniqueId());
@@ -145,7 +157,7 @@ public class HearthstoneListener implements Listener {
                         10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 3));
 
                 pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Teleporting... "
-                        + ChatColor.WHITE + ChatColor.BOLD + + (teleportTime-count) + "s");
+                        + ChatColor.WHITE + ChatColor.BOLD + + (TEL_TIME -count) + "s");
                 count = count+1;
 
             }

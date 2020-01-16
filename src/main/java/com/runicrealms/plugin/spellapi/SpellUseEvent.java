@@ -24,16 +24,17 @@ public class SpellUseEvent implements Listener {
         if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
 
         // ignore spell scrolls
-        if (mat == Material.GRAY_DYE
-                || mat == Material.MAGENTA_DYE
-                || mat == Material.PINK_DYE
-                || mat == Material.CYAN_DYE
-                || mat == Material.LIME_DYE) return;
+        if (mat != Material.POPPED_CHORUS_FRUIT
+                && mat != Material.BOW
+                && mat != Material.WOODEN_SHOVEL
+                && mat != Material.WOODEN_HOE
+                && mat != Material.WOODEN_SWORD
+                && mat != Material.WOODEN_AXE) return;
 
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
 
         // identify artifact or rune
-        SpellItemType spellItemType = SpellItemType.NONE;
+        SpellItemType spellItemType = null;
         for (SpellItemType type : SpellItemType.values()) {
             if (type.getSlot() == slot) {
                 spellItemType = type;
@@ -55,14 +56,14 @@ public class SpellUseEvent implements Listener {
         }
 
         // execute the spell
-        if (spellCasted != null) {
-            if (spellItemType == SpellItemType.NONE) {
-                pl.sendMessage(ChatColor.RED + "ERROR: Something went wrong.");
-                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
+        if (spellCasted == null) {
+            //if (spellItemType == SpellItemType.NONE) {
+                //pl.sendMessage(ChatColor.RED + "ERROR: Something went wrong.");
+                //pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
                 return;
-            }
-            spellCasted.execute(pl, spellItemType);
+            //}
         }
+        spellCasted.execute(pl, spellItemType);
     }
 
     private String determineSpellSlot(PlayerInteractEvent e, ItemStack item) {

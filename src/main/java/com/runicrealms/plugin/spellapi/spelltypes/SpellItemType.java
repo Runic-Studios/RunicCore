@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 public enum SpellItemType {
-    NONE("NONE", -1),
-    ARTIFACT("Artifact", 0),
-    RUNE("Rune", 1);
+    //NONE("NONE", -1),
+    ARTIFACT("Artifact", -1),
+    RUNE("Rune", 0);
 
     private int slot;
     private String name;
