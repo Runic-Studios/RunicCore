@@ -206,10 +206,6 @@ public class TieredItemGenerator {
         return itemTypeName;
     }
 
-    public void setItemTypeName(String itemTypeName) {
-        this.itemTypeName = itemTypeName;
-    }
-
     public Material getMaterial() {
         return material;
     }
@@ -228,9 +224,5 @@ public class TieredItemGenerator {
 
     public String getItemSlot() {
         return itemSlot;
-    }
-
-    public void setItemSlot(String itemSlot) {
-        this.itemSlot = itemSlot;
     }
 }

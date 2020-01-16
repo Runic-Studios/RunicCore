@@ -48,7 +48,7 @@ public class ItemCMD implements SubCommand {
             return;
         }
 
-        // runicgive item [player] [itemType] [tier] [uuid] | length = 5
+        // runicgive item [player] [itemType] [tier] | length = 4
         // runicgive item [player] [itemType] [tier] ([x] [y] [z]) [uuid] | length = 8
         // runicgive item [player] [potion] [type] [someVar]
         ItemNameGenerator nameGen = new ItemNameGenerator();
@@ -137,9 +137,7 @@ public class ItemCMD implements SubCommand {
         }
 
         // ----------------------------------------------------------------
-        /*
-        run our custom event for purposes of loot bonuses, potions, etc.
-         */
+        // run our custom event for purposes of loot bonuses, potions, etc.
         LootEvent event = new LootEvent(pl, craftedItem);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
@@ -148,17 +146,12 @@ public class ItemCMD implements SubCommand {
         // check that the player has an open inventory space
         // this method prevents items from stacking if the player crafts 5
         // quests, or directly in inventory
-        if (args.length == 5) {
+        if (args.length == 4) {
             if (pl.getInventory().firstEmpty() != -1) {
                 int firstEmpty = pl.getInventory().firstEmpty();
                 pl.getInventory().setItem(firstEmpty, craftedItem);
             } else {
-                UUID mobID = UUID.fromString(args[4]);
-                if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
-                    RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), pl.getLocation(), craftedItem);
-                } else {
-                    pl.getWorld().dropItem(pl.getLocation(), craftedItem); // regular drop
-                }
+                pl.getWorld().dropItem(pl.getLocation(), craftedItem);
             }
 
         // mob drops

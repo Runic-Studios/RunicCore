@@ -100,10 +100,10 @@ public class BossTagger implements Listener {
      * This method drops an item in the world with prio
      */
     public void dropTaggedBossLoot(UUID bossID, Location loc, ItemStack itemStack) {
-        HashMap<ItemStack, List<UUID>> prioItems = RunicCore.getMobTagger().getPrioItems();
+        HashMap<ItemStack, HashSet<UUID>> prioItems = RunicCore.getMobTagger().getPrioItems();
+        HashSet<UUID> temp = new HashSet<>();
+        prioItems.put(itemStack, temp);
         HashMap<ItemStack, Long> prioTimers = RunicCore.getMobTagger().getPrioTimers();
-        List<UUID> bossLootersList = new ArrayList<>();
-        prioItems.put(itemStack, bossLootersList);
         for (UUID id : bossLooters.get(bossID)) {
             prioItems.get(itemStack).add(id);
         }

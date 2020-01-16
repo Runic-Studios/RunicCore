@@ -15,9 +15,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class MobTagger implements Listener {
 
@@ -26,7 +24,7 @@ public class MobTagger implements Listener {
 
     private HashMap<UUID, UUID> taggedMobs;
     private HashMap<UUID, Long> taggedTimers;
-    private HashMap<ItemStack, List<UUID>> prioItems;
+    private HashMap<ItemStack, HashSet<UUID>> prioItems;
     private HashMap<ItemStack, Long> prioTimers;
 
     public MobTagger() {
@@ -71,6 +69,8 @@ public class MobTagger implements Listener {
      * This method drops an item in the world with prio
      */
     public void dropTaggedLoot(Player pl, Location loc, ItemStack itemStack) {
+        HashSet<UUID> temp = new HashSet<>();
+        prioItems.put(itemStack, temp);
         prioItems.get(itemStack).add(pl.getUniqueId());
         prioTimers.put(itemStack, System.currentTimeMillis());
         pl.getWorld().dropItem(loc, itemStack);
@@ -95,7 +95,7 @@ public class MobTagger implements Listener {
         return null;
     }
 
-    public HashMap<ItemStack, List<UUID>> getPrioItems() {
+    public HashMap<ItemStack, HashSet<UUID>> getPrioItems() {
         return prioItems;
     }
 
