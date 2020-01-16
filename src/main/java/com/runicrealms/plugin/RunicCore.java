@@ -175,6 +175,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new LegendaryManager(), this);
         pm.registerEvents(RunicCore.getMobTagger(), this);
         pm.registerEvents(RunicCore.getBossTagger(), this);
+        pm.registerEvents(new SoulboundListener(), this);
     }
     
     private void registerCommands() {

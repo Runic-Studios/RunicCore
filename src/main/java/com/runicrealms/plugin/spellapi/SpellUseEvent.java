@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi;
 
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -20,15 +19,16 @@ public class SpellUseEvent implements Listener {
         Player pl = e.getPlayer();
         int slot = pl.getInventory().getHeldItemSlot();
 
-        // only listen for artifacts/runes
-        if (slot != 0 && slot != 1) return;
-
         if (pl.getGameMode() == GameMode.CREATIVE) return;
+        Material mat = pl.getInventory().getItemInMainHand().getType();
         if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
-        if (pl.getInventory().getItem(0) == null) return;
-        if (pl.getInventory().getItem(1) == null) return;
-        if (pl.getInventory().getItem(0).getType() == Material.AIR) return;
-        if (pl.getInventory().getItem(1).getType() == Material.AIR) return;
+
+        // ignore spell scrolls
+        if (mat == Material.GRAY_DYE
+                || mat == Material.MAGENTA_DYE
+                || mat == Material.PINK_DYE
+                || mat == Material.CYAN_DYE
+                || mat == Material.LIME_DYE) return;
 
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
 
@@ -42,7 +42,7 @@ public class SpellUseEvent implements Listener {
         }
 
         // determine which spell slot to search, based on the type of item (bows are flipped left, right)
-        String spellSlot = determineSpellSlot(e, pl, heldItem, slot);
+        String spellSlot = determineSpellSlot(e, heldItem);
         if (spellSlot.equals("")) return;
 
         // determine spell to cast
@@ -53,11 +53,6 @@ public class SpellUseEvent implements Listener {
                 break;
             }
         }
-
-        // call custom event
-//        SpellCastEvent event = new SpellCastEvent(pl, spellCasted);
-//        Bukkit.getPluginManager().callEvent(event);
-//        if (event.isCancelled()) return;
 
         // execute the spell
         if (spellCasted != null) {
@@ -70,33 +65,15 @@ public class SpellUseEvent implements Listener {
         }
     }
 
-    private String determineSpellSlot(PlayerInteractEvent e, Player pl, ItemStack item, int itemSlot) {
+    private String determineSpellSlot(PlayerInteractEvent e, ItemStack item) {
         String spellSlot = "";
-        // if its the rune, its always just left, right
-        if (itemSlot == 1) {
+        if (item.getType() == Material.BOW) {
             if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                spellSlot = "primarySpell";
-            } else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 spellSlot = "secondarySpell";
             }
-        // now if we've got an artifact, things are gonna be a bit more complicated cuz of sneaking and bows.
         } else {
-            if (item.getType() == Material.BOW) {
-                if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                    spellSlot = "secondarySpell";
-                } else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (pl.isSneaking()) {
-                        spellSlot = "primarySpell";
-                    }
-                }
-            } else {
-                if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                    if (pl.isSneaking()) {
-                        spellSlot = "primarySpell";
-                    }
-                } else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    spellSlot = "secondarySpell";
-                }
+            if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                spellSlot = "secondarySpell";
             }
         }
         return spellSlot;

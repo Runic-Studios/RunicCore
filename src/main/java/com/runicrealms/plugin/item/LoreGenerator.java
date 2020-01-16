@@ -20,77 +20,6 @@ import java.util.Collections;
 
 public class LoreGenerator {
 
-    public static void generateArtifactLore(ItemStack artifact, String itemName, String className, int durability) {
-
-        // grab our ItemMeta, ItemLore
-        ItemMeta meta = artifact.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(ChatColor.YELLOW + itemName);
-
-        // grab our NBT attributes wrapper
-        NBTItem nbti = new NBTItem(artifact);
-
-        // spell display
-        String prim = nbti.getString("primarySpell");
-        String sec = nbti.getString("secondarySpell");
-        lore.add("");
-        lore.add(ChatColor.GRAY + "Spells:");
-        if (prim != null) {
-            if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Sneak + Right: " + ChatColor.GREEN + prim);
-            } else {
-                lore.add(ChatColor.WHITE + "Sneak + Left: " + ChatColor.GREEN + prim);
-            }
-        } else {
-            lore.add(ChatColor.RED + "Primary: NULL");
-        }
-        if (sec != null) {
-            if (artifact.getType() == Material.BOW) {
-                lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + sec);
-            } else {
-                lore.add(ChatColor.WHITE + "Right Click: " + ChatColor.GREEN + sec);
-            }
-        } else {
-            lore.add(ChatColor.RED + "Secondary: NULL");
-        }
-
-        // stat display
-        lore.add("");
-        lore.add(ChatColor.GRAY + "Stats:");
-        switch (className) {
-            case "Archer":
-                fillLore(lore, artifact, "Archer");
-                break;
-            case "Cleric":
-                fillLore(lore, artifact, "Cleric");
-                break;
-            case "Mage":
-                fillLore(lore, artifact, "Mage");
-                break;
-            case "Rogue":
-                fillLore(lore, artifact, "Rogue");
-                break;
-            case "Warrior":
-                fillLore(lore, artifact, "Warrior");
-                break;
-        }
-
-        lore.add("");
-        lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
-        lore.add("");
-        if (AttributeUtil.getCustomString(artifact, "soulbound").equals("true")) {
-            lore.add(ChatColor.DARK_GRAY + "Soulbound");
-        }
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-
-        // update lore, meta
-        meta.setLore(lore);
-        ((Damageable) meta).setDamage(durability);
-        artifact.setItemMeta(meta);
-    }
-
     public static void generateHearthstoneLore(ItemStack hearthstone) {
 
         // grab our ItemMeta, ItemLore
@@ -125,47 +54,6 @@ public class LoreGenerator {
         // update lore, meta
         meta.setLore(lore);
         hearthstone.setItemMeta(meta);
-    }
-
-    public static void generateRuneLore(ItemStack rune) {
-
-        // grab our ItemMeta, ItemLore
-        ItemMeta meta = rune.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ancient Rune");
-
-        // grab our NBT attributes wrapper
-        NBTItem nbti = new NBTItem(rune);
-
-        // spell display
-        String prim = nbti.getString("primarySpell");
-        String sec = nbti.getString("secondarySpell");
-        lore.add("");
-        lore.add(ChatColor.GRAY + "Spells:");
-        if (prim != null) {
-            lore.add(ChatColor.WHITE + "Left Click: " + ChatColor.GREEN + prim);
-        } else {
-            lore.add(ChatColor.RED + "Primary: NULL");
-        }
-        if (sec != null) {
-            lore.add(ChatColor.WHITE + "Right Click: " + ChatColor.GREEN + sec);
-        } else {
-            lore.add(ChatColor.RED + "Secondary: NULL");
-        }
-
-        lore.add("");
-        lore.add(ChatColor.WHITE + "Click " + ChatColor.GRAY + "this item to open the editor");
-        lore.add("");
-        if (AttributeUtil.getCustomString(rune, "soulbound").equals("true")) {
-            lore.add(ChatColor.DARK_GRAY + "Soulbound");
-        }
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-
-        // update lore, meta
-        meta.setLore(lore);
-        rune.setItemMeta(meta);
     }
 
     public static void generateItemLore(ItemStack item, ChatColor dispColor, String dispName, String extra) {

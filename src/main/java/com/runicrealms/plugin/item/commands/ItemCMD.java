@@ -4,9 +4,9 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.events.LootEvent;
 import com.runicrealms.plugin.item.ItemNameGenerator;
+import com.runicrealms.plugin.item.util.ItemDropper;
 import com.runicrealms.plugin.item.util.ItemScrapsUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
-import com.runicrealms.plugin.item.LegendaryManager;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -156,15 +156,16 @@ public class ItemCMD implements SubCommand {
 
         // mob drops
         } else if (args.length == 8) {
-            Location loc = new Location(pl.getWorld(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]));
-            UUID mobID = UUID.fromString(args[7]);
-            if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
-                RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), loc, craftedItem);
-            } else if (RunicCore.getBossTagger().isBoss(mobID)) {
-                RunicCore.getBossTagger().dropTaggedBossLoot(mobID, loc, craftedItem); // boss loot
-            } else {
-                pl.getWorld().dropItem(loc, craftedItem); // regular drop
-            }
+//            Location loc = new Location(pl.getWorld(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]));
+//            UUID mobID = UUID.fromString(args[7]);
+//            if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
+//                RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), loc, craftedItem);
+//            } else if (RunicCore.getBossTagger().isBoss(mobID)) {
+//                RunicCore.getBossTagger().dropTaggedBossLoot(mobID, loc, craftedItem); // boss loot
+//            } else {
+//                pl.getWorld().dropItem(loc, craftedItem); // regular drop
+//            }
+            ItemDropper.dropLoot(pl, args[4], args[5], args[6], args[7], craftedItem);
         }
     }
 

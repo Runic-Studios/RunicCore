@@ -29,6 +29,7 @@ public abstract class Spell implements ISpell, Listener {
     private double cooldown;
     protected RunicCore plugin = RunicCore.getInstance();
     private int manaCost;
+    private boolean isPassive = false;
 
     public Spell(String name, String description, ChatColor color, double cooldown, int manaCost) {
 
@@ -160,6 +161,14 @@ public abstract class Spell implements ISpell, Listener {
         newVector.setX(cos * x - sine * z);
         newVector.setZ(sine * x + cos * z);
         return newVector;
+    }
+
+    public void setIsPassive(boolean isPassive) {
+        this.isPassive = isPassive;
+    }
+
+    public boolean getIsPassive() {
+        return isPassive;
     }
 
     public boolean attemptToExecute(Player pl) {

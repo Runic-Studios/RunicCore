@@ -6,19 +6,16 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassGUI;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.player.commands.SetSC;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 
 import java.util.List;
-import java.util.Objects;
 
-import static com.runicrealms.plugin.classes.ClassGUI.*;
+import static com.runicrealms.plugin.classes.SelectClass.*;
 
 public class SetClassCMD implements SubCommand {
 
@@ -71,7 +68,7 @@ public class SetClassCMD implements SubCommand {
         if (pl == null) return;
 
         if (args.length == 2) {
-            //ClassGUI.CLASS_SELECTION.open(pl);
+            //SelectClass.CLASS_SELECTION.open(pl);
         } else {
 
             String classStr = args[2].toLowerCase();
@@ -88,8 +85,7 @@ public class SetClassCMD implements SubCommand {
 
             String formattedStr = classStr.substring(0, 1).toUpperCase() + classStr.substring(1);
 
-            setupArtifact(pl, formattedStr, true);
-            setupRune(pl);
+            setPlayerClass(pl, formattedStr, true);
 
             // only setup their hearthstone if they don't have one already
             if (pl.getInventory().getItem(2) == null
