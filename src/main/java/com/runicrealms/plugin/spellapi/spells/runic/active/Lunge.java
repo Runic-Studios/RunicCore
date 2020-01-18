@@ -1,23 +1,18 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Lunge extends Spell {
 
-    // global variables
     private static final double HEIGHT = 1.2;
 
-    // constructor
     public Lunge() {
         super("Lunge",
                 "You lunge forward into the air," +
@@ -25,7 +20,6 @@ public class Lunge extends Spell {
                         "\nimpact!", ChatColor.WHITE,8, 12);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
@@ -66,4 +60,3 @@ public class Lunge extends Spell {
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
     }
 }
-

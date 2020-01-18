@@ -5,6 +5,8 @@ import me.glaremasters.guilds.guild.Guild;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,11 +20,29 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ScoreboardHandler implements Listener {
+
+    private void removeNPCNameplates() {
+        for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
+            String world = Bukkit.getWorlds().get(i).getName();
+            for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
+                if (en instanceof HumanEntity && en.hasMetadata("NPC")) {
+                    Player npc = (Player) en;
+                    for (Player on : Bukkit.getOnlinePlayers()) {
+                        try {
+                            createScoreboard(npc);
+                            ScoreboardHandler.updateNamesFor(on, npc.getScoreboard().getTeam("npc"),
+                                    Collections.singletonList(npc.getName()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
@@ -35,6 +55,8 @@ public class ScoreboardHandler implements Listener {
             public void run() {
                 createScoreboard(pl);
                 updateSideInfo(pl);
+                updateHealthbar(pl);
+                removeNPCNameplates();
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
@@ -53,6 +75,14 @@ public class ScoreboardHandler implements Listener {
         party.setCanSeeFriendlyInvisibles(true);
         Team outlaw = board.registerNewTeam("outlaw");
         outlaw.setColor(ChatColor.RED);
+        Team npc = board.registerNewTeam("npc");
+        npc.setColor(ChatColor.WHITE);
+        npc.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+
+        // setup below health scoreboard
+        Objective showHealth = board.registerNewObjective("showhealth", "health");
+        showHealth.setDisplayName(ChatColor.RED + "❤");
+        showHealth.setDisplaySlot(DisplaySlot.BELOW_NAME);
 
         // setup side scoreboard
         Objective sidebar = board.registerNewObjective("sidebar", "dummy");
@@ -125,7 +155,6 @@ public class ScoreboardHandler implements Listener {
         Score characterInfo = sidebar.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + "Character");
         characterInfo.setScore(7);
 
-        // TODO: update info for guild
         updatePlayerInfo(pl);
 
         // setup side health display
@@ -134,6 +163,26 @@ public class ScoreboardHandler implements Listener {
         Score mana = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(manaAsString(pl));
         mana.setScore(1);
     }
+
+    /**
+     * Update the below-health display of a player for everyone ELSE
+     */
+    public void updateHealthbar(Player pl) {
+
+        Objective healthbar = pl.getScoreboard().getObjective("showhealth");
+        Score test = healthbar.getScore(pl.getName());
+        test.setScore((int) pl.getHealth());
+
+        // ensure the scoreboard objective exists
+        if (healthbar == null) { return; }
+
+        // updates the health below the nameplate for all OTHER players
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            Score score = healthbar.getScore(online.getName());
+            score.setScore((int) online.getHealth());
+        }
+    }
+
 
     public void updatePlayerInfo(Player pl) {
 

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
@@ -29,9 +29,10 @@ public class Reflect extends Spell {
 
     public Reflect() {
         super("Reflect",
-                "For " + DURATION + " seconds, you gain a reflective" +
-                        "\nenchantment! Enemies who strike you" +
-                        "\nsuffer " + DAMAGE + " damage each attack!",
+                "For " + DURATION + " seconds, you gain a" +
+                        "\nreflective enchantment! Enemies who strike" +
+                        "\n you suffer " + DAMAGE + " spellʔ damage" +
+                        "\neach attack!",
                 ChatColor.WHITE,16, 15);
     }
 

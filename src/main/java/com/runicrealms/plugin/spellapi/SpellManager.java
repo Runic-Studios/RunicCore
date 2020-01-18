@@ -1,12 +1,15 @@
 package com.runicrealms.plugin.spellapi;
 
+import com.runicrealms.plugin.spellapi.spells.runic.active.*;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Backstab;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Permafrost;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
-import com.runicrealms.plugin.spellapi.spells.runic.*;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -120,7 +123,6 @@ public class SpellManager {
         this.spellList.add(new Sandstorm());
         this.spellList.add(new Permafrost());
         this.spellList.add(new RottingShot());
-        this.spellList.add(new Petrify());
         this.spellList.add(new UnholyGround());
         this.spellList.add(new RunicShield());
         this.spellList.add(new ShriekingSkull());
@@ -132,9 +134,7 @@ public class SpellManager {
         this.spellList.add(new Warsong());
         this.spellList.add(new Reflect());
         this.spellList.add(new Siphon());
-        this.spellList.add(new ShadowStrike());
         this.spellList.add(new IceVolley());
-        this.spellList.add(new Starfall());
         this.spellList.add(new ArrowBomb());
         this.spellList.add(new SearingShot());
         this.spellList.add(new BarkShield());
@@ -143,6 +143,11 @@ public class SpellManager {
         this.spellList.add(new Smite());
         this.spellList.add(new Sandstorm());
         this.spellList.add(new PlagueBomb());
+        this.spellList.add(new Bolt());
+        this.spellList.add(new Cleanse());
+        this.spellList.add(new Eruption());
+        this.spellList.add(new HolyWater());
+        this.spellList.add(new Shadowbolt());
     }
 
     // starts the repeating task to manage player cooldowns

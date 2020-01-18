@@ -27,14 +27,14 @@ public class Slam extends Spell {
                 ChatColor.WHITE, 8, 15);
     }
 
-    @Override
-    public boolean attemptToExecute(Player pl) {
-        if (!pl.isOnGround()) {
-            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
-            return false;
-        }
-        return true;
-    }
+//    @Override
+//    public boolean attemptToExecute(Player pl) {
+//        if (!pl.isOnGround()) {
+//            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
+//            return false;
+//        }
+//        return true;
+//    }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {

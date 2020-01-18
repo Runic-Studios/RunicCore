@@ -53,7 +53,7 @@ public class Fireball extends Spell {
         if (verifyEnemy(player, victim)) {
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, false);
             victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
         }
     }
 }

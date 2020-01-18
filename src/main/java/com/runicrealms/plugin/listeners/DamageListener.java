@@ -113,11 +113,11 @@ public class DamageListener implements Listener {
             }
             // -------------------
 
-            // don't fire attack if they're sneaking, since they're casting a spell
-            if (((Player) damager).isSneaking() && slot == 0) {
-                e.setCancelled(true);
-                return;
-            }
+//            // don't fire attack if they're sneaking, since they're casting a spell
+//            if (((Player) damager).isSneaking() && slot == 0) {
+//                e.setCancelled(true);
+//                return;
+//            }
 
             // check for cooldown
             if (artifactType.equals(WeaponEnum.HAND)
@@ -131,8 +131,8 @@ public class DamageListener implements Listener {
                 e.setCancelled(true);
                 int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
 
-                // call our successful hit event, ensure that the item is the artifact
-                if (slot != 0) return;
+//                // call our successful hit event, ensure that the item is the artifact
+//                if (slot != 0) return;
 
                 // outlaw check
                 if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
@@ -162,6 +162,7 @@ public class DamageListener implements Listener {
     // todo: move to RunicArtifacts plugin
     private boolean matchClass(Player pl) {
         ItemStack mainHand = pl.getInventory().getItemInMainHand();
+        if (mainHand.getType() == Material.AIR) return true;
         String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
         switch (mainHand.getType()) {
             case BOW:

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.outlaw.OutlawManager;

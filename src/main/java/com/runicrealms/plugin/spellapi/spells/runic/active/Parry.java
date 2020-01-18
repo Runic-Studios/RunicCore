@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic;
+package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
