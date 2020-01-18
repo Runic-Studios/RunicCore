@@ -3,11 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.item.GearScanner;
-import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
-import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -34,7 +30,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -101,7 +96,6 @@ public class DamageListener implements Listener {
             WeaponEnum artifactType = WeaponEnum.matchType(artifact);
             int damage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
             int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
-            int slot = ((Player) damager).getInventory().getHeldItemSlot();
 
             // --------------------
             // for punching 'n stuff
@@ -112,12 +106,6 @@ public class DamageListener implements Listener {
                 maxDamage = 1;
             }
             // -------------------
-
-//            // don't fire attack if they're sneaking, since they're casting a spell
-//            if (((Player) damager).isSneaking() && slot == 0) {
-//                e.setCancelled(true);
-//                return;
-//            }
 
             // check for cooldown
             if (artifactType.equals(WeaponEnum.HAND)
@@ -130,9 +118,6 @@ public class DamageListener implements Listener {
             if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
                 e.setCancelled(true);
                 int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
-
-//                // call our successful hit event, ensure that the item is the artifact
-//                if (slot != 0) return;
 
                 // outlaw check
                 if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
@@ -159,11 +144,10 @@ public class DamageListener implements Listener {
         applySlainMechanics(e.getDamager(), ((Player) victim));
     }
 
-    // todo: move to RunicArtifacts plugin
     private boolean matchClass(Player pl) {
         ItemStack mainHand = pl.getInventory().getItemInMainHand();
-        if (mainHand.getType() == Material.AIR) return true;
         String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:
                 if (!className.equals("Archer")) {
@@ -205,8 +189,9 @@ public class DamageListener implements Listener {
                 } else {
                     return true;
                 }
+            default:
+                return true;
         }
-        return false;
     }
 
     private String weaponMessage(String className) {

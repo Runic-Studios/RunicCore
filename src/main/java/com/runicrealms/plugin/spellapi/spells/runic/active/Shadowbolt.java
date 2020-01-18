@@ -5,11 +5,10 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -47,28 +46,21 @@ public class Shadowbolt extends Spell {
                 shadowbolt.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.BLACK, 1));
                 if (shadowbolt.isDead() || shadowbolt.isOnGround()) {
                     this.cancel();
+                    blindNearest(player);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEnderPearlHit(EntityDamageByEntityEvent event) {
-
-        // only listen for our shadowbolt
-        if (!(event.getDamager().equals(this.shadowbolt))) return;
-
-        event.setCancelled(true);
-
-        // grab our variables
-        Player player = (Player) shadowbolt.getShooter();
-        if (player == null) return;
-        LivingEntity victim = (LivingEntity) event.getEntity();
-
-        if (verifyEnemy(player, victim)) {
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION*20, 2));
-            victim.getWorld().spawnParticle(Particle.SMOKE_LARGE, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+    private void blindNearest(Player pl) {
+        for (Entity en : shadowbolt.getNearbyEntities(1, 1, 1)) {
+            if (verifyEnemy(pl, en)) {
+                LivingEntity victim = (LivingEntity) en;
+                victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION*20, 2));
+                victim.getWorld().spawnParticle(Particle.SMOKE_LARGE, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                return;
+            }
         }
     }
 

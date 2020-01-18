@@ -4,16 +4,12 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import com.runicrealms.plugin.RunicCore;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -24,14 +20,14 @@ import java.util.UUID;
 public class Reflect extends Spell {
 
     private static final int DAMAGE = 2;
-    private static final int DURATION = 8;
+    private static final int DURATION = 6;
     private List<UUID> reflectedPlrs = new ArrayList<>();
 
     public Reflect() {
         super("Reflect",
-                "For " + DURATION + " seconds, you gain a" +
-                        "\nreflective enchantment! Enemies who strike" +
-                        "\n you suffer " + DAMAGE + " spellʔ damage" +
+                "For " + DURATION + " seconds, you gain a reflective" +
+                        "\nenchantment! Enemies who strike" +
+                        "\nyou suffer " + DAMAGE + " spellʔ damage" +
                         "\neach attack!",
                 ChatColor.WHITE,16, 15);
     }
@@ -42,7 +38,7 @@ public class Reflect extends Spell {
 
         reflectedPlrs.add(pl.getUniqueId());
         pl.getWorld().spawnParticle
-                (Particle.CRIT, pl.getEyeLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
+                (Particle.CRIT_MAGIC, pl.getEyeLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
 
         new BukkitRunnable() {

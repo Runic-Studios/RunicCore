@@ -21,20 +21,19 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class HolyWater extends Spell {
 
-    private static final int HEAL_AMT = 2;
     private static final int DURATION = 6;
-    private static final int PERIOD = 2;
+    private static final int PERCENT = 25;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
     private HashMap<UUID, HashSet<UUID>> affectedPlayers;
 
     public HolyWater() {
         super("Holy Water",
-                "You launch a magical vial of light," +
-                        "\ndealing " + (HEAL_AMT *DURATION/PERIOD) + " spellʔ damage over " +
-                        "\n" + DURATION + " seconds to enemies within" +
-                        "\n" + RADIUS + " blocks of the cloud." +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                "You throw a magical vial of light!" +
+                        "\nAllies within " + RADIUS + " blocks of the light" +
+                        "\nreceive an additional " + PERCENT + "% health" +
+                        "\nfrom all healing✦ spells for " + DURATION +
+                        "\nseconds!",
                 ChatColor.WHITE,10, 10);
         affectedPlayers = new HashMap<>();
     }
@@ -99,7 +98,12 @@ public class HolyWater extends Spell {
         Player caster = e.getPlayer();
         if (!affectedPlayers.containsKey(caster.getUniqueId())) return;
         if (!affectedPlayers.get(caster.getUniqueId()).contains(e.getEntity().getUniqueId())) return;
-        e.setAmount(e.getAmount()+HEAL_AMT);
+        double percent = PERCENT / 100;
+        int extraAmt = (int) (e.getAmount() * percent);
+        if (extraAmt < 1) {
+            extraAmt = 1;
+        }
+        e.setAmount(e.getAmount() + extraAmt);
     }
 }
 
