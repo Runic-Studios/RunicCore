@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.spellapi.spells.runic.active.*;
 import com.runicrealms.plugin.spellapi.spells.runic.passive.Backstab;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.Permafrost;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Frostbite;
 import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.RunicCore;
@@ -121,7 +121,7 @@ public class SpellManager {
         this.spellList.add(new Blizzard());
         this.spellList.add(new BlessedRain());
         this.spellList.add(new Sandstorm());
-        this.spellList.add(new Permafrost());
+        this.spellList.add(new Frostbite());
         this.spellList.add(new RottingShot());
         this.spellList.add(new UnholyGround());
         this.spellList.add(new RunicShield());

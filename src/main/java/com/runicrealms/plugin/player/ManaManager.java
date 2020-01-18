@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -58,7 +59,12 @@ public class ManaManager implements Listener {
     public HashMap<UUID, Integer> getCurrentManaList() { return currentPlayerManas; }
     public int getManaPerLevel() { return manaPerLevel; }
 
-    public void addMana(Player pl, int amt) {
+    public void addMana(Player pl, int amt, boolean gemBoosted) {
+
+        if (gemBoosted) {
+            int boost = GearScanner.getHealingBoost(pl);
+            amt = amt + boost;
+        }
 
         int mana = currentPlayerManas.get(pl.getUniqueId());
         int maxMana = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
