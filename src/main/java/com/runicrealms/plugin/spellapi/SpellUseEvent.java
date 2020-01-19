@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi;
 
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -63,7 +64,12 @@ public class SpellUseEvent implements Listener {
                 return;
             //}
         }
-        spellCasted.execute(pl, spellItemType);
+        SpellCastEvent event = new SpellCastEvent(pl, spellCasted);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            spellCasted.execute(pl, spellItemType);
+            RunicCore.getScoreboardHandler().updateHealthbar(pl);
+        }
     }
 
     private String determineSpellSlot(PlayerInteractEvent e, ItemStack item) {

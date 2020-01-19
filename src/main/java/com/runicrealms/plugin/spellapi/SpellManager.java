@@ -1,9 +1,7 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.spellapi.spells.runic.active.*;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.Backstab;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.Frostbite;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
@@ -148,6 +146,13 @@ public class SpellManager {
         this.spellList.add(new Eruption());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Shadowbolt());
+        this.spellList.add(new Absolution());
+        this.spellList.add(new Insanity());
+        this.spellList.add(new Marksman());
+        this.spellList.add(new Manawell());
+        this.spellList.add(new Agility());
+        this.spellList.add(new Predator());
+        this.spellList.add(new Resolve());
     }
 
     // starts the repeating task to manage player cooldowns

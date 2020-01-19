@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -47,17 +48,24 @@ public class ManaManager implements Listener {
             int maxMana = RunicCore.getInstance().getConfig().getInt(online.getUniqueId() + ".info.maxMana");
             if (mana >= maxMana) continue;
 
-            if (mana+manaRegenAmt >= maxMana) {
-                currentPlayerManas.put(online.getUniqueId(), maxMana);
-            } else {
-                currentPlayerManas.put(online.getUniqueId(), mana + manaRegenAmt);
+            ManaRegenEvent event = new ManaRegenEvent(online, manaRegenAmt);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                if (mana + manaRegenAmt >= maxMana) {
+                    currentPlayerManas.put(online.getUniqueId(), maxMana);
+                } else {
+                    currentPlayerManas.put(online.getUniqueId(), mana + manaRegenAmt);
+                }
+                RunicCore.getScoreboardHandler().updateSideInfo(online);
             }
-            RunicCore.getScoreboardHandler().updateSideInfo(online);
         }
     }
 
     public HashMap<UUID, Integer> getCurrentManaList() { return currentPlayerManas; }
     public int getManaPerLevel() { return manaPerLevel; }
+    public int getManaRegenAmt() {
+        return manaRegenAmt;
+    }
 
     public void addMana(Player pl, int amt, boolean gemBoosted) {
 

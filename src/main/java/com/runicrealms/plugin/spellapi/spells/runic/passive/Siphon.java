@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.runic.passive;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.*;
@@ -26,13 +27,19 @@ public class Siphon extends Spell {
     }
 
     @EventHandler
+    public void onDrainingHit(SpellDamageEvent e) {
+        restoreMana(e.getPlayer(), e.getEntity());
+    }
+
+    @EventHandler
     public void onDrainingHit(WeaponDamageEvent e) {
+        restoreMana(e.getPlayer(), e.getEntity());
+    }
 
-        Player pl = e.getPlayer();
-        Entity en = e.getEntity();
+    private void restoreMana(Player pl, Entity en) {
 
-        if (getRunicPassive(e.getPlayer()) == null) return;
-        if (!getRunicPassive(e.getPlayer()).equals(this)) return;
+        if (getRunicPassive(pl) == null) return;
+        if (!getRunicPassive(pl).equals(this)) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;

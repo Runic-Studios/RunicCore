@@ -14,35 +14,31 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Random;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Frostbite extends Spell {
+public class Predator extends Spell {
 
-    private static final int DURATION = 2;
+    private static final int DURATION = 1;
     private static final int PERCENT = 25;
     private static final int SLOW_MULT = 2;
 
-    public Frostbite() {
-        super ("Frostbite",
+    public Predator() {
+        super ("Predator",
                 "Damaging an enemy has a " + PERCENT + "% chance" +
-                        "\nto slow them for " + DURATION + " second(s)!",
+                        "\nto blind them for " + DURATION + " second(s)!",
                 ChatColor.WHITE, 12, 15);
         this.setIsPassive(true);
     }
 
     @EventHandler
-    public void onIcyHit(SpellDamageEvent e) {
-        applySlow(e.getPlayer(), e.getEntity());
+    public void onBlindingHit(SpellDamageEvent e) {
+        applyBlind(e.getPlayer(), e.getEntity());
     }
 
     @EventHandler
-    public void onIcyHit(WeaponDamageEvent e) {
-//        // ignore ranged attacks
-//        if (e.getIsRanged()) {
-//            return;
-//        }
-        applySlow(e.getPlayer(), e.getEntity());
+    public void onBlindingHit(WeaponDamageEvent e) {
+        applyBlind(e.getPlayer(), e.getEntity());
     }
 
-    private void applySlow(Player pl, Entity en) {
+    private void applyBlind(Player pl, Entity en) {
 
         if (getRunicPassive(pl) == null) return;
         if (!getRunicPassive(pl).equals(this)) return;
@@ -54,10 +50,10 @@ public class Frostbite extends Spell {
         // particles, sounds
         if (verifyEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
-            victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
-            victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
-                    5, 0.5F, 0.5F, 0.5F, 0, Material.PACKED_ICE.createBlockData());
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, SLOW_MULT));
+            victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.25f, 1.75f);
+            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
+                    new Particle.DustOptions(Color.BLACK, 1));
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, SLOW_MULT));
         }
     }
 }
