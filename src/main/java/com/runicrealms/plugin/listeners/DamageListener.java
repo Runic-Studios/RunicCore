@@ -11,6 +11,8 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
@@ -30,6 +32,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.outlaw.OutlawManager;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -77,7 +80,12 @@ public class DamageListener implements Listener {
                 damager = (Entity) ((Arrow) damager).getShooter();
             }
             e.setCancelled(true);
-            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(e.getDamage()), e.getDamager(), victim);
+            double dmgAmt = e.getDamage();
+            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
+                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
+                dmgAmt = mm.getDamage();
+            }
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return;

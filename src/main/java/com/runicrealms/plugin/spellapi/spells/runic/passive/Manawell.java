@@ -18,7 +18,7 @@ public class Manawell extends Spell {
     public Manawell() {
         super ("Manawell",
                 "Spending mana has a " + PERCENT + "% chance" +
-                        "\nto cause heal allies for the amount spent!",
+                        "\nto heal allies for the amount spent!",
                 ChatColor.WHITE, 10, 15);
         this.setIsPassive(true);
     }

@@ -51,10 +51,10 @@ public class ManaManager implements Listener {
             ManaRegenEvent event = new ManaRegenEvent(online, manaRegenAmt);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                if (mana + manaRegenAmt >= maxMana) {
+                if (mana + event.getAmount() >= maxMana) {
                     currentPlayerManas.put(online.getUniqueId(), maxMana);
                 } else {
-                    currentPlayerManas.put(online.getUniqueId(), mana + manaRegenAmt);
+                    currentPlayerManas.put(online.getUniqueId(), mana + event.getAmount());
                 }
                 RunicCore.getScoreboardHandler().updateSideInfo(online);
             }

@@ -116,10 +116,13 @@ public class DamageUtil {
 
         DamageListener damageListener = new DamageListener();
 
-        if (MythicMobs.inst().getMobManager().isActiveMob(damager.getUniqueId())) {
-            ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
-            dmgAmt = mm.getDamage();
-        }
+        /*
+        Calculated in Damage Listener now so this doesn't override debuffs from spells.
+         */
+//        if (MythicMobs.inst().getMobManager().isActiveMob(damager.getUniqueId())) {
+//            ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
+//            dmgAmt = mm.getDamage();
+//        }
 
         // update w/ shield
         if (recipient instanceof Player) {
