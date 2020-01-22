@@ -16,8 +16,8 @@ public class Resolve extends Spell {
 
     public Resolve() {
         super ("Resolve",
-                "While below " + PERCENT_HP + "% health, you" +
-                        "\ntake " + PERCENT_DMG + "% damage!",
+                "While below " + (int) PERCENT_HP + "% health, you" +
+                        "\ntake " + (int) PERCENT_DMG + "% damage!",
                 ChatColor.WHITE, 12, 15);
         this.setIsPassive(true);
     }

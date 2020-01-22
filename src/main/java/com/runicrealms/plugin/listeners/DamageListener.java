@@ -202,7 +202,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    private String weaponMessage(String className) {
+    public static String weaponMessage(String className) {
         String s = "";
         switch (className) {
             case "Archer":

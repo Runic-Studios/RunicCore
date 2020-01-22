@@ -77,7 +77,7 @@ public class ItemUtils {
 
         ItemNameGenerator nameGen = new ItemNameGenerator();
         String name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf("COMMON"));
-        LoreGenerator.generateItemLore(commonItem, ChatColor.GRAY, name + " " + itemTypeName, "");
+        LoreGenerator.generateItemLore(commonItem, ChatColor.GRAY, name + " " + itemTypeName, "", false);
 
         return commonItem;
     }
@@ -145,7 +145,7 @@ public class ItemUtils {
 
         ItemNameGenerator nameGen = new ItemNameGenerator();
         String name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf("UNCOMMON"));
-        LoreGenerator.generateItemLore(uncommonItem, ChatColor.GREEN, name + " " + itemTypeName, "");
+        LoreGenerator.generateItemLore(uncommonItem, ChatColor.GREEN, name + " " + itemTypeName, "", false);
 
         return uncommonItem;
     }
@@ -222,7 +222,7 @@ public class ItemUtils {
 
         ItemNameGenerator nameGen = new ItemNameGenerator();
         String name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf("RARE"));
-        LoreGenerator.generateItemLore(rareItem, ChatColor.AQUA, name + " " + itemTypeName, "");
+        LoreGenerator.generateItemLore(rareItem, ChatColor.AQUA, name + " " + itemTypeName, "", false);
 
         return rareItem;
     }
@@ -299,7 +299,7 @@ public class ItemUtils {
 
         ItemNameGenerator nameGen = new ItemNameGenerator();
         String name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf("EPIC"));
-        LoreGenerator.generateItemLore(epicItem, ChatColor.LIGHT_PURPLE, name + " " + itemTypeName, "");
+        LoreGenerator.generateItemLore(epicItem, ChatColor.LIGHT_PURPLE, name + " " + itemTypeName, "", false);
 
         return epicItem;
     }

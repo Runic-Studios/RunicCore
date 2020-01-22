@@ -13,6 +13,7 @@ import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBossBars;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.mounts.MountListener;
@@ -172,10 +173,10 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new BossKillListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
-        pm.registerEvents(new LegendaryManager(), this);
         pm.registerEvents(RunicCore.getMobTagger(), this);
         pm.registerEvents(RunicCore.getBossTagger(), this);
         pm.registerEvents(new SoulboundListener(), this);
+        pm.registerEvents(new HearthstoneListener(), this);
     }
     
     private void registerCommands() {

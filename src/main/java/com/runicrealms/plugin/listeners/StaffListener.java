@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.runicrealms.plugin.listeners.DamageListener.weaponMessage;
+
 public class StaffListener implements Listener {
 
     // globals
@@ -61,16 +63,21 @@ public class StaffListener implements Listener {
          // cancel the event, run custom mechanics
          e.setCancelled(true);
 
-         // set the cooldown
-        double speed = AttributeUtil.getGenericDouble(artifact, "generic.attackSpeed");
-        if (speed != 0) {
-            e.getPlayer().setCooldown(artifact.getType(), (int) (20/(24+speed)));
-        }
-
         // if they're sneaking, they're casting a spell. so we don't fire the attack.
         if (pl.isSneaking()) return;
 
+        // check for mage
+        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        if (className == null) return;
+        if (!className.equals("Mage")) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            pl.sendMessage(weaponMessage(className));
+            return;
+        }
+
         staffAttack(artifact, pl);
+        // set the cooldown
+        pl.setCooldown(artifact.getType(), 10);
     }
 
     private void staffAttack(ItemStack artifact, Player pl) {

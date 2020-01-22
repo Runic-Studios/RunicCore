@@ -2,6 +2,7 @@ package com.runicrealms.plugin.item.commands;
 
 import com.runicrealms.plugin.classes.SelectClass;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.player.commands.SetSC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,7 +42,7 @@ public class HearthstoneCMD implements SubCommand {
             String location = args[2];
 
             if (args.length == 3) {
-                SelectClass.setupHearthstone(pl, location);
+                //HearthstoneListener.setupHearthstone(pl, location);
             } else {
                 ItemGUI hearthstoneGUI = hearthstoneMenu(pl, args[2], Integer.parseInt(args[3]));
                 hearthstoneGUI.open(pl);

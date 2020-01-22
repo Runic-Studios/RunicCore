@@ -1,12 +1,9 @@
 package com.runicrealms.plugin.classes;
 
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
-import com.runicrealms.plugin.item.LoreGenerator;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 
 import static org.bukkit.Color.*;
@@ -89,15 +86,15 @@ public class SelectClass {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
     }
 
-    // todo: make this its own thing
-    public static void setupHearthstone(Player pl, String location) {
-        location = location.replace("_", " ");
-        ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
-        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", location);
-        hearthstone = AttributeUtil.addCustomStat(hearthstone, "soulbound", "true");
-        LoreGenerator.generateHearthstoneLore(hearthstone);
-        pl.getInventory().setItem(2, hearthstone);
-    }
+//    // todo: make this its own thing
+//    public static void setupHearthstone(Player pl, String location) {
+//        location = location.replace("_", " ");
+//        ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
+//        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", location);
+//        hearthstone = AttributeUtil.addCustomStat(hearthstone, "soulbound", "true");
+//        LoreGenerator.generateHearthstoneLore(hearthstone);
+//        pl.getInventory().setItem(2, hearthstone);
+//    }
 
     public static void setConfig(Player player, String className) {
         HealthUtils.setBaseHealth(player);

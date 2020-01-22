@@ -37,6 +37,7 @@ public final class MobHealthBars implements Listener {
         // stack two armor stands
         Consumer consumer = new InvisStandSpawner();
         ArmorStand stand = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
+        stand.setCollidable(false);
         stand.setMarker(false);
         stand.setSmall(true);
         stand.setInvulnerable(true);
@@ -45,6 +46,7 @@ public final class MobHealthBars implements Listener {
 
         // second stand
         ArmorStand stand2 = mob.getWorld().spawn(mob.getLocation(), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
+        stand.setCollidable(false);
         stand2.setMarker(true);
         stand2.setSmall(true);
         stand2.setInvulnerable(true);

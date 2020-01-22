@@ -2,8 +2,6 @@ package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.utilities.ChatUtils;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.NumRounder;
 import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.ChatColor;
@@ -33,12 +31,11 @@ public class LoreGenerator {
         // item display
         String loc = nbti.getString("location");
         lore.add("");
-        lore.add(ChatColor.WHITE + "Left click: "
-                + ChatColor.GRAY + "Return to your "
-                + ChatColor.GOLD + "Guild Hall");
-        lore.add(ChatColor.WHITE + "Right click: "
-                + ChatColor.GRAY + "Return to "
-                + ChatColor.GREEN + loc);
+//        lore.add(ChatColor.WHITE + "Left click: "
+//                + ChatColor.GRAY + "Return to your "
+//                + ChatColor.GOLD + "Guild Hall");
+        lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "RIGHT CLICK " + ChatColor.GREEN + loc);
+        lore.add(ChatColor.GRAY + "Return to your hometown!");
         lore.add("");
         lore.add(ChatColor.GRAY + "Speak to an "
                 + ChatColor.YELLOW + "innkeeper "
@@ -56,7 +53,7 @@ public class LoreGenerator {
         hearthstone.setItemMeta(meta);
     }
 
-    public static void generateItemLore(ItemStack item, ChatColor dispColor, String dispName, String extra) {
+    public static void generateItemLore(ItemStack item, ChatColor dispColor, String dispName, String extra, boolean reForge) {
 
         // grab our material, ItemMeta, ItemLore
         ItemTypeEnum itemType = ItemTypeEnum.matchType(item);
@@ -99,7 +96,11 @@ public class LoreGenerator {
         // -------------------------------------------------------------------------------------------
 
         if (minDamage != 0 && maxDamage != 0) {
-            lore.add(ChatColor.RED + "+ " + minDamage + "-" + maxDamage + "⚔");
+            if (reForge) {
+                lore.add(ChatColor.RED + "+ " + minDamage + "-" + maxDamage + "⚔ (Reforged)");
+            } else {
+                lore.add(ChatColor.RED + "+ " + minDamage + "-" + maxDamage + "⚔");
+            }
         }
         if (customHealth != 0) {
             lore.add(ChatColor.RED + "+ " + customHealth + "❤");
@@ -212,6 +213,9 @@ public class LoreGenerator {
         }
         lore.add(ChatColor.GRAY + type);
 
+        if (AttributeUtil.getCustomString(item, "untradeable").equals("true")) {
+            lore.add(ChatColor.DARK_GRAY + "Untradeable");
+        }
         if (AttributeUtil.getCustomString(item, "soulbound").equals("true")) {
             lore.add(ChatColor.DARK_GRAY + "Soulbound");
         }

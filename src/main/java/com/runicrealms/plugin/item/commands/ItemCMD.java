@@ -1,11 +1,9 @@
 package com.runicrealms.plugin.item.commands;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.events.LootEvent;
 import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.util.ItemDropper;
-import com.runicrealms.plugin.item.util.ItemScrapsUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -19,7 +17,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ItemCMD implements SubCommand {
@@ -37,16 +34,10 @@ public class ItemCMD implements SubCommand {
         if (pl == null) return;
 
         // mounts
-        if (args[2].equals("mount")) {
-            ItemScrapsUtil.giveScrap(pl, Integer.parseInt(args[3]));
-            return;
-        }
-
-        // item scraps
-        if (args[2].equals("scrap")) {
-            ItemScrapsUtil.giveScrap(pl, Integer.parseInt(args[3]));
-            return;
-        }
+//        if (args[2].equals("mount")) {
+//            ItemScrapsUtil.giveScrap(pl, Integer.parseInt(args[3]));
+//            return;
+//        }
 
         // runicgive item [player] [itemType] [tier] | length = 4
         // runicgive item [player] [itemType] [tier] ([x] [y] [z]) [uuid] | length = 8

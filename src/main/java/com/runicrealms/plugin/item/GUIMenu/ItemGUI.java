@@ -252,7 +252,19 @@ public class ItemGUI implements Listener {
                 }
             }.runTaskLater(plugin, 1L);
 
-            // gold scrapper
+            // artifact forge
+            if (e.getInventory().getTitle().toLowerCase().contains("artifact")) {
+                for (int i = 0; i < 2; i++) {
+                    if (e.getInventory().getItem(i) == null) continue;
+                    ItemStack itemStack = e.getInventory().getItem(i);
+                    if (e.getPlayer().getInventory().firstEmpty() != -1) {
+                        e.getPlayer().getInventory().addItem(itemStack);
+                    } else {
+                        e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), itemStack);
+                    }
+                }
+            }
+
             if (e.getInventory().getTitle().toLowerCase().contains("scrapper")) {
 
                 for (int i = 0; i < 7; i++) {

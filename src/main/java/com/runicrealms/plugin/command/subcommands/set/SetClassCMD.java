@@ -87,13 +87,6 @@ public class SetClassCMD implements SubCommand {
 
             setPlayerClass(pl, formattedStr, true);
 
-            // only setup their hearthstone if they don't have one already
-            if (pl.getInventory().getItem(2) == null
-                    || (pl.getInventory().getItem(2) != null
-                    && pl.getInventory().getItem(2).getType() != Material.CLAY_BALL)) {
-                setupHearthstone(pl, "General Tso's Camp");
-            }
-
             setConfig(pl, formattedStr);
             sbh.updatePlayerInfo(pl);
             sbh.updateSideInfo(pl);
