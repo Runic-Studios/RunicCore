@@ -4,11 +4,9 @@ import java.util.ArrayList;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -251,32 +249,6 @@ public class ItemGUI implements Listener {
                     }
                 }
             }.runTaskLater(plugin, 1L);
-
-            // artifact forge
-            if (e.getInventory().getTitle().toLowerCase().contains("artifact")) {
-                for (int i = 0; i < 2; i++) {
-                    if (e.getInventory().getItem(i) == null) continue;
-                    ItemStack itemStack = e.getInventory().getItem(i);
-                    if (e.getPlayer().getInventory().firstEmpty() != -1) {
-                        e.getPlayer().getInventory().addItem(itemStack);
-                    } else {
-                        e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), itemStack);
-                    }
-                }
-            }
-
-            if (e.getInventory().getTitle().toLowerCase().contains("scrapper")) {
-
-                for (int i = 0; i < 7; i++) {
-                    if (e.getInventory().getItem(i) == null) continue;
-                    ItemStack itemStack = e.getInventory().getItem(i);
-                    if (e.getPlayer().getInventory().firstEmpty() != -1) {
-                        e.getPlayer().getInventory().addItem(itemStack);
-                    } else {
-                        e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), itemStack);
-                    }
-                }
-            }
         }
     }
 

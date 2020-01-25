@@ -2,6 +2,7 @@ package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.item.*;
+import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.commands.*;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
@@ -15,6 +16,8 @@ import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.healthbars.PlayerBossBars;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
+import com.runicrealms.plugin.item.scrapper.ScrapperListener;
+import com.runicrealms.plugin.item.shops.ShopManager;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.mounts.MountListener;
 import com.runicrealms.plugin.npc.Build;
@@ -57,6 +60,7 @@ public class RunicCore extends JavaPlugin {
     private static TabListManager tabListManager;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
+    private static ShopManager shopManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -69,6 +73,8 @@ public class RunicCore extends JavaPlugin {
     public static TabListManager getTabListManager() { return tabListManager; }
     public static MobTagger getMobTagger() { return mobTagger; }
     public static BossTagger getBossTagger() { return bossTagger; }
+    public static ShopManager getShopManager() { return shopManager; }
+
 
     public void onEnable() {
 
@@ -84,6 +90,7 @@ public class RunicCore extends JavaPlugin {
         tabListManager = new TabListManager(this);
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
+        shopManager = new ShopManager();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
@@ -128,6 +135,7 @@ public class RunicCore extends JavaPlugin {
         tabListManager = null;
         mobTagger = null;
         bossTagger = null;
+        shopManager = null;
     }
 
     private void loadConfig() {
@@ -177,6 +185,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(RunicCore.getBossTagger(), this);
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
+        pm.registerEvents(new ScrapperListener(), this);
     }
     
     private void registerCommands() {
@@ -190,7 +199,7 @@ public class RunicCore extends JavaPlugin {
         getCommand("currency").setExecutor(currencySC);
         currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
         currencySC.addCommand(Arrays.asList("pouch"), new CurrencyPouch(currencySC));
-        currencySC.addCommand(Arrays.asList("scrapper"), new GoldScrapperCMD(currencySC));
+        currencySC.addCommand(Arrays.asList("scrapper"), new ItemScrapperCMD(currencySC));
 
         // experience
         CheckExpCMD checkExpCMD = new CheckExpCMD();

@@ -1,38 +1,45 @@
-package com.runicrealms.plugin.item.buyer;
+package com.runicrealms.plugin.item.scrapper;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.item.shops.Shop;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Item Menu to scrap items
  */
-public class GoldScrapper {
+public class ItemScrapper extends Shop {
 
-    private static final int MAX_COMMON_GOLD = 7;
-    private static final int MAX_UNCOMMON_GOLD = 15;
-    private static final int MAX_RARE_GOLD = 30;
-    private static final int MAX_EPIC_GOLD = 60;
-    private static final int MAX_LEGENDARY_GOLD = 120;
+    private static final int MAX_CRAFTED_GOLD = 8;
+    private static final int MAX_COMMON_GOLD = 4;
+    private static final int MAX_UNCOMMON_GOLD = 8;
+    private static final int MAX_RARE_GOLD = 16;
+    private static final int MAX_EPIC_GOLD = 32;
+    private static final int MAX_LEGENDARY_GOLD = 128;
 
-    public GoldScrapper() {}
+    private HashMap<UUID, List<ItemStack>> storedItems;
 
-    public ItemGUI openMenu(Player pl) {
+    public ItemScrapper(Player pl) {
+        setupShop(pl);
+        storedItems = new HashMap<>();
+        List<ItemStack> items = new ArrayList<>();
+        storedItems.put(pl.getUniqueId(), items);
+    }
 
-        // name the menu
-        ItemGUI scrapperMenu = new ItemGUI();
-        scrapperMenu.setName("&f&l" + pl.getName() + "'s &6&lArmor Scrapper");
+    @Override
+    public void setupShop(Player pl) {
+
+        super.setupShop("&eItem Scrapper", false);
+        ItemGUI scrapperMenu = getItemGUI();
 
         //set the visual items
         scrapperMenu.setOption(7, new ItemStack(Material.SLIME_BALL),
-                "&aScrap Armor", "&7Scrap armor and receive &6gold&7!", 0, false);
+                "&aScrap Items", "&7Scrap items and receive &6gold&7!", 0, false);
         scrapperMenu.setOption(8, new ItemStack(Material.BARRIER),
                 "&cClose", "&7Close the menu", 0, false);
 
@@ -49,13 +56,13 @@ public class GoldScrapper {
             // close editor
             } else if (event.getSlot() == 8) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                dropItemsInInventory(pl, scrapperMenu);
                 event.setWillClose(true);
                 event.setWillDestroy(true);
             }
         });
 
-        return scrapperMenu;
+        // update our internal menu
+        this.setItemGUI(scrapperMenu);
     }
 
     // todo: prevent quest items, prevent equipping helmets if crafting screen is open
@@ -77,16 +84,24 @@ public class GoldScrapper {
             List<String> lore = itemStack.getItemMeta().getLore();
 
             if (lore != null) {
-                if (lore.contains(ChatColor.GRAY + "Common")) {
-                    goldToGive += rand.nextInt(MAX_COMMON_GOLD - 2) + 2; // 2-7
+                if (lore.contains(ChatColor.WHITE + "Crafted")) {
+                    goldToGive += rand.nextInt(MAX_CRAFTED_GOLD - 1) + 1; // 1-8
+                    storedItems.get(pl.getUniqueId()).add(itemStack);
+                } else if (lore.contains(ChatColor.GRAY + "Common")) {
+                    goldToGive += rand.nextInt(MAX_COMMON_GOLD - 1) + 1; // 1-4
+                    storedItems.get(pl.getUniqueId()).add(itemStack);
                 } else if (lore.contains(ChatColor.GREEN + "Uncommon")) {
-                    goldToGive += rand.nextInt(MAX_UNCOMMON_GOLD - MAX_COMMON_GOLD) + MAX_COMMON_GOLD; // 7-15
+                    goldToGive += rand.nextInt(MAX_UNCOMMON_GOLD - MAX_COMMON_GOLD) + MAX_COMMON_GOLD; // 4-8
+                    storedItems.get(pl.getUniqueId()).add(itemStack);
                 } else if (lore.contains(ChatColor.AQUA + "Rare")) {
-                    goldToGive += rand.nextInt(MAX_RARE_GOLD - MAX_UNCOMMON_GOLD) + MAX_UNCOMMON_GOLD; // 15-30
+                    goldToGive += rand.nextInt(MAX_RARE_GOLD - MAX_UNCOMMON_GOLD) + MAX_UNCOMMON_GOLD; // 8-16
+                    storedItems.get(pl.getUniqueId()).add(itemStack);
                 } else if (lore.contains(ChatColor.LIGHT_PURPLE + "Epic")) {
-                    goldToGive += rand.nextInt(MAX_EPIC_GOLD - MAX_RARE_GOLD) + MAX_RARE_GOLD; // 30-60
+                    goldToGive += rand.nextInt(MAX_EPIC_GOLD - MAX_RARE_GOLD) + MAX_RARE_GOLD; // 16-32
+                    storedItems.get(pl.getUniqueId()).add(itemStack);
                 } else if (lore.contains(ChatColor.GOLD + "Legendary")) {
-                    goldToGive += rand.nextInt(MAX_LEGENDARY_GOLD - MAX_EPIC_GOLD) + MAX_EPIC_GOLD; // 60-120
+                    goldToGive += rand.nextInt(MAX_LEGENDARY_GOLD - MAX_EPIC_GOLD) + MAX_EPIC_GOLD; // 32-120
+                    storedItems.get(pl.getUniqueId()).add(itemStack);
                 }
             }
         }
@@ -94,14 +109,15 @@ public class GoldScrapper {
         if (goldToGive > 0) {
             giveGold(pl, goldToGive);
         } else {
-            pl.sendMessage(ChatColor.GRAY + "Place armor inside the menu to scrap the items!");
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.GRAY + "Place an armor piece or weapon inside the menu to scrap it!");
         }
     }
 
     private void giveGold(Player pl, int goldToGive) {
 
         pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-        pl.sendMessage(ChatColor.GREEN + "You received " + ChatColor.GOLD + goldToGive + ChatColor.GREEN + " gold for your items!");
+        pl.sendMessage(ChatColor.GREEN + "You received " + ChatColor.GOLD + goldToGive + ChatColor.GREEN + " gold for your item(s)!");
 
         int numOfFullStacks = goldToGive / 64;
         int remainder = goldToGive % 64;
@@ -127,16 +143,7 @@ public class GoldScrapper {
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), pl::updateInventory, 1);
     }
 
-    private void dropItemsInInventory(Player pl, ItemGUI goldScrapperMenu) {
-
-        for (int i = 0; i < 7; i++) {
-            if (goldScrapperMenu.getItem(i) == null) continue;
-            ItemStack itemStack = goldScrapperMenu.getItem(i);
-            if (pl.getInventory().firstEmpty() != -1) {
-                pl.getInventory().addItem(itemStack);
-            } else {
-                pl.getWorld().dropItem(pl.getLocation(), itemStack);
-            }
-        }
+    public HashMap<UUID, List<ItemStack>> getStoredItems() {
+        return storedItems;
     }
 }

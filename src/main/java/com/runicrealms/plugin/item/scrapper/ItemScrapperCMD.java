@@ -1,9 +1,8 @@
-package com.runicrealms.plugin.item.commands;
+package com.runicrealms.plugin.item.scrapper;
 
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
-import com.runicrealms.plugin.item.buyer.GoldScrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -16,12 +15,12 @@ import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.List;
 
-public class GoldScrapperCMD implements SubCommand {
+public class ItemScrapperCMD implements SubCommand {
 
     private CurrencySC currencySC;
     private Plugin plugin = RunicCore.getInstance();
 
-    public GoldScrapperCMD(CurrencySC currencySC) {
+    public ItemScrapperCMD(CurrencySC currencySC) {
         this.currencySC = currencySC;
     }
 
@@ -38,10 +37,10 @@ public class GoldScrapperCMD implements SubCommand {
         Player pl = Bukkit.getPlayer(args[1]);
         if (pl == null) return;
 
-        pl.playSound(pl.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 1.0f);
-        GoldScrapper scrapper = new GoldScrapper();
-        ItemGUI scrapperMenu = scrapper.openMenu(pl);
-        scrapperMenu.open(pl);
+        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+        RunicCore.getShopManager().setPlayerShop(pl, new ItemScrapper(pl));
+        ItemGUI scrapperShop = ((RunicCore.getShopManager().getPlayerShop(pl))).getItemGUI();
+        scrapperShop.open(pl);
     }
 
     @Override
