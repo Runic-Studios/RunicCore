@@ -84,7 +84,9 @@ public class ItemScrapper extends Shop {
             List<String> lore = itemStack.getItemMeta().getLore();
 
             if (lore != null) {
-                if (lore.contains(ChatColor.WHITE + "Crafted")) {
+                if (lore.contains(ChatColor.DARK_GRAY + "Soulbound")) {
+                    pl.sendMessage(ChatColor.RED + "You cannot scrap soulbound items!");
+                } else if (lore.contains(ChatColor.WHITE + "Crafted")) {
                     goldToGive += rand.nextInt(MAX_CRAFTED_GOLD - 1) + 1; // 1-8
                     storedItems.get(pl.getUniqueId()).add(itemStack);
                 } else if (lore.contains(ChatColor.GRAY + "Common")) {
