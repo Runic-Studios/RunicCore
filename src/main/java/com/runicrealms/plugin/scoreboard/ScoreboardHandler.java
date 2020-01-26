@@ -203,13 +203,13 @@ public class ScoreboardHandler implements Listener {
     private String healthAsString(Player pl) {
         int currentHealth = (int) pl.getHealth();
         int maxHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §7/ " + ChatColor.RED + maxHealth;
+        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §7/ " + ChatColor.RED + maxHealth + " (Health)";
     }
 
     private String manaAsString(Player pl) {
         int mana = RunicCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
         int maxMana = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
-        return ChatColor.DARK_AQUA + "✸ " + mana + " §7/ " + ChatColor.DARK_AQUA + maxMana;
+        return ChatColor.DARK_AQUA + "✸ " + mana + " §7/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
     private String playerClass(Player pl) {
