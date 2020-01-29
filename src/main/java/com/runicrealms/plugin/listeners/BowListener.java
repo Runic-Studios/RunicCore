@@ -126,6 +126,7 @@ public class BowListener implements Listener {
             victim = e.getHitEntity().getVehicle();
         }
 
+        if (victim == null) return;
         // get our entity
         if (!(victim.getType().isAlive())) return;
 
