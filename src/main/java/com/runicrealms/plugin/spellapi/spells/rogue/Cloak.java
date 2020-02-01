@@ -3,32 +3,23 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.runicrealms.plugin.RunicCore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Cloak extends Spell {
 
     private static final int DURATION = 5;
     private List<UUID> cloakers;
-    private HashMap<UUID, Boolean> hasDealtDamage;
+    private HashSet<UUID> hasDealtDamage;
 
     // constructor
     public Cloak() {
@@ -40,7 +31,7 @@ public class Cloak extends Spell {
                         "\nearly.",
                 ChatColor.WHITE, 10, 15);
         cloakers = new ArrayList<>();
-        hasDealtDamage = new HashMap<>();
+        hasDealtDamage = new HashSet<>();
     }
 
     @Override
@@ -63,14 +54,14 @@ public class Cloak extends Spell {
 
         cloakers.add(pl.getUniqueId());
         pl.sendMessage(ChatColor.GRAY + "You vanished!");
-        hasDealtDamage.put(pl.getUniqueId(), false);
+        hasDealtDamage.add(pl.getUniqueId());
 
         // reappear after duration or upon dealing damage. can't be tracked async :(
         new BukkitRunnable() {
             int count = 0;
             @Override
             public void run() {
-                if (count >= DURATION || hasDealtDamage.get(pl.getUniqueId())) {
+                if (count >= DURATION || hasDealtDamage.contains(pl.getUniqueId())) {
                     this.cancel();
                     cloakers.remove(pl.getUniqueId());
                     for (Player ps : Bukkit.getOnlinePlayers()) {
@@ -107,8 +98,8 @@ public class Cloak extends Spell {
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player)) return;
         Player pl = (Player) e.getDamager();
-        if (!hasDealtDamage.containsKey(pl.getUniqueId())) return;
+        if (!hasDealtDamage.contains(pl.getUniqueId())) return;
         cloakers.remove(pl.getUniqueId());
-        hasDealtDamage.put(pl.getUniqueId(), true);
+        hasDealtDamage.add(pl.getUniqueId());
     }
 }
