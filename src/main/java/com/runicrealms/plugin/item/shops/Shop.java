@@ -33,6 +33,14 @@ public abstract class Shop implements Listener {
                 "&cClose", "&7Close the menu", 0, false);
     }
 
+    protected void setupShop(Player pl, int size) {
+        title = "&eShop";
+        itemGUI = new ItemGUI(title, size, event -> {
+        },
+                RunicProfessions.getInstance()).setOption(8, new ItemStack(Material.BARRIER),
+                "&cClose", "&7Close the menu", 0, false);
+    }
+
     protected void setupShop(String title, boolean fillSlots) {
         this.title = title;
         itemGUI = new ItemGUI(this.title, 9, event -> {
