@@ -98,8 +98,8 @@ public class Cloak extends Spell {
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player)) return;
         Player pl = (Player) e.getDamager();
-        if (!hasDealtDamage.contains(pl.getUniqueId())) return;
-        cloakers.remove(pl.getUniqueId());
+        if (!cloakers.contains(pl.getUniqueId())) return;
+        if (hasDealtDamage.contains(pl.getUniqueId())) return;
         hasDealtDamage.add(pl.getUniqueId());
     }
 }

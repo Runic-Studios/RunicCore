@@ -2,6 +2,7 @@ package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.item.*;
+import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.commands.*;
 import com.runicrealms.plugin.command.subcommands.Spellpoint;
@@ -33,8 +34,8 @@ import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
-import com.runicrealms.plugin.tutorial.commands.CaptainDefeated;
-import com.runicrealms.plugin.tutorial.commands.TutorialSC;
+import com.runicrealms.plugin.tutorial.TutorialCMD;
+import com.runicrealms.plugin.tutorial.TutorialTask;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -51,7 +52,7 @@ public class RunicCore extends JavaPlugin {
     // handlers
     private static RunicCore instance;
     private static CombatManager combatManager;
-    //private static LootChestManager lootChestManager;
+    private static LootChestManager lootChestManager;
     private static ManaManager manaManager;
     private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
@@ -61,12 +62,13 @@ public class RunicCore extends JavaPlugin {
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ShopManager shopManager;
+    private static TutorialTask tutorialTask;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
     public static ManaManager getManaManager() { return manaManager; }
-    //public static LootChestManager getLootChestManager() { return lootChestManager; }
+    public static LootChestManager getLootChestManager() { return lootChestManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
     public static SpellManager getSpellManager() { return spellManager; }
@@ -74,14 +76,14 @@ public class RunicCore extends JavaPlugin {
     public static MobTagger getMobTagger() { return mobTagger; }
     public static BossTagger getBossTagger() { return bossTagger; }
     public static ShopManager getShopManager() { return shopManager; }
-
+    public static TutorialTask getTutorialTask() { return tutorialTask; }
 
     public void onEnable() {
 
         // instantiate everything we need
         instance = this;
         combatManager = new CombatManager();
-        //lootChestManager = new LootChestManager();
+        lootChestManager = new LootChestManager();
         manaManager = new ManaManager();
         mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
@@ -91,6 +93,7 @@ public class RunicCore extends JavaPlugin {
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
         shopManager = new ShopManager();
+        tutorialTask = new TutorialTask();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
@@ -126,7 +129,7 @@ public class RunicCore extends JavaPlugin {
         // let's prevent memory leaks, shall we?
         combatManager = null;
         instance = null;
-        //lootChestManager = null;
+        lootChestManager = null;
         manaManager = null;
         mobHealthManager = null;
         partyManager = null;
@@ -136,6 +139,7 @@ public class RunicCore extends JavaPlugin {
         mobTagger = null;
         bossTagger = null;
         shopManager = null;
+        tutorialTask = null;
     }
 
     private void loadConfig() {
@@ -231,11 +235,6 @@ public class RunicCore extends JavaPlugin {
         TravelSC travelSC = new TravelSC();
         getCommand("travel").setExecutor(travelSC);
         travelSC.addCommand(Arrays.asList("fast"), new FastTravel(travelSC));
-
-        // tutorial
-        TutorialSC tutorialSC = new TutorialSC();
-        getCommand("tutorial").setExecutor(tutorialSC);
-        tutorialSC.addCommand(Arrays.asList("captaindefeated"), new CaptainDefeated(tutorialSC));
     }
     
     private void registerPartyCommands() {
@@ -262,5 +261,6 @@ public class RunicCore extends JavaPlugin {
         setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
         setSC.addCommand(Arrays.asList("prof"), new SetProfCMD(setSC));
         setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));
+        setSC.addCommand(Arrays.asList("artifact"), new TutorialCMD(setSC));
     }
 }

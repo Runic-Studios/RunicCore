@@ -16,7 +16,7 @@ public class ItemRemover {
         for (ItemStack player_item : pl.getInventory().getContents()) {
             if (player_item != null) {
 
-                if (player_item.equals(itemStack)) {
+                if (player_item.isSimilar(itemStack)) {
                     int take_next = Math.min(to_take, player_item.getAmount());
                     remove(pl, player_item, take_next);
                     to_take -= take_next;
