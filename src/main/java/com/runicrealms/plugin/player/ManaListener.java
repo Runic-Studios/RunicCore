@@ -37,7 +37,7 @@ public class ManaListener implements Listener {
         // create the field if it doesn't exist
         int maxMana = plugin.getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
         if (maxMana == 0) {
-            maxMana = 50+(manaManager.getManaPerLevel()*pl.getLevel());
+            maxMana = manaManager.getBaseMana()+(manaManager.getManaPerLevel()*pl.getLevel());
             plugin.getConfig().set(pl.getUniqueId() + ".info.maxMana", maxMana);
             plugin.saveConfig();
             plugin.reloadConfig();
@@ -97,7 +97,7 @@ public class ManaListener implements Listener {
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent e) {
         Player pl = e.getPlayer();
-        if (pl.getLevel() > 50) return;
+        if (pl.getLevel() > manaManager.getBaseMana()) return;
         calculateMana(pl);
         int maxMana = plugin.getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
         manaManager.getCurrentManaList().put(pl.getUniqueId(), maxMana);
@@ -117,7 +117,7 @@ public class ManaListener implements Listener {
         }
 
         // update stored mana in config, update scoreboard
-        int newMaxMana = 50 + (manaManager.getManaPerLevel() * pl.getLevel()) + totalItemManaBoost;
+        int newMaxMana = manaManager.getBaseMana() + (manaManager.getManaPerLevel() * pl.getLevel()) + totalItemManaBoost;
         plugin.getConfig().set(pl.getUniqueId() + ".info.maxMana", newMaxMana);
         saveConfig(pl);
 

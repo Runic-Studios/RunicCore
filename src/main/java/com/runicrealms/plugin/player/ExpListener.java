@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -18,7 +19,7 @@ public class ExpListener implements Listener {
 
     @EventHandler
     public void onExpGain(PlayerExpChangeEvent e) {
-        if (e.getPlayer().getLevel() >= 50) {
+        if (e.getPlayer().getLevel() >= PlayerLevelUtil.getMaxLevel()) {
             e.setAmount(0);
         }
     }

@@ -21,12 +21,6 @@ public class Mana extends SuperCommand {
             RunicCore.getManaManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
             RunicCore.getScoreboardHandler().updateSideInfo(pl);
             pl.sendMessage(ChatColor.AQUA + "You've restored your mana!");
-
-//            for (Entity e : pl.getNearbyEntities(2, 2, 2)) {
-//                if (e instanceof ArmorStand) e.remove();
-//            }
-//
-//            RunicCore.getMobHealthManager().fullClean();
         }
     }
 }

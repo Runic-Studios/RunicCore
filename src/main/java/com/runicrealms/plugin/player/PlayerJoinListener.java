@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.player;
 
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,7 +36,7 @@ public class PlayerJoinListener implements Listener {
 
                 // new players or corrupted data
                 if (storedHealth == 0) {
-                    storedHealth = 50;
+                    storedHealth = HealthUtils.getBaseHealth();
                 }
 
                 HealthUtils.setPlayerMaxHealth(pl);

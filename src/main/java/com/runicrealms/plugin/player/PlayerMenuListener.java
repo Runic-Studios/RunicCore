@@ -58,7 +58,7 @@ public class PlayerMenuListener implements Listener {
 
             // item 3 must update dynamically
             String healthBonus = statBoost(
-                    (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -PlayerLevelListener.getHpAtLevel(pl));
+                    (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() - PlayerLevelListener.getHpAtLevel(pl));
             String manaBoost = statBoost(GearScanner.getManaBoost(pl));
 
             String healingBoost = statBoost(GearScanner.getHealingBoost(pl));

@@ -1,13 +1,10 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.GearScanner;
 import de.tr7zw.itemnbtapi.NBTEntity;
 import de.tr7zw.itemnbtapi.NBTList;
 import de.tr7zw.itemnbtapi.NBTListCompound;
 import de.tr7zw.itemnbtapi.NBTType;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -21,7 +18,7 @@ import java.util.Objects;
  */
 public class HealthUtils {
 
-    private static final int baseHealth = 50;
+    private static final int baseHealth = 200;
 
     public static void setBaseHealth(Player pl) {
         setHealthAttribute(pl, baseHealth);
@@ -84,18 +81,19 @@ public class HealthUtils {
         int playerHealth = (int) Objects.requireNonNull(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
 
         // a half-heart per 12.5 health
-        int numOfHalfHearts = (playerHealth / 25) * 2;
+        int numOfHalfHearts = (playerHealth / 100) * 2;
 
         // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
-        if (numOfHalfHearts % 2 != 0) {
-            numOfHalfHearts = numOfHalfHearts - 1;
-        }
+        if (numOfHalfHearts % 2 != 0) numOfHalfHearts = numOfHalfHearts - 1;
 
         // insurance to prevent "greater than 0" errors on first join
-        if (numOfHalfHearts <= 0) {
-            numOfHalfHearts=4;
-        }
+        if (numOfHalfHearts <= 0) numOfHalfHearts = 4;
+
 
         pl.setHealthScale(numOfHalfHearts);
+    }
+
+    public static int getBaseHealth() {
+        return baseHealth;
     }
 }

@@ -91,6 +91,6 @@ public class TutorialCMD implements SubCommand {
         }
 
         // floating item for player
-        FloatingItemUtil.spawnFloatingItem(pl, anvilLoc.add(0, 2, 0), artifactType, 4, 0);
+        FloatingItemUtil.spawnFloatingItem(pl, anvilLoc.add(0, 3, 0), artifactType, 6, 0);
     }
 }

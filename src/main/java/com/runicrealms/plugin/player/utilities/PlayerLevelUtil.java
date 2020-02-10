@@ -34,7 +34,7 @@ public class PlayerLevelUtil {
 
         if (calculateExpectedLv(newTotalExp) != currentLv) {
 
-            // apply milestones for 10, 20, 30, etc.
+            // apply milestones for 10, 20, 30, 40, 50, 60.
             boolean needsMilestone = applyMileStone(pl, currentLv, className, calculateExpectedLv(newTotalExp));
 
             // send a basic leveling message for all the levels that aren't milestones.
@@ -69,6 +69,8 @@ public class PlayerLevelUtil {
     }
 
     // 99750 at 50
+    // ????? at 60
+    // ????? at 60
     public static int calculateTotalExp(int currentLv) {
         int cubed = (int) Math.pow((currentLv+5), 3);
         return ((3*cubed)/5)-75;
@@ -78,19 +80,16 @@ public class PlayerLevelUtil {
         ItemStack artifact = pl.getInventory().getItem(0);
         ItemStack rune = pl.getInventory().getItem(1);
         if (artifact == null || rune == null) return false;
-        if (classLevel == 60) {
-            giveSpellpoint(pl);
+        if (classLevel >= 60) {
             Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
                     + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + classLevel + " " + className + "!");
             pl.sendMessage("\n");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
             ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
-            //ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "  You can now access The Flaming Volanco!"); // WIP name
             pl.sendMessage("\n");
             ClassUtil.launchFirework(pl, className);
         } else if (classLevel == 50) {
-            giveSpellpoint(pl);
             pl.sendMessage("\n");
             ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
@@ -99,53 +98,21 @@ public class PlayerLevelUtil {
             return true;
         } else if (classLevel >= 10  && oldLevel < 10) {
             sendUnlockMessage(pl, 10, className, classLevel);
-            giveSpellpoint(pl);
-            //unlockSpell(rune, "primarySpell", pl, 1, className);
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    "lp user " + pl.getName() + " permission set core.skins." + className + ".21" + " true");
             return true;
         } else if (classLevel >= 20 && oldLevel < 20) {
             sendUnlockMessage(pl, 20, className, classLevel);
-            giveSpellpoint(pl);
-            //unlockSpell(rune, "secondarySpell", pl, 1, className);
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    "lp user " + pl.getName() + " permission set core.skins." + className + ".22" + " true");
             return true;
         } else if (classLevel >= 30 && oldLevel < 30) {
             sendUnlockMessage(pl, 30, className, classLevel);
-            giveSpellpoint(pl);
-            //unlockSpell(artifact, "secondarySpell", pl, 0, className);
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    "lp user " + pl.getName() + " permission set core.skins." + className + ".23" + " true");
             return true;
         } else if (classLevel >= 40 && oldLevel < 40) {
-            giveSpellpoint(pl);
             pl.sendMessage("\n");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
             pl.sendMessage("\n");
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                    "lp user " + pl.getName() + " permission set core.skins." + className + ".24" + " true");
             return true;
         }
         return false;
     }
-
-    private static void giveSpellpoint(Player pl) {
-        int spellpoints = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.spellpoints");
-        RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.spellpoints", spellpoints+1);
-    }
-
-//    private static void unlockSpell(ItemStack item, Player pl, int itemSlot, String className) {
-//        int durab = ((Damageable) Objects.requireNonNull(item.getItemMeta())).getDamage();
-//        if (itemSlot == 0) {
-//            LoreGenerator.generateArtifactLore(item, Objects.requireNonNull(item.getItemMeta()).getDisplayName(), className, durab);
-//        } else {
-//            LoreGenerator.generateRuneLore(item);
-//        }
-//        pl.getInventory().setItem(itemSlot, item);
-//    }
 
     private static void sendLevelMessage(Player pl) {
 
@@ -176,7 +143,6 @@ public class PlayerLevelUtil {
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
                         + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLevel() + "✸");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.YELLOW + "        Your artifact speed increases!");
         pl.sendMessage("\n");
     }
 

@@ -23,7 +23,7 @@ public class PlayerLevelListener implements Listener {
 
         Player pl = e.getPlayer();
 
-        if (pl.getLevel() > 50) return;
+        if (pl.getLevel() > PlayerLevelUtil.getMaxLevel()) return;
 
         // update player's level
         RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.class.level", pl.getLevel());
@@ -68,22 +68,22 @@ public class PlayerLevelListener implements Listener {
 
         // grab the player's new info
         String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
-        if (className == null) return 50;
+        if (className == null) return HealthUtils.getBaseHealth();
 
         switch (className.toLowerCase()) {
             case "archer":
-                return (pl.getLevel()) + 50;
+                return (pl.getLevel()) + HealthUtils.getBaseHealth();
             case "cleric":
-                return (2*pl.getLevel()) + 50;
+                return (2*pl.getLevel()) + HealthUtils.getBaseHealth();
             case "mage":
-                return (pl.getLevel()) + 50;
+                return (pl.getLevel()) + HealthUtils.getBaseHealth();
             case "rogue":
-                return (pl.getLevel()) + 50;
+                return (pl.getLevel()) + HealthUtils.getBaseHealth();
             case "warrior":
-                return (2*pl.getLevel()) + 50;
+                return (2*pl.getLevel()) + HealthUtils.getBaseHealth();
         }
 
-        return 50;
+        return HealthUtils.getBaseHealth();
     }
 
     private void saveConfig(Player pl) {

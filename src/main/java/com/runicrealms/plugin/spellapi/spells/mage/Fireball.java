@@ -38,17 +38,18 @@ public class Fireball extends Spell {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onFireballDamage(EntityDamageByEntityEvent event) {
+    public void onFireballDamage(EntityDamageByEntityEvent e) {
 
         // only listen for our fireball
-        if (!(event.getDamager().equals(this.fireball))) return;
+        if (!(e.getDamager().equals(this.fireball))) return;
 
-        event.setCancelled(true);
+        e.setCancelled(true);
 
         // grab our variables
         Player player = (Player) fireball.getShooter();
         if (player == null) return;
-        LivingEntity victim = (LivingEntity) event.getEntity();
+        if (!(e.getEntity() instanceof LivingEntity)) return;
+        LivingEntity victim = (LivingEntity) e.getEntity();
 
         if (verifyEnemy(player, victim)) {
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, false);
