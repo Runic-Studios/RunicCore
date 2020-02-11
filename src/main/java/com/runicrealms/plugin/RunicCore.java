@@ -28,6 +28,7 @@ import com.runicrealms.plugin.parties.PartyDamageListener;
 import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
+import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
@@ -63,6 +64,7 @@ public class RunicCore extends JavaPlugin {
     private static BossTagger bossTagger;
     private static ShopManager shopManager;
     private static TutorialTask tutorialTask;
+    private static CacheManager cacheManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -77,6 +79,7 @@ public class RunicCore extends JavaPlugin {
     public static BossTagger getBossTagger() { return bossTagger; }
     public static ShopManager getShopManager() { return shopManager; }
     public static TutorialTask getTutorialTask() { return tutorialTask; }
+    public static CacheManager getCacheManager() { return cacheManager; }
 
     public void onEnable() {
 
@@ -94,6 +97,7 @@ public class RunicCore extends JavaPlugin {
         bossTagger = new BossTagger();
         shopManager = new ShopManager();
         tutorialTask = new TutorialTask();
+        cacheManager = new CacheManager();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
@@ -124,7 +128,6 @@ public class RunicCore extends JavaPlugin {
     }
     
     public void onDisable() {
-
         getLogger().info(" §cRunicCore has been disabled.");
         // let's prevent memory leaks, shall we?
         combatManager = null;
@@ -140,6 +143,7 @@ public class RunicCore extends JavaPlugin {
         bossTagger = null;
         shopManager = null;
         tutorialTask = null;
+        cacheManager = null;
     }
 
     private void loadConfig() {
