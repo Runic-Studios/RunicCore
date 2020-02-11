@@ -19,6 +19,7 @@ import java.util.UUID;
 
 public class OutlawManager implements Listener {
 
+    private static final int BASE_RATING = 1500;
     private RatingCalculator rc = new RatingCalculator();
     private Plugin plugin = RunicCore.getInstance();
     public double getRating(UUID uuid) {
@@ -146,5 +147,9 @@ public class OutlawManager implements Listener {
         victim.sendTitle("", ChatColor.DARK_RED + "You lost "
                 + ChatColor.RED + changeP2
                 + ChatColor.DARK_RED + " rating!", 10, 40, 10);
+    }
+
+    public static int getBaseRating() {
+        return BASE_RATING;
     }
 }
