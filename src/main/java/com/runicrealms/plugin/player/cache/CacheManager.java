@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.cache;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 public class CacheManager {
 
@@ -20,5 +21,15 @@ public class CacheManager {
 
     public HashSet<PlayerCache> getPlayerCaches() {
         return playerCaches;
+    }
+
+    /**
+     * Grab the cache of a particular player
+     */
+    public PlayerCache getPlayerCache(UUID playerID) {
+        for (PlayerCache cache : playerCaches) {
+            if (cache.getPlayerID() == playerID) return cache;
+        }
+        return null;
     }
 }

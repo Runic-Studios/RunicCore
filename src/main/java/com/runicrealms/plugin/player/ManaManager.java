@@ -19,10 +19,15 @@ import java.util.UUID;
 public class ManaManager implements Listener {
 
     private static HashMap<UUID, Integer> currentPlayerManas;
-    private static final int baseMana = 100;
-    private static final int manaPerLevel = 1;
-    private static final int manaRegenAmt = 5;
-    private static final long manaRegenTime = (long) 5; // seconds
+    private static final int BASE_MANA = 100;
+    private static final int MANA_REGEN_AMT = 5;
+    private static final long MANA_REGEN_PERIOD = (long) 5; // seconds
+
+    private static final int ARCHER_MANA_LV = 1;
+    private static final int CLERIC_MANA_LV = 2;
+    private static final int MAGE_MANA_LV = 3;
+    private static final int ROGUE_MANA_LV = 1;
+    private static final int WARRIOR_MANA_LV = 1;
 
     // constructor
     public ManaManager() {
@@ -40,7 +45,7 @@ public class ManaManager implements Listener {
             public void run() {
                 regenMana();
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, manaRegenTime*20);
+        }.runTaskTimer(RunicCore.getInstance(), 0, MANA_REGEN_PERIOD *20);
     }
 
     private void regenMana() {
@@ -49,7 +54,7 @@ public class ManaManager implements Listener {
             int maxMana = RunicCore.getInstance().getConfig().getInt(online.getUniqueId() + ".info.maxMana");
             if (mana >= maxMana) continue;
 
-            ManaRegenEvent event = new ManaRegenEvent(online, manaRegenAmt);
+            ManaRegenEvent event = new ManaRegenEvent(online, MANA_REGEN_AMT);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 if (mana + event.getAmount() >= maxMana) {
@@ -66,13 +71,50 @@ public class ManaManager implements Listener {
         return currentPlayerManas;
     }
     public int getBaseMana() {
-        return baseMana;
+        return BASE_MANA;
     }
-    public int getManaPerLevel() {
-        return manaPerLevel;
-    }
+
     public int getManaRegenAmt() {
-        return manaRegenAmt;
+        return MANA_REGEN_AMT;
+    }
+
+    public static int getArcherManaLv() {
+        return ARCHER_MANA_LV;
+    }
+
+    public static int getClericManaLv() {
+        return CLERIC_MANA_LV;
+    }
+
+    public static int getMageManaLv() {
+        return MAGE_MANA_LV;
+    }
+
+    public static int getRogueManaLv() {
+        return ROGUE_MANA_LV;
+    }
+
+    public static int getWarriorManaLv() {
+        return WARRIOR_MANA_LV;
+    }
+
+    public static int getManaPerLv(Player pl) {
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        if (className == null) return 0;
+
+        switch(className.toLowerCase()) {
+            case "archer":
+                return ARCHER_MANA_LV;
+            case "cleric":
+                return CLERIC_MANA_LV;
+            case "mage":
+                return MAGE_MANA_LV;
+            case "rogue":
+                return ROGUE_MANA_LV;
+            case "warrior":
+                return WARRIOR_MANA_LV;
+        }
+        return 0;
     }
 
     public void addMana(Player pl, int amt, boolean gemBoosted) {

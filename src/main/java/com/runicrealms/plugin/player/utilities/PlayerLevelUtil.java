@@ -1,36 +1,63 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
-import com.runicrealms.plugin.item.LoreGenerator;
+import com.runicrealms.plugin.player.ManaManager;
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 
-import java.util.Objects;
+import java.util.UUID;
 
-// todo: don't write to config every time someone gets exp, just cache it.
 public class PlayerLevelUtil {
 
-    private static final int maxLevel = 60;
+    private static final int MAX_LEVEL = 60;
 
+    private static final int ARCHER_HP_LV = 5;
+    private static final int CLERIC_HP_LV = 7;
+    private static final int MAGE_HP_LV = 4;
+    private static final int ROGUE_HP_LV = 6;
+    private static final int WARRIOR_HP_LV = 10;
+
+    /*
+    Here is our exp curve!
+    At level 50, the player is ~ halfway to max, w/ 764,750
+    At level 60, the player needs 1,262,700 total exp
+     */
+    public static int calculateTotalExp(int currentLv) {
+        int cubed = (int) Math.pow((currentLv+5), 3);
+        return ((23*cubed)/5)-575;
+    }
+
+    /*
+    This method takes in an experience amount and returns the level which corresponds to that amount.
+    i.e., passing 764,700 will return level 50.
+     */
+    public static int calculateExpectedLv(int experience) {
+        return (int) Math.cbrt((((5 * experience)+2875) / 23)) - 5;
+    }
+
+    /**
+     * Called when a player earns experience towards their combat class
+     */
     public static void giveExperience(Player pl, int expGained) {
 
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
-        int currentLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
-        int currentExp = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.exp");
+        UUID playerID = pl.getUniqueId();
+        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(playerID);
+        if (playerCache == null) return;
 
-        if (currentLv >= maxLevel) return;
+        String className = playerCache.getClassName();
+        int currentLv = playerCache.getClassLevel();
+        int currentExp = playerCache.getClassExp();
+
+        if (currentLv >= MAX_LEVEL) return;
 
         currentExp = currentExp + expGained;
-        RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.class.exp", currentExp);
-        RunicCore.getInstance().saveConfig();
-        RunicCore.getInstance().reloadConfig();
-        int newTotalExp = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.exp");
+        playerCache.setClassExp(currentExp);
+
+        int newTotalExp = playerCache.getClassExp();
 
         if (calculateExpectedLv(newTotalExp) != currentLv) {
 
@@ -55,7 +82,7 @@ public class PlayerLevelUtil {
         int totalExpAtLevel = calculateTotalExp(currentLv);
         int totalExpToLevel = calculateTotalExp(currentLv+1);
         double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
-        if (currentLv == maxLevel) {
+        if (currentLv == MAX_LEVEL) {
             pl.setExp(0);
         }
         if (proportion < 0) {
@@ -64,34 +91,17 @@ public class PlayerLevelUtil {
         pl.setExp((float) proportion);
     }
 
-    public static int calculateExpectedLv(int experience) {
-        return (int) Math.cbrt((((5 * experience)+375) / 3)) - 5;
-    }
-
-    // 99750 at 50
-    // ????? at 60
-    // ????? at 60
-    public static int calculateTotalExp(int currentLv) {
-        int cubed = (int) Math.pow((currentLv+5), 3);
-        return ((3*cubed)/5)-75;
-    }
-
+    // todo: add new level info
     private static boolean applyMileStone(Player pl, int oldLevel, String className, int classLevel) {
-        ItemStack artifact = pl.getInventory().getItem(0);
-        ItemStack rune = pl.getInventory().getItem(1);
-        if (artifact == null || rune == null) return false;
-        if (classLevel >= 60) {
+        if (classLevel >= MAX_LEVEL) {
             Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
                     + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + classLevel + " " + className + "!");
             pl.sendMessage("\n");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
             pl.sendMessage("\n");
             ClassUtil.launchFirework(pl, className);
         } else if (classLevel == 50) {
             pl.sendMessage("\n");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Frozen Fortress!");
             pl.sendMessage("\n");
@@ -116,25 +126,26 @@ public class PlayerLevelUtil {
 
     private static void sendLevelMessage(Player pl) {
 
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        if (className == null) return;
 
         // save player hp, restore hp.food
         int hpPerLevel = 0;
         switch (className.toLowerCase()) {
             case "archer":
-                hpPerLevel = 1;
+                hpPerLevel = ARCHER_HP_LV;
                 break;
             case "cleric":
-                hpPerLevel = 2;
+                hpPerLevel = CLERIC_HP_LV;
                 break;
             case "mage":
-                hpPerLevel = 1;
+                hpPerLevel = MAGE_HP_LV;
                 break;
             case "rogue":
-                hpPerLevel = 1;
+                hpPerLevel = ROGUE_HP_LV;
                 break;
             case "warrior":
-                hpPerLevel = 2;
+                hpPerLevel = WARRIOR_HP_LV;
                 break;
         }
 
@@ -142,7 +153,7 @@ public class PlayerLevelUtil {
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLevel() + "✸");
+                        + ChatColor.DARK_AQUA + "+" + ManaManager.getManaPerLv(pl) + "✸");
         pl.sendMessage("\n");
     }
 
@@ -151,13 +162,33 @@ public class PlayerLevelUtil {
                 ChatColor.GREEN + "Level Up!",
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         pl.sendMessage("\n");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your Artifact or Rune to add a spell!");
+//        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
+//        ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
+//        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your Artifact or Rune to add a spell!");
         pl.sendMessage("\n");
     }
 
     public static int getMaxLevel() {
-        return maxLevel;
+        return MAX_LEVEL;
+    }
+
+    public static int getArcherHpLv() {
+        return ARCHER_HP_LV;
+    }
+
+    public static int getClericHpLv() {
+        return CLERIC_HP_LV;
+    }
+
+    public static int getMageHpLv() {
+        return MAGE_HP_LV;
+    }
+
+    public static int getRogueHpLv() {
+        return ROGUE_HP_LV;
+    }
+
+    public static int getWarriorHpLv() {
+        return WARRIOR_HP_LV;
     }
 }
