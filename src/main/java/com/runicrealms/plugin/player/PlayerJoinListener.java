@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -8,31 +9,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.UUID;
-
 public class PlayerJoinListener implements Listener {
 
-    private RunicCore plugin = RunicCore.getInstance();
-
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onJoin(PlayerJoinEvent e) {
+    public void onJoin(CharacterLoadEvent e) {
 
         Player pl = e.getPlayer();
 
         // set join message
-        e.setJoinMessage("");
+        //e.setJoinMessage("");
 
         new BukkitRunnable() {
             @Override
             public void run() {
 
                 // set their hp to stored value from last logout
-                int storedHealth = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.currentHP");
+                int storedHealth = e.getPlayerCache().getCurrentHealth();
 
                 // new players or corrupted data
                 if (storedHealth == 0) {
@@ -46,27 +42,9 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onFirstJoin(PlayerJoinEvent event) {
+    public void onFirstJoin(CharacterLoadEvent event) {
 
         Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-
-        // set the player's class to "None" if they don't have one setup (do this every login in case of corruption)
-        if (!plugin.getConfig().isSet(uuid + ".info.class.name")) {
-            setConfig(uuid, "class.name");
-        }
-
-        if (!plugin.getConfig().isSet(uuid + ".info.guild")) {
-            setConfig(uuid, "guild");
-        }
-
-        if (!plugin.getConfig().isSet(uuid + ".info.prof.name")) {
-            setConfig(uuid, "prof.name");
-        }
-
-        if (!plugin.getConfig().isSet(uuid + ".info.spellpoints")) {
-            setConfig(uuid, "spellpoints", 0);
-        }
 
         // setup for new players
         if (!player.hasPlayedBefore()) {
@@ -93,17 +71,5 @@ public class PlayerJoinListener implements Listener {
                 e.allow();
             }
         }
-    }
-
-    private void setConfig(UUID uuid, String setting) {
-        RunicCore.getInstance().getConfig().set(uuid + ".info." + setting, "None");
-        RunicCore.getInstance().saveConfig();
-        RunicCore.getInstance().reloadConfig();
-    }
-
-    private void setConfig(UUID uuid, String setting, int value) {
-        RunicCore.getInstance().getConfig().set(uuid + ".info." + setting, value);
-        RunicCore.getInstance().saveConfig();
-        RunicCore.getInstance().reloadConfig();
     }
 }

@@ -15,8 +15,12 @@ public class CacheManager {
     /**
      * Takes information stored in a player cache and writes it to config.
      */
-    private void saveCache() {
+    private void saveCaches() {
 
+    }
+
+    public void savePlayerCache(PlayerCache cache) {
+        // write to RunicCharacters
     }
 
     public HashSet<PlayerCache> getPlayerCaches() {

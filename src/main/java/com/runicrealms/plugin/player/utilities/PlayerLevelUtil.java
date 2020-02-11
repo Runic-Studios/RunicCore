@@ -71,11 +71,8 @@ public class PlayerLevelUtil {
             }
 
             pl.setLevel(calculateExpectedLv(newTotalExp));
-            RunicCore.getInstance().getConfig().set(pl.getUniqueId() + ".info.class.level", calculateExpectedLv(newTotalExp));
-            RunicCore.getInstance().saveConfig();
-            RunicCore.getInstance().reloadConfig();
-            currentLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
-
+            RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setClassLevel(calculateExpectedLv(newTotalExp));
+            currentLv = RunicCore.getCacheManager().getPlayerCache(playerID).getClassLevel();
             RunicCore.getScoreboardHandler().updateSideInfo(pl);
         }
 

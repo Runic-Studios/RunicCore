@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,19 +10,20 @@ import com.runicrealms.plugin.RunicCore;
 public class PlayerQuitListener implements Listener {
 
     @EventHandler
-    public void onQuit (PlayerQuitEvent event) {
+    public void onQuit (PlayerQuitEvent e) {
 
-        Player player = event.getPlayer();
+        Player pl = e.getPlayer();
 
         // remove leave message
-        event.setQuitMessage("");
+        e.setQuitMessage("");
 
         // make sure the player's walk speed is reset
-        player.setWalkSpeed(0.2f);
+        pl.setWalkSpeed(0.2f);
+
+        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
 
         // save player hp
-        RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.currentHP", (int) player.getHealth());
-        RunicCore.getInstance().saveConfig();
-        RunicCore.getInstance().reloadConfig();
+        playerCache.setCurrentHealth((int) pl.getHealth());
+        RunicCore.getCacheManager().savePlayerCache(playerCache);
     }
 }
