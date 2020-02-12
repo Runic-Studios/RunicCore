@@ -159,7 +159,7 @@ public class PlayerCache {
         this.maxMana = maxMana;
     }
 
-    public boolean isOutlaw() {
+    public boolean getIsOutlaw() {
         return isOutlaw;
     }
 
