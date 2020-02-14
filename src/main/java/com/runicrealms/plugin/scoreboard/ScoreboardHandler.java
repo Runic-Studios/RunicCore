@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.scoreboard;
 
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.guild.Guild;
 import org.bukkit.Bukkit;
@@ -11,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import com.runicrealms.plugin.RunicCore;
@@ -45,7 +45,7 @@ public class ScoreboardHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent e) {
+    public void onPlayerJoin(CharacterLoadEvent e) {
 
         Player pl = e.getPlayer();
 
@@ -208,13 +208,13 @@ public class ScoreboardHandler implements Listener {
 
     private String manaAsString(Player pl) {
         int mana = RunicCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
-        int maxMana = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
+        int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
         return ChatColor.DARK_AQUA + "✸ " + mana + " §7/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
     private String playerClass(Player pl) {
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
-        int currentLevel = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        int currentLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
         String display;
         if (className == null) {
             display = ChatColor.GRAY + "Class: " + ChatColor.GREEN + "None";
@@ -228,8 +228,8 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String playerProf(Player pl) {
-        String profName = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.prof.name");
-        int currentLevel = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
+        String profName = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfName();
+        int currentLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfLevel();
         String display;
         if (profName == null) {
             display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None";

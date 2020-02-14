@@ -5,7 +5,9 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.mysterybox.MysteryLoot;
 import com.runicrealms.plugin.mysterybox.animation.Animation;
 import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
+import com.runicrealms.plugin.player.combat.PlayerLevelListener;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -20,7 +22,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,7 +37,7 @@ public class PlayerMenuListener implements Listener {
     private static final int PLAYER_CRAFT_INV_SIZE = 5;
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+    public void onJoin(CharacterLoadEvent e) {
 
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         Player pl = e.getPlayer();

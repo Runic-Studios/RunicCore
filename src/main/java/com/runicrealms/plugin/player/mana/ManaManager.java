@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player;
+package com.runicrealms.plugin.player.mana;
 
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.item.GearScanner;
@@ -32,10 +32,6 @@ public class ManaManager implements Listener {
     // constructor
     public ManaManager() {
         currentPlayerManas = new HashMap<>();
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            int maxMana = RunicCore.getInstance().getConfig().getInt(online.getUniqueId() + ".info.maxMana");
-            currentPlayerManas.put(online.getUniqueId(), maxMana);
-        }
         this.startRegenTask();
     }
 
@@ -49,9 +45,21 @@ public class ManaManager implements Listener {
     }
 
     private void regenMana() {
+
         for (Player online : Bukkit.getOnlinePlayers()) {
-            int mana = currentPlayerManas.get(online.getUniqueId());
-            int maxMana = RunicCore.getInstance().getConfig().getInt(online.getUniqueId() + ".info.maxMana");
+
+            // ensure they have loaded a character
+            if (!RunicCore.getCacheManager().hasCacheLoaded(online.getUniqueId())) continue;
+
+            int mana;
+
+            if (currentPlayerManas.containsKey(online.getUniqueId())) {
+                mana = currentPlayerManas.get(online.getUniqueId());
+            } else {
+                mana = getBaseMana() + getManaPerLv(online) + GearScanner.getManaBoost(online);
+            }
+
+            int maxMana = RunicCore.getCacheManager().getPlayerCache(online.getUniqueId()).getMaxMana();
             if (mana >= maxMana) continue;
 
             ManaRegenEvent event = new ManaRegenEvent(online, MANA_REGEN_AMT);
@@ -125,7 +133,7 @@ public class ManaManager implements Listener {
         }
 
         int mana = currentPlayerManas.get(pl.getUniqueId());
-        int maxMana = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
+        int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
 
         if (mana < maxMana) {
 

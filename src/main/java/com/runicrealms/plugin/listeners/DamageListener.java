@@ -30,7 +30,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 
 import java.util.Objects;
 import java.util.Random;
@@ -46,9 +46,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @SuppressWarnings("deprecation")
 public class DamageListener implements Listener {
-
-    private Plugin plugin = RunicCore.getInstance();
-    private OutlawManager outlawEvent = new OutlawManager();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent e) {
@@ -154,7 +151,7 @@ public class DamageListener implements Listener {
 
     private boolean matchClass(Player pl) {
         ItemStack mainHand = pl.getInventory().getItemInMainHand();
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:
@@ -278,7 +275,7 @@ public class DamageListener implements Listener {
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
         // set their current mana to max
-        int maxMana = RunicCore.getInstance().getConfig().getInt(victim.getUniqueId() + ".info.maxMana");
+        int maxMana = RunicCore.getCacheManager().getPlayerCache(victim.getUniqueId()).getMaxMana();
         RunicCore.getManaManager().getCurrentManaList().put(victim.getUniqueId(), maxMana);
         RunicCore.getScoreboardHandler().updateSideInfo(victim);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
@@ -321,27 +318,25 @@ public class DamageListener implements Listener {
 
         // apply outlaw mechanics if the player is an outlaw AND the killer is an outlaw
         if (damager instanceof Player && OutlawManager.isOutlaw((Player) damager) && OutlawManager.isOutlaw(victim)) {
-            outlawEvent.onKill((Player) damager, victim);
+            RunicCore.getOutlawManager().onKill((Player) damager, victim);
         }
     }
 
     private void broadcastSlainDeathMessage(Entity damager, Player victim) {
 
-        //String nameVic = plugin.getConfig().get(victim.getUniqueId() + ".info.name").toString();
         String nameVic = victim.getName();
 
         if (damager instanceof Player) {
 
-            //String nameDam = plugin.getConfig().get(damager.getUniqueId() + ".info.name").toString();
             String nameDam = damager.getName();
             UUID p1 = damager.getUniqueId();
             UUID p2 = victim.getUniqueId();
-            double ratingP1 = outlawEvent.getRating(p1);
-            double ratingP2 = outlawEvent.getRating(p2);
+            double ratingP1 = RunicCore.getCacheManager().getPlayerCache(p1).getRating();
+            double ratingP2 = RunicCore.getCacheManager().getPlayerCache(p2).getRating();
 
             // if both players are outlaws, amend the death message to display their rating
-            if (plugin.getConfig().getBoolean(p1 + ".outlaw.enabled", true)
-                    && plugin.getConfig().getBoolean(p2 + ".outlaw.enabled", true)) {
+            if (RunicCore.getCacheManager().getPlayerCache(p1).getIsOutlaw()
+                    && RunicCore.getCacheManager().getPlayerCache(p2).getIsOutlaw()) {
                 nameDam = ChatColor.RED + "[" + (int) ratingP1 + "] " + ChatColor.WHITE + nameDam;
                 nameVic = ChatColor.RED + "[" + (int) ratingP2 + "] " + ChatColor.WHITE + nameVic;
                 Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
@@ -368,7 +363,7 @@ public class DamageListener implements Listener {
         Random rand = new Random();
 
         ItemStack[] inv = pl.getInventory().getContents();
-        int currentLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        int currentLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
         //ArrayList<ItemStack> armor = GearScanner.armor(pl);
 
         int numDroppedItems = 0;

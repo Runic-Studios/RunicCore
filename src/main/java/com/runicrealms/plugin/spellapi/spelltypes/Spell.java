@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;

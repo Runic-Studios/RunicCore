@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
@@ -19,7 +18,6 @@ import java.util.List;
 public class Disband implements SubCommand {
 	
 	private PartySC party;
-	private Plugin plugin = RunicCore.getInstance();
 	
 	public Disband(PartySC party) {
 		this.party = party;
@@ -54,7 +52,7 @@ public class Disband implements SubCommand {
             return;
         }
 
-        String storedTargetName = plugin.getConfig().get(target.getUniqueId() + ".info.name").toString();
+        String storedTargetName = target.getName();
 
 		if(!args[1].equalsIgnoreCase("admin"))
 			this.onUserCommand(sender, args);
@@ -114,7 +112,6 @@ public class Disband implements SubCommand {
 	
 	@Override
 	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-
-        return TabCompleteUtil.getPlayers(commandSender, strings, plugin);
+        return TabCompleteUtil.getPlayers(commandSender, strings, RunicCore.getInstance());
 	}
 }

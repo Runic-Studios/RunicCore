@@ -25,16 +25,16 @@ public class CheckExpCMD extends SuperCommand {
 
             Player pl = (Player) sender;
 
-            int classLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
-            int classExp = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.exp");
+            int classLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+            int classExp = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassExp();
             int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
             int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv+1);
             double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
             NumberFormat toDecimal = new DecimalFormat("#0.00");
             String classProgressFormatted = toDecimal.format(proportion);
 
-            int profLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.level");
-            int profExp = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.prof.exp");
+            int profLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfLevel();
+            int profExp = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfExp();
             int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
             int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv+1);
             double progress = (double) (profExp-profExpAtLevel) / (profTotalExpToLevel-profExpAtLevel);

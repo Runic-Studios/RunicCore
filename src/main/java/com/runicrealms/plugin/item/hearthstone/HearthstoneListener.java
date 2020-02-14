@@ -2,6 +2,7 @@ package com.runicrealms.plugin.item.hearthstone;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.LoreGenerator;
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +37,7 @@ public class HearthstoneListener implements Listener {
      * Give new players the hearthstone
      */
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+    public void onJoin(CharacterLoadEvent e) {
         Player pl = e.getPlayer();
         if (pl.getInventory().getItem(8) == null
                 || (pl.getInventory().getItem(8) != null

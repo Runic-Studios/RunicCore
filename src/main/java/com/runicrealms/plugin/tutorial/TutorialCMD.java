@@ -60,7 +60,7 @@ public class TutorialCMD implements SubCommand {
         if (pl == null) return;
 
         // get player class
-        String classStr = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String classStr = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (classStr == null) return;
 
         Location anvilLoc = new Location(Bukkit.getWorld("Alterra"), -2329.5, 38, 1770.5);

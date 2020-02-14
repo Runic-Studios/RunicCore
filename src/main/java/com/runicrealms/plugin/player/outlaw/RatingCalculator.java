@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.outlaw;
+package com.runicrealms.plugin.player.outlaw;
 
 public class RatingCalculator {
 

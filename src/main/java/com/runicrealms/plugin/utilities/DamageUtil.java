@@ -2,9 +2,7 @@ package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.outlaw.OutlawManager;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;

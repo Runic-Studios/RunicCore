@@ -2,7 +2,7 @@ package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
-import com.runicrealms.plugin.player.ManaManager;
+import com.runicrealms.plugin.player.mana.ManaManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.player.combat.CombatManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

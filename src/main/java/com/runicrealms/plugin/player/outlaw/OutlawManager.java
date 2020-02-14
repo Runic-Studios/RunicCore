@@ -1,7 +1,8 @@
-package com.runicrealms.plugin.outlaw;
+package com.runicrealms.plugin.player.outlaw;
 
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -9,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,35 +22,17 @@ public class OutlawManager implements Listener {
     private static final int BASE_RATING = 1500;
     private RatingCalculator rc = new RatingCalculator();
     private Plugin plugin = RunicCore.getInstance();
-    public double getRating(UUID uuid) {
-        return plugin.getConfig().getInt(uuid + ".info.outlaw.rating");
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onJoin(PlayerJoinEvent e) {
+    public void onCharacterLoad(CharacterLoadEvent e) {
 
         Player pl = e.getPlayer();
-        UUID uuid = pl.getUniqueId();
-
-        // if the player data cannot be found, use default settings (also sets up new players)
-        if (!plugin.getConfig().isSet(uuid + ".info.outlaw.rating")){
-            plugin.getConfig().set(uuid + ".info.outlaw.rating", 1500);
-            plugin.saveConfig();
-            plugin.reloadConfig();
-        }
-
-        // by default, players are NOT outlaws
-        if (!plugin.getConfig().isSet(uuid + ".info.outlaw.enabled")) {
-            plugin.getConfig().set(uuid + ".info.outlaw.enabled", false);
-            plugin.saveConfig();
-            plugin.reloadConfig();
-        }
 
         // sets players username red for OTHER players if they are outlaw, delayed by 2s to ensure scoreboard team exists
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (RunicCore.getInstance().getConfig().getBoolean(pl.getUniqueId() + ".info.outlaw.enabled")) {
+                if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getIsOutlaw()) {
                     for (Player on : Bukkit.getOnlinePlayers()) {
                         try {
                         ScoreboardHandler.updateNamesFor(on, pl.getScoreboard().getTeam("outlaw"),
@@ -72,7 +54,7 @@ public class OutlawManager implements Listener {
 
                 // updates OTHER players names for joined user
                 for (Player on : Bukkit.getOnlinePlayers()) {
-                    if (RunicCore.getInstance().getConfig().getBoolean(on.getUniqueId() + ".info.outlaw.enabled")) {
+                    if (RunicCore.getCacheManager().getPlayerCache(on.getUniqueId()).getIsOutlaw()) {
                         try {
                         ScoreboardHandler.updateNamesFor(pl, pl.getScoreboard().getTeam("outlaw"),
                                 Collections.singletonList(on.getName()));
@@ -86,7 +68,7 @@ public class OutlawManager implements Listener {
     }
 
     public static boolean isOutlaw(Player pl) {
-        return RunicCore.getInstance().getConfig().getBoolean(pl.getUniqueId() + ".info.outlaw.enabled");
+        return RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getIsOutlaw();
     }
 
     // uses the rating calculator to apply ratings between two outlaws
@@ -104,19 +86,19 @@ public class OutlawManager implements Listener {
         // otherwise, the r1 is simply the player's current rating
         if (p1Party != null) {
             for (UUID partyMember : p1Party.getMembers()) {
-                r1 += RunicCore.getInstance().getConfig().getInt(partyMember + ".info.outlaw.rating");
+                r1 += RunicCore.getCacheManager().getPlayerCache(partyMember).getRating();
             }
             r1 = r1 / (p1Party.getPartySize());
         } else {
-            r1 = RunicCore.getInstance().getConfig().getInt(p1 + ".info.outlaw.rating");
+            r1 = RunicCore.getCacheManager().getPlayerCache(p1).getRating();
         }
         if (p2Party != null) {
             for (UUID partyMember : p2Party.getMembers()) {
-                r2 += RunicCore.getInstance().getConfig().getInt(partyMember + ".info.outlaw.rating");
+                r2 += RunicCore.getCacheManager().getPlayerCache(partyMember).getRating();
             }
             r2 = r2 / (p2Party.getPartySize());
         } else {
-            r2 = RunicCore.getInstance().getConfig().getInt(p2 + ".info.outlaw.rating");
+            r2 = RunicCore.getCacheManager().getPlayerCache(p2).getRating();
         }
 
         // calculate new score for a win "+"
@@ -125,11 +107,9 @@ public class OutlawManager implements Listener {
         // calculate new score for a loss "-"
         int newRatingP2 = rc.calculateRating(r2, r1, "-", rc.determineK(r2));
 
-        // update config values
-        RunicCore.getInstance().getConfig().set(p1 + ".info.outlaw.rating", newRatingP1);
-        RunicCore.getInstance().getConfig().set(p2 + ".info.outlaw.rating", newRatingP2);
-        RunicCore.getInstance().saveConfig();
-        RunicCore.getInstance().reloadConfig();
+        // update rating values
+        RunicCore.getCacheManager().getPlayerCache(p1).setRating(newRatingP1);
+        RunicCore.getCacheManager().getPlayerCache(p2).setRating(newRatingP2);
 
         // send players messages and effects
         int changeP1 = newRatingP1 - r1;

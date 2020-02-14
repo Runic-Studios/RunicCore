@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player;
+package com.runicrealms.plugin.player.combat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

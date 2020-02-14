@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -67,7 +67,7 @@ public class StaffListener implements Listener {
         if (pl.isSneaking()) return;
 
         // check for mage
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
         if (!className.equals("Mage")) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);

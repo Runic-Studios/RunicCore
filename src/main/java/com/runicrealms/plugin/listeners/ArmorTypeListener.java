@@ -27,7 +27,7 @@ public class ArmorTypeListener implements Listener {
 
         ItemStack equippedItem = e.getNewArmorPiece();
         Player pl = e.getPlayer();
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
 
         ItemTypeEnum armorType = ItemTypeEnum.matchType(equippedItem);
 

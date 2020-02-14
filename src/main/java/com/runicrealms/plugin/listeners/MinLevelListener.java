@@ -22,7 +22,7 @@ public class MinLevelListener implements Listener {
 
         Player pl = e.getPlayer();
         ItemStack equippedItem = e.getNewArmorPiece();
-        int plLv = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.class.level");
+        int plLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
         int reqLv = (int) AttributeUtil.getCustomDouble(equippedItem, "required.level");
 
         if (plLv < reqLv) {

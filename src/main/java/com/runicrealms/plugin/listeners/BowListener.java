@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.enums.WeaponEnum;
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -66,7 +66,7 @@ public class BowListener implements Listener {
         // don't fire arrow if they're sneaking, since they're casting a spell
         if (pl.isSneaking()) return;
 
-        String className = RunicCore.getInstance().getConfig().getString(pl.getUniqueId() + ".info.class.name");
+        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
         if (!className.equals("Archer")) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);

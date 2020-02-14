@@ -5,7 +5,6 @@ import com.runicrealms.plugin.item.*;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.commands.*;
-import com.runicrealms.plugin.command.subcommands.Spellpoint;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
@@ -14,7 +13,7 @@ import com.runicrealms.plugin.command.supercommands.*;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
-import com.runicrealms.plugin.healthbars.PlayerBossBars;
+//import com.runicrealms.plugin.healthbars.PlayerBossBars;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.scrapper.ScrapperListener;
@@ -23,12 +22,17 @@ import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.mounts.MountListener;
 import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.combat.CombatListener;
+import com.runicrealms.plugin.player.combat.PlayerLevelListener;
+import com.runicrealms.plugin.player.mana.ManaListener;
+import com.runicrealms.plugin.player.mana.ManaManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.parties.PartyDamageListener;
 import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.cache.CacheManager;
+import com.runicrealms.plugin.player.cache.Debug;
 import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
@@ -41,8 +45,8 @@ import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
-import com.runicrealms.plugin.player.ExpListener;
-import com.runicrealms.plugin.player.CombatManager;
+import com.runicrealms.plugin.player.combat.ExpListener;
+import com.runicrealms.plugin.player.combat.CombatManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -65,6 +69,7 @@ public class RunicCore extends JavaPlugin {
     private static ShopManager shopManager;
     private static TutorialTask tutorialTask;
     private static CacheManager cacheManager;
+    private static OutlawManager outlawManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -80,6 +85,7 @@ public class RunicCore extends JavaPlugin {
     public static ShopManager getShopManager() { return shopManager; }
     public static TutorialTask getTutorialTask() { return tutorialTask; }
     public static CacheManager getCacheManager() { return cacheManager; }
+    public static OutlawManager getOutlawManager() { return outlawManager; }
 
     public void onEnable() {
 
@@ -98,6 +104,7 @@ public class RunicCore extends JavaPlugin {
         shopManager = new ShopManager();
         tutorialTask = new TutorialTask();
         cacheManager = new CacheManager();
+        outlawManager = new OutlawManager();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
@@ -144,6 +151,7 @@ public class RunicCore extends JavaPlugin {
         shopManager = null;
         tutorialTask = null;
         cacheManager = null;
+        outlawManager = null;
     }
 
     private void loadConfig() {
@@ -165,11 +173,10 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDisconnect(), this);
         pm.registerEvents(new PartyDamageListener(), this);
-        pm.registerEvents(new OutlawManager(), this);
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SpellUseEvent(), this);
         pm.registerEvents(new WeaponCDListener(), this);
-        pm.registerEvents(new PlayerBossBars(), this);
+        //pm.registerEvents(new PlayerBossBars(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
         pm.registerEvents(new ManaListener(), this);
@@ -194,6 +201,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new ScrapperListener(), this);
+        pm.registerEvents(new Debug(), this);
     }
     
     private void registerCommands() {
@@ -229,11 +237,6 @@ public class RunicCore extends JavaPlugin {
         NPCBuilderSC builderSC = new NPCBuilderSC();
         getCommand("npcbuilder").setExecutor(builderSC);
         builderSC.addCommand(Arrays.asList("build"), new Build(builderSC));
-
-        // spellpoint
-        SpellpointSC spellpointSC = new SpellpointSC();
-        getCommand("spellpoint").setExecutor(spellpointSC);
-        spellpointSC.addCommand(Arrays.asList("give"), new Spellpoint(spellpointSC));
 
         // travel
         TravelSC travelSC = new TravelSC();

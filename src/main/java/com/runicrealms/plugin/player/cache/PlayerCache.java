@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 
 import java.util.UUID;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class PlayerCache {
 
     private UUID playerID;
-    private UUID guildID;
+    private String guild;
     private String className;
     private String profName;
 
@@ -33,7 +33,7 @@ public class PlayerCache {
      */
     public PlayerCache(UUID playerID, String className) {
         this.playerID = playerID;
-        this.guildID = null;
+        this.guild = "None";
         this.className = className;
         this.profName = "None";
         this.classLevel = 0;
@@ -49,7 +49,7 @@ public class PlayerCache {
     /**
      * For players who already have a profile.
      * @param playerID uuid of player
-     * @param guildID uuid of player's guild
+     * @param guild uuid of player's guild
      * @param className name of player's class
      * @param profName name of player's profession
      * @param classLevel player's class level
@@ -61,12 +61,12 @@ public class PlayerCache {
      * @param isOutlaw player's outlaw status
      * @param rating player's outlaw rating
      */
-    public PlayerCache(UUID playerID, UUID guildID, String className, String profName,
+    public PlayerCache(UUID playerID, String guild, String className, String profName,
                        int classLevel, int classExp, int profLevel, int profExp,
                        int currentHealth, int maxMana,
                        boolean isOutlaw, int rating) {
         this.playerID = playerID;
-        this.guildID = guildID;
+        this.guild = guild;
         this.className = className;
         this.profName = profName;
         this.classLevel = classLevel;
@@ -87,12 +87,12 @@ public class PlayerCache {
         this.playerID = playerID;
     }
 
-    public UUID getGuildID() {
-        return guildID;
+    public String getGuild() {
+        return guild;
     }
 
-    public void setGuildID(UUID guildID) {
-        this.guildID = guildID;
+    public void setGuild(String guild) {
+        this.guild = guild;
     }
 
     public String getClassName() {

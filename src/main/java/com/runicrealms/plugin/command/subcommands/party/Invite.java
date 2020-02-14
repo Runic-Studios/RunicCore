@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.command.subcommands.party;
 
 import com.runicrealms.plugin.command.supercommands.PartySC;
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

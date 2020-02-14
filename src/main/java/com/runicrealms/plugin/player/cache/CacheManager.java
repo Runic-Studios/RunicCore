@@ -2,14 +2,16 @@ package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.config.UserConfig;
-import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.UUID;
 
-public class CacheManager {
+public class CacheManager implements Listener {
 
     private HashSet<PlayerCache> playerCaches;
 
@@ -18,10 +20,17 @@ public class CacheManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                Bukkit.broadcastMessage("SAVING PLAYER CACHESS");
-                saveCaches();
+                //Bukkit.broadcastMessage("SAVING PLAYER CACHESS");
+                //saveCaches();
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 200L, 180*20); // 10s delay, 3 mins
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 200L, 10*20); // 10s delay, 3 mins
+    }
+
+    @EventHandler
+    public void onCharacterLoad(CharacterLoadEvent e) {
+        // method to set all player's info from the player cache object.
+        // remove the methods that do this in mana manager, outlaw manager, etc.
+        // also, switch guilds and professions order in PlayerCache to match scoreboard.
     }
 
     /**
@@ -38,7 +47,7 @@ public class CacheManager {
 
     private void saveFields(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
         // guild
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".guild.id", playerCache.getGuildID());
+        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".guild.id", playerCache.getGuild());
         // class
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.name", playerCache.getClassName());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.level", playerCache.getClassLevel());
@@ -78,5 +87,15 @@ public class CacheManager {
             if (cache.getPlayerID() == playerID) return cache;
         }
         return null;
+    }
+
+    /**
+     * Check if a player has loaded a character
+     */
+    public boolean hasCacheLoaded(UUID playerID) {
+        for (PlayerCache cache : playerCaches) {
+            if (cache.getPlayerID() == playerID) return true;
+        }
+        return false;
     }
 }

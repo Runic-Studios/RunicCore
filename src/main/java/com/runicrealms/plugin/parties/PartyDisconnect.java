@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.parties;
 
-import com.runicrealms.plugin.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

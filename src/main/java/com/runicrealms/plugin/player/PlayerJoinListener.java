@@ -10,18 +10,25 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerJoinListener implements Listener {
 
+    // todo: ?
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+
+        // set join message
+        //e.setJoinMessage("");
+        // reset their health bar display
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(CharacterLoadEvent e) {
 
         Player pl = e.getPlayer();
-
-        // set join message
-        //e.setJoinMessage("");
 
         new BukkitRunnable() {
             @Override

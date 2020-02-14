@@ -17,7 +17,7 @@ public class Mana extends SuperCommand {
     public void executeBasicCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player pl = (Player) sender;
-            int maxMana = RunicCore.getInstance().getConfig().getInt(pl.getUniqueId() + ".info.maxMana");
+            int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
             RunicCore.getManaManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
             RunicCore.getScoreboardHandler().updateSideInfo(pl);
             pl.sendMessage(ChatColor.AQUA + "You've restored your mana!");
