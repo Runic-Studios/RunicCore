@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.player.commands;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.command.subcommands.SubCommand;
+import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.utilities.ChatUtils;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -10,9 +12,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.command.subcommands.SubCommand;
-import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class SetProfLevelCMD implements SubCommand {
             RunicCore.getInstance().saveConfig();
             RunicCore.getInstance().reloadConfig();
 
-            String profName = RunicCore.getInstance().getConfig().getString(sender.getUniqueId() + ".info.prof.name");
+            String profName = RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).getProfName();
             if (Integer.parseInt(args[1]) == 30) {
 
                 sender.sendMessage("\n");
