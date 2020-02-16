@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
@@ -9,20 +10,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
 
-    // todo: ?
-    @EventHandler
+    /**
+     * Reset the player's displayed values when they join the server, before selecting a character
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
-
-        // set join message
-        //e.setJoinMessage("");
-        // reset their health bar display
+        e.setJoinMessage("");
+        Player pl = e.getPlayer();
+        pl.setHealth(20);
+        pl.setMaxHealth(20);
+        pl.setHealthScale(20);
+        pl.setLevel(0);
+        pl.setExp(0);
+        pl.setFoodLevel(20);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -72,7 +79,6 @@ public class PlayerJoinListener implements Listener {
      */
     @EventHandler
     public void onJoinFullServer(PlayerLoginEvent e) {
-
         if (e.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
             if (e.getPlayer().hasPermission("core.full.join")) {
                 e.allow();

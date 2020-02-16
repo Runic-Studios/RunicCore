@@ -2,7 +2,6 @@ package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
-import com.runicrealms.plugin.player.mana.ManaManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;
@@ -150,7 +149,7 @@ public class PlayerLevelUtil {
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + ManaManager.getManaPerLv(pl) + "✸");
+                        + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLv(pl) + "✸");
         pl.sendMessage("\n");
     }
 

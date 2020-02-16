@@ -42,14 +42,12 @@ public class SetProfLevelCMD implements SubCommand {
         if (args.length == 1) {
             sender.sendMessage(ChatColor.RED + "Correct usage: /set proflevel [level] or /set proflevel [player] [level]");
         } else if (args.length == 2) {
-            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.prof.level", Integer.parseInt(args[1]));
+            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfLevel(Integer.parseInt(args[1]));
             // ----------------------
             // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
             int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
             // ----------------------
-            RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.prof.exp", expAtLevel);
-            RunicCore.getInstance().saveConfig();
-            RunicCore.getInstance().reloadConfig();
+            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfExp(expAtLevel);
 
             String profName = RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).getProfName();
             if (Integer.parseInt(args[1]) == 30) {
@@ -77,14 +75,12 @@ public class SetProfLevelCMD implements SubCommand {
         } else if (args.length == 3) {
             Player player = Bukkit.getPlayer(args[1]);
             if (player == null) return;
-            RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.level", Integer.parseInt(args[1]));
+            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfLevel(Integer.parseInt(args[1]));
             // ----------------------
             // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
             int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
             // ----------------------
-            RunicCore.getInstance().getConfig().set(player.getUniqueId() + ".info.prof.exp", expAtLevel);
-            RunicCore.getInstance().saveConfig();
-            RunicCore.getInstance().reloadConfig();
+            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfExp(expAtLevel);
             RunicCore.getScoreboardHandler().updatePlayerInfo(player);
             RunicCore.getScoreboardHandler().updateSideInfo(player);
         }

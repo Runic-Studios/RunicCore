@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.player.mana;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
@@ -13,8 +15,6 @@ import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 
 import java.util.ArrayList;
 
@@ -33,7 +33,7 @@ public class ManaListener implements Listener {
         // set their mana to their maxMana on login
         int maxMana = playerCache.getMaxMana();
         if (maxMana == 0) {
-            maxMana = RunicCore.getManaManager().getBaseMana()+(ManaManager.getManaPerLv(pl)*pl.getLevel());
+            maxMana = RunicCore.getManaManager().getBaseMana()+(RunicCore.getManaManager().getManaPerLv(pl)*pl.getLevel());
             RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setMaxMana(maxMana);
         }
         // store player's current mana
@@ -111,7 +111,7 @@ public class ManaListener implements Listener {
         }
 
         // update stored mana in config, update scoreboard
-        int newMaxMana = RunicCore.getManaManager().getBaseMana() + (ManaManager.getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
+        int newMaxMana = RunicCore.getManaManager().getBaseMana() + (RunicCore.getManaManager().getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
         RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setMaxMana(newMaxMana);
 
         int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();

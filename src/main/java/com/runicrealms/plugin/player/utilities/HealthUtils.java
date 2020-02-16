@@ -42,19 +42,19 @@ public class HealthUtils {
         int hpPerLevel = 0;
         switch (className.toLowerCase()) {
             case "archer":
-                hpPerLevel = 1;
+                hpPerLevel = PlayerLevelUtil.getArcherHpLv();
                 break;
             case "cleric":
-                hpPerLevel = 2;
+                hpPerLevel = PlayerLevelUtil.getClericHpLv();
                 break;
             case "mage":
-                hpPerLevel = 1;
+                hpPerLevel = PlayerLevelUtil.getMageHpLv();
                 break;
             case "rogue":
-                hpPerLevel = 1;
+                hpPerLevel = PlayerLevelUtil.getRogueHpLv();
                 break;
             case "warrior":
-                hpPerLevel = 2;
+                hpPerLevel = PlayerLevelUtil.getWarriorHpLv();
                 break;
         }
 

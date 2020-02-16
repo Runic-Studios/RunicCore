@@ -1,12 +1,12 @@
 package com.runicrealms.plugin.player.mana;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -16,18 +16,19 @@ import java.util.UUID;
  * and creates a HashMap to store all current player manas.
  * @author Skyfallin_
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class ManaManager implements Listener {
 
-    private static HashMap<UUID, Integer> currentPlayerManas;
-    private static final int BASE_MANA = 100;
-    private static final int MANA_REGEN_AMT = 5;
-    private static final long MANA_REGEN_PERIOD = (long) 5; // seconds
+    private HashMap<UUID, Integer> currentPlayerManas;
+    private final int BASE_MANA = 100;
+    private final int MANA_REGEN_AMT = 5;
+    private final long MANA_REGEN_PERIOD = (long) 5; // seconds
 
-    private static final int ARCHER_MANA_LV = 1;
-    private static final int CLERIC_MANA_LV = 2;
-    private static final int MAGE_MANA_LV = 3;
-    private static final int ROGUE_MANA_LV = 1;
-    private static final int WARRIOR_MANA_LV = 1;
+    private final int ARCHER_MANA_LV = 1;
+    private final int CLERIC_MANA_LV = 2;
+    private final int MAGE_MANA_LV = 3;
+    private final int ROGUE_MANA_LV = 1;
+    private final int WARRIOR_MANA_LV = 1;
 
     // constructor
     public ManaManager() {
@@ -86,27 +87,27 @@ public class ManaManager implements Listener {
         return MANA_REGEN_AMT;
     }
 
-    public static int getArcherManaLv() {
+    public int getArcherManaLv() {
         return ARCHER_MANA_LV;
     }
 
-    public static int getClericManaLv() {
+    public int getClericManaLv() {
         return CLERIC_MANA_LV;
     }
 
-    public static int getMageManaLv() {
+    public int getMageManaLv() {
         return MAGE_MANA_LV;
     }
 
-    public static int getRogueManaLv() {
+    public int getRogueManaLv() {
         return ROGUE_MANA_LV;
     }
 
-    public static int getWarriorManaLv() {
+    public int getWarriorManaLv() {
         return WARRIOR_MANA_LV;
     }
 
-    public static int getManaPerLv(Player pl) {
+    public int getManaPerLv(Player pl) {
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return 0;
 

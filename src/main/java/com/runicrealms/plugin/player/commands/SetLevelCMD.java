@@ -1,5 +1,8 @@
 package com.runicrealms.plugin.player.commands;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.command.subcommands.SubCommand;
+import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,9 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.command.subcommands.SubCommand;
-import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -51,15 +51,14 @@ public class SetLevelCMD implements SubCommand {
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         sender.setLevel(0);
-        RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.exp", 0);
+        RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setClassExp(0);
         PlayerLevelUtil.giveExperience(sender, expAtLevel);
-        RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.level", expectedLv);
-        // ----------------------
-        // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
-        // ----------------------
-        RunicCore.getInstance().getConfig().set(sender.getUniqueId() + ".info.class.exp", expAtLevel);
-        RunicCore.getInstance().saveConfig();
-        RunicCore.getInstance().reloadConfig();
+        RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setClassLevel(expectedLv);
+
+        /*
+        IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the class level!
+        */
+        RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setClassExp(expAtLevel);
     }
 
     @Override
