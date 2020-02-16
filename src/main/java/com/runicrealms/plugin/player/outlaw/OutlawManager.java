@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.outlaw;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
@@ -11,15 +12,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
 import java.util.UUID;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class OutlawManager implements Listener {
 
-    private static final int BASE_RATING = 1500;
+    private final int BASE_RATING = 1500;
     private RatingCalculator rc = new RatingCalculator();
     private Plugin plugin = RunicCore.getInstance();
 
@@ -81,7 +82,7 @@ public class OutlawManager implements Listener {
         int r1 = 0;
         int r2 = 0;
 
-        // todo: add proportion calculator
+        // todo: add proportion calculator?
         // if the player has a party, calculate that party's average rating
         // otherwise, the r1 is simply the player's current rating
         if (p1Party != null) {
@@ -129,7 +130,7 @@ public class OutlawManager implements Listener {
                 + ChatColor.DARK_RED + " rating!", 10, 40, 10);
     }
 
-    public static int getBaseRating() {
+    public int getBaseRating() {
         return BASE_RATING;
     }
 }

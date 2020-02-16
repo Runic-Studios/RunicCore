@@ -18,10 +18,10 @@ import java.util.Objects;
  */
 public class HealthUtils {
 
-    private static final int baseHealth = 200;
+    private static final int BASE_HEALTH = 200;
 
     public static void setBaseHealth(Player pl) {
-        setHealthAttribute(pl, baseHealth);
+        setHealthAttribute(pl, BASE_HEALTH);
     }
 
     public static void setPlayerMaxHealth(Player pl) {
@@ -58,7 +58,7 @@ public class HealthUtils {
                 break;
         }
 
-        int total = baseHealth+(hpPerLevel*classLevel);
+        int total = BASE_HEALTH +(hpPerLevel*classLevel);
 
         HealthUtils.setHealthAttribute(pl, total);
         HealthUtils.setHeartDisplay(pl);
@@ -94,6 +94,6 @@ public class HealthUtils {
     }
 
     public static int getBaseHealth() {
-        return baseHealth;
+        return BASE_HEALTH;
     }
 }
