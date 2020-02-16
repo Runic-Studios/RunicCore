@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 
 import java.util.UUID;
@@ -43,7 +42,7 @@ public class PlayerCache {
         this.currentHealth = HealthUtils.getBaseHealth();
         this.maxMana = RunicCore.getManaManager().getBaseMana();
         this.isOutlaw = false;
-        this.rating = OutlawManager.getBaseRating();
+        this.rating = RunicCore.getOutlawManager().getBaseRating();
     }
 
     /**

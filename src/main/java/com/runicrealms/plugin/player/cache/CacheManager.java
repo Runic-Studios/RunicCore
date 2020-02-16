@@ -48,9 +48,10 @@ public class CacheManager implements Listener {
     /**
      * To be used during logout
      */
+    // todo: broken getting character slot
     public void savePlayerCache(PlayerCache playerCache) {
         UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
-        int characterSlot = RunicCharactersApi.getCurrentCharacterSlot(playerCache.getPlayerID());
+        int characterSlot = userConfig.getCharacterSlot();
         saveFields(playerCache, userConfig, characterSlot);
         userConfig.saveConfig();
     }
@@ -68,6 +69,7 @@ public class CacheManager implements Listener {
         // guild
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".guild", playerCache.getGuild());
         // stats
+        playerCache.setCurrentHealth((int) Bukkit.getPlayer(playerCache.getPlayerID()).getHealth());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".currentHP", playerCache.getCurrentHealth());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".maxMana", playerCache.getMaxMana());
         // outlaw

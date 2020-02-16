@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,5 +25,9 @@ public class PlayerQuitListener implements Listener {
         PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
         playerCache.setCurrentHealth((int) pl.getHealth());
         RunicCore.getCacheManager().savePlayerCache(playerCache);
+
+        // remove player from RunicCharacters
+        RunicCharactersApi.getUserCollection().removePlayer(pl.getUniqueId());
+        RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);
     }
 }

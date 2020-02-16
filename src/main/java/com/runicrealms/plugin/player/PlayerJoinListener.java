@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,8 +25,8 @@ public class PlayerJoinListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         e.setJoinMessage("");
         Player pl = e.getPlayer();
-        pl.setHealth(20);
         pl.setMaxHealth(20);
+        pl.setHealth(pl.getMaxHealth());
         pl.setHealthScale(20);
         pl.setLevel(0);
         pl.setExp(0);
@@ -51,6 +52,15 @@ public class PlayerJoinListener implements Listener {
 
                 HealthUtils.setPlayerMaxHealth(pl);
                 pl.setHealth(storedHealth);
+
+                // update player's level
+                pl.setLevel(e.getPlayerCache().getClassLevel());
+                int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(e.getPlayerCache().getClassLevel());
+                int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(e.getPlayerCache().getClassLevel()+1);
+                double proportion = (double) (e.getPlayerCache().getClassExp() - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
+                if (e.getPlayerCache().getClassLevel() >= PlayerLevelUtil.getMaxLevel()) pl.setExp(0);
+                if (proportion < 0) proportion = 0.0f;
+                pl.setExp((float) proportion);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
