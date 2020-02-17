@@ -29,8 +29,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 
-;
-
 /**
  * Controls the player menu in the inventory crafting slots
  */
@@ -102,26 +100,6 @@ public class PlayerMenuListener implements Listener {
             }
         }, 0L, 5L);
     }
-
-//    @EventHandler
-//    public void onJoin(CharacterLoadEvent e) {
-//
-//        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-//        Player pl = e.getPlayer();
-//
-//        // item 1
-//        // todo: fix
-//        ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
-//                "\n&7Title: &aNone" +
-//                        "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
-//
-//        //item 2
-//        ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
-//                "\n&fClick here &7to view\n&7the quest journal!");
-//
-//        ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
-//                "\n&aFeature Coming Soon!");
-//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onClose(InventoryCloseEvent event) {
