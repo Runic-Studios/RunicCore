@@ -5,9 +5,9 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.mysterybox.MysteryLoot;
 import com.runicrealms.plugin.mysterybox.animation.Animation;
 import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.PlayerLevelListener;
 import com.runicrealms.plugin.utilities.ColorUtil;
-import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import net.minecraft.server.v1_13_R2.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -29,6 +29,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 
+;
+
 /**
  * Controls the player menu in the inventory crafting slots
  */
@@ -36,70 +38,90 @@ public class PlayerMenuListener implements Listener {
 
     private static final int PLAYER_CRAFT_INV_SIZE = 5;
 
-    @EventHandler
-    public void onJoin(CharacterLoadEvent e) {
-
-        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        Player pl = e.getPlayer();
-
-        // item 1
-        // todo: fix
-        ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
-                "\n&7Title: &aNone" +
-                        "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
-
-        //item 2
-        ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
-                "\n&fClick here &7to view\n&7the quest journal!");
-
-        ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
-                "\n&aFeature Coming Soon!");
+    public PlayerMenuListener() {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
-            // item 3 must update dynamically
-            String healthBonus = statBoost(
-                    (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() - PlayerLevelListener.getHpAtLevel(pl));
-            String manaBoost = statBoost(GearScanner.getManaBoost(pl));
+            for (PlayerCache cache : RunicCore.getCacheManager().getPlayerCaches()) {
 
-            String healingBoost = statBoost(GearScanner.getHealingBoost(pl));
-            String magicBoost = statBoost(GearScanner.getMagicBoost(pl));
-            String shieldAmt = statBoost(GearScanner.getShieldAmt(pl));
+                Player pl = Bukkit.getPlayer(cache.getPlayerID());
+                if (pl == null) continue;
 
-            String minDamage = statBoost(GearScanner.getMinDamage(pl) + GearScanner.getAttackBoost(pl));
-            int maxDamage = (GearScanner.getMaxDamage(pl) + GearScanner.getAttackBoost(pl));
+                ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
+                        "\n&7Title: &aNone" +
+                                "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
 
-            ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
-                    "\n&c❤ (Health) &ebonus: " + healthBonus +
-                            "\n&3✸ (Mana) &ebonus: " + manaBoost +
-                            "\n&c⚔ (DMG) &ebonus: " + minDamage + "-" + maxDamage +
-                            "\n&a✦ (Heal) &ebonus: " + healingBoost +
-                            "\n&3ʔ (Magic) &ebonus: " + magicBoost +
-                            "\n&f■ (Shield) &ebonus: " + shieldAmt);
+                //item 2
+                ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
+                        "\n&fClick here &7to view\n&7the quest journal!");
 
-            InventoryView view = pl.getOpenInventory();
+                ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
+                        "\n&aFeature Coming Soon!");
 
-            // If the open inventory is a player inventory
-            // Update to the ring item
-            // This will update even when it is closed, but
-            // it is a small price to pay IMO
-            if (isPlayerCraftingInv(view)) {
+                // item 3 must update dynamically
+                String healthBonus = statBoost(
+                        (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() - PlayerLevelListener.getHpAtLevel(pl));
+                String manaBoost = statBoost(GearScanner.getManaBoost(pl));
 
-                // uses packets to create visual items clientside that can't interact w/ the server
-                // prevents duping
-                PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
-                PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(questJournal));
-                PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gemMenu));
-                PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
+                String healingBoost = statBoost(GearScanner.getHealingBoost(pl));
+                String magicBoost = statBoost(GearScanner.getMagicBoost(pl));
+                String shieldAmt = statBoost(GearScanner.getShieldAmt(pl));
 
-                ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet1);
-                ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet2);
-                ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet3);
-                ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet4);
+                String minDamage = statBoost(GearScanner.getMinDamage(pl) + GearScanner.getAttackBoost(pl));
+                int maxDamage = (GearScanner.getMaxDamage(pl) + GearScanner.getAttackBoost(pl));
 
+                ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
+                        "\n&c❤ (Health) &ebonus: " + healthBonus +
+                                "\n&3✸ (Mana) &ebonus: " + manaBoost +
+                                "\n&c⚔ (DMG) &ebonus: " + minDamage + "-" + maxDamage +
+                                "\n&a✦ (Heal) &ebonus: " + healingBoost +
+                                "\n&3ʔ (Magic) &ebonus: " + magicBoost +
+                                "\n&f■ (Shield) &ebonus: " + shieldAmt);
+
+                InventoryView view = pl.getOpenInventory();
+
+                // If the open inventory is a player inventory
+                // Update to the ring item
+                // This will update even when it is closed, but
+                // it is a small price to pay IMO
+                if (isPlayerCraftingInv(view)) {
+
+                    // uses packets to create visual items clientside that can't interact w/ the server
+                    // prevents duping
+                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
+                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(questJournal));
+                    PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gemMenu));
+                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
+
+                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet1);
+                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet2);
+                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet3);
+                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet4);
+
+                }
             }
         }, 0L, 5L);
     }
+
+//    @EventHandler
+//    public void onJoin(CharacterLoadEvent e) {
+//
+//        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+//        Player pl = e.getPlayer();
+//
+//        // item 1
+//        // todo: fix
+//        ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
+//                "\n&7Title: &aNone" +
+//                        "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
+//
+//        //item 2
+//        ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
+//                "\n&fClick here &7to view\n&7the quest journal!");
+//
+//        ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
+//                "\n&aFeature Coming Soon!");
+//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onClose(InventoryCloseEvent event) {
