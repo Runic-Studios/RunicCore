@@ -5,6 +5,7 @@ import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.config.UserConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
@@ -19,7 +20,6 @@ public class CacheManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                //Bukkit.broadcastMessage("SAVING PLAYER CACHESS");
                 saveCaches();
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, 30*20); // 10s delay, 30 sec period
@@ -40,7 +40,6 @@ public class CacheManager implements Listener {
     /**
      * To be used during logout
      */
-    // todo: broken getting character slot
     public void savePlayerCache(PlayerCache playerCache) {
         UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
         int characterSlot = userConfig.getCharacterSlot();
@@ -68,9 +67,38 @@ public class CacheManager implements Listener {
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".outlaw.enabled", playerCache.getIsOutlaw());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".outlaw.rating", playerCache.getRating());
         // inventory
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".inventory", playerCache.getInventoryContents());
+        saveInventory(userConfig);
         // location
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".location", playerCache.getLocation());
+    }
+
+    /**
+     * Stores player inventory between alts, ignoring null items. (saves a lot of space)
+     * @param userConfig from RunicCharacters
+     */
+    public void saveInventory(UserConfig userConfig) {
+        ItemStack[] contents = userConfig.getPlayer().getInventory().getContents();
+        for (int i = 0; i < contents.length; i++) {
+            if (contents[i] != null) {
+                ItemStack item = contents[i];
+                userConfig.set(userConfig.getCharacterSlot(), UserConfig.getConfigHeader() + ".inventory." + i, item);
+            }
+        }
+    }
+
+    /**
+     * Loads inventory from flat file into memory
+     * @param userConfig from RunicCharacters
+     */
+    public ItemStack[] loadInventory(UserConfig userConfig) {
+        ItemStack[] contents = new ItemStack[41];
+        for (int i = 0; i < contents.length; i++) {
+            if (userConfig.getConfigurationSection(userConfig.getCharacterSlot() + "." + UserConfig.getConfigHeader()).getItemStack("inventory." + i) != null) {
+                ItemStack item = userConfig.getConfigurationSection(userConfig.getCharacterSlot() + "." + UserConfig.getConfigHeader() + ".inventory").getItemStack(i + "");
+                contents[i] = item;
+            }
+        }
+        return contents;
     }
 
     public HashSet<PlayerCache> getPlayerCaches() {

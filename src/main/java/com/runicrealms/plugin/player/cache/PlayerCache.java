@@ -49,7 +49,7 @@ public class PlayerCache {
         this.maxMana = RunicCore.getManaManager().getBaseMana();
         this.isOutlaw = false;
         this.rating = RunicCore.getOutlawManager().getBaseRating();
-        this.inventoryContents = new ItemStack[]{}; // empty inventory
+        this.inventoryContents = new ItemStack[41]; // empty inventory, todo: this may be bugged
         this.location = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // tutorial
     }
 
