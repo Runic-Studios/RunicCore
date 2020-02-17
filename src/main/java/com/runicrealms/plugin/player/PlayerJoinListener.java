@@ -25,6 +25,7 @@ public class PlayerJoinListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         e.setJoinMessage("");
         Player pl = e.getPlayer();
+        pl.getInventory().clear();
         pl.setMaxHealth(20);
         pl.setHealth(pl.getMaxHealth());
         pl.setHealthScale(20);
@@ -61,6 +62,12 @@ public class PlayerJoinListener implements Listener {
                 if (e.getPlayerCache().getClassLevel() >= PlayerLevelUtil.getMaxLevel()) pl.setExp(0);
                 if (proportion < 0) proportion = 0.0f;
                 pl.setExp((float) proportion);
+
+                // set their inventory
+                pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
+
+                // set their location
+                pl.teleport(e.getPlayerCache().getLocation());
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }

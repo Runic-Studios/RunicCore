@@ -2,6 +2,9 @@ package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -27,6 +30,9 @@ public class PlayerCache {
     private boolean isOutlaw;
     private int rating;
 
+    private ItemStack[] inventoryContents;
+    private Location location;
+
     /**
      * Created when a player selects a class for the first time
      */
@@ -43,6 +49,8 @@ public class PlayerCache {
         this.maxMana = RunicCore.getManaManager().getBaseMana();
         this.isOutlaw = false;
         this.rating = RunicCore.getOutlawManager().getBaseRating();
+        this.inventoryContents = new ItemStack[]{}; // empty inventory
+        this.location = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // tutorial
     }
 
     /**
@@ -63,7 +71,8 @@ public class PlayerCache {
     public PlayerCache(UUID playerID, String guild, String className, String profName,
                        int classLevel, int classExp, int profLevel, int profExp,
                        int currentHealth, int maxMana,
-                       boolean isOutlaw, int rating) {
+                       boolean isOutlaw, int rating,
+                       ItemStack[] inventoryContents, Location location) {
         this.playerID = playerID;
         this.guild = guild;
         this.className = className;
@@ -76,6 +85,8 @@ public class PlayerCache {
         this.maxMana = maxMana;
         this.isOutlaw = isOutlaw;
         this.rating = rating;
+        this.inventoryContents = inventoryContents;
+        this.location = location;
     }
 
     public UUID getPlayerID() {
@@ -172,5 +183,21 @@ public class PlayerCache {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public ItemStack[] getInventoryContents() {
+        return inventoryContents;
+    }
+
+    public void setInventoryContents(ItemStack[] inventoryContents) {
+        this.inventoryContents = inventoryContents;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

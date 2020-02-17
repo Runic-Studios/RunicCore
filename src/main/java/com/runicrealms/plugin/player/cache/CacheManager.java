@@ -19,19 +19,11 @@ public class CacheManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                Bukkit.broadcastMessage("SAVING PLAYER CACHESS");
+                //Bukkit.broadcastMessage("SAVING PLAYER CACHESS");
                 saveCaches();
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 200L, 20*20); // 10s delay, 3 mins
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, 30*20); // 10s delay, 30 sec period
     }
-
-//    // todo: is this even needed? maybe just for a few things? also, mov it to player join listener
-//    @EventHandler
-//    public void onCharacterLoad(CharacterLoadEvent e) {
-//        // method to set all player's info from the player cache object.
-//        // remove the methods that do this in mana manager, outlaw manager, etc.
-//        // also, switch guilds and professions order in PlayerCache to match scoreboard.
-//    }
 
     /**
      * Takes information stored in a player cache and writes it to config in RunicCharacters
@@ -75,6 +67,10 @@ public class CacheManager implements Listener {
         // outlaw
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".outlaw.enabled", playerCache.getIsOutlaw());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".outlaw.rating", playerCache.getRating());
+        // inventory
+        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".inventory", playerCache.getInventoryContents());
+        // location
+        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".location", playerCache.getLocation());
     }
 
     public HashSet<PlayerCache> getPlayerCaches() {

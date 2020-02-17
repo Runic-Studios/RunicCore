@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.item.GearScanner;
 import de.tr7zw.itemnbtapi.NBTEntity;
 import de.tr7zw.itemnbtapi.NBTList;
 import de.tr7zw.itemnbtapi.NBTListCompound;
@@ -58,7 +59,7 @@ public class HealthUtils {
                 break;
         }
 
-        int total = BASE_HEALTH +(hpPerLevel*classLevel);
+        int total = BASE_HEALTH +(hpPerLevel*classLevel) + GearScanner.getHealthBoost(pl);
 
         HealthUtils.setHealthAttribute(pl, total);
         HealthUtils.setHeartDisplay(pl);

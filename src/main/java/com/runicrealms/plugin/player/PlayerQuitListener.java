@@ -21,9 +21,17 @@ public class PlayerQuitListener implements Listener {
         // make sure the player's walk speed is reset
         pl.setWalkSpeed(0.2f);
 
-        // save player hp
+        // get player cache
         PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
+
+        // update player hp
         playerCache.setCurrentHealth((int) pl.getHealth());
+
+        // update inventory, location
+        playerCache.setInventoryContents(pl.getInventory().getContents());
+        playerCache.setLocation(pl.getLocation());
+
+        // update cache
         RunicCore.getCacheManager().savePlayerCache(playerCache);
 
         // remove player from RunicCharacters
