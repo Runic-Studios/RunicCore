@@ -4,6 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.config.UserConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,6 +17,7 @@ public class CacheManager implements Listener {
 
     private HashSet<PlayerCache> playerCaches;
 
+    // todo: can write async and just save sync. or just move to database.
     public CacheManager() {
         this.playerCaches = new HashSet<>();
         new BukkitRunnable() {
@@ -22,18 +25,16 @@ public class CacheManager implements Listener {
             public void run() {
                 saveCaches();
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, 30*20); // 10s delay, 30 sec period
+        }.runTaskTimer(RunicCore.getInstance(), 100L, 60*20); // 10s delay, 30 sec period
     }
 
     /**
      * Takes information stored in a player cache and writes it to config in RunicCharacters
      */
-    private void saveCaches() {
+    public void saveCaches() {
         for (PlayerCache playerCache : playerCaches) {
-            UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
-            int characterSlot = RunicCharactersApi.getCurrentCharacterSlot(playerCache.getPlayerID());
-            saveFields(playerCache, userConfig, characterSlot);
-            userConfig.saveConfig();
+            Bukkit.broadcastMessage(ChatColor.DARK_RED + "SAVING CACHE");
+            savePlayerCache(playerCache);
         }
     }
 
@@ -42,23 +43,32 @@ public class CacheManager implements Listener {
      */
     public void savePlayerCache(PlayerCache playerCache) {
         UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
+        Player pl = userConfig.getPlayer();
         int characterSlot = userConfig.getCharacterSlot();
+        playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
+        playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
+        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + playerCache.getInventoryContents()[5]);
+        playerCache.setLocation(pl.getLocation()); // update location
         saveFields(playerCache, userConfig, characterSlot);
         userConfig.saveConfig();
     }
 
     private void saveFields(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
         // class
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.name", playerCache.getClassName());
+        if (playerCache.getClassName() != null) {
+            userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.name", playerCache.getClassName());
+        }
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.level", playerCache.getClassLevel());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.exp", playerCache.getClassExp());
-        // profession
-        // todo: add hunter fields
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.name", playerCache.getProfName());
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.level", playerCache.getProfLevel());
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.exp", playerCache.getProfExp());
         // guild
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".guild", playerCache.getGuild());
+        // profession
+        // todo: add hunter fields
+        if (playerCache.getProfName() != null) {
+            userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.name", playerCache.getProfName());
+        }
+        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.level", playerCache.getProfLevel());
+        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.exp", playerCache.getProfExp());
         // stats
         playerCache.setCurrentHealth((int) Bukkit.getPlayer(playerCache.getPlayerID()).getHealth());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".currentHP", playerCache.getCurrentHealth());
@@ -77,6 +87,7 @@ public class CacheManager implements Listener {
      * @param userConfig from RunicCharacters
      */
     public void saveInventory(UserConfig userConfig) {
+        userConfig.set(userConfig.getCharacterSlot(), UserConfig.getConfigHeader() + ".inventory", null);
         ItemStack[] contents = userConfig.getPlayer().getInventory().getContents();
         for (int i = 0; i < contents.length; i++) {
             if (contents[i] != null) {
@@ -87,7 +98,8 @@ public class CacheManager implements Listener {
     }
 
     /**
-     * Loads inventory from flat file into memory
+     * Loads inventory from flat file into memory.
+     * Called in RunicCharacters.
      * @param userConfig from RunicCharacters
      */
     public ItemStack[] loadInventory(UserConfig userConfig) {

@@ -9,9 +9,10 @@ public class Debug implements Listener {
 
     @EventHandler
     public void onLoad(CharacterLoadEvent e) {
+        displayStuff(e.getPlayerCache());
+    }
 
-        PlayerCache playerCache = e.getPlayerCache();
-
+    public static void displayStuff(PlayerCache playerCache) {
         Bukkit.broadcastMessage(playerCache.getClassName());
         Bukkit.broadcastMessage("" + playerCache.getGuild());
         Bukkit.broadcastMessage("" + playerCache.getProfName());
@@ -26,5 +27,8 @@ public class Debug implements Listener {
 
         Bukkit.broadcastMessage("" + playerCache.getIsOutlaw());
         Bukkit.broadcastMessage("" + playerCache.getRating());
+
+        Bukkit.broadcastMessage("" + playerCache.getInventoryContents()[0]);
+        Bukkit.broadcastMessage("" + playerCache.getLocation());
     }
 }

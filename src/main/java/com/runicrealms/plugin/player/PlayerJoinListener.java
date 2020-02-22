@@ -6,6 +6,7 @@ import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
 
+    // todo: make player nameplates invisible w/ scoreboard teams?
     /**
      * Reset the player's displayed values when they join the server, before selecting a character
      */
@@ -26,12 +28,15 @@ public class PlayerJoinListener implements Listener {
         e.setJoinMessage("");
         Player pl = e.getPlayer();
         pl.getInventory().clear();
+        pl.setInvulnerable(true);
         pl.setMaxHealth(20);
         pl.setHealth(pl.getMaxHealth());
         pl.setHealthScale(20);
         pl.setLevel(0);
         pl.setExp(0);
         pl.setFoodLevel(20);
+        pl.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
+        pl.setInvulnerable(false);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -52,7 +57,12 @@ public class PlayerJoinListener implements Listener {
                 }
 
                 HealthUtils.setPlayerMaxHealth(pl);
-                pl.setHealth(storedHealth);
+                HealthUtils.setHeartDisplay(pl);
+                if (storedHealth <= pl.getMaxHealth()) {
+                    pl.setHealth(storedHealth);
+                } else {
+                    pl.setHealth(pl.getMaxHealth());
+                }
 
                 // update player's level
                 pl.setLevel(e.getPlayerCache().getClassLevel());
@@ -75,19 +85,21 @@ public class PlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFirstJoin(CharacterLoadEvent event) {
 
-        Player player = event.getPlayer();
+        Player pl = event.getPlayer();
 
         // setup for new players
-        if (!player.hasPlayedBefore()) {
+        if (!pl.hasPlayedBefore()) {
 
             // broadcast new player welcome message
-            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
+            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + pl.getName()
                     + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
 
-            // setup hp
-            HealthUtils.setBaseHealth(player);
-            player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-            player.setFoodLevel(20);
+            // heal player
+            HealthUtils.setPlayerMaxHealth(pl);
+            HealthUtils.setHeartDisplay(pl);
+            int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            pl.setHealth(playerHealth);
+            pl.setFoodLevel(20);
         }
     }
 

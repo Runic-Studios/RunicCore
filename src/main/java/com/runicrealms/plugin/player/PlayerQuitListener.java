@@ -24,13 +24,6 @@ public class PlayerQuitListener implements Listener {
         // get player cache
         PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
 
-        // update player hp
-        playerCache.setCurrentHealth((int) pl.getHealth());
-
-        // update inventory, location
-        playerCache.setInventoryContents(pl.getInventory().getContents());
-        playerCache.setLocation(pl.getLocation());
-
         // update cache
         RunicCore.getCacheManager().savePlayerCache(playerCache);
 
