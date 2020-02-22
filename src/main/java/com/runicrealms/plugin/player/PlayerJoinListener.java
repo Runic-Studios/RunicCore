@@ -75,6 +75,7 @@ public class PlayerJoinListener implements Listener {
 
                 // set their inventory
                 pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
+                pl.updateInventory();
 
                 // set their location
                 pl.teleport(e.getPlayerCache().getLocation());

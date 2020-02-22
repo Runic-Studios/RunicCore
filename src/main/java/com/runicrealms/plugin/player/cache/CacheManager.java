@@ -2,10 +2,12 @@ package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
+import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
+import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
 import com.runicrealms.runiccharacters.config.UserConfig;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,11 +17,13 @@ import java.util.UUID;
 
 public class CacheManager implements Listener {
 
+    private HashSet<Player> loadedPlayers;
     private HashSet<PlayerCache> playerCaches;
 
     // todo: can write async and just save sync. or just move to database.
     public CacheManager() {
-        this.playerCaches = new HashSet<>();
+        loadedPlayers = new HashSet<>();
+        playerCaches = new HashSet<>();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -28,12 +32,22 @@ public class CacheManager implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 100L, 60*20); // 10s delay, 30 sec period
     }
 
+    @EventHandler
+    public void onLoad(CharacterLoadEvent e) {
+        loadedPlayers.add(Bukkit.getPlayer(e.getPlayerCache().getPlayerID()));
+    }
+
+    @EventHandler
+    public void onQuit(CharacterQuitEvent e) {
+        loadedPlayers.remove(e.getPlayer());
+    }
+
     /**
      * Takes information stored in a player cache and writes it to config in RunicCharacters
      */
     public void saveCaches() {
         for (PlayerCache playerCache : playerCaches) {
-            Bukkit.broadcastMessage(ChatColor.DARK_RED + "SAVING CACHE");
+            //Bukkit.broadcastMessage(ChatColor.DARK_RED + "SAVING CACHE");
             savePlayerCache(playerCache);
         }
     }
@@ -47,7 +61,7 @@ public class CacheManager implements Listener {
         int characterSlot = userConfig.getCharacterSlot();
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
-        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + playerCache.getInventoryContents()[5]);
+        //Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + playerCache.getInventoryContents()[5]);
         playerCache.setLocation(pl.getLocation()); // update location
         saveFields(playerCache, userConfig, characterSlot);
         userConfig.saveConfig();
@@ -111,6 +125,10 @@ public class CacheManager implements Listener {
             }
         }
         return contents;
+    }
+
+    public HashSet<Player> getLoadedPlayers() {
+        return loadedPlayers;
     }
 
     public HashSet<PlayerCache> getPlayerCaches() {

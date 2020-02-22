@@ -1,18 +1,24 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerInfo;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Cloak extends Spell {
@@ -47,7 +53,7 @@ public class Cloak extends Spell {
                         ((CraftPlayer)pl).getHandle());
 
         // hide the player, prevent them from disappearing in tab
-        for (Player ps : Bukkit.getOnlinePlayers()) {
+        for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
             ps.hidePlayer(plugin, pl);
             ((CraftPlayer)ps).getHandle().playerConnection.sendPacket(packet);
         }
@@ -64,7 +70,7 @@ public class Cloak extends Spell {
                 if (count >= DURATION || hasDealtDamage.contains(pl.getUniqueId())) {
                     this.cancel();
                     cloakers.remove(pl.getUniqueId());
-                    for (Player ps : Bukkit.getOnlinePlayers()) {
+                    for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
                         ps.showPlayer(plugin, pl);
                     }
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);

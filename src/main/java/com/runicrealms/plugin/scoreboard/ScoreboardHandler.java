@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.scoreboard;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import me.glaremasters.guilds.Guilds;
 import me.glaremasters.guilds.guild.Guild;
@@ -14,7 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
-import com.runicrealms.plugin.RunicCore;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -177,7 +177,7 @@ public class ScoreboardHandler implements Listener {
         if (healthbar == null) { return; }
 
         // updates the health below the nameplate for all OTHER players
-        for (Player online : Bukkit.getOnlinePlayers()) {
+        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
             Score score = healthbar.getScore(online.getName());
             score.setScore((int) online.getHealth());
         }

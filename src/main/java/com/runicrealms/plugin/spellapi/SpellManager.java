@@ -1,22 +1,24 @@
 package com.runicrealms.plugin.spellapi;
 
-import com.runicrealms.plugin.spellapi.spells.runic.active.*;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.*;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
+import com.runicrealms.plugin.spellapi.spells.runic.active.*;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.*;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class SpellManager {
 
@@ -161,7 +163,7 @@ public class SpellManager {
             @Override
             public void run() {
 
-                for(Player player : Bukkit.getOnlinePlayers()) {
+                for(Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
                     if(cooldown.containsKey(player.getUniqueId())) {
                         HashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
                         List<String> cdString = new ArrayList<>();

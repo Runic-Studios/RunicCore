@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -34,7 +33,7 @@ public class OutlawManager implements Listener {
             @Override
             public void run() {
                 if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getIsOutlaw()) {
-                    for (Player on : Bukkit.getOnlinePlayers()) {
+                    for (Player on : RunicCore.getCacheManager().getLoadedPlayers()) {
                         try {
                         ScoreboardHandler.updateNamesFor(on, pl.getScoreboard().getTeam("outlaw"),
                                 Collections.singletonList(pl.getName()));
@@ -43,7 +42,7 @@ public class OutlawManager implements Listener {
                         }
                     }
                 } else {
-                    for (Player on : Bukkit.getOnlinePlayers()) {
+                    for (Player on : RunicCore.getCacheManager().getLoadedPlayers()) {
                         try {
                         ScoreboardHandler.updateNamesFor(on, pl.getScoreboard().getTeam("white"),
                                 Collections.singletonList(pl.getName()));
@@ -54,7 +53,7 @@ public class OutlawManager implements Listener {
                 }
 
                 // updates OTHER players names for joined user
-                for (Player on : Bukkit.getOnlinePlayers()) {
+                for (Player on : RunicCore.getCacheManager().getLoadedPlayers()) {
                     if (RunicCore.getCacheManager().getPlayerCache(on.getUniqueId()).getIsOutlaw()) {
                         try {
                         ScoreboardHandler.updateNamesFor(pl, pl.getScoreboard().getTeam("outlaw"),

@@ -7,7 +7,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,7 +33,7 @@ public class PlayerHungerManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(Player player : Bukkit.getOnlinePlayers()) {
+                for(Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
                     if (!player.hasPermission("runic.hunger.exempt")
                             || (player.getGameMode() != GameMode.CREATIVE
                             && player.getGameMode() != GameMode.SPECTATOR)) {

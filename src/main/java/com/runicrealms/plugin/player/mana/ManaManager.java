@@ -47,7 +47,7 @@ public class ManaManager implements Listener {
 
     private void regenMana() {
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
+        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
 
             // ensure they have loaded a character
             if (!RunicCore.getCacheManager().hasCacheLoaded(online.getUniqueId())) continue;

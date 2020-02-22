@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -71,7 +72,7 @@ public class ScoreboardUtil {
         org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
         Objective healthBar = scoreboard.getObjective("healthBar");
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
+        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
             Score score = healthBar.getScore(online);
             score.setScore((int) online.getHealth());
         }

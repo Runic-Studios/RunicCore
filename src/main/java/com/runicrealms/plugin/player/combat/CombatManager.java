@@ -1,11 +1,10 @@
 package com.runicrealms.plugin.player.combat;
 
-import org.bukkit.Bukkit;
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class CombatManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(Player online : Bukkit.getOnlinePlayers()) {
+                for(Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
                     if(playersInCombat.containsKey(online.getUniqueId())) {
                         if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION*1000)) {
                             playersInCombat.remove(online.getUniqueId());
