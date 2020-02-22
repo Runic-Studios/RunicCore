@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.NumRounder;
 import de.tr7zw.itemnbtapi.NBTItem;
@@ -10,8 +12,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,11 +74,11 @@ public class LoreGenerator {
 
         lore.add("");
 
-        // for armor/items
-        int health = (int) AttributeUtil.getGenericDouble(item, "generic.maxHealth");
-        if (health != 0) {
-            lore.add(ChatColor.RED + "+ " + health + "❤");
-        }
+//        // for armor/items
+//        int health = (int) AttributeUtil.getGenericDouble(item, "generic.maxHealth");
+//        if (health != 0) {
+//            lore.add(ChatColor.RED + "+ " + health + "❤");
+//        }
 
         // -------------------------------------------------------------------------------------------
         // for weapons/gemstones/custom boosts

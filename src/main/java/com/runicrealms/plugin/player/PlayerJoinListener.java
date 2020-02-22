@@ -48,6 +48,10 @@ public class PlayerJoinListener implements Listener {
             @Override
             public void run() {
 
+                // set their inventory
+                pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
+                pl.updateInventory();
+
                 // set their hp to stored value from last logout
                 int storedHealth = e.getPlayerCache().getCurrentHealth();
 
@@ -73,15 +77,16 @@ public class PlayerJoinListener implements Listener {
                 if (proportion < 0) proportion = 0.0f;
                 pl.setExp((float) proportion);
 
-                // set their inventory
-                pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
-                pl.updateInventory();
-
                 // set their location
                 pl.teleport(e.getPlayerCache().getLocation());
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
+
+//    private void fixArmorBar(Player pl) {
+//        PacketPlayOutEntityEquipment packet = new PacketPlayOutEntityEquipment(((Entity)pl).getEntityID(), 1, CraftItemStack.asNMSCopy(new ItemStack(Material.DIAMOND_HELMET));
+//        ((CraftPlayer)pl).getHandle().playerConnection.sendPacket(packet);
+//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFirstJoin(CharacterLoadEvent event) {

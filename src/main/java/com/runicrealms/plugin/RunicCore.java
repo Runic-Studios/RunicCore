@@ -71,7 +71,6 @@ public class RunicCore extends JavaPlugin {
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ShopManager shopManager;
-    //private static TutorialTask tutorialTask;
     private static CacheManager cacheManager;
     private static OutlawManager outlawManager;
 

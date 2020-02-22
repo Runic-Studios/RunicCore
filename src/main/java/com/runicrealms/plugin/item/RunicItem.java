@@ -38,11 +38,10 @@ public class RunicItem {
     private int shield;
 
     /*
-    If you give this to an item, holding/equipping it will directly increase health of player.
+    This is to determine the slot of an item if removing armor values.
     (For armor/offhands only in most cases)
-    If you add it, you must specify a vanilla Minecraft slot to apply it to. (e.g. "offhand)
+    If you add it, you must specify a vanilla Minecraft slot to apply it to. (e.g. "offhand")
      */
-    private int maxHealth;
     private String slot;
 
     /*
@@ -71,7 +70,7 @@ public class RunicItem {
      */
     public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
                      int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
-                     int maxHealth, String slot, boolean soulbound) {
+                     String slot, boolean soulbound) {
         this.mat = mat;
         this.tier = tier;
         this.name = name;
@@ -82,7 +81,6 @@ public class RunicItem {
         this.healingBonus = healingBonus;
         this.magicBonus = magicBonus;
         this.shield = shield;
-        this.maxHealth = maxHealth;
         this.slot = slot;
         this.soulbound = soulbound;
         this.buildItem();
@@ -150,11 +148,11 @@ public class RunicItem {
         if (healingBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.healingBoost", healingBonus);
         if (magicBonus != 0) item = AttributeUtil.addCustomStat(item, "custom.magicDamage", magicBonus);
         if (shield != 0) item = AttributeUtil.addCustomStat(item, "custom.shield", shield);
-        if (maxHealth != 0) item = AttributeUtil.addGenericStat(item, "generic.maxHealth", maxHealth, slot);
         if (minDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.minDamage", minDamage);
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);
         if (spell != null && !spell.equals("")) item = AttributeUtil.addSpell(item, "secondarySpell", spell);
         if (soulbound) item = AttributeUtil.addCustomStat(item, "soulbound", "true");
+        item = AttributeUtil.addGenericStat(item, "generic.armor", 0, slot); // remove armor values
         return item;
     }
 

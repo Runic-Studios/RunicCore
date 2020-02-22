@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.item;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.enums.ItemTypeEnum;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
 
 import java.util.ArrayList;
 
@@ -55,7 +55,7 @@ public class GearScanner {
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
         for (ItemStack item : armorAndOffhand) {
-            healthBoost += (int) AttributeUtil.getGenericDouble(item, "generic.maxHealth");
+            healthBoost += (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
         }
         return healthBoost;
     }

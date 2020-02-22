@@ -69,7 +69,8 @@ public class ItemUtils {
         int health = rand.nextInt(maxHealth - (maxHealth/2)) + (maxHealth/2);
         int mana = rand.nextInt(maxMana - (maxMana/2)) + (maxMana/2);
 
-        commonItem = AttributeUtil.addGenericStat(commonItem, "generic.maxHealth", health, itemSlot);
+        commonItem = AttributeUtil.addCustomStat(commonItem, "custom.maxHealth", health);
+        commonItem = AttributeUtil.addGenericStat(commonItem, "generic.armor", 0, itemSlot);
 
         if (numOfStats == 1) {
             commonItem = AttributeUtil.addCustomStat(commonItem, "custom.manaBoost", mana);
@@ -133,8 +134,8 @@ public class ItemUtils {
 
         List<Integer> stats = determineWhichStats(numOfStats, 3); // 1 or 2 stats in addition to health
 
-
-        uncommonItem = AttributeUtil.addGenericStat(uncommonItem, "generic.maxHealth", health, itemSlot);
+        uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.maxHealth", health);
+        uncommonItem = AttributeUtil.addGenericStat(uncommonItem, "generic.armor", 0, itemSlot);
 
         if (stats.contains(2)) {
             uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.manaBoost", mana);
@@ -205,7 +206,8 @@ public class ItemUtils {
         List<Integer> stats = ItemUtils.determineWhichStats(2, 5);
 
         //  add health no matter what
-        rareItem = AttributeUtil.addGenericStat(rareItem, "generic.maxHealth", health, itemSlot);
+        rareItem = AttributeUtil.addCustomStat(rareItem, "custom.maxHealth", health);
+        rareItem = AttributeUtil.addGenericStat(rareItem, "generic.armor", 0, itemSlot);
 
         if (stats.contains(2)) {
             rareItem = AttributeUtil.addCustomStat(rareItem, "custom.manaBoost", mana);
@@ -282,7 +284,8 @@ public class ItemUtils {
         List<Integer> stats = ItemUtils.determineWhichStats(2, 5);
 
         //  add health no matter what
-        epicItem = AttributeUtil.addGenericStat(epicItem, "generic.maxHealth", health, itemSlot);
+        epicItem = AttributeUtil.addCustomStat(epicItem, "custom.maxHealth", health);
+        epicItem = AttributeUtil.addGenericStat(epicItem, "generic.armor", 0, itemSlot);
 
         if (stats.contains(2)) {
             epicItem = AttributeUtil.addCustomStat(epicItem, "custom.manaBoost", mana);

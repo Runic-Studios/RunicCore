@@ -1,15 +1,17 @@
 package com.runicrealms.plugin.item.commands;
 
+import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.events.LootEvent;
 import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.util.ItemDropper;
 import com.runicrealms.plugin.item.util.ItemUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.runicrealms.plugin.command.subcommands.SubCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -147,15 +149,6 @@ public class ItemCMD implements SubCommand {
 
         // mob drops
         } else if (args.length == 8) {
-//            Location loc = new Location(pl.getWorld(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]));
-//            UUID mobID = UUID.fromString(args[7]);
-//            if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
-//                RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), loc, craftedItem);
-//            } else if (RunicCore.getBossTagger().isBoss(mobID)) {
-//                RunicCore.getBossTagger().dropTaggedBossLoot(mobID, loc, craftedItem); // boss loot
-//            } else {
-//                pl.getWorld().dropItem(loc, craftedItem); // regular drop
-//            }
             ItemDropper.dropLoot(pl, args[4], args[5], args[6], args[7], craftedItem);
         }
     }
