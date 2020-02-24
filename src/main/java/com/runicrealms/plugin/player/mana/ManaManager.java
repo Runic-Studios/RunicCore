@@ -22,7 +22,7 @@ public class ManaManager implements Listener {
     private HashMap<UUID, Integer> currentPlayerManas;
     private final int BASE_MANA = 100;
     private final int MANA_REGEN_AMT = 5;
-    private final long MANA_REGEN_PERIOD = (long) 5; // seconds
+    private final long MANA_REGEN_PERIOD = 5; // seconds
 
     private final int ARCHER_MANA_LV = 1;
     private final int CLERIC_MANA_LV = 2;
@@ -47,7 +47,7 @@ public class ManaManager implements Listener {
 
     private void regenMana() {
 
-        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
 
             // ensure they have loaded a character
             if (!RunicCore.getCacheManager().hasCacheLoaded(online.getUniqueId())) continue;

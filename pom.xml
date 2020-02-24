@@ -133,6 +133,14 @@
             <artifactId>Item-NBT-API</artifactId>
             <version>be4dfa593b</version>
         </dependency>
+        <!-- RunicArtifacts -->
+        <dependency>
+            <groupId>com.runicrealms.plugin</groupId>
+            <artifactId>RunicArtifacts</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/RunicArtifacts-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
         <!-- RunicCharacters -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>

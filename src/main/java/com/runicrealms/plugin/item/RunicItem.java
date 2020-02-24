@@ -69,13 +69,14 @@ public class RunicItem {
     Use this constructor for ARMOR and OFFHANDS
      */
     public RunicItem(Material mat, ChatColor tier, String name, int durability, int reqLevel,
-                     int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
+                     int healthBonus, int manaBonus, int damageBonus, int healingBonus, int magicBonus, int shield,
                      String slot, boolean soulbound) {
         this.mat = mat;
         this.tier = tier;
         this.name = name;
         this.durability = durability;
         this.reqLevel = reqLevel;
+        this.healthBonus = healthBonus;
         this.manaBonus = manaBonus;
         this.damageBonus = damageBonus;
         this.healingBonus = healingBonus;
@@ -152,7 +153,7 @@ public class RunicItem {
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);
         if (spell != null && !spell.equals("")) item = AttributeUtil.addSpell(item, "secondarySpell", spell);
         if (soulbound) item = AttributeUtil.addCustomStat(item, "soulbound", "true");
-        item = AttributeUtil.addGenericStat(item, "generic.armor", 0, slot); // remove armor values
+        if (slot != null) item = AttributeUtil.addGenericStat(item, "generic.armor", 0, slot); // remove armor values
         return item;
     }
 

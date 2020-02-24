@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.player.combat;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.mounts.MountListener;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -12,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.UUID;
 
@@ -58,7 +60,7 @@ public class CombatListener implements Listener {
 
         // inform the players when they first enter combat
         if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
-            damager.sendMessage(ChatColor.RED + "You have entered combat!");
+            damager.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
         }
 
         dismount(damager);
@@ -78,7 +80,7 @@ public class CombatListener implements Listener {
         UUID victimID = victim.getUniqueId();
 
         if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
-            victim.sendMessage(ChatColor.RED + "You have entered combat!");
+            victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
         }
 
         dismount(victim);
@@ -100,7 +102,7 @@ public class CombatListener implements Listener {
 
                 if (member == pl) continue;
                 if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
-                    member.sendMessage(ChatColor.RED + "Your party has entered combat!");
+                    member.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Your party has entered combat!"));
                 }
 
                 dismount(member);

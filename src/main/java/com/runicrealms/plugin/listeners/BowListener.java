@@ -1,29 +1,29 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.event.EventPriority;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
 import net.minecraft.server.v1_13_R2.DataWatcherRegistry;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -99,7 +99,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(plugin, 0, 1L);
 
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 10);
+        pl.setCooldown(artifact.getType(), 20);
     }
 
     @EventHandler

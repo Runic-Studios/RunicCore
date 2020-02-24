@@ -22,7 +22,7 @@ import java.util.Random;
 
 public class ItemUtils {
 
-    public static ItemStack generateCommonItem() {
+    public static ItemStack generateCommonArmor() {
 
         // generate base info for item
         TieredItemGenerator tieredItemGenerator = new TieredItemGenerator();
@@ -83,7 +83,7 @@ public class ItemUtils {
         return commonItem;
     }
 
-    public static ItemStack generateUncommonItem() {
+    public static ItemStack generateUncommonArmor() {
 
         // generate base info for item
         TieredItemGenerator tieredItemGenerator = new TieredItemGenerator();
@@ -151,7 +151,7 @@ public class ItemUtils {
         return uncommonItem;
     }
 
-    public static ItemStack generateRareItem() {
+    public static ItemStack generateRareArmor() {
 
         // generate base info for item
         TieredItemGenerator tieredItemGenerator = new TieredItemGenerator();
@@ -229,7 +229,7 @@ public class ItemUtils {
         return rareItem;
     }
 
-    public static ItemStack generateEpicItem() {
+    public static ItemStack generateEpicArmor() {
 
         // generate base info for item
         TieredItemGenerator tieredItemGenerator = new TieredItemGenerator();

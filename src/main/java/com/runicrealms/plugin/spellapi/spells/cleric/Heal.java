@@ -3,7 +3,10 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -11,7 +14,7 @@ import java.util.Objects;
 
 public class Heal extends Spell {
 
-    private static final int HEALING_AMT = 15;
+    private static final int HEALING_AMT = 25;
     private static final float RADIUS = 7f;
 
     // constructor
@@ -19,7 +22,7 @@ public class Heal extends Spell {
         super("Heal",
                 "You restore✦ " + HEALING_AMT + " health to all" +
                         "\nallies within " + (int) RADIUS + " blocks!",
-                ChatColor.WHITE, 8, 20);
+                ChatColor.WHITE, 10, 20);
     }
 
     @Override

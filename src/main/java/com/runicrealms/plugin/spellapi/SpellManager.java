@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -163,7 +164,7 @@ public class SpellManager {
             @Override
             public void run() {
 
-                for(Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+                for(Player player : Bukkit.getOnlinePlayers()) {
                     if(cooldown.containsKey(player.getUniqueId())) {
                         HashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
                         List<String> cdString = new ArrayList<>();

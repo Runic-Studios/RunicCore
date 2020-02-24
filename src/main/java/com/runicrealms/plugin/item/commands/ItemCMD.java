@@ -116,16 +116,16 @@ public class ItemCMD implements SubCommand {
 
         switch (args[3].toLowerCase()) {
             case "common":
-                craftedItem = ItemUtils.generateCommonItem();
+                craftedItem = ItemUtils.generateCommonArmor();
                 break;
             case "uncommon":
-                craftedItem = ItemUtils.generateUncommonItem();
+                craftedItem = ItemUtils.generateUncommonArmor();
                 break;
             case "rare":
-                craftedItem = ItemUtils.generateRareItem();
+                craftedItem = ItemUtils.generateRareArmor();
                 break;
             case "epic":
-                craftedItem = ItemUtils.generateEpicItem();
+                craftedItem = ItemUtils.generateEpicArmor();
                 break;
         }
 

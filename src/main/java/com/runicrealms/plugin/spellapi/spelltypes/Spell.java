@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -7,18 +9,18 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.bukkit.*;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import com.runicrealms.plugin.attributes.AttributeUtil;
+import org.bukkit.util.Vector;
 
 import java.util.Set;
 
@@ -65,7 +67,7 @@ public abstract class Spell implements ISpell, Listener {
         int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
         if (currentMana < this.manaCost) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "You don't have enough mana!");
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You don't have enough mana!"));
             return false;
         }
         return true;

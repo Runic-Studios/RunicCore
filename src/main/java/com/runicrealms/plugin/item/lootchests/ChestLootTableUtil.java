@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.lootchests;
 
+import com.runicrealms.plugin.artifact.utilities.ItemUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.professions.gathering.GatheringUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
@@ -25,7 +26,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> commonLootTable = new WeightedRandomBag<>();
 
         // add the gear chance
-        ItemStack commonItem = ItemUtils.generateCommonItem();
+        ItemStack commonArmor = ItemUtils.generateCommonArmor();
+        ItemStack commonWeapon = ItemUtil.generateCommonWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(6 - 4) + 4);
@@ -49,11 +51,12 @@ public class ChestLootTableUtil {
         ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 1);
 
         // potions
-        ItemStack healthPotion = ItemUtils.generatePotion("healing", 15);
-        ItemStack manaPotion = ItemUtils.generatePotion("mana", 15);
+        ItemStack healthPotion = ItemUtils.generatePotion("healing", 25);
+        ItemStack manaPotion = ItemUtils.generatePotion("mana", 25);
 
         // add entries to table
-        commonLootTable.addEntry(commonItem,  35.0);
+        commonLootTable.addEntry(commonArmor,  35.0);
+        commonLootTable.addEntry(commonWeapon,  35.0);
         commonLootTable.addEntry(coin, 50.0);
         commonLootTable.addEntry(bread, 50.0);
 
@@ -84,7 +87,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> uncommonLootTable = new WeightedRandomBag<>();
 
         // add the gear chance
-        ItemStack uncommonItem = ItemUtils.generateUncommonItem();
+        ItemStack uncommonArmor = ItemUtils.generateUncommonArmor();
+        ItemStack uncommonWeapon = ItemUtil.generateUncommonWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(8 - 4) + 4);
@@ -109,11 +113,13 @@ public class ChestLootTableUtil {
         ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 2);
 
         // potions
-        ItemStack healthPotion = ItemUtils.generatePotion("healing", 20);
-        ItemStack manaPotion = ItemUtils.generatePotion("mana", 20);
+        ItemStack healthPotion = ItemUtils.generatePotion("healing", 25);
+        ItemStack manaPotion = ItemUtils.generatePotion("mana", 25);
 
         // add entries to table
-        uncommonLootTable.addEntry(uncommonItem,  25.0);
+        uncommonLootTable.addEntry(uncommonArmor,  25.0);
+        uncommonLootTable.addEntry(uncommonWeapon,  25.0);
+
         uncommonLootTable.addEntry(coin, 50.0);
         uncommonLootTable.addEntry(bread, 35.0);
 
@@ -145,7 +151,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> rareLootTable = new WeightedRandomBag<>();
 
         // add the gear chance
-        ItemStack rareItem = ItemUtils.generateRareItem();
+        ItemStack rareArmor = ItemUtils.generateRareArmor();
+        ItemStack rareWeapon = ItemUtil.generateRareWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(10 - 5) + 5);
@@ -175,7 +182,8 @@ public class ChestLootTableUtil {
         ItemStack manaPotion = ItemUtils.generatePotion("mana", 40);
 
         // add entries to table
-        rareLootTable.addEntry(rareItem,  25.0);
+        rareLootTable.addEntry(rareArmor,  25.0);
+        rareLootTable.addEntry(rareWeapon,  25.0);
         rareLootTable.addEntry(coin, 50.0);
         rareLootTable.addEntry(bread, 35.0);
 
@@ -208,7 +216,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> epicLootTable = new WeightedRandomBag<>();
 
         // add the gear chance
-        ItemStack epicItem = ItemUtils.generateEpicItem();
+        ItemStack epicArmor = ItemUtils.generateEpicArmor();
+        ItemStack epicWeapon = ItemUtil.generateEpicWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(10 - 5) + 5);
@@ -240,7 +249,8 @@ public class ChestLootTableUtil {
         ItemStack manaPotion = ItemUtils.generatePotion("mana", 60);
 
         // add entries to table
-        epicLootTable.addEntry(epicItem,  15.0);
+        epicLootTable.addEntry(epicArmor,  15.0);
+        epicLootTable.addEntry(epicWeapon,  15.0);
         epicLootTable.addEntry(coin, 50.0);
         epicLootTable.addEntry(bread, 35.0);
 

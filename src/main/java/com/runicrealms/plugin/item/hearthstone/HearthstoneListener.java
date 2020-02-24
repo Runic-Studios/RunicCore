@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.hearthstone;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
@@ -17,10 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Manages the server hearthstone. Cooldown resets on server restart, intended.
@@ -39,11 +40,16 @@ public class HearthstoneListener implements Listener {
     @EventHandler
     public void onJoin(CharacterLoadEvent e) {
         Player pl = e.getPlayer();
-        if (pl.getInventory().getItem(8) == null
-                || (pl.getInventory().getItem(8) != null
-                && pl.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
-            pl.getInventory().setItem(8, getDefaultHearthstone());
-        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (pl.getInventory().getItem(8) == null
+                        || (pl.getInventory().getItem(8) != null
+                        && pl.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
+                    pl.getInventory().setItem(8, getDefaultHearthstone());
+                }
+            }
+        }.runTaskLater(RunicCore.getInstance(), 2L);
     }
 
     @EventHandler
@@ -184,20 +190,18 @@ public class HearthstoneListener implements Listener {
         return hearthstone;
     }
 
-//    private ItemStack setHearthstone() {
-//        location = location.replace("_", " ");
-//        ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
-//        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", location);
-//    }
+    public static ItemStack newHearthstone(String location) {
+        location = location.replace("_", " ");
+        ItemStack hearthstone = new ItemStack(Material.CLAY_BALL);
+        hearthstone = AttributeUtil.addCustomStat(hearthstone, "location", location);
+        hearthstone = AttributeUtil.addCustomStat(hearthstone, "soulbound", "true");
+        LoreGenerator.generateHearthstoneLore(hearthstone);
+        return hearthstone;
+    }
 
     public static void teleportToLocation(Player pl) {
 
         String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(2), "location");
-
-//        if (itemLoc.equals("")) {
-//            pl.sendMessage(ChatColor.DARK_RED + "Error: location not found");
-//            return;
-//        }
 
         // attempt to match the player's hearthstone to a location
         Location loc;
@@ -208,36 +212,38 @@ public class HearthstoneListener implements Listener {
         int yaw;
         switch (itemLoc.toLowerCase()) {
 
-            case "naz'mora": // 10
+            case "naz'mora": // 11
                 x = 2587.5;
                 y = 33;
                 z = 979.5;
                 yaw = 270;
                 break;
-            case "naheen": // 9
+            case "naheen": // 10
                 x = 1962.5;
                 y = 42;
                 z = 349.5;
                 yaw = 270;
                 break;
-            case "zenyth": // 8
+            case "zenyth": // 9
                 x = 1569.5;
                 y = 38;
                 z = -161.5;
                 yaw = 90;
                 break;
-            case "isfodar": // 7
+            case "isfodar": // 8
                 x = 744.5;
                 y = 94;
                 z = -137.5;
                 yaw = 90;
                 break;
-            case "dead man's rest": // 6
+            case "dead man's rest": // 7
                 x = -24.5;
                 y = 32;
                 z = -475.5;
                 yaw = 90;
                 break;
+            //case "dawnshire Inn": // 6
+            //break;
             case "wintervale": // 5
                 x = -1672.5;
                 y = 37;
@@ -267,7 +273,7 @@ public class HearthstoneListener implements Listener {
                 yaw = 180;
                 break;
             default:
-                x = -2205.0; // tutorial 1
+                x = -2205.0; // tutorial 1 (tutorial fortress)
                 y = 39;
                 z = 1903;
                 yaw = 325;
