@@ -63,9 +63,6 @@ public class BowListener implements Listener {
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
 
-        // don't fire arrow if they're sneaking, since they're casting a spell
-        if (pl.isSneaking()) return;
-
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
         if (!className.equals("Archer")) {
@@ -99,7 +96,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(plugin, 0, 1L);
 
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 20);
+        pl.setCooldown(artifact.getType(), 10);
     }
 
     @EventHandler
@@ -162,7 +159,7 @@ public class BowListener implements Listener {
             return;
         }
 
-        DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
+        //DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
     }
 
     // method to handle custom damage for bows

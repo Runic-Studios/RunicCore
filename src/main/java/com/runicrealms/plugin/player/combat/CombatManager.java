@@ -1,9 +1,7 @@
 package com.runicrealms.plugin.player.combat;
 
 import com.runicrealms.plugin.RunicCore;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
+import com.runicrealms.plugin.utilities.ActionBarUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -51,7 +49,7 @@ public class CombatManager implements Listener {
                         if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION*1000)) {
                             playersInCombat.remove(online.getUniqueId());
                             pvpers.remove(online.getUniqueId());
-                            online.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You have left combat!"));
+                            ActionBarUtil.sendTimedMessage(online, "&aYou have left combat!", 3);
                         }
                     }
                 }

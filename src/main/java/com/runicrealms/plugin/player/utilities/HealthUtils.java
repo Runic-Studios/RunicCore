@@ -81,25 +81,43 @@ public class HealthUtils {
         // retrieve player health
         int playerHealth = (int) Objects.requireNonNull(pl.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
 
-        // a half-heart per 12.5 health
-        int numOfHalfHearts = (playerHealth / 100) * 2;
-
-        // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
-        if (numOfHalfHearts % 2 != 0) numOfHalfHearts = numOfHalfHearts - 1;
-
-        // insurance to prevent "greater than 0" errors on first join
-        if (numOfHalfHearts <= 0) numOfHalfHearts = 4;
-
-
-        pl.setHealthScale(numOfHalfHearts);
+        // todo: come up w/ a better system for this
+//        int valuePerHeart;
+//        switch (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName()) {
+//            case "Archer":
+//                valuePerHeart = 3;
+//                break;
+//            case "Cleric":
+//                valuePerHeart = 45;
+//                break;
+//            case "Mage":
+//                valuePerHeart = 40;
+//                break;
+//            case "Rogue":
+//                valuePerHeart = 40;
+//                break;
+//            case "Warrior":
+//                valuePerHeart = 50;
+//                break;
+//            default:
+//                valuePerHeart = 1;
+//                break;
+//        }
+//
+//        // a half-heart per 12.5 health
+//        int numOfHalfHearts = (playerHealth / valuePerHeart) * 2;
+//
+//        // to prevent awkward half-heart displays, it rounds down to the nearest full heart.
+//        if (numOfHalfHearts % 2 != 0) numOfHalfHearts = numOfHalfHearts - 1;
+//
+//        // insurance to prevent "greater than 0" errors on first join
+//        if (numOfHalfHearts <= 0) numOfHalfHearts = 4;
+//
+//        pl.setHealthScale(numOfHalfHearts);
+        pl.setHealthScale(20);
     }
 
     public static int getBaseHealth() {
         return BASE_HEALTH;
     }
-
-//    /**
-//     * Used to set player health without the game getting angry.
-//     */
-//    public static int getMaxHealth
 }

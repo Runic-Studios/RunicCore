@@ -36,13 +36,13 @@ public class PlayerJoinListener implements Listener {
         pl.setExp(0);
         pl.setFoodLevel(20);
         pl.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
-        pl.setInvulnerable(false);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(CharacterLoadEvent e) {
 
         Player pl = e.getPlayer();
+        pl.setInvulnerable(false);
 
         new BukkitRunnable() {
             @Override

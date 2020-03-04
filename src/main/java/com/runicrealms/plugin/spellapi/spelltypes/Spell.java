@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
+import com.runicrealms.plugin.utilities.ActionBarUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -67,7 +68,8 @@ public abstract class Spell implements ISpell, Listener {
         int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
         if (currentMana < this.manaCost) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You don't have enough mana!"));
+            //player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You don't have enough mana!"));
+            ActionBarUtil.sendTimedMessage(player, "&cYou don't have enough mana!", 2);
             return false;
         }
         return true;

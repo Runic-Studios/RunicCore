@@ -7,6 +7,7 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
+import com.runicrealms.plugin.utilities.ActionBarUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -16,8 +17,6 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
@@ -133,7 +132,12 @@ public class DamageListener implements Listener {
                 // ensure correct class/weapon combo (archers and bows, etc)
                 if (!matchClass(pl)) return;
 
+                // ---------------------------
+                // successful damage
+                if (((Player) damager).getCooldown(artifact.getType()) != 0) return;
                 DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false, false);
+                ((Player) damager).setCooldown(artifact.getType(), 15);
+                // ---------------------------
 
             } else {
                 e.setCancelled(true);
@@ -270,7 +274,8 @@ public class DamageListener implements Listener {
         // if player is in combat, remove them
         if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
             RunicCore.getCombatManager().getPlayersInCombat().remove(victim.getUniqueId());
-            victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You have left combat!"));
+            //victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You have left combat!"));
+            ActionBarUtil.sendTimedMessage(victim, "&aYou have left combat!", 3);
         }
 
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());

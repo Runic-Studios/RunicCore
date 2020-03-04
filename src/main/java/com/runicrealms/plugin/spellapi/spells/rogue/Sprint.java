@@ -3,7 +3,10 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -12,7 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 public class Sprint extends Spell {
 
     // global variables
-    private static final int DURATION = 7;
+    private static final int DURATION = 5;
     private static final int SPEED_AMPLIFIER = 2;
 
     // constructor

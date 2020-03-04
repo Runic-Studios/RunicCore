@@ -2,9 +2,7 @@ package com.runicrealms.plugin.player.combat;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.mounts.MountListener;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
+import com.runicrealms.plugin.utilities.ActionBarUtil;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -60,7 +58,8 @@ public class CombatListener implements Listener {
 
         // inform the players when they first enter combat
         if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
-            damager.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
+            //damager.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
+            ActionBarUtil.sendTimedMessage(damager, "&cYou have entered combat!", 3);
         }
 
         dismount(damager);
@@ -80,7 +79,8 @@ public class CombatListener implements Listener {
         UUID victimID = victim.getUniqueId();
 
         if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
-            victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
+            //victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
+            ActionBarUtil.sendTimedMessage(victim, "&cYou have entered combat!", 3);
         }
 
         dismount(victim);
@@ -102,7 +102,8 @@ public class CombatListener implements Listener {
 
                 if (member == pl) continue;
                 if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
-                    member.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Your party has entered combat!"));
+                    //member.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Your party has entered combat!"));
+                    ActionBarUtil.sendTimedMessage(member, "&cYour party has entered combat!", 3);
                 }
 
                 dismount(member);

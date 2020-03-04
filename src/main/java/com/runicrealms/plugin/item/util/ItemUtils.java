@@ -101,6 +101,9 @@ public class ItemUtils {
         // set minimum level
         uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "required.level", 10);
 
+        // item can be socketed once
+        uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.socketCount", 1);
+
         Random rand = new Random();
         int numOfStats = rand.nextInt(2) + 1;
 

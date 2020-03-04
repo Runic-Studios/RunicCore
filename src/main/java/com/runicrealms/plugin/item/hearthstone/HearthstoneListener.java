@@ -201,7 +201,8 @@ public class HearthstoneListener implements Listener {
 
     public static void teleportToLocation(Player pl) {
 
-        String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(2), "location");
+        // get location for hearthstone
+        String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(8), "location");
 
         // attempt to match the player's hearthstone to a location
         Location loc;
@@ -254,10 +255,10 @@ public class HearthstoneListener implements Listener {
             //break;
             //case "whaletown": // 3
             //break;
-            case "koldore": // 2
-                x = -1616.5;
-                y = 43;
-                z = 305.5;
+            case "koldore": // 2 // todo
+                x = -1661.5;
+                y = 35;
+                z = 206.5;
                 yaw = 0;
                 break;
             case "azana": // 1
@@ -266,17 +267,17 @@ public class HearthstoneListener implements Listener {
                 z = 167.5;
                 yaw = 180;
                 break;
-            case "tutorial village": // tutorial 2
-                x = -1927.5;
-                y = 42;
-                z = 2012.5;
-                yaw = 180;
+            case "tutorial village": // tutorial 2 // todo
+                x = -1971.5;
+                y = 40;
+                z = 1940.5;
+                yaw = 0;
                 break;
             default:
-                x = -2205.0; // tutorial 1 (tutorial fortress)
-                y = 39;
-                z = 1903;
-                yaw = 325;
+                x = -2317.5; // tutorial 1 (tutorial fortress)
+                y = 38;
+                z = 1719.5;
+                yaw = 0;
                 break;
         }
 

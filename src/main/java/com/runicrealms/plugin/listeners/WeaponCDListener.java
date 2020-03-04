@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,7 +10,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 
 /**
  * Applies the cooldown to axes, maces, and swords. Bows and staves are handled separately.
@@ -37,10 +37,10 @@ public class WeaponCDListener implements Listener {
         if (cooldown != 0) return;
 
         // don't fire cooldown if they're sneaking, since they're casting a spell
-        if (e.getPlayer().isSneaking()) {
-            e.setCancelled(true);
-            return;
-        }
+//        if (e.getPlayer().isSneaking()) {
+//            e.setCancelled(true);
+//            return;
+//        }
 
         // IMPORTANT: we're not gonna set the bow cooldown here since bows use left-click to cast spells.
         double speed = AttributeUtil.getGenericDouble(artifact, "generic.attackSpeed");
@@ -69,11 +69,11 @@ public class WeaponCDListener implements Listener {
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
 
-        // don't fire cooldown if they're sneaking, since they're casting a spell
-        if (pl.isSneaking()) {
-            e.setCancelled(true);
-            return;
-        }
+//        // don't fire cooldown if they're sneaking, since they're casting a spell
+//        if (pl.isSneaking()) {
+//            e.setCancelled(true);
+//            return;
+//        }
 
         double speed;
         if (artifactType == Material.BOW) {

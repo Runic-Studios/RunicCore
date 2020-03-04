@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -11,11 +13,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class StaffListener implements Listener {
     // globals
     private static double BEAM_WIDTH = 2.0;
     private static int RADIUS = 5;
-    private static double RANGE = 8.0;
+    private static double RANGE = 6.0;
     private static final int SPEED_MULT = 3;
     private HashMap<UUID, List<UUID>> hasBeenHit = new HashMap<>();
 
@@ -48,6 +49,7 @@ public class StaffListener implements Listener {
 
         // only listen for items that can be artifact weapons
         if (artifactType == Material.AIR) return;
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         // IGNORE NON-STAFF ITEMS
         if (artifactType != Material.WOODEN_HOE) return;
@@ -63,9 +65,6 @@ public class StaffListener implements Listener {
          // cancel the event, run custom mechanics
          e.setCancelled(true);
 
-        // if they're sneaking, they're casting a spell. so we don't fire the attack.
-        if (pl.isSneaking()) return;
-
         // check for mage
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
@@ -77,7 +76,7 @@ public class StaffListener implements Listener {
 
         staffAttack(artifact, pl);
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 10);
+        pl.setCooldown(artifact.getType(), 20);
     }
 
     private void staffAttack(ItemStack artifact, Player pl) {
@@ -169,9 +168,9 @@ public class StaffListener implements Listener {
                                 // apply attack effects, random damage amount
                                 if (maxDamage != 0) {
                                     int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-                                    DamageUtil.damageEntityWeapon(randomNum, victim, pl, false, false);
+                                    DamageUtil.damageEntityWeapon(randomNum, victim, pl, true, false);
                                 } else {
-                                    DamageUtil.damageEntityWeapon(maxDamage, victim, pl, false, false);
+                                    DamageUtil.damageEntityWeapon(maxDamage, victim, pl, true, false);
                                 }
 
                                 pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
