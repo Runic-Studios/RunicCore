@@ -79,7 +79,7 @@ public class ActionBarUtil {
 
         duration *= 20; // convert to ticks
 
-        sendActionBar(player, message);
+        sendActionBar(player, ColorUtil.format(message));
 
         if (duration >= 0) {
             // Sends empty message at the end of the duration. Allows messages shorter than 3 seconds, ensures precision.
@@ -97,7 +97,7 @@ public class ActionBarUtil {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    sendActionBar(player, message);
+                    sendActionBar(player, ColorUtil.format(message));
                 }
             }.runTaskLater(RunicCore.getInstance(), duration);
         }
