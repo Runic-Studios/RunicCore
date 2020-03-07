@@ -28,7 +28,7 @@ import java.util.UUID;
  */
 public class HearthstoneListener implements Listener {
 
-    private static final int cooldownTime = 900;
+    private static final int cooldownTime = 0; // 900
     private static final double MOVE_CONSTANT = 0.6;
     private static final int TEL_TIME = 5;
     private HashMap<UUID, Long> hsCooldowns = new HashMap<>();
@@ -106,7 +106,7 @@ public class HearthstoneListener implements Listener {
 
             } else {
 
-                double rawTime = (double) ((cooldownTime*1000) - (System.currentTimeMillis()-hsCooldowns.get(uuid))) / 1000;
+                double rawTime = (double) (-(System.currentTimeMillis() - hsCooldowns.get(uuid))) / 1000;
                 pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                 pl.sendMessage(ChatColor.RED + "You must wait "
                         + ChatColor.YELLOW + (int) rawTime + "s"
@@ -213,29 +213,35 @@ public class HearthstoneListener implements Listener {
         int yaw;
         switch (itemLoc.toLowerCase()) {
 
-            case "naz'mora": // 11
+            case "naz'mora": // 12
                 x = 2587.5;
                 y = 33;
                 z = 979.5;
                 yaw = 270;
                 break;
-            case "naheen": // 10
+            case "naheen": // 11
                 x = 1962.5;
                 y = 42;
                 z = 349.5;
                 yaw = 270;
                 break;
-            case "zenyth": // 9
-                x = 1569.5;
+            case "zenyth": // 10
+                x = 1564.5;
                 y = 38;
-                z = -161.5;
-                yaw = 90;
+                z = -158.5;
+                yaw = 180;
+                break;
+            case "tireneas": // 9
+                x = 887.5;
+                y = 43;
+                z = 547.5;
+                yaw = 270;
                 break;
             case "isfodar": // 8
                 x = 744.5;
                 y = 94;
                 z = -137.5;
-                yaw = 90;
+                yaw = 270;
                 break;
             case "dead man's rest": // 7
                 x = -24.5;
@@ -243,23 +249,35 @@ public class HearthstoneListener implements Listener {
                 z = -475.5;
                 yaw = 90;
                 break;
-            //case "dawnshire Inn": // 6
-            //break;
+            case "dawnshire inn": // 6
+                x = -306.5;
+                y = 57;
+                z = -408.5;
+                yaw = 90;
+                break;
             case "wintervale": // 5
                 x = -1672.5;
                 y = 37;
                 z = -2639.5;
                 yaw = 90;
                 break;
-            //case "hilstead": // 4
-            //break;
-            //case "whaletown": // 3
-            //break;
-            case "koldore": // 2 // todo
+            case "hilstead": // 4
+                x = -1649.5;
+                y = 44;
+                z = -2053.5;
+                yaw = 270;
+                break;
+            case "whaletown": // 3
+                x = -1834.5;
+                y = 32;
+                z = -654.5;
+                yaw = 0;
+                break;
+            case "koldore": // 2
                 x = -1661.5;
                 y = 35;
                 z = 206.5;
-                yaw = 0;
+                yaw = 270;
                 break;
             case "azana": // 1
                 x = -825.5;
@@ -267,11 +285,11 @@ public class HearthstoneListener implements Listener {
                 z = 167.5;
                 yaw = 180;
                 break;
-            case "tutorial village": // tutorial 2 // todo
+            case "tutorial village": // tutorial 2
                 x = -1971.5;
                 y = 40;
                 z = 1940.5;
-                yaw = 0;
+                yaw = 270;
                 break;
             default:
                 x = -2317.5; // tutorial 1 (tutorial fortress)
