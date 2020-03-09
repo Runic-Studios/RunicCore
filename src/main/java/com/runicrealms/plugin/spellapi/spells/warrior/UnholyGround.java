@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,8 +32,8 @@ public class UnholyGround extends Spell {
                         "\nthat taunts enemy monsters within " + (int) RADIUS +
                         "\nblocks every " + PERIOD + " seconds(s)! While standing" +
                         "\non the unholy ground, you take " + (int) PERCENT + "%" +
-                        "\nless damage from monsters!"
-                        , ChatColor.WHITE,12, 15);
+                        "\nless damage from monsters!",
+                ChatColor.WHITE, ClassEnum.WARRIOR, 12, 15);
     }
 
     @Override

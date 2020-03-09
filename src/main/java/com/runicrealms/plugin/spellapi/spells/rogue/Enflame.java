@@ -1,11 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +32,7 @@ public class Enflame extends Spell {
                         "\nwith pure flame, causing your weapon⚔" +
                         "\nattacks to deal twice the damage for" +
                         "\nthe duration!",
-                ChatColor.WHITE,15, 20);
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
     }
 
     // spell execute code

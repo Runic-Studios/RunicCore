@@ -1,9 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,7 +22,7 @@ public class Cleave extends Spell {
                 "You cleave all enemies within" +
                         "\n" + RADIUS + " blocks for " + DAMAGE_AMT + " weapon⚔" +
                         "\ndamage!",
-                ChatColor.WHITE, 10, 10);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 10);
     }
 
     @Override

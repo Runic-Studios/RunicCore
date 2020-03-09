@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -28,7 +29,7 @@ public class Shadowbolt extends Spell {
                         "\nthat blinds enemies on impact" +
                         "\nfor " + DURATION + " seconds! This ability" +
                         "\nhas no effect versus monsters.",
-                ChatColor.WHITE, 5, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 5, 10);
     }
 
     @Override

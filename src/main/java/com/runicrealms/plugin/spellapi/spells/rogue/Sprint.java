@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
@@ -22,7 +23,8 @@ public class Sprint extends Spell {
     public Sprint() {
         super("Sprint",
                 "For " + DURATION + " seconds, you gain a" +
-                        "\nmassive boost of speed!", ChatColor.WHITE,10, 10);
+                        "\nmassive boost of speed!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 10, 10);
     }
 
     // spell execute code

@@ -1,11 +1,14 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -29,7 +32,7 @@ public class IceVolley extends Spell {
                         "\neach dealing " + DAMAGE + " spellʔ damage" +
                         "\nand slowing enemies hit!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, 6, 15);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 15);
         this.vArrows = new HashMap<>();
     }
 

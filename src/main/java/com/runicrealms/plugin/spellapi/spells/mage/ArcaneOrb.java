@@ -1,15 +1,21 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ArcaneOrb extends Spell {
@@ -25,7 +31,7 @@ public class ArcaneOrb extends Spell {
                         "\nFor the next " + DURATION + " seconds, all spellʔ" +
                         "\ndamage you deal is increased by " + (int) PERCENT + "%" +
                         "\nif you stand within " + RADIUS + " blocks" +
-                        "\nof the orb!", ChatColor.WHITE,15, 20);
+                        "\nof the orb!", ChatColor.WHITE, ClassEnum.MAGE, 15, 20);
     }
 
     @Override

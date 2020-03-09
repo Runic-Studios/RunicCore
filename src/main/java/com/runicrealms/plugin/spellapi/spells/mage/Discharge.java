@@ -1,18 +1,22 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.utilities.DamageUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -32,7 +36,7 @@ public class Discharge extends Spell {
                         "\nUpon impact, it summons lightning," +
                         "\ndealing " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + BLAST_RADIUS + " blocks.",
-                ChatColor.WHITE, 8, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 8, 15);
     }
 
     @Override

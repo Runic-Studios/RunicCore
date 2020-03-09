@@ -1,9 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -17,7 +21,8 @@ public class Lunge extends Spell {
         super("Lunge",
                 "You lunge forward into the air," +
                         "\ntaking reduced fall damage on" +
-                        "\nimpact!", ChatColor.WHITE,8, 12);
+                        "\nimpact!",
+                ChatColor.WHITE, ClassEnum.RUNIC, 8, 12);
     }
 
     @Override

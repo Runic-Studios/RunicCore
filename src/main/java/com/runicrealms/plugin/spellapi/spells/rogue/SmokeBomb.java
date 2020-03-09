@@ -1,12 +1,16 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,7 +35,7 @@ public class SmokeBomb extends Spell {
                         "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
                         "\nslows enemies within " + RADIUS + " blocks" +
                         "\nfor " + DURATION + " seconds!",
-                ChatColor.WHITE, 6, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
     }
 
     @Override

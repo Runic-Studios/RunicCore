@@ -1,10 +1,14 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -26,7 +30,7 @@ public class SearingShot extends Spell {
         super("Searing Shot",
                 "You launch an enchanted, flaming arrow" +
                 "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, 8, 12);
+                ChatColor.WHITE, ClassEnum.ARCHER, 8, 12);
         searingArrows = new ArrayList<>();
     }
 

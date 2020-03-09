@@ -1,11 +1,17 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import com.runicrealms.plugin.RunicCore;
-import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,7 +34,7 @@ public class Barrage extends Spell {
         super("Barrage",
                 "You launch a spread of five magical\n"
                         + "arrows that deal " + DAMAGE + " spellʔ damage!",
-                ChatColor.WHITE, 6, 15);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 15);
         this.bArrows = new HashMap<>();
         this.hasBeenHit = new HashMap<>();
     }

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,6 +15,8 @@ public interface ISpell {
     ChatColor getColor();
 
     String getDescription(); // returns the spell description
+
+    ClassEnum getReqClass();
 
     void execute(Player player, SpellItemType type); // casts the spell
 

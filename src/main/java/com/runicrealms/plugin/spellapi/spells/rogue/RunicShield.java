@@ -1,11 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,7 +29,8 @@ public class RunicShield extends Spell {
                 "For " + DURATION + " seconds, you gain a shield of runic" +
                         "\nmagic, causing you to become immune" +
                         "\nto all spellʔ damage! This ability has" +
-                        "\nno effect versus monsters.", ChatColor.WHITE,20, 20);
+                        "\nno effect versus monsters.",
+                ChatColor.WHITE, ClassEnum.ROGUE, 20, 20);
     }
 
     // spell execute code

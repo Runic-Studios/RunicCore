@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -22,7 +23,7 @@ public class Heal extends Spell {
         super("Heal",
                 "You restore✦ " + HEALING_AMT + " health to all" +
                         "\nallies within " + (int) RADIUS + " blocks!",
-                ChatColor.WHITE, 10, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 10, 20);
     }
 
     @Override

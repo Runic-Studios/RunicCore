@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -22,7 +23,7 @@ public class Blink extends Spell {
         super("Blink",
                 "You teleport forward, up to" +
                         "\na distance of " + MAX_DIST + " blocks!",
-                ChatColor.WHITE, 10, 20);
+                ChatColor.WHITE, ClassEnum.RUNIC, 10, 20);
     }
 
     // spell execute code

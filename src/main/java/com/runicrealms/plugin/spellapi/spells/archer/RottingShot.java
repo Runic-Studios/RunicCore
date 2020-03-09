@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -30,7 +31,7 @@ public class RottingShot extends Spell {
                 "\ndeals " + DAMAGE + " spellʔ damage every " + PERIOD + " seconds" +
                 "\nfor " + DURATION + " seconds to its target." +
                 "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, 16, 15);
+                ChatColor.WHITE, ClassEnum.ARCHER, 16, 15);
     }
 
     @Override

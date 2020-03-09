@@ -1,9 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
@@ -12,7 +16,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -31,7 +34,7 @@ public class MeteorShower extends Spell {
                 "You launch four projectile meteors" +
                         "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
-                ChatColor.WHITE, 10, 10);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 10);
         hasBeenHit = new HashMap<>();
     }
 

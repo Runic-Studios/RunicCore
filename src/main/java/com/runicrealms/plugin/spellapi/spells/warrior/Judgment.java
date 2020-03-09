@@ -1,15 +1,19 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,7 @@ public class Judgment extends Spell {
                         "\nprevents them from entering, but" +
                         "\nallies may pass through it. During" +
                         "\nthis time, you may not move.",
-                ChatColor.WHITE, 9, 25);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 9, 25);
         judgers = new ArrayList<>();
     }
 

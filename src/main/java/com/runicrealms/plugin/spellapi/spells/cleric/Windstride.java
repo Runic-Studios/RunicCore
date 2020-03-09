@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.entity.Entity;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -24,7 +25,7 @@ public class Windstride extends Spell {
                 "For " + BUFF_DURATION + " seconds, you grant a massive" +
                         "\nspeed boost to yourself and all" +
                         "\nallies within " + RADIUS + " blocks!",
-                ChatColor.WHITE, 20, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 20, 15);
     }
 
     // spell execute code

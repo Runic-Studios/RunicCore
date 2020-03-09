@@ -1,18 +1,16 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
-
-import java.util.HashMap;
-import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Parry extends Spell {
@@ -22,7 +20,7 @@ public class Parry extends Spell {
     // constructor
     public Parry() {
         super("Parry", "You launch yourself backwards in the air!",
-                ChatColor.WHITE, 8, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 8, 10);
     }
 
     @Override

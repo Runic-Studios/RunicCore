@@ -1,12 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
-import org.bukkit.entity.LivingEntity;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -30,7 +31,7 @@ public class Rejuvenate extends Spell {
                 "You launch a beam of healing magic," +
                 "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
                 "\nall allies it passes through!",
-                ChatColor.WHITE, 7, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 7, 15);
         this.hasBeenHit = new HashMap<>();
     }
 

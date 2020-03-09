@@ -1,17 +1,20 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -31,7 +34,7 @@ public class Blizzard extends Spell {
                         "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
                         "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, 10, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 15);
         this.snowballMap = new HashMap<>();
     }
 

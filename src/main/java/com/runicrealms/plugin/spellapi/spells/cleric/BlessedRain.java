@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -7,7 +9,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,7 +28,7 @@ public class BlessedRain extends Spell {
                         "\nwhich restores✦ " + HEALING_AMT + " health to allies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, 12, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 12, 20);
     }
 
     @Override

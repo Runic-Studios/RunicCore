@@ -1,11 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -29,7 +33,7 @@ public class Frostbolt extends Spell {
                 "You launch a projectile bolt of ice" +
                         "\nthat deals " + DAMAGE_AMT + " spellʔ damage on" +
                         "\nimpact and slows its target!",
-                ChatColor.WHITE, 5, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 5, 10);
     }
 
     // spell execute code

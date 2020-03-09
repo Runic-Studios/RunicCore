@@ -1,11 +1,14 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +37,7 @@ public class HolyWater extends Spell {
                         "\nreceive an additional " + PERCENT + "% health" +
                         "\nfrom all healing✦ spells for " + DURATION +
                         "\nseconds!",
-                ChatColor.WHITE,10, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 10, 10);
         affectedPlayers = new HashMap<>();
     }
 

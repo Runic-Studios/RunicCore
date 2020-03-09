@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -34,7 +35,7 @@ public class WoundingShot extends Spell {
                 "\ndeals " + DAMAGE + " spellʔ damage to its target and" +
                 "\nreduces all ✦spell healing on the target" +
                 "\nby " + (int) PERCENT + "%" + " for " + DURATION + " seconds!",
-                ChatColor.WHITE, 15, 20);
+                ChatColor.WHITE, ClassEnum.ARCHER, 15, 20);
     }
 
     @Override

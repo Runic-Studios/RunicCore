@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -11,7 +13,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Harpoon extends Spell {
@@ -24,7 +25,7 @@ public class Harpoon extends Spell {
                 "You launch a projectile harpoon" +
                         "\nwhich pulls your enemy towards" +
                         "\nyou!",
-                ChatColor.WHITE, 12, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 12, 15);
     }
 
     // spell execute code

@@ -1,10 +1,14 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,7 +21,7 @@ public class Cleanse extends Spell {
                 "You cleanse negative effects" +
                         "\non you, freeing you from" +
                         "\nblindness and slows!",
-                ChatColor.WHITE, 6, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 6, 10);
     }
 
     // spell execute code

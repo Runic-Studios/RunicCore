@@ -1,8 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
@@ -14,7 +19,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +38,7 @@ public class ShriekingSkull extends Spell {
                         "\nlaunching the first enemy hit into the air," +
                         "\nblinding them, and forcing them to fall" +
                         "\nslowly to the ground!",
-                ChatColor.WHITE, 8, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 8, 15);
     }
 
     @Override

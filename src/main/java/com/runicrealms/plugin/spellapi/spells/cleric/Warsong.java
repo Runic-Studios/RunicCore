@@ -1,10 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,7 +31,7 @@ public class Warsong extends Spell {
                         "\nFor " + DURATION + " seconds, the buff increases the" +
                         "\nweapon⚔ damage of you and your allies" +
                         "\nby " + (int) PERCENT + "%!",
-                ChatColor.WHITE, 15, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
         singers = new ArrayList<>();
     }
 

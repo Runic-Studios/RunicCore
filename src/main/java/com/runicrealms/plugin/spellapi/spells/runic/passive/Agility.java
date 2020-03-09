@@ -1,9 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.runic.passive;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +27,7 @@ public class Agility extends Spell {
         super ("Agility",
                 "Damaging an enemy has a " + PERCENT + "% chance" +
                         "\nto grant you speed for " + DURATION + " second(s)!",
-                ChatColor.WHITE, 12, 15);
+                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }
 

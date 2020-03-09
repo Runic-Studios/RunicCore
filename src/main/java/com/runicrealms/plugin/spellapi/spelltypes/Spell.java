@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -29,16 +30,18 @@ public abstract class Spell implements ISpell, Listener {
 
     private String name, description;
     private ChatColor color;
+    private ClassEnum reqClass;
     private double cooldown;
     protected RunicCore plugin = RunicCore.getInstance();
     private int manaCost;
     private boolean isPassive = false;
 
-    public Spell(String name, String description, ChatColor color, double cooldown, int manaCost) {
+    public Spell(String name, String description, ChatColor color, ClassEnum reqClass, double cooldown, int manaCost) {
 
         this.name = name;
         this.description = description;
         this.color = color;
+        this.reqClass = reqClass;
         this.cooldown = cooldown;
         this.manaCost = manaCost;
 
@@ -49,6 +52,16 @@ public abstract class Spell implements ISpell, Listener {
     public void execute(Player player, SpellItemType type) {
 
         if (!RunicCore.getSpellManager().isOnCooldown(player, this)) { // ensure spell is not on cooldown
+
+            // verify class
+            if (this.getReqClass() != ClassEnum.RUNIC) {
+                if (!this.getReqClass().toString().toLowerCase().equals
+                        (RunicCore.getCacheManager().getPlayerCache(player.getUniqueId()).getClassName().toLowerCase())) {
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                    ActionBarUtil.sendTimedMessage(player, "&cYour class cannot cast this spell!", 3);
+                    return;
+                }
+            }
 
             if (!verifyMana(player)) return; // verify the mana
 
@@ -68,7 +81,6 @@ public abstract class Spell implements ISpell, Listener {
         int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
         if (currentMana < this.manaCost) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-            //player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You don't have enough mana!"));
             ActionBarUtil.sendTimedMessage(player, "&cYou don't have enough mana!", 2);
             return false;
         }
@@ -144,6 +156,11 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public String getDescription() {
         return this.description;
+    }
+
+    @Override
+    public ClassEnum getReqClass() {
+        return reqClass;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -35,7 +36,7 @@ public class ArrowBomb extends Spell {
                 "You launch an enchanted arrow," +
                         "\ndealing " + DAMAGE + " spellʔ damage to all" +
                         "\nenemies within " + RADIUS + " blocks!",
-                ChatColor.WHITE, 8, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
         this.bombArrow = new HashMap<>();
     }
 

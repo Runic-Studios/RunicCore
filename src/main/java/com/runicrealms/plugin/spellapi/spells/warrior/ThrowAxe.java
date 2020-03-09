@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
@@ -8,7 +10,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class ThrowAxe extends Spell {
                         "\n" + DAMAGE + " spellʔ damage to the first enemy" +
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
-                ChatColor.WHITE,10, 10);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 10);
         hasBeenHit = new HashMap<>();
         silenced = new ArrayList<>();
     }

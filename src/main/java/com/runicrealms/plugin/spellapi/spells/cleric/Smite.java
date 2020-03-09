@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -22,7 +23,7 @@ public class Smite extends Spell {
                 "You smite all enemies within " + (int) RADIUS + " blocks," +
                         "\ndealing " + DAMAGE_AMT + " spellʔ damage to them." +
                         "\nUndead enemies take double damage!",
-                ChatColor.WHITE, 8, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 8, 20);
     }
 
     @Override

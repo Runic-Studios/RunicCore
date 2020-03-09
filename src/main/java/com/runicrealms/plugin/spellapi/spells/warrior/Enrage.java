@@ -1,11 +1,16 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -32,7 +36,7 @@ public class Enrage extends Spell {
                         "\nyou gain an immense boost of speed" +
                         "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
                         "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, 10, 15);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 15);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -10,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -30,7 +31,7 @@ public class Sandstorm extends Spell {
                         "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage" +
                         "\nand slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, 10, 12);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 12);
     }
 
     // spell execute code

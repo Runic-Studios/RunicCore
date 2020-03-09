@@ -1,8 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -29,7 +33,7 @@ public class Grapple extends Spell {
                 "You fire a grappling hook which pulls" +
                         "\nyou to your target location, up to a max" +
                         "\nof " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, 15, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 15, 25);
     }
 
     // spell execute code

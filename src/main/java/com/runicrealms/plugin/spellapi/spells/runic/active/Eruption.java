@@ -1,14 +1,18 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,7 +32,7 @@ public class Eruption extends Spell {
                         "\nwhich deals " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, 12, 20);
+                ChatColor.WHITE, ClassEnum.RUNIC, 12, 20);
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +32,7 @@ public class Reflect extends Spell {
                         "\nenchantment! Enemies who strike" +
                         "\nyou suffer " + DAMAGE + " spellʔ damage" +
                         "\neach attack!",
-                ChatColor.WHITE,16, 15);
+                ChatColor.WHITE, ClassEnum.RUNIC, 16, 15);
     }
 
     // spell execute code

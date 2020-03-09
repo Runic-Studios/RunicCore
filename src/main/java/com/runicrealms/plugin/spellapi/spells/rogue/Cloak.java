@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -35,7 +36,7 @@ public class Cloak extends Spell {
                         "\nimmune to damage from monsters!" +
                         "\nDealing damage ends the effect" +
                         "\nearly.",
-                ChatColor.WHITE, 10, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 10, 15);
         cloakers = new ArrayList<>();
         hasDealtDamage = new HashSet<>();
     }

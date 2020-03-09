@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -26,7 +27,7 @@ public class Fireball extends Spell {
                 "You launch a projectile fireball" +
                         "\nthat deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
-                ChatColor.WHITE, 5, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
     }
 
     @Override
