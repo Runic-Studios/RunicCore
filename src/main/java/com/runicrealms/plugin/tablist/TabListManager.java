@@ -4,8 +4,8 @@ import com.keenant.tabbed.Tabbed;
 import com.keenant.tabbed.item.TextTabItem;
 import com.keenant.tabbed.tablist.TableTabList;
 import com.keenant.tabbed.util.Skins;
-import me.glaremasters.guilds.Guilds;
-import me.glaremasters.guilds.guild.Guild;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,8 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.parties.Party;
 
 // TODO: fix flickering, fix pings in text component always being '0'
 public class TabListManager implements Listener {
@@ -83,18 +81,19 @@ public class TabListManager implements Listener {
         }
 
         // Column 2 (Guild)
-        Guild guild = Guilds.getApi().getGuild(Bukkit.getOfflinePlayer(pl.getUniqueId()));
+        // todo: finish w/ new plugins
+        String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
         if (guild == null) {
             tab.set(1, 0, new TextTabItem
                     (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));
         } else {
             tab.set(1, 0, new TextTabItem
-                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + guild.getOnlineAsPlayers().size() + "]", 0, Skins.getDot(ChatColor.GOLD)));
+                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + 0 + "]", 0, Skins.getDot(ChatColor.GOLD)));
             int j = 0;
-            for (Player guildy : guild.getOnlineAsPlayers()) {
-                tab.set(1, j + 1, new TextTabItem(guildy.getName(), 0, Skins.getPlayer(guildy)));
-                j++;
-            }
+//            for (Player guildy : guild.getOnlineAsPlayers()) {
+//                tab.set(1, j + 1, new TextTabItem(guildy.getName(), 0, Skins.getPlayer(guildy)));
+//                j++;
+//            }
         }
 
         // Column 4 (Friends)

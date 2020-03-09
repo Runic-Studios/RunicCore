@@ -28,8 +28,6 @@ import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.runicrealms.plugin.listeners.DamageListener.weaponMessage;
-
 @SuppressWarnings("FieldCanBeLocal")
 public class BowListener implements Listener {
 
@@ -55,7 +53,7 @@ public class BowListener implements Listener {
         // only listen for items that can be artifact weapons
         if (artifactType == null) return;
 
-        // only listen for staves
+        // only listen for bows
         if (!(artifactType.equals(WeaponEnum.BOW))) return;
 
         Player pl = e.getPlayer();
@@ -69,8 +67,6 @@ public class BowListener implements Listener {
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
         if (!className.equals("Archer")) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            pl.sendMessage(weaponMessage(className));
             return;
         }
 

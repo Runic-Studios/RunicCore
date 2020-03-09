@@ -119,14 +119,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/MythicMobs-4.5.5.jar</systemPath>
         </dependency>
-        <!-- Guilds -->
-        <dependency>
-            <groupId>me.glaremasters</groupId>
-            <artifactId>guilds</artifactId>
-            <version>3.5.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Guilds-3.5.1-RELEASE.jar</systemPath>
-        </dependency>
         <!-- NBT Api -->
         <dependency>
             <groupId>com.github.tr7zw</groupId>

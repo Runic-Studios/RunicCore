@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.runicrealms.plugin.listeners.DamageListener.weaponMessage;
-
 public class StaffListener implements Listener {
 
     // globals
@@ -69,8 +67,6 @@ public class StaffListener implements Listener {
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
         if (!className.equals("Mage")) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            pl.sendMessage(weaponMessage(className));
             return;
         }
 

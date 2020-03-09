@@ -5,7 +5,7 @@ main: com.runicrealms.plugin.RunicCore
 description: Core plugin for the "Runic Realms" server
 author: Skyfallin_
 loadbefore: [Quests]
-depend: [Guilds, RunicCharacters]
+depend: [RunicCharacters]
 softdepend: [PlaceholderAPI]
 commands:
   artifactinfo:

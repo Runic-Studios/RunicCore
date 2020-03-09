@@ -2,8 +2,6 @@ package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
-import me.glaremasters.guilds.Guilds;
-import me.glaremasters.guilds.guild.Guild;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -244,9 +242,9 @@ public class ScoreboardHandler implements Listener {
 
     private String playerGuild(Player pl) {
         String display;
-        Guild guild = Guilds.getApi().getGuild(Bukkit.getOfflinePlayer(pl.getUniqueId()));
+        String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
         if(guild != null) {
-            display = ChatColor.GRAY + "Guild: " + ChatColor.GOLD + guild.getName();
+            display = ChatColor.GRAY + "Guild: " + ChatColor.GOLD + guild;
         } else {
             display = ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None";
         }

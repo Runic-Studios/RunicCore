@@ -19,7 +19,6 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -250,7 +249,7 @@ public class DamageListener implements Listener {
         applyDeathMechanics(victim);
     }
 
-    private void applyDeathMechanics(Player victim) {
+    public static void applyDeathMechanics(Player victim) {
 
         // call runic death event
         RunicDeathEvent event = new RunicDeathEvent(victim);
@@ -299,7 +298,7 @@ public class DamageListener implements Listener {
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
     }
 
-    public void applySlainMechanics(Entity damager, Player victim) {
+    public static void applySlainMechanics(Entity damager, Player victim) {
 
         // if the player was killed by an arrow, set damager to its shooter
         if (damager instanceof Arrow) {
@@ -328,7 +327,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    private void broadcastSlainDeathMessage(Entity damager, Player victim) {
+    public static void broadcastSlainDeathMessage(Entity damager, Player victim) {
 
         String nameVic = victim.getName();
 
@@ -350,7 +349,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    private void broadcastDeathMessage(Player victim) {
+    public static void broadcastDeathMessage(Player victim) {
         String nameVic = victim.getName();
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
@@ -361,7 +360,7 @@ public class DamageListener implements Listener {
      * it skips soulbound items. It removes protections from protected items.
      * @param pl player whose items may drop
      */
-    private void tryDropItems(Player pl) {
+    public static void tryDropItems(Player pl) {
 
         // don't drop items in dungeon world.
         if (pl.getWorld().getName().toLowerCase().equals("dungeons")) return;
@@ -386,8 +385,6 @@ public class DamageListener implements Listener {
             // remove protection from items
             String isProtected = AttributeUtil.getCustomString(is, "protected");
             if (isProtected.equals("true")) {
-                is = AttributeUtil.addCustomStat(is, "protected", "false");
-                removeGlow(is);
                 if (!hasSeenProtMessage) {
                     pl.sendMessage(ChatColor.GRAY + "Your item(s) have lost their protection!");
                     hasSeenProtMessage = true;
@@ -442,11 +439,5 @@ public class DamageListener implements Listener {
         }
 
         return "";
-    }
-
-    private void removeGlow(ItemStack is) {
-        for (Enchantment enchantment : is.getEnchantments().keySet()) {
-            is.removeEnchantment(enchantment);
-        }
     }
 }

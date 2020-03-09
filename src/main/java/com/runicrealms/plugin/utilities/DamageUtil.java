@@ -112,8 +112,6 @@ public class DamageUtil {
 
     private static void mobDamage(double dmgAmt, LivingEntity recipient, Entity damager) {
 
-        DamageListener damageListener = new DamageListener();
-
         /*
         Calculated in Damage Listener now so this doesn't override debuffs from spells.
          */
@@ -155,7 +153,7 @@ public class DamageUtil {
             recipient.setHealth(newHP);
             recipient.damage(0.0000000000001);
         } else if (recipient instanceof Player) {
-            damageListener.applySlainMechanics(damager, (Player) recipient);
+            DamageListener.applySlainMechanics(damager, (Player) recipient);
         } else {
             recipient.setHealth(0);
         }
@@ -173,8 +171,6 @@ public class DamageUtil {
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(caster) != null
                 && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
-
-        DamageListener damageListener = new DamageListener();
 
         int newHP = (int) (recipient.getHealth() - dmgAmt);
 
@@ -206,7 +202,7 @@ public class DamageUtil {
             recipient.setHealth(newHP);
             recipient.damage(0.0000000000001);
         } else if (recipient instanceof Player) {
-            damageListener.applySlainMechanics(caster, (Player) recipient);
+            DamageListener.applySlainMechanics(caster, (Player) recipient);
         } else {
             recipient.setHealth(0);
         }
