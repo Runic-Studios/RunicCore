@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,6 +43,8 @@ public class BowListener implements Listener {
         if (e.getItem() == null) {
             return;
         }
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         // retrieve the weapon type
         ItemStack artifact = e.getItem();

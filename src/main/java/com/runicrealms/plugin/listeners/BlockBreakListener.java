@@ -15,6 +15,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 /**
  * Prevents players from breaking blocks on the server, but doesn't listen for gathering materials, since those
@@ -115,6 +116,8 @@ public class BlockBreakListener implements Listener {
         if (e.getClickedBlock() == null) return;
         Block target = e.getClickedBlock();
         if (e.getPlayer().isOp()) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         // offhand items
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK

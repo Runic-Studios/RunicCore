@@ -8,9 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,7 +20,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * This class communicates with the 'chests.yml' data file
@@ -198,6 +198,7 @@ public class LootChestListener implements Listener {
 
         Player pl = e.getPlayer();
         if (!pl.isOp()) return;
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
         Material heldItemType = pl.getInventory().getItemInMainHand().getType();
