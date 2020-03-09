@@ -5,15 +5,17 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class Smite extends Spell {
 
-    private static final int DAMAGE_AMT = 15;
-    private static final float RADIUS = 5f;
+    private static final int DAMAGE_AMT = 8;
+    private static final float RADIUS = 3f;
 
     public Smite() {
         super("Smite",

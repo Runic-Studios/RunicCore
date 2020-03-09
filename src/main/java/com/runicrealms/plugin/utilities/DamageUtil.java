@@ -1,16 +1,16 @@
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
+import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.GearScanner;
-import com.runicrealms.plugin.listeners.DamageListener;
-import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 
 public class DamageUtil {
 
@@ -149,7 +149,7 @@ public class DamageUtil {
             if (recipient instanceof Monster) {
                 Monster monster = (Monster) recipient;
                 if (damager instanceof LivingEntity) {
-                    monster.setTarget((LivingEntity) damager);
+                    if (monster.getTarget() == null) monster.setTarget((LivingEntity) damager);
                 }
             }
             recipient.setHealth(newHP);
@@ -201,7 +201,7 @@ public class DamageUtil {
         if (newHP >= 1) {
             if (recipient instanceof Monster) {
                 Monster monster = (Monster) recipient;
-                monster.setTarget(caster);
+                if (monster.getTarget() == null) monster.setTarget(caster);
             }
             recipient.setHealth(newHP);
             recipient.damage(0.0000000000001);

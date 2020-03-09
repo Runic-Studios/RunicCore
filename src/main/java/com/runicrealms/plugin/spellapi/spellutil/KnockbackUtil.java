@@ -44,10 +44,15 @@ public class KnockbackUtil {
 //    }
 
     public static void knockbackRanged(Player p, Entity t) {
+//        Location l = t.getLocation().subtract(p.getLocation());
+//        double distance = t.getLocation().distance(p.getLocation());
+//        Vector v = l.toVector().multiply(1/(2.5*distance));
+//        v.setY(0.3333/2.25);
+//        t.setVelocity(v);
         Location l = t.getLocation().subtract(p.getLocation());
-        double distance = t.getLocation().distance(p.getLocation());
-        Vector v = l.toVector().multiply(1/(2.5*distance));
-        v.setY(0.3333/2.25);
+        //double distance = t.getLocation().distance(attacker.getLocation());
+        Vector v = l.toVector().multiply(.025);
+        v.setY(0.2);
         t.setVelocity(v);
     }
 }
