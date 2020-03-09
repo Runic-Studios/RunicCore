@@ -16,7 +16,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.UUID;
 
 public class BossTagger implements Listener {
 
@@ -70,7 +73,7 @@ public class BossTagger implements Listener {
             public void run() {
                 bossLooters.get(e.getEntity().getUniqueId()).clear();
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 40L);
+        }.runTaskLater(RunicCore.getInstance(), 40L);
     }
 
     /**

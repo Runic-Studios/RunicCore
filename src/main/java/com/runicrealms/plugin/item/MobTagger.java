@@ -15,7 +15,9 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 
 public class MobTagger implements Listener {
 
@@ -38,7 +40,7 @@ public class MobTagger implements Listener {
                 removeTags();
                 removePriority();
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0L, 20L);
+        }.runTaskTimer(RunicCore.getInstance(), 0L, 20L);
     }
 
     /**
