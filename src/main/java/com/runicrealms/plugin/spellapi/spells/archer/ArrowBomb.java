@@ -28,13 +28,13 @@ public class ArrowBomb extends Spell {
     // globals
     private HashMap<Arrow, UUID> bombArrow;
     private static final int DAMAGE = 15;
-    private static final int RADIUS = 4;
+    private static final int RADIUS = 3;
 
     // constructor
     public ArrowBomb() {
         super("Arrow Bomb",
                 "You launch an enchanted arrow," +
-                        "\ndealing " + DAMAGE + " spellʔ damage to all" +
+                        "\ndealing " + DAMAGE + " weapon⚔ damage to all" +
                         "\nenemies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
         this.bombArrow = new HashMap<>();
@@ -106,7 +106,7 @@ public class ArrowBomb extends Spell {
         LivingEntity le = (LivingEntity) victim;
 
         if (verifyEnemy(pl, le)){
-            DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
+            DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true);
         }
     }
 }

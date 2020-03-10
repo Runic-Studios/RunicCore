@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class Blizzard extends Spell {
 
-    private static final int DAMAGE_AMOUNT = 5;
+    private static final int DAMAGE_AMOUNT = 15;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -34,7 +34,7 @@ public class Blizzard extends Spell {
                         "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
                         "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         this.snowballMap = new HashMap<>();
     }
 

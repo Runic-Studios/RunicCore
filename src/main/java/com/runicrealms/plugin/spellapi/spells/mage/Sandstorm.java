@@ -20,7 +20,7 @@ import java.util.Random;
 public class Sandstorm extends Spell {
 
     private static final int DURATION = 6;
-    private static final int DAMAGE_AMT = 3;
+    private static final int DAMAGE_AMT = 15;
     private static final int PERIOD = 1;
     private static final int RADIUS = 3;
 
@@ -31,7 +31,7 @@ public class Sandstorm extends Spell {
                         "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage" +
                         "\nand slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 12);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 10);
     }
 
     // spell execute code

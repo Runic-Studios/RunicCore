@@ -95,7 +95,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(plugin, 0, 1L);
 
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 10);
+        pl.setCooldown(artifact.getType(), 15);
     }
 
     @EventHandler

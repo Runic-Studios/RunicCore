@@ -25,7 +25,7 @@ import java.util.UUID;
 public class Discharge extends Spell {
 
     private static final int DAMAGE_AMT = 20;
-    private static final int BLAST_RADIUS = 3;
+    private static final int BLAST_RADIUS = 5;
     private static final double KNOCKBACK_MULT = -0.2;
     private static final double KNOCKUP_AMT = 0.5;
     private HashMap<Arrow, UUID> trails = new HashMap<>();

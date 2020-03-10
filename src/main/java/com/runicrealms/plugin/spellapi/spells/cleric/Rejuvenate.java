@@ -31,7 +31,7 @@ public class Rejuvenate extends Spell {
                 "You launch a beam of healing magic," +
                 "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
                 "\nall allies it passes through!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 7, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 7, 20);
         this.hasBeenHit = new HashMap<>();
     }
 

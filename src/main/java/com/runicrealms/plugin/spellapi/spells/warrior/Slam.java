@@ -19,14 +19,14 @@ import org.bukkit.util.Vector;
 public class Slam extends Spell {
 
     private static final double KNOCKUP_AMT = 0.2;
-    private static final int DAMAGE_AMT = 6;
+    private static final int DAMAGE_AMT = 15;
     private static final double HEIGHT = 1.2;
-    private static final int RADIUS = 5;
+    private static final int RADIUS = 3;
 
     public Slam() {
         super("Slam", "You charge fearlessly into the air!" +
                         "\nUpon hitting the ground, you deal " +
-                        "\n" + DAMAGE_AMT + " spellʔ damage to enemies within" +
+                        "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
                         "\n" + RADIUS + " blocks and knock them up!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 8, 15);
     }
@@ -89,7 +89,7 @@ public class Slam extends Spell {
 
                     for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (verifyEnemy(pl, en)) {
-                            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, false);
+                            DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, true);
                             Vector force = (pl.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             en.setVelocity(force.normalize());

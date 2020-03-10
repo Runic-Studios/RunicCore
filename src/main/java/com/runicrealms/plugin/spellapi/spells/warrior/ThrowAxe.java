@@ -24,7 +24,7 @@ import java.util.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class ThrowAxe extends Spell {
 
-    private static final int DAMAGE = 10;
+    private static final int DAMAGE = 20;
     private static final int DURATION = 3;
     private HashMap<UUID, UUID> hasBeenHit;
     private List<UUID> silenced;
@@ -32,7 +32,7 @@ public class ThrowAxe extends Spell {
     public ThrowAxe() {
         super("Throw Axe",
                 "You throw your artifact, dealing" +
-                        "\n" + DAMAGE + " spellʔ damage to the first enemy" +
+                        "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 10);
@@ -75,7 +75,7 @@ public class ThrowAxe extends Spell {
                         en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         en.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, pl, false);
+                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) en, pl, false, true);
                         projectile.remove();
                     }
                 }

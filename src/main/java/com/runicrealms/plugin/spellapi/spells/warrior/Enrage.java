@@ -26,7 +26,7 @@ public class Enrage extends Spell {
 
     private static final int CHANNEL_DURATION = 3;
     private static final int BUFF_DURATION = 10;
-    private static final int DAMAGE_AMT = 3;
+    private static final int DAMAGE_AMT = 5;
     private static HashMap<UUID, Long> ragers = new HashMap<>();
 
     public Enrage() {

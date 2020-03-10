@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("FieldCanBeLocal")
 public class BlessedRain extends Spell {
 
-    private static final int HEALING_AMT = 5;
+    private static final int HEALING_AMT = 15;
     private static final int DURATION = 5;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
@@ -28,7 +28,7 @@ public class BlessedRain extends Spell {
                         "\nwhich restores✦ " + HEALING_AMT + " health to allies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
     }
 
     @Override

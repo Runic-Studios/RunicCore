@@ -22,7 +22,7 @@ public class HolyNova extends Spell {
 
     private static final int DAMAGE_AMT = 5;
     private static final int DURATION = 5;
-    private static final int HEAL_AMT = 3;
+    private static final int HEAL_AMT = 8;
     private static final float RADIUS = 5f;
 
     // constructor
@@ -33,7 +33,7 @@ public class HolyNova extends Spell {
                         "\nthat deal " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nand restore✦ " + HEAL_AMT + " health to allies!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
     }
 
     @Override

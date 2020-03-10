@@ -85,6 +85,7 @@ public class BossTagger implements Listener {
         ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(en.getUniqueId()).get();
         if (am.getFaction() == null) return;
         if (!am.getFaction().equalsIgnoreCase("boss")) return;
+        if (bossLooters.get(am.getUniqueId()) == null) return;
         if (bossLooters.get(am.getUniqueId()).contains(pl.getUniqueId())) return;
 
         UUID plID = pl.getUniqueId();

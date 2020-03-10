@@ -22,7 +22,7 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class PlagueBomb extends Spell {
 
-    private static final int DAMAGE_AMT = 2;
+    private static final int DAMAGE_AMT = 20;
     private static final int DURATION = 6;
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;
@@ -35,7 +35,7 @@ public class PlagueBomb extends Spell {
                         "\n" + DURATION + " seconds to enemies within" +
                         "\n" + RADIUS + " blocks of the cloud." +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 10);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 15);
     }
 
     // spell execute code

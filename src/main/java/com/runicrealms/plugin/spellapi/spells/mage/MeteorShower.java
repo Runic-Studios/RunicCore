@@ -25,7 +25,7 @@ public class MeteorShower extends Spell {
 
     private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
-    private static final int DAMAGE_AMOUNT = 20;
+    private static final int DAMAGE_AMOUNT = 25;
     private SmallFireball meteor;
     private HashMap<UUID, UUID> hasBeenHit;
 
@@ -34,7 +34,7 @@ public class MeteorShower extends Spell {
                 "You launch four projectile meteors" +
                         "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 10);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
     }
 

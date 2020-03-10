@@ -61,7 +61,7 @@ public class ItemUtils {
                 maxMana = 10;
                 break;
             case "warrior":
-                maxHealth = 20;
+                maxHealth = 25;
                 maxMana = 10;
                 break;
         }
@@ -98,19 +98,19 @@ public class ItemUtils {
         ((Damageable) Objects.requireNonNull(meta)).setDamage(durability);
         uncommonItem.setItemMeta(meta);
 
-        // set minimum level
+        // set required level
         uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "required.level", 10);
 
         // item can be socketed once
         uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.socketCount", 1);
 
         Random rand = new Random();
-        int numOfStats = rand.nextInt(2) + 1;
 
         int health = 0;
         int mana = 0;
-        int weapDamage = rand.nextInt(2-1) + 1;
-
+        int weapDamage = rand.nextInt(2-1) + 1; // 1-2
+        int healing = rand.nextInt(3-1) + 1; // 1-3
+        int spellDamage = rand.nextInt(3-1) + 1; // 1-3
         String className = TieredItemGenerator.determineClass(uncommonItem, material);
         switch (className.toLowerCase()) {
             case "mage":
@@ -130,21 +130,28 @@ public class ItemUtils {
                 mana = rand.nextInt(15-10) + 10;
                 break;
             case "warrior":
-                health = rand.nextInt(30-20) + 20;
+                health = rand.nextInt(40-25) + 25;
                 mana = rand.nextInt(15-10) + 10;
                 break;
         }
 
-        List<Integer> stats = determineWhichStats(numOfStats, 3); // 1 or 2 stats in addition to health
+        List<Integer> stats = ItemUtils.determineWhichStats(1, 5);
 
+        //  add health no matter what
         uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.maxHealth", health);
         uncommonItem = AttributeUtil.addGenericStat(uncommonItem, "generic.armor", 0, itemSlot);
 
-        if (stats.contains(2)) {
+        //if (stats.contains(2)) {
             uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.manaBoost", mana);
-        }
+        //}
         if (stats.contains(3)) {
             uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.attackDamage", weapDamage);
+        }
+        if (stats.contains(4)) {
+            uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.healingBoost", healing);
+        }
+        if (stats.contains(5)) {
+            uncommonItem = AttributeUtil.addCustomStat(uncommonItem, "custom.magicDamage", spellDamage);
         }
 
         ItemNameGenerator nameGen = new ItemNameGenerator();
@@ -180,8 +187,8 @@ public class ItemUtils {
         int health = 0;
         int mana = 0;
         int weapDamage = rand.nextInt(3-2) + 2; // 2-3
-        int healing = 3;
-        int spellDamage = rand.nextInt(4-2) + 2; // 2-4
+        int healing = rand.nextInt(5-2) + 2; // 2-5
+        int spellDamage = rand.nextInt(5-2) + 2; // 2-5
         String className = TieredItemGenerator.determineClass(rareItem, material);
         switch (className.toLowerCase()) {
             case "mage":
@@ -201,20 +208,20 @@ public class ItemUtils {
                 mana = rand.nextInt(30-15) + 15;
                 break;
             case "warrior":
-                health = rand.nextInt(50-30) + 30;
+                health = rand.nextInt(60-35) + 35;
                 mana = rand.nextInt(30-15) + 15;
                 break;
         }
 
-        List<Integer> stats = ItemUtils.determineWhichStats(2, 5);
+        List<Integer> stats = ItemUtils.determineWhichStats(1, 5);
 
         //  add health no matter what
         rareItem = AttributeUtil.addCustomStat(rareItem, "custom.maxHealth", health);
         rareItem = AttributeUtil.addGenericStat(rareItem, "generic.armor", 0, itemSlot);
 
-        if (stats.contains(2)) {
+        //if (stats.contains(2)) {
             rareItem = AttributeUtil.addCustomStat(rareItem, "custom.manaBoost", mana);
-        }
+        //}
         if (stats.contains(3)) {
             rareItem = AttributeUtil.addCustomStat(rareItem, "custom.attackDamage", weapDamage);
         }
@@ -258,7 +265,7 @@ public class ItemUtils {
         int health = 0;
         int mana = 0;
         int weapDamage = rand.nextInt(5-3) + 3; // 3-5
-        int healing = 4;
+        int healing = rand.nextInt(5-3) + 3; // 3-5
         int spellDamage = rand.nextInt(5-3) + 3; // 3-5
         String className = TieredItemGenerator.determineClass(epicItem, material);
         switch (className.toLowerCase()) {
@@ -271,7 +278,7 @@ public class ItemUtils {
                 mana = rand.nextInt(50-30) + 30;
                 break;
             case "archer":
-                health = rand.nextInt(50-30) + 30;
+                health = rand.nextInt(60-30) + 30;
                 mana = rand.nextInt(50-30) + 30;
                 break;
             case "cleric":
@@ -279,7 +286,7 @@ public class ItemUtils {
                 mana = rand.nextInt(50-30) + 30;
                 break;
             case "warrior":
-                health = rand.nextInt(80-50) + 50;
+                health = rand.nextInt(100-50) + 50;
                 mana = rand.nextInt(50-30) + 30;
                 break;
         }
@@ -290,9 +297,9 @@ public class ItemUtils {
         epicItem = AttributeUtil.addCustomStat(epicItem, "custom.maxHealth", health);
         epicItem = AttributeUtil.addGenericStat(epicItem, "generic.armor", 0, itemSlot);
 
-        if (stats.contains(2)) {
+        //if (stats.contains(2)) {
             epicItem = AttributeUtil.addCustomStat(epicItem, "custom.manaBoost", mana);
-        }
+        //}
         if (stats.contains(3)) {
             epicItem = AttributeUtil.addCustomStat(epicItem, "custom.attackDamage", weapDamage);
         }
