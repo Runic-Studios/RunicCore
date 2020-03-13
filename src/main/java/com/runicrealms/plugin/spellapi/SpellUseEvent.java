@@ -1,12 +1,15 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.ActionBarUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,27 +55,29 @@ public class SpellUseEvent implements Listener {
         if (spellSlot.equals("")) return;
 
         // determine spell to cast
-        Spell spellCasted = null;
+        Spell spellToCast = null;
         for (Spell spell : RunicCore.getSpellManager().getSpells()) {
             if (spell.isFound(pl.getInventory().getItemInMainHand(), spellSlot)) {
-                spellCasted = spell;
+                spellToCast = spell;
                 break;
             }
         }
 
         // execute the spell
-        if (spellCasted == null) {
-            //if (spellItemType == SpellItemType.NONE) {
-                //pl.sendMessage(ChatColor.RED + "ERROR: Something went wrong.");
-                //pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
-                return;
-            //}
+        if (spellToCast == null) return;
+
+        // verify player level
+        if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel() < AttributeUtil.getCustomDouble(heldItem, "required.level")) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
+            ActionBarUtil.sendTimedMessage(pl, "&cYour level is too low to cast this!", 3);
+            return;
         }
-        SpellCastEvent event = new SpellCastEvent(pl, spellCasted);
+
+        // call spell event
+        SpellCastEvent event = new SpellCastEvent(pl, spellToCast);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            spellCasted.execute(pl, spellItemType);
-            RunicCore.getScoreboardHandler().updateHealthbar(pl);
+            spellToCast.execute(pl, spellItemType);
         }
     }
 
