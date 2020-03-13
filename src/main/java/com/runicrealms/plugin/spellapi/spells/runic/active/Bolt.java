@@ -27,7 +27,7 @@ public class Bolt extends Spell {
                         "\nup to " + MAX_DIST + " blocks away, dealing" +
                         "\n" + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + RADIUS + " blocks!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 6, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 6, 15);
     }
 
     // spell execute code

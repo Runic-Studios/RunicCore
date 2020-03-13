@@ -61,7 +61,7 @@ public class BossTagger implements Listener {
     public void onBossDeath(MythicMobDeathEvent e) {
 
         if (!e.getMob().hasFaction()) return;
-        if (!e.getMobType().getFaction().equalsIgnoreCase("boss")) return;
+        if (!e.getMob().getFaction().equalsIgnoreCase("boss")) return;
         if (!bossFighters.containsKey(e.getMob().getUniqueId())) return;
 
         // clear damage tracking

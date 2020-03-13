@@ -41,6 +41,8 @@ public class LootChestListener implements Listener {
         if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if (!(e.getHand() == EquipmentSlot.HAND)) return;
         if (!e.hasBlock()) return;
+        if (e.getClickedBlock() == null) return;
+        if (e.getClickedBlock().getType() != Material.CHEST) return;
 
         Player pl = e.getPlayer();
         Block block = e.getClickedBlock();
@@ -116,6 +118,8 @@ public class LootChestListener implements Listener {
 
             pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
             openChestGUI(pl, chestTier);
+        } else {
+            e.setCancelled(true);
         }
     }
 

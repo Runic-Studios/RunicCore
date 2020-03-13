@@ -85,7 +85,7 @@ public class UnholyGround extends Spell {
 
             if (taunted.contains(en.getUniqueId())) continue;
 
-            if (en instanceof Monster) {
+            if (en instanceof Monster) { //  || victim instanceof Wolf || victim instanceof PolarBear
                 taunted.add(en.getUniqueId());
                 ((Monster) en).setTarget(pl);
                 MythicMobs.inst().getAPIHelper().taunt(en, pl);

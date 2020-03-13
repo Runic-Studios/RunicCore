@@ -36,7 +36,7 @@ public class Discharge extends Spell {
                         "\nUpon impact, it summons lightning," +
                         "\ndealing " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + BLAST_RADIUS + " blocks.",
-                ChatColor.WHITE, ClassEnum.MAGE, 8, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 8, 20);
     }
 
     @Override

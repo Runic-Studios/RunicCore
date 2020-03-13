@@ -82,7 +82,7 @@ public class TabListManager implements Listener {
 
         // Column 2 (Guild)
         // todo: finish w/ new plugins
-        String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
+        String guild = "";//RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild()
         if (guild == null) {
             tab.set(1, 0, new TextTabItem
                     (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));

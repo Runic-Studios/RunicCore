@@ -156,6 +156,7 @@ public class SpellManager {
         this.spellList.add(new Agility());
         this.spellList.add(new Predator());
         this.spellList.add(new Resolve());
+        this.spellList.add(new Taunt());
     }
 
     // starts the repeating task to manage player cooldowns
