@@ -22,20 +22,20 @@ public class PlayerLevelUtil {
 
     /*
     Here is our exp curve!
-    At level 50, the player is ~ halfway to max, w/ 764,750
-    At level 60, the player needs 1,262,700 total exp
+    At level 50, the player is ~ halfway to max, w/ 997,500
+    At level 60, the player needs 1,647,000 total exp
      */
     public static int calculateTotalExp(int currentLv) {
         int cubed = (int) Math.pow((currentLv+5), 3);
-        return ((23*cubed)/5)-575;
+        return ((30*cubed)/5)-750;
     }
 
     /*
     This method takes in an experience amount and returns the level which corresponds to that amount.
-    i.e., passing 764,700 will return level 50.
+    i.e., passing 997,500 will return level 50.
      */
     public static int calculateExpectedLv(int experience) {
-        return (int) Math.cbrt((((5 * experience)+2875) / 23)) - 5;
+        return (int) Math.cbrt(((experience+750) / 6)) - 5;
     }
 
     /**
