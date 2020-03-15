@@ -150,7 +150,7 @@ public class ScoreboardHandler implements Listener {
         blankSpaceTwo.setScore(3);
 
         // set side board header
-        Score characterInfo = sidebar.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + "Character");
+        Score characterInfo = sidebar.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + "Character");
         characterInfo.setScore(7);
 
         updatePlayerInfo(pl);
@@ -201,13 +201,13 @@ public class ScoreboardHandler implements Listener {
     private String healthAsString(Player pl) {
         int currentHealth = (int) pl.getHealth();
         int maxHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §7/ " + ChatColor.RED + maxHealth + " (Health)";
+        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §e/ " + ChatColor.RED + maxHealth + " (Health)";
     }
 
     private String manaAsString(Player pl) {
         int mana = RunicCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
-        return ChatColor.DARK_AQUA + "✸ " + mana + " §7/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
+        return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
     private String playerClass(Player pl) {
@@ -215,11 +215,11 @@ public class ScoreboardHandler implements Listener {
         int currentLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
         String display;
         if (className == null) {
-            display = ChatColor.GRAY + "Class: " + ChatColor.GREEN + "None";
+            display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
         } else {
-            display = ChatColor.GRAY + "Class: " + ChatColor.GREEN + className;
+            display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + className;
             if (currentLevel != 0) {
-                display = ChatColor.GREEN + className + ChatColor.GRAY + " lv. " + ChatColor.GREEN + currentLevel;
+                display = ChatColor.GREEN + className + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
             }
         }
         return display;
@@ -230,11 +230,11 @@ public class ScoreboardHandler implements Listener {
         int currentLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfLevel();
         String display;
         if (profName == null) {
-            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + "None";
+            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
         } else {
-            display = ChatColor.GRAY + "Prof: " + ChatColor.GREEN + profName;
+            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + profName;
             if (currentLevel != 0) {
-                display = ChatColor.GREEN + profName + ChatColor.GRAY + " lv. " + ChatColor.GREEN + currentLevel;
+                display = ChatColor.GREEN + profName + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
             }
         }
         return display;
@@ -244,9 +244,9 @@ public class ScoreboardHandler implements Listener {
         String display;
         String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
         if(guild != null) {
-            display = ChatColor.GRAY + "Guild: " + ChatColor.GOLD + guild;
+            display = ChatColor.YELLOW + "Guild: " + ChatColor.GOLD + guild;
         } else {
-            display = ChatColor.GRAY + "Guild: " + ChatColor.GREEN + "None";
+            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
         }
         return display;
     }

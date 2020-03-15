@@ -20,7 +20,7 @@ import java.util.Random;
 public class Agility extends Spell {
 
     private static final int DURATION = 2;
-    private static final int PERCENT = 25;
+    private static final int PERCENT = 10;
     private static final int SPEED_MULT = 1;
 
     public Agility() {

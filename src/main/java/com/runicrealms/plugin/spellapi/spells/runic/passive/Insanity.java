@@ -20,7 +20,7 @@ import java.util.Random;
 public class Insanity extends Spell {
 
     private static final int DURATION = 2;
-    private static final int PERCENT = 25;
+    private static final int PERCENT = 10;
     private static final int NAUSEA_MULT = 2;
 
     public Insanity() {

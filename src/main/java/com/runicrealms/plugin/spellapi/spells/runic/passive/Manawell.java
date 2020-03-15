@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Manawell extends Spell {
 
-    private static final int PERCENT = 25;
+    private static final int PERCENT = 7;
 
     public Manawell() {
         super ("Manawell",

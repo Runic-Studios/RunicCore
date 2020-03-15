@@ -21,7 +21,7 @@ import java.util.Random;
 public class Predator extends Spell {
 
     private static final int DURATION = 1;
-    private static final int PERCENT = 25;
+    private static final int PERCENT = 10;
     private static final int SLOW_MULT = 2;
 
     public Predator() {
