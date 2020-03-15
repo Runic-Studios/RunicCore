@@ -16,7 +16,7 @@ public class PlayerLevelUtil {
 
     private static final int ARCHER_HP_LV = 5;
     private static final int CLERIC_HP_LV = 7;
-    private static final int MAGE_HP_LV = 4;
+    private static final int MAGE_HP_LV = 3;
     private static final int ROGUE_HP_LV = 6;
     private static final int WARRIOR_HP_LV = 10;
 

@@ -119,7 +119,8 @@ public class LootChestListener implements Listener {
             pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
             openChestGUI(pl, chestTier);
         } else {
-            e.setCancelled(true);
+            if (pl.getGameMode() != GameMode.CREATIVE)
+                e.setCancelled(true);
         }
     }
 

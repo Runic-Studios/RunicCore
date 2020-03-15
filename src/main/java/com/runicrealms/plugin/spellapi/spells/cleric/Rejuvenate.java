@@ -18,7 +18,7 @@ import java.util.*;
 public class Rejuvenate extends Spell {
 
     private HashMap<UUID, List<UUID>> hasBeenHit;
-    private static int HEAL_AMT = 35;
+    private static int HEAL_AMT = 45;
     private final double RADIUS = 1.5;
     private final int RANGE = 15;
     private final int SPEED = 3;
@@ -31,7 +31,7 @@ public class Rejuvenate extends Spell {
                 "You launch a beam of healing magic," +
                 "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
                 "\nall allies it passes through!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 7, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 12, 30);
         this.hasBeenHit = new HashMap<>();
     }
 

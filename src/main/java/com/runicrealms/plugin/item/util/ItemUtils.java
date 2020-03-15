@@ -45,23 +45,23 @@ public class ItemUtils {
         String className = TieredItemGenerator.determineClass(commonItem, material);
         switch (className.toLowerCase()) {
             case "mage":
-                maxHealth = 10;
+                maxHealth = 9; // 4-9
                 maxMana = 10;
                 break;
             case "rogue":
-                maxHealth = 10;
+                maxHealth = 10; // 5-10
                 maxMana = 10;
                 break;
             case "archer":
-                maxHealth = 10;
+                maxHealth = 10; // 5-10
                 maxMana = 10;
                 break;
             case "cleric":
-                maxHealth = 20;
+                maxHealth = 20; // 10-20
                 maxMana = 10;
                 break;
             case "warrior":
-                maxHealth = 25;
+                maxHealth = 25; // 12-25
                 maxMana = 10;
                 break;
         }
@@ -114,23 +114,23 @@ public class ItemUtils {
         String className = TieredItemGenerator.determineClass(uncommonItem, material);
         switch (className.toLowerCase()) {
             case "mage":
-                health = rand.nextInt(15-10) + 10;
+                health = rand.nextInt(12-10) + 10; // 10-12
                 mana = rand.nextInt(15-10) + 10;
                 break;
             case "rogue":
-                health = rand.nextInt(15-10) + 10;
+                health = rand.nextInt(15-10) + 10; // 10-15
                 mana = rand.nextInt(15-10) + 10;
                 break;
             case "archer":
-                health = rand.nextInt(15-10) + 10;
+                health = rand.nextInt(15-10) + 10; // 10-15
                 mana = rand.nextInt(15-10) + 10;
                 break;
             case "cleric":
-                health = rand.nextInt(30-20) + 20;
+                health = rand.nextInt(30-20) + 20; // 20-30
                 mana = rand.nextInt(15-10) + 10;
                 break;
             case "warrior":
-                health = rand.nextInt(40-25) + 25;
+                health = rand.nextInt(40-25) + 25; // 25-40
                 mana = rand.nextInt(15-10) + 10;
                 break;
         }
@@ -192,23 +192,23 @@ public class ItemUtils {
         String className = TieredItemGenerator.determineClass(rareItem, material);
         switch (className.toLowerCase()) {
             case "mage":
-                health = rand.nextInt(30-15) + 15;
+                health = rand.nextInt(22-15) + 15; // 15-22
                 mana = rand.nextInt(30-15) + 15;
                 break;
             case "rogue":
-                health = rand.nextInt(30-15) + 15;
+                health = rand.nextInt(26-15) + 15; // 15-26
                 mana = rand.nextInt(30-15) + 15;
                 break;
             case "archer":
-                health = rand.nextInt(30-15) + 15;
+                health = rand.nextInt(30-15) + 15; // 15-30
                 mana = rand.nextInt(30-15) + 15;
                 break;
             case "cleric":
-                health = rand.nextInt(50-30) + 30;
+                health = rand.nextInt(50-30) + 30; // 30-50
                 mana = rand.nextInt(30-15) + 15;
                 break;
             case "warrior":
-                health = rand.nextInt(60-35) + 35;
+                health = rand.nextInt(60-35) + 35; // 35-60
                 mana = rand.nextInt(30-15) + 15;
                 break;
         }

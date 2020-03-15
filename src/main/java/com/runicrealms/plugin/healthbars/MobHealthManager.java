@@ -1,11 +1,12 @@
 package com.runicrealms.plugin.healthbars;
 
+import com.runicrealms.plugin.RunicCore;
+import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.Objects;
 
@@ -59,7 +60,8 @@ public class MobHealthManager {
                                         5, 0.6F, 0.5F, 0.6F, 0, Material.PACKED_ICE.createBlockData());
                             }
                         }
-                        if (en.hasMetadata("healthbar") && en.getVehicle() == null) {
+                        if (en.hasMetadata("healthbar")
+                                && en.getVehicle() == null) {
                             en.remove();
                         }
                     }
@@ -79,7 +81,8 @@ public class MobHealthManager {
                 // remove stray armorstands
                 if (en instanceof ArmorStand
                         && !en.hasMetadata("healthbar")
-                        && !en.hasMetadata("indicator")) {
+                        && !en.hasMetadata("indicator")
+                        && !MythicMobs.inst().getAPIHelper().isMythicMob(en)) {
                     en.remove();
                 }
             }
