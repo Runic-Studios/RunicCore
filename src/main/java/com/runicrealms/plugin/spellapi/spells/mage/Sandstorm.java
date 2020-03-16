@@ -31,7 +31,7 @@ public class Sandstorm extends Spell {
                         "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage" +
                         "\nand slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 10);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
     }
 
     // spell execute code

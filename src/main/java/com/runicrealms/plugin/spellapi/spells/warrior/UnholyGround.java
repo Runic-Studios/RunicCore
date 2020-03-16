@@ -33,7 +33,7 @@ public class UnholyGround extends Spell {
                         "\nblocks every " + PERIOD + " seconds(s)! While standing" +
                         "\non the unholy ground, you take " + (int) PERCENT + "%" +
                         "\nless damage from monsters!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 12, 15);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 12, 25);
     }
 
     @Override

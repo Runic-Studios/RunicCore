@@ -20,7 +20,7 @@ import java.util.List;
 @SuppressWarnings("FieldCanBeLocal")
 public class RottingShot extends Spell {
 
-    private static final int DAMAGE = 3;
+    private static final int DAMAGE = 10;
     private static final int PERIOD = 2;
     private static final int DURATION = 8;
     private List<Arrow> poisonedArrs = new ArrayList<>();
@@ -31,7 +31,7 @@ public class RottingShot extends Spell {
                 "\ndeals " + DAMAGE + " spellʔ damage every " + PERIOD + " seconds" +
                 "\nfor " + DURATION + " seconds to its target." +
                 "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.ARCHER, 16, 15);
+                ChatColor.WHITE, ClassEnum.ARCHER, 16, 20);
     }
 
     @Override

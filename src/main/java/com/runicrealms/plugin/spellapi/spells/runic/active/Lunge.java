@@ -22,7 +22,7 @@ public class Lunge extends Spell {
                 "You lunge forward into the air," +
                         "\ntaking reduced fall damage on" +
                         "\nimpact!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 8, 12);
+                ChatColor.WHITE, ClassEnum.RUNIC, 8, 15);
     }
 
     @Override

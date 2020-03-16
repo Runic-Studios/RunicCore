@@ -32,7 +32,7 @@ public class Eruption extends Spell {
                         "\nwhich deals " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.RUNIC, 12, 20);
+                ChatColor.WHITE, ClassEnum.RUNIC, 12, 25);
     }
 
     @Override

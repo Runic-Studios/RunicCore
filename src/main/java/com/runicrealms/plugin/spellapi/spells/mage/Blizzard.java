@@ -34,7 +34,7 @@ public class Blizzard extends Spell {
                         "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
                         "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
         this.snowballMap = new HashMap<>();
     }
 

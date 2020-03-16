@@ -37,7 +37,7 @@ public class Judgment extends Spell {
                         "\nprevents them from entering, but" +
                         "\nallies may pass through it. During" +
                         "\nthis time, you may not move.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 9, 25);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 9, 35);
         judgers = new ArrayList<>();
     }
 

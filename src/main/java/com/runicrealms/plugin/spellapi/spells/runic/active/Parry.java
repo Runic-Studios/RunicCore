@@ -20,7 +20,7 @@ public class Parry extends Spell {
     // constructor
     public Parry() {
         super("Parry", "You launch yourself backwards in the air!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 8, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 8, 15);
     }
 
     @Override

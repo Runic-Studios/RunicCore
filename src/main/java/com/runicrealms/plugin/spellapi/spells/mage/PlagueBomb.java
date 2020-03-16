@@ -35,7 +35,7 @@ public class PlagueBomb extends Spell {
                         "\n" + DURATION + " seconds to enemies within" +
                         "\n" + RADIUS + " blocks of the cloud." +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
     }
 
     // spell execute code
@@ -90,7 +90,7 @@ public class PlagueBomb extends Spell {
                     this.cancel();
                 } else {
                     count += PERIOD;
-                    le.getWorld().playSound(le.getLocation(), Sound.ENTITY_CAT_HISS, 0.5F, 0.5F);
+                    le.getWorld().playSound(le.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
                     le.getWorld().spawnParticle(Particle.REDSTONE, le.getLocation(),
                             50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GREEN, 1));
                     DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);

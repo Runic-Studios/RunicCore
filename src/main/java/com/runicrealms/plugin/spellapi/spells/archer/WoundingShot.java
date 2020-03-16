@@ -23,7 +23,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class WoundingShot extends Spell {
 
-    private static final int DAMAGE = 3;
+    private static final int DAMAGE = 20;
     private static final int DURATION = 5;
     private static final double PERCENT = 50;
     private List<Arrow> cripplingArrs = new ArrayList<>();
@@ -35,7 +35,7 @@ public class WoundingShot extends Spell {
                 "\ndeals " + DAMAGE + " spellʔ damage to its target and" +
                 "\nreduces all ✦spell healing on the target" +
                 "\nby " + (int) PERCENT + "%" + " for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 15, 20);
+                ChatColor.WHITE, ClassEnum.ARCHER, 15, 25);
     }
 
     @Override

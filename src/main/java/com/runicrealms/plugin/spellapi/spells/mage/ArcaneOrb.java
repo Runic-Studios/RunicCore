@@ -31,7 +31,7 @@ public class ArcaneOrb extends Spell {
                         "\nFor the next " + DURATION + " seconds, all spellʔ" +
                         "\ndamage you deal is increased by " + (int) PERCENT + "%" +
                         "\nif you stand within " + RADIUS + " blocks" +
-                        "\nof the orb!", ChatColor.WHITE, ClassEnum.MAGE, 15, 20);
+                        "\nof the orb!", ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
     }
 
     @Override

@@ -17,9 +17,9 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class Bolt extends Spell {
 
-    private static final int DAMAGE_AMT = 15;
-    private static final int MAX_DIST = 8;
-    private static final int RADIUS = 5;
+    private static final int DAMAGE_AMT = 10;
+    private static final int MAX_DIST = 6;
+    private static final int RADIUS = 3;
 
     public Bolt() {
         super("Bolt",
@@ -27,7 +27,7 @@ public class Bolt extends Spell {
                         "\nup to " + MAX_DIST + " blocks away, dealing" +
                         "\n" + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + RADIUS + " blocks!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 6, 15);
+                ChatColor.WHITE, ClassEnum.RUNIC, 8, 20);
     }
 
     // spell execute code

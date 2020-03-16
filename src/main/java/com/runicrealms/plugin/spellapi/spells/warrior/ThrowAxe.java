@@ -35,7 +35,7 @@ public class ThrowAxe extends Spell {
                         "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 10);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         silenced = new ArrayList<>();
     }

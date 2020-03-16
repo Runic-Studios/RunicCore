@@ -152,7 +152,7 @@ public class Barrage extends Spell {
                         "\neach dealing " + DAMAGE + " weapon⚔ damage" +
                         "\nto enemies hit!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.ARCHER, 6, 15);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 20);
         this.bArrows = new HashMap<>();
     }
 

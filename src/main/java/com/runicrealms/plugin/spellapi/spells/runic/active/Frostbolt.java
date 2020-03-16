@@ -25,7 +25,7 @@ import org.bukkit.util.Vector;
 public class Frostbolt extends Spell {
 
     private static final double SPEED = 2;
-    private static final int DAMAGE_AMT = 14;
+    private static final int DAMAGE_AMT = 15;
     private Snowball snowball;
 
     public Frostbolt() {
@@ -33,7 +33,7 @@ public class Frostbolt extends Spell {
                 "You launch a projectile bolt of ice" +
                         "\nthat deals " + DAMAGE_AMT + " spellʔ damage on" +
                         "\nimpact and slows its target!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 5, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 5, 20);
     }
 
     // spell execute code

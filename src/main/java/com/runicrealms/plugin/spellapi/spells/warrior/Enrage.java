@@ -36,7 +36,7 @@ public class Enrage extends Spell {
                         "\nyou gain an immense boost of speed" +
                         "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
                         "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 15);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 25);
     }
 
     @Override

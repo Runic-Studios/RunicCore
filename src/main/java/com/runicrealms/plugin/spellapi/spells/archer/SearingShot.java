@@ -23,14 +23,14 @@ import java.util.List;
 @SuppressWarnings("FieldCanBeLocal")
 public class SearingShot extends Spell {
 
-    private static final int DAMAGE = 35;
+    private static final int DAMAGE = 50;
     private List<Arrow> searingArrows;
 
     public SearingShot() {
         super("Searing Shot",
                 "You launch an enchanted, flaming arrow" +
                 "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 8, 12);
+                ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
         searingArrows = new ArrayList<>();
     }
 

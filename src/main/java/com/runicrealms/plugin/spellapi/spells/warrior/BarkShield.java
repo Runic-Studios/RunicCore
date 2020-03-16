@@ -30,7 +30,7 @@ public class BarkShield extends Spell {
                         "\nattacks, causing you to become immune" +
                         "\nto all weapon⚔ damage! This ability has" +
                         "\nno effect versus monsters.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 20, 20);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 20, 25);
     }
 
     // spell execute code

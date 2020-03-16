@@ -29,7 +29,7 @@ public class Shadowbolt extends Spell {
                         "\nthat blinds enemies on impact" +
                         "\nfor " + DURATION + " seconds! This ability" +
                         "\nhas no effect versus monsters.",
-                ChatColor.WHITE, ClassEnum.RUNIC, 5, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 12, 20);
     }
 
     @Override

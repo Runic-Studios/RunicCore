@@ -25,7 +25,7 @@ import java.util.UUID;
 public class HolyWater extends Spell {
 
     private static final int DURATION = 6;
-    private static final int PERCENT = 25;
+    private static final double PERCENT = 25;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
     private HashMap<UUID, HashSet<UUID>> affectedPlayers;
@@ -37,7 +37,7 @@ public class HolyWater extends Spell {
                         "\nreceive an additional " + PERCENT + "% health" +
                         "\nfrom all healing✦ spells for " + DURATION +
                         "\nseconds!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 10, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 10, 20);
         affectedPlayers = new HashMap<>();
     }
 
@@ -60,7 +60,7 @@ public class HolyWater extends Spell {
             public void run() {
                 if (affectedPlayers.get(pl.getUniqueId()) != null) affectedPlayers.remove(pl.getUniqueId());
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 40L);
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
     }
 
     @EventHandler
@@ -102,7 +102,9 @@ public class HolyWater extends Spell {
         if (!affectedPlayers.containsKey(caster.getUniqueId())) return;
         if (!affectedPlayers.get(caster.getUniqueId()).contains(e.getEntity().getUniqueId())) return;
         double percent = PERCENT / 100;
+        //Bukkit.broadcastMessage(percent + "%");
         int extraAmt = (int) (e.getAmount() * percent);
+        //Bukkit.broadcastMessage(extraAmt + "");
         if (extraAmt < 1) {
             extraAmt = 1;
         }

@@ -21,7 +21,7 @@ public class Cleanse extends Spell {
                 "You cleanse negative effects" +
                         "\non you, freeing you from" +
                         "\nblindness and slows!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 6, 10);
+                ChatColor.WHITE, ClassEnum.RUNIC, 6, 15);
     }
 
     // spell execute code

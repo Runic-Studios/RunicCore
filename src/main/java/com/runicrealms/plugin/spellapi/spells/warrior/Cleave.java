@@ -22,7 +22,7 @@ public class Cleave extends Spell {
                 "You cleave all enemies within" +
                         "\n" + RADIUS + " blocks for " + DAMAGE_AMT + " weapon⚔" +
                         "\ndamage!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 10);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
     }
 
     @Override

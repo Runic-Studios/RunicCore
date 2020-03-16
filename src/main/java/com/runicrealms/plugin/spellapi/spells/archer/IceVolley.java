@@ -32,7 +32,7 @@ public class IceVolley extends Spell {
                         "\neach dealing " + DAMAGE + " spellʔ damage" +
                         "\nand slowing enemies hit!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.ARCHER, 6, 15);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 30);
         this.vArrows = new HashMap<>();
     }
 

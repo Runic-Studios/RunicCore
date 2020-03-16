@@ -20,9 +20,9 @@ import java.util.Random;
 @SuppressWarnings("FieldCanBeLocal")
 public class Predator extends Spell {
 
-    private static final int DURATION = 1;
+    private static final int DURATION = 2;
     private static final int PERCENT = 10;
-    private static final int SLOW_MULT = 2;
+    private static final int BLIND_MULT = 2;
 
     public Predator() {
         super ("Predator",
@@ -57,7 +57,7 @@ public class Predator extends Spell {
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.25f, 1.75f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                     new Particle.DustOptions(Color.BLACK, 1));
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, SLOW_MULT));
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, BLIND_MULT));
         }
     }
 }

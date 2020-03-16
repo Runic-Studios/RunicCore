@@ -28,7 +28,7 @@ public class Slam extends Spell {
                         "\nUpon hitting the ground, you deal " +
                         "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
                         "\n" + RADIUS + " blocks and knock them up!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 8, 15);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
     }
 
 //    @Override

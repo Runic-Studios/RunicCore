@@ -41,6 +41,8 @@ public class Manawell extends Spell {
 
         for (Player ally : allies) {
             if (verifyAlly(e.getCaster(), ally)) {
+                e.getCaster().getWorld().playSound(e.getCaster().getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
+                e.getCaster().playSound(e.getCaster().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
                 ally.getWorld().playSound(ally.getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
                 ally.getWorld().spawnParticle(Particle.SPELL_WITCH, ally.getEyeLocation(), 3, 0.3F, 0.3F, 0.3F, 0);
                 HealUtil.healPlayer(e.getSpell().getManaCost(), ally, e.getCaster(), false, false, false);

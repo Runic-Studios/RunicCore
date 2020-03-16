@@ -32,7 +32,7 @@ public class Reflect extends Spell {
                         "\nenchantment! Enemies who strike" +
                         "\nyou suffer " + DAMAGE + " spellʔ damage" +
                         "\neach attack!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 16, 15);
+                ChatColor.WHITE, ClassEnum.RUNIC, 16, 20);
     }
 
     // spell execute code
