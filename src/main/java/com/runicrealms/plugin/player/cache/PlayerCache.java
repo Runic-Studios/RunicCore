@@ -14,6 +14,8 @@ import java.util.UUID;
 // todo: add hunter info
 public class PlayerCache {
 
+    private int characterSlot;
+
     private UUID playerID;
     private String guild;
     private String className;
@@ -37,6 +39,7 @@ public class PlayerCache {
      * Created when a player selects a class for the first time
      */
     public PlayerCache(UUID playerID, String className) {
+        this.characterSlot = 1;
         this.playerID = playerID;
         this.guild = "None";
         this.className = className;
@@ -68,11 +71,12 @@ public class PlayerCache {
      * @param isOutlaw player's outlaw status
      * @param rating player's outlaw rating
      */
-    public PlayerCache(UUID playerID, String guild, String className, String profName,
+    public PlayerCache(int characterSlot, UUID playerID, String guild, String className, String profName,
                        int classLevel, int classExp, int profLevel, int profExp,
                        int currentHealth, int maxMana,
                        boolean isOutlaw, int rating,
                        ItemStack[] inventoryContents, Location location) {
+        this.characterSlot = characterSlot;
         this.playerID = playerID;
         this.guild = guild;
         this.className = className;
@@ -87,6 +91,10 @@ public class PlayerCache {
         this.rating = rating;
         this.inventoryContents = inventoryContents;
         this.location = location;
+    }
+
+    public int getCharacterSlot() {
+        return characterSlot;
     }
 
     public UUID getPlayerID() {

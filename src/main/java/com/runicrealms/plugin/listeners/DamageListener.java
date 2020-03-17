@@ -124,6 +124,7 @@ public class DamageListener implements Listener {
                 int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
 
                 // outlaw check
+                if (victim.hasMetadata("NPC")) return;
                 if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
                     return;
                 }
