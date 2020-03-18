@@ -63,6 +63,7 @@ public class FloatingItemUtil {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
         Vector vec = loc.toVector().multiply(0);
         item.setVelocity(vec);
+        item.setGravity(false);
         item.setPickupDelay(Integer.MAX_VALUE);
 
         // send packets to make item invisible for all other players

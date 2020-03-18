@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.commands;
 
+import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import org.bukkit.Bukkit;
@@ -7,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.runicrealms.plugin.command.subcommands.SubCommand;
 
 import java.util.List;
 
@@ -31,11 +31,11 @@ public class ProfExpCMD implements SubCommand {
         // skip all other calculations for quest exp
         if (args.length == 4) {
             int exp = Integer.parseInt(args[2]);
-            ProfExpUtil.giveExperience(pl, exp);
+            ProfExpUtil.giveExperience(pl, exp, true);
             return;
         } else {
             int exp = Integer.parseInt(args[2]);
-            ProfExpUtil.giveExperience(pl, exp);
+            ProfExpUtil.giveExperience(pl, exp, true);
         }
     }
 

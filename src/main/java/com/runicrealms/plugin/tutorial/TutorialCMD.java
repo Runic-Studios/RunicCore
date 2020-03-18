@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.player.commands.SetSC;
-import com.runicrealms.plugin.professions.utilities.FloatingItemUtil;
+import com.runicrealms.plugin.utilities.FloatingItemUtil;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
