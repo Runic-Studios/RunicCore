@@ -24,6 +24,7 @@ public class Eruption extends Spell {
     private static final int DURATION = 5;
     private static final int PERIOD = 1;
     private static final float RADIUS = 3f;
+    private static final double GEM_BOOST = 50;
 
     public Eruption() {
         super("Eruption",
@@ -31,7 +32,7 @@ public class Eruption extends Spell {
                         "\nfire, conjuring a ring of flames" +
                         "\nwhich deals " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.RUNIC, 12, 25);
     }
 
@@ -86,7 +87,7 @@ public class Eruption extends Spell {
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (verifyEnemy(pl, en)) {
                 LivingEntity le = (LivingEntity) en;
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, GEM_BOOST);
             }
         }
     }

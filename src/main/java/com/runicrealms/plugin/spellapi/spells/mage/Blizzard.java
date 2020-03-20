@@ -26,6 +26,7 @@ public class Blizzard extends Spell {
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
     private HashMap<Snowball, UUID> snowballMap;
+    private static final double GEM_BOOST = 50;
 
     public Blizzard() {
         super("Blizzard",
@@ -103,7 +104,7 @@ public class Blizzard extends Spell {
             if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
             if (verifyEnemy(shooter, le)) {
-                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, true);
+                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, GEM_BOOST);
                 victim.setLastDamageCause(e);
                 le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
             }

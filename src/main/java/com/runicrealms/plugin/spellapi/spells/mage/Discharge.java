@@ -79,7 +79,7 @@ public class Discharge extends Spell {
                                 if (entity.getType().isAlive()) {
                                     LivingEntity victim = (LivingEntity) entity;
                                     if (verifyEnemy(pl, victim)) {
-                                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
+                                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
                                         Vector force = (arrowLoc.toVector().subtract(victim.getLocation().toVector()).multiply(KNOCKBACK_MULT).setY(KNOCKUP_AMT));
                                         victim.setVelocity(force);
                                     }

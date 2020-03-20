@@ -24,6 +24,7 @@ public class HolyNova extends Spell {
     private static final int DURATION = 5;
     private static final int HEAL_AMT = 8;
     private static final float RADIUS = 5f;
+    private static final double GEM_BOOST = 50;
 
     // constructor
     public HolyNova() {
@@ -32,7 +33,7 @@ public class HolyNova extends Spell {
                         "\npower, conjuring rings of light" +
                         "\nthat deal " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nand restore✦ " + HEAL_AMT + " health to allies!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
     }
 
@@ -84,7 +85,7 @@ public class HolyNova extends Spell {
 
             // Executes the damage aspect of spell
             if (verifyEnemy(pl, en)) {
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, GEM_BOOST);
             }
 
             // heal party members

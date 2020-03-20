@@ -84,7 +84,7 @@ public class Frostbolt extends Spell {
                 && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(victim.getUniqueId())) { return; }
 
         // cancel the event, apply spell mechanics
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, false);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
         //KnockbackUtil.knockbackPlayer(pl, victim);
 
         // slow

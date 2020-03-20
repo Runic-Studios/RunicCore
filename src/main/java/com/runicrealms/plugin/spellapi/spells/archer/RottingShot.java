@@ -24,13 +24,14 @@ public class RottingShot extends Spell {
     private static final int PERIOD = 2;
     private static final int DURATION = 8;
     private List<Arrow> poisonedArrs = new ArrayList<>();
+    private static final double GEM_BOOST = 50;
 
     public RottingShot() {
         super("Rotting Shot",
                 "You launch an unholy arrow which" +
                 "\ndeals " + DAMAGE + " spellʔ damage every " + PERIOD + " seconds" +
                 "\nfor " + DURATION + " seconds to its target." +
-                "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.ARCHER, 16, 20);
     }
 
@@ -94,7 +95,7 @@ public class RottingShot extends Spell {
                 } else {
 
                     count += PERIOD;
-                    DamageUtil.damageEntitySpell(DAMAGE, le, pl, true);
+                    DamageUtil.damageEntitySpell(DAMAGE, le, pl, GEM_BOOST);
                     le.getWorld().spawnParticle(Particle.SLIME, le.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
                     le.getWorld().playSound(le.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 1);
 

@@ -14,12 +14,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DamageUtil {
 
-    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, boolean halveGemBoost) {
+    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, double gemBoostPercent) {
 
         // update amount with gem values
         int gemBoost = GearScanner.getMagicBoost(caster);
-        if (halveGemBoost) {
-            gemBoost = gemBoost / 2;
+        if (gemBoostPercent < 100) {
+            gemBoost = (int) (gemBoost * (gemBoostPercent / 100));
         }
         dmgAmt = dmgAmt + gemBoost;
 

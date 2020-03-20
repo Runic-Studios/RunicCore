@@ -27,6 +27,7 @@ public class PlagueBomb extends Spell {
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
+    private static final double GEM_BOOST = 50;
 
     public PlagueBomb() {
         super("Plague Bomb",
@@ -34,7 +35,7 @@ public class PlagueBomb extends Spell {
                         "\ndealing " + (DAMAGE_AMT*DURATION/PERIOD) + " spellʔ damage over " +
                         "\n" + DURATION + " seconds to enemies within" +
                         "\n" + RADIUS + " blocks of the cloud." +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
     }
 
@@ -93,7 +94,7 @@ public class PlagueBomb extends Spell {
                     le.getWorld().playSound(le.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
                     le.getWorld().spawnParticle(Particle.REDSTONE, le.getLocation(),
                             50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GREEN, 1));
-                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, true);
+                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, GEM_BOOST);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);

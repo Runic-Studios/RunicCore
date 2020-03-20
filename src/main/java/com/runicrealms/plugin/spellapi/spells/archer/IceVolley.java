@@ -25,13 +25,14 @@ public class IceVolley extends Spell {
 
     private HashMap<Arrow, UUID> vArrows;
     private static final int DAMAGE = 15;
+    private static final double GEM_BOOST = 50;
 
     public IceVolley() {
         super("Ice Volley",
                 "You rapid-fire a volley of five arrows," +
                         "\neach dealing " + DAMAGE + " spellʔ damage" +
                         "\nand slowing enemies hit!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.ARCHER, 6, 30);
         this.vArrows = new HashMap<>();
     }
@@ -104,7 +105,7 @@ public class IceVolley extends Spell {
                 e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
                 e.getEntity().getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
                 le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 1));
-                DamageUtil.damageEntitySpell(DAMAGE, le, pl, true);
+                DamageUtil.damageEntitySpell(DAMAGE, le, pl, 50);
             }
         }
     }

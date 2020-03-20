@@ -20,6 +20,7 @@ public class BlessedRain extends Spell {
     private static final int DURATION = 5;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
+    private static final double GEM_BOOST = 50;
 
     // constructor
     public BlessedRain() {
@@ -27,7 +28,7 @@ public class BlessedRain extends Spell {
                         "\nwaters, conjuring a ring of light magic" +
                         "\nwhich restores✦ " + HEALING_AMT + " health to allies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
     }
 

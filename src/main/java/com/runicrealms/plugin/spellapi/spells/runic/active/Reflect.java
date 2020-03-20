@@ -68,7 +68,7 @@ public class Reflect extends Spell {
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.25f, 2.0f);
             victim.getWorld().spawnParticle
                     (Particle.CRIT, victim.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
-            DamageUtil.damageEntitySpell(DAMAGE, damager, victim, false);
+            DamageUtil.damageEntitySpell(DAMAGE, damager, victim, 100);
         }
     }
 
@@ -85,7 +85,7 @@ public class Reflect extends Spell {
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.25f, 2.0f);
             victim.getWorld().spawnParticle
                     (Particle.CRIT, victim.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
-            DamageUtil.damageEntitySpell(DAMAGE, damager, victim, false);
+            DamageUtil.damageEntitySpell(DAMAGE, damager, victim, 100);
         }
     }
 }

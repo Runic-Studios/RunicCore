@@ -86,7 +86,7 @@ public class SearingShot extends Spell {
         LivingEntity le = (LivingEntity) e.getEntity();
 
         if (verifyEnemy(pl, le)) {
-            DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
+            DamageUtil.damageEntitySpell(DAMAGE, le, pl, 100);
         }
     }
 }

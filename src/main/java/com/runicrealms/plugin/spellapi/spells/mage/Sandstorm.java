@@ -23,6 +23,7 @@ public class Sandstorm extends Spell {
     private static final int DAMAGE_AMT = 15;
     private static final int PERIOD = 1;
     private static final int RADIUS = 3;
+    private static final double GEM_BOOST = 50;
 
     public Sandstorm() {
         super ("Sandstorm",
@@ -30,7 +31,7 @@ public class Sandstorm extends Spell {
                         "\nsandstorm, damaging enemies within " + RADIUS + " blocks" +
                         "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage" +
                         "\nand slowing them!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
     }
 
@@ -55,7 +56,7 @@ public class Sandstorm extends Spell {
 
                     for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (verifyEnemy(player, en)) {
-                            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, true);
+                            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, GEM_BOOST);
                             ((LivingEntity) en).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 0));
                         }
                     }

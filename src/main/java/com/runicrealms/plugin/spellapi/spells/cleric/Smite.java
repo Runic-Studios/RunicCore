@@ -47,7 +47,7 @@ public class Smite extends Spell {
                 }
             }
             if (verifyEnemy(pl, le)) {
-                DamageUtil.damageEntitySpell(damage, le, pl, false);
+                DamageUtil.damageEntitySpell(damage, le, pl, 100);
             }
         }
     }

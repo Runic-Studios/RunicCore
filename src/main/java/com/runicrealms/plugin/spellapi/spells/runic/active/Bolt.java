@@ -42,7 +42,7 @@ public class Bolt extends Spell {
             if (!verifyEnemy(pl, en)) continue;
             LivingEntity le = (LivingEntity) en;
             le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, false);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
         }
     }
 }

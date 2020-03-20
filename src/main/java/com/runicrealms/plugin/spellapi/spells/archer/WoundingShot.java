@@ -92,7 +92,7 @@ public class WoundingShot extends Spell {
 
         // spell effect
         crippledPlrs.add(le.getUniqueId());
-        DamageUtil.damageEntitySpell(DAMAGE, le, pl, false);
+        DamageUtil.damageEntitySpell(DAMAGE, le, pl, 100);
 
         // particles, sounds
         le.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "wounded! "

@@ -92,7 +92,7 @@ public class MeteorShower extends Spell {
         if (hasBeenHit.get(player.getUniqueId()) == victim.getUniqueId()) return;
 
         if (verifyEnemy(player, victim)) {
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, false);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, 100);
             victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
             hasBeenHit.put(player.getUniqueId(), victim.getUniqueId());

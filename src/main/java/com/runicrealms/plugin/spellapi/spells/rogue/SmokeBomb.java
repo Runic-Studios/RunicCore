@@ -84,7 +84,7 @@ public class SmokeBomb extends Spell {
                         if (entity.getLocation().distance(arrowLoc) <= RADIUS) {
                             if (verifyEnemy(player, entity)) {
                                 LivingEntity victim = (LivingEntity) entity;
-                                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, false);
+                                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, 100);
                                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
                             }
                         }
