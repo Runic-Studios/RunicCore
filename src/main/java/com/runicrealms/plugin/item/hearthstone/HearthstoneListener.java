@@ -175,7 +175,7 @@ public class HearthstoneListener implements Listener {
         int slot = p.getInventory().getHeldItemSlot();
 
         // cancel the event
-        if (slot == 2) {
+        if (slot == 8) {
             swapevent.setCancelled(true);
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1);
             p.sendMessage(ChatColor.GRAY + "You cannot perform this action in this slot.");
