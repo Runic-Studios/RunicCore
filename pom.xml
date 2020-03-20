@@ -139,7 +139,15 @@
             <artifactId>RunicCharacters</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicCharacters-1.0.jar</systemPath>
+            <systemPath>${project.basedir}/lib/RunicCharacters-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <!-- RunicGuilds -->
+        <dependency>
+            <groupId>com.runicrealms.plugin</groupId>
+            <artifactId>RunicGuilds</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/RunicGuilds.jar</systemPath>
         </dependency>
         <!-- RunicProfessions -->
         <dependency>

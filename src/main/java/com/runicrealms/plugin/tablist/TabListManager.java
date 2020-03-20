@@ -6,6 +6,10 @@ import com.keenant.tabbed.tablist.TableTabList;
 import com.keenant.tabbed.util.Skins;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.parties.Party;
+import com.runicrealms.runicguilds.api.RunicGuildsAPI;
+import com.runicrealms.runicguilds.config.GuildUtil;
+import com.runicrealms.runicguilds.guilds.Guild;
+import com.runicrealms.runicguilds.guilds.GuildMember;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -81,19 +85,21 @@ public class TabListManager implements Listener {
         }
 
         // Column 2 (Guild)
-        // todo: finish w/ new plugins
-        String guild = "";//RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild()
+        Guild guild = RunicGuildsAPI.getGuild(pl.getUniqueId());
         if (guild == null) {
             tab.set(1, 0, new TextTabItem
                     (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));
         } else {
             tab.set(1, 0, new TextTabItem
-                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + 0 + "]", 0, Skins.getDot(ChatColor.GOLD)));
+                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + GuildUtil.getOnlineMembersWithOwner(guild).size() + "]", 0, Skins.getDot(ChatColor.GOLD))); // +1 for owner
             int j = 0;
-//            for (Player guildy : guild.getOnlineAsPlayers()) {
-//                tab.set(1, j + 1, new TextTabItem(guildy.getName(), 0, Skins.getPlayer(guildy)));
-//                j++;
-//            }
+            for (GuildMember guildy : GuildUtil.getOnlineMembersWithOwner(guild)) {
+                if (j > 19) break;
+                Player plMem = Bukkit.getPlayer(guildy.getUUID());
+                if (plMem == null) continue;
+                tab.set(1, j + 1, new TextTabItem(plMem.getName(), 0, Skins.getPlayer(plMem)));
+                j++;
+            }
         }
 
         // Column 4 (Friends)
@@ -115,6 +121,7 @@ public class TabListManager implements Listener {
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getPartySize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int k = 0;
             for (Player member : party.getPlayerMembers()) {
+                if (k > 19) break;
                 tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(member)));
                 k++;
             }

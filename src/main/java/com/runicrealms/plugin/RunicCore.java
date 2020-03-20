@@ -3,7 +3,6 @@ package com.runicrealms.plugin;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
-import com.runicrealms.plugin.command.subcommands.set.SetProfCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
@@ -268,7 +267,6 @@ public class RunicCore extends JavaPlugin {
         setSC.addCommand(Arrays.asList("class"), new SetClassCMD(setSC));
         setSC.addCommand(Arrays.asList("hearthstone"), new HearthstoneCMD(setSC));
         setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
-        setSC.addCommand(Arrays.asList("prof"), new SetProfCMD(setSC));
         setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));
         setSC.addCommand(Arrays.asList("artifact"), new TutorialCMD(setSC));
     }

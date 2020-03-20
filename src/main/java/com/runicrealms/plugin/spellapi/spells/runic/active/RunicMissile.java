@@ -19,7 +19,7 @@ public class RunicMissile extends Spell {
     private static int DAMAGE_AMT = 15;
     //private final double RADIUS = 1.5;
     private final int RANGE = 10;
-    private final int SPEED = 3;
+    private final int SPEED = 2;
     private static final int IMPACT_RADIUS = 3;
     private static final double GEM_BOOST = 0;
 
@@ -32,7 +32,7 @@ public class RunicMissile extends Spell {
                         "\ndealing " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nwithin " + IMPACT_RADIUS + " blocks on impact!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
-                ChatColor.WHITE, ClassEnum.RUNIC, 20, 35);
+                ChatColor.WHITE, ClassEnum.RUNIC, 20, 30);
         //this.hasBeenHit = new HashMap<>();
     }
 
