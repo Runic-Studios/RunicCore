@@ -7,7 +7,6 @@ import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
-import com.runicrealms.plugin.dungeons.BossKillListener;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
@@ -194,7 +193,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
         pm.registerEvents(new GoldPouchListener(), this);
-        pm.registerEvents(new BossKillListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(RunicCore.getMobTagger(), this);
@@ -203,6 +201,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new ScrapperListener(), this);
         pm.registerEvents(new Debug(), this);
+        pm.registerEvents(new MobBurnListener(), this);
     }
     
     private void registerCommands() {

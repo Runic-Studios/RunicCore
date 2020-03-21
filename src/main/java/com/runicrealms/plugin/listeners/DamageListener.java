@@ -32,7 +32,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -366,42 +365,11 @@ public class DamageListener implements Listener {
         // don't drop items in dungeon world.
         if (pl.getWorld().getName().toLowerCase().equals("dungeons")) return;
 
-        Random rand = new Random();
-
-        ItemStack[] inv = pl.getInventory().getContents();
-        int currentLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
-        //ArrayList<ItemStack> armor = GearScanner.armor(pl);
-
-        int numDroppedItems = 0;
-        boolean hasSeenProtMessage = false;
-        for (ItemStack is : inv) {
-
-            // skip null items
+        for (int i = 9; i < 36; i++) {
+            ItemStack is = pl.getInventory().getItem(i);
             if (is == null) continue;
-
-            // skip soulbound items
-            String soulbound = AttributeUtil.getCustomString(is, "soulbound");
-            if (soulbound.equals("true")) continue;
-
-            // remove protection from items
-            String isProtected = AttributeUtil.getCustomString(is, "protected");
-            if (isProtected.equals("true")) {
-                if (!hasSeenProtMessage) {
-                    pl.sendMessage(ChatColor.GRAY + "Your item(s) have lost their protection!");
-                    hasSeenProtMessage = true;
-                }
-                continue;
-            }
-
-            // 25% drop chance at 50
-            int chance =  rand.nextInt(100);
-            if ((chance*2) < currentLv) {
-                pl.getWorld().dropItemNaturally(pl.getLocation(), is);
-                is.setAmount(0);
-                numDroppedItems+=1;
-            }
+            pl.getInventory().remove(is);
         }
-        pl.sendMessage(ChatColor.RED + "You dropped " + numDroppedItems + " items!");
     }
 
     public static String checkForDungeon(Player pl) {

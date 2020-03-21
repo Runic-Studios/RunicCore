@@ -50,7 +50,7 @@ public class PlayerMenuListener implements Listener {
                                 "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
 
                 //item 2
-                ItemStack questJournal = item(pl, Material.WRITABLE_BOOK, "&6Quest Journal",
+                ItemStack questJournal = item(pl, Material.BOOK, "&6Quest Journal",
                         "\n&fClick here &7to view\n&7the quest journal!");
 
                 ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",

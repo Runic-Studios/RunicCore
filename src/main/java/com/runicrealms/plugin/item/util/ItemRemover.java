@@ -6,8 +6,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemRemover {
 
-    // todo: gold pouch calculator?
-
     /**
      * Removes item based on object.
      */
