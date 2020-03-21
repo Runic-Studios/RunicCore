@@ -46,8 +46,7 @@ public class PlayerMenuListener implements Listener {
                 if (pl == null) continue;
 
                 ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
-                        "\n&7Title: &aNone" +
-                                "\n&7Item Drop Chance: &f" + (pl.getLevel()/2) + "&7%");
+                        "\n&7Title: &aNone");
 
                 //item 2
                 ItemStack questJournal = item(pl, Material.BOOK, "&6Quest Journal",

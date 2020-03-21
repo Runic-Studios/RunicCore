@@ -21,14 +21,16 @@ public class PlayerQuitListener implements Listener {
         // make sure the player's walk speed is reset
         pl.setWalkSpeed(0.2f);
 
-        // get player cache
-        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
+        // get player cache (if they've loaded in)
+        if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()) != null) {
+            PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
 
-        // update cache
-        RunicCore.getCacheManager().savePlayerCache(playerCache);
+            // update cache
+            RunicCore.getCacheManager().savePlayerCache(playerCache);
 
-        // remove player from RunicCharacters
-        RunicCharactersApi.getUserCollection().removePlayer(pl.getUniqueId());
-        RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);
+            // remove player from RunicCharacters
+            RunicCharactersApi.getUserCollection().removePlayer(pl.getUniqueId());
+            RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);
+        }
     }
 }

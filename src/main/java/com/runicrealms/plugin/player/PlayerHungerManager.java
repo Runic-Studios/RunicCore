@@ -7,7 +7,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,15 +33,15 @@ public class PlayerHungerManager implements Listener {
             @Override
             public void run() {
                 for(Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
-                    if (!player.hasPermission("runic.hunger.exempt")
-                            || (player.getGameMode() != GameMode.CREATIVE
-                            && player.getGameMode() != GameMode.SPECTATOR)) {
+//                    if (!player.hasPermission("runic.hunger.exempt")
+//                            || (player.getGameMode() != GameMode.CREATIVE
+//                            && player.getGameMode() != GameMode.SPECTATOR)) {
 
                         if (player.getFoodLevel() <= 1) return;
                         if (isSafezone(player.getLocation())) return;
 
                         player.setFoodLevel(player.getFoodLevel() - 1);
-                    }
+                   // }
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 30 * 20, PLAYER_HUNGER_TIME * 20L);
