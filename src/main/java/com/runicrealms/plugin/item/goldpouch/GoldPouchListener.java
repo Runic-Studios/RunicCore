@@ -1,17 +1,21 @@
-package com.runicrealms.plugin.item;
+package com.runicrealms.plugin.item.goldpouch;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.events.PouchCloseEvent;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
+import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -19,10 +23,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 /**
  * Manages the gold pouch item
  */
 public class GoldPouchListener implements Listener {
+
+    private static HashMap<UUID, ItemGUI> pouchLookers;
+
+    public GoldPouchListener() {
+        pouchLookers = new HashMap<>();
+    }
 
     @EventHandler
     public void onPouchInteract(PlayerInteractEvent e) {
@@ -77,7 +90,42 @@ public class GoldPouchListener implements Listener {
             }
         });
 
+        pouchLookers.put(pl.getUniqueId(), coinMenu);
+        pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_SADDLE, 0.5f, 1.0f);
         coinMenu.open(pl);
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent e) {
+
+        if (!pouchLookers.containsKey(e.getWhoClicked().getUniqueId())) return;
+        Player pl = (Player) e.getWhoClicked();
+
+        if (e.getInventory().getTitle().toLowerCase().contains("gold pouch")
+                && e.getCurrentItem() != null
+                && (e.getCurrentItem().getType() == Material.GOLD_NUGGET
+                || (e.getCursor().getType() == Material.GOLD_NUGGET
+                && e.getCurrentItem().getType() == Material.AIR
+                || e.getCurrentItem().getType() == Material.GOLD_NUGGET))) {
+            e.setCancelled(false);
+        } else {
+            e.setCancelled(true);
+        }
+
+        ItemGUI itemGUI = pouchLookers.get(e.getWhoClicked().getUniqueId());
+        int slot = e.getRawSlot();
+        if (slot >= 0 && slot < itemGUI.getSize() && itemGUI.getOptionNames()[slot] != null) {
+
+            OptionClickEvent ope = new OptionClickEvent(e, (Player) e.getWhoClicked(), slot, itemGUI.getOptionNames()[slot]);
+            itemGUI.getHandler().onOptionClick(ope);
+
+            if (ope.willClose()) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), pl::closeInventory, 1);
+            }
+            if (ope.willDestroy()) {
+                itemGUI.destroy();
+            }
+        }
     }
 
     @EventHandler
@@ -104,6 +152,7 @@ public class GoldPouchListener implements Listener {
             pouch = AttributeUtil.addCustomStat(pouch, "goldAmount", event.getAmount());
             LoreGenerator.generateGoldPouchLore(pouch);
             e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().getHeldItemSlot(), pouch);
+            pouchLookers.remove(e.getPlayer().getUniqueId());
         }
     }
 }

@@ -47,7 +47,6 @@ public class CacheManager implements Listener {
      */
     public void saveCaches() {
         for (PlayerCache playerCache : playerCaches) {
-            //Bukkit.broadcastMessage(ChatColor.DARK_RED + "SAVING CACHE");
             savePlayerCache(playerCache);
         }
     }
@@ -55,13 +54,12 @@ public class CacheManager implements Listener {
     /**
      * To be used during logout
      */
-    public void savePlayerCache(PlayerCache playerCache) {
+    public void savePlayerCache(PlayerCache playerCache) { // could be a /class command
         UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
         Player pl = userConfig.getPlayer();
-        int characterSlot = userConfig.getCharacterSlot();
+        int characterSlot = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getCharacterSlot();
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
-        //Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + playerCache.getInventoryContents()[5]);
         playerCache.setLocation(pl.getLocation()); // update location
         saveFields(playerCache, userConfig, characterSlot);
         userConfig.saveConfig();

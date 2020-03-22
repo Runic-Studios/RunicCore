@@ -65,7 +65,7 @@ public class CombatListener implements Listener {
         dismount(damager);
 
         // add/refresh their combat timer every hit
-        RunicCore.getCombatManager().addPlayer(damagerID, System.currentTimeMillis());
+        RunicCore.getCombatManager().addPlayer(damagerID);
         if (e.getEntity() instanceof Player) {
             RunicCore.getCombatManager().getPvPers().add(damagerID);
         }
@@ -79,13 +79,12 @@ public class CombatListener implements Listener {
         UUID victimID = victim.getUniqueId();
 
         if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
-            //victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
             ActionBarUtil.sendTimedMessage(victim, "&cYou have entered combat!", 3);
         }
 
         dismount(victim);
 
-        RunicCore.getCombatManager().addPlayer(victimID, System.currentTimeMillis());
+        RunicCore.getCombatManager().addPlayer(victimID);
 
         tagPartyCombat(victim, victim);
     }
@@ -108,7 +107,7 @@ public class CombatListener implements Listener {
 
                 dismount(member);
 
-                RunicCore.getCombatManager().addPlayer(member.getUniqueId(), System.currentTimeMillis());
+                RunicCore.getCombatManager().addPlayer(member.getUniqueId());
                 if (e instanceof Player) {
                     RunicCore.getCombatManager().getPvPers().add(member.getUniqueId());
                 }

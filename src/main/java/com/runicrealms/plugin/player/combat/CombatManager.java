@@ -20,14 +20,14 @@ public class CombatManager implements Listener {
     private HashMap<UUID, Long> playersInCombat;
     private List<UUID> pvpers = new ArrayList<>();
     private RunicCore plugin = RunicCore.getInstance();
-    private static final int COMBAT_DURATION = 10;
+    private static final double COMBAT_DURATION = 10;
 
     public CombatManager() {
         this.playersInCombat = new HashMap<>();
         this.startCombatTask();
     }
 
-    public int getCombatDuration() { return COMBAT_DURATION; }
+    public double getCombatDuration() { return COMBAT_DURATION; }
     public HashMap<UUID, Long> getPlayersInCombat() {
         return this.playersInCombat;
     }
@@ -35,11 +35,11 @@ public class CombatManager implements Listener {
         return this.pvpers;
     }
 
-    public void addPlayer(UUID uuid, Long currentTime) {
-        playersInCombat.put(uuid, currentTime);
+    public void addPlayer(UUID uuid) {
+        playersInCombat.put(uuid, System.currentTimeMillis());
     }
 
-    // starts the repeating task to manage pvp timers
+    // starts the repeating task to manage pve/pvp timers
     private void startCombatTask() {
         new BukkitRunnable() {
             @Override

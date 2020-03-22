@@ -79,14 +79,11 @@ public class PlayerJoinListener implements Listener {
 
                 // set their location
                 pl.teleport(e.getPlayerCache().getLocation());
+
+                pl.setResourcePack("https://www.dropbox.com/s/lzg9qlwrmlezvtz/RR%20Official%20Pack.zip?dl=1");
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
-
-//    private void fixArmorBar(Player pl) {
-//        PacketPlayOutEntityEquipment packet = new PacketPlayOutEntityEquipment(((Entity)pl).getEntityID(), 1, CraftItemStack.asNMSCopy(new ItemStack(Material.DIAMOND_HELMET));
-//        ((CraftPlayer)pl).getHandle().playerConnection.sendPacket(packet);
-//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFirstJoin(CharacterLoadEvent event) {

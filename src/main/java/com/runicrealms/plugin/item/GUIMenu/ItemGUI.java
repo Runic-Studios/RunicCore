@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.item.GUIMenu;
 
-import java.util.ArrayList;
-
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -10,8 +8,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
@@ -20,6 +22,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
 
 public class ItemGUI implements Listener {
 
@@ -123,70 +127,72 @@ public class ItemGUI implements Listener {
 //
 //        this.clickType = event.getClick();
 //
-//        if (event.getInventory().getTitle().equals(this.name)) {
+//        //if (event.getInventory().getTitle().equals(this.name)) {
 //
-//            // gold scrapper
-//            if (event.getInventory().getTitle().toLowerCase().contains("scrapper")) {
+////            // gold scrapper
+////            if (event.getInventory().getTitle().toLowerCase().contains("scrapper")) {
+////
+////                // menu items in gold scrapper menu
+////                if (event.getCurrentItem() != null
+////                        && (event.getCurrentItem().getType() == Material.SLIME_BALL
+////                        || event.getCurrentItem().getType() == Material.BARRIER)) {
+////                        event.setCancelled(true);
+////
+////                } else if (event.getCurrentItem() != null) {
+////
+////                    if (event.getCurrentItem().getType() == Material.AIR) {
+////                        event.setCancelled(false);
+////
+////                    } else {
+////
+////                        ItemTypeEnum itemType = ItemTypeEnum.matchType(event.getCurrentItem());
+////                        switch (itemType) {
+////                            case PLATE:
+////                            case GILDED:
+////                            case MAIL:
+////                            case LEATHER:
+////                            case CLOTH:
+////                                if (soulboundCheck(event)) {
+////                                    event.setCancelled(false);
+////                                } else {
+////                                    event.setCancelled(true);
+////                                    event.getWhoClicked().sendMessage
+////                                            (ChatColor.GRAY + "[1/1] "  +
+////                                                    ChatColor.YELLOW + "Armor Scrapper: " +
+////                                                    ChatColor.WHITE + "I can only scrap armor!");
+////                                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(),
+////                                            Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+////                                }
+////                                break;
+////                            default:
+////                                event.setCancelled(true);
+////                                event.getWhoClicked().sendMessage
+////                                        (ChatColor.GRAY + "[1/1] "  +
+////                                                ChatColor.YELLOW + "Armor Scrapper: " +
+////                                                ChatColor.WHITE + "I can only scrap armor!");
+////                                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(),
+////                                        Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+////                                break;
+////                        }
+////                    }
+////                }
+////
+////                // loot chests
+////            } else if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
+////
+////                // cancel moving soulbound items to chest
+////                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) && !soulboundCheck(event)) {
+////                    event.setCancelled(true);
+////                } else if (!soulboundCheck(event)) {
+////                    event.setCancelled(true);
+////                } else {
+////                    event.setCancelled(false);
+////                }
 //
-//                // menu items in gold scrapper menu
-//                if (event.getCurrentItem() != null
-//                        && (event.getCurrentItem().getType() == Material.SLIME_BALL
-//                        || event.getCurrentItem().getType() == Material.BARRIER)) {
-//                        event.setCancelled(true);
-//
-//                } else if (event.getCurrentItem() != null) {
-//
-//                    if (event.getCurrentItem().getType() == Material.AIR) {
-//                        event.setCancelled(false);
-//
-//                    } else {
-//
-//                        ItemTypeEnum itemType = ItemTypeEnum.matchType(event.getCurrentItem());
-//                        switch (itemType) {
-//                            case PLATE:
-//                            case GILDED:
-//                            case MAIL:
-//                            case LEATHER:
-//                            case CLOTH:
-//                                if (soulboundCheck(event)) {
-//                                    event.setCancelled(false);
-//                                } else {
-//                                    event.setCancelled(true);
-//                                    event.getWhoClicked().sendMessage
-//                                            (ChatColor.GRAY + "[1/1] "  +
-//                                                    ChatColor.YELLOW + "Armor Scrapper: " +
-//                                                    ChatColor.WHITE + "I can only scrap armor!");
-//                                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(),
-//                                            Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
-//                                }
-//                                break;
-//                            default:
-//                                event.setCancelled(true);
-//                                event.getWhoClicked().sendMessage
-//                                        (ChatColor.GRAY + "[1/1] "  +
-//                                                ChatColor.YELLOW + "Armor Scrapper: " +
-//                                                ChatColor.WHITE + "I can only scrap armor!");
-//                                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(),
-//                                        Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
-//                                break;
-//                        }
-//                    }
-//                }
-//
-//                // loot chests
-//            } else if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
-//
-//                // cancel moving soulbound items to chest
-//                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) && !soulboundCheck(event)) {
-//                    event.setCancelled(true);
-//                } else if (!soulboundCheck(event)) {
-//                    event.setCancelled(true);
-//                } else {
-//                    event.setCancelled(false);
-//                }
-//
-//                // gold pouch
-//            } else if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
+//            // gold pouch
+//            //} else
+//            //if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
+//        if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
 //                    && event.getCurrentItem() != null
 //                    && (event.getCurrentItem().getType() == Material.GOLD_NUGGET
 //                    || (event.getCursor().getType() == Material.GOLD_NUGGET
@@ -195,39 +201,39 @@ public class ItemGUI implements Listener {
 //                event.setCancelled(false);
 //
 //                // all other menus
-//            } else {
-//                event.setCancelled(true);
-//                event.setResult(Event.Result.DENY);
 //
-//                // ----------------------------------------------------------------------
-//                // FIXES A SUBSTANTIAL BUG: STEALING ARTIFACT SKINS FOR MAX ATTACK SPEED
-//                if(event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-//                    event.getWhoClicked().closeInventory();
-//                    event.setCancelled(true);
-//                    event.setResult(Event.Result.DENY);
-//                    ((Player) event.getWhoClicked()).updateInventory();
-//                }
-//                // ----------------------------------------------------------------------
+////            } else {
+////                event.setCancelled(true);
+////                event.setResult(Event.Result.DENY);
+////
+////                // ----------------------------------------------------------------------
+////                // FIXES A SUBSTANTIAL BUG: STEALING ARTIFACT SKINS FOR MAX ATTACK SPEED
+////                if(event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+////                    event.getWhoClicked().closeInventory();
+////                    event.setCancelled(true);
+////                    event.setResult(Event.Result.DENY);
+////                    ((Player) event.getWhoClicked()).updateInventory();
+////                }
+////                // ----------------------------------------------------------------------
 //
+//        }
+//
+//        int slot = event.getRawSlot();
+//        if (slot >= 0 && slot < size && optionNames[slot] != null) {
+//            Plugin plugin = this.plugin;
+//
+//            OptionClickEvent e = new OptionClickEvent(event, (Player) event.getWhoClicked(), slot, optionNames[slot]);
+//            handler.onOptionClick(e);
+//
+//            if (e.willClose()) {
+//                final Player p = (Player) event.getWhoClicked();
+//                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, p::closeInventory, 1);
 //            }
-//
-//            int slot = event.getRawSlot();
-//            if (slot >= 0 && slot < size && optionNames[slot] != null) {
-//                Plugin plugin = this.plugin;
-//
-//                OptionClickEvent e = new OptionClickEvent(event, (Player)event.getWhoClicked(), slot, optionNames[slot]);
-//                handler.onOptionClick(e);
-//
-//                if (e.willClose()) {
-//                    final Player p = (Player)event.getWhoClicked();
-//                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, p::closeInventory, 1);
-//                }
-//                if (e.willDestroy()) {
-//                    destroy();
-//                }
+//            if (e.willDestroy()) {
+//                destroy();
 //            }
 //        }
-//    }
+    //}
 
     /**
      * This method is called when a player closes a GUI.
