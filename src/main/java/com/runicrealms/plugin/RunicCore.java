@@ -84,12 +84,24 @@ public class RunicCore extends JavaPlugin {
     public static PartyManager getPartyManager() { return partyManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
     public static SpellManager getSpellManager() { return spellManager; }
-    public static TabListManager getTabListManager() { return tabListManager; }
-    public static MobTagger getMobTagger() { return mobTagger; }
-    public static BossTagger getBossTagger() { return bossTagger; }
-    public static ShopManager getShopManager() { return shopManager; }
-    public static CacheManager getCacheManager() { return cacheManager; }
-    public static OutlawManager getOutlawManager() { return outlawManager; }
+    public static TabListManager getTabListManager() {
+        return tabListManager;
+    }
+    public static MobTagger getMobTagger() {
+        return mobTagger;
+    }
+    public static BossTagger getBossTagger() {
+        return bossTagger;
+    }
+    public static ShopManager getShopManager() {
+        return shopManager;
+    }
+    public static CacheManager getCacheManager() {
+        return cacheManager;
+    }
+    public static OutlawManager getOutlawManager() {
+        return outlawManager;
+    }
 
     public void onEnable() {
 

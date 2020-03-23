@@ -261,7 +261,7 @@ public class DamageListener implements Listener {
 
         // broadcast the death message
         broadcastDeathMessage(victim);
-        victim.sendMessage(ChatColor.RED + "You have died!");
+        victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
@@ -368,7 +368,9 @@ public class DamageListener implements Listener {
         for (int i = 9; i < 36; i++) {
             ItemStack is = pl.getInventory().getItem(i);
             if (is == null) continue;
+            if (AttributeUtil.getCustomString(is, "soulbound").equals("true")) continue;
             pl.getInventory().remove(is);
+            pl.getWorld().dropItem(pl.getLocation(), is);
         }
     }
 

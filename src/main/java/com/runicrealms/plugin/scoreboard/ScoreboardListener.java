@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,14 +11,9 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.runicrealms.plugin.RunicCore;
 
 public class ScoreboardListener implements Listener {
-
-    private ScoreboardHandler sbh = RunicCore.getScoreboardHandler();
-    private Plugin plugin = RunicCore.getInstance();
 
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
@@ -56,7 +52,7 @@ public class ScoreboardListener implements Listener {
                 HealthUtils.setPlayerMaxHealth(pl);
                 updateHealth(pl);
             }
-        }.runTaskLater(plugin, 1L);
+        }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
     /**
@@ -76,7 +72,7 @@ public class ScoreboardListener implements Listener {
                     HealthUtils.setPlayerMaxHealth(pl);
                     updateHealth(pl);
                 }
-            }.runTaskLater(plugin, 1L);
+            }.runTaskLater(RunicCore.getInstance(), 1L);
         }
     }
 
@@ -92,7 +88,7 @@ public class ScoreboardListener implements Listener {
                 HealthUtils.setPlayerMaxHealth(pl);
                 updateHealth(pl);
             }
-        }.runTaskLater(plugin, 1L);
+        }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
     private void updateHealth(Player pl) {
@@ -100,9 +96,9 @@ public class ScoreboardListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                sbh.updateSideInfo(pl);
-                sbh.updateHealthbar(pl);
+                RunicCore.getScoreboardHandler().updateSideInfo(pl);
+                RunicCore.getScoreboardHandler().updateHealthbar(pl);
             }
-        }.runTaskLater(plugin, 1);
+        }.runTaskLater(RunicCore.getInstance(), 1);
     }
 }

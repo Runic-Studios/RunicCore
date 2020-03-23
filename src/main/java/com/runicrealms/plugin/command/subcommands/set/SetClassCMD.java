@@ -1,27 +1,25 @@
 package com.runicrealms.plugin.command.subcommands.set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.player.commands.SetSC;
-import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-import static com.runicrealms.plugin.classes.SelectClass.*;
+import static com.runicrealms.plugin.classes.SelectClass.setConfig;
+import static com.runicrealms.plugin.classes.SelectClass.setPlayerClass;
 
 public class SetClassCMD implements SubCommand {
 
     private SetSC set;
     private Plugin plugin = RunicCore.getInstance();
-    private ScoreboardHandler sbh = RunicCore.getScoreboardHandler();
 
     public SetClassCMD(SetSC set) {
         this.set = set;
@@ -88,8 +86,8 @@ public class SetClassCMD implements SubCommand {
             setPlayerClass(pl, formattedStr, true);
 
             setConfig(pl, formattedStr);
-            sbh.updatePlayerInfo(pl);
-            sbh.updateSideInfo(pl);
+            RunicCore.getScoreboardHandler().updatePlayerInfo(pl);
+            RunicCore.getScoreboardHandler().updateSideInfo(pl);
 
             // set the player's slot to 0 (the artifact)
             pl.getInventory().setHeldItemSlot(0);

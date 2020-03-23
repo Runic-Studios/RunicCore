@@ -168,19 +168,18 @@ public class ScoreboardHandler implements Listener {
     public void updateHealthbar(Player pl) {
 
         Objective healthbar = pl.getScoreboard().getObjective("showhealth");
-        Score test = healthbar.getScore(pl.getName());
-        test.setScore((int) pl.getHealth());
+        if (healthbar == null) return;
 
-        // ensure the scoreboard objective exists
-        if (healthbar == null) { return; }
-
-        // updates the health below the nameplate for all OTHER players
+        // updates the health below the nameplate (of parameter player) for all OTHER players
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
             Score score = healthbar.getScore(online.getName());
             score.setScore((int) online.getHealth());
         }
-    }
 
+        // updates the display of all other players for parameter player
+        Score test = healthbar.getScore(pl.getName());
+        test.setScore((int) pl.getHealth());
+    }
 
     public void updatePlayerInfo(Player pl) {
 

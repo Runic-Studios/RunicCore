@@ -65,7 +65,7 @@ public class CombatListener implements Listener {
         dismount(damager);
 
         // add/refresh their combat timer every hit
-        RunicCore.getCombatManager().addPlayer(damagerID);
+        //RunicCore.getCombatManager().addPlayer(damagerID);
         if (e.getEntity() instanceof Player) {
             RunicCore.getCombatManager().getPvPers().add(damagerID);
         }
@@ -84,7 +84,7 @@ public class CombatListener implements Listener {
 
         dismount(victim);
 
-        RunicCore.getCombatManager().addPlayer(victimID);
+        //RunicCore.getCombatManager().addPlayer(victimID);
 
         tagPartyCombat(victim, victim);
     }
@@ -107,7 +107,7 @@ public class CombatListener implements Listener {
 
                 dismount(member);
 
-                RunicCore.getCombatManager().addPlayer(member.getUniqueId());
+                //RunicCore.getCombatManager().addPlayer(member.getUniqueId());
                 if (e instanceof Player) {
                     RunicCore.getCombatManager().getPvPers().add(member.getUniqueId());
                 }

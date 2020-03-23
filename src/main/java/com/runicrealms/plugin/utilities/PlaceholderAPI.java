@@ -32,7 +32,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return "runic";
+        return "runic_core";
     }
 
     @Override
