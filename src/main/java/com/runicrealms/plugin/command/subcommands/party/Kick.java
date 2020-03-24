@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.command.subcommands.party;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.PartySC;
+import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.parties.PartyDisconnect;
 import org.bukkit.Bukkit;
@@ -9,9 +12,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.command.subcommands.SubCommand;
-import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +86,16 @@ public class Kick implements SubCommand {
 			return;
 		}
 
+		ArrayList<Player> members = party.getPlayerMembers();
+
+		if(!members.contains(target)) {
+			party.sendMessage
+					(ChatColor.DARK_GREEN + "Party "
+							+ ChatColor.GOLD + "» "
+							+ ChatColor.RED + "This player is not in the party!");
+			return;
+		}
+
         String targetName = target.getName();
 		String senderName = sender.getName();
 		
@@ -95,8 +105,6 @@ public class Kick implements SubCommand {
                         + ChatColor.RED + "You kicked "
                         + ChatColor.WHITE + targetName
                         + ChatColor.RED + " from your party!");
-
-		ArrayList<Player> members = party.getPlayerMembers();
 
 		// remove the player from the party and party array
         party.removeMember(target.getUniqueId());

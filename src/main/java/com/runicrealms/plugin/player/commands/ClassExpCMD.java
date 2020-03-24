@@ -22,7 +22,7 @@ public class ClassExpCMD implements SubCommand {
 
     private RunicGiveSC giveItemSC;
     private static final int LV_BUFFER = 10;
-    private static double PARTY_BONUS = 25;
+    private static double PARTY_BONUS = 15;
     private static int RANGE = 100;
 
     public ClassExpCMD(RunicGiveSC giveItemSC) {
