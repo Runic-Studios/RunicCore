@@ -7,7 +7,6 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
-import com.runicrealms.plugin.utilities.ActionBarUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -280,9 +279,9 @@ public class DamageListener implements Listener {
 
         // if player is in combat, remove them
         if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
-            RunicCore.getCombatManager().getPlayersInCombat().remove(victim.getUniqueId());
+            RunicCore.getCombatManager().removePlayer(victim.getUniqueId());
             //victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You have left combat!"));
-            ActionBarUtil.sendTimedMessage(victim, "&aYou have left combat!", 3);
+            //ActionBarUtil.sendTimedMessage(victim, "&aYou have left combat!", 3);
         }
 
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());

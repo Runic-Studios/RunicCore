@@ -84,24 +84,12 @@ public class RunicCore extends JavaPlugin {
     public static PartyManager getPartyManager() { return partyManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
     public static SpellManager getSpellManager() { return spellManager; }
-    public static TabListManager getTabListManager() {
-        return tabListManager;
-    }
-    public static MobTagger getMobTagger() {
-        return mobTagger;
-    }
-    public static BossTagger getBossTagger() {
-        return bossTagger;
-    }
-    public static ShopManager getShopManager() {
-        return shopManager;
-    }
-    public static CacheManager getCacheManager() {
-        return cacheManager;
-    }
-    public static OutlawManager getOutlawManager() {
-        return outlawManager;
-    }
+    public static TabListManager getTabListManager() { return tabListManager; }
+    public static MobTagger getMobTagger() { return mobTagger; }
+    public static BossTagger getBossTagger() { return bossTagger; }
+    public static ShopManager getShopManager() { return shopManager; }
+    public static CacheManager getCacheManager() { return cacheManager; }
+    public static OutlawManager getOutlawManager() { return outlawManager; }
 
     public void onEnable() {
 
@@ -181,7 +169,10 @@ public class RunicCore extends JavaPlugin {
 
         PluginManager pm = this.getServer().getPluginManager();
 
+        pm.registerEvents(RunicCore.getCacheManager(), this);
         pm.registerEvents(RunicCore.getScoreboardHandler(), this);
+        pm.registerEvents(RunicCore.getMobTagger(), this);
+        pm.registerEvents(RunicCore.getBossTagger(), this);
         pm.registerEvents(new ScoreboardListener(), this);
         pm.registerEvents(new DurabilityListener(), this);
         pm.registerEvents(new StaffListener(), this);
@@ -212,8 +203,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new GoldPouchListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
-        pm.registerEvents(RunicCore.getMobTagger(), this);
-        pm.registerEvents(RunicCore.getBossTagger(), this);
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new ScrapperListener(), this);

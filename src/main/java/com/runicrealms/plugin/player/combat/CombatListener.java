@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.player.combat;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.mounts.MountListener;
-import com.runicrealms.plugin.utilities.ActionBarUtil;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -12,25 +14,22 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CombatListener implements Listener {
 
-    private static int RANGE = 100;
+    private static final int PARTY_TAG_RANGE = 100;
 
     @EventHandler
-    public void onCombat(EntityDamageByEntityEvent e) {
+    public void onMobDamage(MobDamageEvent e) {
 
-        // only listen for two players, or arrows
+        // only listen for player, or arrows. ignore NPCs
         if (!(e.getDamager() instanceof Player)) return;
         if (!(e.getDamager() instanceof Player) && !(e.getDamager() instanceof Arrow)) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-
-        // ignore NPCs
-        if (e.getEntity().hasMetadata("NPC")) return;
+        if (!(e.getVictim() instanceof LivingEntity)) return;
+        if (e.getVictim().hasMetadata("NPC")) return;
 
         // grab our variables
         Player damager;
@@ -41,52 +40,61 @@ public class CombatListener implements Listener {
         }
 
         if (damager == null) return;
-        int slot = damager.getInventory().getHeldItemSlot();
-        if (slot != 0) return;
+        UUID damagerID = damager.getUniqueId();
+
+        // remove their mount
+        dismount(damager);
+
+        // add/refresh their combat timer every hit
+        RunicCore.getCombatManager().addPlayer(damagerID);
+
+        // if the damager has a party, tag their party members and inform them
+        tagPartyCombat(damager, e.getVictim());
+    }
+
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        tagCombat(e.getPlayer(), e.getEntity());
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        tagCombat(e.getPlayer(), e.getEntity());
+    }
+
+    private void tagCombat(Player damager, Entity victim) {
+
+        // ignore NPCs
+        if (victim.hasMetadata("NPC")) return;
 
         // ignore party members
-        if (e.getEntity() instanceof Player &&
-                RunicCore.getPartyManager().getPlayerParty(damager) != null
-                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) e.getEntity())) {
+        if (RunicCore.getPartyManager().getPlayerParty(damager) != null
+                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) victim)) {
             return;
         }
 
         // player cannot damage themselves
-        if (damager == e.getEntity()) return;
+        if (damager == victim) return;
 
         UUID damagerID = damager.getUniqueId();
-
-        // inform the players when they first enter combat
-        if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(damagerID)) {
-            //damager.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You have entered combat!"));
-            ActionBarUtil.sendTimedMessage(damager, "&cYou have entered combat!", 3);
-        }
 
         dismount(damager);
 
         // add/refresh their combat timer every hit
-        //RunicCore.getCombatManager().addPlayer(damagerID);
-        if (e.getEntity() instanceof Player) {
+        RunicCore.getCombatManager().addPlayer(damagerID);
+        if (victim instanceof Player) {
             RunicCore.getCombatManager().getPvPers().add(damagerID);
         }
 
         // if the damager has a party, tag their party members and inform them
-        tagPartyCombat(damager, e.getEntity());
+        tagPartyCombat(damager, victim);
 
         // apply same mechanics to victim if the victim is a player
-        if (!(e.getEntity() instanceof Player)) return;
-        Player victim = (Player) e.getEntity();
+        if (!(victim instanceof Player)) return;
         UUID victimID = victim.getUniqueId();
-
-        if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(victimID)) {
-            ActionBarUtil.sendTimedMessage(victim, "&cYou have entered combat!", 3);
-        }
-
-        dismount(victim);
-
-        //RunicCore.getCombatManager().addPlayer(victimID);
-
-        tagPartyCombat(victim, victim);
+        dismount((Player) victim);
+        RunicCore.getCombatManager().addPlayer(victimID);
+        tagPartyCombat((Player) victim, victim);
     }
 
     private void tagPartyCombat(Player pl, Entity e) {
@@ -97,17 +105,17 @@ public class CombatListener implements Listener {
                 if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
 
                 // only tag players in 100 block range
-                if (pl.getLocation().distance(member.getLocation()) > RANGE) continue;
+                if (pl.getLocation().distance(member.getLocation()) > PARTY_TAG_RANGE) continue;
 
                 if (member == pl) continue;
-                if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
-                    //member.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Your party has entered combat!"));
-                    ActionBarUtil.sendTimedMessage(member, "&cYour party has entered combat!", 3);
-                }
+//                if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
+//                    //member.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Your party has entered combat!"));
+//                    ActionBarUtil.sendTimedMessage(member, "&cYour party has entered combat!", 3);
+//                }
 
                 dismount(member);
 
-                //RunicCore.getCombatManager().addPlayer(member.getUniqueId());
+                RunicCore.getCombatManager().addPlayer(member.getUniqueId());
                 if (e instanceof Player) {
                     RunicCore.getCombatManager().getPvPers().add(member.getUniqueId());
                 }
