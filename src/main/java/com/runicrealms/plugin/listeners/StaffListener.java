@@ -80,6 +80,13 @@ public class StaffListener implements Listener {
         // retrieve the weapon damage, cooldown
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+        int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
+
+        if (reqLv > RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel()) {
+            pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+            return;
+        }
 
         // create our vector to be used later
         Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);

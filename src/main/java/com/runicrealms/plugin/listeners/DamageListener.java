@@ -99,6 +99,7 @@ public class DamageListener implements Listener {
             WeaponEnum artifactType = WeaponEnum.matchType(artifact);
             int damage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
             int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+            int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
 
             // --------------------
             // for punching 'n stuff
@@ -109,6 +110,13 @@ public class DamageListener implements Listener {
                 maxDamage = 1;
             }
             // -------------------
+
+            if (reqLv > RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel()) {
+                pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+                pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+                e.setCancelled(true);
+                return;
+            }
 
             // check for cooldown
             if (artifactType.equals(WeaponEnum.HAND)

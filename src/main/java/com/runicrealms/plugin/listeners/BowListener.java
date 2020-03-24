@@ -7,6 +7,7 @@ import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
 import net.minecraft.server.v1_13_R2.DataWatcherRegistry;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -67,6 +68,14 @@ public class BowListener implements Listener {
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
         if (!className.equals("Archer")) {
+            return;
+        }
+
+        int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
+
+        if (reqLv > RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel()) {
+            pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
             return;
         }
 
