@@ -70,14 +70,30 @@ public class MobHealthManager {
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100, 20);
     }
 
+    /**
+     * This method is incase TPS drops and mobs get stuck as evokers.
+     */
+    public void insurancePolicy() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
+                    String world = Bukkit.getWorlds().get(i).getName();
+                    for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
+                        if (MythicMobs.inst().getMobManager().isActiveMob(en.getUniqueId())) continue;
+                        if (en instanceof Evoker || en instanceof Vex) {
+                            en.remove();
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0L, 10L);
+    }
+
     public void fullClean() {
-
         for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
-
             String world = Bukkit.getWorlds().get(i).getName();
-
             for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
-
                 // remove stray armorstands
                 if (en instanceof ArmorStand
                         && !en.hasMetadata("healthbar")

@@ -145,7 +145,8 @@ public class RunicCore extends JavaPlugin {
             new PlaceholderAPI().register();
         }
 
-        // clean any stray armor stands
+        // clean any stray armor stands, evokers
+        mobHealthManager.insurancePolicy();
         mobHealthManager.fullClean();
     }
     

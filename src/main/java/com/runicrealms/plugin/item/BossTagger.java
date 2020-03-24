@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BossTagger implements Listener {
 
@@ -104,10 +105,10 @@ public class BossTagger implements Listener {
      * This method drops an item in the world with prio
      */
     public void dropTaggedBossLoot(UUID bossID, Location loc, ItemStack itemStack) {
-        HashMap<ItemStack, HashSet<UUID>> prioItems = RunicCore.getMobTagger().getPrioItems();
+        ConcurrentHashMap<ItemStack, HashSet<UUID>> prioItems = RunicCore.getMobTagger().getPrioItems();
         HashSet<UUID> temp = new HashSet<>();
         prioItems.put(itemStack, temp);
-        HashMap<ItemStack, Long> prioTimers = RunicCore.getMobTagger().getPrioTimers();
+        ConcurrentHashMap<ItemStack, Long> prioTimers = RunicCore.getMobTagger().getPrioTimers();
         for (UUID id : bossLooters.get(bossID)) {
             prioItems.get(itemStack).add(id);
         }

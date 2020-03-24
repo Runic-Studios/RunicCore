@@ -15,25 +15,25 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MobTagger implements Listener {
 
     private static final int PRIO_TIME = 10;
     private static final int TAG_TIME = 10;
 
-    private HashMap<UUID, UUID> taggedMobs;
-    private HashMap<UUID, Long> taggedTimers;
-    private HashMap<ItemStack, HashSet<UUID>> prioItems;
-    private HashMap<ItemStack, Long> prioTimers;
+    private ConcurrentHashMap<UUID, UUID> taggedMobs;
+    private ConcurrentHashMap<UUID, Long> taggedTimers;
+    private ConcurrentHashMap<ItemStack, HashSet<UUID>> prioItems;
+    private ConcurrentHashMap<ItemStack, Long> prioTimers;
 
     public MobTagger() {
-        taggedMobs = new HashMap<>();
-        taggedTimers = new HashMap<>();
-        prioItems = new HashMap<>();
-        prioTimers = new HashMap<>();
+        taggedMobs = new ConcurrentHashMap<>();
+        taggedTimers = new ConcurrentHashMap<>();
+        prioItems = new ConcurrentHashMap<>();
+        prioTimers = new ConcurrentHashMap<>();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -82,7 +82,7 @@ public class MobTagger implements Listener {
      * Checks whether a mob is tagged.
      */
     public boolean getIsTagged(UUID mobID) {
-        return taggedMobs.values().contains(mobID);
+        return taggedMobs.containsValue(mobID);
     }
 
     /**
@@ -97,11 +97,11 @@ public class MobTagger implements Listener {
         return null;
     }
 
-    public HashMap<ItemStack, HashSet<UUID>> getPrioItems() {
+    public ConcurrentHashMap<ItemStack, HashSet<UUID>> getPrioItems() {
         return prioItems;
     }
 
-    public HashMap<ItemStack, Long> getPrioTimers() {
+    public ConcurrentHashMap<ItemStack, Long> getPrioTimers() {
         return prioTimers;
     }
 
@@ -111,7 +111,7 @@ public class MobTagger implements Listener {
     @EventHandler
     public void onItemPickup(EntityPickupItemEvent e) {
         ItemStack itemStack = e.getItem().getItemStack();
-        if (!prioItems.keySet().contains(itemStack)) return;
+        if (!prioItems.containsKey(itemStack)) return;
         if (prioItems.get(itemStack).contains(e.getEntity().getUniqueId())) return;
         e.setCancelled(true);
     }
@@ -143,12 +143,12 @@ public class MobTagger implements Listener {
             }
         }
 
-        if (taggedMobs.keySet().contains(plID)) { // if player is on the list (has tagged ANY mob)
+        if (taggedMobs.containsKey(plID)) { // if player is on the list (has tagged ANY mob)
             if (taggedMobs.get(plID).equals(victimID)) { // if mob is tied to player
                 taggedTimers.put(plID, System.currentTimeMillis()); // update timer
             }
         } else {
-            if (!taggedMobs.keySet().contains(plID) && !getIsTagged(victimID)) { // player is not on list AND mob is not on list
+            if (!taggedMobs.containsKey(plID) && !getIsTagged(victimID)) { // player is not on list AND mob is not on list
                 taggedMobs.put(plID, victimID);
                 taggedTimers.put(plID, System.currentTimeMillis());
             }
