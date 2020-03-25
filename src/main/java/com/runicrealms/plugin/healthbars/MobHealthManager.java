@@ -47,6 +47,7 @@ public class MobHealthManager {
 
                     String world = Bukkit.getWorlds().get(i).getName();
 
+                    if (Bukkit.getWorld(world) == null) continue;
                     for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
                         // remove stuck horses
                         if (en instanceof Horse && en.getPassengers().size() == 0 && !en.hasMetadata("NPC")) {

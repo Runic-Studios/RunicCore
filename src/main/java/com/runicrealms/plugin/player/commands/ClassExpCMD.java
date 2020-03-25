@@ -10,7 +10,6 @@ import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,6 +32,7 @@ public class ClassExpCMD implements SubCommand {
     public void onConsoleCommand(CommandSender sender, String[] args)  {
 
         // runicgive exp [player] [amount] [x] [y] [z] [levelOfMob]
+        // runicgive exp [player] [amount] [uuidOfMob] [mobLevel]
         // runicgive exp [player] [amount] [quest]
         Player pl = Bukkit.getPlayer(args[1]);
         if (pl == null) return;
@@ -54,15 +54,15 @@ public class ClassExpCMD implements SubCommand {
                 PlayerLevelUtil.giveExperience(pl, exp);
             } else {
                 int mobLv = Integer.parseInt(args[6]);
-                if (mobLv > (plLv+LV_BUFFER)) {
-                    pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-                    pl.sendMessage(ChatColor.RED + "This mob is too far outside of your level range for you to receive exp!");
-                    return;
-                }
                 int exp = Integer.parseInt(args[2]);
                 PlayerLevelUtil.giveExperience(pl, exp);
-                Location loc = new Location(pl.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ &f" + exp + " &7exp"), 0, 2.5, 0);
+                Location loc = new Location(pl.getWorld(), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
+                ChatColor expColor = ChatColor.WHITE;
+                if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
+                    exp = 0;
+                    expColor = ChatColor.RED;
+                }
+                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + exp + " &7exp"), 0, 2.5, 0);
                 HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName()), 0, 2.25, 0);
             }
 
@@ -77,7 +77,7 @@ public class ClassExpCMD implements SubCommand {
             if (extraAmt < 1) {
                 extraAmt = 1;
             }
-            exp += extraAmt;
+            ChatColor expColor = ChatColor.WHITE;
 
             int nearbyMembers = 0;
             for (Player member : party.getPlayerMembers()) {
@@ -90,11 +90,12 @@ public class ClassExpCMD implements SubCommand {
             for (Player member : party.getPlayerMembers()) {
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
                     if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
+                    exp = Integer.parseInt(args[2]);
+                    exp += extraAmt;
                     int mobLv = Integer.parseInt(args[6]);
-                    if (mobLv > (plLv+LV_BUFFER)) {
-                        pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-                        pl.sendMessage(ChatColor.RED + "This mob is too far outside of your level range for you to receive exp!");
-                        continue;
+                    if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
+                        exp = 0;
+                        expColor = ChatColor.RED;
                     }
                     PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
                 }
@@ -102,7 +103,7 @@ public class ClassExpCMD implements SubCommand {
 
             if (args.length == 7) {
                 Location loc = new Location(pl.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ &f" + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.5, 0);
+                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.5, 0);
                 HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName() + "&7's Party"), 0, 2.25, 0);
             }
         }
