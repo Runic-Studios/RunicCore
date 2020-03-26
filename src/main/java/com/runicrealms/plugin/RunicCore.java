@@ -40,6 +40,7 @@ import com.runicrealms.plugin.player.combat.CombatManager;
 import com.runicrealms.plugin.player.combat.ExpListener;
 import com.runicrealms.plugin.player.combat.PlayerLevelListener;
 import com.runicrealms.plugin.player.commands.*;
+import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.ManaManager;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
@@ -208,6 +209,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new ScrapperListener(), this);
         pm.registerEvents(new Debug(), this);
         pm.registerEvents(new MobBurnListener(), this);
+        pm.registerEvents(new OffhandListener(), this);
     }
     
     private void registerCommands() {

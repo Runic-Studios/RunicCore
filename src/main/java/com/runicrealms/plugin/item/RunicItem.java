@@ -153,7 +153,12 @@ public class RunicItem {
         if (maxDamage != 0) item = AttributeUtil.addCustomStat(item, "custom.maxDamage", maxDamage);
         if (spell != null && !spell.equals("")) item = AttributeUtil.addSpell(item, "secondarySpell", spell);
         if (soulbound) item = AttributeUtil.addCustomStat(item, "soulbound", "true");
-        if (slot != null) item = AttributeUtil.addGenericStat(item, "generic.armor", 0, slot); // remove armor values
+        if (slot != null) {
+            item = AttributeUtil.addGenericStat(item, "generic.armor", 0, slot); // remove armor values
+            if (slot.equals("offhand")) {
+                item = AttributeUtil.addCustomStat(item, "offhand", "true");
+            }
+        }
         return item;
     }
 

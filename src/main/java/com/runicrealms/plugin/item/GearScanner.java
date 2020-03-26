@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -42,8 +41,7 @@ public class GearScanner {
         if (chestplate != null) armorAndOffhand.add(pl.getInventory().getChestplate());
         if (leggings != null) armorAndOffhand.add(pl.getInventory().getLeggings());
         if (boots != null) armorAndOffhand.add(pl.getInventory().getBoots());
-        ItemTypeEnum offHandType = ItemTypeEnum.matchType(offhand);
-        if (offhand != null && offHandType != ItemTypeEnum.GEMSTONE) {
+        if (AttributeUtil.getCustomString(offhand, "offhand").equals("true")) {
             armorAndOffhand.add(pl.getInventory().getItemInOffHand());
         }
         return armorAndOffhand;
