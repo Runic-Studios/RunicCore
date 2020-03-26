@@ -15,6 +15,7 @@ public class KnockbackUtil {
     // damager can be mob
     public static void knockbackPlayer(Entity damager, Player victim) {
         Location l = victim.getLocation().subtract(damager.getLocation());
+        if (victim.getLocation().getWorld() != damager.getLocation().getWorld()) return;
         double distance = victim.getLocation().distance(damager.getLocation());
         if (distance == 0) distance = 1;
         DecimalFormat finite = new DecimalFormat("#.####");

@@ -87,8 +87,8 @@ public class ClassExpCMD implements SubCommand {
             }
 
             for (Player member : party.getPlayerMembers()) {
+                if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
-                    if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                     exp = Integer.parseInt(args[2]);
                     exp += extraAmt;
                     int mobLv = Integer.parseInt(args[6]);
