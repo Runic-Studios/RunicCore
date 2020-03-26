@@ -5,9 +5,12 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ConcurrentModificationException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -46,25 +49,39 @@ public class MobHealthManager {
                 for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
 
                     String world = Bukkit.getWorlds().get(i).getName();
-
                     if (Bukkit.getWorld(world) == null) continue;
-                    for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
-                        // remove stuck horses
-                        if (en instanceof Horse && en.getPassengers().size() == 0 && !en.hasMetadata("NPC")) {
-                            en.remove();
-                        } else if (en instanceof Horse) {
-                            Horse horse = (Horse) en;
-                            if (horse.getColor() == Horse.Color.CREAMY) {
-                                horse.getWorld().spawnParticle(Particle.FLAME, horse.getEyeLocation(), 15, 0.6f, 0.5f, 0.6f, 0);
-                            } else if (horse.getColor() == Horse.Color.DARK_BROWN) {
-                                horse.getWorld().spawnParticle(Particle.BLOCK_DUST, horse.getEyeLocation(),
-                                        5, 0.6F, 0.5F, 0.6F, 0, Material.PACKED_ICE.createBlockData());
+                    World current = Bukkit.getWorld(world);
+                    if (current == null) continue;
+
+                    /*
+                    From Sky: careful for ConcurrentModificationException!
+                     */
+                    List<Entity> currentEntities = current.getEntities();
+                    try {
+                        for (Entity en : currentEntities) {
+                            if (en == null) continue;
+                            // remove stuck horses
+                            if (en instanceof Horse // is a horse
+                                    && en.getPassengers().size() == 0 // no passenger
+                                    && !en.hasMetadata("NPC") // not an npc
+                                    && !MythicMobs.inst().getMobManager().isActiveMob(en.getUniqueId())) { // not a mythicmobs
+                                en.remove();
+                            } else if (en instanceof Horse) {
+                                Horse horse = (Horse) en;
+                                if (horse.getColor() == Horse.Color.CREAMY) {
+                                    horse.getWorld().spawnParticle(Particle.FLAME, horse.getEyeLocation(), 15, 0.6f, 0.5f, 0.6f, 0);
+                                } else if (horse.getColor() == Horse.Color.DARK_BROWN) {
+                                    horse.getWorld().spawnParticle(Particle.BLOCK_DUST, horse.getEyeLocation(),
+                                            5, 0.6F, 0.5F, 0.6F, 0, Material.PACKED_ICE.createBlockData());
+                                }
+                            }
+                            if (en.hasMetadata("healthbar")
+                                    && en.getVehicle() == null) {
+                                en.remove();
                             }
                         }
-                        if (en.hasMetadata("healthbar")
-                                && en.getVehicle() == null) {
-                            en.remove();
-                        }
+                    } catch (ConcurrentModificationException e) {
+                        e.printStackTrace();
                     }
                 }
             }

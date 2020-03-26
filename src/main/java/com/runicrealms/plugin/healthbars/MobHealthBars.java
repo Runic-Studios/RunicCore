@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.healthbars;
 
-import org.bukkit.ChatColor;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.InvisStandSpawner;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,12 +14,32 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Consumer;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.InvisStandSpawner;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 // todo: only update the mob healthbars if players are nearby to see them, to prevent client-side lag for low-end PCs.
 @SuppressWarnings({"unchecked", "deprecation"})
 public final class MobHealthBars implements Listener {
+
+    /**
+     * Removes drowning mobs.
+     */
+    @EventHandler
+    public void onMobSwim(EntityDismountEvent e) {
+        Entity mob = e.getEntity();
+        Location loc = mob.getLocation();
+        Entity dismounted = e.getDismounted();
+        // only listen for mythic mobs
+        if (!MythicMobs.inst().getMobManager().isActiveMob(dismounted.getUniqueId())) return;
+        dismounted.remove();
+        if (dismounted.getPassengers().size() > 0) {
+            for (Entity pass : dismounted.getPassengers()) {
+                pass.remove();
+            }
+        }
+        mob.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 0.5f, 1.0f);
+        mob.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
+                10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(Color.BLUE, 3));
+    }
 
     /**
      * Creates mob healthbars.
