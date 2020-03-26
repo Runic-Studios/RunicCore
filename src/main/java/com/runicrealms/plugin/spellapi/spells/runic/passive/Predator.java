@@ -26,7 +26,7 @@ public class Predator extends Spell {
 
     public Predator() {
         super ("Predator",
-                "Damaging an enemy has a " + PERCENT + "% chance" +
+                "Damaging an enemy has a " + (int) PERCENT + "% chance" +
                         "\nto blind them for " + DURATION + " second(s)!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);

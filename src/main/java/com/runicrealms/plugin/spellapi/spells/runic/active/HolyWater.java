@@ -34,7 +34,7 @@ public class HolyWater extends Spell {
         super("Holy Water",
                 "You throw a magical vial of light!" +
                         "\nAllies within " + RADIUS + " blocks of the light" +
-                        "\nreceive an additional " + PERCENT + "% health" +
+                        "\nreceive an additional " + (int) PERCENT + "% health" +
                         "\nfrom all healing✦ spells for " + DURATION +
                         "\nseconds!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 10, 20);

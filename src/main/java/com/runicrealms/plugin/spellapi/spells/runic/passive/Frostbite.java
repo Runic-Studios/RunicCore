@@ -26,7 +26,7 @@ public class Frostbite extends Spell {
 
     public Frostbite() {
         super ("Frostbite",
-                "Damaging an enemy has a " + PERCENT + "% chance" +
+                "Damaging an enemy has a " + (int) PERCENT + "% chance" +
                         "\nto slow them for " + DURATION + " second(s)!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);

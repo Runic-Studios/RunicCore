@@ -25,7 +25,7 @@ public class Insanity extends Spell {
 
     public Insanity() {
         super ("Insanity",
-                "Damaging an enemy has a " + PERCENT + "% chance" +
+                "Damaging an enemy has a " + (int) PERCENT + "% chance" +
                         "\nto cause nausea for " + DURATION + " second(s)!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
