@@ -6,6 +6,7 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -23,7 +24,7 @@ public final class MobHealthBars implements Listener {
     /**
      * Removes drowning mobs.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onMobSwim(EntityDismountEvent e) {
         Entity mob = e.getEntity();
         Location loc = mob.getLocation();
@@ -35,10 +36,12 @@ public final class MobHealthBars implements Listener {
             for (Entity pass : dismounted.getPassengers()) {
                 pass.remove();
             }
+            if (loc.getBlock().getType() == Material.WATER) {
+                mob.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 0.5f, 1.0f);
+                mob.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
+                        10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(Color.BLUE, 3));
+            }
         }
-        mob.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 0.5f, 1.0f);
-        mob.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
-                10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(Color.BLUE, 3));
     }
 
     /**
@@ -112,7 +115,7 @@ public final class MobHealthBars implements Listener {
 
         LivingEntity mob = (LivingEntity) e.getEntity();
 
-        if (mob.getPassengers().size() == 0) {
+        if (mob.getPassengers().size() < 1) {
             String healthBar = ChatColor.YELLOW + "" + "["
                     + createHealthDisplay(mob, e.getDamage())
                     + ChatColor.YELLOW + "]";

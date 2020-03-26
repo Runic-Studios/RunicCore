@@ -77,7 +77,6 @@ public class ClassExpCMD implements SubCommand {
             if (extraAmt < 1) {
                 extraAmt = 1;
             }
-            ChatColor expColor = ChatColor.WHITE;
 
             int nearbyMembers = 0;
             for (Player member : party.getPlayerMembers()) {
@@ -95,7 +94,6 @@ public class ClassExpCMD implements SubCommand {
                     int mobLv = Integer.parseInt(args[6]);
                     if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
                         exp = 0;
-                        expColor = ChatColor.RED;
                     }
                     PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
                 }
@@ -103,7 +101,7 @@ public class ClassExpCMD implements SubCommand {
 
             if (args.length == 7) {
                 Location loc = new Location(pl.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.5, 0);
+                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.5, 0);
                 HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName() + "&7's Party"), 0, 2.25, 0);
             }
         }

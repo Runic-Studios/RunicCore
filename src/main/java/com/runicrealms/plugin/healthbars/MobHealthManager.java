@@ -56,6 +56,7 @@ public class MobHealthManager {
                     /*
                     From Sky: careful for ConcurrentModificationException!
                      */
+                    if (current.getEntities().size() < 1) continue;
                     List<Entity> currentEntities = current.getEntities();
                     try {
                         for (Entity en : currentEntities) {
