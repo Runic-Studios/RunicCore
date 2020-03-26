@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.command.subcommands.party;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.PartySC;
+import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,9 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.command.subcommands.SubCommand;
-import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.List;
 
@@ -50,6 +50,7 @@ public class Teleport implements SubCommand {
 
         for (Player member : party.getPlayerMembers()) {
             if (member == pl) continue;
+            if (member.getWorld() != pl.getWorld()) continue;
             member.teleport(pl.getLocation().add(0, 1, 0));
         }
     }

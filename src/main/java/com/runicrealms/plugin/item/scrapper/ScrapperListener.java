@@ -46,7 +46,7 @@ public class ScrapperListener implements Listener {
             /*
             Call custom ItemGUI logic
              */
-            // todo: null error line 51
+            if (shop.getItemGUI() == null) return;
             ItemGUI itemGUI = shop.getItemGUI();
             if (slot >= 0 && slot < itemGUI.getSize() && itemGUI.getOptionNames()[slot] != null) {
 

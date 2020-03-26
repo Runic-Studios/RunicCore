@@ -110,10 +110,6 @@ public class CombatListener implements Listener {
                 if (pl.getLocation().distance(member.getLocation()) > PARTY_TAG_RANGE) continue;
 
                 if (member == pl) continue;
-//                if (!RunicCore.getCombatManager().getPlayersInCombat().containsKey(member.getUniqueId())) {
-//                    //member.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Your party has entered combat!"));
-//                    ActionBarUtil.sendTimedMessage(member, "&cYour party has entered combat!", 3);
-//                }
 
                 dismount(member);
 
