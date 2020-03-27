@@ -1,15 +1,18 @@
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.RunicCore;
 import net.minecraft.server.v1_13_R2.EntityArmorStand;
+import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftArmorStand;
-import org.bukkit.entity.*;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Consumer;
-import com.runicrealms.plugin.RunicCore;
 
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -83,6 +86,49 @@ public class HologramUtil {
                     return;
                 }
                 nmsStand.locY = nmsStand.locY + .1D;
+                ticks++;
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 1);
+
+        holograms.put(stand, runnable);
+        if (holograms.keySet().size() > 4)
+            removeDamageHologram(createFor, holograms.keySet().toArray(new ArmorStand[1])[0]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void createStaticHologram(Player createFor, Location createAround, String display, double x, double y, double z, boolean isClient) {
+
+        // build the custom armorstand
+        Consumer consumer = new InvisStandSpawner();
+        ArmorStand stand = createAround.getWorld().spawn(createAround.add(x, y, z).subtract(0, 1, 0), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
+        stand.setCustomName(display);
+
+        // nms
+        EntityArmorStand nmsStand = ((CraftArmorStand) stand).getHandle();
+        nmsStand.noclip = true;
+        nmsStand.setSmall(true);
+        nmsStand.setInvulnerable(true);
+        HashMap<ArmorStand, BukkitTask> holograms = HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
+
+        // send packets to make item invisible for all other players
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (p == createFor) continue;
+            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(stand.getEntityId());
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+        }
+
+        // create our runnable
+        BukkitTask runnable = new BukkitRunnable() {
+
+            int ticks = 0;
+
+            @Override
+            public void run() {
+                if (ticks >= 30 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
+                    cancel();
+                    removeDamageHologram(createFor, stand);
+                    return;
+                }
                 ticks++;
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1);

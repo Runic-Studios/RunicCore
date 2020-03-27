@@ -55,13 +55,13 @@ public class ClassExpCMD implements SubCommand {
             } else {
                 int mobLv = Integer.parseInt(args[6]);
                 int exp = Integer.parseInt(args[2]);
-                PlayerLevelUtil.giveExperience(pl, exp);
                 Location loc = new Location(pl.getWorld(), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
                 ChatColor expColor = ChatColor.WHITE;
                 if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
                     exp = 0;
                     expColor = ChatColor.RED;
                 }
+                PlayerLevelUtil.giveExperience(pl, exp);
                 HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + exp + " &7exp"), 0, 2.5, 0);
                 HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName()), 0, 2.25, 0);
             }
@@ -77,6 +77,7 @@ public class ClassExpCMD implements SubCommand {
             if (extraAmt < 1) {
                 extraAmt = 1;
             }
+            exp += extraAmt;
 
             int nearbyMembers = 0;
             for (Player member : party.getPlayerMembers()) {
@@ -89,20 +90,22 @@ public class ClassExpCMD implements SubCommand {
             for (Player member : party.getPlayerMembers()) {
                 if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
-                    exp = Integer.parseInt(args[2]);
-                    exp += extraAmt;
                     int mobLv = Integer.parseInt(args[6]);
-                    if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
-                        exp = 0;
+                    int memberLv = RunicCore.getCacheManager().getPlayerCache(member.getUniqueId()).getClassLevel();
+                    if (mobLv > (memberLv+LV_BUFFER) || mobLv < (memberLv-LV_BUFFER)) {
+                        PlayerLevelUtil.giveExperience(member, 0);
+                        Location loc = new Location(member.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
+                        HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
+                    } else {
+                        PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
                     }
-                    PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
                 }
             }
 
             if (args.length == 7) {
                 Location loc = new Location(pl.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.5, 0);
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName() + "&7's Party"), 0, 2.25, 0);
+                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.6, 0);
+                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName() + "&7's Party"), 0, 2.3, 0);
             }
         }
     }
