@@ -50,3 +50,6 @@ commands:
   tutorial:
     usage: /<commands>
     description: used for tutorial-related commands
+  boost:
+    usage: /<commands>
+    description: store stuff

@@ -44,8 +44,10 @@ import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.ManaManager;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.SpeedListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
+import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
@@ -210,6 +212,7 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new Debug(), this);
         pm.registerEvents(new MobBurnListener(), this);
         pm.registerEvents(new OffhandListener(), this);
+        pm.registerEvents(new SpeedListener(), this);
     }
     
     private void registerCommands() {
@@ -250,6 +253,9 @@ public class RunicCore extends JavaPlugin {
         TravelSC travelSC = new TravelSC();
         getCommand("travel").setExecutor(travelSC);
         travelSC.addCommand(Arrays.asList("fast"), new FastTravel(travelSC));
+
+        // boost
+        getCommand("boost").setExecutor(new BoostCMD());
     }
     
     private void registerPartyCommands() {

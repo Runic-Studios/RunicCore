@@ -74,12 +74,6 @@ public class LoreGenerator {
 
         lore.add("");
 
-//        // for armor/items
-//        int health = (int) AttributeUtil.getGenericDouble(item, "generic.maxHealth");
-//        if (health != 0) {
-//            lore.add(ChatColor.RED + "+ " + health + "❤");
-//        }
-
         // -------------------------------------------------------------------------------------------
         // for weapons/gemstones/custom boosts
         int minDamage = (int) AttributeUtil.getCustomDouble(item, "custom.minDamage");
@@ -93,6 +87,23 @@ public class LoreGenerator {
         double shieldAmt = AttributeUtil.getCustomDouble(item, "custom.shield");
         String spellStr = "";
         if (AttributeUtil.getSpell(item, "secondarySpell") != null) spellStr = AttributeUtil.getSpell(item, "secondarySpell");
+        // -------------------------------------------------------------------------------------------
+
+        // -------------------------------------------------------------------------------------------
+        // enchants
+        String location = AttributeUtil.getCustomString(item, "scroll.location");
+        String enchantment = AttributeUtil.getCustomString(item, "scroll.enchantment");
+        int enchantPercent = (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
+        if (!location.equals("")) {
+            lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "RIGHT CLICK" + " " + ChatColor.GREEN + location);
+            lore.add(ChatColor.GRAY + "Teleport to a city!");
+        }
+        if (!enchantment.equals("")) {
+            lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "Enchantment" + " " + ChatColor.GREEN + enchantment + " " + enchantPercent + "%");
+            for (String s : extra.split("\n")) {
+                lore.add(ChatColor.GRAY + s);
+            }
+        }
         // -------------------------------------------------------------------------------------------
 
         if (minDamage != 0 && maxDamage != 0) {
@@ -221,9 +232,12 @@ public class LoreGenerator {
         }
 
         // add additional lore if necessary
-        if (!extra.equals("")) {
+        if (!extra.equals("") && enchantment.equals("")) {
             String[] extraLore = extra.split("\n");
             Collections.addAll(lore, extraLore);
+        } else if (!enchantment.equals("")) {
+            lore.add("");
+            lore.add(ChatColor.DARK_GRAY + "Use this on an item");
         }
 
         // set other flags

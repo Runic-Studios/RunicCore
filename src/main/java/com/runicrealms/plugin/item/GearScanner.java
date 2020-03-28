@@ -48,7 +48,6 @@ public class GearScanner {
     }
 
     public static int getHealthBoost(Player pl) {
-
         int healthBoost = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
@@ -59,7 +58,6 @@ public class GearScanner {
     }
 
     public static int getManaBoost(Player pl) {
-
         int manaBoost = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
@@ -70,7 +68,6 @@ public class GearScanner {
     }
 
     public static int getAttackBoost(Player pl) {
-
         int attackDamage = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
@@ -91,7 +88,6 @@ public class GearScanner {
     }
 
     public static int getHealingBoost(Player pl) {
-
         int healingBoost = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
@@ -102,7 +98,6 @@ public class GearScanner {
     }
 
     public static int getMagicBoost(Player pl) {
-
         int magicBoost = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
@@ -113,7 +108,6 @@ public class GearScanner {
     }
 
     public static int getShieldAmt(Player pl) {
-
         int shieldAmt = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
 
@@ -121,5 +115,49 @@ public class GearScanner {
             shieldAmt += (int) AttributeUtil.getCustomDouble(item, "custom.shield");
         }
         return shieldAmt;
+    }
+
+    public static int getCritEnchant(Player pl) {
+        int critEnchant = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("crit"))
+                critEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
+        }
+        return critEnchant;
+    }
+
+    public static int getDodgeEnchant(Player pl) {
+        int dodgeEnchant = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("dodge"))
+                dodgeEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
+        }
+        return dodgeEnchant;
+    }
+
+    public static int getSpeedEnchant(Player pl) {
+        int speedEnchant = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("speed"))
+                speedEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
+        }
+        return speedEnchant;
+    }
+
+    public static int getThornsEnchant(Player pl) {
+        int thornsEnchant = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("thorns"))
+                thornsEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
+        }
+        return thornsEnchant;
     }
 }

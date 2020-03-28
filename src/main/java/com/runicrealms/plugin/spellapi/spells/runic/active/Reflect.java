@@ -22,7 +22,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Reflect extends Spell {
 
-    private static final int DAMAGE = 2;
+    private static final int DAMAGE = 10;
     private static final int DURATION = 6;
     private List<UUID> reflectedPlrs = new ArrayList<>();
 

@@ -66,6 +66,7 @@ public enum ItemTypeEnum {
                 case SHIELD:
                     return OFFHAND;
                 case FLINT:
+                case PURPLE_DYE:
                     return CONSUMABLE;
                 case BOW:
                     return ARCHER;

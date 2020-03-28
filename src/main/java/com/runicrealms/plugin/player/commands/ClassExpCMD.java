@@ -5,6 +5,7 @@ import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
@@ -54,7 +55,10 @@ public class ClassExpCMD implements SubCommand {
                 PlayerLevelUtil.giveExperience(pl, exp);
             } else {
                 int mobLv = Integer.parseInt(args[6]);
+                double percent = BoostCMD.getCombatExperienceBoost()/100;
                 int exp = Integer.parseInt(args[2]);
+                int boost = (int) percent*exp;
+                exp += boost;
                 Location loc = new Location(pl.getWorld(), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
                 ChatColor expColor = ChatColor.WHITE;
                 if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
@@ -70,7 +74,10 @@ public class ClassExpCMD implements SubCommand {
         } else {
 
             Party party = RunicCore.getPartyManager().getPlayerParty(pl);
+            double boostPercent = BoostCMD.getCombatExperienceBoost()/100;
             int exp = Integer.parseInt(args[2]);
+            int boost = (int) boostPercent*exp;
+            exp += boost;
             int originalExp = Integer.parseInt(args[2]);
             double percent = PARTY_BONUS / 100;
             int extraAmt = (int) (exp * percent);
