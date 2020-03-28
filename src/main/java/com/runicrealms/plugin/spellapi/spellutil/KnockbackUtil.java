@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -33,6 +35,13 @@ public class KnockbackUtil {
         //double distance = t.getLocation().distance(attacker.getLocation());
         Vector v = l.toVector().multiply(.05);
         v.setY(0.225);
+        // no boss knockback
+        if (MythicMobs.inst().getMobManager().getActiveMob(t.getUniqueId()).isPresent()) {
+            ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(t.getUniqueId()).get();
+            if (am.hasFaction() && am.getFaction().equalsIgnoreCase("boss")) {
+                return;
+            }
+        }
         t.setVelocity(v);
     }
 
@@ -54,6 +63,12 @@ public class KnockbackUtil {
         //double distance = t.getLocation().distance(attacker.getLocation());
         Vector v = l.toVector().multiply(.025);
         v.setY(0.2);
+        if (MythicMobs.inst().getMobManager().getActiveMob(t.getUniqueId()).isPresent()) {
+            ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(t.getUniqueId()).get();
+            if (am.hasFaction() && am.getFaction().equalsIgnoreCase("boss")) {
+                return;
+            }
+        }
         t.setVelocity(v);
     }
 }

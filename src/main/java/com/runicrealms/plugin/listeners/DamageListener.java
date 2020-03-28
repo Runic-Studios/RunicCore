@@ -268,7 +268,6 @@ public class DamageListener implements Listener {
 
         // broadcast the death message
         broadcastDeathMessage(victim);
-        victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
@@ -297,8 +296,9 @@ public class DamageListener implements Listener {
         // teleport them to their hearthstone location, or the front of the dungeon
         tryDropItems(victim);
         String isDungeon = checkForDungeon(victim);
-        if (isDungeon.equals("")) {
+        if (isDungeon.equals("")) { // no dungeon
             HearthstoneListener.teleportToLocation(victim);
+            victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
         }
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
