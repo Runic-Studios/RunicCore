@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.UUID;
 
 public class CacheManager implements Listener {
@@ -20,16 +21,29 @@ public class CacheManager implements Listener {
     private HashSet<Player> loadedPlayers;
     private HashSet<PlayerCache> playerCaches;
 
-    // todo: can write async and just save sync. or just move to database.
+    private volatile LinkedHashSet<PlayerCache> queuedCaches;
+    private static final int CACHE_PERIOD = 30;
+    private static final int SAVE_PERIOD = 15;
+
     public CacheManager() {
+
         loadedPlayers = new HashSet<>();
         playerCaches = new HashSet<>();
+        queuedCaches = new LinkedHashSet<>();
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 saveCaches();
             }
-        }.runTaskTimer(RunicCore.getInstance(), 100L, 60*20); // 10s delay, 30 sec period
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD*20); // 10s delay, 30 sec period
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                saveCacheFiles(true);
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), (100+CACHE_PERIOD), SAVE_PERIOD*20); // wait for save, 15 sec period
     }
 
     @EventHandler
@@ -47,25 +61,45 @@ public class CacheManager implements Listener {
      */
     public void saveCaches() {
         for (PlayerCache playerCache : playerCaches) {
-            savePlayerCache(playerCache);
+            savePlayerCache(playerCache, true);
         }
     }
 
     /**
-     * To be used during logout
+     * Also used on server disable and logout. Updates information about player and adds them to data queue for saving.
      */
-    public void savePlayerCache(PlayerCache playerCache) { // could be a /class command
+    public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
         UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
         Player pl = userConfig.getPlayer();
-        int characterSlot = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getCharacterSlot();
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
         playerCache.setLocation(pl.getLocation()); // update location
-        saveFields(playerCache, userConfig, characterSlot);
-        userConfig.saveConfig();
+        if (willQueue)
+            queuedCaches.add(playerCache); // queue the file for saving
     }
 
-    private void saveFields(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
+    /**
+     * Writes data async
+     */
+    public void saveCacheFiles(boolean limitSize) {
+        int limit;
+        if (limitSize)
+            limit = (int) Math.ceil(queuedCaches.size() / 4);
+        else
+            limit = queuedCaches.size();
+        UserConfig userConfig;
+        int characterSlot;
+        for (int i = 0; i < limit; i++) {
+            if (queuedCaches.size() < 1) continue;
+            PlayerCache queued = queuedCaches.iterator().next();
+            userConfig = RunicCharactersApi.getUserConfig(queued.getPlayerID());
+            characterSlot = queued.getCharacterSlot();
+            setFieldsSaveFile(queued, userConfig, characterSlot);
+            queuedCaches.remove(queued);
+        }
+    }
+
+    public void setFieldsSaveFile(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
         // class
         if (playerCache.getClassName() != null) {
             userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.name", playerCache.getClassName());
@@ -75,7 +109,6 @@ public class CacheManager implements Listener {
         // guild
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".guild", playerCache.getGuild());
         // profession
-        // todo: add hunter fields
         if (playerCache.getProfName() != null) {
             userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".prof.name", playerCache.getProfName());
         }
@@ -92,6 +125,8 @@ public class CacheManager implements Listener {
         saveInventory(userConfig);
         // location
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".location", playerCache.getLocation());
+        // save file
+        userConfig.saveConfig();
     }
 
     /**
@@ -131,6 +166,10 @@ public class CacheManager implements Listener {
 
     public HashSet<PlayerCache> getPlayerCaches() {
         return playerCaches;
+    }
+
+    public LinkedHashSet<PlayerCache> getQueuedCaches() {
+        return queuedCaches;
     }
 
     /**

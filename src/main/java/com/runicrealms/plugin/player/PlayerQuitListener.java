@@ -16,11 +16,23 @@ public class PlayerQuitListener implements Listener {
         // get player cache (if they've loaded in)
         Player pl = e.getPlayer();
         if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()) != null) {
+
+            //Bukkit.broadcastMessage("new character loading! saving files");
+
             PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
 
-            // update cache
-            RunicCore.getCacheManager().savePlayerCache(playerCache);
+            // remove player data from data queue!
+            RunicCore.getCacheManager().getQueuedCaches().remove(playerCache);
+
+            // update cache, save it
+            RunicCore.getCacheManager().savePlayerCache(playerCache, false);
+            RunicCore.getCacheManager().setFieldsSaveFile(playerCache, RunicCharactersApi.getUserConfig(pl.getUniqueId()), playerCache.getCharacterSlot());
+
+            // remove them from cached queue
             RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);
+
+            // remove player from RunicCharacters
+            RunicCharactersApi.getUserCollection().removePlayer(pl.getUniqueId());
         }
     }
 
@@ -29,7 +41,5 @@ public class PlayerQuitListener implements Listener {
         Player pl = e.getPlayer();
         e.setQuitMessage("");
         pl.setWalkSpeed(0.2f);
-        // remove player from RunicCharacters
-        RunicCharactersApi.getUserCollection().removePlayer(pl.getUniqueId());
     }
 }

@@ -32,6 +32,7 @@ public final class MobHealthBars implements Listener {
         // only listen for mythic mobs
         if (!MythicMobs.inst().getMobManager().isActiveMob(dismounted.getUniqueId())) return;
         dismounted.remove();
+        mob.getWorld().playSound(loc, Sound.ENTITY_GENERIC_DEATH, 0.5f, 1.0f);
         if (dismounted.getPassengers().size() > 0) {
             for (Entity pass : dismounted.getPassengers()) {
                 pass.remove();

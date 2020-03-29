@@ -34,7 +34,6 @@ import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.cache.CacheManager;
-import com.runicrealms.plugin.player.cache.Debug;
 import com.runicrealms.plugin.player.combat.CombatListener;
 import com.runicrealms.plugin.player.combat.CombatManager;
 import com.runicrealms.plugin.player.combat.ExpListener;
@@ -144,6 +143,7 @@ public class RunicCore extends JavaPlugin {
     public void onDisable() {
         getLogger().info(" §cRunicCore has been disabled.");
         getCacheManager().saveCaches(); // save player data
+        getCacheManager().saveCacheFiles(false);
         /*
         let's prevent memory leaks, shall we?
          */
@@ -209,7 +209,6 @@ public class RunicCore extends JavaPlugin {
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new ScrapperListener(), this);
-        pm.registerEvents(new Debug(), this);
         pm.registerEvents(new MobBurnListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new SpeedListener(), this);
