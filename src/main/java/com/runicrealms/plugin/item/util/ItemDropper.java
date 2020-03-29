@@ -10,7 +10,7 @@ import java.util.UUID;
 public class ItemDropper {
 
     public static void dropLoot(Player pl, String x, String y, String z, String uuid, ItemStack itemStack) {
-        Location loc = new Location(pl.getWorld(), Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
+        Location loc = new Location(pl.getWorld(), Integer.parseInt(x), Integer.parseInt(y), Integer.parseInt(z));
         UUID mobID = UUID.fromString(uuid);
         if (RunicCore.getMobTagger().getIsTagged(mobID)) { // if the mob is tagged, drop a prio item
             RunicCore.getMobTagger().dropTaggedLoot(RunicCore.getMobTagger().getTagger(mobID), loc, itemStack);

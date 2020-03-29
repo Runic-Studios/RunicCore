@@ -50,7 +50,8 @@ public class BoostCMD implements CommandExecutor {
                 COMBAT_EXPERIENCE_BOOST = 0;
                 Bukkit.broadcastMessage
                         (ChatColor.DARK_PURPLE + "[Runic Realms] "
-                                + ChatColor.LIGHT_PURPLE + "The global combat experience boost has ended!");
+                                + ChatColor.WHITE + pl.getName() + "'s"
+                                + ChatColor.LIGHT_PURPLE + " global combat experience boost has ended!");
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L*duration);
         return true;

@@ -78,7 +78,7 @@ public class ClassExpCMD implements SubCommand {
             int exp = Integer.parseInt(args[2]);
             int boost = (int) boostPercent*exp;
             exp += boost;
-            int originalExp = Integer.parseInt(args[2]);
+            int originalExp = Integer.parseInt(args[2]) + boost;
             double percent = PARTY_BONUS / 100;
             int extraAmt = (int) (exp * percent);
             if (extraAmt < 1) {

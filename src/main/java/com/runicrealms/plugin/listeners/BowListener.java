@@ -3,14 +3,14 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import net.minecraft.server.v1_13_R2.DataWatcherObject;
 import net.minecraft.server.v1_13_R2.DataWatcherRegistry;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -27,6 +27,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -179,60 +180,81 @@ public class BowListener implements Listener {
         if (!(e.getDamager() instanceof Arrow)) return;
 
         Arrow arrow = (Arrow) e.getDamager();
+        if (!(arrow.getShooter() instanceof LivingEntity)) return;
+        if (!(e.getEntity() instanceof LivingEntity)) return;
+        Entity shooter = (Entity) arrow.getShooter();
 
         // only listen for arrows shot by a player
-        if (!(arrow.getShooter() instanceof Player)) return;
+        if (!(arrow.getShooter() instanceof Player)) {
+            // mobs
+                e.setCancelled(true);
+                double dmgAmt = e.getDamage();
+                if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
+                    ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
+                    dmgAmt = mm.getDamage();
+                }
+                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity());
+                Bukkit.getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return;
+                } else {
+                    DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), (LivingEntity) e.getEntity(), shooter);
+                }
+        } else {
 
-        // bugfix for armor stands
-        Entity victim = e.getEntity();
-        if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
-            victim = e.getEntity().getVehicle();
-        }
-
-        // get our entity
-        if (!(victim.getType().isAlive())) return;
-
-        // skip NPCs
-        if (victim.hasMetadata("NPC")) return;
-
-        Player damager = (Player) arrow.getShooter();
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(damager) != null
-                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim.getUniqueId())) { return; }
-
-        // player can't damage themselves
-        if (victim == damager) {
-            e.setCancelled(true);
-            return;
-        }
-
-        ItemStack artifact = damager.getInventory().getItemInMainHand();
-
-        // retrieve the weapon damage, cooldown
-        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
-
-        // remove the arrow with nms magic
-        new BukkitRunnable() {
-            public void run() {
-                ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
+            // bugfix for armor stands
+            Entity victim = e.getEntity();
+            if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
+                victim = e.getEntity().getVehicle();
             }
-        }.runTaskLater(RunicCore.getInstance(), 3);
 
-        int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+            // get our entity
+            if (!(victim.getType().isAlive())) return;
 
-        // spawn the damage indicator if the arrow is an autoattack
-        if (arrow.getCustomName() == null) return;
+            // skip NPCs
+            if (victim.hasMetadata("NPC")) return;
 
-        e.setCancelled(true);
+            Player damager = (Player) arrow.getShooter();
 
-        // outlaw check
-        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(damager))) {
-            return;
+            // skip party members
+            if (RunicCore.getPartyManager().getPlayerParty(damager) != null
+                    && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim.getUniqueId())) {
+                return;
+            }
+
+            // player can't damage themselves
+            if (victim == damager) {
+                e.setCancelled(true);
+                return;
+            }
+
+            ItemStack artifact = damager.getInventory().getItemInMainHand();
+
+            // retrieve the weapon damage, cooldown
+            int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
+            int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+
+            // remove the arrow with nms magic
+            new BukkitRunnable() {
+                public void run() {
+                    ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
+                }
+            }.runTaskLater(RunicCore.getInstance(), 3);
+
+            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+
+            // spawn the damage indicator if the arrow is an autoattack
+            if (arrow.getCustomName() == null) return;
+
+            e.setCancelled(true);
+
+            // outlaw check
+            if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(damager))) {
+                return;
+            }
+
+            DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
         }
-
-        DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
     }
 
     // removes arrows stuck in bodies
