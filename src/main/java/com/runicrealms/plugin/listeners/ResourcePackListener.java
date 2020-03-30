@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.ColorUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,8 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 
 public class ResourcePackListener implements Listener {
-
-    //private RunicCore plugin = RunicCore.getInstance();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void resourcePackEvent(PlayerResourcePackStatusEvent e) {

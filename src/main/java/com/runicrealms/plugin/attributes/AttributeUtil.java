@@ -4,10 +4,7 @@ import de.tr7zw.itemnbtapi.NBTItem;
 import de.tr7zw.itemnbtapi.NBTList;
 import de.tr7zw.itemnbtapi.NBTListCompound;
 import de.tr7zw.itemnbtapi.NBTType;
-import net.minecraft.server.v1_13_R2.Item;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Set;
 
 public class AttributeUtil {
 

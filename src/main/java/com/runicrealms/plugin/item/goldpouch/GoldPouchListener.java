@@ -101,7 +101,7 @@ public class GoldPouchListener implements Listener {
         if (!pouchLookers.containsKey(e.getWhoClicked().getUniqueId())) return;
         Player pl = (Player) e.getWhoClicked();
 
-        if (e.getInventory().getTitle().toLowerCase().contains("gold pouch")
+        if (e.getView().getTitle().toLowerCase().contains("gold pouch")
                 && e.getCurrentItem() != null
                 && (e.getCurrentItem().getType() == Material.GOLD_NUGGET
                 || (e.getCursor().getType() == Material.GOLD_NUGGET
@@ -130,7 +130,7 @@ public class GoldPouchListener implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
-        if (e.getInventory().getTitle().toLowerCase().contains("gold pouch")) {
+        if (e.getView().getTitle().toLowerCase().contains("gold pouch")) {
 
             ItemStack pouch = e.getPlayer().getInventory().getItemInMainHand();
 

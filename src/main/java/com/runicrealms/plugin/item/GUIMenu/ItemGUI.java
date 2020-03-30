@@ -127,10 +127,10 @@ public class ItemGUI implements Listener {
 //
 //        this.clickType = event.getClick();
 //
-//        //if (event.getInventory().getTitle().equals(this.name)) {
+//        //if (event.getView().getTitle().equals(this.name)) {
 //
 ////            // gold scrapper
-////            if (event.getInventory().getTitle().toLowerCase().contains("scrapper")) {
+////            if (event.getView().getTitle().toLowerCase().contains("scrapper")) {
 ////
 ////                // menu items in gold scrapper menu
 ////                if (event.getCurrentItem() != null
@@ -178,7 +178,7 @@ public class ItemGUI implements Listener {
 ////                }
 ////
 ////                // loot chests
-////            } else if (event.getInventory().getTitle().toLowerCase().contains("chest")) {
+////            } else if (event.getView().getTitle().toLowerCase().contains("chest")) {
 ////
 ////                // cancel moving soulbound items to chest
 ////                if((event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) && !soulboundCheck(event)) {
@@ -191,8 +191,8 @@ public class ItemGUI implements Listener {
 //
 //            // gold pouch
 //            //} else
-//            //if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
-//        if (event.getInventory().getTitle().toLowerCase().contains("gold pouch")
+//            //if (event.getView().getTitle().toLowerCase().contains("gold pouch")
+//        if (event.getView().getTitle().toLowerCase().contains("gold pouch")
 //                    && event.getCurrentItem() != null
 //                    && (event.getCurrentItem().getType() == Material.GOLD_NUGGET
 //                    || (event.getCursor().getType() == Material.GOLD_NUGGET
@@ -244,7 +244,7 @@ public class ItemGUI implements Listener {
      */
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
-        if (e.getInventory().getTitle().equals(this.name)) {
+        if (e.getView().getTitle().equals(this.name)) {
             new BukkitRunnable() {
                 @Override
                 public void run() {

@@ -8,14 +8,14 @@ import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.PlayerLevelListener;
 import com.runicrealms.plugin.utilities.ColorUtil;
-import net.minecraft.server.v1_13_R2.PacketPlayOutSetSlot;
+import net.minecraft.server.v1_15_R1.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -142,11 +142,6 @@ public class PlayerMenuListener implements Listener {
                     animation.spawn(pl, pl.getLocation());
                 }
             }
-        }
-
-        // prevent question marks from dropping out of quest journal
-        if (event.getInventory().getTitle().toLowerCase().contains("quest journal")) {
-            event.setCancelled(true);
         }
     }
 
