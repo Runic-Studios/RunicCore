@@ -60,6 +60,7 @@ public class ScoreboardHandler implements Listener {
 
         Player pl = e.getPlayer();
         createScoreboard(pl);
+        removeNPCNameplates();
 
         // sets players username red if they are outlaw.
         new BukkitRunnable() {
@@ -67,7 +68,6 @@ public class ScoreboardHandler implements Listener {
             public void run() {
                 updateSideInfo(pl);
                 updateHealthbar(pl);
-                removeNPCNameplates();
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L);
     }
