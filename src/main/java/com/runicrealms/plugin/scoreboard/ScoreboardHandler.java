@@ -22,6 +22,19 @@ import java.util.*;
 
 public class ScoreboardHandler implements Listener {
 
+    public ScoreboardHandler() {
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player pl : RunicCore.getCacheManager().getLoadedPlayers()) {
+                    updateSideInfo(pl);
+                    updateHealthbar(pl);
+                }
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, 5L);
+    }
+
     private void removeNPCNameplates() {
         for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
             String world = Bukkit.getWorlds().get(i).getName();
@@ -46,17 +59,17 @@ public class ScoreboardHandler implements Listener {
     public void onPlayerJoin(CharacterLoadEvent e) {
 
         Player pl = e.getPlayer();
+        createScoreboard(pl);
 
         // sets players username red if they are outlaw.
         new BukkitRunnable() {
             @Override
             public void run() {
-                createScoreboard(pl);
                 updateSideInfo(pl);
                 updateHealthbar(pl);
                 removeNPCNameplates();
             }
-        }.runTaskLater(RunicCore.getInstance(), 20L);
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L);
     }
 
     public void createScoreboard(Player pl){
@@ -127,7 +140,7 @@ public class ScoreboardHandler implements Listener {
         sendPacket.invoke(getConnection(player), packet);
     }
 
-    public void updateSideInfo(Player pl){
+    private void updateSideInfo(Player pl){
 
         Scoreboard board = pl.getScoreboard();
         Objective sidebar = board.getObjective("sidebar");
@@ -165,7 +178,7 @@ public class ScoreboardHandler implements Listener {
     /**
      * Update the below-health display of a player for everyone ELSE
      */
-    public void updateHealthbar(Player pl) {
+    private void updateHealthbar(Player pl) {
 
         Objective healthbar = pl.getScoreboard().getObjective("showhealth");
         if (healthbar == null) return;
@@ -181,7 +194,7 @@ public class ScoreboardHandler implements Listener {
         test.setScore((int) pl.getHealth());
     }
 
-    public void updatePlayerInfo(Player pl) {
+    private void updatePlayerInfo(Player pl) {
 
         Scoreboard board = pl.getScoreboard();
         Objective sidebar = board.getObjective("sidebar");

@@ -72,7 +72,6 @@ public class PlayerLevelUtil {
             pl.setLevel(calculateExpectedLv(newTotalExp));
             RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setClassLevel(calculateExpectedLv(newTotalExp));
             currentLv = RunicCore.getCacheManager().getPlayerCache(playerID).getClassLevel();
-            RunicCore.getScoreboardHandler().updateSideInfo(pl);
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLv);

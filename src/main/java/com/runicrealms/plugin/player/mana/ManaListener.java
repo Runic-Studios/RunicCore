@@ -118,7 +118,6 @@ public class ManaListener implements Listener {
         int currentMana = RunicCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
         if (currentMana > maxMana) {
             RunicCore.getManaManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
-            RunicCore.getScoreboardHandler().updateSideInfo(pl);
         }
     }
 }

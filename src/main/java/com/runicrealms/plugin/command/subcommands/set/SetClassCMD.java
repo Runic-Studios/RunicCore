@@ -86,8 +86,6 @@ public class SetClassCMD implements SubCommand {
             setPlayerClass(pl, formattedStr, true);
 
             setConfig(pl, formattedStr);
-            RunicCore.getScoreboardHandler().updatePlayerInfo(pl);
-            RunicCore.getScoreboardHandler().updateSideInfo(pl);
 
             // set the player's slot to 0 (the artifact)
             pl.getInventory().setHeldItemSlot(0);

@@ -22,8 +22,7 @@ public class ScoreboardListener implements Listener {
         if (e.getEntity().hasMetadata("NPC")) return;
         Player pl = (Player) e.getEntity();
         // null check
-        if (pl.getScoreboard() == null) { return; }
-        updateHealth(pl);
+        pl.getScoreboard();
     }
 
     @EventHandler
@@ -33,8 +32,7 @@ public class ScoreboardListener implements Listener {
         if (e.getEntity().hasMetadata("NPC")) return;
         Player pl = (Player) e.getEntity();
         // null check
-        if (pl.getScoreboard() == null) { return; }
-        updateHealth(pl);
+        pl.getScoreboard();
     }
 
     /**
@@ -44,13 +42,12 @@ public class ScoreboardListener implements Listener {
     public void onArmorEquip(ArmorEquipEvent e) {
         Player pl = e.getPlayer();
         // null check
-        if (pl.getScoreboard() == null) { return; }
+        pl.getScoreboard();
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 HealthUtils.setPlayerMaxHealth(pl);
-                updateHealth(pl);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
@@ -70,7 +67,6 @@ public class ScoreboardListener implements Listener {
                 @Override
                 public void run() {
                     HealthUtils.setPlayerMaxHealth(pl);
-                    updateHealth(pl);
                 }
             }.runTaskLater(RunicCore.getInstance(), 1L);
         }
@@ -86,19 +82,7 @@ public class ScoreboardListener implements Listener {
             @Override
             public void run() {
                 HealthUtils.setPlayerMaxHealth(pl);
-                updateHealth(pl);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
-    }
-
-    private void updateHealth(Player pl) {
-        // update health bar and scoreboard
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                RunicCore.getScoreboardHandler().updateSideInfo(pl);
-                RunicCore.getScoreboardHandler().updateHealthbar(pl);
-            }
-        }.runTaskLater(RunicCore.getInstance(), 1);
     }
 }

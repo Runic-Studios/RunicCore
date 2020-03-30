@@ -71,7 +71,6 @@ public class ManaManager implements Listener {
                 } else {
                     currentPlayerManas.put(online.getUniqueId(), mana + event.getAmount());
                 }
-                RunicCore.getScoreboardHandler().updateSideInfo(online);
             }
         }
     }
@@ -138,12 +137,7 @@ public class ManaManager implements Listener {
 
         if (mana < maxMana) {
 
-            if (mana + amt >= maxMana) {
-                currentPlayerManas.put(pl.getUniqueId(), maxMana);
-            } else {
-                currentPlayerManas.put(pl.getUniqueId(), mana + amt);
-            }
-            RunicCore.getScoreboardHandler().updateSideInfo(pl);
+            currentPlayerManas.put(pl.getUniqueId(), Math.min(mana + amt, maxMana));
         }
     }
 
@@ -154,6 +148,5 @@ public class ManaManager implements Listener {
         if (mana <= 0) return;
 
         currentPlayerManas.put(pl.getUniqueId(), mana - amt);
-        RunicCore.getScoreboardHandler().updateSideInfo(pl);
     }
  }

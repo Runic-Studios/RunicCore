@@ -70,8 +70,6 @@ public class SetProfLevelCMD implements SubCommand {
 
             }
 
-            RunicCore.getScoreboardHandler().updatePlayerInfo(sender);
-            RunicCore.getScoreboardHandler().updateSideInfo(sender);
         } else if (args.length == 3) {
             Player player = Bukkit.getPlayer(args[1]);
             if (player == null) return;
@@ -81,8 +79,6 @@ public class SetProfLevelCMD implements SubCommand {
             int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
             // ----------------------
             RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfExp(expAtLevel);
-            RunicCore.getScoreboardHandler().updatePlayerInfo(player);
-            RunicCore.getScoreboardHandler().updateSideInfo(player);
         }
     }
 

@@ -70,7 +70,6 @@ public abstract class Spell implements ISpell, Listener {
             // cast the spell
             int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
             RunicCore.getManaManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
-            RunicCore.getScoreboardHandler().updateSideInfo(player);
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
             RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
             this.executeSpell(player, type);

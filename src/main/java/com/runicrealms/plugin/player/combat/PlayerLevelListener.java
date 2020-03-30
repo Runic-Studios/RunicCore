@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.combat;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -10,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
-import com.runicrealms.plugin.RunicCore;
 
 /**
  * Handles all the logic for when a player levels-up their primary class (archer, mage, etc.)
@@ -39,7 +39,6 @@ public class PlayerLevelListener implements Listener {
         pl.setHealth(playerHealth);
         playerCache.setCurrentHealth((int) pl.getHealth());
         pl.setFoodLevel(20);
-        RunicCore.getScoreboardHandler().updateSideInfo(pl);
 
         if (pl.getLevel() == 0) return;
 

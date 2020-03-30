@@ -288,7 +288,6 @@ public class DamageListener implements Listener {
         // set their current mana to max
         int maxMana = RunicCore.getCacheManager().getPlayerCache(victim.getUniqueId()).getMaxMana();
         RunicCore.getManaManager().getCurrentManaList().put(victim.getUniqueId(), maxMana);
-        RunicCore.getScoreboardHandler().updateSideInfo(victim);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
