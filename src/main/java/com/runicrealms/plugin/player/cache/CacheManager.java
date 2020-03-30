@@ -15,13 +15,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CacheManager implements Listener {
 
     private HashSet<Player> loadedPlayers;
     private HashSet<PlayerCache> playerCaches;
 
-    private volatile LinkedHashSet<PlayerCache> queuedCaches;
+    private volatile ConcurrentLinkedQueue<PlayerCache> queuedCaches;
     private static final int CACHE_PERIOD = 30;
     private static final int SAVE_PERIOD = 15;
 
@@ -29,7 +30,7 @@ public class CacheManager implements Listener {
 
         loadedPlayers = new HashSet<>();
         playerCaches = new HashSet<>();
-        queuedCaches = new LinkedHashSet<>();
+        queuedCaches = new ConcurrentLinkedQueue<>();
 
         new BukkitRunnable() {
             @Override
@@ -168,7 +169,7 @@ public class CacheManager implements Listener {
         return playerCaches;
     }
 
-    public LinkedHashSet<PlayerCache> getQueuedCaches() {
+    public ConcurrentLinkedQueue<PlayerCache> getQueuedCaches() {
         return queuedCaches;
     }
 
