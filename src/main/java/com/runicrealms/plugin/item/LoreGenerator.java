@@ -5,7 +5,7 @@ import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.NumRounder;
-import de.tr7zw.itemnbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;

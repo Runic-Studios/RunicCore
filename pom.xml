@@ -123,39 +123,39 @@
         <dependency>
             <groupId>com.github.tr7zw</groupId>
             <artifactId>Item-NBT-API</artifactId>
-            <version>be4dfa593b</version>
+            <version>2.2.0</version>
         </dependency>
         <!-- RunicArtifacts -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicArtifacts</artifactId>
-            <version>1.13.2</version>
+            <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicArtifacts-1.13.2.jar</systemPath>
+            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicArtifacts-1.15.2.jar</systemPath>
         </dependency>
         <!-- RunicCharacters -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicCharacters</artifactId>
-            <version>1.13.2</version>
+            <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicCharacters-1.13.2.jar</systemPath>
+            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicCharacters-1.15.2.jar</systemPath>
         </dependency>
         <!-- RunicGuilds -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicGuilds</artifactId>
-            <version>1.13.2</version>
+            <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicGuilds-1.13.2.jar</systemPath>
+            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicGuilds-1.15.2.jar</systemPath>
         </dependency>
         <!-- RunicProfessions -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicProfessions</artifactId>
-            <version>1.13.2</version>
+            <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicProfessions-1.13.2.jar</systemPath>
+            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicProfessions-1.15.2.jar</systemPath>
         </dependency>
         <!-- Paper API -->
         <dependency>

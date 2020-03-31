@@ -1,9 +1,8 @@
 package com.runicrealms.plugin.attributes;
 
-import de.tr7zw.itemnbtapi.NBTItem;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
+import de.tr7zw.nbtapi.NBTCompoundList;
+import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTListCompound;
 import org.bukkit.inventory.ItemStack;
 
 public class AttributeUtil {
@@ -28,7 +27,7 @@ public class AttributeUtil {
     public static ItemStack addGenericStat(ItemStack item, String statName, double amt, String slot) {
         ItemStack artifact = item;
         NBTItem nbti = new NBTItem(artifact);
-        NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        NBTCompoundList attributes = nbti.getCompoundList("AttributeModifiers");
         NBTListCompound attribute = attributes.addCompound();
         attribute.setDouble("Amount", amt);
         attribute.setString("AttributeName", statName);
@@ -66,7 +65,7 @@ public class AttributeUtil {
     public static ItemStack addGenericStat(ItemStack item, String statName, double amt, String slot, int uuid) {
         ItemStack artifact = item;
         NBTItem nbti = new NBTItem(artifact);
-        NBTList attributes = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
+        NBTCompoundList attributes = nbti.getCompoundList("AttributeModifiers");
         NBTListCompound attribute = attributes.addCompound();
         attribute.setDouble("Amount", amt);
         attribute.setString("AttributeName", statName);
@@ -114,36 +113,18 @@ public class AttributeUtil {
     public static double getGenericDouble(ItemStack item, String name) {
         double amount = 0;
         NBTItem nbti = new NBTItem(item);
-        NBTList list = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
-        for (int i = 0; i < list.size(); i++) {
-            NBTListCompound lc = list.getCompound(i);
+        NBTCompoundList list = nbti.getCompoundList("Attributes");
+        for (NBTListCompound lc : list) {
             if (lc.getString("Name").equals(name)) {
                 amount = lc.getDouble("Amount");
             }
         }
-        if (amount != 0) {
-            return amount;
-        } else {
-            return 0;
-        }
+        return amount;
     }
 
     // finds a spell
     public static String getSpell(ItemStack item, String spellSlot) {
         NBTItem nbti = new NBTItem(item);
         return nbti.getString(spellSlot);
-    }
-
-    public static ItemStack overrideGenericDouble(ItemStack item, String name, double amt) {
-        NBTItem nbti = new NBTItem(item);
-        NBTList list = nbti.getList("AttributeModifiers", NBTType.NBTTagCompound);
-        for (int i = 0; i < list.size(); i++) {
-            NBTListCompound lc = list.getCompound(i);
-            if (lc.getString("Name").equals(name)) {
-                lc.setDouble("Amount", amt);
-            }
-        }
-        item = nbti.getItem();
-        return item;
     }
 }

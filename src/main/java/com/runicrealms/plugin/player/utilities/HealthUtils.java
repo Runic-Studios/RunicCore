@@ -2,10 +2,9 @@ package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
-import de.tr7zw.itemnbtapi.NBTEntity;
-import de.tr7zw.itemnbtapi.NBTList;
-import de.tr7zw.itemnbtapi.NBTListCompound;
-import de.tr7zw.itemnbtapi.NBTType;
+import de.tr7zw.nbtapi.NBTCompoundList;
+import de.tr7zw.nbtapi.NBTEntity;
+import de.tr7zw.nbtapi.NBTListCompound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -67,9 +66,9 @@ public class HealthUtils {
 
     private static void setHealthAttribute(Player pl, double amt) {
         NBTEntity nbtPlayer = new NBTEntity(pl);
-        NBTList list = nbtPlayer.getList("Attributes", NBTType.NBTTagCompound);
+        NBTCompoundList list = nbtPlayer.getCompoundList("Attributes");
         for (int i = 0; i < list.size(); i++) {
-            NBTListCompound lc = list.getCompound(i);
+            NBTListCompound lc = list.get(i);
             if (lc.getString("Name").equals("generic.maxHealth")) {
                 lc.setDouble("Base", amt);
             }
