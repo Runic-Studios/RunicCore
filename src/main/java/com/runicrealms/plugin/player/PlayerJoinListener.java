@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.player;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -8,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.lang.reflect.InvocationTargetException;
 
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
@@ -80,10 +85,48 @@ public class PlayerJoinListener implements Listener {
                 // set their location
                 pl.teleport(e.getPlayerCache().getLocation());
 
-                pl.setResourcePack("https://www.dropbox.com/s/lzg9qlwrmlezvtz/RR%20Official%20Pack.zip?dl=1");
+                int version = RunicCore.getProtocolManager().getProtocolVersion(pl);
+                Bukkit.broadcastMessage(ChatColor.DARK_RED + "" + version);
+                if (version < 472) { // less than 1.14
+                    Bukkit.broadcastMessage("below 1.14");
+                    pl.setResourcePack("https://www.dropbox.com/s/lzg9qlwrmlezvtz/RR%20Official%20Pack.zip?dl=1"); // 1.13.2 pack
+                } else {
+                    Bukkit.broadcastMessage("at or above 1.14");
+                }
+
+
+                PacketContainer packet = RunicCore.getProtocolManager().createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
+                packet.getModifier().writeDefaults();
+                // declare type
+                packet.getIntegers().write(0, (int) EntityType.SHEEP.getTypeId());
+                //
+                packet.getDoubles().write(0, pl.getLocation().getX());
+                packet.getDoubles().write(1, pl.getLocation().getX());
+                packet.getDoubles().write(2, pl.getLocation().getX());
+
+
+                try {
+                    RunicCore.getProtocolManager().sendServerPacket(pl, packet);
+                } catch (InvocationTargetException ex) {
+                    ex.printStackTrace();
+                }
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
+
+//    public void test() {
+//        RunicCore.getProtocolManager().addPacketListener(new PacketAdapter(RunicCore.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Client.) {
+//            @Override
+//            public void onPacketReceiving(PacketEvent event) {
+//                Player player = event.getPlayer();
+//                PacketContainer packet = event.getPacket();
+//                if (isMuted(player)) {
+//                    System.out.println("[MUTED] " + player.getName() + ": " + packet.getStrings().read(0));
+//                    event.setCancelled(true);
+//                }
+//            }
+//        });
+//    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFirstJoin(CharacterLoadEvent event) {

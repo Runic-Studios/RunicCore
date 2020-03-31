@@ -18,6 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
@@ -172,6 +173,18 @@ public class BowListener implements Listener {
         //DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
     }
 
+    /**
+     * Stop mobs from targeting each other.
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMobTargetMob(EntityTargetEvent e) {
+        if (e.getTarget() == null) return; // has target
+        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent()) return; // target is a mythic mob
+//        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
+//        if (am.getFaction() != null && am.getFaction().equalsIgnoreCase("guard")) return; // targeter is not a guard
+        e.setCancelled(true);
+    }
+
     // method to handle custom damage for bows
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDamage(EntityDamageByEntityEvent e) {
@@ -190,6 +203,7 @@ public class BowListener implements Listener {
                 e.setCancelled(true);
                 double dmgAmt = e.getDamage();
                 if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
+                    if (MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId())) return; // don't let mobs shoot each other
                     ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
                     dmgAmt = mm.getDamage();
                 }

@@ -1,5 +1,7 @@
 package com.runicrealms.plugin;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
@@ -77,6 +79,7 @@ public class RunicCore extends JavaPlugin {
     private static ShopManager shopManager;
     private static CacheManager cacheManager;
     private static OutlawManager outlawManager;
+    private static ProtocolManager protocolManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -92,6 +95,7 @@ public class RunicCore extends JavaPlugin {
     public static ShopManager getShopManager() { return shopManager; }
     public static CacheManager getCacheManager() { return cacheManager; }
     public static OutlawManager getOutlawManager() { return outlawManager; }
+    public static ProtocolManager getProtocolManager() { return protocolManager; }
 
     public void onEnable() {
 
@@ -110,6 +114,7 @@ public class RunicCore extends JavaPlugin {
         shopManager = new ShopManager();
         cacheManager = new CacheManager();
         outlawManager = new OutlawManager();
+        protocolManager = ProtocolLibrary.getProtocolManager();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
