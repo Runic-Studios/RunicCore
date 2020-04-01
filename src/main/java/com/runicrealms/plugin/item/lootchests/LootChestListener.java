@@ -44,7 +44,8 @@ public class LootChestListener implements Listener {
         Block block = e.getClickedBlock();
         Location blockLoc = block.getLocation();
 
-        if (RunicCore.getLootChestManager().getLootChest(blockLoc) == null) return;
+        if (RunicCore.getLootChestManager().getQueuedChest(blockLoc) != null) return; // chest already queued
+        if (RunicCore.getLootChestManager().getLootChest(blockLoc) == null) return; // chest doesn't match saved chest locations
         LootChest lootChest = RunicCore.getLootChestManager().getLootChest(blockLoc);
 
         // iterate through data file, if it finds a saved station w/ same world, x, y, and z, then
@@ -74,7 +75,7 @@ public class LootChestListener implements Listener {
 
             // destroy chest, open inv if all conditions are met
 
-            RunicCore.getLootChestManager().getLootChests().put(lootChest, System.currentTimeMillis()); // update respawn timer
+            RunicCore.getLootChestManager().getQueuedChests().put(lootChest, System.currentTimeMillis()); // update respawn timer
             pl.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
             block.setType(Material.AIR);
 
