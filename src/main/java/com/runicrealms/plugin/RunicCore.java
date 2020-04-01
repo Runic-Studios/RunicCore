@@ -273,7 +273,7 @@ public class RunicCore extends JavaPlugin {
         // boost
         getCommand("boost").setExecutor(new BoostCMD());
 
-        
+
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
     }
     
