@@ -69,10 +69,7 @@ public class LootChestManager {
      */
     private void regenChests() {
 
-        Bukkit.broadcastMessage("regen chests!");
-        Bukkit.broadcastMessage(queuedChests.size() + " is size");
         int limit = (int) Math.ceil(queuedChests.size() / 4) + 1;
-        Bukkit.broadcastMessage("limit is: " + limit);
         int count = 0;
 
         for (LootChest chest : queuedChests.keySet()) {
