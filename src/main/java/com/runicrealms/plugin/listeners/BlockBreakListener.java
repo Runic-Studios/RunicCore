@@ -26,8 +26,12 @@ public class BlockBreakListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
-            if (event.getClickedBlock().getType() == Material.FLOWER_POT && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                event.setCancelled(true);
+            if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (event.getClickedBlock().getType() == Material.FLOWER_POT || event.getClickedBlock().getType().toString().startsWith("POTTED_")) {
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
     }
