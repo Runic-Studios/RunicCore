@@ -114,7 +114,7 @@
             <artifactId>craftbukkit</artifactId>
             <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/craftbukkit-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/craftbukkit-1.15.2.jar</systemPath>
         </dependency>
         <!-- MythicMobs -->
         <dependency>
@@ -122,7 +122,7 @@
             <artifactId>mythicmobs</artifactId>
             <version>4.9.0</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/MythicMobs-4.9.0.jar</systemPath>
+            <systemPath>${project.basedir}/lib/MythicMobs-4.9.0.jar</systemPath>
         </dependency>
         <!-- NBT Api -->
         <dependency>
@@ -136,7 +136,7 @@
             <artifactId>RunicArtifacts</artifactId>
             <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicArtifacts-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/RunicArtifacts-1.15.2.jar</systemPath>
         </dependency>
         <!-- RunicCharacters -->
         <dependency>
@@ -144,7 +144,7 @@
             <artifactId>RunicCharacters</artifactId>
             <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicCharacters-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/RunicCharacters-1.15.2.jar</systemPath>
         </dependency>
         <!-- RunicGuilds -->
         <dependency>
@@ -152,7 +152,7 @@
             <artifactId>RunicGuilds</artifactId>
             <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicGuilds-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/RunicGuilds-1.15.2.jar</systemPath>
         </dependency>
         <!-- RunicProfessions -->
         <dependency>
@@ -160,7 +160,7 @@
             <artifactId>RunicProfessions</artifactId>
             <version>1.15.2</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Owner/IdeaProjects/lib/RunicProfessions-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/lib/RunicProfessions-1.15.2.jar</systemPath>
         </dependency>
         <!-- Paper API -->
         <dependency>

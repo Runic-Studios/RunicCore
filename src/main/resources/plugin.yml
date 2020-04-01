@@ -53,3 +53,6 @@ commands:
   boost:
     usage: /<commands>
     description: store stuff
+  map:
+    usage: /<commands>
+    description: View the online runic realms map
