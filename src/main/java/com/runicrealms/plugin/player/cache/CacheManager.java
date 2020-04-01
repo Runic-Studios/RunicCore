@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -92,6 +91,7 @@ public class CacheManager implements Listener {
         int characterSlot;
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;
+            if (!queuedCaches.iterator().hasNext()) continue;
             PlayerCache queued = queuedCaches.iterator().next();
             userConfig = RunicCharactersApi.getUserConfig(queued.getPlayerID());
             characterSlot = queued.getCharacterSlot();

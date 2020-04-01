@@ -53,8 +53,11 @@ import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.TutorialCMD;
+import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
+import net.minecraft.server.v1_15_R1.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -143,6 +146,14 @@ public class RunicCore extends JavaPlugin {
         // clean any stray armor stands, evokers
         mobHealthManager.insurancePolicy();
         mobHealthManager.fullClean();
+
+        String spaces = ChatUtils.determineSpaces
+                ("&d&lRUNIC REALMS\n" +
+                " &f&lA New Adventure Begins!");
+        String motd = spaces + ColorUtil.format
+                ("&d&lRUNIC REALMS\n" +
+                        "&f&lA New Adventure Begins!");
+        MinecraftServer.getServer().setMotd(motd);
     }
     
     public void onDisable() {

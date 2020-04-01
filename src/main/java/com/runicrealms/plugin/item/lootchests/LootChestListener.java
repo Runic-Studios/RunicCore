@@ -5,7 +5,6 @@ import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -32,9 +31,6 @@ import java.util.UUID;
  */
 public class LootChestListener implements Listener {
 
-    // only used if we need to protect chests from nearby mobs
-    //private static final double OPEN_RADIUS = 10;
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onChestInteract(PlayerInteractEvent e) {
 
@@ -47,36 +43,13 @@ public class LootChestListener implements Listener {
         Player pl = e.getPlayer();
         Block block = e.getClickedBlock();
         Location blockLoc = block.getLocation();
-        World world = block.getWorld();
-        double x = blockLoc.getX();
-        double y = blockLoc.getY();
-        double z = blockLoc.getZ();
 
-        // retrieve the data file
-        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-                "chests.yml");
-        FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
-        ConfigurationSection chestLocs = chestConfig.getConfigurationSection("Chests.Locations");
-
-        if (chestLocs == null) return;
+        if (RunicCore.getLootChestManager().getLootChest(blockLoc) == null) return;
+        LootChest lootChest = RunicCore.getLootChestManager().getLootChest(blockLoc);
 
         // iterate through data file, if it finds a saved station w/ same world, x, y, and z, then
         // it checks 'tier' and switch statement to spawn correct loot
-        String chestTier = "";
-        for (String stationID : chestLocs.getKeys(false)) {
-
-            World savedWorld = Bukkit.getServer().getWorld(chestLocs.getString(stationID + ".world"));
-            double savedX = chestLocs.getDouble(stationID + ".x");
-            double savedY = chestLocs.getDouble(stationID + ".y");
-            double savedZ = chestLocs.getDouble(stationID + ".z");
-
-            // if this particular location is saved, check what kind of workstation it is
-            if (world == savedWorld && x == savedX && y == savedY && z == savedZ){
-                String savedTier = chestLocs.getString(stationID + ".tier");
-                if (savedTier == null) return;
-                chestTier = savedTier;
-            }
-        }
+        String chestTier = lootChest.getTier();
 
         // if we've found a location and a chest, open the associated ItemGUI
         if (!chestTier.equals("") && block.getType() != Material.AIR) {
@@ -99,20 +72,9 @@ public class LootChestListener implements Listener {
                 return;
             }
 
-            // check for nearby entities
-//            for (Entity en : Objects.requireNonNull(blockLoc.getWorld()).getNearbyEntities(blockLoc, OPEN_RADIUS, OPEN_RADIUS, OPEN_RADIUS)) {
-//
-//                if (!(en instanceof LivingEntity)) continue;
-//                if (en instanceof Player) continue;
-//                if (en instanceof Horse) continue;
-//
-//                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-//                pl.sendMessage(ChatColor.RED + "It isn't safe to open that! Defeat monsters nearby.");
-//                return;
-//            }
-
             // destroy chest, open inv if all conditions are met
 
+            RunicCore.getLootChestManager().getLootChests().put(lootChest, System.currentTimeMillis()); // update respawn timer
             pl.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
             block.setType(Material.AIR);
 

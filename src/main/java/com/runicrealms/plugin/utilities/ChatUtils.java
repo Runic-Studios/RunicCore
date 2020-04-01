@@ -43,4 +43,40 @@ public class ChatUtils {
         }
         player.sendMessage(sb.toString() + message);
     }
+
+    public static String determineSpaces(String message) {
+        message = ChatColor.translateAlternateColorCodes('&', message);
+
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for(char c : message.toCharArray()){
+            if(c == '§'){
+                previousCode = true;
+                continue;
+            }else if(previousCode == true){
+                previousCode = false;
+                if(c == 'l' || c == 'L'){
+                    isBold = true;
+                    continue;
+                }else isBold = false;
+            }else{
+                DefaultFontEnum dFI = DefaultFontEnum.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontEnum.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while(compensated < toCompensate){
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return sb.toString();
+    }
 }
