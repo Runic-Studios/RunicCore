@@ -8,10 +8,7 @@ import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import net.minecraft.server.v1_15_R1.DataWatcherObject;
-import net.minecraft.server.v1_15_R1.DataWatcherRegistry;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -154,11 +151,11 @@ public class BowListener implements Listener {
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
         // remove the arrow with nms magic
-        new BukkitRunnable() {
-            public void run() {
-                ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
-            }
-        }.runTaskLater(RunicCore.getInstance(), 3);
+//        new BukkitRunnable() {
+//            public void run() {
+//                ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
+//            }
+//        }.runTaskLater(RunicCore.getInstance(), 3);
 
         int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
 
@@ -249,11 +246,11 @@ public class BowListener implements Listener {
             int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
             // remove the arrow with nms magic
-            new BukkitRunnable() {
-                public void run() {
-                    ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
-                }
-            }.runTaskLater(RunicCore.getInstance(), 3);
+//            new BukkitRunnable() {
+//                public void run() {
+//                    ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
+//                }
+//            }.runTaskLater(RunicCore.getInstance(), 3);
 
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
 

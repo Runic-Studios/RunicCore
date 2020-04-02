@@ -76,35 +76,39 @@ public class TabListManager implements Listener {
                 (ChatColor.YELLOW + "" + ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]",0, Skins.getDot(ChatColor.YELLOW)));
 
         // fill column with online players, stop after first column
-        int i = 0;
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            if (i > 19) break;
-            if (online.hasMetadata("NPC")) continue;
-            tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
-            i++;
-        }
-
-        // Column 2 (Guild)
-        Guild guild = RunicGuildsAPI.getGuild(pl.getUniqueId());
-        if (guild == null) {
-            tab.set(1, 0, new TextTabItem
-                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));
-        } else {
-            tab.set(1, 0, new TextTabItem
-                    (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + GuildUtil.getOnlineMembersWithOwner(guild).size() + "]", 0, Skins.getDot(ChatColor.GOLD))); // +1 for owner
-            int j = 0;
-            for (GuildMember guildy : GuildUtil.getOnlineMembersWithOwner(guild)) {
-                if (j > 19) break;
-                Player plMem = Bukkit.getPlayer(guildy.getUUID());
-                if (plMem == null) continue;
-                tab.set(1, j + 1, new TextTabItem(plMem.getName(), 0, Skins.getPlayer(plMem)));
-                j++;
+        try {
+            int i = 0;
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (i > 19) break;
+                if (online.hasMetadata("NPC")) continue;
+                tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
+                i++;
             }
-        }
 
-        // Column 4 (Friends)
-        tab.set(3, 0, new TextTabItem
-                (ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.DARK_GREEN)));
+            // Column 2 (Guild)
+            Guild guild = RunicGuildsAPI.getGuild(pl.getUniqueId());
+            if (guild == null) {
+                tab.set(1, 0, new TextTabItem
+                        (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));
+            } else {
+                tab.set(1, 0, new TextTabItem
+                        (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + GuildUtil.getOnlineMembersWithOwner(guild).size() + "]", 0, Skins.getDot(ChatColor.GOLD))); // +1 for owner
+                int j = 0;
+                for (GuildMember guildy : GuildUtil.getOnlineMembersWithOwner(guild)) {
+                    if (j > 19) break;
+                    Player plMem = Bukkit.getPlayer(guildy.getUUID());
+                    if (plMem == null) continue;
+                    tab.set(1, j + 1, new TextTabItem(plMem.getName(), 0, Skins.getPlayer(plMem)));
+                    j++;
+                }
+            }
+
+            // Column 4 (Friends)
+            tab.set(3, 0, new TextTabItem
+                    (ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.DARK_GREEN)));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

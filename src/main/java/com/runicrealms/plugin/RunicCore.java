@@ -54,7 +54,6 @@ import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseEvent;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.TutorialCMD;
-import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
@@ -148,12 +147,9 @@ public class RunicCore extends JavaPlugin {
         mobHealthManager.insurancePolicy();
         mobHealthManager.fullClean();
 
-        String spaces = ChatUtils.determineSpaces
-                ("&d&lRUNIC REALMS\n" +
-                " &f&lA New Adventure Begins!");
-        String motd = spaces + ColorUtil.format
-                ("&d&lRUNIC REALMS\n" +
-                        "&f&lA New Adventure Begins!");
+        String motd = ColorUtil.format
+                ("&d&l                RUNIC REALMS\n" +
+                        "&f&l           A New Adventure Begins!");
         MinecraftServer.getServer().setMotd(motd);
     }
     

@@ -32,9 +32,6 @@ commands:
   mana:
     usage: /<commands>
     description: sets your mana to full
-  gathertool:
-    usage: /<commands>
-    description: give yourself a gathering tool
   runicgive:
     usage: /<commands>
     description: give yourself something

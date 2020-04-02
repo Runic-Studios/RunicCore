@@ -22,7 +22,7 @@ public class ManaManager implements Listener {
     private HashMap<UUID, Integer> currentPlayerManas;
     private final int BASE_MANA = 100;
     private final int MANA_REGEN_AMT = 5;
-    private final long MANA_REGEN_PERIOD = 5; // seconds
+    private final long MANA_REGEN_PERIOD = 4; // seconds
 
     private final int ARCHER_MANA_LV = 1;
     private final int CLERIC_MANA_LV = 2;
@@ -66,11 +66,7 @@ public class ManaManager implements Listener {
             ManaRegenEvent event = new ManaRegenEvent(online, MANA_REGEN_AMT);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                if (mana + event.getAmount() >= maxMana) {
-                    currentPlayerManas.put(online.getUniqueId(), maxMana);
-                } else {
-                    currentPlayerManas.put(online.getUniqueId(), mana + event.getAmount());
-                }
+                currentPlayerManas.put(online.getUniqueId(), Math.min(mana + event.getAmount(), maxMana));
             }
         }
     }

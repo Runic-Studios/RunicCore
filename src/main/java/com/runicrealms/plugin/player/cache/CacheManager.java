@@ -102,6 +102,7 @@ public class CacheManager implements Listener {
 
     public void setFieldsSaveFile(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
         // class
+        if (userConfig == null) return;
         if (playerCache.getClassName() != null) {
             userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".class.name", playerCache.getClassName());
         }
