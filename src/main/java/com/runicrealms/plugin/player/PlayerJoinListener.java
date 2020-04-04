@@ -82,6 +82,15 @@ public class PlayerJoinListener implements Listener {
 
                 // prompt resource pack
                 pl.setResourcePack("https://www.dropbox.com/s/vukg132jwgcv1mh/RR%20Official%20Pack.zip?dl=1");
+
+
+
+                try {
+                    Bukkit.broadcastMessage(RunicCore.getDatabaseManager().getAPI().getPlayerFile("2343243243243").get("guild") + "");
+                } catch (NullPointerException e) {
+                    Bukkit.broadcastMessage(ChatColor.DARK_RED + "null pointer!");
+                }
+
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }

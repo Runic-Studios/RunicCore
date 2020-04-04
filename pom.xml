@@ -29,6 +29,33 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <!-- Shade plugin (for use w/ MongoDB) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.mongodb:mongodb-driver-sync</include>
+                                    <include>org.mongodb:bson</include>
+                                    <include>org.mongodb:mongo-java-driver</include>
+                                    <include>org.mongodb:mongodb-driver-core</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.2</version>
@@ -115,6 +142,12 @@
             <version>1.15.2</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/craftbukkit-1.15.2.jar</systemPath>
+        </dependency>
+        <!-- MongoDB -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>3.12.2</version>
         </dependency>
         <!-- MythicMobs -->
         <dependency>

@@ -41,7 +41,7 @@ public class CacheManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                saveCacheFiles(true);
+                saveQueuedFiles(true);
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), (100+CACHE_PERIOD), SAVE_PERIOD*20); // wait for save, 15 sec period
     }
@@ -81,7 +81,7 @@ public class CacheManager implements Listener {
     /**
      * Writes data async
      */
-    public void saveCacheFiles(boolean limitSize) {
+    public void saveQueuedFiles(boolean limitSize) {
         int limit;
         if (limitSize)
             limit = (int) Math.ceil(queuedCaches.size() / 4);

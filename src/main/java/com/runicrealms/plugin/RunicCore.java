@@ -10,6 +10,7 @@ import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
+import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
@@ -83,6 +84,7 @@ public class RunicCore extends JavaPlugin {
     private static CacheManager cacheManager;
     private static OutlawManager outlawManager;
     private static ProtocolManager protocolManager;
+    private static DatabaseManager databaseManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -99,6 +101,7 @@ public class RunicCore extends JavaPlugin {
     public static CacheManager getCacheManager() { return cacheManager; }
     public static OutlawManager getOutlawManager() { return outlawManager; }
     public static ProtocolManager getProtocolManager() { return protocolManager; }
+    public static DatabaseManager getDatabaseManager() { return databaseManager; }
 
     public void onEnable() {
 
@@ -118,6 +121,7 @@ public class RunicCore extends JavaPlugin {
         cacheManager = new CacheManager();
         outlawManager = new OutlawManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
+        databaseManager = new DatabaseManager();
 
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
@@ -147,16 +151,17 @@ public class RunicCore extends JavaPlugin {
         mobHealthManager.insurancePolicy();
         mobHealthManager.fullClean();
 
+        // motd
         String motd = ColorUtil.format
                 ("&d&l                RUNIC REALMS\n" +
-                        "&f&l           A New Adventure Begins!");
+                        "&f&l           A New Adventure Begins");
         MinecraftServer.getServer().setMotd(motd);
     }
     
     public void onDisable() {
         getLogger().info(" §cRunicCore has been disabled.");
         getCacheManager().saveCaches(); // save player data
-        getCacheManager().saveCacheFiles(false);
+        getCacheManager().saveQueuedFiles(false);
         /*
         let's prevent memory leaks, shall we?
          */
@@ -174,6 +179,7 @@ public class RunicCore extends JavaPlugin {
         shopManager = null;
         cacheManager = null;
         outlawManager = null;
+        databaseManager = null;
     }
 
     private void loadConfig() {
