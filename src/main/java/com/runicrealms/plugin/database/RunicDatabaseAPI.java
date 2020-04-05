@@ -5,6 +5,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,7 +30,7 @@ public class RunicDatabaseAPI implements IRunicDatabase {
 
     /**
      *
-     * @param uuid of player, todo: change to UUID of character?
+     * @param uuid of player
      * @param characterSlot number representing which char
      * @param inv player's current inv
      */
@@ -49,8 +50,14 @@ public class RunicDatabaseAPI implements IRunicDatabase {
     private Document serializedInventory(Inventory inv) {
         Document inventory = new Document();
         ItemStack[] contents = inv.getContents();
-        String serializedInv = InventorySerializer.toBase64List(contents);
-        inventory.append("inv", serializedInv);
+        YamlConfiguration invConfig = new YamlConfiguration();
+        for (int i = 0; i < inv.getSize(); i++) {
+            if (contents[i] == null) continue;
+            ItemStack is = contents[i];
+            invConfig.set(String.valueOf(i), is);
+        }
+        String serialized = invConfig.saveToString();
+        inventory.append("inv", serialized);
         return inventory;
     }
 }

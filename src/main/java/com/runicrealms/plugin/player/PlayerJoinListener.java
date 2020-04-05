@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -84,13 +83,6 @@ public class PlayerJoinListener implements Listener {
                 // prompt resource pack
                 pl.setResourcePack("https://www.dropbox.com/s/vukg132jwgcv1mh/RR%20Official%20Pack.zip?dl=1");
 
-
-                Document playerFile = RunicCore.getDatabaseManager().getAPI().getPlayerFile("2343243243243");
-                Document playerCharacter = RunicCore.getDatabaseManager().getAPI().getCharacter(playerFile, 1);
-                Bukkit.broadcastMessage(playerFile.get("guild") + "");
-
-
-                String inv = playerCharacter.getString("inv");
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }

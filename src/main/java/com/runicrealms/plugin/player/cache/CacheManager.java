@@ -5,7 +5,9 @@ import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
 import com.runicrealms.runiccharacters.config.UserConfig;
+import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -136,14 +138,10 @@ public class CacheManager implements Listener {
      * @param userConfig from RunicCharacters
      */
     public void saveInventory(UserConfig userConfig) {
-        userConfig.set(userConfig.getCharacterSlot(), UserConfig.getConfigHeader() + ".inventory", null);
-        ItemStack[] contents = userConfig.getPlayer().getInventory().getContents();
-        for (int i = 0; i < contents.length; i++) {
-            if (contents[i] != null) {
-                ItemStack item = contents[i];
-                userConfig.set(userConfig.getCharacterSlot(), UserConfig.getConfigHeader() + ".inventory." + i, item);
-            }
-        }
+        Player pl = userConfig.getPlayer();
+        int characterSlot = userConfig.getCharacterSlot();
+        RunicCore.getDatabaseManager().getAPI().updateCharacterInv
+                (pl.getUniqueId().toString(), characterSlot, pl.getInventory());
     }
 
     /**
@@ -153,13 +151,23 @@ public class CacheManager implements Listener {
      */
     public ItemStack[] loadInventory(UserConfig userConfig) {
         ItemStack[] contents = new ItemStack[41];
-        for (int i = 0; i < contents.length; i++) {
-            if (userConfig.getConfigurationSection(userConfig.getCharacterSlot() + "." + UserConfig.getConfigHeader()).getItemStack("inventory." + i) != null) {
-                ItemStack item = userConfig.getConfigurationSection(userConfig.getCharacterSlot() + "." + UserConfig.getConfigHeader() + ".inventory").getItemStack(i + "");
-                contents[i] = item;
+        try {
+            Player pl = userConfig.getPlayer();
+            Document playerFile = RunicCore.getDatabaseManager().getAPI().getPlayerFile(pl.getUniqueId().toString());
+            Document playerCharacter = RunicCore.getDatabaseManager().getAPI().getCharacter(playerFile, 1);
+            String serialized = playerCharacter.getString("inv");
+            YamlConfiguration restoreInv = new YamlConfiguration();
+            restoreInv.loadFromString(serialized);
+            for (int i = 0; i < 41; i++) {
+                ItemStack restored = restoreInv.getItemStack(String.valueOf(i));
+                if (restored != null) {
+                    contents[i] = restored;
+                }
             }
+            return contents;
+        } catch (Exception e) {
+            return new ItemStack[41];
         }
-        return contents;
     }
 
     public HashSet<Player> getLoadedPlayers() {
