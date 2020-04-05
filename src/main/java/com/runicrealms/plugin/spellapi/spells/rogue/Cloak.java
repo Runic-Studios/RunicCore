@@ -30,7 +30,8 @@ public class Cloak extends Spell {
 
     // constructor
     public Cloak() {
-        super("Cloak", "For " + DURATION + " seconds, you vanish completely," +
+        super("Cloak",
+                "For " + DURATION + " seconds, you vanish completely," +
                         "\ncausing you to appear invisible to" +
                         "\nplayers. During this time, you are" +
                         "\nimmune to damage from monsters!" +

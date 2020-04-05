@@ -19,7 +19,7 @@ import java.util.Random;
 public class Siphon extends Spell {
 
     private static final int AMOUNT = 5;
-    private static final int PERCENT = 10;
+    private static final double PERCENT = 10;
 
     public Siphon() {
         super ("Siphon",

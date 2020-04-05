@@ -24,7 +24,8 @@ public class BlessedRain extends Spell {
 
     // constructor
     public BlessedRain() {
-        super("Blessed Rain", "For " + DURATION + " seconds, you summon healing" +
+        super("Blessed Rain",
+                "For " + DURATION + " seconds, you summon healing" +
                         "\nwaters, conjuring a ring of light magic" +
                         "\nwhich restores✦ " + HEALING_AMT + " health to allies" +
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +

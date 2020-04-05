@@ -24,7 +24,8 @@ public class Slam extends Spell {
     private static final int RADIUS = 3;
 
     public Slam() {
-        super("Slam", "You charge fearlessly into the air!" +
+        super("Slam",
+                "You charge fearlessly into the air!" +
                         "\nUpon hitting the ground, you deal " +
                         "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
                         "\n" + RADIUS + " blocks and knock them up!",
