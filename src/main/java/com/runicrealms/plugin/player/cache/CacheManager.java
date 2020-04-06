@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
 import com.runicrealms.runiccharacters.config.UserConfig;
-import org.bson.Document;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -128,7 +128,8 @@ public class CacheManager implements Listener {
         // inventory
         saveInventory(userConfig);
         // location
-        userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".location", playerCache.getLocation());
+        //userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".location", playerCache.getLocation());
+        RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterLoc(playerCache.getPlayerID().toString(), userConfig.getCharacterSlot(), playerCache.getLocation());
         // save file
         userConfig.saveConfig();
     }
@@ -140,34 +141,8 @@ public class CacheManager implements Listener {
     public void saveInventory(UserConfig userConfig) {
         Player pl = userConfig.getPlayer();
         int characterSlot = userConfig.getCharacterSlot();
-        RunicCore.getDatabaseManager().getAPI().updateCharacterInv
+        RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterInv
                 (pl.getUniqueId().toString(), characterSlot, pl.getInventory());
-    }
-
-    /**
-     * Loads inventory from flat file into memory.
-     * Called in RunicCharacters.
-     * @param userConfig from RunicCharacters
-     */
-    public ItemStack[] loadInventory(UserConfig userConfig) {
-        ItemStack[] contents = new ItemStack[41];
-        try {
-            Player pl = userConfig.getPlayer();
-            Document playerFile = RunicCore.getDatabaseManager().getAPI().getPlayerFile(pl.getUniqueId().toString());
-            Document playerCharacter = RunicCore.getDatabaseManager().getAPI().getCharacter(playerFile, 1);
-            String serialized = playerCharacter.getString("inv");
-            YamlConfiguration restoreInv = new YamlConfiguration();
-            restoreInv.loadFromString(serialized);
-            for (int i = 0; i < 41; i++) {
-                ItemStack restored = restoreInv.getItemStack(String.valueOf(i));
-                if (restored != null) {
-                    contents[i] = restored;
-                }
-            }
-            return contents;
-        } catch (Exception e) {
-            return new ItemStack[41];
-        }
     }
 
     public HashSet<Player> getLoadedPlayers() {
@@ -200,5 +175,41 @@ public class CacheManager implements Listener {
             if (cache.getPlayerID() == playerID) return true;
         }
         return false;
+    }
+
+    public PlayerCache buildPlayerCache(UserConfig userConfig) {
+
+        String path = userConfig.getCharacterSlot() + "." + UserConfig.getConfigHeader();
+
+        UUID playerID = userConfig.getPlayer().getUniqueId();
+        String guildName = userConfig.getConfigurationSection(path).getString("guild");
+        String className = userConfig.getConfigurationSection(path).getString("class.name");
+        String profName = userConfig.getConfigurationSection(path).getString("prof.name");
+
+        int classLevel = userConfig.getConfigurationSection(path).getInt("class.level");
+        int classExp = userConfig.getConfigurationSection(path).getInt("class.exp");
+        int profLevel = userConfig.getConfigurationSection(path).getInt("prof.level");
+        int profExp = userConfig.getConfigurationSection(path).getInt("prof.exp");
+
+        int currentHealth = userConfig.getConfigurationSection(path).getInt("currentHP");
+        int maxMana = userConfig.getConfigurationSection(path).getInt("maxMana");
+
+        boolean isOutlaw = userConfig.getConfigurationSection(path).getBoolean("outlaw.enabled");
+        int rating = userConfig.getConfigurationSection(path).getInt("outlaw.rating");
+
+        //ItemStack[] inventoryContents = RunicCore.getCacheManager().loadInventory(userConfig);
+        //Location location = (Location) userConfig.getConfigurationSection(path).get("location");
+
+        //ItemStack[] inventoryContents = RunicCore.getCacheManager().loadInventory(userConfig);
+        ItemStack[] inventoryContents = DatabaseUtil.loadInventory(userConfig);
+        Location location = DatabaseUtil.loadLocation(userConfig);
+
+        return new PlayerCache(userConfig.getCharacterSlot(),
+                playerID, guildName, className, profName,
+                classLevel, classExp,
+                profLevel, profExp,
+                currentHealth, maxMana,
+                isOutlaw, rating,
+                inventoryContents, location);
     }
 }
