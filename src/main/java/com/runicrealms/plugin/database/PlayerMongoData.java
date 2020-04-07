@@ -75,4 +75,9 @@ public class PlayerMongoData implements MongoData {
         return this.updates;
     }
 
+    @Override
+    public Set<String> getKeys() {
+        return this.document.keySet();
+    }
+
 }

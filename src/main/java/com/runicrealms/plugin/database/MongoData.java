@@ -27,4 +27,6 @@ public interface MongoData {
 
     public Set<Bson> getUpdates();
 
+    public Set<String> getKeys();
+
 }

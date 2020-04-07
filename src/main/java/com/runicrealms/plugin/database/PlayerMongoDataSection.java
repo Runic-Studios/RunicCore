@@ -2,6 +2,8 @@ package com.runicrealms.plugin.database;
 
 import org.bson.Document;
 
+import java.util.Set;
+
 public class PlayerMongoDataSection implements MongoDataSection {
 
     private Document document;
@@ -52,6 +54,11 @@ public class PlayerMongoDataSection implements MongoDataSection {
     @Override
     public void saveParent() {
         this.parent.save();
+    }
+
+    @Override
+    public Set<String> getKeys() {
+        return this.document.keySet();
     }
 
 }

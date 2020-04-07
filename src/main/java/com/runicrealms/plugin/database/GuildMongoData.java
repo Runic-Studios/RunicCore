@@ -75,4 +75,9 @@ public class GuildMongoData implements MongoData {
         return this.updates;
     }
 
+    @Override
+    public Set<String> getKeys() {
+        return this.document.keySet();
+    }
+
 }
