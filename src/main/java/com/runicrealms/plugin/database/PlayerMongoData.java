@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.database;
 
+import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -15,8 +16,9 @@ public class PlayerMongoData implements MongoData {
 
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;
-        this.updates = new HashSet<Bson>();
-        this.document = RunicCore.getDatabaseManager().getAPI().getPlayerFile(this.uuid);
+        this.updates = new HashSet<>();
+        this.document = RunicCore.getDatabaseManager().getPlayerData().find
+                (Filters.eq("player_uuid", this.uuid)).first();
     }
 
     @Override
@@ -36,7 +38,8 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public void refresh() {
-        this.document = RunicCore.getDatabaseManager().getAPI().getPlayerFile(this.uuid);
+        this.document = RunicCore.getDatabaseManager().getPlayerData().find
+                (Filters.eq("player_uuid", this.uuid)).first();
     }
 
     @Override

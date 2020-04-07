@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.database;
 
+import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -15,8 +16,9 @@ public class GuildMongoData implements MongoData {
 
     public GuildMongoData(String prefix) {
         this.prefix = prefix;
-        this.updates = new HashSet<Bson>();
-        this.document = RunicCore.getDatabaseManager().getAPI().getGuildFile(this.prefix);
+        this.updates = new HashSet<>();
+        this.document = RunicCore.getDatabaseManager().getGuildData().find(
+                (Filters.eq("prefix", prefix))).first();
     }
 
     @Override
@@ -36,7 +38,8 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public void refresh() {
-        this.document = RunicCore.getDatabaseManager().getAPI().getGuildFile(this.prefix);
+        this.document = RunicCore.getDatabaseManager().getGuildData().find(
+                (Filters.eq("prefix", prefix))).first();
     }
 
     @Override

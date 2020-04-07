@@ -1,44 +1,29 @@
 package com.runicrealms.plugin.database;
 
-import com.mongodb.client.model.Filters;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.player.cache.PlayerCache;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
 public class RunicDatabaseAPI implements IRunicDatabase {
 
-    private CharacterAPI characterAPI;
+    //private CharacterAPI characterAPI;
 
-    public RunicDatabaseAPI() {
-        characterAPI = new CharacterAPI();
+//    public RunicDatabaseAPI() {
+//        characterAPI = new CharacterAPI();
+//    }
+
+    @Override
+    public PlayerMongoData getPlayerFile(String uuid) {
+        return new PlayerMongoData(uuid);
     }
 
     @Override
-    public Document getPlayerFile(String uuid) {
-        return RunicCore.getDatabaseManager().getPlayerData().find
-                (Filters.eq("player_uuid", uuid)).first();
+    public GuildMongoData getGuildFile(String guildPrefix) {
+        return new GuildMongoData(guildPrefix);
     }
 
-    @Override
-    public Document getGuildFile(String guildPrefix) {
-        return RunicCore.getDatabaseManager().getGuildData().find((Filters.eq("prefix", guildPrefix))).first();
-    }
+//    @Override
+//    public PlayerCache getPlayerCache(Document playerFile) {
+//        return null;
+//    }
 
-    @Override
-    public PlayerCache getPlayerCache(Document playerFile) {
-        return null;
-    }
-
-    public CharacterAPI getCharacterAPI() {
-        return characterAPI;
-    }
-
-    @Override
-    public void updateDocumentField(String uuid, String identifier, Object value) {
-        Document document = new Document("player_uuid", uuid); // change player_uuid to uuid
-        Bson newValue = new Document(identifier, value);
-        Bson updateOperation = new Document("$set", newValue);
-        RunicCore.getDatabaseManager().getPlayerData().updateOne(document, updateOperation);
-    }
+//    public CharacterAPI getCharacterAPI() {
+//        return characterAPI;
+//    }
 }
