@@ -12,6 +12,7 @@ public class DatabaseManager {
 
     private MongoDatabase playersDB;
     private MongoCollection<Document> player_data;
+    private MongoCollection<Document> guild_data;
     private RunicDatabaseAPI runicDatabaseAPI;
 
     public DatabaseManager() {
@@ -29,6 +30,7 @@ public class DatabaseManager {
         MongoClient mongoClient = MongoClients.create(settings);
         playersDB = mongoClient.getDatabase("players");
         player_data = playersDB.getCollection("player_data");
+        guild_data = playersDB.getCollection("guild_data");
 
         // access api
         runicDatabaseAPI = new RunicDatabaseAPI();
@@ -40,6 +42,10 @@ public class DatabaseManager {
 
     public MongoCollection<Document> getPlayerData() {
         return player_data;
+    }
+
+    public MongoCollection<Document> getGuildData() {
+        return guild_data;
     }
 
     public RunicDatabaseAPI getAPI() {

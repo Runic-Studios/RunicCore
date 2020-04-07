@@ -21,6 +21,11 @@ public class RunicDatabaseAPI implements IRunicDatabase {
     }
 
     @Override
+    public Document getGuildFile(String guildPrefix) {
+        return RunicCore.getDatabaseManager().getGuildData().find((Filters.eq("prefix", guildPrefix))).first();
+    }
+
+    @Override
     public PlayerCache getPlayerCache(Document playerFile) {
         return null;
     }

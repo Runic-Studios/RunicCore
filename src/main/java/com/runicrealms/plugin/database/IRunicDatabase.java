@@ -7,11 +7,9 @@ public interface IRunicDatabase {
 
     // TODO: getPlayerBank
 
-    // TODO: getPlayerGuild
-
-    // TODO: getPlayerTradeMarket
-
     Document getPlayerFile(String uuid); // lookup a player's json data file
+
+    Document getGuildFile(String guildPrefix);
 
     PlayerCache getPlayerCache(Document playerFile); // returns the in-memory object of the player
 
