@@ -13,7 +13,7 @@ public class GuildMongoData implements MongoData {
     private String prefix;
     private Set<Bson> updates;
 
-    public GuildMongoData(String uuid) {
+    public GuildMongoData(String prefix) {
         this.prefix = prefix;
         this.updates = new HashSet<Bson>();
         this.document = RunicCore.getDatabaseManager().getAPI().getGuildFile(this.prefix);
@@ -55,6 +55,11 @@ public class GuildMongoData implements MongoData {
     @Override
     public boolean has(String key) {
         return this.document.containsKey(key);
+    }
+
+    @Override
+    public void remove(String key) {
+        this.updates.add(new Document("$unset", new Document(key, "")));
     }
 
 }

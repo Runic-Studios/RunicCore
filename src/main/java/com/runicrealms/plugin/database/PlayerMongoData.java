@@ -57,4 +57,9 @@ public class PlayerMongoData implements MongoData {
         return this.document.containsKey(key);
     }
 
+    @Override
+    public void remove(String key) {
+        this.updates.add(new Document("$unset", new Document(key, "")));
+    }
+
 }
