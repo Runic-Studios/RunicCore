@@ -65,4 +65,14 @@ public class GuildMongoData implements MongoData {
         this.updates.add(new Document("$unset", new Document(key, "")));
     }
 
+    @Override
+    public MongoDataSection getSection(String root) {
+        return new GuildMongoDataSection(this, root);
+    }
+
+    @Override
+    public Set<Bson> getUpdates() {
+        return this.updates;
+    }
+
 }

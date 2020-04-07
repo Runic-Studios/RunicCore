@@ -65,4 +65,14 @@ public class PlayerMongoData implements MongoData {
         this.updates.add(new Document("$unset", new Document(key, "")));
     }
 
+    @Override
+    public MongoDataSection getSection(String root) {
+        return new PlayerMongoDataSection(this, root);
+    }
+
+    @Override
+    public Set<Bson> getUpdates() {
+        return this.updates;
+    }
+
 }
