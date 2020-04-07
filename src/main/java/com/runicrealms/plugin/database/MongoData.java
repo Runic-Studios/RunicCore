@@ -16,4 +16,6 @@ public interface MongoData {
 
     public Document getDocument();
 
+    public boolean has(String key);
+
 }

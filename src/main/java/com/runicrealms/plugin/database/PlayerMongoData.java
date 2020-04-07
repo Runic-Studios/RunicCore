@@ -52,4 +52,9 @@ public class PlayerMongoData implements MongoData {
         return this.document;
     }
 
+    @Override
+    public boolean has(String key) {
+        return this.document.containsKey(key);
+    }
+
 }
