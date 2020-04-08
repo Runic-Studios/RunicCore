@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.database.MongoData;
+import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
@@ -141,7 +143,7 @@ public class CacheManager implements Listener {
     public void saveInventory(PlayerCache playerCache, UserConfig userConfig) {
         Player pl = userConfig.getPlayer();
         int characterSlot = userConfig.getCharacterSlot();
-        playerCache.getMongoData().set("character." + characterSlot + ".inventory", DatabaseUtil.serializedInventory(pl.getInventory()));
+        playerCache.getMongoData().set("character." + characterSlot + ".inventory", DatabaseUtil.serializeInventory(pl.getInventory()));
         //RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterInv
                 //(pl.getUniqueId().toString(), characterSlot, pl.getInventory());
     }
@@ -178,7 +180,9 @@ public class CacheManager implements Listener {
         return false;
     }
 
-    public PlayerCache buildPlayerCache(UserConfig userConfig) {
+    public PlayerCache buildPlayerCache(UserConfig userConfig) { // TODO - use mongodata to build player cache
+
+        PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
 
         String path = userConfig.getCharacterSlot() + "." + UserConfig.getConfigHeader();
 
@@ -202,7 +206,8 @@ public class CacheManager implements Listener {
         //Location location = (Location) userConfig.getConfigurationSection(path).get("location");
 
         //ItemStack[] inventoryContents = RunicCore.getCacheManager().loadInventory(userConfig);
-        ItemStack[] inventoryContents = DatabaseUtil.loadInventory(userConfig);
+
+        ItemStack[] inventoryContents = DatabaseUtil.loadInventory(mongoData.get("characters." + userConfig.getCharacterSlot() + ".inventory", String.class));
         Location location = DatabaseUtil.loadLocation(userConfig);
 
         return new PlayerCache(userConfig.getCharacterSlot(),
@@ -211,6 +216,6 @@ public class CacheManager implements Listener {
                 profLevel, profExp,
                 currentHealth, maxMana,
                 isOutlaw, rating,
-                inventoryContents, location);
+                inventoryContents, location, mongoData);
     }
 }

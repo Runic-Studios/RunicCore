@@ -7,9 +7,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.output.ByteArrayOutputStream;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 public class DatabaseUtil {
@@ -26,9 +29,9 @@ public class DatabaseUtil {
 
     /**
      * Loads inventory from JSON object into memory
-     * @param userConfig from RunicCharacters
+     * @String encoded inventory data
      */
-    public static ItemStack[] loadInventory(UserConfig userConfig) {
+    public static ItemStack[] loadInventory(String encoded) {
 //        ItemStack[] contents = new ItemStack[41];
 //        try {
 //            Player pl = userConfig.getPlayer();
@@ -45,8 +48,30 @@ public class DatabaseUtil {
 //            }
 //            return contents;
 //        } catch (Exception e) {
-            return new ItemStack[41];
-//        }
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
+        try {
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            dataInput.close();
+            ItemStack[] contents = new ItemStack[41];
+            for (int i = 0; i < 41; i++) {
+                try {
+                    Integer next = dataInput.readInt();
+                    if (next != -1) {
+                        contents[next] = (ItemStack) dataInput.readObject();
+                    } else {
+                        break;
+                    }
+                } catch (EOFException exception) {
+                    break;
+                } catch (IOException exception) {
+                    break; // This shouldn't happen!
+                }
+            }
+            return contents;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ItemStack[41]; // That is bad!
     }
 
     public static Location loadLocation(UserConfig userConfig) {
@@ -65,25 +90,31 @@ public class DatabaseUtil {
 //        }
     }
 
-    /**
-     * Converts a player's inventory to a format we can store in JSON objects
-     */
-    public static String serializedInventory(Inventory inv) {
-        ItemStack[] contents = inv.getContents();
-        YamlConfiguration invConfig = new YamlConfiguration();
-        for (int i = 0; i < inv.getSize(); i++) {
-            if (contents[i] == null) continue;
-            ItemStack is = contents[i];
-            invConfig.set(String.valueOf(i), is);
-        }
-        return invConfig.saveToString();
-    }
+//    /**
+//     * Converts a player's inventory to a format we can store in JSON objects
+//     */
+//    public static String serializedInventory(Inventory inv) {
+//        ItemStack[] contents = inv.getContents();
+//        YamlConfiguration invConfig = new YamlConfiguration();
+//        for (int i = 0; i < inv.getSize(); i++) {
+//            if (contents[i] == null) continue;
+//            ItemStack is = contents[i];
+//            invConfig.set(String.valueOf(i), is);
+//        }
+//        return invConfig.saveToString();
+//    }
 
-    private static String serializeItemStack(ItemStack item) {
+    public static String serializeInventory(Inventory inventory) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-            dataOutput.writeObject(item);
+            ItemStack[] contents = inventory.getContents();
+            for (int i = 0; i < 41; i++) {
+                if (contents[i] != null) {
+                    dataOutput.writeInt(i);
+                    dataOutput.writeObject(contents[i]);
+                }
+            }
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (IOException exception) {

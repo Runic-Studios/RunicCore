@@ -42,7 +42,7 @@ public class PlayerCache {
     /**
      * Created when a player selects a class for the first time
      */
-    public PlayerCache(UUID playerID, String className) {
+    public PlayerCache(UUID playerID, String className, PlayerMongoData mongoData) {
         this.characterSlot = 1;
         this.playerID = playerID;
         this.guild = "None";
@@ -58,7 +58,7 @@ public class PlayerCache {
         this.rating = RunicCore.getOutlawManager().getBaseRating();
         this.inventoryContents = new ItemStack[41]; // empty inventory, todo: this may be bugged
         this.location = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // tutorial
-        this.mongoData = new PlayerMongoData(playerID.toString());
+        this.mongoData = mongoData;
     }
 
     /**
@@ -80,7 +80,8 @@ public class PlayerCache {
                        int classLevel, int classExp, int profLevel, int profExp,
                        int currentHealth, int maxMana,
                        boolean isOutlaw, int rating,
-                       ItemStack[] inventoryContents, Location location) {
+                       ItemStack[] inventoryContents, Location location, PlayerMongoData mongoData) {
+        this.mongoData = mongoData;
         this.characterSlot = characterSlot;
         this.playerID = playerID;
         this.guild = guild;
