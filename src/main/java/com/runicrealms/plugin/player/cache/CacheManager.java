@@ -130,7 +130,7 @@ public class CacheManager implements Listener {
         // inventory
         saveInventory(playerCache, userConfig);
         // location
-        playerCache.getMongoData().set("character." + userConfig.getCharacterSlot() + ".location", DatabaseUtil.serializedLocation(playerCache.getLocation()));
+        playerCache.getMongoData().set("character." + userConfig.getCharacterSlot() + ".location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
         playerCache.getMongoData().save();
         //RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterLoc(playerCache.getPlayerID().toString(), userConfig.getCharacterSlot(), playerCache.getLocation());
         // save file
@@ -210,7 +210,7 @@ public class CacheManager implements Listener {
         //ItemStack[] inventoryContents = RunicCore.getCacheManager().loadInventory(userConfig);
 
         ItemStack[] inventoryContents = DatabaseUtil.loadInventory(mongoData.get("characters." + userConfig.getCharacterSlot() + ".inventory", String.class));
-        Location location = DatabaseUtil.loadLocation(userConfig);
+        Location location = DatabaseUtil.loadLocation(mongoData.get("characters." + userConfig.getCharacterSlot() + ".location", String.class));
 
         return new PlayerCache(userConfig.getCharacterSlot(),
                 playerID, guildName, className, profName,

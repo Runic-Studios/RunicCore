@@ -32,26 +32,9 @@ public class DatabaseUtil {
      * @String encoded inventory data
      */
     public static ItemStack[] loadInventory(String encoded) {
-//        ItemStack[] contents = new ItemStack[41];
-//        try {
-//            Player pl = userConfig.getPlayer();
-//            Document playerFile = RunicCore.getDatabaseManager().getAPI().getPlayerFile("2343243243243");//pl.getUniqueId().toString()
-//            Document playerCharacter = RunicCore.getDatabaseManager().getAPI().getCharacterAPI().getCharacter(playerFile, 1);
-//            String serialized = playerCharacter.getString("inventory");
-//            YamlConfiguration restoreInv = new YamlConfiguration();
-//            restoreInv.loadFromString(serialized);
-//            for (int i = 0; i < 41; i++) {
-//                ItemStack restored = restoreInv.getItemStack(String.valueOf(i));
-//                if (restored != null) {
-//                    contents[i] = restored;
-//                }
-//            }
-//            return contents;
-//        } catch (Exception e) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
         try {
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            dataInput.close();
             ItemStack[] contents = new ItemStack[41];
             for (int i = 0; i < 41; i++) {
                 try {
@@ -67,6 +50,7 @@ public class DatabaseUtil {
                     break; // This shouldn't happen!
                 }
             }
+            dataInput.close();
             return contents;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -74,35 +58,18 @@ public class DatabaseUtil {
         return new ItemStack[41]; // That is bad!
     }
 
-    public static Location loadLocation(UserConfig userConfig) {
-//        try {
-//            Player pl = userConfig.getPlayer();
-//            Document playerFile = RunicCore.getDatabaseManager().getAPI().getPlayerFile("2343243243243");//pl.getUniqueId().toString()
-//            Document playerCharacter = RunicCore.getDatabaseManager().getAPI().getCharacterAPI().getCharacter(playerFile, 1);
-//            String serialized = playerCharacter.getString("location");
-//            YamlConfiguration restoreLoc = new YamlConfiguration();
-//            restoreLoc.loadFromString(serialized);
-//            return restoreLoc.getLocation("loc");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Bukkit.broadcastMessage("something went wrong");
-            return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5);
-//        }
+    public static Location loadLocation(String encoded) {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
+        try {
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            Location location = (Location) dataInput.readObject();
+            dataInput.close();
+            return location;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null; // That is bad!
     }
-
-//    /**
-//     * Converts a player's inventory to a format we can store in JSON objects
-//     */
-//    public static String serializedInventory(Inventory inv) {
-//        ItemStack[] contents = inv.getContents();
-//        YamlConfiguration invConfig = new YamlConfiguration();
-//        for (int i = 0; i < inv.getSize(); i++) {
-//            if (contents[i] == null) continue;
-//            ItemStack is = contents[i];
-//            invConfig.set(String.valueOf(i), is);
-//        }
-//        return invConfig.saveToString();
-//    }
 
     public static String serializeInventory(Inventory inventory) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -126,9 +93,16 @@ public class DatabaseUtil {
     /**
      * Converts a player's location to a format we can store in JSON objects
      */
-    public static String serializedLocation(Location loc) {
-        YamlConfiguration locConfig = new YamlConfiguration();
-        locConfig.set("loc", loc);
-        return locConfig.saveToString();
+    public static String serializeLocation(Location location) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+            dataOutput.writeObject(location);
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        return null;
     }
 }
