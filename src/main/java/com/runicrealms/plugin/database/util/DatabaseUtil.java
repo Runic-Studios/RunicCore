@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.database.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.output.ByteArrayOutputStream;
 import org.bukkit.inventory.Inventory;
@@ -9,7 +10,6 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 
 public class DatabaseUtil {
@@ -35,17 +35,16 @@ public class DatabaseUtil {
             ItemStack[] contents = new ItemStack[41];
             for (int i = 0; i < 41; i++) {
                 try {
-                    Integer next = dataInput.readInt();
+                    int next = dataInput.readInt();
                     if (next != -1) {
                         contents[next] = (ItemStack) dataInput.readObject();
                     } else {
                         break;
                     }
-                } catch (EOFException exception) {
-                    break;
                 } catch (IOException exception) {
-                    break; // This shouldn't happen!
-                }
+                    break;
+                }// This shouldn't happen!
+
             }
             dataInput.close();
             return contents;
@@ -65,7 +64,7 @@ public class DatabaseUtil {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return null; // That is bad!
+        return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // That is bad!
     }
 
     public static String serializeInventory(Inventory inventory) {
