@@ -131,6 +131,7 @@ public class CacheManager implements Listener {
         saveInventory(playerCache, userConfig);
         // location
         playerCache.getMongoData().set("character." + userConfig.getCharacterSlot() + ".location", DatabaseUtil.serializedLocation(playerCache.getLocation()));
+        playerCache.getMongoData().save();
         //RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterLoc(playerCache.getPlayerID().toString(), userConfig.getCharacterSlot(), playerCache.getLocation());
         // save file
         userConfig.saveConfig();
@@ -144,6 +145,7 @@ public class CacheManager implements Listener {
         Player pl = userConfig.getPlayer();
         int characterSlot = userConfig.getCharacterSlot();
         playerCache.getMongoData().set("character." + characterSlot + ".inventory", DatabaseUtil.serializeInventory(pl.getInventory()));
+        playerCache.getMongoData().save();
         //RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterInv
                 //(pl.getUniqueId().toString(), characterSlot, pl.getInventory());
     }
