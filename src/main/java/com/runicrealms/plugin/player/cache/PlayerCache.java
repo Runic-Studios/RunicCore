@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.database.MongoData;
+import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,6 +37,8 @@ public class PlayerCache {
     private ItemStack[] inventoryContents;
     private Location location;
 
+    private PlayerMongoData mongoData;
+
     /**
      * Created when a player selects a class for the first time
      */
@@ -54,6 +58,7 @@ public class PlayerCache {
         this.rating = RunicCore.getOutlawManager().getBaseRating();
         this.inventoryContents = new ItemStack[41]; // empty inventory, todo: this may be bugged
         this.location = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // tutorial
+        this.mongoData = new PlayerMongoData(playerID.toString());
     }
 
     /**
@@ -208,4 +213,9 @@ public class PlayerCache {
     public void setLocation(Location location) {
         this.location = location;
     }
+
+    public MongoData getMongoData() {
+        return this.mongoData;
+    }
+
 }

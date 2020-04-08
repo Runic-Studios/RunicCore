@@ -126,10 +126,10 @@ public class CacheManager implements Listener {
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".outlaw.enabled", playerCache.getIsOutlaw());
         userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".outlaw.rating", playerCache.getRating());
         // inventory
-        saveInventory(userConfig);
+        saveInventory(playerCache, userConfig);
         // location
-        //userConfig.set(characterSlot, UserConfig.getConfigHeader() + ".location", playerCache.getLocation());
-        RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterLoc(playerCache.getPlayerID().toString(), userConfig.getCharacterSlot(), playerCache.getLocation());
+        playerCache.getMongoData().set("character." + userConfig.getCharacterSlot() + ".location", DatabaseUtil.serializedLocation(playerCache.getLocation()));
+        //RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterLoc(playerCache.getPlayerID().toString(), userConfig.getCharacterSlot(), playerCache.getLocation());
         // save file
         userConfig.saveConfig();
     }
@@ -138,11 +138,12 @@ public class CacheManager implements Listener {
      * Stores player inventory between alts, ignoring null items. (saves a lot of space)
      * @param userConfig from RunicCharacters
      */
-    public void saveInventory(UserConfig userConfig) {
+    public void saveInventory(PlayerCache playerCache, UserConfig userConfig) {
         Player pl = userConfig.getPlayer();
         int characterSlot = userConfig.getCharacterSlot();
-        RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterInv
-                (pl.getUniqueId().toString(), characterSlot, pl.getInventory());
+        playerCache.getMongoData().set("character." + characterSlot + ".inventory", DatabaseUtil.serializedInventory(pl.getInventory()));
+        //RunicCore.getDatabaseManager().getAPI().getCharacterAPI().updateCharacterInv
+                //(pl.getUniqueId().toString(), characterSlot, pl.getInventory());
     }
 
     public HashSet<Player> getLoadedPlayers() {
