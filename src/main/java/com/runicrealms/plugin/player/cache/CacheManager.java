@@ -4,10 +4,12 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
+import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
 import com.runicrealms.runiccharacters.config.UserConfig;
+import com.runicrealms.runicrestart.api.RunicRestartApi;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -87,10 +89,12 @@ public class CacheManager implements Listener {
      */
     public void saveQueuedFiles(boolean limitSize) {
         int limit;
-        if (limitSize)
+        if (limitSize) {
             limit = (int) Math.ceil(queuedCaches.size() / 4);
-        else
+        } else {
             limit = queuedCaches.size();
+            RunicRestartApi.markPluginSaved("core");
+        }
         UserConfig userConfig;
         int characterSlot;
         for (int i = 0; i < limit; i++) {
@@ -212,5 +216,64 @@ public class CacheManager implements Listener {
                 currentHealth, maxMana,
                 isOutlaw, rating,
                 inventoryContents, location, mongoData);
+    }
+
+    public void tryCreateNewPlayer(UserConfig userConfig) {
+
+        int slot = userConfig.getCharacterSlot();
+        PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
+        MongoDataSection characterData = mongoData.getCharacter(slot);
+
+        // class
+        if (!characterData.has("class.level")) {
+            characterData.set("class.level", 0);
+        }
+        if (!characterData.has("class.exp")) {
+            characterData.set("class.exp", 0);
+        }
+
+        // guild
+        if (!characterData.has("guild")) {
+            characterData.set("guild", "None");
+        }
+
+        // profession
+        if (!characterData.has("prof.name")) {
+            characterData.set("prof.name", "None");
+        }
+        if (!characterData.has("prof.level")) {
+            characterData.set("prof.level", 0);
+        }
+        if (!characterData.has("prof.exp")) {
+            characterData.set("prof.exp", 0);
+        }
+
+        // stats
+        if (!characterData.has("currentHP")) {
+            characterData.set("currentHP", HealthUtils.getBaseHealth());
+        }
+        if (!characterData.has("maxMana")) {
+            characterData.set("maxMana", RunicCore.getManaManager().getBaseMana());
+        }
+
+        // outlaw
+        if (!characterData.has("outlaw.enabled")) {
+            characterData.set("outlaw.enabled", false);
+        }
+        if (!characterData.has("outlaw.rating")) {
+            characterData.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
+        }
+
+        // inventory, location
+//        if (!userConfig.getConfigurationSection(characterSlot + "." + UserConfig.getConfigHeader()).isSet("inventory")) {
+//            RunicCore.getCacheManager().saveInventory(userConfig);
+//        }
+
+        if (!characterData.has("location")) {
+            characterData.set("location", new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5)); // tutorial
+        }
+
+        // save file
+        mongoData.save();
     }
 }
