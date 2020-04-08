@@ -80,4 +80,8 @@ public class PlayerMongoData implements MongoData {
         return this.document.keySet();
     }
 
+    public PlayerMongoDataSection getCharacter(int slot) {
+        return new PlayerMongoDataSection(this, "character." + slot);
+    }
+
 }

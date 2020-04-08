@@ -209,8 +209,8 @@ public class CacheManager implements Listener {
 
         //ItemStack[] inventoryContents = RunicCore.getCacheManager().loadInventory(userConfig);
 
-        ItemStack[] inventoryContents = DatabaseUtil.loadInventory(mongoData.get("characters." + userConfig.getCharacterSlot() + ".inventory", String.class));
-        Location location = DatabaseUtil.loadLocation(mongoData.get("characters." + userConfig.getCharacterSlot() + ".location", String.class));
+        ItemStack[] inventoryContents = DatabaseUtil.loadInventory(mongoData.get("character." + userConfig.getCharacterSlot() + ".inventory", String.class));
+        Location location = DatabaseUtil.loadLocation(mongoData.get("character." + userConfig.getCharacterSlot() + ".location", String.class));
 
         return new PlayerCache(userConfig.getCharacterSlot(),
                 playerID, guildName, className, profName,
