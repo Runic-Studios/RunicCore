@@ -242,20 +242,22 @@ public class CacheManager implements Listener {
      */
     public void tryCreateNewCharacter(Player player, ICharacter character) {
 
-        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        Document playerFile = mongoData.getDocument();
+        Bukkit.broadcastMessage("trying to make character section");
 
-        playerFile.append("character", String.valueOf(character.getSlot()))
-                .append("class",
-                        new Document("name", character.className()).append("level", 0).append("exp", 0))
-                .append("prof",
-                        new Document("name", "None").append("level", 0).append("exp", 0))
-                .append("currentHP", HealthUtils.getBaseHealth())
-                .append("maxMana", RunicCore.getManaManager().getBaseMana())
-                .append("outlaw",
-                        new Document("enabled", false).append("rating", RunicCore.getOutlawManager().getBaseRating()))
-                .append("location", DatabaseUtil.serializeLocation
-                        (new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5))); // tutorial
+        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
+        MongoDataSection mongoDataSection = mongoData.getSection("character." + character.getSlot());
+
+        mongoDataSection.set("class.name", character.className());
+        mongoDataSection.set("class.level", 0);
+        mongoDataSection.set("class.exp", 0);
+        mongoDataSection.set("prof.name", "None");
+        mongoDataSection.set("prof.level", 0);
+        mongoDataSection.set("prof.exp", 0);
+        mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
+        mongoDataSection.set("maxMana", RunicCore.getManaManager().getBaseMana());
+        mongoDataSection.set("outlaw.enabled", false);
+        mongoDataSection.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
+        mongoDataSection.set("location", DatabaseUtil.serializeLocation(new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5))); // tutorial
         mongoData.save();
     }
 }
