@@ -19,6 +19,10 @@ public class GuildMongoData implements MongoData {
         this.updates = new HashSet<>();
         this.document = RunicCore.getDatabaseManager().getGuildData().find(
                 (Filters.eq("prefix", prefix))).first();
+        if (this.document == null) {
+            this.document = new Document("prefix", this.prefix);
+            RunicCore.getDatabaseManager().getGuildData().insertOne(this.document);
+        }
     }
 
     @Override

@@ -17,8 +17,11 @@ public class PlayerMongoData implements MongoData {
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;
         this.updates = new HashSet<>();
-        this.document = RunicCore.getDatabaseManager().getPlayerData().find
-                (Filters.eq("player_uuid", this.uuid)).first();
+        this.document = RunicCore.getDatabaseManager().getPlayerData().find(Filters.eq("player_uuid", this.uuid)).first();
+        if (this.document == null) {
+            this.document = new Document("player_uuid", this.uuid);
+            RunicCore.getDatabaseManager().getPlayerData().insertOne(this.document);
+        }
     }
 
     @Override
