@@ -27,6 +27,9 @@ public class PlayerJoinListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         e.setJoinMessage("");
         Player pl = e.getPlayer();
+        // build database file async (if it doesn't exist)
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(),
+                () -> RunicCore.getCacheManager().tryCreateNewPlayer(pl), 1L);
         pl.getInventory().clear();
         pl.setInvulnerable(true);
         pl.setMaxHealth(20);
@@ -88,7 +91,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onFirstJoin(CharacterLoadEvent event) {
+    public void onFirstLoad(CharacterLoadEvent event) {
 
         Player pl = event.getPlayer();
 

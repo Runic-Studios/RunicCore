@@ -14,16 +14,6 @@ import java.io.IOException;
 
 public class DatabaseUtil {
 
-    //        // example player
-//        Document newDataFile = new Document("player_uuid", "2343243243243")
-//                .append("bank", new Document("inv", "some inv"))
-//                .append("guild", "Sister_Slayers")
-//                .append("trade_market", "some trade market")
-//                .append("character", new Document("1", new Document("quests", "quest_data"))
-//                        .append("2", "test 2"));
-//
-//        player_data.insertOne(newDataFile);
-
     /**
      * Loads inventory from JSON object into memory
      * @String encoded inventory data

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.cache;
 
+import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -8,8 +9,10 @@ import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
+import com.runicrealms.runiccharacters.character.classes.ICharacter;
 import com.runicrealms.runiccharacters.config.UserConfig;
 import com.runicrealms.runicrestart.api.RunicRestartApi;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -218,62 +221,41 @@ public class CacheManager implements Listener {
                 inventoryContents, location, mongoData);
     }
 
-    public void tryCreateNewPlayer(UserConfig userConfig) {
+    /**
+     * Call on-join
+     */
+    public void tryCreateNewPlayer(Player pl) {
+        UUID uuid = pl.getUniqueId();
+        /*
+        If the data file doesn't exist, we're gonna build it
+         */
+        if (RunicCore.getDatabaseManager().getPlayerData().find
+                (Filters.eq("player_uuid", uuid.toString())).first() == null) {
+            Document newDataFile = new Document("player_uuid", uuid.toString())
+                    .append("guild", "None");
+            RunicCore.getDatabaseManager().getPlayerData().insertOne(newDataFile);
+        }
+    }
 
-        int slot = userConfig.getCharacterSlot();
-        PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
-        MongoDataSection characterData = mongoData.getCharacter(slot);
+    /**
+     * Call from RunicCharacters
+     */
+    public void tryCreateNewCharacter(Player player, ICharacter character) {
 
-        // class
-        if (!characterData.has("class.level")) {
-            characterData.set("class.level", 0);
-        }
-        if (!characterData.has("class.exp")) {
-            characterData.set("class.exp", 0);
-        }
+        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
+        Document playerFile = mongoData.getDocument();
 
-        // guild
-        if (!characterData.has("guild")) {
-            characterData.set("guild", "None");
-        }
-
-        // profession
-        if (!characterData.has("prof.name")) {
-            characterData.set("prof.name", "None");
-        }
-        if (!characterData.has("prof.level")) {
-            characterData.set("prof.level", 0);
-        }
-        if (!characterData.has("prof.exp")) {
-            characterData.set("prof.exp", 0);
-        }
-
-        // stats
-        if (!characterData.has("currentHP")) {
-            characterData.set("currentHP", HealthUtils.getBaseHealth());
-        }
-        if (!characterData.has("maxMana")) {
-            characterData.set("maxMana", RunicCore.getManaManager().getBaseMana());
-        }
-
-        // outlaw
-        if (!characterData.has("outlaw.enabled")) {
-            characterData.set("outlaw.enabled", false);
-        }
-        if (!characterData.has("outlaw.rating")) {
-            characterData.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
-        }
-
-        // inventory, location
-//        if (!userConfig.getConfigurationSection(characterSlot + "." + UserConfig.getConfigHeader()).isSet("inventory")) {
-//            RunicCore.getCacheManager().saveInventory(userConfig);
-//        }
-
-        if (!characterData.has("location")) {
-            characterData.set("location", new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5)); // tutorial
-        }
-
-        // save file
+        playerFile.append("character", String.valueOf(character.getSlot()))
+                .append("class",
+                        new Document("name", character.className()).append("level", 0).append("exp", 0))
+                .append("prof",
+                        new Document("name", "None").append("level", 0).append("exp", 0))
+                .append("currentHP", HealthUtils.getBaseHealth())
+                .append("maxMana", RunicCore.getManaManager().getBaseMana())
+                .append("outlaw",
+                        new Document("enabled", false).append("rating", RunicCore.getOutlawManager().getBaseRating()))
+                .append("location", DatabaseUtil.serializeLocation
+                        (new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5))); // tutorial
         mongoData.save();
     }
 }
