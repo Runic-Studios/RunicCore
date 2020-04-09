@@ -61,4 +61,9 @@ public class GuildMongoDataSection implements MongoDataSection {
         return this.document.keySet();
     }
 
+    @Override
+    public MongoDataSection getSection(String root) {
+        return new GuildMongoDataSection(this.parent, this.root + "." + root);
+    }
+
 }

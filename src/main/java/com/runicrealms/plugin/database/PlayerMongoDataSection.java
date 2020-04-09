@@ -61,4 +61,9 @@ public class PlayerMongoDataSection implements MongoDataSection {
         return this.document.keySet();
     }
 
+    @Override
+    public MongoDataSection getSection(String root) {
+        return new PlayerMongoDataSection(this.parent, this.root + "." + root);
+    }
+
 }

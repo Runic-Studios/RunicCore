@@ -24,4 +24,6 @@ public interface MongoDataSection {
 
     public Set<String> getKeys();
 
+    public MongoDataSection getSection(String root);
+
 }
