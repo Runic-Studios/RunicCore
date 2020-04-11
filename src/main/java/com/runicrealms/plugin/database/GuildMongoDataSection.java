@@ -45,7 +45,7 @@ public class GuildMongoDataSection implements MongoDataSection {
 
     @Override
     public boolean has(String key) {
-        return this.document.containsKey(key);
+        return this.get(key) != null;
     }
 
     @Override

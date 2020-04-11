@@ -68,7 +68,7 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public boolean has(String key) {
-        return this.document.containsKey(key);
+        return this.get(key) != null;
     }
 
     @Override
