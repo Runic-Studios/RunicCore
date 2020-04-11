@@ -123,7 +123,7 @@ public class CacheManager implements Listener {
         character.set("class.level", playerCache.getClassLevel());
         character.set("class.exp", playerCache.getClassExp());
         // guild
-        character.set("guild", playerCache.getGuild());
+        mongoData.set("guild", playerCache.getGuild());
         // profession
         if (playerCache.getProfName() != null) {
             character.set("prof.name", playerCache.getProfName());
