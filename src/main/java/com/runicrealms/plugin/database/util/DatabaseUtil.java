@@ -19,8 +19,8 @@ public class DatabaseUtil {
      * @String encoded inventory data
      */
     public static ItemStack[] loadInventory(String encoded) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
         try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             ItemStack[] contents = new ItemStack[41];
             for (int i = 0; i < 41; i++) {
@@ -39,27 +39,27 @@ public class DatabaseUtil {
             dataInput.close();
             return contents;
         } catch (Exception exception) {
-            exception.printStackTrace();
+
         }
         return new ItemStack[41]; // That is bad!
     }
 
     public static Location loadLocation(String encoded) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
         try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             Location location = (Location) dataInput.readObject();
             dataInput.close();
             return location;
         } catch (Exception exception) {
-            exception.printStackTrace();
+
         }
         return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // That is bad!
     }
 
     public static String serializeInventory(Inventory inventory) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
             ItemStack[] contents = inventory.getContents();
             for (int i = 0; i < 41; i++) {
@@ -80,8 +80,8 @@ public class DatabaseUtil {
      * Converts a player's location to a format we can store in JSON objects
      */
     public static String serializeLocation(Location location) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
             dataOutput.writeObject(location);
             dataOutput.close();
