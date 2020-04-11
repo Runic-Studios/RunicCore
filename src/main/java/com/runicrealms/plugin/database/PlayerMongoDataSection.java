@@ -2,6 +2,7 @@ package com.runicrealms.plugin.database;
 
 import org.bson.Document;
 
+import java.util.Arrays;
 import java.util.Set;
 
 public class PlayerMongoDataSection implements MongoDataSection {
@@ -23,12 +24,18 @@ public class PlayerMongoDataSection implements MongoDataSection {
 
     @Override
     public Object get(String key) {
+        if (key.contains(".")) {
+            return this.document.getEmbedded(Arrays.asList(key.split("\\.")), Object.class);
+        }
         return this.document.get(key);
     }
 
     @Override
     public <T> T get(String key, Class<T> type) {
-        return (T) this.document.get(key);
+        if (key.contains(".")) {
+            return this.document.getEmbedded(Arrays.asList(key.split("\\.")), type);
+        }
+        return this.document.get(key, type);
     }
 
     @Override

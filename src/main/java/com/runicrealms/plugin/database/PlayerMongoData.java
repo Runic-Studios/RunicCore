@@ -5,6 +5,7 @@ import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,12 +32,18 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public Object get(String key) {
+        if (key.contains(".")) {
+            return this.document.getEmbedded(Arrays.asList(key.split("\\.")), Object.class);
+        }
         return this.document.get(key);
     }
 
     @Override
     public <T> T get(String key, Class<T> type) {
-        return (T) this.document.get(key);
+        if (key.contains(".")) {
+            return this.document.getEmbedded(Arrays.asList(key.split("\\.")), type);
+        }
+        return this.document.get(key, type);
     }
 
     @Override
