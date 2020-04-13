@@ -112,7 +112,7 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public String getIdentifier() {
-        return return this.prefix;
+        return this.prefix;
     }
 
 }
