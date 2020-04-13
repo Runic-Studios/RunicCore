@@ -19,7 +19,7 @@ public class PlayerMongoDataSection implements MongoDataSection {
 
     @Override
     public void set(String key, Object value) {
-        this.parent.getUpdates().add(new Document("$set", new Document(this.root + "." + key, value)));
+        this.parent.getSetUpdates().add(new MongoSetUpdate(this.root + "." + key, value));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PlayerMongoDataSection implements MongoDataSection {
 
     @Override
     public void remove(String key) {
-        this.parent.getUpdates().add(new Document("$unset", new Document(this.root + "." + key, "")));
+        this.parent.getUnsetUpdates().add(new MongoUnsetUpdate(this.root + "." + key));
     }
 
     @Override

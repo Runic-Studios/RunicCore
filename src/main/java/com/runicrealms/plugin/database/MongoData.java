@@ -25,7 +25,9 @@ public interface MongoData {
 
     public MongoDataSection getSection(String root);
 
-    public Set<Bson> getUpdates();
+    public Set<MongoSetUpdate> getSetUpdates();
+
+    public Set<MongoUnsetUpdate> getUnsetUpdates();
 
     public Set<String> getKeys();
 

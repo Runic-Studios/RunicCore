@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.database;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
@@ -13,11 +14,13 @@ public class GuildMongoData implements MongoData {
 
     private Document document;
     private String prefix;
-    private Set<Bson> updates;
+    private Set<MongoSetUpdate> setUpdates;
+    private Set<MongoUnsetUpdate> unsetUpdates;
 
     public GuildMongoData(String prefix) {
         this.prefix = prefix;
-        this.updates = new HashSet<>();
+        this.setUpdates = new HashSet<MongoSetUpdate>();
+        this.unsetUpdates = new HashSet<MongoUnsetUpdate>();
         this.document = RunicCore.getDatabaseManager().getGuildData().find(
                 (Filters.eq("prefix", prefix))).first();
         if (this.document == null) {
@@ -28,7 +31,7 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public void set(String key, Object value) {
-        this.updates.add(new Document("$set", new Document(key, value)));
+        this.setUpdates.add(new MongoSetUpdate(key, value));
     }
 
     @Override
@@ -55,10 +58,22 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public void save() {
-        for (Bson bson : this.updates) {
-            RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("prefix", this.prefix), bson);
+        if (this.setUpdates.size() > 0) {
+            BasicDBObject updates = new BasicDBObject();
+            for (MongoSetUpdate update : this.setUpdates) {
+                updates.append(update.getKey(), update.getValue());
+            }
+            RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$set", updates));
+            this.setUpdates.clear();
         }
-        this.updates.clear();
+        if (this.unsetUpdates.size() > 0) {
+            BasicDBObject updates = new BasicDBObject();
+            for (MongoUnsetUpdate update : this.unsetUpdates) {
+                updates.append(update.getKey(), "");
+            }
+            RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$unset", updates));
+            this.unsetUpdates.clear();
+        }
     }
 
     @Override
@@ -73,7 +88,7 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public void remove(String key) {
-        this.updates.add(new Document("$unset", new Document(key, "")));
+        this.unsetUpdates.add(new MongoUnsetUpdate(key));
     }
 
     @Override
@@ -82,8 +97,13 @@ public class GuildMongoData implements MongoData {
     }
 
     @Override
-    public Set<Bson> getUpdates() {
-        return this.updates;
+    public Set<MongoSetUpdate> getSetUpdates() {
+        return null;
+    }
+
+    @Override
+    public Set<MongoUnsetUpdate> getUnsetUpdates() {
+        return null;
     }
 
     @Override
