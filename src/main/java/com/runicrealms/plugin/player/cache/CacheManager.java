@@ -138,21 +138,11 @@ public class CacheManager implements Listener {
         character.set("outlaw.enabled", playerCache.getIsOutlaw());
         character.set("outlaw.rating", playerCache.getRating());
         // inventory
-        saveInventory(playerCache, userConfig);
+        character.set("inventory", DatabaseUtil.serializeInventory(userConfig.getPlayer().getInventory()));
         // location
         character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
         // save data (includes nested fields)
         mongoData.save();
-    }
-
-    /**
-     * Stores player inventory between alts, ignoring null items. (saves a lot of space)
-     * @param userConfig from RunicCharacters
-     */
-    public void saveInventory(PlayerCache playerCache, UserConfig userConfig) {
-        Player pl = userConfig.getPlayer();
-        int characterSlot = userConfig.getCharacterSlot();
-        playerCache.getMongoData().set("character." + characterSlot + ".inventory", DatabaseUtil.serializeInventory(pl.getInventory()));
     }
 
     public HashSet<Player> getLoadedPlayers() {

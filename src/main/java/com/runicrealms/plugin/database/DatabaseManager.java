@@ -18,7 +18,7 @@ public class DatabaseManager {
 
         // Connect to MongoDB database (Atlas)
         ConnectionString connString = new ConnectionString(
-                "mongodb+srv://bob123:password!23@cluster0-mf2re.mongodb.net/test?retryWrites=true&w=majority"
+                "mongodb+srv://RunicCore:vggRBvA1MjNEw4pE@cluster0-mf2re.mongodb.net/test?retryWrites=true&w=majority"
         );
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connString)
