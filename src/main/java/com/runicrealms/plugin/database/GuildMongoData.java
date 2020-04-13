@@ -4,7 +4,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -109,6 +108,11 @@ public class GuildMongoData implements MongoData {
     @Override
     public Set<String> getKeys() {
         return this.document.keySet();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return return this.prefix;
     }
 
 }

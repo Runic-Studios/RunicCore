@@ -109,6 +109,11 @@ public class PlayerMongoData implements MongoData {
         return this.document.keySet();
     }
 
+    @Override
+    public String getIdentifier() {
+        return this.uuid;
+    }
+
     public PlayerMongoDataSection getCharacter(int slot) {
         return new PlayerMongoDataSection(this, "character." + slot);
     }

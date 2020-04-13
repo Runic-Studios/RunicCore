@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.database;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.util.Set;
 
@@ -30,5 +29,7 @@ public interface MongoData {
     public Set<MongoUnsetUpdate> getUnsetUpdates();
 
     public Set<String> getKeys();
+
+    public String getIdentifier();
 
 }
