@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.database;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,11 +13,13 @@ public class PlayerMongoData implements MongoData {
 
     private Document document;
     private String uuid;
-    private Set<Bson> updates;
+    private Set<MongoSetUpdate> setUpdates;
+    private Set<MongoUnsetUpdate> unsetUpdates;
 
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;
-        this.updates = new HashSet<>();
+        this.setUpdates = new HashSet<MongoSetUpdate>();
+        this.unsetUpdates = new HashSet<MongoUnsetUpdate>();
         this.document = RunicCore.getDatabaseManager().getPlayerData().find(Filters.eq("player_uuid", this.uuid)).first();
         if (this.document == null) {
             this.document = new Document("player_uuid", this.uuid);
@@ -27,7 +29,7 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public void set(String key, Object value) {
-        this.updates.add(new Document("$set", new Document(key, value)));
+        this.setUpdates.add(new MongoSetUpdate(key, value));
     }
 
     @Override
@@ -54,10 +56,22 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public void save() {
-        for (Bson bson : this.updates) {
-            RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("player_uuid", this.uuid), bson);
+        if (this.setUpdates.size() > 0) {
+            BasicDBObject updates = new BasicDBObject();
+            for (MongoSetUpdate update : this.setUpdates) {
+                updates.append(update.getKey(), update.getValue());
+            }
+            RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("player_uuid", this.uuid), new Document("$set", updates));
+            this.setUpdates.clear();
         }
-        this.updates.clear();
+        if (this.unsetUpdates.size() > 0) {
+            BasicDBObject updates = new BasicDBObject();
+            for (MongoUnsetUpdate update : this.unsetUpdates) {
+                updates.append(update.getKey(), "");
+            }
+            RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("player_uuid", this.uuid), new Document("$unset", updates));
+            this.unsetUpdates.clear();
+        }
     }
 
     @Override
@@ -72,7 +86,7 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public void remove(String key) {
-        this.updates.add(new Document("$unset", new Document(key, "")));
+        this.unsetUpdates.add(new MongoUnsetUpdate(key));
     }
 
     @Override
@@ -81,13 +95,23 @@ public class PlayerMongoData implements MongoData {
     }
 
     @Override
-    public Set<Bson> getUpdates() {
-        return this.updates;
+    public Set<MongoSetUpdate> getSetUpdates() {
+        return null;
+    }
+
+    @Override
+    public Set<MongoUnsetUpdate> getUnsetUpdates() {
+        return null;
     }
 
     @Override
     public Set<String> getKeys() {
         return this.document.keySet();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.uuid;
     }
 
     public PlayerMongoDataSection getCharacter(int slot) {
