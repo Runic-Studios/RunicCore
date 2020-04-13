@@ -7,7 +7,7 @@ import com.keenant.tabbed.util.Skins;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.runicguilds.api.RunicGuildsAPI;
-import com.runicrealms.runicguilds.config.GuildUtil;
+import com.runicrealms.runicguilds.data.GuildUtil;
 import com.runicrealms.runicguilds.guilds.Guild;
 import com.runicrealms.runicguilds.guilds.GuildMember;
 import org.bukkit.Bukkit;

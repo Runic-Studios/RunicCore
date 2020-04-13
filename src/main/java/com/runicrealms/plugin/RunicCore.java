@@ -59,15 +59,18 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.runicrestart.api.RunicRestartApi;
+import com.runicrealms.runicrestart.api.ServerShutdownEvent;
 import net.minecraft.server.v1_15_R1.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Arrays;
 
-public class RunicCore extends JavaPlugin {
+public class RunicCore extends JavaPlugin implements Listener {
 
     // handlers
     private static RunicCore instance;
@@ -157,14 +160,9 @@ public class RunicCore extends JavaPlugin {
                 ("&d&l                RUNIC REALMS\n" +
                         "&f&l           A New Adventure Begins");
         MinecraftServer.getServer().setMotd(motd);
-
-        RunicRestartApi.markPluginLoaded("core");
     }
-    
+
     public void onDisable() {
-        getLogger().info(" §cRunicCore has been disabled.");
-        getCacheManager().saveCaches(); // save player data
-        getCacheManager().saveQueuedFiles(false);
         /*
         let's prevent memory leaks, shall we?
          */
@@ -183,7 +181,19 @@ public class RunicCore extends JavaPlugin {
         cacheManager = null;
         outlawManager = null;
         databaseManager = null;
+    }
 
+    @EventHandler
+    public void onRunicShutdown(ServerShutdownEvent e) {
+        /*
+        Save current state of player data
+         */
+        getLogger().info(" §cRunicCore has been disabled.");
+        getCacheManager().saveCaches(); // save player data
+        getCacheManager().saveQueuedFiles(false);
+        /*
+        Notify RunicRestart
+         */
         RunicRestartApi.markPluginSaved("core");
     }
 

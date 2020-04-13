@@ -115,19 +115,18 @@ public class CacheManager implements Listener {
     public void setFieldsSaveFile(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
 
         PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
-        MongoDataSection character = mongoData.getCharacter(characterSlot);
+        PlayerMongoDataSection character = mongoData.getCharacter(characterSlot);
 
-        if (playerCache.getClassName() != null) {
+        if (playerCache.getClassName() != null)
             character.set("class.name", playerCache.getClassName());
-        }
         character.set("class.level", playerCache.getClassLevel());
         character.set("class.exp", playerCache.getClassExp());
         // guild
-        mongoData.set("guild", playerCache.getGuild());
+        if (playerCache.getGuild() != null)
+            mongoData.set("guild", playerCache.getGuild());
         // profession
-        if (playerCache.getProfName() != null) {
+        if (playerCache.getProfName() != null)
             character.set("prof.name", playerCache.getProfName());
-        }
         character.set("prof.level", playerCache.getProfLevel());
         character.set("prof.exp", playerCache.getProfExp());
         // stats
