@@ -12,7 +12,6 @@ import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
 import com.runicrealms.runiccharacters.character.classes.ICharacter;
 import com.runicrealms.runiccharacters.config.UserConfig;
-import com.runicrealms.runicrestart.api.RunicRestartApi;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -97,25 +96,23 @@ public class CacheManager implements Listener {
             limit = (int) Math.ceil(queuedCaches.size() / 4);
         } else {
             limit = queuedCaches.size();
-            RunicRestartApi.markPluginSaved("core");
         }
         UserConfig userConfig;
-        int characterSlot;
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;
             if (!queuedCaches.iterator().hasNext()) continue;
             PlayerCache queued = queuedCaches.iterator().next();
             userConfig = RunicCharactersApi.getUserConfig(queued.getPlayerID());
-            characterSlot = queued.getCharacterSlot();
-            setFieldsSaveFile(queued, userConfig, characterSlot);
+            setFieldsSaveFile(queued, userConfig);
             queuedCaches.remove(queued);
         }
     }
 
-    public void setFieldsSaveFile(PlayerCache playerCache, UserConfig userConfig, int characterSlot) {
+    public void setFieldsSaveFile(PlayerCache playerCache, UserConfig userConfig) {
 
+        int slot = userConfig.getCharacterSlot();
         PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
-        PlayerMongoDataSection character = mongoData.getCharacter(characterSlot);
+        PlayerMongoDataSection character = mongoData.getCharacter(slot);
 
         if (playerCache.getClassName() != null)
             character.set("class.name", playerCache.getClassName());

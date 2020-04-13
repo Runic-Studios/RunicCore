@@ -18,8 +18,8 @@ public class PlayerMongoData implements MongoData {
 
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;
-        this.setUpdates = new HashSet<MongoSetUpdate>();
-        this.unsetUpdates = new HashSet<MongoUnsetUpdate>();
+        this.setUpdates = new HashSet<>();
+        this.unsetUpdates = new HashSet<>();
         this.document = RunicCore.getDatabaseManager().getPlayerData().find(Filters.eq("player_uuid", this.uuid)).first();
         if (this.document == null) {
             this.document = new Document("player_uuid", this.uuid);
@@ -96,12 +96,12 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public Set<MongoSetUpdate> getSetUpdates() {
-        return null;
+        return this.setUpdates;
     }
 
     @Override
     public Set<MongoUnsetUpdate> getUnsetUpdates() {
-        return null;
+        return this.unsetUpdates;
     }
 
     @Override

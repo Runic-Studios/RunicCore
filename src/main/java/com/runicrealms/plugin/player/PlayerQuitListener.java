@@ -26,7 +26,7 @@ public class PlayerQuitListener implements Listener {
 
             // update cache, save it
             RunicCore.getCacheManager().savePlayerCache(playerCache, false);
-            RunicCore.getCacheManager().setFieldsSaveFile(playerCache, RunicCharactersApi.getUserConfig(pl.getUniqueId()), playerCache.getCharacterSlot());
+            RunicCore.getCacheManager().setFieldsSaveFile(playerCache, RunicCharactersApi.getUserConfig(pl.getUniqueId()));
 
             // remove them from cached queue
             RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);

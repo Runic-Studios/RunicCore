@@ -18,8 +18,8 @@ public class GuildMongoData implements MongoData {
 
     public GuildMongoData(String prefix) {
         this.prefix = prefix;
-        this.setUpdates = new HashSet<MongoSetUpdate>();
-        this.unsetUpdates = new HashSet<MongoUnsetUpdate>();
+        this.setUpdates = new HashSet<>();
+        this.unsetUpdates = new HashSet<>();
         this.document = RunicCore.getDatabaseManager().getGuildData().find(
                 (Filters.eq("prefix", prefix))).first();
         if (this.document == null) {
@@ -97,12 +97,12 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public Set<MongoSetUpdate> getSetUpdates() {
-        return null;
+        return this.setUpdates;
     }
 
     @Override
     public Set<MongoUnsetUpdate> getUnsetUpdates() {
-        return null;
+        return this.unsetUpdates;
     }
 
     @Override
