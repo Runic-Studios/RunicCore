@@ -58,6 +58,7 @@ import com.runicrealms.plugin.tutorial.TutorialCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
+import com.runicrealms.runicrestart.api.RunicRestartApi;
 import net.minecraft.server.v1_15_R1.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -156,6 +157,8 @@ public class RunicCore extends JavaPlugin {
                 ("&d&l                RUNIC REALMS\n" +
                         "&f&l           A New Adventure Begins");
         MinecraftServer.getServer().setMotd(motd);
+
+        RunicRestartApi.markPluginLoaded("core");
     }
     
     public void onDisable() {
@@ -180,6 +183,8 @@ public class RunicCore extends JavaPlugin {
         cacheManager = null;
         outlawManager = null;
         databaseManager = null;
+
+        RunicRestartApi.markPluginSaved("core");
     }
 
     private void loadConfig() {
