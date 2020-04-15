@@ -127,6 +127,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
 
+        Bukkit.getPluginManager().registerEvents(this, this);
+
         // enable message
         getLogger().info(" §aRunicCore has been enabled.");
 
