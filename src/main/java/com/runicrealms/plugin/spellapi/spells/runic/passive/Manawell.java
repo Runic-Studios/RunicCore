@@ -17,6 +17,7 @@ import java.util.Random;
 public class Manawell extends Spell {
 
     private static final double PERCENT = 7;
+    private static final double RADIUS = 5;
 
     public Manawell() {
         super ("Manawell",
@@ -41,6 +42,8 @@ public class Manawell extends Spell {
 
         for (Player ally : allies) {
             if (verifyAlly(e.getCaster(), ally)) {
+                if (!e.getCaster().getWorld().equals(ally.getWorld())) continue;
+                if (e.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS*RADIUS) continue;
                 e.getCaster().getWorld().playSound(e.getCaster().getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
                 e.getCaster().playSound(e.getCaster().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
                 ally.getWorld().playSound(ally.getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);

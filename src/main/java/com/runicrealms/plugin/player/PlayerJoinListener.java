@@ -81,7 +81,6 @@ public class PlayerJoinListener implements Listener {
 
                 // set their hp to stored value from last logout
                 int storedHealth = e.getPlayerCache().getCurrentHealth();
-                Bukkit.broadcastMessage(storedHealth + "");
 
                 // update their health
                 // new players or corrupted data
