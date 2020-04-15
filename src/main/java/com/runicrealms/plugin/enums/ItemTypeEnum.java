@@ -64,6 +64,10 @@ public enum ItemTypeEnum {
                 case FIRE_CHARGE:
                 case RABBIT_FOOT:
                 case SHIELD:
+                case STONE_SHOVEL:
+                case STONE_HOE:
+                case STONE_SWORD:
+                case STONE_AXE:
                     return OFFHAND;
                 case FLINT:
                 case PURPLE_DYE:
