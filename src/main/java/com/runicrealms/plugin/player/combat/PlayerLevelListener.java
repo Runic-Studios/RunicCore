@@ -37,7 +37,6 @@ public class PlayerLevelListener implements Listener {
         HealthUtils.setHeartDisplay(pl);
         int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         pl.setHealth(playerHealth);
-        playerCache.setCurrentHealth((int) pl.getHealth());
         pl.setFoodLevel(20);
 
         if (pl.getLevel() == 0) return;
@@ -55,7 +54,6 @@ public class PlayerLevelListener implements Listener {
                     ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         }
     }
-
 
     /**
      * This method is used to calculate how much HP the wearer has from items. So it subtracts the base hp of their

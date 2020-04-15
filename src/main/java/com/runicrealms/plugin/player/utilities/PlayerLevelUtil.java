@@ -86,21 +86,16 @@ public class PlayerLevelUtil {
         pl.setExp((float) proportion);
     }
 
-    // todo: add new level info
     private static boolean applyMileStone(Player pl, int oldLevel, String className, int classLevel) {
         if (classLevel >= MAX_LEVEL) {
             Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
                     + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + classLevel + " " + className + "!");
             pl.sendMessage("\n");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
-            pl.sendMessage("\n");
-            ClassUtil.launchFirework(pl, className);
-        } else if (classLevel == 50) {
-            pl.sendMessage("\n");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
             ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Frozen Fortress!");
             pl.sendMessage("\n");
-            return true;
+            ClassUtil.launchFirework(pl, className);
         } else if (classLevel >= 10  && oldLevel < 10) {
             sendUnlockMessage(pl, 10, className, classLevel);
             return true;
@@ -157,9 +152,6 @@ public class PlayerLevelUtil {
                 ChatColor.GREEN + "Level Up!",
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         pl.sendMessage("\n");
-//        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "" + ChatColor.BOLD + "+1 Spell Point");
-//        ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "        You've unlocked a new artifact skin!");
-//        ChatUtils.sendCenteredMessage(pl, ChatColor.WHITE + "      Click " + ChatColor.GREEN + "your Artifact or Rune to add a spell!");
         pl.sendMessage("\n");
     }
 

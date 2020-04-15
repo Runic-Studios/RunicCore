@@ -55,23 +55,10 @@ public class PlayerJoinListener implements Listener {
                 pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
                 pl.updateInventory();
 
-                // set their hp to stored value from last logout
-                int storedHealth = e.getPlayerCache().getCurrentHealth();
-
-                // new players or corrupted data
-                if (storedHealth == 0) {
-                    storedHealth = HealthUtils.getBaseHealth();
-                }
-
                 HealthUtils.setPlayerMaxHealth(pl);
                 HealthUtils.setHeartDisplay(pl);
-                if (storedHealth <= pl.getMaxHealth()) {
-                    pl.setHealth(storedHealth);
-                } else {
-                    pl.setHealth(pl.getMaxHealth());
-                }
 
-                // update player's level
+                // update player's level (this will change storedHealth, but we alrdy got variable hehe)
                 pl.setLevel(e.getPlayerCache().getClassLevel());
                 int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(e.getPlayerCache().getClassLevel());
                 int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(e.getPlayerCache().getClassLevel()+1);
@@ -84,10 +71,30 @@ public class PlayerJoinListener implements Listener {
                 pl.teleport(e.getPlayerCache().getLocation());
 
                 // prompt resource pack
-                pl.setResourcePack("https://www.dropbox.com/s/vukg132jwgcv1mh/RR%20Official%20Pack.zip?dl=1");
-
+                pl.setResourcePack("https://www.dropbox.com/s/2sk1stelt2bo7s5/RR%20Official%20Pack.zip?dl=1");
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                // set their hp to stored value from last logout
+                int storedHealth = e.getPlayerCache().getCurrentHealth();
+                Bukkit.broadcastMessage(storedHealth + "");
+
+                // update their health
+                // new players or corrupted data
+                if (storedHealth == 0) {
+                    storedHealth = HealthUtils.getBaseHealth();
+                }
+                if (storedHealth <= pl.getMaxHealth()) {
+                    pl.setHealth(storedHealth);
+                } else {
+                    pl.setHealth(pl.getMaxHealth());
+                }
+            }
+        }.runTaskLater(RunicCore.getInstance(), 2L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
