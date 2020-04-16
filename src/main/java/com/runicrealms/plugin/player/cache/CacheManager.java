@@ -97,6 +97,7 @@ public class CacheManager implements Listener {
         } else {
             limit = queuedCaches.size();
         }
+        if (limit < 1) return;
         UserConfig userConfig;
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;

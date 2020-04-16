@@ -44,6 +44,32 @@ public class DatabaseUtil {
         return new ItemStack[41]; // That is bad!
     }
 
+    public static ItemStack[] loadInventory(String encoded, int invSize) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            ItemStack[] contents = new ItemStack[invSize];
+            for (int i = 0; i < invSize; i++) {
+                try {
+                    int next = dataInput.readInt();
+                    if (next != -1) {
+                        contents[next] = (ItemStack) dataInput.readObject();
+                    } else {
+                        break;
+                    }
+                } catch (IOException exception) {
+                    break;
+                }// This shouldn't happen!
+
+            }
+            dataInput.close();
+            return contents;
+        } catch (Exception exception) {
+
+        }
+        return new ItemStack[invSize]; // That is bad!
+    }
+
     public static Location loadLocation(String encoded) {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
@@ -63,6 +89,24 @@ public class DatabaseUtil {
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
             ItemStack[] contents = inventory.getContents();
             for (int i = 0; i < 41; i++) {
+                if (contents[i] != null) {
+                    dataOutput.writeInt(i);
+                    dataOutput.writeObject(contents[i]);
+                }
+            }
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String serializeInventory(ItemStack[] contents) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+            for (int i = 0; i < contents.length; i++) {
                 if (contents[i] != null) {
                     dataOutput.writeInt(i);
                     dataOutput.writeObject(contents[i]);
