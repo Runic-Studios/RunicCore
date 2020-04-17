@@ -5,8 +5,6 @@ import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,7 +16,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class ScoreboardHandler implements Listener {
 
@@ -29,30 +29,9 @@ public class ScoreboardHandler implements Listener {
             public void run() {
                 for (Player pl : RunicCore.getCacheManager().getLoadedPlayers()) {
                     updateSideInfo(pl);
-                    updateHealthbar(pl);
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, 5L);
-    }
-
-    private void removeNPCNameplates() {
-        for (int i = 0; i < Bukkit.getWorlds().size(); i++) {
-            String world = Bukkit.getWorlds().get(i).getName();
-            for (Entity en : Objects.requireNonNull(Bukkit.getWorld(world)).getEntities()) {
-                if (en instanceof HumanEntity && en.hasMetadata("NPC")) {
-                    Player npc = (Player) en;
-                    for (Player on : Bukkit.getOnlinePlayers()) {
-                        try {
-                            createScoreboard(npc);
-                            ScoreboardHandler.updateNamesFor(on, npc.getScoreboard().getTeam("npc"),
-                                    Collections.singletonList(npc.getName()));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -60,19 +39,17 @@ public class ScoreboardHandler implements Listener {
 
         Player pl = e.getPlayer();
         createScoreboard(pl);
-        removeNPCNameplates();
 
         // sets players username red if they are outlaw.
         new BukkitRunnable() {
             @Override
             public void run() {
                 updateSideInfo(pl);
-                updateHealthbar(pl);
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L);
     }
 
-    public void createScoreboard(Player pl){
+    private void createScoreboard(Player pl){
 
         // create our scoreboard
         ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -90,11 +67,6 @@ public class ScoreboardHandler implements Listener {
         npc.setColor(ChatColor.WHITE);
         npc.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
 
-        // setup below health scoreboard
-        Objective showHealth = board.registerNewObjective("showhealth", "health");
-        showHealth.setDisplayName(ChatColor.RED + "❤");
-        showHealth.setDisplaySlot(DisplaySlot.BELOW_NAME);
-
         // setup side scoreboard
         Objective sidebar = board.registerNewObjective("sidebar", "dummy");
         sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lRunic Realms     ");
@@ -107,16 +79,14 @@ public class ScoreboardHandler implements Listener {
     private static Class<?> getNMSClass(String nmsClassString) throws ClassNotFoundException {
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
         String name = "net.minecraft.server." + version + nmsClassString;
-        Class<?> nmsClass = Class.forName(name);
-        return nmsClass;
+        return Class.forName(name);
     }
 
     private static Object getConnection(Player player) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Method getHandle = player.getClass().getMethod("getHandle");
         Object nmsPlayer = getHandle.invoke(player);
         Field conField = nmsPlayer.getClass().getField("playerConnection");
-        Object con = conField.get(nmsPlayer);
-        return con;
+        return conField.get(nmsPlayer);
     }
 
     /**
@@ -173,25 +143,6 @@ public class ScoreboardHandler implements Listener {
         health.setScore(2);
         Score mana = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(manaAsString(pl));
         mana.setScore(1);
-    }
-
-    /**
-     * Update the below-health display of a player for everyone ELSE
-     */
-    private void updateHealthbar(Player pl) {
-
-        Objective healthbar = pl.getScoreboard().getObjective("showhealth");
-        if (healthbar == null) return;
-
-        // updates the health below the nameplate (of parameter player) for all OTHER players
-        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            Score score = healthbar.getScore(online.getName());
-            score.setScore((int) online.getHealth());
-        }
-
-        // updates the display of all other players for parameter player
-        Score test = healthbar.getScore(pl.getName());
-        test.setScore((int) pl.getHealth());
     }
 
     private void updatePlayerInfo(Player pl) {
