@@ -71,7 +71,7 @@ public class PlayerJoinListener implements Listener {
                 pl.teleport(e.getPlayerCache().getLocation());
 
                 // prompt resource pack
-                pl.setResourcePack("https://www.dropbox.com/s/2sk1stelt2bo7s5/RR%20Official%20Pack.zip?dl=1");
+                pl.setResourcePack("https://www.dropbox.com/s/9ymuk315d59gif1/RR%20Official%20Pack.zip?dl=1");
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
 

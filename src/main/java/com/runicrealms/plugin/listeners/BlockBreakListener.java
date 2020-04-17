@@ -28,7 +28,8 @@ public class BlockBreakListener implements Listener {
         if (event.getClickedBlock() != null) {
             if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (event.getClickedBlock().getType() == Material.FLOWER_POT || event.getClickedBlock().getType().toString().startsWith("POTTED_")) {
+                    if (event.getClickedBlock().getType() == Material.FLOWER_POT
+                            || event.getClickedBlock().getType().toString().startsWith("POTTED_")) {
                         event.setCancelled(true);
                     }
                 }
@@ -39,8 +40,10 @@ public class BlockBreakListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
 
+        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         Material type = e.getBlock().getType();
         if (e.getBlock().getType() == Material.AIR) return;
+
         switch (type) {
 
             // farming materials
@@ -127,6 +130,7 @@ public class BlockBreakListener implements Listener {
     public void onFireBreak(PlayerInteractEvent e) {
 
         if (e.getClickedBlock() == null) return;
+        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         Block target = e.getClickedBlock();
         if (e.getPlayer().isOp()) return;
 
