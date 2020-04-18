@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
 
 public class DatabaseManager {
@@ -27,7 +28,7 @@ public class DatabaseManager {
 
         // create a client
         MongoClient mongoClient = MongoClients.create(settings);
-        playersDB = mongoClient.getDatabase("players");
+        playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
         player_data = playersDB.getCollection("player_data");
         guild_data = playersDB.getCollection("guild_data");
     }
