@@ -73,6 +73,7 @@ public class GuildMongoData implements MongoData {
             RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$unset", updates));
             this.unsetUpdates.clear();
         }
+        this.refresh();
     }
 
     @Override

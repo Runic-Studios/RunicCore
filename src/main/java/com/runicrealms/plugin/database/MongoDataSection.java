@@ -26,4 +26,6 @@ public interface MongoDataSection {
 
     public MongoDataSection getSection(String root);
 
+    public void refresh();
+
 }
