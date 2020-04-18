@@ -63,8 +63,12 @@ public class PlayerLevelListener implements Listener {
     public static int getHpAtLevel(Player pl) {
 
         // grab the player's new info
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
-        if (className == null) return HealthUtils.getBaseHealth();
+        String className;
+        try {
+            className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        } catch (Exception e) {
+            return HealthUtils.getBaseHealth();
+        }
 
         switch (className.toLowerCase()) {
             case "archer":
