@@ -27,10 +27,14 @@ public class DatabaseManager {
                 .build();
 
         // create a client
-        MongoClient mongoClient = MongoClients.create(settings);
-        playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
-        player_data = playersDB.getCollection("player_data");
-        guild_data = playersDB.getCollection("guild_data");
+        try {
+            MongoClient mongoClient = MongoClients.create(settings);
+            playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
+            player_data = playersDB.getCollection("player_data");
+            guild_data = playersDB.getCollection("guild_data");
+        } catch (Exception e) {
+            RunicCore.getInstance().getLogger().info("[ERROR]: Database connection failed!");
+        }
     }
 
     public MongoDatabase getPlayersDB() {
