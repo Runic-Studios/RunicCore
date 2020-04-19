@@ -108,6 +108,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
 
     public void onEnable() {
+        // Load config defaults
+        this.loadConfig();
 
         // instantiate everything we need
         instance = this;
@@ -140,7 +142,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // register our events, config, commands
         this.registerEvents();
-        this.loadConfig();
 
         // register custom yml files
         this.saveResource("item_prefixes.yml", true);

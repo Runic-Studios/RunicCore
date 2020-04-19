@@ -72,6 +72,7 @@ public class PlayerMongoData implements MongoData {
             RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("player_uuid", this.uuid), new Document("$unset", updates));
             this.unsetUpdates.clear();
         }
+        this.refresh();
     }
 
     @Override

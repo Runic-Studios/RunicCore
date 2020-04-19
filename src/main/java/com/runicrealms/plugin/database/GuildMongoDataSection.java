@@ -61,6 +61,7 @@ public class GuildMongoDataSection implements MongoDataSection {
     @Override
     public void saveParent() {
         this.parent.save();
+        this.refresh();
     }
 
     @Override
@@ -71,6 +72,11 @@ public class GuildMongoDataSection implements MongoDataSection {
     @Override
     public MongoDataSection getSection(String root) {
         return new GuildMongoDataSection(this.parent, this.root + "." + root);
+    }
+
+    @Override
+    public void refresh() {
+        this.document = (Document) this.parent.get(this.root);
     }
 
 }
