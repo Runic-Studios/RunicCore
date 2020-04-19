@@ -102,9 +102,7 @@ public class HolyWater extends Spell {
         if (!affectedPlayers.containsKey(caster.getUniqueId())) return;
         if (!affectedPlayers.get(caster.getUniqueId()).contains(e.getEntity().getUniqueId())) return;
         double percent = PERCENT / 100;
-        //Bukkit.broadcastMessage(percent + "%");
         int extraAmt = (int) (e.getAmount() * percent);
-        //Bukkit.broadcastMessage(extraAmt + "");
         if (extraAmt < 1) {
             extraAmt = 1;
         }

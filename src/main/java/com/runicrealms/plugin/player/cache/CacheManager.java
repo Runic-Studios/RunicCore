@@ -83,8 +83,10 @@ public class CacheManager implements Listener {
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
         playerCache.setLocation(pl.getLocation()); // update location
-        if (willQueue)
+        if (willQueue) {
+            queuedCaches.removeIf(n -> (n.getPlayerID() == playerCache.getPlayerID())); // prevent duplicates
             queuedCaches.add(playerCache); // queue the file for saving
+        }
     }
 
     /**
@@ -93,15 +95,15 @@ public class CacheManager implements Listener {
     public void saveQueuedFiles(boolean limitSize) {
         int limit;
         if (limitSize) {
-            limit = (int) Math.ceil(queuedCaches.size() / 4);
+            limit = (int) Math.ceil(queuedCaches.size() / 4.0);
         } else {
             limit = queuedCaches.size();
         }
-        if (limit < 1) return;
+        if (limit < 1)
+            return;
         CharacterWrapper characterWrapper;
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;
-            if (!queuedCaches.iterator().hasNext()) continue;
             PlayerCache queued = queuedCaches.iterator().next();
             characterWrapper = RunicCharactersApi.getUserConfig(queued.getPlayerID());
             setFieldsSaveFile(queued, characterWrapper);

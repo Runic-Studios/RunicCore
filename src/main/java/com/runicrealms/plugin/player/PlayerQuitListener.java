@@ -10,6 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.UUID;
+
 /**
  * Saves player data async
  */
@@ -26,9 +28,10 @@ public class PlayerQuitListener implements Listener {
         if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()) != null) {
 
             PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
+            UUID cacheID = playerCache.getPlayerID();
 
             // remove player data from data queue!
-            RunicCore.getCacheManager().getQueuedCaches().remove(playerCache);
+            RunicCore.getCacheManager().getQueuedCaches().removeIf(n -> (n.getPlayerID() == cacheID));
 
             // update cache, save it
             RunicCore.getCacheManager().savePlayerCache(playerCache, false);
