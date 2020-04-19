@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * Big boi class. Caches and stores all info about a player which must be written to config.
  */
-// todo: add hunter info
+// todo: add hunter info?
 public class PlayerCache {
 
     private int characterSlot;

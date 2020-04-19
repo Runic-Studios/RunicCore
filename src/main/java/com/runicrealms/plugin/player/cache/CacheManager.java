@@ -110,36 +110,38 @@ public class CacheManager implements Listener {
     }
 
     public void setFieldsSaveFile(PlayerCache playerCache, CharacterWrapper characterWrapper) {
-
-        int slot = playerCache.getCharacterSlot();
-        PlayerMongoData mongoData = new PlayerMongoData(characterWrapper.getPlayer().getUniqueId().toString());
-        PlayerMongoDataSection character = mongoData.getCharacter(slot);
-
-        if (playerCache.getClassName() != null)
-            character.set("class.name", playerCache.getClassName());
-        character.set("class.level", playerCache.getClassLevel());
-        character.set("class.exp", playerCache.getClassExp());
-        // guild
-        if (playerCache.getGuild() != null)
-            mongoData.set("guild", playerCache.getGuild());
-        // profession
-        if (playerCache.getProfName() != null)
-            character.set("prof.name", playerCache.getProfName());
-        character.set("prof.level", playerCache.getProfLevel());
-        character.set("prof.exp", playerCache.getProfExp());
-        // stats
-        playerCache.setCurrentHealth((int) Bukkit.getPlayer(playerCache.getPlayerID()).getHealth());
-        character.set("currentHP", playerCache.getCurrentHealth());
-        character.set("maxMana", playerCache.getMaxMana());
-        // outlaw
-        character.set("outlaw.enabled", playerCache.getIsOutlaw());
-        character.set("outlaw.rating", playerCache.getRating());
-        // inventory
-        character.set("inventory", DatabaseUtil.serializeInventory(characterWrapper.getPlayer().getInventory()));
-        // location
-        character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
-        // save data (includes nested fields)
-        mongoData.save();
+        try {
+            int slot = playerCache.getCharacterSlot();
+            PlayerMongoData mongoData = new PlayerMongoData(characterWrapper.getPlayer().getUniqueId().toString());
+            PlayerMongoDataSection character = mongoData.getCharacter(slot);
+            if (playerCache.getClassName() != null)
+                character.set("class.name", playerCache.getClassName());
+            character.set("class.level", playerCache.getClassLevel());
+            character.set("class.exp", playerCache.getClassExp());
+            // guild
+            if (playerCache.getGuild() != null)
+                mongoData.set("guild", playerCache.getGuild());
+            // profession
+            if (playerCache.getProfName() != null)
+                character.set("prof.name", playerCache.getProfName());
+            character.set("prof.level", playerCache.getProfLevel());
+            character.set("prof.exp", playerCache.getProfExp());
+            // stats (health is updated above)
+            character.set("currentHP", playerCache.getCurrentHealth());
+            character.set("maxMana", playerCache.getMaxMana());
+            // outlaw
+            character.set("outlaw.enabled", playerCache.getIsOutlaw());
+            character.set("outlaw.rating", playerCache.getRating());
+            // inventory
+            character.set("inventory", DatabaseUtil.serializeInventory(characterWrapper.getPlayer().getInventory()));
+            // location
+            character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
+            // save data (includes nested fields)
+            mongoData.save();
+        } catch (Exception e) {
+            RunicCore.getInstance().getLogger().info("[ERROR]: Data of player cache to save was null.");
+            e.printStackTrace();
+        }
     }
 
     public HashSet<Player> getLoadedPlayers() {
