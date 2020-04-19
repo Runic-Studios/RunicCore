@@ -10,8 +10,8 @@ import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.runiccharacters.api.RunicCharactersApi;
 import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
+import com.runicrealms.runiccharacters.character.CharacterWrapper;
 import com.runicrealms.runiccharacters.character.classes.ICharacter;
-import com.runicrealms.runiccharacters.config.UserConfig;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -78,8 +78,8 @@ public class CacheManager implements Listener {
      * Also used on server disable and logout. Updates information about player and adds them to data queue for saving.
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
-        UserConfig userConfig = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
-        Player pl = userConfig.getPlayer();
+        CharacterWrapper characterWrapper = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
+        Player pl = characterWrapper.getPlayer();
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
         playerCache.setLocation(pl.getLocation()); // update location
@@ -98,21 +98,21 @@ public class CacheManager implements Listener {
             limit = queuedCaches.size();
         }
         if (limit < 1) return;
-        UserConfig userConfig;
+        CharacterWrapper characterWrapper;
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;
             if (!queuedCaches.iterator().hasNext()) continue;
             PlayerCache queued = queuedCaches.iterator().next();
-            userConfig = RunicCharactersApi.getUserConfig(queued.getPlayerID());
-            setFieldsSaveFile(queued, userConfig);
+            characterWrapper = RunicCharactersApi.getUserConfig(queued.getPlayerID());
+            setFieldsSaveFile(queued, characterWrapper);
             queuedCaches.remove(queued);
         }
     }
 
-    public void setFieldsSaveFile(PlayerCache playerCache, UserConfig userConfig) {
+    public void setFieldsSaveFile(PlayerCache playerCache, CharacterWrapper characterWrapper) {
 
-        int slot = userConfig.getCharacterSlot();
-        PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
+        int slot = playerCache.getCharacterSlot();
+        PlayerMongoData mongoData = new PlayerMongoData(characterWrapper.getPlayer().getUniqueId().toString());
         PlayerMongoDataSection character = mongoData.getCharacter(slot);
 
         if (playerCache.getClassName() != null)
@@ -135,7 +135,7 @@ public class CacheManager implements Listener {
         character.set("outlaw.enabled", playerCache.getIsOutlaw());
         character.set("outlaw.rating", playerCache.getRating());
         // inventory
-        character.set("inventory", DatabaseUtil.serializeInventory(userConfig.getPlayer().getInventory()));
+        character.set("inventory", DatabaseUtil.serializeInventory(characterWrapper.getPlayer().getInventory()));
         // location
         character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
         // save data (includes nested fields)
@@ -174,10 +174,10 @@ public class CacheManager implements Listener {
         return false;
     }
 
-    public PlayerCache buildPlayerCache(UserConfig userConfig) {
+    public PlayerCache buildPlayerCache(CharacterWrapper characterWrapper) {
 
-        int slot = userConfig.getCharacterSlot();
-        PlayerMongoData mongoData = new PlayerMongoData(userConfig.getPlayer().getUniqueId().toString());
+        int slot = characterWrapper.getCharacterSlot();
+        PlayerMongoData mongoData = new PlayerMongoData(characterWrapper.getPlayer().getUniqueId().toString());
         PlayerMongoDataSection character = mongoData.getCharacter(slot);
 
         String guildName = mongoData.get("guild", String.class); // account-wide
@@ -199,8 +199,8 @@ public class CacheManager implements Listener {
         ItemStack[] inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));
         Location location = DatabaseUtil.loadLocation(character.get("location", String.class));
 
-        return new PlayerCache(userConfig.getCharacterSlot(),
-                userConfig.getPlayer().getUniqueId(),
+        return new PlayerCache(characterWrapper.getCharacterSlot(),
+                characterWrapper.getPlayer().getUniqueId(),
                 guildName, className, profName,
                 classLevel, classExp,
                 profLevel, profExp,
