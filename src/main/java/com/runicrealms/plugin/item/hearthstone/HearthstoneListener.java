@@ -200,107 +200,111 @@ public class HearthstoneListener implements Listener {
     }
 
     public static void teleportToLocation(Player pl) {
+        try {
+            // get location for hearthstone
+            String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(8), "location");
 
-        // get location for hearthstone
-        String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(8), "location");
+            // attempt to match the player's hearthstone to a location
+            Location loc;
+            World world = Bukkit.getWorld("Alterra");
+            double x;
+            double y;
+            double z;
+            int yaw;
+            switch (itemLoc.toLowerCase()) {
 
-        // attempt to match the player's hearthstone to a location
-        Location loc;
-        World world = Bukkit.getWorld("Alterra");
-        double x;
-        double y;
-        double z;
-        int yaw;
-        switch (itemLoc.toLowerCase()) {
+                case "naz'mora": // 12
+                    x = 2587.5;
+                    y = 33;
+                    z = 979.5;
+                    yaw = 270;
+                    break;
+                case "naheen": // 11
+                    x = 1962.5;
+                    y = 42;
+                    z = 349.5;
+                    yaw = 270;
+                    break;
+                case "zenyth": // 10
+                    x = 1564.5;
+                    y = 38;
+                    z = -158.5;
+                    yaw = 180;
+                    break;
+                case "tireneas": // 9
+                    x = 887.5;
+                    y = 43;
+                    z = 547.5;
+                    yaw = 270;
+                    break;
+                case "isfodar": // 8
+                    x = 744.5;
+                    y = 94;
+                    z = -137.5;
+                    yaw = 270;
+                    break;
+                case "dead man's rest": // 7
+                    x = -24.5;
+                    y = 32;
+                    z = -475.5;
+                    yaw = 90;
+                    break;
+                case "dawnshire inn": // 6
+                    x = -306.5;
+                    y = 57;
+                    z = -408.5;
+                    yaw = 90;
+                    break;
+                case "wintervale": // 5
+                    x = -1672.5;
+                    y = 37;
+                    z = -2639.5;
+                    yaw = 90;
+                    break;
+                case "hilstead": // 4
+                    x = -1649.5;
+                    y = 44;
+                    z = -2053.5;
+                    yaw = 270;
+                    break;
+                case "whaletown": // 3
+                    x = -1834.5;
+                    y = 32;
+                    z = -654.5;
+                    yaw = 0;
+                    break;
+                case "koldore": // 2
+                    x = -1661.5;
+                    y = 35;
+                    z = 206.5;
+                    yaw = 270;
+                    break;
+                case "azana": // 1
+                    x = -825.5;
+                    y = 38;
+                    z = 167.5;
+                    yaw = 180;
+                    break;
+                case "tutorial village": // tutorial 2
+                    x = -1971.5;
+                    y = 40;
+                    z = 1940.5;
+                    yaw = 270;
+                    break;
+                default:
+                    x = -2317.5; // tutorial 1 (tutorial fortress)
+                    y = 38;
+                    z = 1719.5;
+                    yaw = 0;
+                    break;
+            }
 
-            case "naz'mora": // 12
-                x = 2587.5;
-                y = 33;
-                z = 979.5;
-                yaw = 270;
-                break;
-            case "naheen": // 11
-                x = 1962.5;
-                y = 42;
-                z = 349.5;
-                yaw = 270;
-                break;
-            case "zenyth": // 10
-                x = 1564.5;
-                y = 38;
-                z = -158.5;
-                yaw = 180;
-                break;
-            case "tireneas": // 9
-                x = 887.5;
-                y = 43;
-                z = 547.5;
-                yaw = 270;
-                break;
-            case "isfodar": // 8
-                x = 744.5;
-                y = 94;
-                z = -137.5;
-                yaw = 270;
-                break;
-            case "dead man's rest": // 7
-                x = -24.5;
-                y = 32;
-                z = -475.5;
-                yaw = 90;
-                break;
-            case "dawnshire inn": // 6
-                x = -306.5;
-                y = 57;
-                z = -408.5;
-                yaw = 90;
-                break;
-            case "wintervale": // 5
-                x = -1672.5;
-                y = 37;
-                z = -2639.5;
-                yaw = 90;
-                break;
-            case "hilstead": // 4
-                x = -1649.5;
-                y = 44;
-                z = -2053.5;
-                yaw = 270;
-                break;
-            case "whaletown": // 3
-                x = -1834.5;
-                y = 32;
-                z = -654.5;
-                yaw = 0;
-                break;
-            case "koldore": // 2
-                x = -1661.5;
-                y = 35;
-                z = 206.5;
-                yaw = 270;
-                break;
-            case "azana": // 1
-                x = -825.5;
-                y = 38;
-                z = 167.5;
-                yaw = 180;
-                break;
-            case "tutorial village": // tutorial 2
-                x = -1971.5;
-                y = 40;
-                z = 1940.5;
-                yaw = 270;
-                break;
-            default:
-                x = -2317.5; // tutorial 1 (tutorial fortress)
-                y = 38;
-                z = 1719.5;
-                yaw = 0;
-                break;
+            loc = new Location(world, x, y, z, yaw, 0);
+            pl.teleport(loc);
+        } catch (Exception e) {
+            Location loc = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38, 1719.5, 0, 0);
+            pl.teleport(loc);
         }
-
-        loc = new Location(world, x, y, z, yaw, 0);
-        pl.teleport(loc);
     }
 }
 

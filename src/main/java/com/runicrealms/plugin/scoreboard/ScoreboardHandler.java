@@ -204,13 +204,17 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String playerGuild(Player pl) {
-        String display;
-        String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
-        if(!guild.toLowerCase().equals("none")) {
-            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
-        } else {
-            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
+        try {
+            String display;
+            String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
+            if (!guild.toLowerCase().equals("none")) {
+                display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
+            } else {
+                display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
+            }
+            return display;
+        } catch (Exception e) {
+            return ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
         }
-        return display;
     }
 }

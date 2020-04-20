@@ -22,20 +22,29 @@ import java.util.UUID;
 public class Blizzard extends Spell {
 
     private static final int DAMAGE_AMOUNT = 15;
-    private static final int DURATION = 5;
+    private int duration = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
     private HashMap<Snowball, UUID> snowballMap;
     private static final double GEM_BOOST = 50;
 
     public Blizzard() {
-        super("Blizzard",
-                "You summon a cloud of snow that" +
-                        "\nrains down snowballs for " + DURATION + " seconds," +
-                        "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
-                        "\nto enemies and slowing them!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+        super("Blizzard", "",
+//                "You summon a cloud of snow that" +
+//                        "\nrains down snowballs for " + DURATION + " seconds," +
+//                        "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
+//                        "\nto enemies and slowing them!" +
+//                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                // todo: if this works, just add a 'set descripton'
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
+        this.snowballMap = new HashMap<>();
+    }
+
+    public Blizzard(int duration) {
+        super("Blizzard",
+                "",
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
+        this.duration = duration;
         this.snowballMap = new HashMap<>();
     }
 
@@ -51,7 +60,7 @@ public class Blizzard extends Spell {
             public void run() {
 
                 // cancel after duration
-                if (System.currentTimeMillis() - startTime >= DURATION * 1000) {
+                if (System.currentTimeMillis() - startTime >= duration * 1000) {
                     this.cancel();
                 }
 
