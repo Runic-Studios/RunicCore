@@ -1,9 +1,9 @@
 name: RunicCore
 version: 2.0.0
-api-version: 1.13
+api-version: 1.15
 main: com.runicrealms.plugin.RunicCore
 description: Core plugin for the "Runic Realms" server
-author: Skyfallin_
+author: Skyfallin, Excel, Destiny
 loadbefore: [Quests]
 depend: [RunicCharacters]
 softdepend: [PlaceholderAPI]
@@ -53,3 +53,6 @@ commands:
   map:
     usage: /<commands>
     description: View the online runic realms map
+  runicdamage:
+    usage: /<commands>
+    description: Fixes damage logic in MM skills

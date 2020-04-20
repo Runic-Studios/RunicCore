@@ -3,6 +3,7 @@ package com.runicrealms.plugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.plugin.command.MapLink;
+import com.runicrealms.plugin.command.RunicDamage;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
@@ -295,6 +296,7 @@ public class RunicCore extends JavaPlugin implements Listener {
 
 
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
+        Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
     }
     
     private void registerPartyCommands() {
