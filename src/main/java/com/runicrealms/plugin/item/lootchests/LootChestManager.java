@@ -8,10 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class LootChestManager {
@@ -73,9 +70,8 @@ public class LootChestManager {
         int limit = (int) Math.ceil(queuedChests.size() / 4) + 1;
         int count = 0;
 
-        Iterator<LootChest> iterator = queuedChests.keySet().iterator();
-        while (iterator.hasNext()) {
-            LootChest chest = iterator.next();
+        Set<LootChest> remove = new HashSet<LootChest>();
+        for (LootChest chest : queuedChests.keySet()) {
             if (queuedChests.size() < 1) continue;
             if (count >= limit) break;
             Location loc = chest.getLocation();
@@ -83,8 +79,11 @@ public class LootChestManager {
             if (loc.getBlock().getType() == Material.CHEST) continue; // chest already loaded
             if ((System.currentTimeMillis()-queuedChests.get(chest)) < matchTime(chest)*1000) continue;
             loc.getBlock().setType(Material.CHEST);
-            queuedChests.remove(chest);
+            remove.add(chest);
             count++;
+        }
+        for (LootChest chest : remove) {
+            queuedChests.remove(chest);
         }
     }
 
