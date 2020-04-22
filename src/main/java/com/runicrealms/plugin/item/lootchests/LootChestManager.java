@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
@@ -72,7 +73,9 @@ public class LootChestManager {
         int limit = (int) Math.ceil(queuedChests.size() / 4) + 1;
         int count = 0;
 
-        for (LootChest chest : queuedChests.keySet()) {
+        Iterator<LootChest> iterator = queuedChests.keySet().iterator();
+        while (iterator.hasNext()) {
+            LootChest chest = iterator.next();
             if (queuedChests.size() < 1) continue;
             if (count >= limit) break;
             Location loc = chest.getLocation();
