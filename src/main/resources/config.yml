@@ -1,1 +1,12 @@
 database: 'players'
+class-icons:
+  archer:
+    material: 'BOW'
+  cleric:
+    material: 'WOODEN_SHOVEL'
+  warrior:
+    material: 'WOODEN_AXE'
+  mage:
+    material: 'WOODEN_HOE'
+  rogue:
+    material: 'WOODEN_SWORD'

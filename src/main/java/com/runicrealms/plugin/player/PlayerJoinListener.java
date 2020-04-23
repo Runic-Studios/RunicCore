@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

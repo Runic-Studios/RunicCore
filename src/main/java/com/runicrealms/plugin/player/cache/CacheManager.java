@@ -2,16 +2,13 @@ package com.runicrealms.plugin.player.cache;
 
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
-import com.runicrealms.runiccharacters.api.RunicCharactersApi;
-import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
-import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
-import com.runicrealms.runiccharacters.character.CharacterWrapper;
-import com.runicrealms.runiccharacters.character.classes.ICharacter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -78,8 +75,7 @@ public class CacheManager implements Listener {
      * Also used on server disable and logout. Updates information about player and adds them to data queue for saving.
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
-        CharacterWrapper characterWrapper = RunicCharactersApi.getUserConfig(playerCache.getPlayerID());
-        Player pl = characterWrapper.getPlayer();
+        Player pl = Bukkit.getPlayer(playerCache.getPlayerID());
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
         playerCache.setLocation(pl.getLocation()); // update location
@@ -101,20 +97,18 @@ public class CacheManager implements Listener {
         }
         if (limit < 1)
             return;
-        CharacterWrapper characterWrapper;
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;
             PlayerCache queued = queuedCaches.iterator().next();
-            characterWrapper = RunicCharactersApi.getUserConfig(queued.getPlayerID());
-            setFieldsSaveFile(queued, characterWrapper);
+            setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()));
             queuedCaches.remove(queued);
         }
     }
 
-    public void setFieldsSaveFile(PlayerCache playerCache, CharacterWrapper characterWrapper) {
+    public void setFieldsSaveFile(PlayerCache playerCache, Player player) {
         try {
             int slot = playerCache.getCharacterSlot();
-            PlayerMongoData mongoData = new PlayerMongoData(characterWrapper.getPlayer().getUniqueId().toString());
+            PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
             PlayerMongoDataSection character = mongoData.getCharacter(slot);
             if (playerCache.getClassName() != null)
                 character.set("class.name", playerCache.getClassName());
@@ -135,7 +129,7 @@ public class CacheManager implements Listener {
             character.set("outlaw.enabled", playerCache.getIsOutlaw());
             character.set("outlaw.rating", playerCache.getRating());
             // inventory
-            character.set("inventory", DatabaseUtil.serializeInventory(characterWrapper.getPlayer().getInventory()));
+            character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
             // location
             character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
             // save data (includes nested fields)
@@ -178,10 +172,9 @@ public class CacheManager implements Listener {
         return false;
     }
 
-    public PlayerCache buildPlayerCache(CharacterWrapper characterWrapper) {
+    public PlayerCache buildPlayerCache(Player player, Integer slot) {
 
-        int slot = characterWrapper.getCharacterSlot();
-        PlayerMongoData mongoData = new PlayerMongoData(characterWrapper.getPlayer().getUniqueId().toString());
+        PlayerMongoData mongoData = new PlayerMongoData(player.getPlayer().getUniqueId().toString());
         PlayerMongoDataSection character = mongoData.getCharacter(slot);
 
         String guildName = mongoData.get("guild", String.class); // account-wide
@@ -203,8 +196,8 @@ public class CacheManager implements Listener {
         ItemStack[] inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));
         Location location = DatabaseUtil.loadLocation(character.get("location", String.class));
 
-        return new PlayerCache(characterWrapper.getCharacterSlot(),
-                characterWrapper.getPlayer().getUniqueId(),
+        return new PlayerCache(slot,
+                player.getUniqueId(),
                 guildName, className, profName,
                 classLevel, classExp,
                 profLevel, profExp,
@@ -232,10 +225,10 @@ public class CacheManager implements Listener {
     /**
      * Call from RunicCharacters
      */
-    public void tryCreateNewCharacter(Player player, ICharacter character) {
+    public void tryCreateNewCharacter(Player player, String className, Integer slot) {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection mongoDataSection = mongoData.getSection("character." + character.getSlot());
-        mongoDataSection.set("class.name", character.className());
+        MongoDataSection mongoDataSection = mongoData.getSection("character." + slot);
+        mongoDataSection.set("class.name", className);
         mongoDataSection.set("class.level", 0);
         mongoDataSection.set("class.exp", 0);
         mongoDataSection.set("prof.name", "None");

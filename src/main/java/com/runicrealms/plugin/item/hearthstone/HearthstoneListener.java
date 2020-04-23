@@ -2,8 +2,8 @@ package com.runicrealms.plugin.item.hearthstone;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.item.LoreGenerator;
-import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

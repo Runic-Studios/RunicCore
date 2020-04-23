@@ -2,6 +2,7 @@ package com.runicrealms.plugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.MapLink;
 import com.runicrealms.plugin.command.RunicDamage;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
@@ -250,6 +251,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new MobBurnListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new SpeedListener(), this);
+        pm.registerEvents(new CharacterGuiManager(), this);
+        CharacterGuiManager.initIcons();
     }
     
     private void registerCommands() {
