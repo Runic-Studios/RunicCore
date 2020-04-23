@@ -54,10 +54,6 @@ public class PlayerHungerManager implements Listener {
             @Override
             public void run() {
                 for(Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
-//                    if (!player.hasPermission("runic.hunger.exempt")
-//                            || (player.getGameMode() != GameMode.CREATIVE
-//                            && player.getGameMode() != GameMode.SPECTATOR)) {
-                    if (player.getFoodLevel() <= 1) continue;
                     if (isSafezone(player.getLocation())) {
                         if (player.getFoodLevel() < 20) {
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
@@ -66,6 +62,7 @@ public class PlayerHungerManager implements Listener {
                         }
                         continue;
                     }
+                    if (player.getFoodLevel() <= 1) continue;
                     player.setFoodLevel(player.getFoodLevel() - 1);
                 }
             }
@@ -80,9 +77,7 @@ public class PlayerHungerManager implements Listener {
         if(event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if(event.getFoodLevel() < player.getFoodLevel()) {
-                //if (!player.hasPermission("runic.hunger.exempt")) {
-                    event.setCancelled(true);
-                //}
+                event.setCancelled(true);
             }
         }
     }
@@ -97,9 +92,6 @@ public class PlayerHungerManager implements Listener {
         Set<ProtectedRegion> regions = set.getRegions();
         if (regions == null) return false;
         for (ProtectedRegion region : regions) {
-//            if (region.getId().contains("safezone")) {
-//                return true;
-//            }
             return cityNames().parallelStream().anyMatch(region.getId()::contains);
         }
         return false;
