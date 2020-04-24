@@ -323,4 +323,8 @@ public class CharacterGuiManager implements Listener {
         return item;
     }
 
+    public static Map<UUID, CharacterGuiInfo> getCharacterCache() {
+        return characterCache;
+    }
+
 }
