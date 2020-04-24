@@ -133,7 +133,7 @@ public class CacheManager implements Listener {
             // location
             character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
             // save data (includes nested fields)
-            mongoData.save();
+            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> mongoData.save());
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Data of player cache to save was null.");
             e.printStackTrace();
