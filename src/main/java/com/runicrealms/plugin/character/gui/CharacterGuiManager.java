@@ -37,7 +37,7 @@ public class CharacterGuiManager implements Listener {
 
     public static void initIcons() {
 
-        creationIcon = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
+        creationIcon = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE, 1);
         ItemMeta creationMeta = creationIcon.getItemMeta();
         creationMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Create A Class");
         creationIcon.setItemMeta(creationMeta);
@@ -52,12 +52,12 @@ public class CharacterGuiManager implements Listener {
         championMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Champion" + ChatColor.RED + "" + ChatColor.BOLD + " rank to use this slot");
         onlyChampionCreateIcon.setItemMeta(championMeta);
 
-        goBackIcon = new ItemStack(Material.RED_STAINED_GLASS);
+        goBackIcon = new ItemStack(Material.BARRIER);
         ItemMeta goBackMeta = goBackIcon.getItemMeta();
         goBackMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Cancel");
         goBackIcon.setItemMeta(goBackMeta);
 
-        confirmDeletionIcon = new ItemStack(Material.GREEN_STAINED_GLASS);
+        confirmDeletionIcon = new ItemStack(Material.SLIME_BALL);
         ItemMeta confirmDeletionMeta = confirmDeletionIcon.getItemMeta();
         confirmDeletionMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Confirm Deletion");
         confirmDeletionMeta.setLore(Arrays.asList(new String[] {ChatColor.DARK_RED + "WARNING: There is no going back!"}));

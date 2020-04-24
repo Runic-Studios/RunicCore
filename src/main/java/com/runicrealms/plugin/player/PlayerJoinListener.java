@@ -39,6 +39,8 @@ public class PlayerJoinListener implements Listener {
         pl.setExp(0);
         pl.setFoodLevel(20);
         pl.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
+        // prompt resource pack
+        pl.setResourcePack("https://www.dropbox.com/s/9ymuk315d59gif1/RR%20Official%20Pack.zip?dl=1");
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -69,9 +71,6 @@ public class PlayerJoinListener implements Listener {
 
                 // set their location
                 pl.teleport(e.getPlayerCache().getLocation());
-
-                // prompt resource pack
-                pl.setResourcePack("https://www.dropbox.com/s/9ymuk315d59gif1/RR%20Official%20Pack.zip?dl=1");
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
 
