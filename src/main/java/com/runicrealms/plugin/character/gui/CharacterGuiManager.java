@@ -12,9 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -37,32 +39,33 @@ public class CharacterGuiManager implements Listener {
 
         creationIcon = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
         ItemMeta creationMeta = creationIcon.getItemMeta();
-        creationMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "Create A Class");
+        creationMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Create A Class");
         creationIcon.setItemMeta(creationMeta);
 
         onlyKnightCreateIcon = new ItemStack(Material.BARRIER, 1);
         ItemMeta knightMeta = onlyKnightCreateIcon.getItemMeta();
-        knightMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "You need " + ChatColor.AQUA + "Knight" + ChatColor.RED + " rank to use this slot");
+        knightMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.AQUA + "Knight" + ChatColor.RED + " rank to use this slot");
         onlyKnightCreateIcon.setItemMeta(knightMeta);
 
         onlyChampionCreateIcon = new ItemStack(Material.BARRIER, 1);
         ItemMeta championMeta = onlyChampionCreateIcon.getItemMeta();
-        championMeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.RED + "You need " + ChatColor.LIGHT_PURPLE + "Champion" + ChatColor.RED + " rank to use this slot");
+        championMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Champion" + ChatColor.RED + "" + ChatColor.BOLD + " rank to use this slot");
         onlyChampionCreateIcon.setItemMeta(championMeta);
 
         goBackIcon = new ItemStack(Material.RED_STAINED_GLASS);
         ItemMeta goBackMeta = goBackIcon.getItemMeta();
-        goBackMeta.setDisplayName(ChatColor.RED + "Cancel");
+        goBackMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Cancel");
         goBackIcon.setItemMeta(goBackMeta);
 
         confirmDeletionIcon = new ItemStack(Material.GREEN_STAINED_GLASS);
         ItemMeta confirmDeletionMeta = confirmDeletionIcon.getItemMeta();
-        confirmDeletionMeta.setDisplayName(ChatColor.RED + "Confirm Deletion");
+        confirmDeletionMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Confirm Deletion");
         confirmDeletionMeta.setLore(Arrays.asList(new String[] {ChatColor.DARK_RED + "WARNING: There is no going back!"}));
         confirmDeletionIcon.setItemMeta(confirmDeletionMeta);
 
         ItemStack archerItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.archer.material")));
         ItemMeta archerMeta = archerItem.getItemMeta();
+        archerMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Archer");
         archerMeta.setLore(Arrays.asList(new String[] {
                 ChatColor.GRAY + "Ranged shooter, high",
                 ChatColor.GRAY + "damage, single target"
@@ -72,6 +75,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")));
         ItemMeta clericMeta = clericItem.getItemMeta();
+        clericMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        clericMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Cleric");
         clericMeta.setLore(Arrays.asList(new String[] {
                 ChatColor.GRAY + "Group Healer, low",
                 ChatColor.GRAY + "damage, single target"
@@ -81,6 +86,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack warriorItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.warrior.material")));
         ItemMeta warriorMeta = warriorItem.getItemMeta();
+        warriorMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        warriorMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Warrior");
         warriorMeta.setLore(Arrays.asList(new String[] {
                 ChatColor.GRAY + "Tank, high defense, low",
                 ChatColor.GRAY + "damage, single target"
@@ -90,6 +97,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack mageItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.mage.material")));
         ItemMeta mageMeta = mageItem.getItemMeta();
+        mageMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        mageMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Mage");
         mageMeta.setLore(Arrays.asList(new String[] {
                 ChatColor.GRAY + "AoE & single target, medium",
                 ChatColor.GRAY + "range & medium damage"
@@ -99,6 +108,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack rogueItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.rogue.material")));
         ItemMeta rogueMeta = rogueItem.getItemMeta();
+        rogueMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        rogueMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Rogue");
         rogueMeta.setLore(Arrays.asList(new String[] {
                 ChatColor.GRAY + "Close range, low defense,",
                 ChatColor.GRAY + "very high damage"
@@ -127,25 +138,29 @@ public class CharacterGuiManager implements Listener {
 
     public static void openSelectGui(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 18, "Select Your Character");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             if (characterCache.get(player.getUniqueId()).getCharacterInfo().get(i) != null) {
-                inventory.setItem(i < 5 ? i + 2 : i + 6, getCharacterIcon(characterCache.get(player.getUniqueId()).getCharacterInfo().get(i)));
+                inventory.setItem(i <= 5 ? i + 1 : i + 5, getCharacterIcon(characterCache.get(player.getUniqueId()).getCharacterInfo().get(i)));
             } else {
-                if (i == 5) {
+                if (i == 6) {
                     inventory.setItem(
-                            i < 5 ? i + 2 : i + 6,
+                            i <= 5 ? i + 1 : i + 5,
                             player.hasPermission("runic.rank.knight") || player.hasPermission("runic.rank.champion") ? creationIcon : onlyKnightCreateIcon);
-                } else if (i >= 6 && i <= 9) {
+                } else if (i >= 7 && i <= 10) {
                     inventory.setItem(
-                            i < 5 ? i + 2 : i + 6,
+                            i <= 5 ? i + 1 : i + 5,
                             !player.hasPermission("runic.rank.champion") ? creationIcon : onlyChampionCreateIcon);
                 } else {
-                    inventory.setItem(i < 5 ? i + 2 : i + 6, creationIcon);
+                    inventory.setItem(i <= 5 ? i + 1 : i + 5, creationIcon);
                 }
             }
         }
-        player.openInventory(inventory);
-        classMenu.put(player.getUniqueId(), CharacterGui.SELECT);
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+            classMenu.remove(player.getUniqueId());
+            player.closeInventory();
+            player.openInventory(inventory);
+            classMenu.put(player.getUniqueId(), CharacterGui.SELECT);
+        });
     }
 
     public static void openAddGui(Player player) {
@@ -156,101 +171,101 @@ public class CharacterGuiManager implements Listener {
         inventory.setItem(4, classIcons.get(ClassEnum.WARRIOR));
         inventory.setItem(5, classIcons.get(ClassEnum.MAGE));
         inventory.setItem(6, classIcons.get(ClassEnum.ROGUE));
-        player.openInventory(inventory);
-        classMenu.put(player.getUniqueId(), CharacterGui.ADD);
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+            classMenu.remove(player.getUniqueId());
+            player.closeInventory();
+            player.openInventory(inventory);
+            classMenu.put(player.getUniqueId(), CharacterGui.ADD);
+        });
     }
 
     public static void openRemoveGui(Player player, Integer classSlot) {
         Inventory inventory = Bukkit.createInventory(null, 9, "Confirm Character Deletion");
         inventory.setItem(2, goBackIcon);
         inventory.setItem(6, confirmDeletionIcon);
-        player.openInventory(inventory);
-        classMenu.put(player.getUniqueId(), CharacterGui.REMOVE);
         deletingCharacters.put(player.getUniqueId(), classSlot);
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+            classMenu.remove(player.getUniqueId());
+            player.closeInventory();
+            player.openInventory(inventory);
+            classMenu.put(player.getUniqueId(), CharacterGui.REMOVE);
+        });
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             if (classMenu.containsKey(event.getWhoClicked().getUniqueId())) {
+                event.setCancelled(true);
                 if (event.getCurrentItem() != null) {
                     if (event.getCurrentItem().getType() != Material.AIR) {
                         if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.SELECT) {
                             if (checkIsCharacterIcon(event.getCurrentItem())) {
                                 if (event.isRightClick()) {
-                                    event.setCancelled(true);
-                                    classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.REMOVE);
-                                    deletingCharacters.put(event.getWhoClicked().getUniqueId(), (event.getSlot() < 9 ? event.getSlot() - 2 : event.getSlot() - 6) + 1);
-                                    return;
+                                    openRemoveGui((Player) event.getWhoClicked(), event.getSlot() < 9 ? event.getSlot() - 1 : event.getSlot() - 5);
                                 } else {
-                                    event.setCancelled(true);
                                     classMenu.remove(event.getWhoClicked().getUniqueId());
-                                    Integer slot = (event.getSlot() < 9 ? event.getSlot() - 2 : event.getSlot() - 6) + 1;
+                                    event.getWhoClicked().closeInventory();
+                                    Integer slot = event.getSlot() < 9 ? event.getSlot() - 1 : event.getSlot() - 5;
                                     CharacterManager.getSelectedCharacters().put(event.getWhoClicked().getUniqueId(), slot);
                                     CharacterLoadEvent characterLoadEvent = new CharacterLoadEvent(
                                             RunicCore.getCacheManager().buildPlayerCache((Player) event.getWhoClicked(), slot),
                                             (Player) event.getWhoClicked());
                                     RunicCore.getCacheManager().getPlayerCaches().add(characterLoadEvent.getPlayerCache());
                                     Bukkit.getPluginManager().callEvent(characterLoadEvent);
-                                    return;
                                 }
                             } else if (event.getCurrentItem().getType() == creationIcon.getType()) {
-                                event.setCancelled(true);
-                                classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.ADD);
                                 openAddGui((Player) event.getWhoClicked());
-                                return;
-                            } else if (event.getCurrentItem().getType() == onlyKnightCreateIcon.getType() || event.getCurrentItem().getType() == onlyChampionCreateIcon.getType()) {
-                                event.setCancelled(true);
-                                return;
                             }
                         } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.ADD) {
                             if (event.getCurrentItem().getType() == goBackIcon.getType()) {
-                                event.setCancelled(true);
-                                classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
                                 openSelectGui((Player) event.getWhoClicked());
-                                return;
                             } else {
-                                event.setCancelled(true);
                                 String className = getClassNameFromIcon(event.getCurrentItem());
                                 RunicCore.getCacheManager().tryCreateNewCharacter((Player) event.getWhoClicked(), className, characterCache.get(event.getWhoClicked().getUniqueId()).getFirstUnusedSlot());
-                                characterCache.get(event.getWhoClicked()).addCharacter(new CharacterInfo(ClassEnum.getFromName(className), 0, 0));
-                                classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
+                                characterCache.get(event.getWhoClicked().getUniqueId()).addCharacter(new CharacterInfo(ClassEnum.getFromName(className), 0, 0));
                                 openSelectGui((Player) event.getWhoClicked());
-                                return;
                             }
                         } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.REMOVE) {
                             if (event.getCurrentItem().getType() == confirmDeletionIcon.getType()) {
-                                event.setCancelled(true);
+                                event.getWhoClicked().closeInventory();
                                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), new Runnable() {
                                     @Override
                                     public void run() {
                                         PlayerMongoData mongoData = new PlayerMongoData(event.getWhoClicked().getUniqueId().toString());
                                         mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId().toString()));
                                         mongoData.save();
-                                        classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
                                         deletingCharacters.remove(event.getWhoClicked());
                                         openSelectGui((Player) event.getWhoClicked());
                                     }
                                 });
-                                return;
                             } else {
-                                event.setCancelled(true);
                                 classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
                                 deletingCharacters.remove(event.getWhoClicked().getUniqueId());
                                 openSelectGui((Player) event.getWhoClicked());
-                                return;
                             }
-                        } else {
-                            event.setCancelled(true);
                         }
-                    } else {
-                        event.setCancelled(true);
-                        return;
                     }
-                } else {
-                    event.setCancelled(true);
-                    return;
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        if (classMenu.containsKey(event.getPlayer().getUniqueId())) {
+            switch (classMenu.get(event.getPlayer().getUniqueId())) {
+                case SELECT:
+                    openSelectGui((Player) event.getPlayer());
+                    break;
+                case ADD:
+                    openAddGui((Player) event.getPlayer());
+                    break;
+                case REMOVE:
+                    openRemoveGui((Player) event.getPlayer(), deletingCharacters.get(event.getPlayer().getUniqueId()));
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -263,8 +278,9 @@ public class CharacterGuiManager implements Listener {
                 UUID playerUuid = event.getPlayer().getUniqueId();
                 try {
                     characterCache.put(playerUuid, new CharacterGuiInfo(new PlayerMongoData(playerUuid.toString())));
-                    classMenu.put(playerUuid, CharacterGui.SELECT);
+                    openSelectGui(event.getPlayer());
                 } catch (Exception exception) {
+                    exception.printStackTrace();
                     characterCache.remove(playerUuid);
                     classMenu.remove(playerUuid);
                 }
@@ -297,6 +313,7 @@ public class CharacterGuiManager implements Listener {
         }
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + character.getClassType().getName());
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         List<String> lore = new ArrayList<String>(3);
         lore.add(ChatColor.GRAY + "Level: " + ChatColor.DARK_GREEN + "" + character.getLevel());
         lore.add(ChatColor.GRAY + "Exp: " + ChatColor.DARK_GREEN + "" + character.getExp());

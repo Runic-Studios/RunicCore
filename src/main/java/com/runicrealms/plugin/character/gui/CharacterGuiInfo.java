@@ -3,44 +3,42 @@ package com.runicrealms.plugin.character.gui;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.MongoData;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CharacterGuiInfo {
 
-    private List<CharacterInfo> characters;
+    private Map<Integer, CharacterInfo> characters = new HashMap<Integer, CharacterInfo>();
     private int firstUnusedSlot;
 
     public CharacterGuiInfo(MongoData mongoData) {
-        this.characters = new ArrayList<CharacterInfo>(10);
-        for (String key : mongoData.getSection("character").getKeys()) {
-            this.characters.set(Integer.parseInt(key), new CharacterInfo(
-                    ClassEnum.getFromName(mongoData.get("character." + key + ".class.name", String.class)),
-                    mongoData.get("character." + key + ".class.exp", Integer.class),
-                    mongoData.get("character." + key + ".class.level", Integer.class)));
+        if (mongoData.has("character")) {
+            for (String key : mongoData.getSection("character").getKeys()) {
+                this.characters.put(Integer.parseInt(key), new CharacterInfo(
+                        ClassEnum.getFromName(mongoData.get("character." + key + ".class.name", String.class)),
+                        mongoData.get("character." + key + ".class.exp", Integer.class),
+                        mongoData.get("character." + key + ".class.level", Integer.class)));
 
-        }
-        for (int i = 0; i < this.characters.size(); i++) {
-            if (this.characters.get(i) == null){
-                this.firstUnusedSlot = i + 1;
             }
         }
+        this.findFirstUnusedSlot();
     }
 
     public void addCharacter(CharacterInfo character) {
-        this.characters.add(character);
-        for (int i = 0; i < this.characters.size(); i++) {
-            if (this.characters.get(i) == null){
-                this.firstUnusedSlot = i + 1;
-            }
-        }
+        this.characters.put(this.firstUnusedSlot, character);
+        this.findFirstUnusedSlot();
     }
 
     public void removeCharacter(Integer slot) {
         this.characters.remove(slot);
-        for (int i = 0; i < this.characters.size(); i++) {
+        this.findFirstUnusedSlot();
+    }
+
+    public void findFirstUnusedSlot() {
+        for (int i = 1; i <= 10; i++) {
             if (this.characters.get(i) == null){
-                this.firstUnusedSlot = i + 1;
+                this.firstUnusedSlot = i;
+                break;
             }
         }
     }
@@ -49,7 +47,7 @@ public class CharacterGuiInfo {
         return this.firstUnusedSlot;
     }
 
-    public List<CharacterInfo> getCharacterInfo() {
+    public Map<Integer, CharacterInfo> getCharacterInfo() {
         return this.characters;
     }
 

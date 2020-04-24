@@ -5,8 +5,8 @@ main: com.runicrealms.plugin.RunicCore
 description: Core plugin for the "Runic Realms" server
 author: Skyfallin, Excel, Destiny
 loadbefore: [Quests]
-depend: [RunicCharacters]
 softdepend: [PlaceholderAPI]
+depend: [MythicMobs]
 commands:
   artifactinfo:
     usage: /<commands>
