@@ -233,8 +233,9 @@ public class CharacterGuiManager implements Listener {
                                     @Override
                                     public void run() {
                                         PlayerMongoData mongoData = new PlayerMongoData(event.getWhoClicked().getUniqueId().toString());
-                                        mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId().toString()));
+                                        mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId()));
                                         mongoData.save();
+                                        characterCache.get(event.getWhoClicked().getUniqueId()).removeCharacter(deletingCharacters.get(event.getWhoClicked().getUniqueId()));
                                         deletingCharacters.remove(event.getWhoClicked());
                                         openSelectGui((Player) event.getWhoClicked());
                                     }
