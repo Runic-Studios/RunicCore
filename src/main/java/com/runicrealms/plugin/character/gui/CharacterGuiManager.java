@@ -228,6 +228,7 @@ public class CharacterGuiManager implements Listener {
                             }
                         } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.REMOVE) {
                             if (event.getCurrentItem().getType() == confirmDeletionIcon.getType()) {
+                                classMenu.remove(event.getWhoClicked().getUniqueId());
                                 event.getWhoClicked().closeInventory();
                                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), new Runnable() {
                                     @Override
