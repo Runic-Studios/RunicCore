@@ -204,13 +204,13 @@ public class BowListener implements Listener {
                     ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
                     dmgAmt = mm.getDamage();
                 }
-                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity());
+                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), true);
                 Bukkit.getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return;
-                } else {
-                    DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), (LivingEntity) e.getEntity(), shooter);
-                }
+//                if (event.isCancelled()) {
+//                    return;
+//                } else {
+//                    DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), (LivingEntity) e.getEntity(), shooter);
+//                }
         } else {
 
             // bugfix for armor stands

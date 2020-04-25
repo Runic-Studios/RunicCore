@@ -101,16 +101,16 @@ public class DamageUtil {
         HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
-    public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager) {
+    public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
         if (recipient instanceof ArmorStand) return;
 
-        mobDamage(dmgAmt, recipient, damager);
+        mobDamage(dmgAmt, recipient, damager, knockBack);
     }
 
-    private static void mobDamage(double dmgAmt, LivingEntity recipient, Entity damager) {
+    private static void mobDamage(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
 
         /*
         Calculated in Damage Listener now so this doesn't override debuffs from spells.
@@ -137,7 +137,7 @@ public class DamageUtil {
         Bukkit.getPluginManager().callEvent(e);
         recipient.setLastDamageCause(e);
 
-        if (recipient instanceof Player) {
+        if (recipient instanceof Player && knockBack) {
             KnockbackUtil.knockbackPlayer(damager, (Player) recipient);
         }
 

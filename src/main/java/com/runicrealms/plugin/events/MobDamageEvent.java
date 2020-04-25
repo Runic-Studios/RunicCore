@@ -14,12 +14,14 @@ public class MobDamageEvent extends Event implements Cancellable {
     private int amount;
     private Entity damager;
     private Entity victim;
+    private boolean applyMechanics;
     private boolean isCancelled;
 
-    public MobDamageEvent(int amount, Entity damager, Entity victim) {
+    public MobDamageEvent(int amount, Entity damager, Entity victim, boolean applyMechanics) {
         this.amount = amount;
         this.damager = damager;
         this.victim = victim;
+        this.applyMechanics = applyMechanics;
         this.isCancelled = false;
     }
 
@@ -37,6 +39,10 @@ public class MobDamageEvent extends Event implements Cancellable {
 
     public Entity getVictim() {
         return this.victim;
+    }
+
+    public boolean shouldApplyMechanics() {
+        return this.applyMechanics;
     }
 
     @Override

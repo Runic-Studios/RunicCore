@@ -250,6 +250,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new MobBurnListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new SpeedListener(), this);
+        pm.registerEvents(new MobDamageListener(), this);
     }
     
     private void registerCommands() {

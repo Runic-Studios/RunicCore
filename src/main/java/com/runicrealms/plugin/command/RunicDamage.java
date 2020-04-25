@@ -1,13 +1,12 @@
 package com.runicrealms.plugin.command;
 
+import com.runicrealms.plugin.events.MobDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.UUID;
 
@@ -25,7 +24,7 @@ public class RunicDamage implements CommandExecutor {
         if (caster == null) return false;
         if (pl == null) return false;
 
-        EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(caster, pl, EntityDamageEvent.DamageCause.ENTITY_ATTACK, amount);
+        MobDamageEvent e = new MobDamageEvent(amount, caster, pl, false);
         Bukkit.getPluginManager().callEvent(e);
 
         return !e.isCancelled();

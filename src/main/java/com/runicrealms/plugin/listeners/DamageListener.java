@@ -79,13 +79,13 @@ public class DamageListener implements Listener {
                 ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
                 dmgAmt = mm.getDamage();
             }
-            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim);
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, true);
             Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            } else {
-                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), victim, damager);
-            }
+//            if (event.isCancelled()) {
+//                return;
+//            } else {
+//                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), victim, damager);
+//            }
         }
 
         // todo: fix this. might need to properly listen for arrow, might need new outlaw checks.
