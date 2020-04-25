@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.runiccharacters.api.events.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;

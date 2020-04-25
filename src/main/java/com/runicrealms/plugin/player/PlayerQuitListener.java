@@ -1,10 +1,8 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.runiccharacters.api.RunicCharactersApi;
-import com.runicrealms.runiccharacters.api.events.CharacterQuitEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,12 +17,11 @@ public class PlayerQuitListener implements Listener {
 
     @EventHandler
     public void onLoadedQuit(CharacterQuitEvent e) {
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(),
-                () -> saveCharacterRemoveQueue(e.getPlayer()), 1L);
+        saveCharacterRemoveQueue(e.getPlayer());
     }
 
     private void saveCharacterRemoveQueue(Player pl) {
-        // get player cache (if they've loaded in)
+        // get player cache (if they've loaded in)i
         if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()) != null) {
 
             PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
@@ -35,13 +32,10 @@ public class PlayerQuitListener implements Listener {
 
             // update cache, save it
             RunicCore.getCacheManager().savePlayerCache(playerCache, false);
-            RunicCore.getCacheManager().setFieldsSaveFile(playerCache, RunicCharactersApi.getUserConfig(pl.getUniqueId()));
+            RunicCore.getCacheManager().setFieldsSaveFile(playerCache, pl);
 
             // remove them from cached queue
             RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);
-
-            // remove player from RunicCharacters
-            RunicCharactersApi.getUserCollection().removePlayer(pl.getUniqueId());
         }
     }
 
