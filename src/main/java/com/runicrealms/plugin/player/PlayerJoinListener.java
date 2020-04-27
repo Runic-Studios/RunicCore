@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.resourcepack.ResourcePackManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -40,7 +41,7 @@ public class PlayerJoinListener implements Listener {
         pl.setFoodLevel(20);
         pl.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
         // prompt resource pack
-        pl.setResourcePack("https://www.dropbox.com/s/9ymuk315d59gif1/RR%20Official%20Pack.zip?dl=1");
+        ResourcePackManager.openPackForPlayer(pl);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

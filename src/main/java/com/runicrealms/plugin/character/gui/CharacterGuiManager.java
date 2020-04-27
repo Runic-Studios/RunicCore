@@ -13,8 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -273,21 +273,25 @@ public class CharacterGuiManager implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                UUID playerUuid = event.getPlayer().getUniqueId();
-                try {
-                    characterCache.put(playerUuid, new CharacterGuiInfo(new PlayerMongoData(playerUuid.toString())));
-                    openSelectGui(event.getPlayer());
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                    characterCache.remove(playerUuid);
-                    classMenu.remove(playerUuid);
+    public void onResourcePackStatus(PlayerResourcePackStatusEvent event) {
+        if (event.getStatus() == PlayerResourcePackStatusEvent.Status.DECLINED ||
+                event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED ||
+                event.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD) {
+            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    UUID playerUuid = event.getPlayer().getUniqueId();
+                    try {
+                        characterCache.put(playerUuid, new CharacterGuiInfo(new PlayerMongoData(playerUuid.toString())));
+                        openSelectGui(event.getPlayer());
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                        characterCache.remove(playerUuid);
+                        classMenu.remove(playerUuid);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @EventHandler
