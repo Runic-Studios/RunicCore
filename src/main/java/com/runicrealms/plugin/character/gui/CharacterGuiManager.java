@@ -319,7 +319,9 @@ public class CharacterGuiManager implements Listener {
         }
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + character.getClassType().getName());
+        meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         List<String> lore = new ArrayList<String>(3);
         lore.add(ChatColor.GRAY + "Level: " + ChatColor.DARK_GREEN + "" + character.getLevel());
         lore.add(ChatColor.GRAY + "Exp: " + ChatColor.DARK_GREEN + "" + character.getExp());
