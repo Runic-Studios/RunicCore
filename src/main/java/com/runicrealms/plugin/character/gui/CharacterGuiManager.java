@@ -39,32 +39,44 @@ public class CharacterGuiManager implements Listener {
 
         creationIcon = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE, 1);
         ItemMeta creationMeta = creationIcon.getItemMeta();
+        creationMeta.setUnbreakable(true);
+        creationMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         creationMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Create A Class");
         creationIcon.setItemMeta(creationMeta);
 
         onlyKnightCreateIcon = new ItemStack(Material.BARRIER, 1);
         ItemMeta knightMeta = onlyKnightCreateIcon.getItemMeta();
+        knightMeta.setUnbreakable(true);
+        knightMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         knightMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.AQUA + "Knight" + ChatColor.RED + " rank to use this slot");
         onlyKnightCreateIcon.setItemMeta(knightMeta);
 
         onlyChampionCreateIcon = new ItemStack(Material.BARRIER, 1);
         ItemMeta championMeta = onlyChampionCreateIcon.getItemMeta();
+        championMeta.setUnbreakable(true);
+        championMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         championMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Champion" + ChatColor.RED + "" + ChatColor.BOLD + " rank to use this slot");
         onlyChampionCreateIcon.setItemMeta(championMeta);
 
         goBackIcon = new ItemStack(Material.BARRIER);
         ItemMeta goBackMeta = goBackIcon.getItemMeta();
+        goBackMeta.setUnbreakable(true);
+        goBackMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         goBackMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Cancel");
         goBackIcon.setItemMeta(goBackMeta);
 
         confirmDeletionIcon = new ItemStack(Material.SLIME_BALL);
         ItemMeta confirmDeletionMeta = confirmDeletionIcon.getItemMeta();
+        confirmDeletionMeta.setUnbreakable(true);
+        confirmDeletionMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         confirmDeletionMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Confirm Deletion");
         confirmDeletionMeta.setLore(Arrays.asList(new String[] {ChatColor.DARK_RED + "WARNING: There is no going back!"}));
         confirmDeletionIcon.setItemMeta(confirmDeletionMeta);
 
         ItemStack archerItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.archer.material")));
         ItemMeta archerMeta = archerItem.getItemMeta();
+        archerMeta.setUnbreakable(true);
+        archerMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         archerMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Archer");
         archerMeta.setLore(Arrays.asList(new String[] {
                 ChatColor.GRAY + "Ranged shooter, high",
@@ -75,6 +87,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")));
         ItemMeta clericMeta = clericItem.getItemMeta();
+        clericMeta.setUnbreakable(true);
+        clericMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         clericMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         clericMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Cleric");
         clericMeta.setLore(Arrays.asList(new String[] {
@@ -86,6 +100,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack warriorItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.warrior.material")));
         ItemMeta warriorMeta = warriorItem.getItemMeta();
+        warriorMeta.setUnbreakable(true);
+        warriorMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         warriorMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         warriorMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Warrior");
         warriorMeta.setLore(Arrays.asList(new String[] {
@@ -108,6 +124,8 @@ public class CharacterGuiManager implements Listener {
 
         ItemStack rogueItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.rogue.material")));
         ItemMeta rogueMeta = rogueItem.getItemMeta();
+        rogueMeta.setUnbreakable(true);
+        rogueMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         rogueMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         rogueMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Rogue");
         rogueMeta.setLore(Arrays.asList(new String[] {
