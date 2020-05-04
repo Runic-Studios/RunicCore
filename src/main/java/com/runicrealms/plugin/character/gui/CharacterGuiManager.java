@@ -8,6 +8,7 @@ import com.runicrealms.plugin.database.PlayerMongoData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +24,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 public class CharacterGuiManager implements Listener {
+
+    private static final FileConfiguration FILE_CONFIGURATION = RunicCore.getInstance().getConfig();
+    private static final short ARCHER_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.archer.damage");
+    private static final short CLERIC_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.cleric.damage");
+    private static final short MAGE_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.mage.damage");
+    private static final short ROGUE_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.rogue.damage");
+    private static final short WARRIOR_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.warrior.damage");
 
     private static Map<UUID, CharacterGuiInfo> characterCache = new HashMap<UUID, CharacterGuiInfo>();
     private static Map<UUID, CharacterGui> classMenu = new HashMap<UUID, CharacterGui>();
@@ -41,7 +49,7 @@ public class CharacterGuiManager implements Listener {
         ItemMeta creationMeta = creationIcon.getItemMeta();
         creationMeta.setUnbreakable(true);
         creationMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        creationMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Create A Class");
+        creationMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Create a Class");
         creationIcon.setItemMeta(creationMeta);
 
         onlyKnightCreateIcon = new ItemStack(Material.BARRIER, 1);
@@ -70,70 +78,107 @@ public class CharacterGuiManager implements Listener {
         confirmDeletionMeta.setUnbreakable(true);
         confirmDeletionMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         confirmDeletionMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "Confirm Deletion");
-        confirmDeletionMeta.setLore(Arrays.asList(new String[] {ChatColor.DARK_RED + "WARNING: There is no going back!"}));
+        confirmDeletionMeta.setLore(Collections.singletonList(ChatColor.DARK_RED + "WARNING: There is no going back!"));
         confirmDeletionIcon.setItemMeta(confirmDeletionMeta);
 
-        ItemStack archerItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.archer.material")));
+        ItemStack archerItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.archer.material")), 1, ARCHER_ITEM_DURAB);
         ItemMeta archerMeta = archerItem.getItemMeta();
         archerMeta.setUnbreakable(true);
         archerMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        archerMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Archer");
-        archerMeta.setLore(Arrays.asList(new String[] {
-                ChatColor.GRAY + "Ranged shooter, high",
-                ChatColor.GRAY + "damage, single target"
-        }));
+        archerMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Archer ⚔");
+        archerMeta.setLore(Arrays.asList(
+                ChatColor.GRAY + "",
+                ChatColor.GOLD + "● Long-range",
+                ChatColor.GOLD + "● Bowman",
+                ChatColor.GOLD + "● Single Target",
+                ChatColor.GRAY + "",
+                ChatColor.GRAY + "The archer features a diverse",
+                ChatColor.GRAY + "pool of damage, mobility, and",
+                ChatColor.GRAY + "utility spells, a master of",
+                ChatColor.GRAY + "terrain and single combat!"
+        ));
         archerItem.setItemMeta(archerMeta);
         classIcons.put(ClassEnum.ARCHER, archerItem);
 
-        ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")));
+        ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")),1, CLERIC_ITEM_DURAB);
         ItemMeta clericMeta = clericItem.getItemMeta();
         clericMeta.setUnbreakable(true);
         clericMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         clericMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        clericMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Cleric");
-        clericMeta.setLore(Arrays.asList(new String[] {
-                ChatColor.GRAY + "Group Healer, low",
-                ChatColor.GRAY + "damage, single target"
-        }));
+        clericMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Cleric ✦");
+        clericMeta.setLore(Arrays.asList(
+                ChatColor.GRAY + "",
+                ChatColor.GOLD + "● Close-range",
+                ChatColor.GOLD + "● Healer",
+                ChatColor.GOLD + "● Area-of-effect",
+                ChatColor.GRAY + "",
+                ChatColor.GRAY + "The cleric features a range",
+                ChatColor.GRAY + "crowd control, healing, and",
+                ChatColor.GRAY + "utility spells, bolstering",
+                ChatColor.GRAY + "any party!"
+        ));
         clericItem.setItemMeta(clericMeta);
         classIcons.put(ClassEnum.CLERIC, clericItem);
 
-        ItemStack warriorItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.warrior.material")));
-        ItemMeta warriorMeta = warriorItem.getItemMeta();
-        warriorMeta.setUnbreakable(true);
-        warriorMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        warriorMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        warriorMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Warrior");
-        warriorMeta.setLore(Arrays.asList(new String[] {
-                ChatColor.GRAY + "Tank, high defense, low",
-                ChatColor.GRAY + "damage, single target"
-        }));
-        warriorItem.setItemMeta(warriorMeta);
-        classIcons.put(ClassEnum.WARRIOR, warriorItem);
-
-        ItemStack mageItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.mage.material")));
+        ItemStack mageItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.mage.material")), 1, MAGE_ITEM_DURAB);
         ItemMeta mageMeta = mageItem.getItemMeta();
+        mageMeta.setUnbreakable(true);
+        mageMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         mageMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        mageMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Mage");
-        mageMeta.setLore(Arrays.asList(new String[] {
-                ChatColor.GRAY + "AoE & single target, medium",
-                ChatColor.GRAY + "range & medium damage"
-        }));
+        mageMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Mage ʔ");
+        mageMeta.setLore(Arrays.asList(
+                ChatColor.GRAY + "",
+                ChatColor.GOLD + "● Medium-range",
+                ChatColor.GOLD + "● Caster",
+                ChatColor.GOLD + "● Area-of-effect",
+                ChatColor.GRAY + "",
+                ChatColor.GRAY + "The mage is a master of widespread",
+                ChatColor.GRAY + "damage, controlling the flow of",
+                ChatColor.GRAY + "battle and deadly if left unchecked",
+                ChatColor.GRAY + "in the back lines!"
+        ));
         mageItem.setItemMeta(mageMeta);
         classIcons.put(ClassEnum.MAGE, mageItem);
 
-        ItemStack rogueItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.rogue.material")));
+        ItemStack rogueItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.rogue.material")), 1, ROGUE_ITEM_DURAB);
         ItemMeta rogueMeta = rogueItem.getItemMeta();
         rogueMeta.setUnbreakable(true);
         rogueMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         rogueMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        rogueMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Rogue");
-        rogueMeta.setLore(Arrays.asList(new String[] {
-                ChatColor.GRAY + "Close range, low defense,",
-                ChatColor.GRAY + "very high damage"
-        }));
+        rogueMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Rogue ⚔");
+        rogueMeta.setLore(Arrays.asList(
+                ChatColor.GRAY + "",
+                ChatColor.GOLD + "● Close-range",
+                ChatColor.GOLD + "● Duelist",
+                ChatColor.GOLD + "● Single Target",
+                ChatColor.GRAY + "",
+                ChatColor.GRAY + "The rogue does not play fair,",
+                ChatColor.GRAY + "Equipped with a pool of crowd",
+                ChatColor.GRAY + "control, stealth, and damage",
+                ChatColor.GRAY + "to engage any foe!"
+                ));
         rogueItem.setItemMeta(rogueMeta);
         classIcons.put(ClassEnum.ROGUE, rogueItem);
+
+        ItemStack warriorItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.warrior.material")), 1, WARRIOR_ITEM_DURAB);
+        ItemMeta warriorMeta = warriorItem.getItemMeta();
+        warriorMeta.setUnbreakable(true);
+        warriorMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        warriorMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        warriorMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Warrior ■");
+        warriorMeta.setLore(Arrays.asList(
+                ChatColor.GRAY + "",
+                ChatColor.GOLD + "● Close-range",
+                ChatColor.GOLD + "● Tank",
+                ChatColor.GOLD + "● Single Target",
+                ChatColor.GRAY + "",
+                ChatColor.GRAY + "The warrior is a force to be",
+                ChatColor.GRAY + "reckoned with, featuring both",
+                ChatColor.GRAY + "offensive and defensive spells",
+                ChatColor.GRAY + "to charge into the front lines!"
+        ));
+        warriorItem.setItemMeta(warriorMeta);
+        classIcons.put(ClassEnum.WARRIOR, warriorItem);
     }
 
     private static boolean checkIsCharacterIcon(ItemStack item) {
@@ -154,8 +199,8 @@ public class CharacterGuiManager implements Listener {
         return null;
     }
 
-    public static void openSelectGui(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 18, "Select Your Character");
+    private static void openSelectGui(Player player) {
+        Inventory inventory = Bukkit.createInventory(null, 18, ChatColor.GREEN + "Select Your Character");
         for (int i = 1; i <= 10; i++) {
             if (characterCache.get(player.getUniqueId()).getCharacterInfo().get(i) != null) {
                 inventory.setItem(i <= 5 ? i + 1 : i + 5, getCharacterIcon(characterCache.get(player.getUniqueId()).getCharacterInfo().get(i)));
@@ -182,13 +227,13 @@ public class CharacterGuiManager implements Listener {
     }
 
     public static void openAddGui(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 9, "Choose Your Class");
+        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.GREEN + "Choose Your Class");
         inventory.setItem(0, goBackIcon);
         inventory.setItem(2, classIcons.get(ClassEnum.ARCHER));
         inventory.setItem(3, classIcons.get(ClassEnum.CLERIC));
-        inventory.setItem(4, classIcons.get(ClassEnum.WARRIOR));
-        inventory.setItem(5, classIcons.get(ClassEnum.MAGE));
-        inventory.setItem(6, classIcons.get(ClassEnum.ROGUE));
+        inventory.setItem(4, classIcons.get(ClassEnum.MAGE));
+        inventory.setItem(5, classIcons.get(ClassEnum.ROGUE));
+        inventory.setItem(6, classIcons.get(ClassEnum.WARRIOR));
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
             classMenu.remove(player.getUniqueId());
             player.closeInventory();
@@ -198,7 +243,7 @@ public class CharacterGuiManager implements Listener {
     }
 
     public static void openRemoveGui(Player player, Integer classSlot) {
-        Inventory inventory = Bukkit.createInventory(null, 9, "Confirm Character Deletion");
+        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.RED + "Confirm Character Deletion");
         inventory.setItem(2, goBackIcon);
         inventory.setItem(6, confirmDeletionIcon);
         deletingCharacters.put(player.getUniqueId(), classSlot);
@@ -341,9 +386,9 @@ public class CharacterGuiManager implements Listener {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         List<String> lore = new ArrayList<String>(3);
-        lore.add(ChatColor.GRAY + "Level: " + ChatColor.DARK_GREEN + "" + character.getLevel());
-        lore.add(ChatColor.GRAY + "Exp: " + ChatColor.DARK_GREEN + "" + character.getExp());
-        lore.add(ChatColor.RED + "Right click to delete");
+        lore.add(ChatColor.GRAY + "Level: " + ChatColor.GREEN + "" + character.getLevel());
+        lore.add(ChatColor.GRAY + "Exp: " + ChatColor.GREEN + "" + character.getExp());
+        lore.add(ChatColor.RED + "[Right click] to delete");
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
