@@ -48,6 +48,11 @@ public class MountListener implements Listener {
         }
         if (mounted.containsKey(pl.getUniqueId())) return;
 
+        if (pl.getWorld().equals(Bukkit.getWorld("dungeons"))) {
+            pl.sendMessage(ChatColor.RED + "You can't use that in the dungeon world!");
+            return;
+        }
+
         if (!isOnCooldown(pl)) {
 
             // remove old horse, if applicable
