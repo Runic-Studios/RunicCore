@@ -8,9 +8,7 @@ import com.runicrealms.plugin.item.mounts.MountListener;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,31 +23,20 @@ public class CombatListener implements Listener {
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
 
-        // only listen for player, or arrows. ignore NPCs
-        if (!(e.getDamager() instanceof Player)) return;
-        if (!(e.getDamager() instanceof Player) && !(e.getDamager() instanceof Arrow)) return;
-        if (!(e.getVictim() instanceof LivingEntity)) return;
-        if (e.getVictim().hasMetadata("NPC")) return;
+        if (!(e.getVictim() instanceof Player)) return;
+        Player pl = (Player) e.getVictim();
 
-        // grab our variables
-        Player damager;
-        if (e.getDamager() instanceof Arrow && ((Arrow) e.getDamager()).getShooter() instanceof Player) {
-            damager = (Player) ((Arrow) e.getDamager()).getShooter();
-        } else {
-            damager = (Player) e.getDamager();
-        }
-
-        if (damager == null) return;
-        UUID damagerID = damager.getUniqueId();
+        //if (damager == null) return;
+        UUID playerID = pl.getUniqueId();
 
         // remove their mount
-        dismount(damager);
+        dismount(pl);
 
         // add/refresh their combat timer every hit
-        RunicCore.getCombatManager().addPlayer(damagerID);
+        RunicCore.getCombatManager().addPlayer(playerID);
 
         // if the damager has a party, tag their party members and inform them
-        tagPartyCombat(damager, e.getVictim());
+        tagPartyCombat(pl, e.getVictim());
     }
 
     @EventHandler

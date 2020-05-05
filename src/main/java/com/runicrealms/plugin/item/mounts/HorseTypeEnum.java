@@ -15,8 +15,6 @@ public enum HorseTypeEnum {
     // legendary
     FIRE(Horse.Color.CREAMY, Horse.Variant.HORSE, HorseTierEnum.LEGENDARY, "Blazing War Steed"),
     ICE(Horse.Color.DARK_BROWN, Horse.Variant.HORSE, HorseTierEnum.LEGENDARY, "Mirage");
-//    SKELETON(Horse.Color.BROWN, Horse.Variant.SKELETON_HORSE, HorseTierEnum.LEGENDARY, "Dead Man's Charger"),
-//    UNDEAD(Horse.Color.BROWN, Horse.Variant.UNDEAD_HORSE, HorseTierEnum.LEGENDARY, "Shademane");
 
     Horse.Color color;
     Horse.Variant variant;
