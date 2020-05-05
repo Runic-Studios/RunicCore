@@ -4,6 +4,8 @@ import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.events.LootEvent;
 import com.runicrealms.plugin.item.ItemNameGenerator;
+import com.runicrealms.plugin.item.mounts.HorseTypeEnum;
+import com.runicrealms.plugin.item.mounts.SaddleCMD;
 import com.runicrealms.plugin.item.util.ItemDropper;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import org.bukkit.Bukkit;
@@ -36,10 +38,15 @@ public class ItemCMD implements SubCommand {
         if (pl == null) return;
 
         // mounts
-//        if (args[2].equals("mount")) {
-//            ItemScrapsUtil.giveScrap(pl, Integer.parseInt(args[3]));
-//            return;
-//        }
+        // runicgive item [player] mount [name]
+        if (args[2].equals("mount")) {
+            try {
+                SaddleCMD.giveSaddle(pl, HorseTypeEnum.valueOf(args[3].toUpperCase()));
+                return;
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "Error: that mount was not found.");
+            }
+        }
 
         // runicgive item [player] [itemType] [tier] | length = 4
         // runicgive item [player] [itemType] [tier] ([x] [y] [z]) [uuid] | length = 8
@@ -51,7 +58,6 @@ public class ItemCMD implements SubCommand {
             name = nameGen.generateName(ItemNameGenerator.NameTier.valueOf(args[3].toUpperCase()));
             if (name == null) return;
         }
-
 
         String itemType = args[2];
 

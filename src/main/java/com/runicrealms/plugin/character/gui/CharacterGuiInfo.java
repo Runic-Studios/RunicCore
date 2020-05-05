@@ -9,19 +9,23 @@ import java.util.Map;
 public class CharacterGuiInfo {
 
     private Map<Integer, CharacterInfo> characters = new HashMap<Integer, CharacterInfo>();
-    private int firstUnusedSlot;
+    private int firstUnusedSlot = 1;
 
     public CharacterGuiInfo(MongoData mongoData) {
-        if (mongoData.has("character")) {
-            for (String key : mongoData.getSection("character").getKeys()) {
-                this.characters.put(Integer.parseInt(key), new CharacterInfo(
-                        ClassEnum.getFromName(mongoData.get("character." + key + ".class.name", String.class)),
-                        mongoData.get("character." + key + ".class.exp", Integer.class),
-                        mongoData.get("character." + key + ".class.level", Integer.class)));
+        try {
+            if (mongoData.has("character")) {
+                for (String key : mongoData.getSection("character").getKeys()) {
+                    this.characters.put(Integer.parseInt(key), new CharacterInfo(
+                            ClassEnum.getFromName(mongoData.get("character." + key + ".class.name", String.class)),
+                            mongoData.get("character." + key + ".class.exp", Integer.class),
+                            mongoData.get("character." + key + ".class.level", Integer.class)));
 
+                }
             }
+            this.findFirstUnusedSlot();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        this.findFirstUnusedSlot();
     }
 
     public void addCharacter(CharacterInfo character) {
@@ -34,7 +38,7 @@ public class CharacterGuiInfo {
         this.findFirstUnusedSlot();
     }
 
-    public void findFirstUnusedSlot() {
+    private void findFirstUnusedSlot() {
         for (int i = 1; i <= 10; i++) {
             if (this.characters.get(i) == null){
                 this.firstUnusedSlot = i;

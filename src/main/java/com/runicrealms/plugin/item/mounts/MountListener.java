@@ -1,6 +1,7 @@
-package com.runicrealms.plugin.mounts;
+package com.runicrealms.plugin.item.mounts;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.attributes.AttributeUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -22,14 +23,11 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-    // todo: color variants, cosmetic appearance on shift + right (make item soulbound)
-    // todo: NBT stuff
-    // todo: soulbound
 @SuppressWarnings("deprecation")
 public class MountListener implements Listener {
 
-    private HashMap<UUID, Long> onCooldown = new HashMap<>();
     private static final int cooldownTime = 5;
+    private HashMap<UUID, Long> onCooldown = new HashMap<>();
     public static HashMap<UUID, Entity> mounted = new HashMap<>();
 
     @EventHandler
@@ -50,9 +48,22 @@ public class MountListener implements Listener {
         }
         if (mounted.containsKey(pl.getUniqueId())) return;
 
-        boolean onCooldown = isOnCooldown(pl);
-        if (!onCooldown) {
-            spawnHorse(pl, pl.getInventory().getItemInMainHand());
+        if (!isOnCooldown(pl)) {
+
+            // remove old horse, if applicable
+            if (mounted.containsKey(pl.getUniqueId())) {
+                mounted.get(pl.getUniqueId()).remove();
+                mounted.remove(pl.getUniqueId());
+            }
+
+            pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_BREATHE, 1.0f, 1.0f);
+            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
+                    25, 0.5f, 0.5f, 0.5f,
+                    new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
+
+            Horse mount = spawnHorse(pl, pl.getInventory().getItemInMainHand());
+            mount.setPassenger(pl);
+            mounted.put(pl.getUniqueId(), mount);
         }
     }
 
@@ -61,13 +72,13 @@ public class MountListener implements Listener {
      */
     @EventHandler
     public void onVehicleDismount(VehicleExitEvent e) {
-
         if (e.getExited() instanceof Player && e.getVehicle() instanceof Horse) {
             mounted.remove(e.getExited().getUniqueId());
             Player pl = (Player) e.getExited();
             pl.playSound(e.getExited().getLocation(), Sound.ENTITY_HORSE_HURT, 0.5f, 1.0f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, e.getExited().getLocation(),
-                    25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
+                    25, 0.5f, 0.5f, 0.5f,
+                    new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
             e.getVehicle().remove();
         }
     }
@@ -81,7 +92,6 @@ public class MountListener implements Listener {
     }
 
     private boolean isOnCooldown(Player pl) {
-
         if (onCooldown.containsKey(pl.getUniqueId())) {
             pl.sendMessage(ChatColor.RED + "You must wait " + getUserCooldown(pl) + " second(s).");
             return true;
@@ -90,7 +100,6 @@ public class MountListener implements Listener {
             RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
                     (RunicCore.getInstance(), () -> onCooldown.remove(pl.getUniqueId()), (long) cooldownTime * 20);
         }
-
         return false;
     }
 
@@ -103,35 +112,29 @@ public class MountListener implements Listener {
         return ((int) cooldownRemaining / 1000);
     }
 
-    private void spawnHorse(Player pl, ItemStack saddle) {
-
-        // remove old horse, if applicable
-        if (mounted.containsKey(pl.getUniqueId())) {
-            mounted.get(pl.getUniqueId()).remove();
-            mounted.remove(pl.getUniqueId());
+    private Horse spawnHorse(Player pl, ItemStack saddle) {
+        HorseTypeEnum horseType = HorseTypeEnum.valueOf(AttributeUtil.getCustomString(saddle, "horseType"));
+        EntityType variant;
+        if (horseType.getVariant() == Horse.Variant.HORSE) {
+            variant = EntityType.HORSE;
+        } else if (horseType.getVariant() == Horse.Variant.SKELETON_HORSE) {
+            variant = EntityType.SKELETON_HORSE;
+        } else {
+            variant = EntityType.ZOMBIE_HORSE;
         }
-        pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_BREATHE, 1.0f, 1.0f);
-        pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
-                25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
-        Horse test = (Horse) Objects.requireNonNull(pl.getLocation().getWorld()).spawnEntity(pl.getLocation(), EntityType.HORSE);
-
-        // todo: read NBT tag
-        HorseTypeEnum type = HorseTypeEnum.valueOf("NORMAL");
-        // horsetype type = horsetype.valueof(NBT tag)
-        // horsetype.color.valueof(NBT tag)
-        test.setColor(Horse.Color.CHESTNUT);
-        test.setStyle(Horse.Style.NONE);
-        test.setMaxHealth(20);
-        test.setHealth(20);
-        test.setTamed(true);
-        test.setOwner(pl);
-        test.setInvulnerable(true);
-        test.getInventory().setSaddle(new ItemStack(Material.SADDLE, 1));
-        test.setCustomName(ChatColor.YELLOW + pl.getName() + "'s Horse");
-        test.setAdult();
-        test.setJumpStrength(0.75f);
-        Objects.requireNonNull(test.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(type.getSpeed());
-        test.setPassenger(pl);
-        mounted.put(pl.getUniqueId(), test);
+        Horse horseMount = (Horse) Objects.requireNonNull(pl.getLocation().getWorld()).spawnEntity(pl.getLocation(), variant);
+        horseMount.setColor(horseType.getColor());
+        horseMount.setStyle(Horse.Style.NONE);
+        horseMount.setMaxHealth(20);
+        horseMount.setHealth(20);
+        horseMount.setTamed(true);
+        horseMount.setOwner(pl);
+        horseMount.setInvulnerable(true);
+        horseMount.getInventory().setSaddle(new ItemStack(Material.SADDLE, 1));
+        horseMount.setCustomName(ChatColor.YELLOW + pl.getName() + "'s Horse");
+        horseMount.setAdult();
+        horseMount.setJumpStrength(horseType.getTier().getJumpSpeed());
+        Objects.requireNonNull(horseMount.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(horseType.getTier().getSpeed());
+        return horseMount;
     }
 }

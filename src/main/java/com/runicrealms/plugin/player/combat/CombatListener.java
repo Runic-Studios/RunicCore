@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.mounts.MountListener;
+import com.runicrealms.plugin.item.mounts.MountListener;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
