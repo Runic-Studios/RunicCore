@@ -6,11 +6,13 @@ import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,8 +24,10 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Enflame extends Spell {
 
+    private boolean areaOfEffect;
     private static final int DURATION = 5;
     private static final double PERCENT = 100;
+    private static final int RADIUS = 5;
     private List<UUID> flamers = new ArrayList<>();
 
     public Enflame() {
@@ -33,6 +37,21 @@ public class Enflame extends Spell {
                         "\nattacks to deal twice the damage for" +
                         "\nthe duration!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
+        this.areaOfEffect = false;
+    }
+
+    /**
+     *
+     * @param areaOfEffect used for tier set
+     */
+    public Enflame(boolean areaOfEffect) {
+        super("Enflame",
+                "For " + DURATION + " seconds, you ignite your blade" +
+                        "\nwith pure flame, causing your weapon⚔" +
+                        "\nattacks to deal twice the damage for" +
+                        "\nthe duration!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
+        this.areaOfEffect = areaOfEffect;
     }
 
     // spell execute code
@@ -66,6 +85,19 @@ public class Enflame extends Spell {
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.5f, 1.0f);
         victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1);
         victim.getWorld().spawnParticle(Particle.FLAME, victim.getLocation(), 10, 0.5F, 0.5F, 0.5F, 0);
+        if (areaOfEffect) {
+            for (Entity en : e.getPlayer().getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+                if (!verifyEnemy(e.getPlayer(), en)) continue;
+                DamageUtil.damageEntitySpell(e.getAmount(), (LivingEntity) en, e.getPlayer(), 0);
+                en.getWorld().playSound(en.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.5f, 1.0f);
+                en.getWorld().playSound(en.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1);
+                en.getWorld().spawnParticle(Particle.FLAME, en.getLocation(), 10, 0.5F, 0.5F, 0.5F, 0);
+            }
+        }
+    }
+
+    public static int getRadius() {
+        return RADIUS;
     }
 }
 
