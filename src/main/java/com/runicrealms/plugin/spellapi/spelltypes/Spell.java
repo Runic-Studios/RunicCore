@@ -51,7 +51,7 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public void execute(Player player, SpellItemType type) {
 
-        if (!RunicCore.getSpellManager().isOnCooldown(player, this)) { // ensure spell is not on cooldown
+        if (!RunicCore.getSpellManager().isOnCooldown(player, this.getName())) { // ensure spell is not on cooldown
 
             // verify class
             if (this.getReqClass() != ClassEnum.RUNIC) {

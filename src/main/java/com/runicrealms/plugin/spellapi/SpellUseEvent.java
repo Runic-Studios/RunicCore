@@ -76,7 +76,7 @@ public class SpellUseEvent implements Listener {
         // call spell event
         SpellCastEvent event = new SpellCastEvent(pl, spellToCast);
         Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
+        if (!event.isCancelled() && event.willExecute()) {
             spellToCast.execute(pl, spellItemType);
         }
     }

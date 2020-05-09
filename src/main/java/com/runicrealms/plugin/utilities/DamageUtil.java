@@ -133,9 +133,9 @@ public class DamageUtil {
 
         // todo: ensure it works w/ players. fix crafting tooltips for legendaries
         // call a custom damage event to communicate with other listeners/plugins
-        EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(damager, recipient, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
-        Bukkit.getPluginManager().callEvent(e);
-        recipient.setLastDamageCause(e);
+//        EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(damager, recipient, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
+//        Bukkit.getPluginManager().callEvent(e);
+//        recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player && knockBack) {
             KnockbackUtil.knockbackPlayer(damager, (Player) recipient);
