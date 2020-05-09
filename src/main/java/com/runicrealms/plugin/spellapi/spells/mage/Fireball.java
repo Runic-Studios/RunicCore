@@ -97,9 +97,12 @@ public class Fireball extends Spell {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
 
             if (applyBurn) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(),
-                        () -> victim.getWorld().spawnParticle
-                                (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0), 20L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT/2), victim, player, 50);
+                    victim.getWorld().spawnParticle
+                            (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                        }, 20L);
             }
         }
     }
