@@ -79,7 +79,7 @@ public class DamageListener implements Listener {
                 ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
                 dmgAmt = mm.getDamage();
             }
-            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, true);
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
             Bukkit.getPluginManager().callEvent(event);
 //            if (event.isCancelled()) {
 //                return;
@@ -210,7 +210,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    public static String weaponMessage(String className) {
+    private static String weaponMessage(String className) {
         String s = "";
         switch (className) {
             case "Archer":
@@ -256,7 +256,7 @@ public class DamageListener implements Listener {
         applyDeathMechanics(victim);
     }
 
-    public static void applyDeathMechanics(Player victim) {
+    private static void applyDeathMechanics(Player victim) {
 
         // call runic death event
         RunicDeathEvent event = new RunicDeathEvent(victim);
@@ -333,7 +333,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    public static void broadcastSlainDeathMessage(Entity damager, Player victim) {
+    private static void broadcastSlainDeathMessage(Entity damager, Player victim) {
 
         String nameVic = victim.getName();
 
@@ -355,7 +355,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    public static void broadcastDeathMessage(Player victim) {
+    private static void broadcastDeathMessage(Player victim) {
         String nameVic = victim.getName();
         // display death message
         Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
@@ -366,7 +366,7 @@ public class DamageListener implements Listener {
      * it skips soulbound items. It removes protections from protected items.
      * @param pl player whose items may drop
      */
-    public static void tryDropItems(Player pl) {
+    private static void tryDropItems(Player pl) {
 
         // don't drop items in dungeon world.
         if (pl.getWorld().getName().toLowerCase().equals("dungeons")) return;
@@ -380,7 +380,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    public static String checkForDungeon(Player pl) {
+    private static String checkForDungeon(Player pl) {
 
         // grab all regions the player is standing in
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();

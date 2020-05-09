@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.NumRounder;
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
@@ -14,7 +15,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class LoreGenerator {
 
@@ -53,7 +53,17 @@ public class LoreGenerator {
         hearthstone.setItemMeta(meta);
     }
 
-    public static void generateItemLore(ItemStack item, ChatColor dispColor, String dispName, String extra, boolean reForge) {
+    /**
+     *
+     * @param item ItemStack to create
+     * @param dispColor color of item corresponds to tier
+     * @param dispName name of item
+     * @param extra used for professions
+     * @param reForge used for weapons
+     * @param effectLore used for tiersets
+     */
+    public static void generateItemLore(ItemStack item, ChatColor dispColor, String dispName,
+                                        String extra, boolean reForge, String effectLore) {
 
         // grab our material, ItemMeta, ItemLore
         ItemTypeEnum itemType = ItemTypeEnum.matchType(item);
@@ -154,7 +164,15 @@ public class LoreGenerator {
             }
         }
 
-        // add rarity
+        // add additional lore if necessary
+        if (!effectLore.equals("")) {
+            String[] extraEffectLore = effectLore.split("\n");
+            for (String s : extraEffectLore) {
+                lore.add(ColorUtil.format(s));
+            }
+        }
+
+            // add rarity
         if (dispColor == ChatColor.WHITE) {
             lore.add(ChatColor.WHITE + "Crafted");
         } else if (dispColor == ChatColor.GRAY) {
@@ -215,8 +233,6 @@ public class LoreGenerator {
                 break;
             case WARRIOR:
                 type = "Axe";
-//                String s = itemType.toString();
-//                type = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
                 break;
             default:
                 type = "Something went wrong";
@@ -231,10 +247,11 @@ public class LoreGenerator {
             lore.add(ChatColor.DARK_GRAY + "Soulbound");
         }
 
-        // add additional lore if necessary
         if (!extra.equals("") && enchantment.equals("")) {
             String[] extraLore = extra.split("\n");
-            Collections.addAll(lore, extraLore);
+            for (String s : extraLore) {
+                lore.add(ColorUtil.format(s));
+            }
         } else if (!enchantment.equals("")) {
             lore.add("");
             lore.add(ChatColor.DARK_GRAY + "Use this on an item");

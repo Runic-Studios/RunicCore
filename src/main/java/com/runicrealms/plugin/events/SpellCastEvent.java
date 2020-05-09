@@ -4,7 +4,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -20,12 +19,14 @@ public class SpellCastEvent extends Event implements Cancellable {
     private Spell spellCasted;
     private Entity[] recipients;
     private boolean isCancelled;
+    private boolean willExecute; // for tier sets
 
     public SpellCastEvent(Player caster, Spell spellCasted, Entity... recipients) {
         this.caster = caster;
         this.spellCasted = spellCasted;
         this.recipients = recipients;
         this.isCancelled = false;
+        this.willExecute = true;
     }
 
     public Player getCaster() {
@@ -49,6 +50,14 @@ public class SpellCastEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean arg0) {
         this.isCancelled = arg0;
+    }
+
+    public boolean willExecute() {
+        return willExecute;
+    }
+
+    public void setWillExecute(boolean willExecute) {
+        this.willExecute = willExecute;
     }
 
     private static final HandlerList handlers = new HandlerList();

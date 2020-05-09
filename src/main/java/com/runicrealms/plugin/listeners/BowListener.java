@@ -194,7 +194,7 @@ public class BowListener implements Listener {
         if (!(e.getEntity() instanceof LivingEntity)) return;
         Entity shooter = (Entity) arrow.getShooter();
 
-        // only listen for arrows shot by a player
+        // only listen for arrows NOT shot by a player
         if (!(arrow.getShooter() instanceof Player)) {
             // mobs
                 e.setCancelled(true);
@@ -204,7 +204,7 @@ public class BowListener implements Listener {
                     ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
                     dmgAmt = mm.getDamage();
                 }
-                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), true);
+                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), false);
                 Bukkit.getPluginManager().callEvent(event);
 //                if (event.isCancelled()) {
 //                    return;

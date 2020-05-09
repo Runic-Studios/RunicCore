@@ -137,7 +137,7 @@ public class RunicItem {
         ((Damageable) Objects.requireNonNull(meta)).setDamage(durability);
         item.setItemMeta(meta);
         item = applyStats(item);
-        LoreGenerator.generateItemLore(item, tier, name, "", false);
+        LoreGenerator.generateItemLore(item, tier, name, "", false, "");
         setItem(item);
     }
 
