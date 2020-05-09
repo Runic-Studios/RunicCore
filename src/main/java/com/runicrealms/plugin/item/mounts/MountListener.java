@@ -67,8 +67,11 @@ public class MountListener implements Listener {
                     new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
             Horse mount = spawnHorse(pl, pl.getInventory().getItemInMainHand());
-            mount.setPassenger(pl);
-            mounted.put(pl.getUniqueId(), mount);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                mount.setPassenger(pl);
+                mounted.put(pl.getUniqueId(), mount);
+            }, 1L);
         }
     }
 
