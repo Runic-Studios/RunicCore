@@ -41,12 +41,13 @@ public class SearingShot extends Spell {
         spreadArrows = false;
     }
 
-    public SearingShot(boolean doExplosion, boolean spreadArrows) {
+    public SearingShot(boolean doExplosion, boolean spreadArrows, int cooldown) {
         super("Searing Shot",
                 "You launch an enchanted, flaming arrow" +
                         "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, cooldown, 25);
         searingArrows = new ArrayList<>();
+        hasBeenHit = new HashSet<>();
         this.doExplosion = doExplosion;
         this.spreadArrows = spreadArrows;
     }
@@ -118,13 +119,15 @@ public class SearingShot extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        if (verifyEnemy(pl, le)) {
+        if (verifyEnemy(pl, le) && !hasBeenHit.contains(le.getUniqueId())) {
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(le.getUniqueId()), 20L);
             DamageUtil.damageEntitySpell(DAMAGE, le, pl, 100);
 
             if (doExplosion) {
 
                 // hit them baddies
                 for (Entity en : arrow.getWorld().getNearbyEntities(arrow.getLocation(), RADIUS, RADIUS, RADIUS)) {
+                    if (en.equals(le)) continue; // skip original target
                     if (verifyEnemy(pl, en) && !hasBeenHit.contains(en.getUniqueId())) {
                         hasBeenHit.add(en.getUniqueId()); // prevent multiple explosions on single target
                         Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(en.getUniqueId()), 20L);

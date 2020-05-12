@@ -25,7 +25,7 @@ public class SpellManager {
 
     private List<Spell> spellList;
     private RunicCore plugin = RunicCore.getInstance();
-    private HashMap<UUID, HashMap<String, Long>> cooldown;
+    private HashMap<UUID, HashMap<Spell, Long>> cooldown;
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
@@ -41,12 +41,12 @@ public class SpellManager {
 
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
         if(this.cooldown.containsKey(player.getUniqueId())) {
-            HashMap<String, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
-            playerSpellsOnCooldown.put(spell.getName(), System.currentTimeMillis());
+            HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+            playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         } else {
-            HashMap<String, Long> playerSpellsOnCooldown = new HashMap<>();
-            playerSpellsOnCooldown.put(spell.getName(), System.currentTimeMillis());
+            HashMap<Spell, Long> playerSpellsOnCooldown = new HashMap<>();
+            playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
 
@@ -58,18 +58,18 @@ public class SpellManager {
         if(!this.cooldown.containsKey(player.getUniqueId())){
             return false;
         }
-        HashMap<String, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
-        return playerSpellsOnCooldown.containsKey(spellName);
+        HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
 
     @SuppressWarnings({"IntegerDivisionInFloatingPointContext"})
-    private int getUserCooldown(Player player, String spellName) {
+    private int getUserCooldown(Player player, Spell spell) {
         double cooldownRemaining = 0;
 
-        if(isOnCooldown(player, spellName)) {
-            HashMap<String, Long> cd = this.cooldown.get(player.getUniqueId());
-            if(cd.containsKey(spellName)) {
-                cooldownRemaining = (cd.get(spellName) + ((RunicCore.getSpellManager().getSpellByName(spellName).getCooldown() + 1) * 1000)) - System.currentTimeMillis();
+        if(isOnCooldown(player, spell.getName())) {
+            HashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
+            if(cd.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spell.getName()))) {
+                cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
         }
         return ((int) (cooldownRemaining / 1000));
@@ -79,8 +79,8 @@ public class SpellManager {
         if(!this.cooldown.containsKey(player.getUniqueId())) {
             return;
         }
-        HashMap<String, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
-        playerSpellsOnCooldown.remove(spell.getName());
+        HashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
+        playerSpellsOnCooldown.remove(spell);
         this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
 
@@ -165,11 +165,11 @@ public class SpellManager {
 
                 for(Player player : Bukkit.getOnlinePlayers()) {
                     if(cooldown.containsKey(player.getUniqueId())) {
-                        HashMap<String, Long> spells = cooldown.get(player.getUniqueId());
+                        HashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
                         List<String> cdString = new ArrayList<>();
 
-                        for(String spellName : spells.keySet()) {
-                            cdString.add(ChatColor.RED + spellName + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spellName) +/*+ ChatColor.RED +*/ "s");
+                        for(Spell spell : spells.keySet()) {
+                            cdString.add(ChatColor.RED + spell.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) +/*+ ChatColor.RED +*/ "s");
                         }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
