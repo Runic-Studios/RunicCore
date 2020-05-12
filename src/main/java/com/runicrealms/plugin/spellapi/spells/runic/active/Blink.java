@@ -78,6 +78,8 @@ public class Blink extends Spell {
 
         // teleport the player to the blink location
         pl.teleport(teleportLoc);
+        final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.8);
+        pl.setVelocity(velocity);
 
         new BukkitRunnable() {
             @Override

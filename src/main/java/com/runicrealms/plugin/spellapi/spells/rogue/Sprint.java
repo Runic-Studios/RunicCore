@@ -52,7 +52,7 @@ public class Sprint extends Spell {
         // apply effects
         if (flame) {
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
-            final Vector velocity = pl.getLocation().getDirection().normalize().multiply(FLAME_SPEED);
+            final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(FLAME_SPEED);
             pl.setVelocity(velocity);
             for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                 if (!verifyEnemy(pl, en)) continue;

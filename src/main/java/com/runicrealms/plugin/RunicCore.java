@@ -2,6 +2,7 @@ package com.runicrealms.plugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.MapLink;
@@ -36,6 +37,7 @@ import com.runicrealms.plugin.item.shops.ShopManager;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
+import com.runicrealms.plugin.parties.PartyChannel;
 import com.runicrealms.plugin.parties.PartyDamageListener;
 import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
@@ -256,6 +258,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
         CharacterGuiManager.initIcons();
+        RunicChat.getRunicChatAPI().registerChatChannel(new PartyChannel());
     }
     
     private void registerCommands() {

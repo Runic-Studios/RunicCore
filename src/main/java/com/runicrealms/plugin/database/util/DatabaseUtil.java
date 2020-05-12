@@ -41,7 +41,7 @@ public class DatabaseUtil {
         } catch (Exception exception) {
 
         }
-        return new ItemStack[41]; // That is bad!
+        return new ItemStack[41]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
 
     public static ItemStack[] loadInventory(String encoded, int invSize) {
@@ -67,7 +67,7 @@ public class DatabaseUtil {
         } catch (Exception exception) {
 
         }
-        return new ItemStack[invSize]; // That is bad!
+        return new ItemStack[invSize]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
 
     public static Location loadLocation(String encoded) {
@@ -80,7 +80,7 @@ public class DatabaseUtil {
         } catch (Exception exception) {
 
         }
-        return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // That is bad!
+        return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
 
     public static String serializeInventory(Inventory inventory) {
