@@ -25,12 +25,8 @@ public class PartyCommand extends BaseCommand {
 
     public PartyCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-invite", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) {
-                return new ArrayList<String>();
-            }
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) {
-                return new ArrayList<String>();
-            }
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<String>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) return new ArrayList<String>();
             Set<String> players = new HashSet<String>();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
@@ -40,9 +36,7 @@ public class PartyCommand extends BaseCommand {
             return players;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-join", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) {
-                return new ArrayList<String>();
-            }
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<String>();
             Set<String> invites = new HashSet<String>();
             for (Party party : RunicCore.getPartyManager().getParties()) {
                 for (Party.Invite invite : party.getInvites()) {
@@ -54,20 +48,14 @@ public class PartyCommand extends BaseCommand {
             return invites;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-kick", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) {
-                return new ArrayList<String>();
-            }
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) {
-                return new ArrayList<String>();
-            }
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<String>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) return new ArrayList<String>();
             Set<String> members = new HashSet<String>();
             RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getMembers().forEach(member -> members.add(member.getName()));
             return members;
         });
         RunicCore.getCommandManager().getCommandConditions().addCondition("is-player", context -> {
-            if (!(context.getIssuer().getIssuer() instanceof Player)) {
-                throw new ConditionFailedException("This command cannot be run from console!");
-            }
+            if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
         });
     }
 
