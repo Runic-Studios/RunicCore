@@ -42,7 +42,6 @@ public class PartyManager implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         if (this.playerParties.containsKey(event.getPlayer())) {
-            
             this.playerParties.remove(event.getPlayer());
         }
     }

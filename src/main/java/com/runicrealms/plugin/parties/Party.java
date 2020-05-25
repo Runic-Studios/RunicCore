@@ -25,7 +25,7 @@ public class Party {
     }
 
     public void inviteMember(Player player) {
-        this.members.add(player);
+        this.invites.add(new Invite(player, this));
     }
 
     public void acceptMemberInvite(Player player) {

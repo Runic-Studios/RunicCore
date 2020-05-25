@@ -137,6 +137,10 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not online!"));
             return;
         }
+        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        invited.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
+        PartyChannel.sendInPartyChat(party, RunicCore.getPartyChatChannel().getPrefix() + player.getName() + " has invited " + invited.getName() + " to the party");
+        party.inviteMember(player);
     }
 
     @Subcommand("join|j")
