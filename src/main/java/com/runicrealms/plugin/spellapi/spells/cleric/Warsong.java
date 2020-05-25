@@ -19,10 +19,11 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Warsong extends Spell {
 
+    private final double bonus;
     private static final int DURATION = 6;
-    private static double PERCENT = 40;
+    private static final double PERCENT = 40;
     private static final int RADIUS = 10;
-    private List<UUID> singers;
+    private final List<UUID> singers;
 
     public Warsong() {
         super("Warsong",
@@ -33,6 +34,19 @@ public class Warsong extends Spell {
                         "\nby " + (int) PERCENT + "%!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
         singers = new ArrayList<>();
+        this.bonus = 0;
+    }
+
+    public Warsong(int bonus) {
+        super("Warsong",
+                "You sing a song of battle, granting a buff" +
+                        "\nto all party members within " + RADIUS + " blocks!" +
+                        "\nFor " + DURATION + " seconds, the buff increases the" +
+                        "\nweapon⚔ damage of you and your allies" +
+                        "\nby " + (int) PERCENT + "%!",
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
+        singers = new ArrayList<>();
+        this.bonus = bonus;
     }
 
     // spell execute code
@@ -72,7 +86,7 @@ public class Warsong extends Spell {
         if (singers == null) return;
         if (!singers.contains(damager.getUniqueId())) return;
 
-        double percent = PERCENT / 100;
+        double percent = (PERCENT + bonus) / 100;
         int extraAmt = (int) (e.getAmount() * percent);
         if (extraAmt < 1) {
             extraAmt = 1;
@@ -82,6 +96,10 @@ public class Warsong extends Spell {
         e.getEntity().getWorld().spawnParticle
                 (Particle.NOTE, e.getEntity().getLocation().add(0, 1.5, 0),
                         5, 0.3F, 0.3F, 0.3F, 0);
+    }
+
+    public static double getPERCENT() {
+        return PERCENT;
     }
 }
 
