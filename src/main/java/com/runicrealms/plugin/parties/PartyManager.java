@@ -1,91 +1,50 @@
 package com.runicrealms.plugin.parties;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import com.runicrealms.plugin.RunicCore;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class PartyManager {
-    private ArrayList<Party> activeParties = new ArrayList<>();
-    private ArrayList<Invite> activeInvites = new ArrayList<>();
+public class PartyManager implements Listener {
+
+    private Set<Party> parties;
+    private Map<Player, Party> playerParties;
 
     public PartyManager() {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            for(Party party : activeParties) {
-                party.update();
-            }
-            for(Invite invite : activeInvites) {
-                invite.update();
-            }
-        }, 20L);
+        this.parties = new HashSet<Party>();
+        this.playerParties = new HashMap<Player, Party>();
     }
 
-    public void addParty(Party party) {
-        this.activeParties.add(party);
+    public Set<Party> getParties() {
+        return this.parties;
     }
 
-    public boolean addInvite(Invite invite) {
-        Invite pending = null;
-        for(Invite activeInvite : activeInvites)
-        {
-            if(activeInvite.getInvitedPlayer() == invite.getInvitedPlayer()) {
-                pending = activeInvite;
-            }
-        }
-
-        if(pending == null) {
-            this.activeInvites.add(invite);
-            return true;
+    public void updatePlayerParty(Player player, Party party) {
+        if (party == null) {
+            this.playerParties.remove(player);
         } else {
-            invite.getInviter().sendMessage
-                    (ChatColor.DARK_GREEN + "Party "
-                            + ChatColor.GOLD + "» "
-                            + ChatColor.WHITE + invite.getInvitedPlayer().getName()
-                            + ChatColor.RED + " already has an invite to another party!");
-
-            return false;
+            this.playerParties.put(player, party);
         }
-    }
-
-    public void removeParty(Party party) {
-        this.activeParties.remove(party);
-    }
-
-    public void removeInvite(Invite invite) {
-        this.activeInvites.remove(invite);
-    }
-
-    public void disbandParty(Party party) {
-        party.removeAllMembers();
-        this.activeParties.remove(party);
     }
 
     public Party getPlayerParty(Player player) {
-        for(Party party : activeParties) {
-            if(party.hasMember(player)) {
-                return party;
-            }
+        if (this.playerParties.containsKey(player)) {
+            return this.playerParties.get(player);
         }
         return null;
     }
 
-    public Invite getActiveInvite(Player player) {
-        for(Invite invite : activeInvites) {
-            if(invite.getInvitedPlayer() == player) {
-                return invite;
-            }
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if (this.playerParties.containsKey(event.getPlayer())) {
+            
+            this.playerParties.remove(event.getPlayer());
         }
-
-        return null;
     }
 
-    public ArrayList<Party> getActiveParties() {
-        return this.activeParties;
-    }
-
-    public ArrayList<Invite> getActiveInvites() {
-        return this.activeInvites;
-    }
 }

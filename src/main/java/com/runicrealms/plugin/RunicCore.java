@@ -1,5 +1,6 @@
 package com.runicrealms.plugin;
 
+import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
@@ -39,7 +40,6 @@ import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.parties.PartyChannel;
 import com.runicrealms.plugin.parties.PartyDamageListener;
-import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.cache.CacheManager;
@@ -94,6 +94,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static OutlawManager outlawManager;
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
+    private static PartyChannel partyChannel;
+    private static PaperCommandManager commandManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -111,6 +113,10 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static OutlawManager getOutlawManager() { return outlawManager; }
     public static ProtocolManager getProtocolManager() { return protocolManager; }
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
+    public static PartyChannel getPartyChatChannel() { return partyChannel; }
+    public static PaperCommandManager getCommandManager() {
+        return commandManager;
+    }
 
     public void onEnable() {
         // Load config defaults
@@ -133,6 +139,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         outlawManager = new OutlawManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
+        commandManager = new PaperCommandManager(this);
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
@@ -189,6 +196,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         cacheManager = null;
         outlawManager = null;
         databaseManager = null;
+        partyChannel = null;
     }
 
     @EventHandler
@@ -225,7 +233,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
-        pm.registerEvents(new PartyDisconnect(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SpellUseEvent(), this);
@@ -257,8 +264,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
+        pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
-        RunicChat.getRunicChatAPI().registerChatChannel(new PartyChannel());
+        partyChannel = new PartyChannel();
+        RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
     
     private void registerCommands() {

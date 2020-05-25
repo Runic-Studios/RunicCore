@@ -3,7 +3,6 @@ package com.runicrealms.plugin.command.subcommands.party;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.PartySC;
-import com.runicrealms.plugin.parties.Invite;
 import com.runicrealms.plugin.parties.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import org.bukkit.ChatColor;

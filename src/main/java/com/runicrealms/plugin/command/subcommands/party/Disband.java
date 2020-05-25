@@ -2,7 +2,6 @@ package com.runicrealms.plugin.command.subcommands.party;
 
 import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.parties.Party;
-import com.runicrealms.plugin.parties.PartyDisconnect;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

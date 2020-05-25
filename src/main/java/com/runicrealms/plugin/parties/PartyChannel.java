@@ -5,8 +5,8 @@ import com.runicrealms.plugin.RunicCore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class PartyChannel extends ChatChannel {
 
@@ -21,23 +21,22 @@ public class PartyChannel extends ChatChannel {
     }
 
     @Override
-    public List<Player> getRecipients(Player player) {
-        List<Player> recipients = new ArrayList<>();
+    public Collection<Player> getRecipients(Player player) {
         if (RunicCore.getPartyManager().getPlayerParty(player) != null) {
-            for (Player target : RunicCore.getPartyManager().getPlayerParty(player).getPlayerMembers()) {
-                if (target != null) {
-                    recipients.add(target);
-                }
-            }
+            return RunicCore.getPartyManager().getPlayerParty(player).getMembersWithLeader();
         } else {
             player.sendMessage(ChatColor.RED + "You must be in a party to use party chat!");
         }
-
-        return recipients;
+        return new HashSet<Player>();
     }
 
     @Override
     public String getMessageFormat() {
         return "%luckperms_meta_name_color%%player_name%: &r%message%";
     }
+
+    public static void sendInPartyChat(Party party, String message) {
+        RunicCore.getPartyChatChannel().getRecipients(party.getLeader()).forEach(player -> { player.sendMessage(ChatColor.translateAlternateColorCodes('&', message)); });
+    }
+
 }
