@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.parties;
 
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -24,12 +25,26 @@ public class Party {
         return this.leader;
     }
 
-    public void inviteMember(Player player) {
-        this.invites.add(new Invite(player, this));
+    public Invite addInvite(Player player) {
+        Invite invite = new Invite(player, this);
+        this.invites.add(invite);
+        return invite;
     }
 
-    public void acceptMemberInvite(Player player) {
-
+    public boolean acceptMemberInvite(Player player) {
+        this.members.add(player);
+        Invite playerInvite = null;
+        for (Invite invite : this.invites) {
+            if (invite.getPlayer() == player) {
+                playerInvite = invite;
+                break;
+            }
+        }
+        if (playerInvite != null) {
+            playerInvite.inviteAccepted();
+            return true;
+        }
+        return false;
     }
 
     public void kickMember(Player player) {
@@ -64,6 +79,21 @@ public class Party {
 
     public Set<Invite> getInvites() {
         return this.invites;
+    }
+
+    public Invite getInvite(Player player) {
+        for (Invite invite : this.invites) {
+            if (invite.getPlayer() == player) {
+                return invite;
+            }
+        }
+        return null;
+    }
+
+    public void sendMessageInChannel(String message) {
+        RunicCore.getPartyChatChannel().getRecipients(this.leader).forEach(player -> {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getPartyChatChannel().getPrefix() + message));
+        });
     }
 
     public static class Invite {

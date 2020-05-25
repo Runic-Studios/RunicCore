@@ -39,10 +39,26 @@ public class PartyManager implements Listener {
         return null;
     }
 
+    public boolean memberHasInvite(Player player) {
+        for (Party party : this.parties) {
+            if (party.getInvite(player) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         if (this.playerParties.containsKey(event.getPlayer())) {
             this.playerParties.remove(event.getPlayer());
+        }
+        for (Party party : this.parties) {
+            Party.Invite invite = party.getInvite(event.getPlayer());
+            if (invite != null) {
+                invite.inviteAccepted();
+                party.getInvites().remove(invite);
+            }
         }
     }
 

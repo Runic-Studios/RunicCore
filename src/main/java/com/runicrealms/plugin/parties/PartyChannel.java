@@ -35,8 +35,4 @@ public class PartyChannel extends ChatChannel {
         return "%luckperms_meta_name_color%%player_name%: &r%message%";
     }
 
-    public static void sendInPartyChat(Party party, String message) {
-        RunicCore.getPartyChatChannel().getRecipients(party.getLeader()).forEach(player -> { player.sendMessage(ChatColor.translateAlternateColorCodes('&', message)); });
-    }
-
 }
