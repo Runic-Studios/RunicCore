@@ -9,10 +9,8 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.MapLink;
 import com.runicrealms.plugin.command.RunicDamage;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
-import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
-import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
@@ -41,6 +39,7 @@ import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.parties.PartyChannel;
 import com.runicrealms.plugin.parties.PartyDamageListener;
 import com.runicrealms.plugin.parties.PartyManager;
+import com.runicrealms.plugin.parties.command.PartyCommand;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.combat.CombatListener;
@@ -140,6 +139,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
         commandManager = new PaperCommandManager(this);
+        commandManager.registerCommand(new PartyCommand());
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
@@ -273,7 +273,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private void registerCommands() {
 
         // bigger commands get their own methods
-        registerPartyCommands();
         registerSetCommands();
 
         // currency
@@ -315,21 +314,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
-    }
-    
-    private void registerPartyCommands() {
-        
-        PartySC partySC = new PartySC();
-        getCommand("party").setExecutor(partySC);
-        
-        partySC.addCommand(Arrays.asList("create"), new Create(partySC));
-        partySC.addCommand(Arrays.asList("disband", "end"), new Disband(partySC));
-        partySC.addCommand(Arrays.asList("help"), new Help(partySC));
-        partySC.addCommand(Arrays.asList("invite", "add"), new Invite(partySC));
-        partySC.addCommand(Arrays.asList("join", "accept"), new Join(partySC));
-        partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
-        partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
-        partySC.addCommand(Arrays.asList("teleport", "tp"), new Teleport(partySC));
     }
 
     private void registerSetCommands() {
