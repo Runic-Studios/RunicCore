@@ -135,9 +135,12 @@ public class StaffListener implements Listener {
                                 }
 
                                 // skip party members
-                                if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                                        && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(e.getUniqueId())) {
-                                    continue;
+                                if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
+                                    if (e instanceof Player) {
+                                        if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) e)) {
+                                            continue;
+                                        }
+                                    }
                                 }
 
                                 // skip NPCs

@@ -85,18 +85,18 @@ public class OutlawManager implements Listener {
         // if the player has a party, calculate that party's average rating
         // otherwise, the r1 is simply the player's current rating
         if (p1Party != null) {
-            for (UUID partyMember : p1Party.getMembers()) {
-                r1 += RunicCore.getCacheManager().getPlayerCache(partyMember).getRating();
+            for (Player partyMember : p1Party.getMembers()) {
+                r1 += RunicCore.getCacheManager().getPlayerCache(partyMember.getUniqueId()).getRating();
             }
-            r1 = r1 / (p1Party.getPartySize());
+            r1 = r1 / (p1Party.getSize());
         } else {
             r1 = RunicCore.getCacheManager().getPlayerCache(p1).getRating();
         }
         if (p2Party != null) {
-            for (UUID partyMember : p2Party.getMembers()) {
-                r2 += RunicCore.getCacheManager().getPlayerCache(partyMember).getRating();
+            for (Player partyMember : p2Party.getMembers()) {
+                r2 += RunicCore.getCacheManager().getPlayerCache(partyMember.getUniqueId()).getRating();
             }
-            r2 = r2 / (p2Party.getPartySize());
+            r2 = r2 / (p2Party.getSize());
         } else {
             r2 = RunicCore.getCacheManager().getPlayerCache(p2).getRating();
         }

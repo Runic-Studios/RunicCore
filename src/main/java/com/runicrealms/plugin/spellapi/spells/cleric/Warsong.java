@@ -65,7 +65,7 @@ public class Warsong extends Spell {
 
         // buff all players within 10 blocks
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-            for (Player memeber : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
+            for (Player memeber : RunicCore.getPartyManager().getPlayerParty(pl).getMembersWithLeader()) {
                 if (pl.getLocation().distance(memeber.getLocation()) > RADIUS) continue;
                 singers.add(memeber.getUniqueId());
             }

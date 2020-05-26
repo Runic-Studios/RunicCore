@@ -60,6 +60,7 @@ public class PartyManager implements Listener {
                 party.getInvites().remove(invite);
             }
         }
+        // TODO - check if player is in party and disband if leader
     }
 
 }

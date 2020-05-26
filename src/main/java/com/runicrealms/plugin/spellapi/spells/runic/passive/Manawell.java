@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class Manawell extends Spell {
 
@@ -38,7 +39,7 @@ public class Manawell extends Spell {
         if (roll > PERCENT) return;
 
         if (RunicCore.getPartyManager().getPlayerParty(e.getCaster()) == null) return;
-        List<Player> allies = RunicCore.getPartyManager().getPlayerParty(e.getCaster()).getPlayerMembers();
+        Set<Player> allies = RunicCore.getPartyManager().getPlayerParty(e.getCaster()).getMembersWithLeader();
 
         for (Player ally : allies) {
             if (verifyAlly(e.getCaster(), ally)) {
