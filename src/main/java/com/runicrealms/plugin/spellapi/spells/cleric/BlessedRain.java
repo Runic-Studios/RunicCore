@@ -33,6 +33,20 @@ public class BlessedRain extends Spell {
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
     }
 
+    /**
+     * Used for
+     * @param blessedFire whether to use the alternative skill of the tier set
+     */
+    public BlessedRain(boolean blessedFire) {
+        super("Blessed Rain",
+                "For " + DURATION + " seconds, you summon healing" +
+                        "\nwaters, conjuring a ring of light magic" +
+                        "\nwhich restores✦ " + HEALING_AMT + " health to allies" +
+                        "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
+    }
+
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
