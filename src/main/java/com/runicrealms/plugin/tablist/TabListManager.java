@@ -10,13 +10,6 @@ import com.runicrealms.runicguilds.api.RunicGuildsAPI;
 import com.runicrealms.runicguilds.data.GuildUtil;
 import com.runicrealms.runicguilds.guilds.Guild;
 import com.runicrealms.runicguilds.guilds.GuildMember;
-import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.LibsDisguises;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
-import me.libraryaddict.disguise.events.DisguiseEvent;
-import me.libraryaddict.disguise.events.UndisguiseEvent;
-import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
@@ -89,12 +82,7 @@ public class TabListManager implements Listener {
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (i > 19) break;
                 if (online.hasMetadata("NPC")) continue;
-                if (!DisguiseAPI.isSelfDisguised(online)) {
-                    tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
-                } else if (DisguiseAPI.getDisguise(online).getType() == DisguiseType.PLAYER) {
-                    PlayerDisguise disguise = ((PlayerDisguise) (DisguiseAPI.getDisguise(online)));
-                    tab.set(0, i + 1, new TextTabItem(disguise.getName(), 0, Skins.getPlayer(disguise.getName())));
-                }
+                tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
                 i++;
             }
 
@@ -111,12 +99,7 @@ public class TabListManager implements Listener {
                     if (j > 19) break;
                     Player plMem = Bukkit.getPlayer(guildy.getUUID());
                     if (plMem == null) continue;
-                    if (!DisguiseAPI.isSelfDisguised(plMem)) {
-                        tab.set(1, j + 1, new TextTabItem(plMem.getName(), 0, Skins.getPlayer(plMem)));
-                    } else {
-                        PlayerDisguise disguise = ((PlayerDisguise) (DisguiseAPI.getDisguise(plMem)));
-                        tab.set(0, i + 1, new TextTabItem(disguise.getName(), 0, Skins.getPlayer(disguise.getName())));
-                    }
+                    tab.set(1, j + 1, new TextTabItem(plMem.getName(), 0, Skins.getPlayer(plMem)));
                     j++;
                 }
             }
@@ -144,12 +127,7 @@ public class TabListManager implements Listener {
             int k = 0;
             for (Player member : party.getMembersWithLeader()) {
                 if (k > 19) break;
-                if (!DisguiseAPI.isSelfDisguised(member)) {
-                    tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(member)));
-                } else {
-                    PlayerDisguise disguise = ((PlayerDisguise) (DisguiseAPI.getDisguise(member)));
-                    tab.set(2, k + 1, new TextTabItem(disguise.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(disguise.getName())));
-                }
+                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(member)));
                 k++;
             }
         }
@@ -167,38 +145,6 @@ public class TabListManager implements Listener {
                 }
             }
         }.runTaskLater(RunicCore.getInstance(), 1);
-    }
-
-    @EventHandler
-    public void onPlayerDisguise(DisguiseEvent event) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                if (event.getEntity().getType() == EntityType.PLAYER) {
-                    for (Player online : Bukkit.getOnlinePlayers()) {
-                        if (online.hasMetadata("NPC")) continue;
-                        RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
-                                (RunicCore.getInstance(), () -> setupTab(online), 1);
-                    }
-                }
-            }
-        }, 1L);
-    }
-
-    @EventHandler
-    public void onPlayerUndisguise(UndisguiseEvent event) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                if (event.getEntity().getType() == EntityType.PLAYER) {
-                    for (Player online : Bukkit.getOnlinePlayers()) {
-                        if (online.hasMetadata("NPC")) continue;
-                        RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
-                                (RunicCore.getInstance(), () -> setupTab(online), 1);
-                    }
-                }
-            }
-        }, 1L);
     }
 
 }
