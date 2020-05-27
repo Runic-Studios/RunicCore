@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.parties;
 
+import com.runicrealms.plugin.RunicCore;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,6 +53,19 @@ public class PartyManager implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         if (this.playerParties.containsKey(event.getPlayer())) {
+            Party party = this.playerParties.get(event.getPlayer());
+            if (party.getLeader() == event.getPlayer()) {
+                party.sendMessageInChannel("This party has been disbanded &7Reason: leader disconnected");
+                party.disband();
+                for (Player member : party.getMembers()) {
+                    RunicCore.getPartyManager().updatePlayerParty(member, null);
+                }
+                this.updatePlayerParty(party.getLeader(), null);
+                this.getParties().remove(party);
+            } else {
+                party.getMembers().remove(event.getPlayer());
+                party.sendMessageInChannel(event.getPlayer() + " has been removed from the party &7Reason: disconnected");
+            }
             this.playerParties.remove(event.getPlayer());
         }
         for (Party party : this.parties) {
@@ -60,7 +75,6 @@ public class PartyManager implements Listener {
                 party.getInvites().remove(invite);
             }
         }
-        // TODO - check if player is in party and disband if leader
     }
 
 }

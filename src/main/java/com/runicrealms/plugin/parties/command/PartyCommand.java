@@ -75,7 +75,7 @@ public class PartyCommand extends BaseCommand {
         RunicCore.getPartyManager().getParties().add(party);
         RunicCore.getPartyManager().updatePlayerParty(player, party);
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-        player.sendMessage("&2Party &6» &aYou created a party! Use &2/party invite &ato invite players");
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aYou created a party! Use &2/party invite &ato invite players"));
         RunicCore.getTabListManager().setupTab(player);
     }
 
@@ -85,11 +85,12 @@ public class PartyCommand extends BaseCommand {
         if (RunicCore.getPartyManager().getPlayerParty(player) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou must be in a party to use this command!")); return; }
         if (RunicCore.getPartyManager().getPlayerParty(player).getLeader() != player) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou must be party leader to use this command!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
+        party.disband();
         for (Player member : party.getMembers()) {
             RunicCore.getPartyManager().updatePlayerParty(member, null);
         }
         RunicCore.getPartyManager().updatePlayerParty(party.getLeader(), null);
-        party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
         RunicCore.getPartyManager().getParties().remove(party);
     }
 
@@ -153,11 +154,12 @@ public class PartyCommand extends BaseCommand {
         if (RunicCore.getPartyManager().getPlayerParty(player) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou need to be in a party to use this command!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
         if (party.getLeader() == player) {
+            party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
             for (Player member : party.getMembers()) {
                 RunicCore.getPartyManager().updatePlayerParty(member, null);
             }
             RunicCore.getPartyManager().updatePlayerParty(party.getLeader(), null);
-            party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
+            party.disband();
             RunicCore.getPartyManager().getParties().remove(party);
         } else {
             party.sendMessageInChannel(player + " has been removed this party &7Reason: left");

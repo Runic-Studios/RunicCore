@@ -52,6 +52,7 @@ public class Party {
     }
 
     public void disband() {
+        this.leader = null;
         this.members.clear();
     }
 
