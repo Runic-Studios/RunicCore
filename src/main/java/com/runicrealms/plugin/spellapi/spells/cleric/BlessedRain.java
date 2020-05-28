@@ -5,8 +5,10 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -21,6 +23,7 @@ public class BlessedRain extends Spell {
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
     private static final double GEM_BOOST = 50;
+    private final boolean blessedFire;
 
     // constructor
     public BlessedRain() {
@@ -31,6 +34,7 @@ public class BlessedRain extends Spell {
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
+        this.blessedFire = false;
     }
 
     /**
@@ -45,6 +49,7 @@ public class BlessedRain extends Spell {
                         "\nwithin " + (int) RADIUS + " blocks every " + PERIOD + " second(s)!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
+        this.blessedFire = blessedFire;
     }
 
     @Override
@@ -73,9 +78,10 @@ public class BlessedRain extends Spell {
 
     private void spawnRing(Player pl, Location loc) {
 
-        //Location temp = new Location(pl.getWorld(), loc.getX(), loc.getY(), loc.getZ());
-
-        pl.getWorld().playSound(pl.getLocation(), Sound.WEATHER_RAIN, 0.5F, 1.0F);
+        if (blessedFire)
+            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1.0F);
+        else
+            pl.getWorld().playSound(pl.getLocation(), Sound.WEATHER_RAIN, 0.5F, 1.0F);
 
         int particles = 50;
         float radius = RADIUS;
@@ -87,10 +93,15 @@ public class BlessedRain extends Spell {
             x = Math.cos(angle) * radius;
             z = Math.sin(angle) * radius;
             loc.add(x, 0, z);
-            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
-                    new Particle.DustOptions(Color.AQUA, 1));
-            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
-                    new Particle.DustOptions(Color.WHITE, 1));
+            if (blessedFire) {
+                pl.getWorld().spawnParticle(Particle.FLAME, loc, 5, 0, 0, 0, 0);
+                pl.getWorld().spawnParticle(Particle.FLAME, loc, 5, 0, 0, 0, 0);
+            } else {
+                pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
+                        new Particle.DustOptions(Color.AQUA, 1));
+                pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
+                        new Particle.DustOptions(Color.WHITE, 1));
+            }
             loc.subtract(x, 0, z);
         }
 
@@ -99,21 +110,32 @@ public class BlessedRain extends Spell {
 
         Location tempSplash = new Location(pl.getWorld(), loc.getX()+ranX, loc.getY(), loc.getZ()+ranZ);
 
-        pl.getWorld().spawnParticle(Particle.WATER_SPLASH, tempSplash, 25, 0, 0, 0);
-        pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, tempSplash, 25, 0, 0, 0);
+        if (blessedFire) {
+            pl.getWorld().spawnParticle(Particle.LAVA, tempSplash, 5, 0, 0, 0);
+        } else {
+            pl.getWorld().spawnParticle(Particle.WATER_SPLASH, tempSplash, 25, 0, 0, 0);
+            pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, tempSplash, 25, 0, 0, 0);
+        }
 
         // heal people
         for (Entity entity : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
-            // skip non-players
-            if (!(entity instanceof Player)) {
-                continue;
-            }
+            if (blessedFire) {
+                if (verifyEnemy(pl, entity)) {
+                    pl.getWorld().spawnParticle(Particle.FLAME, entity.getLocation(), 5, 0, 0, 0);
+                    DamageUtil.damageEntitySpell(HEALING_AMT, (LivingEntity) entity, pl, 50);
+                }
 
-            // heal party members and the caster
-            Player ally = (Player) entity;
-            if (verifyAlly(pl, ally)) {
-                HealUtil.healPlayer(HEALING_AMT, ally, pl, true, true, false);
+            } else {
+
+                // skip non-players
+                if (!(entity instanceof Player)) continue;
+
+                // heal party members and the caster
+                Player ally = (Player) entity;
+                if (verifyAlly(pl, ally)) {
+                    HealUtil.healPlayer(HEALING_AMT, ally, pl, true, true, false);
+                }
             }
         }
     }

@@ -95,7 +95,7 @@ public class Warsong extends Spell {
         damager.getWorld().playSound(damager.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
         e.getEntity().getWorld().spawnParticle
                 (Particle.NOTE, e.getEntity().getLocation().add(0, 1.5, 0),
-                        5, 0.3F, 0.3F, 0.3F, 0);
+                        5, 1.0F, 0, 0, 0); // 0.3F
     }
 
     public static double getPERCENT() {
