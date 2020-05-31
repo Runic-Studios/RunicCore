@@ -10,6 +10,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 public class DatabaseUtil {
@@ -57,6 +58,8 @@ public class DatabaseUtil {
                     } else {
                         break;
                     }
+                } catch (EOFException exception) {
+                    break;
                 } catch (IOException exception) {
                     exception.printStackTrace();
                     break;
