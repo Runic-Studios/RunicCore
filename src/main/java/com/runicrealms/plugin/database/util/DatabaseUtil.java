@@ -39,7 +39,7 @@ public class DatabaseUtil {
             dataInput.close();
             return contents;
         } catch (Exception exception) {
-
+            exception.printStackTrace();
         }
         return new ItemStack[41]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
@@ -58,6 +58,7 @@ public class DatabaseUtil {
                         break;
                     }
                 } catch (IOException exception) {
+                    exception.printStackTrace();
                     break;
                 }// This shouldn't happen!
 
@@ -65,7 +66,7 @@ public class DatabaseUtil {
             dataInput.close();
             return contents;
         } catch (Exception exception) {
-
+            exception.printStackTrace();
         }
         return new ItemStack[invSize]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
@@ -78,7 +79,7 @@ public class DatabaseUtil {
             dataInput.close();
             return location;
         } catch (Exception exception) {
-
+            exception.printStackTrace();
         }
         return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }

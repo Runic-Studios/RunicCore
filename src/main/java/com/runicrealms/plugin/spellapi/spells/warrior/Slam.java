@@ -5,10 +5,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +15,7 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Slam extends Spell {
 
+    private final boolean ignite;
     private static final double KNOCKUP_AMT = 0.2;
     private static final int DAMAGE_AMT = 15;
     private static final double HEIGHT = 1.2;
@@ -30,16 +28,18 @@ public class Slam extends Spell {
                         "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
                         "\n" + RADIUS + " blocks and knock them up!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
+        ignite = false;
     }
 
-//    @Override
-//    public boolean attemptToExecute(Player pl) {
-//        if (!pl.isOnGround()) {
-//            pl.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
-//            return false;
-//        }
-//        return true;
-//    }
+    public Slam(boolean ignite) {
+        super("Slam",
+                "You charge fearlessly into the air!" +
+                        "\nUpon hitting the ground, you deal " +
+                        "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
+                        "\n" + RADIUS + " blocks and knock them up!",
+                ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
+        this.ignite = ignite;
+    }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
@@ -94,6 +94,14 @@ public class Slam extends Spell {
                             Vector force = (pl.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             en.setVelocity(force.normalize());
+                            if (ignite) {
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                                    DamageUtil.damageEntitySpell((DAMAGE_AMT/2), (LivingEntity) en, pl, 50);
+                                    en.getWorld().spawnParticle
+                                            (Particle.LAVA, ((LivingEntity) en).getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                                }, 20L);
+                            }
                         }
                     }
                 }
