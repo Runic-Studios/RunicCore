@@ -187,6 +187,8 @@ public final class MobHealthBars implements Listener {
             }
             passener.remove();
         }
+
+        e.getEntity().getWorld().spawnParticle(Particle.SMOKE_LARGE, e.getEntity().getEyeLocation(), 5, 0, 0, 0, 0);
     }
 
     /**
