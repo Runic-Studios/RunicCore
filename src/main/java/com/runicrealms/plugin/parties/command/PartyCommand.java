@@ -62,9 +62,9 @@ public class PartyCommand extends BaseCommand {
     @Default
     @CatchUnknown
     @Subcommand("help|h")
-    @Conditions("is-player")
+    //@Conditions("is-player")
     public void onCommandHelp(Player player) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &7Available commands: &ecreate, disband, help, invite, join, kick, leave"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave"));
     }
 
     @Subcommand("create|c")
