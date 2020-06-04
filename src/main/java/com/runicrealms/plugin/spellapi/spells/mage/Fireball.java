@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Fireball extends Spell {
 
-    private boolean fireCone;
-    private boolean applyBurn;
+    private final boolean fireCone;
+    private final boolean applyBurn;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 25;
     private SmallFireball fireball;

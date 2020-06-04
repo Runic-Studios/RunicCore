@@ -72,15 +72,17 @@ public class Slam extends Spell {
                         (pl.getLocation().getDirection().getX(), -10.0,
                                 pl.getLocation().getDirection().getZ()).multiply(2).normalize());
                 pl.setFallDistance(-512.0F);
+                startSlamTask(pl);
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
+    }
 
-        // todo: fix potential memory leak if player falls into void or never hits ground?
+    private void startSlamTask(Player pl) {
         new BukkitRunnable() {
             @Override
             public void run() {
 
-                if (pl.isOnGround() || pl.getFallDistance() == 1) {
+                if (pl.isOnGround() || pl.getFallDistance() == 1) { //  || pl.getFallDistance() == 1
 
                     this.cancel();
                     pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
@@ -96,7 +98,7 @@ public class Slam extends Spell {
                             en.setVelocity(force.normalize());
                             if (ignite) {
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                                    DamageUtil.damageEntitySpell((DAMAGE_AMT/2), (LivingEntity) en, pl, 50);
+                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, 100);
                                     en.getWorld().spawnParticle
                                             (Particle.LAVA, ((LivingEntity) en).getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                                     pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

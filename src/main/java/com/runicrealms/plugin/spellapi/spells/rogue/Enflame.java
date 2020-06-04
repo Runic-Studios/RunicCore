@@ -17,18 +17,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Enflame extends Spell {
 
-    private boolean areaOfEffect;
+    private final boolean areaOfEffect;
     private static final int DURATION = 5;
     private static final double PERCENT = 100;
     private static final int RADIUS = 5;
-    private List<UUID> flamers = new ArrayList<>();
+    private final HashSet<UUID> flamers = new HashSet<>();
 
     public Enflame() {
         super("Enflame",
@@ -88,12 +87,16 @@ public class Enflame extends Spell {
         if (areaOfEffect) {
             for (Entity en : e.getPlayer().getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                 if (!verifyEnemy(e.getPlayer(), en)) continue;
-                DamageUtil.damageEntitySpell(e.getAmount(), (LivingEntity) en, e.getPlayer(), 0);
+                DamageUtil.damageEntitySpell((e.getAmount() * 0.5), (LivingEntity) en, e.getPlayer(), 0);
                 en.getWorld().playSound(en.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.5f, 1.0f);
                 en.getWorld().playSound(en.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 1);
                 en.getWorld().spawnParticle(Particle.FLAME, en.getLocation(), 10, 0.5F, 0.5F, 0.5F, 0);
             }
         }
+    }
+
+    public static double getPercent() {
+        return PERCENT;
     }
 
     public static int getRadius() {

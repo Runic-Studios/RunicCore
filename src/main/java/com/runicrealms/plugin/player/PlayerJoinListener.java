@@ -68,6 +68,7 @@ public class PlayerJoinListener implements Listener {
                 double proportion = (double) (e.getPlayerCache().getClassExp() - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
                 if (e.getPlayerCache().getClassLevel() >= PlayerLevelUtil.getMaxLevel()) pl.setExp(0);
                 if (proportion < 0) proportion = 0.0f;
+                if (proportion >= 1) proportion = 0.99f;
                 pl.setExp((float) proportion);
 
                 // set their location

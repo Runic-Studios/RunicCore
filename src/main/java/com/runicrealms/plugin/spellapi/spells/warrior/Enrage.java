@@ -19,7 +19,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class Enrage extends Spell {
@@ -29,7 +29,7 @@ public class Enrage extends Spell {
     private static final int CHANNEL_DURATION = 3;
     private static final int BUFF_DURATION = 10;
     private static final int DAMAGE_AMT = 5;
-    private static HashMap<UUID, Long> ragers = new HashMap<>();
+    private final HashSet<UUID> ragers = new HashSet<>();
 
     public Enrage() {
         super("Enrage",
@@ -92,7 +92,7 @@ public class Enrage extends Spell {
 
         // potion effect, dmg effect
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION * 20, 1));
-        ragers.put(pl.getUniqueId(), System.currentTimeMillis());
+        ragers.add(pl.getUniqueId());
 
         // remove damage buff
         new BukkitRunnable() {
@@ -110,7 +110,7 @@ public class Enrage extends Spell {
     @EventHandler
     public void onSuccessfulHit(WeaponDamageEvent e) {
 
-        if (!ragers.containsKey(e.getPlayer().getUniqueId())) return;
+        if (!ragers.contains(e.getPlayer().getUniqueId())) return;
 
         if(e.isCancelled()) return;
 
@@ -121,7 +121,10 @@ public class Enrage extends Spell {
 
         LivingEntity le = (LivingEntity) en;
 
-        DamageUtil.damageEntitySpell(DAMAGE_AMT+extraDamage, le, pl, 100);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
+        if (extraDamage > 0) {
+            DamageUtil.damageEntitySpell(extraDamage, le, pl, 100);
+        }
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
     }

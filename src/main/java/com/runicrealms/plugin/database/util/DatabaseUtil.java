@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.database.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.output.ByteArrayOutputStream;
 import org.bukkit.inventory.Inventory;
@@ -68,6 +69,9 @@ public class DatabaseUtil {
             }
             dataInput.close();
             return contents;
+        } catch (EOFException exception) {
+            Bukkit.getServer().getLogger().info(ChatColor.RED + "EOFException encountered");
+            exception.printStackTrace();
         } catch (Exception exception) {
             exception.printStackTrace();
         }

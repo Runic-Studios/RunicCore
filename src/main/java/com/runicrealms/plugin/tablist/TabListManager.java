@@ -12,7 +12,6 @@ import com.runicrealms.runicguilds.guilds.Guild;
 import com.runicrealms.runicguilds.guilds.GuildMember;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 // TODO: fix flickering, fix pings in text component always being '0'
 public class TabListManager implements Listener {
 
-    private Tabbed tabbed;
+    private final Tabbed tabbed;
 
     // constructor
     public TabListManager(Plugin plugin) {
