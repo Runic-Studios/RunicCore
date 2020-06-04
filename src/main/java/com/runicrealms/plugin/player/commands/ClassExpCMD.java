@@ -49,7 +49,7 @@ public class ClassExpCMD implements SubCommand {
         // if the player doesn't have a party or they're in there by themself, give them regular exp.
         if (RunicCore.getPartyManager().getPlayerParty(pl) == null
                 || RunicCore.getPartyManager().getPlayerParty(pl) != null
-                && RunicCore.getPartyManager().getPlayerParty(pl).getPartySize() < 2) {
+                && RunicCore.getPartyManager().getPlayerParty(pl).getSize() < 2) {
             if (args.length != 7) {
                 int exp = Integer.parseInt(args[2]);
                 PlayerLevelUtil.giveExperience(pl, exp);
@@ -87,14 +87,14 @@ public class ClassExpCMD implements SubCommand {
             exp += extraAmt;
 
             int nearbyMembers = 0;
-            for (Player member : party.getPlayerMembers()) {
+            for (Player member : party.getMembersWithLeader()) {
                 if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
                     nearbyMembers += 1;
                 }
             }
 
-            for (Player member : party.getPlayerMembers()) {
+            for (Player member : party.getMembersWithLeader()) {
                 if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
                 if (pl.getLocation().distance(member.getLocation()) < RANGE) {
                     int mobLv = Integer.parseInt(args[6]);

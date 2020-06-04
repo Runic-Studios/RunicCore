@@ -62,7 +62,7 @@ public class Reflect extends Spell {
 
         // skip party members
         if (RunicCore.getPartyManager().getPlayerParty(victim) != null
-                && RunicCore.getPartyManager().getPlayerParty(victim).hasMember(damager.getUniqueId())) return;
+                && RunicCore.getPartyManager().getPlayerParty(victim).hasMember(damager)) return;
 
         if (this.reflectedPlrs.contains(id)) {
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.25f, 2.0f);

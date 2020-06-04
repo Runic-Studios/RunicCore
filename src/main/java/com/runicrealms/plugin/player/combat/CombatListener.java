@@ -89,7 +89,7 @@ public class CombatListener implements Listener {
     private void tagPartyCombat(Player pl, Entity e) {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
 
-            for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getPlayerMembers()) {
+            for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getMembersWithLeader()) {
 
                 if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
 

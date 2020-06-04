@@ -122,9 +122,9 @@ public class TabListManager implements Listener {
         } else {
             Party party = RunicCore.getPartyManager().getPlayerParty(pl);
             tab.set(2, 0, new TextTabItem
-                    (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getPartySize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
+                    (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getSize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int k = 0;
-            for (Player member : party.getPlayerMembers()) {
+            for (Player member : party.getMembersWithLeader()) {
                 if (k > 19) break;
                 tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(member)));
                 k++;
