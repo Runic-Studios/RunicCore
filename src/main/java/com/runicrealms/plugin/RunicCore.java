@@ -15,6 +15,7 @@ import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
+import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.item.BossTagger;
@@ -94,6 +95,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
+    private static GroupManager groupManager;
     private static PaperCommandManager commandManager;
 
     // getters for handlers
@@ -113,6 +115,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static ProtocolManager getProtocolManager() { return protocolManager; }
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
     public static PartyChannel getPartyChatChannel() { return partyChannel; }
+    public static GroupManager getGroupManager() { return groupManager; }
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
@@ -138,6 +141,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         outlawManager = new OutlawManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
+        groupManager = new GroupManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
 
@@ -196,6 +200,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         cacheManager = null;
         outlawManager = null;
         databaseManager = null;
+        groupManager = null;
         partyChannel = null;
     }
 
@@ -264,6 +269,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
+        pm.registerEvents(new GroupManager(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
