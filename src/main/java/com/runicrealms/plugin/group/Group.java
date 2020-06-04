@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.parties;
+package com.runicrealms.plugin.group;
 
 import org.bukkit.entity.Player;
 

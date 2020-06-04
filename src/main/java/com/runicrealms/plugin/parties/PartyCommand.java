@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.parties.command;
+package com.runicrealms.plugin.parties;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.ConditionFailedException;

@@ -39,7 +39,7 @@ import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.parties.PartyChannel;
 import com.runicrealms.plugin.parties.PartyDamageListener;
 import com.runicrealms.plugin.parties.PartyManager;
-import com.runicrealms.plugin.parties.command.PartyCommand;
+import com.runicrealms.plugin.parties.PartyCommand;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.combat.CombatListener;

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.parties;
+package com.runicrealms.plugin.group;
 
 import com.runicrealms.plugin.utilities.GUIItem;
 import org.bukkit.ChatColor;
