@@ -36,7 +36,7 @@ public class PartyCommand extends BaseCommand {
             return players;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-join", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<String>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) != null) return new ArrayList<String>();
             Set<String> invites = new HashSet<String>();
             for (Party party : RunicCore.getPartyManager().getParties()) {
                 for (Party.Invite invite : party.getInvites()) {
@@ -62,9 +62,8 @@ public class PartyCommand extends BaseCommand {
     @Default
     @CatchUnknown
     @Subcommand("help|h")
-    //@Conditions("is-player")
     public void onCommandHelp(Player player) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list"));
     }
 
     @Subcommand("create|c")
@@ -86,11 +85,10 @@ public class PartyCommand extends BaseCommand {
         if (RunicCore.getPartyManager().getPlayerParty(player).getLeader() != player) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou must be party leader to use this command!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
         party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
-        party.disband();
-        for (Player member : party.getMembers()) {
+        for (Player member : party.getMembersWithLeader()) {
             RunicCore.getPartyManager().updatePlayerParty(member, null);
+            RunicCore.getTabListManager().setupTab(member);
         }
-        RunicCore.getPartyManager().updatePlayerParty(party.getLeader(), null);
         RunicCore.getPartyManager().getParties().remove(party);
     }
 
@@ -105,11 +103,11 @@ public class PartyCommand extends BaseCommand {
         Player invited = Bukkit.getPlayerExact(args[0]);
         if (invited == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not online!")); return; }
         if (RunicCore.getPartyManager().getPlayerParty(invited) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is already in a party!")); return; }
-        if (RunicCore.getPartyManager().memberHasInvite(invited)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player has been invited to a different party!")); return; }
+        if (RunicCore.getPartyManager().memberHasInvite(invited)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player has already been invited to your/a different party!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
         invited.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
-        party.addInvite(player);
+        party.addInvite(invited);
     }
 
     @Subcommand("join|j")
@@ -117,7 +115,7 @@ public class PartyCommand extends BaseCommand {
     @CommandCompletion("@party-join")
     @Conditions("is-player")
     public void onCommandJoin(Player player, String[] args) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou cannot use this command while in a party!")); return; }
+        if (RunicCore.getPartyManager().getPlayerParty(player) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou cannot use this command while in a party!")); return; }
         if (args.length < 1) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cPlease specify the name of the person that invited you to their party")); return; }
         Player inviter = Bukkit.getPlayerExact(args[0]);
         if (inviter == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not online!")); return; }
@@ -141,31 +139,58 @@ public class PartyCommand extends BaseCommand {
         if (args.length < 1) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cPlease specify which player to kick")); return; }
         Player kicked = Bukkit.getPlayerExact(args[0]);
         if (kicked == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not online!")); return; }
+        if (kicked == player) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou cannot kick yourself!")); return; }
         if (RunicCore.getPartyManager().getPlayerParty(kicked) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not in your party!")); return; }
         if (RunicCore.getPartyManager().getPlayerParty(kicked) != party) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not in your party!")); return; }
         party.getMembers().remove(kicked);
         RunicCore.getPartyManager().updatePlayerParty(kicked, null);
-        party.sendMessageInChannel(kicked + " has been removed from this party &7Reason: kicked");
+        RunicCore.getTabListManager().setupTab(kicked);
+        for (Player member : party.getMembersWithLeader()) {
+            RunicCore.getTabListManager().setupTab(member);
+        }
+        party.sendMessageInChannel(kicked.getName() + " has been removed from this party &7Reason: kicked");
+        kicked.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aYou have been kicked from the party!"));
     }
 
-    @Subcommand("leave|l|quit|q")
+    @Subcommand("leave|quit|q")
     @Conditions("is-player")
     public void onCommandLeave(Player player) {
         if (RunicCore.getPartyManager().getPlayerParty(player) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou need to be in a party to use this command!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
         if (party.getLeader() == player) {
             party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
-            for (Player member : party.getMembers()) {
+            for (Player member : party.getMembersWithLeader()) {
                 RunicCore.getPartyManager().updatePlayerParty(member, null);
+                RunicCore.getTabListManager().setupTab(member);
             }
-            RunicCore.getPartyManager().updatePlayerParty(party.getLeader(), null);
-            party.disband();
-            RunicCore.getPartyManager().getParties().remove(party);
         } else {
-            party.sendMessageInChannel(player + " has been removed this party &7Reason: left");
+            party.sendMessageInChannel(player.getName() + " has been removed this party &7Reason: left");
             party.getMembers().remove(player);
             RunicCore.getPartyManager().updatePlayerParty(player, null);
+            RunicCore.getTabListManager().setupTab(player);
+            for (Player member : party.getMembersWithLeader()) {
+                RunicCore.getTabListManager().setupTab(member);
+            }
         }
+    }
+
+    @Subcommand("list|players|members|l")
+    @Conditions("is-player")
+    public void onCommandList(Player player) {
+        if (RunicCore.getPartyManager().getPlayerParty(player) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou need to be in a party to use this command!")); return; }
+        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        StringBuilder builder = new StringBuilder();
+        builder.append("&2Party &6» &aMembers: &e");
+        int i = 0;
+        int last = party.getMembers().size();
+        for (Player member : party.getMembersWithLeader()) {
+            builder.append(member.getName());
+            if (i != last) {
+                builder.append(", ");
+            }
+            i++;
+        }
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', builder.toString()));
     }
 
 }

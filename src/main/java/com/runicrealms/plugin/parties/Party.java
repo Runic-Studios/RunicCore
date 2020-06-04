@@ -42,6 +42,7 @@ public class Party {
         }
         if (playerInvite != null) {
             playerInvite.inviteAccepted();
+            this.invites.remove(playerInvite);
             return true;
         }
         return false;
@@ -49,11 +50,6 @@ public class Party {
 
     public void kickMember(Player player) {
         this.members.remove(player);
-    }
-
-    public void disband() {
-        this.leader = null;
-        this.members.clear();
     }
 
     public void setLeader(Player player) {
@@ -118,7 +114,9 @@ public class Party {
 
         public void inviteAccepted() {
             if (this.task != null) {
-                this.task.cancel();
+                if (!task.isCancelled()) {
+                    this.task.cancel();
+                }
             }
         }
 
