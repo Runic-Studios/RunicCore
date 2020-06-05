@@ -64,7 +64,7 @@ public class PartyManager implements Listener {
                 RunicCore.getPartyManager().getParties().remove(party);
             } else {
                 party.getMembers().remove(event.getPlayer());
-                party.sendMessageInChannel(event.getPlayer() + " has been removed from the party &7Reason: disconnected");
+                party.sendMessageInChannel(event.getPlayer().getName() + " has been removed from the party &7Reason: disconnected");
                 for (Player member : party.getMembersWithLeader()) {
                     RunicCore.getTabListManager().setupTab(member);
                 }
