@@ -2,10 +2,10 @@ package com.runicrealms.plugin.resourcepack;
 
 public enum ResourcePackVersion {
 
-    MC_1_9("", 48, 110), // todo: add
-    MC_1_10("", 201, 210), // todo: add
-    MC_1_11("", 301, 316), // todo: add
-    MC_1_12("", 317, 340), // todo: add
+    MC_1_9("https://www.dropbox.com/s/zyzp2okga5at3ow/1.10_RR.zip?dl=1", 48, 110), // same as 1.10
+    MC_1_10("https://www.dropbox.com/s/zyzp2okga5at3ow/1.10_RR.zip?dl=1", 201, 210),
+    MC_1_11("https://www.dropbox.com/s/zhv02mx6hixneyc/1.12_RR.zip?dl=1", 301, 316), // same as 1.12 // https://www.dropbox.com/s/b7hu3aqlehzd135/1.11_RR.zip?dl=1
+    MC_1_12("https://www.dropbox.com/s/zhv02mx6hixneyc/1.12_RR.zip?dl=1", 317, 340),
     MC_1_13("https://www.dropbox.com/s/pd4n42rlsi91ufw/1.13_RR.zip?dl=1", 341, 404), // uses old font format
     MC_1_14("https://www.dropbox.com/s/uevneode37qedk5/1.14_RR.zip?dl=1", 441, 498),
     MC_1_15("https://www.dropbox.com/s/1g2l8cvqr6cqjif/1.15_RR.zip?dl=1", 550, 578);
