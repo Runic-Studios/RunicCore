@@ -141,8 +141,13 @@ public class BowListener implements Listener {
         Player damager = (Player) arrow.getShooter();
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(damager) != null
-                && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim.getUniqueId())) { return; }
+        if (RunicCore.getPartyManager().getPlayerParty(damager) != null) {
+            if (victim instanceof Player) {
+                if (RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) victim)) {
+                    return;
+                }
+            }
+        }
 
         ItemStack artifact = damager.getInventory().getItemInMainHand();
 
@@ -228,9 +233,12 @@ public class BowListener implements Listener {
             Player damager = (Player) arrow.getShooter();
 
             // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(damager) != null
-                    && RunicCore.getPartyManager().getPlayerParty(damager).hasMember(victim.getUniqueId())) {
-                return;
+            if (RunicCore.getPartyManager().getPlayerParty(damager) != null) {
+                if (victim instanceof Player) {
+                    if (RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) victim)) {
+                        return;
+                    }
+                }
             }
 
             // player can't damage themselves

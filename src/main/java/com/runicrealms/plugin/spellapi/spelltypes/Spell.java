@@ -96,8 +96,12 @@ public abstract class Spell implements ISpell, Listener {
         if (livingAlly instanceof ArmorStand) return false;
 
         // skip the player if they're not in the party
-        return RunicCore.getPartyManager().getPlayerParty(caster) == null
-                || RunicCore.getPartyManager().getPlayerParty(caster).hasMember(ally.getUniqueId());
+        if (ally instanceof Player) {
+            if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally)) {
+                return true;
+            }
+        }
+        return RunicCore.getPartyManager().getPlayerParty(caster) == null;
     }
 
     @Override
@@ -138,8 +142,12 @@ public abstract class Spell implements ISpell, Listener {
         }
 
         // skip party members
-        return RunicCore.getPartyManager().getPlayerParty(caster) == null
-                || !RunicCore.getPartyManager().getPlayerParty(caster).hasMember(victim.getUniqueId());
+        if (victim instanceof Player) {
+            if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) victim)) {
+                return true;
+            }
+        }
+        return RunicCore.getPartyManager().getPlayerParty(caster) == null;
     }
 
     @Override

@@ -46,11 +46,14 @@ public class Windstride extends Spell {
                 // skip our player, skip non-player entities
                 if (le == pl)  continue;
 
-                if (RunicCore.getPartyManager().getPlayerParty(pl) != null
-                        && RunicCore.getPartyManager().getPlayerParty(pl).hasMember(le.getUniqueId())) {
-                    // send player info message
-                    le.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
-                    applySpell((Player) le);
+                if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
+                    if (le instanceof Player) {
+                        if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) le)) {
+                            // send player info message
+                            le.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
+                            applySpell((Player) le);
+                        }
+                    }
                 }
             }
         }

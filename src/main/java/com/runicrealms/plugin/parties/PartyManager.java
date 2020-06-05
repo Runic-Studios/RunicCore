@@ -1,91 +1,83 @@
 package com.runicrealms.plugin.parties;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class PartyManager {
-    private ArrayList<Party> activeParties = new ArrayList<>();
-    private ArrayList<Invite> activeInvites = new ArrayList<>();
+public class PartyManager implements Listener {
+
+    private Set<Party> parties;
+    private Map<Player, Party> playerParties;
 
     public PartyManager() {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            for(Party party : activeParties) {
-                party.update();
-            }
-            for(Invite invite : activeInvites) {
-                invite.update();
-            }
-        }, 20L);
+        this.parties = new HashSet<Party>();
+        this.playerParties = new HashMap<Player, Party>();
     }
 
-    public void addParty(Party party) {
-        this.activeParties.add(party);
+    public Set<Party> getParties() {
+        return this.parties;
     }
 
-    public boolean addInvite(Invite invite) {
-        Invite pending = null;
-        for(Invite activeInvite : activeInvites)
-        {
-            if(activeInvite.getInvitedPlayer() == invite.getInvitedPlayer()) {
-                pending = activeInvite;
-            }
-        }
-
-        if(pending == null) {
-            this.activeInvites.add(invite);
-            return true;
+    public void updatePlayerParty(Player player, Party party) {
+        if (party == null) {
+            this.playerParties.remove(player);
         } else {
-            invite.getInviter().sendMessage
-                    (ChatColor.DARK_GREEN + "Party "
-                            + ChatColor.GOLD + "» "
-                            + ChatColor.WHITE + invite.getInvitedPlayer().getName()
-                            + ChatColor.RED + " already has an invite to another party!");
-
-            return false;
+            this.playerParties.put(player, party);
         }
-    }
-
-    public void removeParty(Party party) {
-        this.activeParties.remove(party);
-    }
-
-    public void removeInvite(Invite invite) {
-        this.activeInvites.remove(invite);
-    }
-
-    public void disbandParty(Party party) {
-        party.removeAllMembers();
-        this.activeParties.remove(party);
     }
 
     public Party getPlayerParty(Player player) {
-        for(Party party : activeParties) {
-            if(party.hasMember(player)) {
-                return party;
-            }
+        if (this.playerParties.containsKey(player)) {
+            return this.playerParties.get(player);
         }
         return null;
     }
 
-    public Invite getActiveInvite(Player player) {
-        for(Invite invite : activeInvites) {
-            if(invite.getInvitedPlayer() == player) {
-                return invite;
+    public boolean memberHasInvite(Player player) {
+        for (Party party : this.parties) {
+            if (party.getInvite(player) != null) {
+                return true;
             }
         }
-
-        return null;
+        return false;
     }
 
-    public ArrayList<Party> getActiveParties() {
-        return this.activeParties;
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if (this.playerParties.containsKey(event.getPlayer())) {
+            Party party = this.playerParties.get(event.getPlayer());
+            if (party.getLeader() == event.getPlayer()) {
+                party.sendMessageInChannel("This party has been disbanded &7Reason: leader disconnected");
+                for (Player member : party.getMembers()) {
+                    RunicCore.getPartyManager().updatePlayerParty(member, null);
+                    RunicCore.getTabListManager().setupTab(member);
+                }
+                RunicCore.getPartyManager().updatePlayerParty(party.getLeader(), null);
+                RunicCore.getPartyManager().getParties().remove(party);
+            } else {
+                party.getMembers().remove(event.getPlayer());
+                party.sendMessageInChannel(event.getPlayer() + " has been removed from the party &7Reason: disconnected");
+                for (Player member : party.getMembersWithLeader()) {
+                    RunicCore.getTabListManager().setupTab(member);
+                }
+            }
+            this.playerParties.remove(event.getPlayer());
+        }
+        for (Party party : this.parties) {
+            Party.Invite invite = party.getInvite(event.getPlayer());
+            if (invite != null) {
+                invite.inviteAccepted();
+                party.getInvites().remove(invite);
+            }
+        }
     }
 
-    public ArrayList<Invite> getActiveInvites() {
-        return this.activeInvites;
-    }
 }

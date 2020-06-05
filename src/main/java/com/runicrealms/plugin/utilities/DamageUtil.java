@@ -46,8 +46,13 @@ public class DamageUtil {
         //if (recipient instanceof ArmorStand) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
-                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+            if (recipient instanceof Player) {
+                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                    return;
+                }
+            }
+        }
 
         // outlaw check
         if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
@@ -89,8 +94,13 @@ public class DamageUtil {
         if (recipient instanceof ArmorStand) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
-                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+            if (recipient instanceof Player) {
+                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                    return;
+                }
+            }
+        }
 
         // outlaw check
         if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
@@ -169,8 +179,13 @@ public class DamageUtil {
         if (recipient == caster) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null
-                && RunicCore.getPartyManager().getPlayerParty(caster).hasMember(recipient.getUniqueId())) { return; }
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+            if (recipient instanceof Player) {
+                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                    return;
+                }
+            }
+        }
 
         int newHP = (int) (recipient.getHealth() - dmgAmt);
 

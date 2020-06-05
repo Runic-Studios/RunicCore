@@ -1,5 +1,6 @@
 package com.runicrealms.plugin;
 
+import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
@@ -8,10 +9,8 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.MapLink;
 import com.runicrealms.plugin.command.RunicDamage;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
-import com.runicrealms.plugin.command.subcommands.party.*;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
-import com.runicrealms.plugin.command.supercommands.PartySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
@@ -39,8 +38,8 @@ import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.parties.PartyChannel;
 import com.runicrealms.plugin.parties.PartyDamageListener;
-import com.runicrealms.plugin.parties.PartyDisconnect;
 import com.runicrealms.plugin.parties.PartyManager;
+import com.runicrealms.plugin.parties.command.PartyCommand;
 import com.runicrealms.plugin.player.*;
 import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.combat.CombatListener;
@@ -94,6 +93,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static OutlawManager outlawManager;
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
+    private static PartyChannel partyChannel;
+    private static PaperCommandManager commandManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -111,6 +112,10 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static OutlawManager getOutlawManager() { return outlawManager; }
     public static ProtocolManager getProtocolManager() { return protocolManager; }
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
+    public static PartyChannel getPartyChatChannel() { return partyChannel; }
+    public static PaperCommandManager getCommandManager() {
+        return commandManager;
+    }
 
     public void onEnable() {
         // Load config defaults
@@ -133,6 +138,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         outlawManager = new OutlawManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
+        commandManager = new PaperCommandManager(this);
+        commandManager.registerCommand(new PartyCommand());
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
@@ -189,6 +196,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         cacheManager = null;
         outlawManager = null;
         databaseManager = null;
+        partyChannel = null;
     }
 
     @EventHandler
@@ -225,7 +233,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ResourcePackListener(), this);
         pm.registerEvents(new PlayerQuitListener(), this);
-        pm.registerEvents(new PartyDisconnect(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SpellUseEvent(), this);
@@ -257,14 +264,15 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
+        pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
-        RunicChat.getRunicChatAPI().registerChatChannel(new PartyChannel());
+        partyChannel = new PartyChannel();
+        RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
     
     private void registerCommands() {
 
         // bigger commands get their own methods
-        registerPartyCommands();
         registerSetCommands();
 
         // currency
@@ -306,21 +314,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
-    }
-    
-    private void registerPartyCommands() {
-        
-        PartySC partySC = new PartySC();
-        getCommand("party").setExecutor(partySC);
-        
-        partySC.addCommand(Arrays.asList("create"), new Create(partySC));
-        partySC.addCommand(Arrays.asList("disband", "end"), new Disband(partySC));
-        partySC.addCommand(Arrays.asList("help"), new Help(partySC));
-        partySC.addCommand(Arrays.asList("invite", "add"), new Invite(partySC));
-        partySC.addCommand(Arrays.asList("join", "accept"), new Join(partySC));
-        partySC.addCommand(Arrays.asList("kick"), new Kick(partySC));
-        partySC.addCommand(Arrays.asList("leave", "exit"), new Leave(partySC));
-        partySC.addCommand(Arrays.asList("teleport", "tp"), new Teleport(partySC));
     }
 
     private void registerSetCommands() {
