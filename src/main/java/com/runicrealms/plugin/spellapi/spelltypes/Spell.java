@@ -26,12 +26,13 @@ import java.util.Set;
 
 public abstract class Spell implements ISpell, Listener {
 
-    private String name, description;
-    private ChatColor color;
-    private ClassEnum reqClass;
-    private double cooldown;
+    private final String name;
+    private final String description;
+    private final ChatColor color;
+    private final ClassEnum reqClass;
+    private final double cooldown;
     protected RunicCore plugin = RunicCore.getInstance();
-    private int manaCost;
+    private final int manaCost;
     private boolean isPassive = false;
 
     public Spell(String name, String description, ChatColor color, ClassEnum reqClass, double cooldown, int manaCost) {
@@ -84,6 +85,12 @@ public abstract class Spell implements ISpell, Listener {
         return true;
     }
 
+    /**
+     * Method to check for valid enemy before applying healing calculation. True if enemy can be healed.
+     * @param caster player who used spell
+     * @param ally player who was hit by spell
+     * @return whether target is valid
+     */
     @Override
     public boolean verifyAlly(Player caster, Entity ally) {
 
@@ -95,15 +102,20 @@ public abstract class Spell implements ISpell, Listener {
         if (livingAlly.hasMetadata("NPC")) return false;
         if (livingAlly instanceof ArmorStand) return false;
 
-        // skip the player if they're not in the party
+        // skip the target player if the caster has a party and the target is NOT in it
         if (ally instanceof Player) {
-            if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally)) {
-                return true;
-            }
+            return RunicCore.getPartyManager().getPlayerParty(caster) == null
+                    || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
         }
-        return RunicCore.getPartyManager().getPlayerParty(caster) == null;
+        return true;
     }
 
+    /**
+     * Method to check for valid enemy before applying damage calculation. True if enemy can be damaged.
+     * @param caster player who used spell
+     * @param victim mob or player who was hit by spell
+     * @return whether target is valid
+     */
     @Override
     public boolean verifyEnemy(Player caster, Entity victim) {
 
@@ -143,11 +155,10 @@ public abstract class Spell implements ISpell, Listener {
 
         // skip party members
         if (victim instanceof Player) {
-            if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) victim)) {
-                return true;
-            }
+            return RunicCore.getPartyManager().getPlayerParty(caster) == null
+                    || !RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) victim);
         }
-        return RunicCore.getPartyManager().getPlayerParty(caster) == null;
+        return true;
     }
 
     @Override
