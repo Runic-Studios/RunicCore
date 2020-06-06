@@ -212,7 +212,7 @@ public class CharacterGuiManager implements Listener {
                 } else if (i >= 7 && i <= 10) {
                     inventory.setItem(
                             i <= 5 ? i + 1 : i + 5,
-                            !player.hasPermission("runic.rank.champion") ? creationIcon : onlyChampionCreateIcon);
+                            player.hasPermission("runic.rank.champion") ? creationIcon : onlyChampionCreateIcon);
                 } else {
                     inventory.setItem(i <= 5 ? i + 1 : i + 5, creationIcon);
                 }
