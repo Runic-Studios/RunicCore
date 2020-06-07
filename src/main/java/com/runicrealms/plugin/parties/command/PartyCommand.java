@@ -105,6 +105,7 @@ public class PartyCommand extends BaseCommand {
         if (RunicCore.getPartyManager().getPlayerParty(invited) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is already in a party!")); return; }
         if (RunicCore.getPartyManager().memberHasInvite(invited)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player has already been invited to your/a different party!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        if (Math.abs(party.getLeader().getLevel() - invited.getLevel()) > 15) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is outside the party level range [15]")); return; }
         invited.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
