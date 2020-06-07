@@ -206,7 +206,7 @@ public class RunicCore extends JavaPlugin implements Listener {
          */
         getLogger().info(" §cRunicCore has been disabled.");
         getCacheManager().saveCaches(); // save player data
-        getCacheManager().saveQueuedFiles(false, true); // saves SYNC
+        getCacheManager().saveQueuedFiles(false, false); // saves SYNC
         /*
         Notify RunicRestart
          */
