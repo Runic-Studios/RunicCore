@@ -27,7 +27,7 @@ public class PartyChannel extends ChatChannel {
         } else {
             player.sendMessage(ChatColor.RED + "You must be in a party to use party chat!");
         }
-        return new HashSet<Player>();
+        return new HashSet<>();
     }
 
     @Override

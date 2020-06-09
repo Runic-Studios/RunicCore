@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class SaddleCMD {
 
     public static void giveSaddle(Player pl, HorseTypeEnum horseTypeEnum) {
-        ItemStack mountSaddle = mountSaddle(horseTypeEnum);
+        ItemStack mountSaddle = getMountSaddle(horseTypeEnum);
         HashMap<Integer, ItemStack> itemsToAdd = pl.getInventory().addItem(mountSaddle);
         // drop leftover items on the floor
         for (ItemStack leftOver : itemsToAdd.values()) {
@@ -21,7 +21,12 @@ public class SaddleCMD {
         }
     }
 
-    private static ItemStack mountSaddle(HorseTypeEnum horseType) {
+    /**
+     * Generates a saddle item! Used in RunicArtifacts for the Guild Vendor
+     * @param horseType Horse type enum
+     * @return saddle item
+     */
+    public static ItemStack getMountSaddle(HorseTypeEnum horseType) {
 
         ItemStack mountSaddle = new ItemStack(Material.SADDLE);
 

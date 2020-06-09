@@ -23,9 +23,9 @@ import java.util.UUID;
 
 public class SpellManager {
 
-    private List<Spell> spellList;
-    private RunicCore plugin = RunicCore.getInstance();
-    private HashMap<UUID, HashMap<Spell, Long>> cooldown;
+    private final List<Spell> spellList;
+    private final RunicCore plugin = RunicCore.getInstance();
+    private final HashMap<UUID, HashMap<Spell, Long>> cooldown;
 
     public SpellManager() {
         this.spellList = new ArrayList<>();

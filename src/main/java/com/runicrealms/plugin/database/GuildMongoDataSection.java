@@ -8,8 +8,8 @@ import java.util.Set;
 public class GuildMongoDataSection implements MongoDataSection {
 
     private Document document;
-    private GuildMongoData parent;
-    private String root;
+    private final GuildMongoData parent;
+    private final String root;
 
     public GuildMongoDataSection(GuildMongoData parent, String key) {
         this.document = (Document) parent.get(key);
