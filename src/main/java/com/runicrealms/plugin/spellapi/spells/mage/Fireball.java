@@ -22,6 +22,7 @@ public class Fireball extends Spell {
 
     private final boolean fireCone;
     private final boolean applyBurn;
+    private final boolean iceBolt;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 25;
     private SmallFireball fireball;
@@ -36,6 +37,7 @@ public class Fireball extends Spell {
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
         fireCone = false;
         applyBurn = false;
+        iceBolt = false;
     }
 
     /**
@@ -51,6 +53,22 @@ public class Fireball extends Spell {
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
         this.fireCone = fireCone;
         this.applyBurn = applyBurn;
+        this.iceBolt = false;
+    }
+
+    /**
+     * Overriden method for tier set bonuses
+     * @param iceBolt swap spell
+     */
+    public Fireball(boolean iceBolt) {
+        super ("Fireball",
+                "You launch a projectile fireball" +
+                        "\nthat deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
+                        "\nimpact!",
+                ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
+        this.fireCone = false;
+        this.applyBurn = false;
+        this.iceBolt = iceBolt;
     }
 
     @Override
