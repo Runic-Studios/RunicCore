@@ -2,6 +2,7 @@ package com.runicrealms.plugin.item.mounts;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.events.SpellCastEvent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -27,8 +28,16 @@ import java.util.UUID;
 public class MountListener implements Listener {
 
     private static final int cooldownTime = 5;
-    private HashMap<UUID, Long> onCooldown = new HashMap<>();
+    private final HashMap<UUID, Long> onCooldown = new HashMap<>();
     public static HashMap<UUID, Entity> mounted = new HashMap<>();
+
+    @EventHandler
+    public void onSpellCast(SpellCastEvent e) {
+        if (mounted.containsKey(e.getCaster().getUniqueId())) {
+            e.setCancelled(true);
+            e.getCaster().sendMessage(ChatColor.RED + "You cannot use this while mounted!");
+        }
+    }
 
     @EventHandler
     public void onSaddleInteract(PlayerInteractEvent e) {
