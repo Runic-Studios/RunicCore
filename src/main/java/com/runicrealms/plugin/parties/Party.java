@@ -89,7 +89,7 @@ public class Party {
 
     public void sendMessageInChannel(String message) {
         RunicCore.getPartyChatChannel().getRecipients(this.leader).forEach(player -> {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getPartyChatChannel().getPrefix() + message));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getPartyChatChannel().getConsolePrefix() + message));
         });
     }
 
