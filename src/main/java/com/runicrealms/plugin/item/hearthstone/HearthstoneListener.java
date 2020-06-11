@@ -31,8 +31,8 @@ public class HearthstoneListener implements Listener {
     private static final int cooldownTime = 0; // 900
     private static final double MOVE_CONSTANT = 0.6;
     private static final int TEL_TIME = 5;
-    private HashMap<UUID, Long> hsCooldowns = new HashMap<>();
-    private HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
+    private final HashMap<UUID, Long> hsCooldowns = new HashMap<>();
+    private final HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
 
     /**
      * Give new players the hearthstone

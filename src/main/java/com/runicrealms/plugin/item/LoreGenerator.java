@@ -69,7 +69,7 @@ public class LoreGenerator {
         // grab our material, ItemMeta, ItemLore
         ItemTypeEnum itemType = ItemTypeEnum.matchType(item);
         ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         meta.setDisplayName(dispColor + dispName);
 
         int socketCount = (int) AttributeUtil.getCustomDouble(item, "custom.socketCount");
@@ -97,7 +97,11 @@ public class LoreGenerator {
         double magicBoost = AttributeUtil.getCustomDouble(item, "custom.magicDamage");
         double shieldAmt = AttributeUtil.getCustomDouble(item, "custom.shield");
         String spellStr = "";
-        if (AttributeUtil.getSpell(item, "secondarySpell") != null) spellStr = AttributeUtil.getSpell(item, "secondarySpell");
+        if (AttributeUtil.getSpell(item, "secondarySpell") != null)
+            spellStr = AttributeUtil.getSpell(item, "secondarySpell");
+        String sneakSpellStr = "";
+        if (AttributeUtil.getSpell(item, "sneakSpell") != null)
+            sneakSpellStr = AttributeUtil.getSpell(item, "sneakSpell");
         // -------------------------------------------------------------------------------------------
 
         // -------------------------------------------------------------------------------------------
@@ -162,6 +166,25 @@ public class LoreGenerator {
                 lore.add("");
             } catch (NullPointerException e) {
                 RunicCore.getInstance().getLogger().info(" §4Error: spell not found... " + spellStr); // debug
+            }
+        }
+
+        /*
+        Artifact reforging
+         */
+        if (!sneakSpellStr.equals("")) {
+            try {
+                Spell spell = RunicCore.getSpellManager().getSpellByName(sneakSpellStr);
+                String command = "SNEAK + RIGHT";
+                if (item.getType() == Material.BOW) command = "SNEAK + LEFT";
+                lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + command + " " + ChatColor.GREEN + spell.getName());
+                for (String s : spell.getDescription().split("\n")) {
+                    lore.add(ChatColor.GRAY + s);
+                }
+                lore.add(ChatColor.DARK_AQUA + "Costs " + spell.getManaCost() + "✸");
+                lore.add("");
+            } catch (NullPointerException e) {
+                RunicCore.getInstance().getLogger().info(" §4Error: spell not found... " + sneakSpellStr); // debug
             }
         }
 
