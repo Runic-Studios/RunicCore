@@ -28,8 +28,9 @@ public class Cleave extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
+        pl.swingMainHand();
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
-        pl.getWorld().spawnParticle(Particle.CRIT, pl.getEyeLocation(), 15, 0.75F, 0.5F, 0.75F, 0);
+        pl.getWorld().spawnParticle(Particle.CRIT, pl.getEyeLocation(), 25, 0.75F, 0.5F, 0.75F, 0);
 
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (verifyEnemy(pl, en)) {

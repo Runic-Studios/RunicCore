@@ -6,6 +6,7 @@ import com.runicrealms.plugin.events.PouchCloseEvent;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
 import com.runicrealms.plugin.item.LoreGenerator;
+import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -16,7 +17,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -30,12 +30,11 @@ import java.util.UUID;
  */
 public class GoldPouchListener implements Listener {
 
-    private static HashMap<UUID, ItemGUI> pouchLookers;
+    private final HashMap<UUID, PouchMenu> pouchLookers;
 
     public GoldPouchListener() {
         pouchLookers = new HashMap<>();
     }
-
 
     /*
     Fixes a dupe bug
@@ -48,32 +47,6 @@ public class GoldPouchListener implements Listener {
         }
     }
 
-    /*
-    Fixes a dupe bug
-     */
-    @EventHandler
-    public void onGoldPouchHandSwap(PlayerSwapHandItemsEvent e) {
-
-        if (e.getOffHandItem() == null) return;
-        if (e.getOffHandItem().getItemMeta() == null) return;
-        ItemMeta meta2 = e.getOffHandItem().getItemMeta();
-        int durability2 = ((Damageable) meta2).getDamage();
-        if (e.getOffHandItem().getType() == Material.SHEARS && durability2 == 234) {
-            e.setCancelled(true);
-            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1);
-            e.getPlayer().sendMessage(ChatColor.GRAY + "You cannot perform this action with this item.");
-        }
-
-        if (e.getMainHandItem() == null) return;
-        if (e.getMainHandItem().getItemMeta() == null) return;
-        ItemMeta meta = e.getMainHandItem().getItemMeta();
-        int durability = ((Damageable) meta).getDamage();
-        if (e.getMainHandItem().getType() == Material.SHEARS && durability == 234) {
-            e.setCancelled(true);
-            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1);
-            e.getPlayer().sendMessage(ChatColor.GRAY + "You cannot perform this action with this item.");
-        }
-    }
     @EventHandler
     public void onPouchInteract(PlayerInteractEvent e) {
 
@@ -81,8 +54,8 @@ public class GoldPouchListener implements Listener {
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (!e.hasItem()) return;
-        if (!e.getItem().hasItemMeta()) return;
+        if (e.getItem() == null) return;
+        if (e.getItem().getItemMeta() == null) return;
 
         ItemStack pouch = e.getItem();
         ItemMeta meta = pouch.getItemMeta();
@@ -98,7 +71,7 @@ public class GoldPouchListener implements Listener {
         }
 
         ItemGUI coinMenu = new ItemGUI("&f" + pl.getName() + "s &6Gold Pouch", menuSize, event -> {}, RunicCore.getInstance());
-        pouchLookers.put(pl.getUniqueId(), coinMenu);
+        pouchLookers.put(pl.getUniqueId(), new PouchMenu(coinMenu, pouch));
 
         // fill coins
         int slotSize = size / 64;
@@ -145,7 +118,7 @@ public class GoldPouchListener implements Listener {
                 || e.getCurrentItem().getType() != Material.AIR)
                 && e.getCurrentItem().getType() != Material.GOLD_NUGGET)));
 
-        ItemGUI itemGUI = pouchLookers.get(e.getWhoClicked().getUniqueId());
+        ItemGUI itemGUI = pouchLookers.get(e.getWhoClicked().getUniqueId()).getMenu();
         int slot = e.getRawSlot();
         if (slot >= 0 && slot < itemGUI.getSize() && itemGUI.getOptionNames()[slot] != null) {
 
@@ -163,9 +136,10 @@ public class GoldPouchListener implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
-        if (e.getView().getTitle().toLowerCase().contains("gold pouch")) {
+        if (e.getPlayer() instanceof Player
+                && e.getView().getTitle().toLowerCase().contains("gold pouch")) {
 
-            ItemStack pouch = e.getPlayer().getInventory().getItemInMainHand();
+            ItemStack pouch = pouchLookers.get(e.getPlayer().getUniqueId()).getPouch();
 
             int amount = 0;
             for (ItemStack is : e.getInventory()) {
@@ -181,10 +155,18 @@ public class GoldPouchListener implements Listener {
                 return;
             }
 
-            // update new current amount
+            // remove old item
+            ItemRemover.takeItem((Player) e.getPlayer(), pouchLookers.get(e.getPlayer().getUniqueId()).getPouch(), 1);
+
+            // update new current amount, give new item
             pouch = AttributeUtil.addCustomStat(pouch, "goldAmount", event.getAmount());
             LoreGenerator.generateGoldPouchLore(pouch);
-            e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().getHeldItemSlot(), pouch);
+            HashMap<Integer, ItemStack> leftOver = e.getPlayer().getInventory().addItem(pouch);
+            for (ItemStack is : leftOver.values()) {
+                e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), is);
+            }
+
+            // remove from pouchlookers
             pouchLookers.remove(e.getPlayer().getUniqueId());
         }
     }

@@ -2,13 +2,7 @@ package com.runicrealms.plugin.parties.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.ConditionFailedException;
-import co.aikar.commands.annotation.CatchUnknown;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.Conditions;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
-import co.aikar.commands.annotation.Syntax;
+import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
@@ -26,9 +20,9 @@ public class PartyCommand extends BaseCommand {
 
     public PartyCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-invite", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<String>();
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) return new ArrayList<String>();
-            Set<String> players = new HashSet<String>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) return new ArrayList<>();
+            Set<String> players = new HashSet<>();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
                     players.add(player.getName());
@@ -37,8 +31,8 @@ public class PartyCommand extends BaseCommand {
             return players;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-join", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) != null) return new ArrayList<String>();
-            Set<String> invites = new HashSet<String>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) != null) return new ArrayList<>();
+            Set<String> invites = new HashSet<>();
             for (Party party : RunicCore.getPartyManager().getParties()) {
                 for (Party.Invite invite : party.getInvites()) {
                     if (invite.getPlayer() == context.getPlayer()) {
@@ -49,9 +43,9 @@ public class PartyCommand extends BaseCommand {
             return invites;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-kick", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<String>();
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) return new ArrayList<String>();
-            Set<String> members = new HashSet<String>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<>();
+            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer()) return new ArrayList<>();
+            Set<String> members = new HashSet<>();
             RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getMembers().forEach(member -> members.add(member.getName()));
             return members;
         });

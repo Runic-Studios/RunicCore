@@ -53,7 +53,7 @@ public class PlayerCache {
         this.profLevel = 0;
         this.profExp = 0;
         this.currentHealth = HealthUtils.getBaseHealth();
-        this.maxMana = RunicCore.getManaManager().getBaseMana();
+        this.maxMana = RunicCore.getRegenManager().getBaseMana();
         this.isOutlaw = false;
         this.rating = RunicCore.getOutlawManager().getBaseRating();
         this.inventoryContents = new ItemStack[41]; // empty inventory, todo: this may be bugged

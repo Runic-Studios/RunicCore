@@ -239,7 +239,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("prof.level", 0);
         mongoDataSection.set("prof.exp", 0);
         mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
-        mongoDataSection.set("maxMana", RunicCore.getManaManager().getBaseMana());
+        mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
         mongoDataSection.set("inventory", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory

@@ -12,7 +12,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -166,20 +165,6 @@ public class HearthstoneListener implements Listener {
 
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20);
-    }
-
-    @EventHandler
-    public void onItemSwap(PlayerSwapHandItemsEvent swapevent) {
-
-        Player p = swapevent.getPlayer();
-        int slot = p.getInventory().getHeldItemSlot();
-
-        // cancel the event
-        if (slot == 8) {
-            swapevent.setCancelled(true);
-            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1);
-            p.sendMessage(ChatColor.GRAY + "You cannot perform this action in this slot.");
-        }
     }
 
     private ItemStack getDefaultHearthstone() {

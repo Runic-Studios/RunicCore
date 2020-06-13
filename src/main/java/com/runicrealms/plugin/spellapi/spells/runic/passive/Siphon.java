@@ -50,7 +50,7 @@ public class Siphon extends Spell {
 
         if (verifyEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
-            RunicCore.getManaManager().addMana(pl, AMOUNT, true);
+            RunicCore.getRegenManager().addMana(pl, AMOUNT, true);
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
             victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getEyeLocation(), 3, 0.3F, 0.3F, 0.3F, 0);
         }

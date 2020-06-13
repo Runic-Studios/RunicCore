@@ -33,6 +33,7 @@ public class SaddleCMD {
         // tell the game this is a custom saddle, add the horse type
         mountSaddle = AttributeUtil.addCustomStat(mountSaddle, "mount", "true");
         mountSaddle = AttributeUtil.addCustomStat(mountSaddle, "horseType", horseType.toString());
+        mountSaddle = AttributeUtil.addCustomStat(mountSaddle, "soulbound", "true");
 
         ItemMeta meta = mountSaddle.getItemMeta();
         if (meta == null) return null;
@@ -56,7 +57,8 @@ public class SaddleCMD {
                 org.bukkit.ChatColor.GRAY + "",
                 org.bukkit.ChatColor.GRAY + "" + ChatColor.ITALIC + "A loyal and valiant steed!",
                 org.bukkit.ChatColor.GRAY + "",
-                org.bukkit.ChatColor.YELLOW + "Unique"
+                org.bukkit.ChatColor.YELLOW + "Unique",
+                org.bukkit.ChatColor.DARK_GRAY + "Soulbound"
         ));
         mountSaddle.setItemMeta(meta);
 
