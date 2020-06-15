@@ -19,7 +19,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class ManaManager implements Listener {
 
-    private HashMap<UUID, Integer> currentPlayerManas;
+    private final HashMap<UUID, Integer> currentPlayerManas;
     private final int BASE_MANA = 100;
     private final int MANA_REGEN_AMT = 5;
     private final long MANA_REGEN_PERIOD = 4; // seconds
@@ -103,8 +103,10 @@ public class ManaManager implements Listener {
     }
 
     public int getManaPerLv(Player pl) {
+
+        if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName() == null)
+            return 0;
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
-        if (className == null) return 0;
 
         switch(className.toLowerCase()) {
             case "archer":

@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 public class Blink extends Spell {
 
     // instance variables
-    private static int MAX_DIST = 8;
+    private static final int MAX_DIST = 8;
 
     // constructor
     public Blink() {
@@ -62,36 +62,40 @@ public class Blink extends Spell {
         }
 
         // create the blink location
-        Location teleportLoc = validFinalBlock.getLocation().clone();
-        teleportLoc.add(new Vector(.5, 0, .5));
+        try {
+            Location teleportLoc = validFinalBlock.getLocation().clone();
+            teleportLoc.add(new Vector(.5, 0, .5));
 
-        // Set the blink location yaw/pitch to the player's
-        teleportLoc.setPitch(loc.getPitch());
-        teleportLoc.setYaw(loc.getYaw());
+            // Set the blink location yaw/pitch to the player's
+            teleportLoc.setPitch(loc.getPitch());
+            teleportLoc.setYaw(loc.getYaw());
 
-        // particles, sounds
-        pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0,1,0),
-                10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
-        pl.getWorld().spawnParticle(Particle.REDSTONE, teleportLoc.add(0,1,0),
-                10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
+            // particles, sounds
+            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0, 1, 0),
+                    10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
+            pl.getWorld().spawnParticle(Particle.REDSTONE, teleportLoc.add(0, 1, 0),
+                    10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
+            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
 
-        // teleport the player to the blink location
-        pl.teleport(teleportLoc);
-        final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.8);
-        pl.setVelocity(velocity);
+            // teleport the player to the blink location
+            pl.teleport(teleportLoc);
+            final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.8);
+            pl.setVelocity(velocity);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
 
-                if (pl.isOnGround()) {
-                    this.cancel();
-                } else {
-                    pl.setFallDistance(-8.0F);
+                    if (pl.isOnGround()) {
+                        this.cancel();
+                    } else {
+                        pl.setFallDistance(-8.0F);
+                    }
                 }
-            }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
+            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
+        } catch (NullPointerException e) {
+            pl.sendMessage(ChatColor.RED + "Error: blink location invalid!");
+        }
     }
 }
 

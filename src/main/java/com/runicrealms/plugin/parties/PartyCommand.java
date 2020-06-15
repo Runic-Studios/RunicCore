@@ -14,6 +14,7 @@ import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -56,6 +57,9 @@ public class PartyCommand extends BaseCommand {
         });
         RunicCore.getCommandManager().getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
+        });
+        RunicCore.getCommandManager().getCommandConditions().addCondition("is-op", context -> {
+            if (!context.getIssuer().getIssuer().isOp()) throw new ConditionFailedException("You must be an operator to run this command!");
         });
     }
 
@@ -105,6 +109,7 @@ public class PartyCommand extends BaseCommand {
         if (RunicCore.getPartyManager().getPlayerParty(invited) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is already in a party!")); return; }
         if (RunicCore.getPartyManager().memberHasInvite(invited)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player has already been invited to your/a different party!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        if (Math.abs(party.getLeader().getLevel() - invited.getLevel()) > 15) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is outside the party level range [15]")); return; }
         invited.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
@@ -191,6 +196,23 @@ public class PartyCommand extends BaseCommand {
             i++;
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', builder.toString()));
+    }
+
+    @Subcommand("tp|teleport")
+    @Syntax("<player>")
+    @Conditions("is-op")
+    public void onCommandTeleport(CommandSender sender, String[] args) {
+        if (args.length < 1) { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cPlease provide the player to teleport party members to!")); return; }
+        Player player = Bukkit.getPlayerExact(args[0]);
+        if (player == null) { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThat player is not online!")); return; }
+        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        if (party == null) { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThat player is not in a party!")); return; }
+        for (Player target : party.getMembersWithLeader()) {
+            if (target != player) {
+                target.teleport(player.getLocation());
+            }
+        }
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported party members"));
     }
 
 }

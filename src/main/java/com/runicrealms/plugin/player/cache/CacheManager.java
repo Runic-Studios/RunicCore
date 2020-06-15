@@ -47,7 +47,7 @@ public class CacheManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                saveQueuedFiles(true);
+                saveQueuedFiles(true, true);
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), (100+CACHE_PERIOD), SAVE_PERIOD*20); // wait for save, 15 sec period
     }
@@ -88,7 +88,7 @@ public class CacheManager implements Listener {
     /**
      * Writes data async
      */
-    public void saveQueuedFiles(boolean limitSize) {
+    public void saveQueuedFiles(boolean limitSize, boolean saveAsync) {
         int limit;
         if (limitSize) {
             limit = (int) Math.ceil(queuedCaches.size() / 4.0);
@@ -100,12 +100,12 @@ public class CacheManager implements Listener {
         for (int i = 0; i < limit; i++) {
             if (queuedCaches.size() < 1) continue;
             PlayerCache queued = queuedCaches.iterator().next();
-            setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()));
+            setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()), saveAsync);
             queuedCaches.remove(queued);
         }
     }
 
-    public void setFieldsSaveFile(PlayerCache playerCache, Player player) {
+    public void setFieldsSaveFile(PlayerCache playerCache, Player player, boolean saveAsync) {
         try {
             int slot = playerCache.getCharacterSlot();
             PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
@@ -133,7 +133,11 @@ public class CacheManager implements Listener {
             // location
             character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
             // save data (includes nested fields)
-            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
+            if (saveAsync) {
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
+            } else {
+                mongoData.save();
+            }
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Data of player cache to save was null.");
             e.printStackTrace();

@@ -12,7 +12,11 @@ public class PartyChannel extends ChatChannel {
 
     @Override
     public String getPrefix() {
-        return "&a[&2Party&a]&r ";
+        return "&a[&2Party&a] &a[%core_class_prefix%|%core_level%] &r";
+    }
+
+    public String getConsolePrefix() {
+        return "&a[&2Party&a] &r";
     }
 
     @Override
@@ -27,7 +31,7 @@ public class PartyChannel extends ChatChannel {
         } else {
             player.sendMessage(ChatColor.RED + "You must be in a party to use party chat!");
         }
-        return new HashSet<Player>();
+        return new HashSet<>();
     }
 
     @Override
