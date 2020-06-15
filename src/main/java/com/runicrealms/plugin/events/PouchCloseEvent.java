@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.events;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -12,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PouchCloseEvent extends Event implements Cancellable {
 
-    private Player player;
-    private ItemStack pouch;
+    private final Player player;
+    private final ItemStack pouch;
     private int amount;
     private boolean isCancelled;
 

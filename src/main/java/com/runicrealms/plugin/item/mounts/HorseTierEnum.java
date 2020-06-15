@@ -6,8 +6,8 @@ public enum HorseTierEnum {
     EPIC(0.3f, 0.625f), // +50%
     LEGENDARY(0.4f, 0.75f); // +100%
 
-    private float speed;
-    private float jumpSpeed;
+    private final float speed;
+    private final float jumpSpeed;
 
     HorseTierEnum(float speed, float jumpSpeed) {
         this.speed = speed;

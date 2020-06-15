@@ -83,7 +83,10 @@ public class SpellUseEvent implements Listener {
 
     private String determineSpellSlot(PlayerInteractEvent e, ItemStack item) {
         String spellSlot = "";
-        if (item.getType() == Material.BOW) {
+        if (item.getType() == Material.POPPED_CHORUS_FRUIT) {
+            spellSlot = (e.getAction() == Action.RIGHT_CLICK_AIR
+                    || e.getAction() == Action.RIGHT_CLICK_BLOCK) ? "secondarySpell" : "leftActiveSpell";
+        } else if (item.getType() == Material.BOW) {
             if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
                 spellSlot = !e.getPlayer().isSneaking() ? "secondarySpell" : "sneakSpell";
             }

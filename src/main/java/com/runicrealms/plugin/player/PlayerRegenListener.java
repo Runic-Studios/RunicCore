@@ -1,29 +1,21 @@
 package com.runicrealms.plugin.player;
 
-import com.runicrealms.plugin.player.combat.CombatManager;
-import org.bukkit.entity.Player;
+import com.runicrealms.plugin.events.HealthRegenEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import com.runicrealms.plugin.RunicCore;
 
+@SuppressWarnings("deprecation")
 public class PlayerRegenListener implements Listener {
 
     @EventHandler
-    public void onRegen(EntityRegainHealthEvent e) {
+    public void onRegen(HealthRegenEvent e) {
 
-        if (!(e.getEntity() instanceof Player)) return;
+        double maxHealth = e.getPlayer().getMaxHealth();
+        int amount = e.getAmount();
 
-        if (!(e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED)) return;
-
-        Player pl = (Player) e.getEntity();
-
-        CombatManager cm = RunicCore.getCombatManager();
-        if (cm.getPlayersInCombat().containsKey(pl.getUniqueId())) {
-            e.setCancelled(true);
-        } /*else {
-            e.setAmount(5); // after we remove old combat mechanics
-        }
-        */
+        if ((e.getPlayer().getHealth() + amount) > maxHealth)
+            e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
+        else
+            e.getPlayer().setHealth(e.getPlayer().getHealth() + e.getAmount());
     }
 }

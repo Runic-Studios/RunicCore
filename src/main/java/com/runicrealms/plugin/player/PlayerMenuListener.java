@@ -58,7 +58,9 @@ public class PlayerMenuListener implements Listener {
                 // item 3 must update dynamically
                 String healthBonus = statBoost(
                         (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() - PlayerLevelListener.getHpAtLevel(pl));
+                String healthRegen = statBoost(GearScanner.getHealthRegenBoost(pl));
                 String manaBoost = statBoost(GearScanner.getManaBoost(pl));
+                String manaRegen = statBoost(GearScanner.getManaRegenBoost(pl));
 
                 String healingBoost = statBoost(GearScanner.getHealingBoost(pl));
                 String magicBoost = statBoost(GearScanner.getMagicBoost(pl));
@@ -69,7 +71,9 @@ public class PlayerMenuListener implements Listener {
 
                 ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
                         "\n&c❤ (Health) &ebonus: " + healthBonus +
+                                "\n&c❤/s (Regen) &ebonus: " + healthRegen +
                                 "\n&3✸ (Mana) &ebonus: " + manaBoost +
+                                "\n&3✸/s (Regen) &ebonus: " + manaRegen +
                                 "\n&c⚔ (DMG) &ebonus: " + minDamage + "-" + maxDamage +
                                 "\n&a✦ (Heal) &ebonus: " + healingBoost +
                                 "\n&3ʔ (Magic) &ebonus: " + magicBoost +

@@ -57,6 +57,16 @@ public class GearScanner {
         return healthBoost;
     }
 
+    public static int getHealthRegenBoost(Player pl) {
+        int healthRegenBoost = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            healthRegenBoost += (int) AttributeUtil.getCustomDouble(item, "custom.healthRegen");
+        }
+        return healthRegenBoost;
+    }
+
     public static int getManaBoost(Player pl) {
         int manaBoost = 0;
         ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
@@ -65,6 +75,16 @@ public class GearScanner {
             manaBoost += (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
         }
         return manaBoost;
+    }
+
+    public static int getManaRegenBoost(Player pl) {
+        int manaRegen = 0;
+        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+
+        for (ItemStack item : armorAndOffhand) {
+            manaRegen += (int) AttributeUtil.getCustomDouble(item, "custom.manaRegen");
+        }
+        return manaRegen;
     }
 
     public static int getAttackBoost(Player pl) {

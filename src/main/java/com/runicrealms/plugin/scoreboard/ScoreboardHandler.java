@@ -168,7 +168,7 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String manaAsString(Player pl) {
-        int mana = RunicCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
+        int mana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }

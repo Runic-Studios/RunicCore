@@ -23,7 +23,7 @@ public class LoreGenerator {
 
         // grab our ItemMeta, ItemLore
         ItemMeta meta = hearthstone.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         meta.setDisplayName(ChatColor.AQUA + "Hearthstone");
 
         // grab our NBT attributes wrapper
@@ -90,8 +90,10 @@ public class LoreGenerator {
         int minDamage = (int) AttributeUtil.getCustomDouble(item, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(item, "custom.maxDamage");
         int customHealth = (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
+        int healthRegen = (int) AttributeUtil.getCustomDouble(item, "custom.healthRegen");
         double customAttSpeed = AttributeUtil.getCustomDouble(item, "custom.attackSpeed");
         int manaBoost = (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
+        int manaRegen = (int) AttributeUtil.getCustomDouble(item, "custom.manaRegen");
         double damageBoost = AttributeUtil.getCustomDouble(item, "custom.attackDamage");
         double healingBoost = AttributeUtil.getCustomDouble(item, "custom.healingBoost");
         double magicBoost = AttributeUtil.getCustomDouble(item, "custom.magicDamage");
@@ -131,12 +133,18 @@ public class LoreGenerator {
         if (customHealth != 0) {
             lore.add(ChatColor.RED + "+ " + customHealth + "❤");
         }
+        if (healthRegen != 0) {
+            lore.add(ChatColor.RED + "+ " + healthRegen + "❤/s");
+        }
         if (customAttSpeed != 0) {
             double roundedSpeed = NumRounder.round(customAttSpeed);
             lore.add(ChatColor.RED + "+ " + roundedSpeed + " Att Speed");
         }
         if (manaBoost != 0) {
             lore.add(ChatColor.DARK_AQUA + "+ " + manaBoost + "✸");
+        }
+        if (manaRegen != 0) {
+            lore.add(ChatColor.DARK_AQUA + "+ " + manaRegen + "✸/s");
         }
         if (damageBoost != 0) {
             lore.add(ChatColor.RED + "+ " + (int) damageBoost + "⚔");

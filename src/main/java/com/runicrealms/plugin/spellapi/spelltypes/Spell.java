@@ -67,8 +67,8 @@ public abstract class Spell implements ISpell, Listener {
             if (!this.attemptToExecute(player)) return; // check additional conditions
 
             // cast the spell
-            int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
-            RunicCore.getManaManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
+            int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
+            RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
             RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
             this.executeSpell(player, type);
@@ -76,7 +76,7 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     private boolean verifyMana(Player player) {
-        int currentMana = RunicCore.getManaManager().getCurrentManaList().get(player.getUniqueId());
+        int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
         if (currentMana < this.manaCost) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             ActionBarUtil.sendTimedMessage(player, "&cYou don't have enough mana!", 2);

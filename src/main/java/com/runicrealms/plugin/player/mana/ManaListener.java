@@ -33,11 +33,11 @@ public class ManaListener implements Listener {
         // set their mana to their maxMana on login
         int maxMana = playerCache.getMaxMana();
         if (maxMana == 0) {
-            maxMana = RunicCore.getManaManager().getBaseMana()+(RunicCore.getManaManager().getManaPerLv(pl)*pl.getLevel());
+            maxMana = RunicCore.getRegenManager().getBaseMana()+(RunicCore.getRegenManager().getManaPerLv(pl)*pl.getLevel());
             RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setMaxMana(maxMana);
         }
         // store player's current mana
-        RunicCore.getManaManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
+        RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
     }
 
     @EventHandler
@@ -91,10 +91,10 @@ public class ManaListener implements Listener {
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent e) {
         Player pl = e.getPlayer();
-        if (pl.getLevel() > RunicCore.getManaManager().getBaseMana()) return;
+        if (pl.getLevel() > RunicCore.getRegenManager().getBaseMana()) return;
         calculateMana(pl);
         int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
-        RunicCore.getManaManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
+        RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
     }
 
     private void calculateMana(Player pl) {
@@ -111,13 +111,13 @@ public class ManaListener implements Listener {
         }
 
         // update stored mana in config, update scoreboard
-        int newMaxMana = RunicCore.getManaManager().getBaseMana() + (RunicCore.getManaManager().getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
+        int newMaxMana = RunicCore.getRegenManager().getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
         RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setMaxMana(newMaxMana);
 
         int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
-        int currentMana = RunicCore.getManaManager().getCurrentManaList().get(pl.getUniqueId());
+        int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
         if (currentMana > maxMana) {
-            RunicCore.getManaManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
+            RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.mana;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.Bukkit;
@@ -12,17 +13,19 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * Method to manage player mana. Stores max mana in the player data file,
+ * Method to manage player health and mana. Stores max mana in the player data file,
  * and creates a HashMap to store all current player manas.
  * @author Skyfallin_
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class ManaManager implements Listener {
+public class RegenManager implements Listener {
+
+    private final int HEALTH_REGEN_AMT = 5;
+    private final long REGEN_PERIOD = 4; // seconds
 
     private final HashMap<UUID, Integer> currentPlayerManas;
     private final int BASE_MANA = 100;
     private final int MANA_REGEN_AMT = 5;
-    private final long MANA_REGEN_PERIOD = 4; // seconds
 
     private final int ARCHER_MANA_LV = 1;
     private final int CLERIC_MANA_LV = 2;
@@ -31,18 +34,23 @@ public class ManaManager implements Listener {
     private final int WARRIOR_MANA_LV = 1;
 
     // constructor
-    public ManaManager() {
+    public RegenManager() {
         currentPlayerManas = new HashMap<>();
-        this.startRegenTask();
-    }
 
-    private void startRegenTask() {
         new BukkitRunnable() {
             @Override
             public void run() {
+                regenHealth();
                 regenMana();
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, MANA_REGEN_PERIOD *20);
+        }.runTaskTimer(RunicCore.getInstance(), 0, REGEN_PERIOD *20);
+    }
+
+    private void regenHealth() {
+        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
+            HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT);
+            Bukkit.getPluginManager().callEvent(event);
+        }
     }
 
     private void regenMana() {
@@ -139,12 +147,12 @@ public class ManaManager implements Listener {
         }
     }
 
-    public void subtractMana(Player pl, int amt) {
-
-        int mana = currentPlayerManas.get(pl.getUniqueId());
-
-        if (mana <= 0) return;
-
-        currentPlayerManas.put(pl.getUniqueId(), mana - amt);
-    }
+//    public void subtractMana(Player pl, int amt) {
+//
+//        int mana = currentPlayerManas.get(pl.getUniqueId());
+//
+//        if (mana <= 0) return;
+//
+//        currentPlayerManas.put(pl.getUniqueId(), mana - amt);
+//    }
  }

@@ -13,7 +13,6 @@ public class ItemRemover {
         int to_take = amount;
         for (ItemStack player_item : pl.getInventory().getContents()) {
             if (player_item != null) {
-
                 if (player_item.isSimilar(itemStack)) {
                     int take_next = Math.min(to_take, player_item.getAmount());
                     remove(pl, player_item, take_next);
@@ -33,7 +32,6 @@ public class ItemRemover {
         int to_take = amount;
         for (ItemStack player_item : pl.getInventory().getContents()) {
             if (player_item != null) {
-
                 if (player_item.getType() == material) {
                     int take_next = Math.min(to_take, player_item.getAmount());
                     remove(pl, player_item, take_next);
@@ -46,7 +44,7 @@ public class ItemRemover {
         }
     }
 
-    private static void remove(Player p, ItemStack toR, int amount){
+    private static void remove(Player p, ItemStack toR, int amount) {
         ItemStack i = toR.clone();
         i.setAmount(amount);
         p.getInventory().removeItem(i);

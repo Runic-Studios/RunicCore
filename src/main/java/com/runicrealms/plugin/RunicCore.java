@@ -50,7 +50,7 @@ import com.runicrealms.plugin.player.combat.PlayerLevelListener;
 import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
-import com.runicrealms.plugin.player.mana.ManaManager;
+import com.runicrealms.plugin.player.mana.RegenManager;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.player.outlaw.SpeedListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
@@ -81,7 +81,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static RunicCore instance;
     private static CombatManager combatManager;
     private static LootChestManager lootChestManager;
-    private static ManaManager manaManager;
+    private static RegenManager regenManager;
     private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
     private static ScoreboardHandler scoreboardHandler;
@@ -101,7 +101,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
-    public static ManaManager getManaManager() { return manaManager; }
+    public static RegenManager getRegenManager() { return regenManager; }
     public static LootChestManager getLootChestManager() { return lootChestManager; }
     public static PartyManager getPartyManager() { return partyManager; }
     public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
@@ -128,7 +128,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         instance = this;
         combatManager = new CombatManager();
         lootChestManager = new LootChestManager();
-        manaManager = new ManaManager();
+        regenManager = new RegenManager();
         mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
         scoreboardHandler = new ScoreboardHandler();
@@ -188,7 +188,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         combatManager = null;
         instance = null;
         lootChestManager = null;
-        manaManager = null;
+        regenManager = null;
         mobHealthManager = null;
         partyManager = null;
         scoreboardHandler = null;
@@ -270,6 +270,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
         pm.registerEvents(new GroupManager(), this);
+        pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();

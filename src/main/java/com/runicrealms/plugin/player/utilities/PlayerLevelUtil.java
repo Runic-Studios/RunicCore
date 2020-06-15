@@ -143,7 +143,7 @@ public class PlayerLevelUtil {
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + RunicCore.getManaManager().getManaPerLv(pl) + "✸");
+                        + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(pl) + "✸");
         pl.sendMessage("\n");
     }
 
