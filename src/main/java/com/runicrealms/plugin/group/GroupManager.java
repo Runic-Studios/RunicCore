@@ -7,20 +7,21 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class GroupManager implements Listener {
 
-    private Set<Group> groups;
+    private LinkedHashSet<Group> groups;
     private Map<Player, Group> playerGroups;
 
     public GroupManager() {
-        this.groups = new HashSet<Group>();
+        this.groups = new LinkedHashSet<Group>(); // Important that it is linked!
         this.playerGroups = new HashMap<Player, Group>();
     }
 
-    public Set<Group> getGroups() {
+    public LinkedHashSet<Group> getGroups() {
         return this.groups;
     }
 
