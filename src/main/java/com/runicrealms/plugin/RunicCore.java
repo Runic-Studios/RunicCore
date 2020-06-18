@@ -265,12 +265,14 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
+        pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
-    
+
+    // TODO: replace ALL commands w ACF
     private void registerCommands() {
 
         // bigger commands get their own methods
