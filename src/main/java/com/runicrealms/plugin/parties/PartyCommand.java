@@ -48,12 +48,6 @@ public class PartyCommand extends BaseCommand {
             RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getMembers().forEach(member -> members.add(member.getName()));
             return members;
         });
-        RunicCore.getCommandManager().getCommandConditions().addCondition("is-player", context -> {
-            if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
-        });
-        RunicCore.getCommandManager().getCommandConditions().addCondition("is-op", context -> {
-            if (!context.getIssuer().getIssuer().isOp()) throw new ConditionFailedException("You must be an operator to run this command!");
-        });
     }
 
     @Default
