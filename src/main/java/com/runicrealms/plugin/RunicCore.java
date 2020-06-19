@@ -15,6 +15,7 @@ import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
+import com.runicrealms.plugin.group.GroupChannel;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
@@ -96,6 +97,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
     private static GroupManager groupManager;
+    private static GroupChannel groupChannel;
     private static PaperCommandManager commandManager;
 
     // getters for handlers
@@ -116,6 +118,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
     public static PartyChannel getPartyChatChannel() { return partyChannel; }
     public static GroupManager getGroupManager() { return groupManager; }
+    public static GroupChannel getGroupChatChannel() { return groupChannel; }
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
@@ -276,6 +279,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
+        groupChannel = new GroupChannel();
+        RunicChat.getRunicChatAPI().registerChatChannel(groupChannel);
     }
 
     // TODO: replace ALL commands w ACF

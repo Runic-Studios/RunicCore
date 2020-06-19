@@ -74,8 +74,8 @@ public class GroupJoinGui implements Listener {
                     } else if (viewers.get(player).getSlots().containsKey(event.getSlot())) {
                         if (RunicCore.getGroupManager().getGroups().containsKey(viewers.get(player).getSlots().get(event.getSlot()).getPurpose())) {
                             RunicCore.getGroupManager().addToGroup(player, viewers.get(player).getSlots().get(event.getSlot()));
+                            viewers.get(player).getSlots().get(event.getSlot()).sendMessageInChannel(player + " has joined the group!");
                             player.closeInventory();
-                            // TODO - send message in channel
                         } else {
                             player.closeInventory();
                             player.sendMessage(ChatColor.RED + "That group is no longer active!");

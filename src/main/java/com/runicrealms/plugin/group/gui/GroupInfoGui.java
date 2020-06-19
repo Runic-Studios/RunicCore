@@ -50,8 +50,9 @@ public class GroupInfoGui implements Listener {
                 if (event.getRawSlot() < event.getInventory().getSize()) {
                     if (event.getSlot() == 5) {
                         if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
+                            RunicCore.getGroupManager().getPlayerGroup(player).sendMessageInChannel(player + " has left the group!");
                             RunicCore.getGroupManager().removeFromGroup(player, RunicCore.getGroupManager().getPlayerGroup(player));
-                            // TODO - send message in channel
+                            player.closeInventory();
                         } else {
                             player.closeInventory();
                             player.sendMessage(ChatColor.RED + "You are not in a group!");

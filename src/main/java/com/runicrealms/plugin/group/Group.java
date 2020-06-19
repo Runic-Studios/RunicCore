@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.GUIItem;
 import com.runicrealms.plugin.utilities.HeadUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -55,6 +56,12 @@ public class Group {
 
     public Map<Player, ItemStack> getMemberIcons() {
         return this.memberIcons;
+    }
+
+    public void sendMessageInChannel(String message) {
+        RunicCore.getGroupChatChannel().getRecipients(this.members.iterator().next()).forEach(player -> {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getGroupChatChannel().getConsolePrefix() + message));
+        });
     }
 
     public void rebuildIcon() {
