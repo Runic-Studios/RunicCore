@@ -87,6 +87,19 @@ public class Party {
         return null;
     }
 
+    public void removeInvite(Player player) {
+        Invite remove = null;
+        for (Invite invite : this.invites) {
+            if (invite.getPlayer() == player) {
+                remove = invite;
+                break;
+            }
+        }
+        if (remove != null) {
+            this.invites.remove(remove);
+        }
+    }
+
     public void sendMessageInChannel(String message) {
         RunicCore.getPartyChatChannel().getRecipients(this.leader).forEach(player -> {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getPartyChatChannel().getConsolePrefix() + message));
@@ -105,9 +118,7 @@ public class Party {
             this.task = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!Invite.this.party.getInvites().contains(Invite.this)) {
-                        Invite.this.party.getInvites().remove(Invite.this);
-                    }
+                    Invite.this.party.removeInvite(Invite.this.player);
                 }
             }.runTaskLater(RunicCore.getInstance(), 60 * 20);
         }
