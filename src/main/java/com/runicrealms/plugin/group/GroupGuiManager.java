@@ -19,6 +19,8 @@ public class GroupGuiManager implements Listener {
         Bukkit.getPluginManager().registerEvents(new GroupCreateChooseTypeGui(), RunicCore.getInstance());
         Bukkit.getPluginManager().registerEvents(new GroupCreateChoosePurposeGui(), RunicCore.getInstance());
         GroupMainGui.initInventory();
+        GroupCreateChooseTypeGui.initInventory();
+        GroupCreateChoosePurposeGui.initInventories();
     }
 
 }
