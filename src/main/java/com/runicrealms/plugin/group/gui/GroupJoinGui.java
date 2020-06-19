@@ -17,20 +17,23 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class GroupJoinGui implements Listener {
 
     private static Map<Player, PlayerGuiInfo> viewers = new HashMap<Player, PlayerGuiInfo>();
     private static ItemStack blankSlot = GUIItem.dispItem(Material.BLACK_STAINED_GLASS_PANE, " ", new String[] {});
+    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
     private static ItemStack previousArrow = GUIItem.dispItem(Material.ARROW, "&ePrevious Page", new String[] {});
     private static ItemStack nextArrow = GUIItem.dispItem(Material.ARROW, "&eNext Page", new String[] {});
     private static ItemStack guiIcon = GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {});
 
     public static void display(Player player, Integer page) {
         Inventory inventory = Bukkit.createInventory(null, 54, "Join a Group");
-        inventory.setItem(0, page > 0 ? previousArrow : blankSlot);
+        inventory.setItem(0, page > 0 ? previousArrow : backArrow);
         inventory.setItem(8, RunicCore.getGroupManager().getGroups().size() > page * 45 + 45 ? nextArrow : blankSlot);
         for (int i = 1; i < 8; i++) {
             inventory.setItem(i, i != 4 ? blankSlot : guiIcon);
@@ -43,18 +46,25 @@ public class GroupJoinGui implements Listener {
             while (iterator.hasNext()) {
                 if (count >= page * 45 && count < RunicCore.getGroupManager().getGroups().size() - page * 45) {
                     Group group = iterator.next().getValue();
-                    inventory.setItem(slot, group.getIcon());
-                    slots.put(slot, group);
+                    ItemStack icon = group.getIcon();
+                    if (group.getPurpose().getMaxMembers() <= group.getMembers().size()) {
+                        GUIItem.setName(icon, icon.getItemMeta().getDisplayName() + " &c&lFULL");
+                    } else {
+                        slots.put(slot, group);
+                    }
+                    inventory.setItem(slot, icon);
                     slot++;
                 } else {
                     iterator.next();
                 }
                 count++;
             }
+            player.closeInventory();
             player.openInventory(inventory);
             viewers.put(player, new PlayerGuiInfo(page, slots));
         } else {
             inventory.setItem(13, GUIItem.dispItem(Material.BARRIER, "&cNo Active Groups", new String[] {}));
+            player.closeInventory();
             player.openInventory(inventory);
             viewers.put(player, new PlayerGuiInfo(page, new HashMap<Integer, Group>()));
         }
@@ -65,20 +75,27 @@ public class GroupJoinGui implements Listener {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             if (viewers.containsKey(player)) {
-                event.setCancelled(true);
-                if (event.getRawSlot() < event.getInventory().getSize()) {
-                    if (event.getSlot() == 0 && event.getCurrentItem().getType() == Material.ARROW) {
-                        display(player, viewers.get(player).getPage() - 1);
-                    } else if (event.getSlot() == 8 && event.getCurrentItem().getType() == Material.ARROW) {
-                        display(player, viewers.get(player).getPage() + 1);
-                    } else if (viewers.get(player).getSlots().containsKey(event.getSlot())) {
-                        if (RunicCore.getGroupManager().getGroups().containsKey(viewers.get(player).getSlots().get(event.getSlot()).getPurpose())) {
-                            RunicCore.getGroupManager().addToGroup(player, viewers.get(player).getSlots().get(event.getSlot()));
-                            viewers.get(player).getSlots().get(event.getSlot()).sendMessageInChannel(player + " has joined the group!");
-                            player.closeInventory();
-                        } else {
-                            player.closeInventory();
-                            player.sendMessage(ChatColor.RED + "That group is no longer active!");
+                if (event.getView().getTitle().equals("Join a Group")) {
+                    event.setCancelled(true);
+                    if (event.getRawSlot() < event.getInventory().getSize()) {
+                        if (event.getSlot() == 0 && event.getCurrentItem().getType() == Material.ARROW) {
+                            if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(previousArrow.getItemMeta().getDisplayName())) {
+                                display(player, viewers.get(player).getPage() - 1);
+                            } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(backArrow.getItemMeta().getDisplayName())) {
+                                viewers.remove(player);
+                                GroupMainGui.display(player);
+                            }
+                        } else if (event.getSlot() == 8 && event.getCurrentItem().getType() == Material.ARROW) {
+                            display(player, viewers.get(player).getPage() + 1);
+                        } else if (viewers.get(player).getSlots().containsKey(event.getSlot())) {
+                            if (RunicCore.getGroupManager().getGroups().containsKey(viewers.get(player).getSlots().get(event.getSlot()).getPurpose())) {
+                                RunicCore.getGroupManager().addToGroup(player, viewers.get(player).getSlots().get(event.getSlot()));
+                                viewers.get(player).getSlots().get(event.getSlot()).sendMessageInChannel(player + " has joined the group!");
+                                player.closeInventory();
+                            } else {
+                                player.closeInventory();
+                                player.sendMessage(ChatColor.RED + "That group is no longer active!");
+                            }
                         }
                     }
                 }

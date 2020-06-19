@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,9 +21,11 @@ import java.util.Set;
 public class GroupInfoGui implements Listener {
 
     private static Set<Player> viewers = new HashSet<Player>();
+    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
 
     public static void display(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, "Group Info");
+        inventory.setItem(0, backArrow);
         if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
             Group group = RunicCore.getGroupManager().getPlayerGroup(player);
             inventory.setItem(3, group.getIcon());
@@ -37,6 +40,7 @@ public class GroupInfoGui implements Listener {
                     "&7Group members and more info would show up here"
             }));
         }
+        player.closeInventory();
         player.openInventory(inventory);
         viewers.add(player);
     }
@@ -46,16 +50,21 @@ public class GroupInfoGui implements Listener {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             if (viewers.contains(player)) {
-                event.setCancelled(true);
-                if (event.getRawSlot() < event.getInventory().getSize()) {
-                    if (event.getSlot() == 5) {
-                        if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
-                            RunicCore.getGroupManager().getPlayerGroup(player).sendMessageInChannel(player + " has left the group!");
-                            RunicCore.getGroupManager().removeFromGroup(player, RunicCore.getGroupManager().getPlayerGroup(player));
-                            player.closeInventory();
-                        } else {
-                            player.closeInventory();
-                            player.sendMessage(ChatColor.RED + "You are not in a group!");
+                if (event.getView().getTitle().equals("Group Info")) {
+                    event.setCancelled(true);
+                    if (event.getRawSlot() < event.getInventory().getSize()) {
+                        if (event.getSlot() == 0) {
+                            viewers.remove(player);
+                            GroupMainGui.display(player);
+                        } else if (event.getSlot() == 5) {
+                            if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
+                                RunicCore.getGroupManager().getPlayerGroup(player).sendMessageInChannel(player.getName() + " has left the group!");
+                                RunicCore.getGroupManager().removeFromGroup(player, RunicCore.getGroupManager().getPlayerGroup(player));
+                                player.closeInventory();
+                            } else {
+                                player.closeInventory();
+                                player.sendMessage(ChatColor.RED + "You are not in a group!");
+                            }
                         }
                     }
                 }

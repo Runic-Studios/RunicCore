@@ -58,8 +58,9 @@ public class GroupManager implements Listener {
     public void removeFromGroup(Player player, Group group) {
         group.removeMember(player);
         if (group.getMembers().size() == 0) {
-            this.groups.remove(group);
+            this.groups.remove(group.getPurpose());
         }
+        this.updatePlayerGroup(player, null);
     }
 
     public void updatePlayerGroup(Player player, Group group) {
@@ -83,7 +84,9 @@ public class GroupManager implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        // TODO stub
+        if (this.getPlayerGroup(event.getPlayer()) != null) {
+            this.removeFromGroup(event.getPlayer(), this.getPlayerGroup(event.getPlayer()));
+        }
     }
 
 }

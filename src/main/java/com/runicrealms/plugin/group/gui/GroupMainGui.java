@@ -28,17 +28,18 @@ public class GroupMainGui implements Listener {
                 "&7other players  while having a set purpose,",
                 "&7like running a dungeon or fighting a boss."
         }));
-        inventory.setItem(11, GUIItem.dispItem(Material.WRITABLE_BOOK, "&eJoin a Group", new String[] {
+        inventory.setItem(13, GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {
                 "&7Join another player's group to play",
                 "&7with them and others while having a set purpose,",
                 "&7like running a dungeon or fighting a boss."
         }));
-        inventory.setItem(11, GUIItem.dispItem(Material.WRITABLE_BOOK, "&eInfo on Your Group", new String[] {
+        inventory.setItem(15, GUIItem.dispItem(Material.PAPER, "&eInfo on Your Group", new String[] {
                 "&7Get info on the group you are currently in"
         }));
     }
 
     public static void display(Player player) {
+        player.closeInventory();
         player.openInventory(inventory);
         viewers.add(player);
     }
@@ -48,27 +49,29 @@ public class GroupMainGui implements Listener {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             if (viewers.contains(player)) {
-                event.setCancelled(true);
-                if (event.getRawSlot() < event.getInventory().getSize()) {
-                    if (event.getSlot() == 11) {
-                        viewers.remove(player);
-                        if (RunicCore.getGroupManager().canJoinGroup(player)) {
-                            GroupCreateChooseTypeGui.display(player);
-                        } else {
-                            player.closeInventory();
-                            player.sendMessage(ChatColor.RED + "You are already in a group/party!");
+                if (event.getView().getTitle().equals("Groups")) {
+                    event.setCancelled(true);
+                    if (event.getRawSlot() < event.getInventory().getSize()) {
+                        if (event.getSlot() == 11) {
+                            viewers.remove(player);
+                            if (RunicCore.getGroupManager().canJoinGroup(player)) {
+                                GroupCreateChooseTypeGui.display(player);
+                            } else {
+                                player.closeInventory();
+                                player.sendMessage(ChatColor.RED + "You are already in a group/party!");
+                            }
+                        } else if (event.getSlot() == 13) {
+                            viewers.remove(player);
+                            if (RunicCore.getGroupManager().canJoinGroup(player)) {
+                                GroupJoinGui.display(player, 0);
+                            } else {
+                                player.closeInventory();
+                                player.sendMessage(ChatColor.RED + "You are already in a group/party!");
+                            }
+                        } else if (event.getSlot() == 15) {
+                            viewers.remove(player);
+                            GroupInfoGui.display(player);
                         }
-                    } else if (event.getSlot() == 13) {
-                        viewers.remove(player);
-                        if (RunicCore.getGroupManager().canJoinGroup(player)) {
-                            GroupJoinGui.display(player, 0);
-                        } else {
-                            player.closeInventory();
-                            player.sendMessage(ChatColor.RED + "You are already in a group/party!");
-                        }
-                    } else if (event.getSlot() == 15) {
-                        viewers.remove(player);
-                        GroupInfoGui.display(player);
                     }
                 }
             }

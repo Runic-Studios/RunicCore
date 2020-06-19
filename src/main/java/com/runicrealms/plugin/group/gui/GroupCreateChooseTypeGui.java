@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,9 +20,11 @@ public class GroupCreateChooseTypeGui implements Listener {
 
     private static Set<Player> viewers = new HashSet<Player>();
     private static Inventory inventory;
+    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
 
     public static void initInventory() {
         inventory = Bukkit.createInventory(null, 27, "Choose Group Type");
+        inventory.setItem(0, backArrow);
         inventory.setItem(4, GUIItem.dispItem(Material.PAPER, "&eChoose Group Type", new String[] {
                 "&7When creating a group, you must choose",
                 "&7the purpose of the group. There are",
@@ -34,6 +37,7 @@ public class GroupCreateChooseTypeGui implements Listener {
     }
 
     public static void display(Player player) {
+        player.closeInventory();
         player.openInventory(inventory);
         viewers.add(player);
     }
@@ -43,20 +47,25 @@ public class GroupCreateChooseTypeGui implements Listener {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             if (viewers.contains(player)) {
-                event.setCancelled(true);
-                if (event.getRawSlot() < event.getInventory().getSize()) {
-                    if (event.getSlot() == 10) {
-                        viewers.remove(player);
-                        GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.DUNGEON);
-                    } else if (event.getSlot() == 12) {
-                        viewers.remove(player);
-                        GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.QUESTS);
-                    } else if (event.getSlot() == 14) {
-                        viewers.remove(player);
-                        GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.GRINDING);
-                    } else if (event.getSlot() == 16) {
-                        viewers.remove(player);
-                        GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.MINIBOSS);
+                if (event.getView().getTitle().equals("Choose Group Type")) {
+                    event.setCancelled(true);
+                    if (event.getRawSlot() < event.getInventory().getSize()) {
+                        if (event.getSlot() == 0) {
+                            viewers.remove(player);
+                            GroupMainGui.display(player);
+                        } else if (event.getSlot() == 10) {
+                            viewers.remove(player);
+                            GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.DUNGEON);
+                        } else if (event.getSlot() == 12) {
+                            viewers.remove(player);
+                            GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.QUESTS);
+                        } else if (event.getSlot() == 14) {
+                            viewers.remove(player);
+                            GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.GRINDING);
+                        } else if (event.getSlot() == 16) {
+                            viewers.remove(player);
+                            GroupCreateChoosePurposeGui.display(player, GroupPurpose.Type.MINIBOSS);
+                        }
                     }
                 }
             }

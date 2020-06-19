@@ -34,7 +34,7 @@ public class Group {
 
     public void addMember(Player player) {
         this.members.add(player);
-        this.rebuildIcon();
+        this.rebuildIcons();
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             this.memberIcons.put(player, GUIItem.setName(HeadUtil.getHead(player), "&e" + player.getName()));
         });
@@ -42,7 +42,7 @@ public class Group {
 
     public void removeMember(Player player) {
         this.members.remove(player);
-        this.rebuildIcon();
+        this.rebuildIcons();
         this.memberIcons.remove(player);
     }
 
@@ -64,7 +64,7 @@ public class Group {
         });
     }
 
-    public void rebuildIcon() {
+    public void rebuildIcons() {
         this.icon = this.purpose.getIcon().clone();
         StringBuilder builder = new StringBuilder("&7");
         int count = 0;
