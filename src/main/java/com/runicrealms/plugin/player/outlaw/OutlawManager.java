@@ -2,7 +2,7 @@ package com.runicrealms.plugin.player.outlaw;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
-import com.runicrealms.plugin.parties.Party;
+import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

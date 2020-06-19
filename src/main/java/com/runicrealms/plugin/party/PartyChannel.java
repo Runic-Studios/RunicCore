@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.parties;
+package com.runicrealms.plugin.party;
 
 import com.runicrealms.api.chat.ChatChannel;
 import com.runicrealms.plugin.RunicCore;

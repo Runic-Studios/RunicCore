@@ -3,7 +3,7 @@ package com.runicrealms.plugin.player.commands;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
-import com.runicrealms.plugin.parties.Party;
+import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;

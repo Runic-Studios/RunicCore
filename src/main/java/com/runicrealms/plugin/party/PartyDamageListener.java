@@ -1,5 +1,6 @@
-package com.runicrealms.plugin.parties;
+package com.runicrealms.plugin.party;
 
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -7,7 +8,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import com.runicrealms.plugin.RunicCore;
 
 public class PartyDamageListener implements Listener {
 

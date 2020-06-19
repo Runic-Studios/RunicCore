@@ -1,7 +1,6 @@
-package com.runicrealms.plugin.parties;
+package com.runicrealms.plugin.party;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Bukkit;

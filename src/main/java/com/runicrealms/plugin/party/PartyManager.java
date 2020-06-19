@@ -1,7 +1,6 @@
-package com.runicrealms.plugin.parties;
+package com.runicrealms.plugin.party;
 
 import com.runicrealms.plugin.RunicCore;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
