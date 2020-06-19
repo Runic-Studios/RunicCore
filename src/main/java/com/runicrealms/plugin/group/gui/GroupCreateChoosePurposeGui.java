@@ -26,7 +26,7 @@ public class GroupCreateChoosePurposeGui implements Listener {
     private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
 
     public static void display(Player player, GroupPurpose.Type type) {
-        Inventory inventory = Bukkit.createInventory(null, 54, "Group Purpose - " + type.getName());
+        Inventory inventory = Bukkit.createInventory(null, 27, "Group Purpose - " + type.getName());
         inventory.setItem(0, backArrow);
         inventory.setItem(4, type.getIcon());
         Map<Integer, GroupPurpose> slots = new HashMap<Integer, GroupPurpose>();
