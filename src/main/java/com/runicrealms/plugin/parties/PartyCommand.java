@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.parties.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -67,7 +66,7 @@ public class PartyCommand extends BaseCommand {
     @Subcommand("create|c")
     @Conditions("is-player")
     public void onCommandCreate(Player player) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou are already in a party!")); return; }
+        if (RunicCore.getPartyManager().canJoinParty(player)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou are already in a party/group!")); return; }
         Party party = new Party(player);
         RunicCore.getPartyManager().getParties().add(party);
         RunicCore.getPartyManager().updatePlayerParty(player, party);
@@ -100,7 +99,7 @@ public class PartyCommand extends BaseCommand {
         if (args.length < 1) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cPlease specify a player to invite!")); return; }
         Player invited = Bukkit.getPlayerExact(args[0]);
         if (invited == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not online!")); return; }
-        if (RunicCore.getPartyManager().getPlayerParty(invited) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is already in a party!")); return; }
+        if (RunicCore.getPartyManager().canJoinParty(invited)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is already in a party/group!")); return; }
         if (RunicCore.getPartyManager().memberHasInvite(invited)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player has already been invited to your/a different party!")); return; }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
         if (Math.abs(party.getLeader().getLevel() - invited.getLevel()) > 15) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is outside the party level range [15]")); return; }
@@ -114,7 +113,7 @@ public class PartyCommand extends BaseCommand {
     @CommandCompletion("@party-join")
     @Conditions("is-player")
     public void onCommandJoin(Player player, String[] args) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) != null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou cannot use this command while in a party!")); return; }
+        if (!RunicCore.getPartyManager().canJoinParty(player)) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cYou cannot use this command while in a party/group!")); return; }
         if (args.length < 1) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cPlease specify the name of the person that invited you to their party")); return; }
         Player inviter = Bukkit.getPlayerExact(args[0]);
         if (inviter == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2Party &6» &cThat player is not online!")); return; }

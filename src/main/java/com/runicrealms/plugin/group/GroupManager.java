@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.group;
 
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,6 +39,10 @@ public class GroupManager implements Listener {
             return this.playerGroups.get(player);
         }
         return null;
+    }
+
+    public boolean canJoinGroup(Player player) {
+        return RunicCore.getPartyManager().getPlayerParty(player) == null && this.getPlayerGroup(player) == null;
     }
 
     @EventHandler

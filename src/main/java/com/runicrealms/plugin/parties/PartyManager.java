@@ -34,6 +34,10 @@ public class PartyManager implements Listener {
         }
     }
 
+    public boolean canJoinParty(Player player) {
+        return this.getPlayerParty(player) == null && RunicCore.getGroupManager().getPlayerGroup(player) == null;
+    }
+
     public Party getPlayerParty(Player player) {
         if (this.playerParties.containsKey(player)) {
             return this.playerParties.get(player);
