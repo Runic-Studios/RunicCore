@@ -45,14 +45,6 @@ public class KnockbackUtil {
         t.setVelocity(v);
     }
 
-//    public static void knockbackPlayer(Player p, Entity t, double mult) {
-//        Location l = t.getLocation().subtract(p.getLocation());
-//        double distance = t.getLocation().distance(p.getLocation());
-//        Vector v = l.toVector().multiply(mult/distance);
-//        v.setY(0.3333);
-//        t.setVelocity(v);
-//    }
-
     public static void knockbackRanged(Player p, Entity t) {
 //        Location l = t.getLocation().subtract(p.getLocation());
 //        double distance = t.getLocation().distance(p.getLocation());
