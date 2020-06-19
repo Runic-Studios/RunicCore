@@ -2,7 +2,9 @@ package com.runicrealms.plugin.group.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.group.Group;
+import com.runicrealms.plugin.utilities.GUIItem;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,39 +20,94 @@ import java.util.Map;
 
 public class GroupJoinGui implements Listener {
 
-    private static Map<Player, Integer> viewers = new HashMap<Player, Integer>();
+    private static Map<Player, PlayerGuiInfo> viewers = new HashMap<Player, PlayerGuiInfo>();
+    private static ItemStack blankSlot = GUIItem.dispItem(Material.BLACK_STAINED_GLASS_PANE, " ", new String[] {});
+    private static ItemStack previousArrow = GUIItem.dispItem(Material.ARROW, "&ePrevious Page", new String[] {});
+    private static ItemStack nextArrow = GUIItem.dispItem(Material.ARROW, "&eNext Page", new String[] {});
+    private static ItemStack guiIcon = GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {});
 
-    public static void display(Player player) {
+    public static void display(Player player, Integer page) {
         Inventory inventory = Bukkit.createInventory(null, 54, "Join a Group");
-        int page = viewers.containsKey(player) ? viewers.get(player) : 0;
-        int slot = 9;
-        Iterator<Group> iterator = RunicCore.getGroupManager().getGroups().iterator();
-        int count = 0;
-        while (iterator.hasNext()) {
-            if (count >= page * 45 && count < RunicCore.getGroupManager().getGroups().size() - page * 45) {
-                inventory.setItem(slot, iterator.next().getIcon());
-                slot++;
-            } else {
-                iterator.next();
-            }
-            count++;
+        inventory.setItem(0, page > 0 ? previousArrow : blankSlot);
+        inventory.setItem(8, RunicCore.getGroupManager().getGroups().size() > page * 45 + 45 ? nextArrow : blankSlot);
+        for (int i = 1; i < 8; i++) {
+            inventory.setItem(i, i != 4 ? blankSlot : guiIcon);
         }
-        player.openInventory(inventory);
-        viewers.put(player, page);
+        if (RunicCore.getGroupManager().getGroups().size() > 0) {
+            Iterator<Group> iterator = RunicCore.getGroupManager().getGroups().iterator();
+            int slot = 9;
+            int count = 0;
+            Map<Integer, Group> slots = new HashMap<Integer, Group>();
+            while (iterator.hasNext()) {
+                if (count >= page * 45 && count < RunicCore.getGroupManager().getGroups().size() - page * 45) {
+                    Group group = iterator.next();
+                    inventory.setItem(slot, group.getIcon());
+                    slots.put(slot, group);
+                    slot++;
+                } else {
+                    iterator.next();
+                }
+                count++;
+            }
+            player.openInventory(inventory);
+            viewers.put(player, new PlayerGuiInfo(page, slots));
+        } else {
+            inventory.setItem(13, GUIItem.dispItem(Material.BARRIER, "&cNo Active Groups", new String[] {}));
+            player.openInventory(inventory);
+            viewers.put(player, new PlayerGuiInfo(page, new HashMap<Integer, Group>()));
+        }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-
+        if (event.getWhoClicked() instanceof Player) {
+            Player player = (Player) event.getWhoClicked();
+            if (viewers.containsKey(player)) {
+                event.setCancelled(true);
+                if (event.getRawSlot() < event.getInventory().getSize()) {
+                    if (event.getSlot() == 0 && event.getCurrentItem().getType() == Material.ARROW) {
+                        display(player, viewers.get(player).getPage() - 1);
+                    } else if (event.getSlot() == 8 && event.getCurrentItem().getType() == Material.ARROW) {
+                        display(player, viewers.get(player).getPage() + 1);
+                    } else if (viewers.get(player).getSlots().containsKey(event.getSlot())) {
+                        // TODO - add player to group
+                    }
+                }
+            }
+        }
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-
+        if (viewers.containsKey(event.getPlayer())) {
+            viewers.remove(event.getPlayer());
+        }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if (viewers.containsKey(event.getPlayer())) {
+            viewers.remove(event.getPlayer());
+        }
+    }
+
+    private static class PlayerGuiInfo {
+
+        private Integer page;
+        private Map<Integer, Group> slots;
+
+        public PlayerGuiInfo(Integer page, Map<Integer, Group> slots) {
+            this.page = page;
+            this.slots = slots;
+        }
+
+        public Integer getPage() {
+            return this.page;
+        }
+
+        public Map<Integer, Group> getSlots() {
+            return this.slots;
+        }
 
     }
 
