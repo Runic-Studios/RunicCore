@@ -1,5 +1,6 @@
 package com.runicrealms.plugin;
 
+import co.aikar.commands.ConditionFailedException;
 import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -66,6 +67,7 @@ import com.runicrealms.runicrestart.api.RunicRestartApi;
 import com.runicrealms.runicrestart.api.ServerShutdownEvent;
 import net.minecraft.server.v1_15_R1.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -140,6 +142,12 @@ public class RunicCore extends JavaPlugin implements Listener {
         databaseManager = new DatabaseManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
+        commandManager.getCommandConditions().addCondition("is-player", context -> {
+            if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
+        });
+        commandManager.getCommandConditions().addCondition("is-op", context -> {
+            if (!context.getIssuer().getIssuer().isOp()) throw new ConditionFailedException("You must be an operator to run this command!");
+        });
 
         Bukkit.getPluginManager().registerEvents(this, this);
 
