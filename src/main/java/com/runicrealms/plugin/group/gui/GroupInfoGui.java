@@ -24,7 +24,8 @@ public class GroupInfoGui implements Listener {
         Inventory inventory = Bukkit.createInventory(null, 27, "Group Info");
         if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
             Group group = RunicCore.getGroupManager().getPlayerGroup(player);
-            inventory.setItem(4, group.getIcon());
+            inventory.setItem(3, group.getIcon());
+            inventory.setItem(5, GUIItem.dispItem(Material.BARRIER, "&cLeave your group", new String[] {}));
             int slot = 9;
             for (Player member : group.getMemberIcons().keySet()) {
                 inventory.setItem(slot, group.getMemberIcons().get(player));
@@ -45,6 +46,11 @@ public class GroupInfoGui implements Listener {
             Player player = (Player) event.getWhoClicked();
             if (viewers.contains(player)) {
                 event.setCancelled(true);
+                if (event.getRawSlot() < event.getInventory().getSize()) {
+                    if (event.getSlot() == 5) {
+                        // TODO - remove player from group
+                    }
+                }
             }
         }
     }
