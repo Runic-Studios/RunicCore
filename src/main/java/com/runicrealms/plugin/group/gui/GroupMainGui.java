@@ -37,7 +37,6 @@ public class GroupMainGui implements Listener {
     }
 
     public static void display(Player player) {
-        player.closeInventory();
         player.openInventory(inventory);
         viewers.add(player);
     }

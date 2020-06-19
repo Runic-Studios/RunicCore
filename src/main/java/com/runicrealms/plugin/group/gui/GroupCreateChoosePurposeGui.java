@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.group.gui;
 
+import com.runicrealms.plugin.group.GroupPurpose;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +15,7 @@ public class GroupCreateChoosePurposeGui implements Listener {
 
     private static Set<Player> viewers = new HashSet<Player>();
 
-    public static void display(Player player) {
+    public static void display(Player player, GroupPurpose.Type type) {
 
     }
 
