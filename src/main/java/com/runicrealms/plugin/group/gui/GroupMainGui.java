@@ -52,7 +52,7 @@ public class GroupMainGui implements Listener {
                     if (event.getSlot() == 11) {
                         GroupCreateChooseTypeGui.display(player);
                     } else if (event.getSlot() == 13) {
-                        GroupJoinGui.display(player);
+                        GroupJoinGui.display(player, 0);
                     } else if (event.getSlot() == 15) {
                         GroupInfoGui.display(player);
                     }
