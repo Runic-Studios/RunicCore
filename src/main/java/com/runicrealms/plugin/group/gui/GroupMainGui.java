@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.group.gui;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.GUIItem;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,10 +51,23 @@ public class GroupMainGui implements Listener {
                 event.setCancelled(true);
                 if (event.getRawSlot() < event.getInventory().getSize()) {
                     if (event.getSlot() == 11) {
-                        GroupCreateChooseTypeGui.display(player);
+                        viewers.remove(player);
+                        if (RunicCore.getGroupManager().canJoinGroup(player)) {
+                            GroupCreateChooseTypeGui.display(player);
+                        } else {
+                            player.closeInventory();
+                            player.sendMessage(ChatColor.RED + "You are already in a group/party!");
+                        }
                     } else if (event.getSlot() == 13) {
-                        GroupJoinGui.display(player, 0);
+                        viewers.remove(player);
+                        if (RunicCore.getGroupManager().canJoinGroup(player)) {
+                            GroupJoinGui.display(player, 0);
+                        } else {
+                            player.closeInventory();
+                            player.sendMessage(ChatColor.RED + "You are already in a group/party!");
+                        }
                     } else if (event.getSlot() == 15) {
+                        viewers.remove(player);
                         GroupInfoGui.display(player);
                     }
                 }
