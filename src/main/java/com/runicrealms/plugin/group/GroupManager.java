@@ -1,6 +1,12 @@
 package com.runicrealms.plugin.group;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.group.gui.GroupCreateChoosePurposeGui;
+import com.runicrealms.plugin.group.gui.GroupCreateChooseTypeGui;
+import com.runicrealms.plugin.group.gui.GroupInfoGui;
+import com.runicrealms.plugin.group.gui.GroupJoinGui;
+import com.runicrealms.plugin.group.gui.GroupMainGui;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +23,16 @@ public class GroupManager implements Listener {
 
     private LinkedHashMap<GroupPurpose, Group> groups;
     private Map<Player, Group> playerGroups;
+
+    public void registerGuiEvents() {
+        Bukkit.getPluginManager().registerEvents(new GroupMainGui(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(new GroupInfoGui(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(new GroupJoinGui(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(new GroupCreateChooseTypeGui(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(new GroupCreateChoosePurposeGui(), RunicCore.getInstance());
+        GroupMainGui.initInventory();
+        GroupCreateChooseTypeGui.initInventory();
+    }
 
     public GroupManager() {
         this.groups = new LinkedHashMap<GroupPurpose, Group>(); // Important that it is linked!
