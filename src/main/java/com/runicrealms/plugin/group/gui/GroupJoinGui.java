@@ -2,6 +2,7 @@ package com.runicrealms.plugin.group.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.group.Group;
+import com.runicrealms.plugin.group.GroupPurpose;
 import com.runicrealms.plugin.utilities.GUIItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -34,13 +35,13 @@ public class GroupJoinGui implements Listener {
             inventory.setItem(i, i != 4 ? blankSlot : guiIcon);
         }
         if (RunicCore.getGroupManager().getGroups().size() > 0) {
-            Iterator<Group> iterator = RunicCore.getGroupManager().getGroups().iterator();
+            Iterator<Map.Entry<GroupPurpose, Group>> iterator = RunicCore.getGroupManager().getGroups().entrySet().iterator();
             int slot = 9;
             int count = 0;
             Map<Integer, Group> slots = new HashMap<Integer, Group>();
             while (iterator.hasNext()) {
                 if (count >= page * 45 && count < RunicCore.getGroupManager().getGroups().size() - page * 45) {
-                    Group group = iterator.next();
+                    Group group = iterator.next().getValue();
                     inventory.setItem(slot, group.getIcon());
                     slots.put(slot, group);
                     slot++;

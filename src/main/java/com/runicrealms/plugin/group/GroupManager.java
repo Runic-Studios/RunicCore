@@ -8,22 +8,42 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class GroupManager implements Listener {
 
-    private LinkedHashSet<Group> groups;
+    private LinkedHashMap<GroupPurpose, Group> groups;
     private Map<Player, Group> playerGroups;
 
     public GroupManager() {
-        this.groups = new LinkedHashSet<Group>(); // Important that it is linked!
+        this.groups = new LinkedHashMap<GroupPurpose, Group>(); // Important that it is linked!
         this.playerGroups = new HashMap<Player, Group>();
     }
 
-    public LinkedHashSet<Group> getGroups() {
+    public LinkedHashMap<GroupPurpose, Group> getGroups() {
         return this.groups;
+    }
+
+    public void createGroup(Player player, GroupPurpose purpose) {
+        Group group = new Group(purpose);
+        group.addMember(player);
+        this.groups.put(purpose, group);
+        this.updatePlayerGroup(player, group);
+    }
+
+    public void addToGroup(Player player, Group group) {
+        group.addMember(player);
+        this.updatePlayerGroup(player, group);
+    }
+
+    public void removeFromGroup(Player player, Group group) {
+        group.removeMember(player);
+        if (group.getMembers().size() == 0) {
+            this.groups.remove(group);
+        }
     }
 
     public void updatePlayerGroup(Player player, Group group) {

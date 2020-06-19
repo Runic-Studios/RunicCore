@@ -49,6 +49,10 @@ public class Group {
         return this.members.contains(player);
     }
 
+    public Set<Player> getMembers() {
+        return this.members;
+    }
+
     public Map<Player, ItemStack> getMemberIcons() {
         return this.memberIcons;
     }

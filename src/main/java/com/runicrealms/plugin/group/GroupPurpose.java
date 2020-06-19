@@ -48,15 +48,21 @@ public enum GroupPurpose {
     }
 
     public enum Type {
-        DUNGEON(GUIItem.dispItem(Material.IRON_BARS, ChatColor.YELLOW, "Dungeon", "Gather allies to fight powerful foes")),
-        QUESTS(GUIItem.dispItem(Material.BOOK, ChatColor.YELLOW, "Quests", "Level up by questing with friends")),
-        GRINDING(GUIItem.dispItem(Material.IRON_PICKAXE, ChatColor.YELLOW, "Mob Grinding", "Fight enemies and level up with friends")),
-        MINIBOSS(GUIItem.dispItem(Material.IRON_SWORD, ChatColor.YELLOW, "Miniboss", "Defeat hard bosses with the help of some allies"));
+        DUNGEON("Dungeon", GUIItem.dispItem(Material.IRON_BARS, ChatColor.YELLOW, "Dungeon", "Gather allies to fight powerful foes")),
+        QUESTS("Quests", GUIItem.dispItem(Material.BOOK, ChatColor.YELLOW, "Quests", "Level up by questing with friends")),
+        GRINDING("Grinding", GUIItem.dispItem(Material.IRON_PICKAXE, ChatColor.YELLOW, "Mob Grinding", "Fight enemies and level up with friends")),
+        MINIBOSS("Miniboss", GUIItem.dispItem(Material.IRON_SWORD, ChatColor.YELLOW, "Miniboss", "Defeat hard bosses with the help of some allies"));
 
+        private String name;
         private ItemStack item;
 
-        Type(ItemStack item) {
+        Type(String name, ItemStack item) {
+            this.name = name;
             this.item = item;
+        }
+
+        public String getName() {
+            return this.name;
         }
 
         public ItemStack getIcon() {
