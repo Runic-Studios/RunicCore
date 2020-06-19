@@ -5,6 +5,7 @@ import com.runicrealms.plugin.group.Group;
 import com.runicrealms.plugin.group.GroupPurpose;
 import com.runicrealms.plugin.utilities.GUIItem;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,7 +72,14 @@ public class GroupJoinGui implements Listener {
                     } else if (event.getSlot() == 8 && event.getCurrentItem().getType() == Material.ARROW) {
                         display(player, viewers.get(player).getPage() + 1);
                     } else if (viewers.get(player).getSlots().containsKey(event.getSlot())) {
-                        // TODO - add player to group
+                        if (RunicCore.getGroupManager().getGroups().containsKey(viewers.get(player).getSlots().get(event.getSlot()).getPurpose())) {
+                            RunicCore.getGroupManager().addToGroup(player, viewers.get(player).getSlots().get(event.getSlot()));
+                            player.closeInventory();
+                            // TODO - send message in channel
+                        } else {
+                            player.closeInventory();
+                            player.sendMessage(ChatColor.RED + "That group is no longer active!");
+                        }
                     }
                 }
             }

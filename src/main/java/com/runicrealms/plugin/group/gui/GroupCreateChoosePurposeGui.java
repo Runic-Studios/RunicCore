@@ -51,7 +51,8 @@ public class GroupCreateChoosePurposeGui implements Listener {
                     if (viewers.get(player).containsKey(event.getSlot())) {
                         if (RunicCore.getGroupManager().canJoinGroup(player)) {
                             if (!RunicCore.getGroupManager().getGroups().containsKey(viewers.get(player).get(event.getSlot()))) {
-                                // TODO - create group
+                                RunicCore.getGroupManager().createGroup(player, viewers.get(player).get(event.getSlot()));
+                                // TODO - send message in channel
                             } else {
                                 player.closeInventory();
                                 player.sendMessage(ChatColor.RED + "A group with that purpose has already been created!");

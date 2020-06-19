@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.group.Group;
 import com.runicrealms.plugin.utilities.GUIItem;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -48,7 +49,13 @@ public class GroupInfoGui implements Listener {
                 event.setCancelled(true);
                 if (event.getRawSlot() < event.getInventory().getSize()) {
                     if (event.getSlot() == 5) {
-                        // TODO - remove player from group
+                        if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
+                            RunicCore.getGroupManager().removeFromGroup(player, RunicCore.getGroupManager().getPlayerGroup(player));
+                            // TODO - send message in channel
+                        } else {
+                            player.closeInventory();
+                            player.sendMessage(ChatColor.RED + "You are not in a group!");
+                        }
                     }
                 }
             }
