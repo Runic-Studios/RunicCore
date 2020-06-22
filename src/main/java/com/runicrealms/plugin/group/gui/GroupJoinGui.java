@@ -17,19 +17,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public class GroupJoinGui implements Listener {
 
-    private static Map<Player, PlayerGuiInfo> viewers = new HashMap<Player, PlayerGuiInfo>();
-    private static ItemStack blankSlot = GUIItem.dispItem(Material.BLACK_STAINED_GLASS_PANE, " ", new String[] {});
-    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
-    private static ItemStack previousArrow = GUIItem.dispItem(Material.ARROW, "&ePrevious Page", new String[] {});
-    private static ItemStack nextArrow = GUIItem.dispItem(Material.ARROW, "&eNext Page", new String[] {});
-    private static ItemStack guiIcon = GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {});
+    private static final Map<Player, PlayerGuiInfo> viewers = new HashMap<>();
+    private static final ItemStack blankSlot = GUIItem.dispItem(Material.BLACK_STAINED_GLASS_PANE, " ", new String[] {});
+    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final ItemStack previousArrow = GUIItem.dispItem(Material.ARROW, "&ePrevious Page", new String[] {});
+    private static final ItemStack nextArrow = GUIItem.dispItem(Material.ARROW, "&eNext Page", new String[] {});
+    private static final ItemStack guiIcon = GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {});
 
     public static void display(Player player, Integer page) {
         Inventory inventory = Bukkit.createInventory(null, 54, "Join a Group");
@@ -42,7 +40,7 @@ public class GroupJoinGui implements Listener {
             Iterator<Map.Entry<GroupPurpose, Group>> iterator = RunicCore.getGroupManager().getGroups().entrySet().iterator();
             int slot = 9;
             int count = 0;
-            Map<Integer, Group> slots = new HashMap<Integer, Group>();
+            Map<Integer, Group> slots = new HashMap<>();
             while (iterator.hasNext()) {
                 if (count >= page * 45 && count < RunicCore.getGroupManager().getGroups().size() - page * 45) {
                     Group group = iterator.next().getValue();
@@ -66,7 +64,7 @@ public class GroupJoinGui implements Listener {
             inventory.setItem(13, GUIItem.dispItem(Material.BARRIER, "&cNo Active Groups", new String[] {}));
             player.closeInventory();
             player.openInventory(inventory);
-            viewers.put(player, new PlayerGuiInfo(page, new HashMap<Integer, Group>()));
+            viewers.put(player, new PlayerGuiInfo(page, new HashMap<>()));
         }
     }
 
@@ -105,22 +103,18 @@ public class GroupJoinGui implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (viewers.containsKey(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (viewers.containsKey(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
     private static class PlayerGuiInfo {
 
-        private Integer page;
-        private Map<Integer, Group> slots;
+        private final Integer page;
+        private final Map<Integer, Group> slots;
 
         public PlayerGuiInfo(Integer page, Map<Integer, Group> slots) {
             this.page = page;

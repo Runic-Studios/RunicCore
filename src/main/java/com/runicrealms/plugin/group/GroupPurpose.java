@@ -37,9 +37,9 @@ public enum GroupPurpose {
     MINIBOSS_SUN_PRIEST(Type.MINIBOSS, GUIItem.dispItem(Material.IRON_SWORD, "&eSun Priest", new String[] {"&7• Level 40+", "&7• Zenyth"}), 3),
     MINIBOSS_PYROMANCER(Type.MINIBOSS, GUIItem.dispItem(Material.IRON_SWORD, "&ePyromancer", new String[] {"&7• Level 55+", "&7• Valmyra Citadel"}), 3);
 
-    private Type type;
-    private ItemStack item;
-    private int max;
+    private final Type type;
+    private final ItemStack item;
+    private final int max;
 
     GroupPurpose(Type type, ItemStack item, int max) {
         this.type = type;
@@ -65,8 +65,8 @@ public enum GroupPurpose {
         GRINDING("Grinding", GUIItem.dispItem(Material.IRON_PICKAXE, ChatColor.YELLOW, "Mob Grinding", "Fight enemies and level up with friends")),
         MINIBOSS("Miniboss", GUIItem.dispItem(Material.IRON_SWORD, ChatColor.YELLOW, "Miniboss", "Defeat hard bosses with the help of some allies"));
 
-        private String name;
-        private ItemStack item;
+        private final String name;
+        private final ItemStack item;
 
         Type(String name, ItemStack item) {
             this.name = name;

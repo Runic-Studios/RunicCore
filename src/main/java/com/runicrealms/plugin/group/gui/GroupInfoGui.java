@@ -20,8 +20,8 @@ import java.util.Set;
 
 public class GroupInfoGui implements Listener {
 
-    private static Set<Player> viewers = new HashSet<Player>();
-    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final Set<Player> viewers = new HashSet<>();
+    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
 
     public static void display(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, "Group Info");
@@ -74,16 +74,12 @@ public class GroupInfoGui implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (viewers.contains(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (viewers.contains(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
 }

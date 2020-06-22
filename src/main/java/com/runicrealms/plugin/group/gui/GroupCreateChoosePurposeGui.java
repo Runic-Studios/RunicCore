@@ -16,20 +16,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class GroupCreateChoosePurposeGui implements Listener {
 
-    private static Map<Player, Map<Integer, GroupPurpose>> viewers = new HashMap<Player, Map<Integer, GroupPurpose>>();
-    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final Map<Player, Map<Integer, GroupPurpose>> viewers = new HashMap<>();
+    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
 
     public static void display(Player player, GroupPurpose.Type type) {
         Inventory inventory = Bukkit.createInventory(null, 27, "Group Purpose - " + type.getName());
         inventory.setItem(0, backArrow);
         inventory.setItem(4, type.getIcon());
-        Map<Integer, GroupPurpose> slots = new HashMap<Integer, GroupPurpose>();
+        Map<Integer, GroupPurpose> slots = new HashMap<>();
         int slot = 9;
         for (GroupPurpose purpose : GroupPurpose.values()) {
             if (purpose.getType() == type) {
@@ -81,16 +79,12 @@ public class GroupCreateChoosePurposeGui implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (viewers.containsKey(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (viewers.containsKey(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
 }

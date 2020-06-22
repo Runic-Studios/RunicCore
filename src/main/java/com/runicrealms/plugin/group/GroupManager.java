@@ -1,11 +1,7 @@
 package com.runicrealms.plugin.group;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.group.gui.GroupCreateChoosePurposeGui;
-import com.runicrealms.plugin.group.gui.GroupCreateChooseTypeGui;
-import com.runicrealms.plugin.group.gui.GroupInfoGui;
-import com.runicrealms.plugin.group.gui.GroupJoinGui;
-import com.runicrealms.plugin.group.gui.GroupMainGui;
+import com.runicrealms.plugin.group.gui.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,16 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class GroupManager implements Listener {
 
-    private LinkedHashMap<GroupPurpose, Group> groups;
-    private Map<Player, Group> playerGroups;
+    private final LinkedHashMap<GroupPurpose, Group> groups;
+    private final Map<Player, Group> playerGroups;
 
     public void registerGuiEvents() {
         Bukkit.getPluginManager().registerEvents(new GroupMainGui(), RunicCore.getInstance());
@@ -35,8 +28,8 @@ public class GroupManager implements Listener {
     }
 
     public GroupManager() {
-        this.groups = new LinkedHashMap<GroupPurpose, Group>(); // Important that it is linked!
-        this.playerGroups = new HashMap<Player, Group>();
+        this.groups = new LinkedHashMap<>(); // Important that it is linked!
+        this.playerGroups = new HashMap<>();
     }
 
     public LinkedHashMap<GroupPurpose, Group> getGroups() {

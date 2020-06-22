@@ -18,9 +18,9 @@ import java.util.Set;
 
 public class GroupCreateChooseTypeGui implements Listener {
 
-    private static Set<Player> viewers = new HashSet<Player>();
+    private static final Set<Player> viewers = new HashSet<>();
     private static Inventory inventory;
-    private static ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
 
     public static void initInventory() {
         inventory = Bukkit.createInventory(null, 27, "Choose Group Type");
@@ -74,16 +74,12 @@ public class GroupCreateChooseTypeGui implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (viewers.contains(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (viewers.contains(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
 }

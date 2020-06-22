@@ -18,23 +18,23 @@ import java.util.Set;
 
 public class GroupMainGui implements Listener {
 
-    private static Set<Player> viewers = new HashSet<Player>();
+    private static final Set<Player> viewers = new HashSet<>();
     private static Inventory inventory;
 
     public static void initInventory() {
-        inventory = Bukkit.createInventory(null, 27, "Groups");
+        inventory = Bukkit.createInventory(null, 27, ChatColor.YELLOW + "" + ChatColor.BOLD + "Groups");
         inventory.setItem(11, GUIItem.dispItem(Material.WRITABLE_BOOK, "&eCreate a Group", new String[] {
-                "&7Groups are a way for you to play with",
-                "&7other players  while having a set purpose,",
+                "&7Groups are a way for you complete",
+                "&7challenging content with other players,",
                 "&7like running a dungeon or fighting a boss."
         }));
         inventory.setItem(13, GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {
-                "&7Join another player's group to play",
-                "&7with them and others while having a set purpose,",
-                "&7like running a dungeon or fighting a boss."
+                "&7Join another player's group to complete",
+                "&7a common goal, like finishing a quest",
+                "&7or fighting a boss!"
         }));
         inventory.setItem(15, GUIItem.dispItem(Material.PAPER, "&eInfo on Your Group", new String[] {
-                "&7Get info on the group you are currently in"
+                "&7Get info on your current group!"
         }));
     }
 
@@ -80,16 +80,12 @@ public class GroupMainGui implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (viewers.contains(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (viewers.contains(event.getPlayer())) {
-            viewers.remove(event.getPlayer());
-        }
+        viewers.remove(event.getPlayer());
     }
 
 }
