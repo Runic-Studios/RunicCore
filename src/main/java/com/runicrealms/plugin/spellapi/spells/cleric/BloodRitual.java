@@ -52,12 +52,15 @@ public class BloodRitual extends Spell {
                 if (count > WARMUP) {
                     this.cancel();
                     pl.getWorld().playSound(lecternLoc, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2.0f);
+                    pl.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, lecternLoc, 1, 0, 0, 0, 0);
                     for (Player nearby : RunicCore.getCacheManager().getLoadedPlayers()) {
                         if (nearby.getLocation().distanceSquared(lecternLoc) <= Math.pow(50, 2)) {
                             nearby.sendBlockChange(lecternLoc, data);
                         }
                     }
                     for (Entity ally : pl.getWorld().getNearbyEntities(lecternLoc, RADIUS, RADIUS, RADIUS)) {
+                        if (!(ally instanceof Player))
+                            continue;
                         if (verifyAlly(pl, ally))
                             HealUtil.healPlayer(HEALING_AMT, (Player) ally, pl, true, false, false);
                     }
