@@ -8,8 +8,8 @@ public enum ResourcePackVersion {
     MC_1_12("https://www.dropbox.com/s/zhv02mx6hixneyc/1.12_RR.zip?dl=1", 317, 340),
     MC_1_13("https://www.dropbox.com/s/pd4n42rlsi91ufw/1.13_RR.zip?dl=1", 341, 404), // uses old font format
     MC_1_14("https://www.dropbox.com/s/uevneode37qedk5/1.14_RR.zip?dl=1", 441, 498),
-    MC_1_15("https://www.dropbox.com/s/1g2l8cvqr6cqjif/1.15_RR.zip?dl=1", 550, 578);
-    //MC_1_16("", 701, 1000);
+    MC_1_15("https://www.dropbox.com/s/1g2l8cvqr6cqjif/1.15_RR.zip?dl=1", 550, 578),
+    MC_1_16("", 701, 1000);
 
     private final String link;
     private final Integer minVersion;
