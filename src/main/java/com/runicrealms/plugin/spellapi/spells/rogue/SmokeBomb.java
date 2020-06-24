@@ -27,7 +27,7 @@ public class SmokeBomb extends Spell {
     private static final int DAMAGE_AMT = 15;
     private static final int DURATION = 2;
     private static final int RADIUS = 5;
-    private HashMap<Arrow, UUID> trails = new HashMap<>();
+    private final HashMap<Arrow, UUID> trails = new HashMap<>();
 
     public SmokeBomb() {
         super("Smoke Bomb",

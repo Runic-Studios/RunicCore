@@ -23,7 +23,7 @@ public class ArcaneOrb extends Spell {
     private static final int DURATION = 10;
     private static final double PERCENT = 25;
     private static final int RADIUS = 10;
-    private HashMap<UUID, Location> buffed = new HashMap<>();
+    private final HashMap<UUID, Location> buffed = new HashMap<>();
 
     public ArcaneOrb() {
         super("Arcane Orb",

@@ -26,7 +26,7 @@ public class Blizzard extends Spell {
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
-    private HashMap<Snowball, UUID> snowballMap;
+    private final HashMap<Snowball, UUID> snowballMap;
     private static final double GEM_BOOST = 50;
 
     public Blizzard() {
