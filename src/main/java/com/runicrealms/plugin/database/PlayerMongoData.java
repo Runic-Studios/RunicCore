@@ -13,8 +13,8 @@ public class PlayerMongoData implements MongoData {
 
     private Document document;
     private String uuid;
-    private Set<MongoSetUpdate> setUpdates;
-    private Set<MongoUnsetUpdate> unsetUpdates;
+    private volatile Set<MongoSetUpdate> setUpdates;
+    private volatile Set<MongoUnsetUpdate> unsetUpdates;
 
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;

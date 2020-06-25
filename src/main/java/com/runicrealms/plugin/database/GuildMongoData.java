@@ -13,8 +13,8 @@ public class GuildMongoData implements MongoData {
 
     private Document document;
     private String prefix;
-    private Set<MongoSetUpdate> setUpdates;
-    private Set<MongoUnsetUpdate> unsetUpdates;
+    private volatile Set<MongoSetUpdate> setUpdates;
+    private volatile Set<MongoUnsetUpdate> unsetUpdates;
 
     public GuildMongoData(String prefix) {
         this.prefix = prefix;
