@@ -1,11 +1,14 @@
-package com.runicrealms.plugin.spellapi.spells.cleric;
+package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,23 +18,24 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Rejuvenate extends Spell {
+public class Battlecry extends Spell {
 
     private final HashMap<UUID, List<UUID>> hasBeenHit;
-    private static final int HEAL_AMT = 45;
-    private final double RADIUS = 1.5;
-    private final int RANGE = 15;
-    private final int SPEED = 3;
+    private static final int SHIELD_AMT = 35;
+    private static final double RADIUS = 2;
+    private static final int RANGE = 10;
+    private static final int SPEED = 3;
 
     // in seconds
     private final int SUCCESSIVE_COOLDOWN = 2;
 
-    public Rejuvenate() {
-        super("Rejuvenate",
-                "You launch a beam of healing magic," +
-                "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
-                "\nall allies it passes through!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
+    public Battlecry() {
+        super("Battlecry",
+                "You unleash a rallying cry" +
+                        "\nthat travels up to " + RANGE + " blocks!" +
+                        "\nAllies hit by the battlecry" +
+                        "\nare shielded■ for " + SHIELD_AMT + " health!",
+                ChatColor.WHITE, ClassEnum.WARRIOR, 15, 30);
         this.hasBeenHit = new HashMap<>();
     }
 
@@ -42,10 +46,10 @@ public class Rejuvenate extends Spell {
         pl.swingMainHand();
 
         // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
+        HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
 
         // sound effect
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.0f);
 
         // particle effect, spell effects
         Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(SPEED);
@@ -56,6 +60,7 @@ public class Rejuvenate extends Spell {
     private void startTask(Player pl, Vector[] vectors) {
         for (Vector vector : vectors) {
             new BukkitRunnable() {
+
                 final Location location = pl.getEyeLocation();
                 final Location startLoc = pl.getLocation();
 
@@ -66,8 +71,7 @@ public class Rejuvenate extends Spell {
                     if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                         this.cancel();
                     }
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
-                    pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 10, 0, 0, 0, 0);
+                    pl.getWorld().spawnParticle(Particle.CLOUD, location, 10, 0.2f, 0.2f, 0.2f, 0);
                     allyCheck(pl, location);
                 }
             }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
@@ -75,7 +79,6 @@ public class Rejuvenate extends Spell {
     }
 
     // checks for allies near the beam, stops multiple healing of the same player
-    @SuppressWarnings("deprecation")
     private void allyCheck(Player pl, Location location) {
 
         for (Entity e : Objects.requireNonNull
@@ -84,7 +87,9 @@ public class Rejuvenate extends Spell {
             if (!e.getType().isAlive()) return;
             LivingEntity le = (LivingEntity) e;
 
-            if (le == (pl)) { continue; }
+            if (le == (pl)) {
+                continue;
+            }
 
             // only listen for players
             if (!(le instanceof Player)) return;
@@ -119,19 +124,8 @@ public class Rejuvenate extends Spell {
                 }
             }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
-            if (ally.getHealth() == ally.getMaxHealth()) {
-                ally.sendMessage(
-                        ChatColor.WHITE + pl.getName()
-                                + ChatColor.GRAY + " tried to heal you, but you are at full health.");
-                ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
-            } else {
-                HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
-                pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-
-                // stop the beam if it hits a player
-                break;
-            }
+            HealUtil.shieldPlayer(SHIELD_AMT, ally, pl, true, false, false);
         }
     }
 }

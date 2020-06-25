@@ -155,6 +155,9 @@ public class SpellManager {
         this.spellList.add(new Resolve());
         this.spellList.add(new Taunt());
         this.spellList.add(new RunicMissile());
+        this.spellList.add(new Battlecry());
+        this.spellList.add(new Leech());
+        this.spellList.add(new BloodRitual());
     }
 
     // starts the repeating task to manage player cooldowns

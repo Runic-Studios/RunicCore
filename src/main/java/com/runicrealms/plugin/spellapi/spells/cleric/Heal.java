@@ -29,6 +29,7 @@ public class Heal extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
+        pl.swingMainHand();
         Location loc = pl.getLocation();
         pl.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.5f);
         pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 15, 1, 1, 1, 0);

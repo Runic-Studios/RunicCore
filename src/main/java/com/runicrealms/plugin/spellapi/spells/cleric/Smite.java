@@ -29,6 +29,7 @@ public class Smite extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
+        pl.swingMainHand();
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
         pl.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, pl.getEyeLocation(), 15, 0.75F, 0.5F, 0.75F, 0);
 

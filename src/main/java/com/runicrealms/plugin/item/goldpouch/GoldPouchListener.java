@@ -143,17 +143,18 @@ public class GoldPouchListener implements Listener {
 
             int amount = 0;
             for (ItemStack is : e.getInventory()) {
-                if (is == null) continue;
-                if (is.getType() != Material.GOLD_NUGGET) continue;
+                if (is == null)
+                    continue;
+                if (is.getType() != Material.GOLD_NUGGET)
+                    continue;
                 amount += is.getAmount();
             }
 
             PouchCloseEvent event = new PouchCloseEvent((Player) e.getPlayer(), pouch, amount);
             Bukkit.getPluginManager().callEvent(event);
 
-            if (event.isCancelled()) {
+            if (event.isCancelled())
                 return;
-            }
 
             // remove old item
             ItemRemover.takeItem((Player) e.getPlayer(), pouchLookers.get(e.getPlayer().getUniqueId()).getPouch(), 1);

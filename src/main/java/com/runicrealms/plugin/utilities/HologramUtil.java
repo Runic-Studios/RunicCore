@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class HologramUtil {
 
-    private static HashMap<Player, HashMap<ArmorStand, BukkitTask>> HOLOGRAMS = new HashMap<>();
+    private static final HashMap<Player, HashMap<ArmorStand, BukkitTask>> HOLOGRAMS = new HashMap<>();
 
     // builds the damage hologram
     public static void createDamageHologram(Player createFor, Location createAround, double hp) {
@@ -30,13 +30,12 @@ public class HologramUtil {
         createDamageHologram(createFor, createAround, ChatColor.GREEN + "+" + (int) hp + " ❤✦");
     }
 
-    // todo: add shield icon, needs its own gemstone too
     public static void createShieldHologram(Player createFor, Location createAround, double hp) {
-        createDamageHologram(createFor, createAround, ChatColor.WHITE + "+" + (int) hp + " ❤✦");
+        createDamageHologram(createFor, createAround, ChatColor.WHITE + "+" + (int) hp + " ■");
     }
 
     public static void createShieldDamageHologram(Player createFor, Location createAround, double hp) {
-        createDamageHologram(createFor, createAround, ChatColor.WHITE + "-" + (int) hp + " ❤✦");
+        createDamageHologram(createFor, createAround, ChatColor.WHITE + "-" + (int) hp + " ■");
     }
 
     public static void createSpellDamageHologram(Player createFor, Location createAround, double hp) {
