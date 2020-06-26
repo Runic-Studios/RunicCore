@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -79,7 +80,8 @@ public class Blink extends Spell {
 
             // teleport the player to the blink location
             pl.teleport(teleportLoc);
-            final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.8);
+            VectorUtil.drawLine(pl, Particle.REDSTONE, Color.FUCHSIA, loc, teleportLoc, 1.0);
+            final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
             pl.setVelocity(velocity);
 
             new BukkitRunnable() {
