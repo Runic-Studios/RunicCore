@@ -147,12 +147,10 @@ public class RegenManager implements Listener {
         }
     }
 
-//    public void subtractMana(Player pl, int amt) {
-//
-//        int mana = currentPlayerManas.get(pl.getUniqueId());
-//
-//        if (mana <= 0) return;
-//
-//        currentPlayerManas.put(pl.getUniqueId(), mana - amt);
-//    }
+    public void subtractMana(Player pl, int amt) {
+        int mana = currentPlayerManas.get(pl.getUniqueId());
+        if (mana <= 0)
+            return;
+        currentPlayerManas.put(pl.getUniqueId(), Math.max((mana - amt), 0));
+    }
  }

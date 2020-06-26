@@ -158,7 +158,8 @@ public class SpellManager {
         this.spellList.add(new Battlecry());
         this.spellList.add(new Leech());
         this.spellList.add(new BloodRitual());
-        this.spellList.add(new Curse());
+        this.spellList.add(new Ensnare());
+        this.spellList.add(new ManaShield());
     }
 
     // starts the repeating task to manage player cooldowns
