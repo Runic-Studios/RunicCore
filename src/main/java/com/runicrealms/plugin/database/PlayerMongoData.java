@@ -12,9 +12,9 @@ import java.util.Set;
 public class PlayerMongoData implements MongoData {
 
     private Document document;
-    private String uuid;
-    private volatile Set<MongoSetUpdate> setUpdates;
-    private volatile Set<MongoUnsetUpdate> unsetUpdates;
+    private final String uuid;
+    private final Set<MongoSetUpdate> setUpdates;
+    private final Set<MongoUnsetUpdate> unsetUpdates;
 
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;

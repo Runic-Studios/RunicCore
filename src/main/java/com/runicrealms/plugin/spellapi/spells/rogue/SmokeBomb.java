@@ -4,30 +4,28 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityDestroy;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.Objects;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class SmokeBomb extends Spell {
 
     private static final int DAMAGE_AMT = 15;
     private static final int DURATION = 2;
     private static final int RADIUS = 5;
-    private final HashMap<Arrow, UUID> trails = new HashMap<>();
+    private ThrownPotion thrownPotion;
 
     public SmokeBomb() {
         super("Smoke Bomb",
@@ -38,69 +36,50 @@ public class SmokeBomb extends Spell {
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
     }
 
+    // spell execute code
     @Override
-    public void executeSpell(Player player, SpellItemType type) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-        startTask(player);
+    public void executeSpell(Player pl, SpellItemType type) {
+        pl.swingMainHand();
+        ItemStack item = new ItemStack(Material.SPLASH_POTION);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        Objects.requireNonNull(meta).setColor(Color.YELLOW);
+        item.setItemMeta(meta);
+        thrownPotion = pl.launchProjectile(ThrownPotion.class);
+        thrownPotion.setItem(item);
+        final Vector velocity = pl.getLocation().getDirection().normalize().multiply(1.25);
+        thrownPotion.setVelocity(velocity);
+        thrownPotion.setShooter(pl);
     }
 
-    private void startTask(Player player) {
+    @EventHandler
+    public void onPotionBreak(PotionSplashEvent e) {
 
-        // create our vector, arrow, add arrow to hashmap
-        Vector direction = player.getEyeLocation().getDirection().normalize().multiply(1);
-        Arrow arrow = player.launchProjectile(Arrow.class);
-        arrow.setVelocity(direction);
-        arrow.setShooter(player);
-        arrow.isSilent();
-        UUID uuid = player.getUniqueId();
-        trails.put(arrow, uuid);
+        // only listen for our fireball
+        if (!(e.getPotion().equals(this.thrownPotion)))
+            return;
+        if (!(e.getPotion().getShooter() instanceof Player))
+            return;
 
-        // make our arrow invisible
-        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(arrow.getEntityId());
-            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-        }
+        e.setCancelled(true);
 
-        // start our running task
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+        ThrownPotion expiredBomb = e.getPotion();
+        Location loc = expiredBomb.getLocation();
+        Player pl = (Player) e.getPotion().getShooter();
 
-                // grab our arrow's location
-                Location arrowLoc = arrow.getLocation();
-                player.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.YELLOW, 1));
-                if (arrow.isDead() || arrow.isOnGround()) {
-                    this.cancel();
+        if (pl == null)
+            return;
 
-                    // particle effect
-                    arrow.getWorld().spawnParticle(Particle.REDSTONE, arrowLoc,
-                            50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
+        expiredBomb.getWorld().playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
+        expiredBomb.getWorld().playSound(loc, Sound.ENTITY_BLAZE_SHOOT, 0.5F, 1.0F);
 
-                    // sound effects
-                    player.getWorld().playSound(arrowLoc, Sound.BLOCK_FIRE_AMBIENT, 0.5F, 0.5F);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
+        pl.getWorld().spawnParticle(Particle.REDSTONE, loc,
+                50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
 
-                    for (Entity entity : arrow.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (entity.getLocation().distance(arrowLoc) <= RADIUS) {
-                            if (verifyEnemy(player, entity)) {
-                                LivingEntity victim = (LivingEntity) entity;
-                                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, 100);
-                                victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
-                            }
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(plugin, 0, 1L);
-    }
-
-    // prevent damage from our invisible arrow
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onArrowDamage(EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Arrow) {
-            Arrow arrow = (Arrow) e.getDamager();
-            if (trails.containsKey(arrow)) {
-                e.setCancelled(true);
+        for (Entity entity : pl.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
+            if (entity instanceof LivingEntity && verifyEnemy(pl, entity)) {
+                LivingEntity victim = (LivingEntity) entity;
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
+                victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
             }
         }
     }

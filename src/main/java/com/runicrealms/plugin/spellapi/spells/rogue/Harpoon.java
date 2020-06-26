@@ -31,6 +31,7 @@ public class Harpoon extends Spell {
     // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        player.swingMainHand();
         trident = player.launchProjectile(Trident.class);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(TRIDENT_SPEED);
         trident.setVelocity(velocity);

@@ -8,8 +8,8 @@ import java.util.Set;
 public class PlayerMongoDataSection implements MongoDataSection {
 
     private Document document;
-    private PlayerMongoData parent;
-    private String root;
+    private final PlayerMongoData parent;
+    private final String root;
 
     public PlayerMongoDataSection(PlayerMongoData parent, String key) {
         this.document = (Document) parent.get(key);

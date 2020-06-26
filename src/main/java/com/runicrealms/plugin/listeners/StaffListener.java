@@ -27,11 +27,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StaffListener implements Listener {
 
     // globals
-    private static double BEAM_WIDTH = 2.0;
-    private static int RADIUS = 5;
-    private static double RANGE = 6.0;
+    private static final double BEAM_WIDTH = 2.0;
+    private static final int RADIUS = 5;
+    private static final double RANGE = 6.0;
     private static final int SPEED_MULT = 3;
-    private HashMap<UUID, List<UUID>> hasBeenHit = new HashMap<>();
+    private final HashMap<UUID, List<UUID>> hasBeenHit = new HashMap<>();
 
     // creates the mage ranged auto-attack
     @EventHandler
@@ -97,8 +97,8 @@ public class StaffListener implements Listener {
         // particle effect
         new BukkitRunnable() {
 
-            Location location = pl.getEyeLocation();
-            Location startLoc = pl.getLocation();
+            final Location location = pl.getEyeLocation();
+            final Location startLoc = pl.getLocation();
 
             @Override
             public void run() {
@@ -107,7 +107,7 @@ public class StaffListener implements Listener {
                 location.add(vector);
                 location.getWorld().spawnParticle(Particle.CRIT_MAGIC, location, 25, 0.1f, 0.1f, 0.1f, 0);
                 location.getWorld().spawnParticle(Particle.REDSTONE, location,
-                        5, 0.1f, 0.1f, 0.1f, new Particle.DustOptions(Color.WHITE, 1));
+                        25, 0.1f, 0.1f, 0.1f, new Particle.DustOptions(Color.WHITE, 1));
 
                 // range before spell dies out naturally
                 if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {

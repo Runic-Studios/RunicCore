@@ -30,7 +30,7 @@ public class ShriekingSkull extends Spell {
     private static final double LAUNCH_MULT = 1.5;
     private static final double SKULL_SPEED = 0.8;
     private WitherSkull skull;
-    private List<WitherSkull> hit = new ArrayList<>();
+    private final List<WitherSkull> hit = new ArrayList<>();
 
     public ShriekingSkull() {
         super ("Shrieking Skull",
@@ -44,6 +44,7 @@ public class ShriekingSkull extends Spell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
+        player.swingMainHand();
         skull = player.launchProjectile(WitherSkull.class);
         skull.setCharged(false);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(SKULL_SPEED);

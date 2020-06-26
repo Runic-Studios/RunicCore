@@ -28,7 +28,7 @@ public class HolyWater extends Spell {
     private static final double PERCENT = 25;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
-    private HashMap<UUID, HashSet<UUID>> affectedPlayers;
+    private final HashMap<UUID, HashSet<UUID>> affectedPlayers;
 
     public HolyWater() {
         super("Holy Water",
@@ -45,6 +45,7 @@ public class HolyWater extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
+        pl.swingMainHand();
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         Objects.requireNonNull(meta).setColor(Color.WHITE);
