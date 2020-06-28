@@ -57,7 +57,7 @@ public class Rupture extends Spell {
                     if (!(en instanceof LivingEntity))
                         continue;
                     if (verifyEnemy(pl, en)) {
-                        pl.getWorld().spawnParticle(Particle.SWEEP_ATTACK, en.getLocation(), 5, 0, 0, 0, 0);
+                        pl.getWorld().spawnParticle(Particle.SWEEP_ATTACK, ((LivingEntity) en).getEyeLocation(), 5, 0, 0, 0, 0);
                         DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, true);
                     }
                 }
