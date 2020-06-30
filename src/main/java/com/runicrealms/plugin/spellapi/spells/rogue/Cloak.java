@@ -3,6 +3,8 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo;
@@ -13,20 +15,18 @@ import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Cloak extends Spell {
 
     private static final int DURATION = 5;
-    private List<UUID> cloakers;
-    private HashSet<UUID> hasDealtDamage;
+    private final Set<UUID> cloakers;
+    private final Set<UUID> hasDealtDamage;
 
     // constructor
     public Cloak() {
@@ -37,8 +37,8 @@ public class Cloak extends Spell {
                         "\nimmune to damage from monsters!" +
                         "\nDealing damage ends the effect" +
                         "\nearly.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 10, 15);
-        cloakers = new ArrayList<>();
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 15);
+        cloakers = new HashSet<>();
         hasDealtDamage = new HashSet<>();
     }
 
@@ -62,7 +62,6 @@ public class Cloak extends Spell {
 
         cloakers.add(pl.getUniqueId());
         pl.sendMessage(ChatColor.GRAY + "You vanished!");
-        hasDealtDamage.add(pl.getUniqueId());
 
         // reappear after duration or upon dealing damage. can't be tracked async :(
         new BukkitRunnable() {
@@ -103,11 +102,20 @@ public class Cloak extends Spell {
      * Reveal the player after dealing damage
      */
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        Player pl = (Player) e.getDamager();
-        if (!cloakers.contains(pl.getUniqueId())) return;
-        if (hasDealtDamage.contains(pl.getUniqueId())) return;
-        hasDealtDamage.add(pl.getUniqueId());
+    public void onSpellDamage(SpellDamageEvent e) {
+        if (!cloakers.contains(e.getPlayer().getUniqueId()))
+            return;
+        if (hasDealtDamage.contains(e.getPlayer().getUniqueId()))
+            return;
+        hasDealtDamage.add(e.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        if (!cloakers.contains(e.getPlayer().getUniqueId()))
+            return;
+        if (hasDealtDamage.contains(e.getPlayer().getUniqueId()))
+            return;
+        hasDealtDamage.add(e.getPlayer().getUniqueId());
     }
 }

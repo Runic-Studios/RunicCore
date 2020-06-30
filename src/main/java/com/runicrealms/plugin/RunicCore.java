@@ -17,7 +17,6 @@ import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.group.GroupChannel;
-import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.healthbars.MobHealthBars;
 import com.runicrealms.plugin.healthbars.MobHealthManager;
@@ -150,7 +149,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         groupManager = new GroupManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
-        commandManager.registerCommand(new GroupCommand());
+        //commandManager.registerCommand(new GroupCommand());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
         });

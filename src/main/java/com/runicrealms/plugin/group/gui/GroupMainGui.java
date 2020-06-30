@@ -20,9 +20,10 @@ public class GroupMainGui implements Listener {
 
     private static final Set<Player> viewers = new HashSet<>();
     private static Inventory inventory;
+    private static final String invTitle = ChatColor.YELLOW + "" + ChatColor.BOLD + "Groups";
 
     public static void initInventory() {
-        inventory = Bukkit.createInventory(null, 27, ChatColor.YELLOW + "" + ChatColor.BOLD + "Groups");
+        inventory = Bukkit.createInventory(null, 27, invTitle);
         inventory.setItem(11, GUIItem.dispItem(Material.WRITABLE_BOOK, "&eCreate a Group", new String[] {
                 "&7Groups are a way for you complete",
                 "&7challenging content with other players,",
@@ -49,7 +50,7 @@ public class GroupMainGui implements Listener {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             if (viewers.contains(player)) {
-                if (event.getView().getTitle().equals("Groups")) {
+                if (event.getView().getTitle().equals(invTitle)) {
                     event.setCancelled(true);
                     if (event.getRawSlot() < event.getInventory().getSize()) {
                         if (event.getSlot() == 11) {
