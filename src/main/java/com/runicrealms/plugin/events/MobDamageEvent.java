@@ -12,9 +12,9 @@ import org.bukkit.event.HandlerList;
 public class MobDamageEvent extends Event implements Cancellable {
 
     private int amount;
-    private Entity damager;
-    private Entity victim;
-    private boolean applyMechanics;
+    private final Entity damager;
+    private final Entity victim;
+    private final boolean applyMechanics;
     private boolean isCancelled;
 
     public MobDamageEvent(int amount, Entity damager, Entity victim, boolean applyMechanics) {

@@ -13,7 +13,8 @@ public class MobDamageListener implements Listener {
      */
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
-        DamageUtil.damageEntityMob(Math.ceil(e.getAmount()),
-                (LivingEntity) e.getVictim(), e.getDamager(), e.shouldApplyMechanics());
+        if (!e.isCancelled())
+            DamageUtil.damageEntityMob(Math.ceil(e.getAmount()),
+                    (LivingEntity) e.getVictim(), e.getDamager(), e.shouldApplyMechanics());
     }
 }

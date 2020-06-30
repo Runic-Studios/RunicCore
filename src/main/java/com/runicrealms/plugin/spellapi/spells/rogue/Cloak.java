@@ -91,11 +91,11 @@ public class Cloak extends Spell {
      */
     @EventHandler
     public void onDamage(MobDamageEvent e) {
-        if (!(e.getVictim() instanceof Player)) return;
+        if (!(e.getVictim() instanceof Player))
+            return;
         Player pl = (Player) e.getVictim();
-        if (cloakers.contains(pl.getUniqueId())) {
+        if (cloakers.contains(pl.getUniqueId()))
             e.setCancelled(true);
-        }
     }
 
     /**
