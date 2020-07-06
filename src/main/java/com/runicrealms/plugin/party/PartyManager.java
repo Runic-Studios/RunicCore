@@ -13,12 +13,12 @@ import java.util.Set;
 
 public class PartyManager implements Listener {
 
-    private Set<Party> parties;
-    private Map<Player, Party> playerParties;
+    private final Set<Party> parties;
+    private final Map<Player, Party> playerParties;
 
     public PartyManager() {
-        this.parties = new HashSet<Party>();
-        this.playerParties = new HashMap<Player, Party>();
+        this.parties = new HashSet<>();
+        this.playerParties = new HashMap<>();
     }
 
     public Set<Party> getParties() {
@@ -34,7 +34,7 @@ public class PartyManager implements Listener {
     }
 
     public boolean canJoinParty(Player player) {
-        return this.getPlayerParty(player) == null && RunicCore.getGroupManager().getPlayerGroup(player) == null;
+        return this.getPlayerParty(player) == null;// && RunicCore.getGroupManager().getPlayerGroup(player) == null;
     }
 
     public Party getPlayerParty(Player player) {

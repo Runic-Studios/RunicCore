@@ -16,7 +16,7 @@ public class PartyChannel extends ChatChannel {
     }
 
     public String getConsolePrefix() {
-        return "&a[&2Party&a] &r";
+        return "&2[Party] &r";
     }
 
     @Override

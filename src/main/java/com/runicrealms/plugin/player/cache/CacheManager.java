@@ -98,7 +98,8 @@ public class CacheManager implements Listener {
         if (limit < 1)
             return;
         for (int i = 0; i < limit; i++) {
-            if (queuedCaches.size() < 1) continue;
+            if (queuedCaches.size() < 1)
+                continue;
             PlayerCache queued = queuedCaches.iterator().next();
             setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()), saveAsync);
             queuedCaches.remove(queued);

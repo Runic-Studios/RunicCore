@@ -11,13 +11,13 @@ import java.util.Set;
 
 public class Party {
 
-    private Set<Player> members;
-    private Set<Invite> invites;
+    private final Set<Player> members;
+    private final Set<Invite> invites;
     private Player leader;
 
     public Party(Player leader) {
-        this.members = new HashSet<Player>();
-        this.invites = new HashSet<Invite>();
+        this.members = new HashSet<>();
+        this.invites = new HashSet<>();
         this.leader = leader;
     }
 
@@ -101,16 +101,15 @@ public class Party {
     }
 
     public void sendMessageInChannel(String message) {
-        RunicCore.getPartyChatChannel().getRecipients(this.leader).forEach(player -> {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getPartyChatChannel().getConsolePrefix() + message));
-        });
+        RunicCore.getPartyChatChannel().getRecipients(this.leader).forEach(player ->
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', RunicCore.getPartyChatChannel().getConsolePrefix() + message)));
     }
 
     public static class Invite {
 
-        private Player player;
-        private Party party;
-        private BukkitTask task;
+        private final Player player;
+        private final Party party;
+        private final BukkitTask task;
 
         public Invite(Player player, Party party) {
             this.player = player;
