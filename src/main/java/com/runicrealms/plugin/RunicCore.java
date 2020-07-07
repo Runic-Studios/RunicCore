@@ -7,6 +7,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
+import com.runicrealms.plugin.command.FireworkCMD;
 import com.runicrealms.plugin.command.MapLink;
 import com.runicrealms.plugin.command.RunicDamage;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
@@ -336,9 +337,9 @@ public class RunicCore extends JavaPlugin implements Listener {
         // boost
         getCommand("boost").setExecutor(new BoostCMD());
 
-
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
+        Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
     }
 
     private void registerSetCommands() {

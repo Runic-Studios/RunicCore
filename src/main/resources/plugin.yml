@@ -56,3 +56,6 @@ commands:
   runicdamage:
     usage: /<commands>
     description: Fixes damage logic in MM skills
+  runicfirework:
+    usage: /<commands>
+    description: Spawns a firework
