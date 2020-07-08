@@ -20,7 +20,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
 
-    // todo: make player nameplates invisible w/ scoreboard teams?
     /**
      * Reset the player's displayed values when they join the server, before selecting a character
      */

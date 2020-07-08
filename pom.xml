@@ -173,6 +173,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/MythicMobs-4.9.0.jar</systemPath>
         </dependency>
+        <!-- NametagEdit Api -->
+        <dependency>
+            <groupId>com.github.sgtcaze</groupId>
+            <artifactId>NametagEdit</artifactId>
+            <version>master-6f1532540d-1</version>
+        </dependency>
         <!-- NBT Api -->
         <dependency>
             <groupId>com.github.tr7zw</groupId>

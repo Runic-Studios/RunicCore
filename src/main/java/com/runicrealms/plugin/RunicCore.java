@@ -55,6 +55,7 @@ import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.RegenManager;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
+import com.runicrealms.plugin.player.outlaw.SetOutlawCMD;
 import com.runicrealms.plugin.player.outlaw.SpeedListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
@@ -340,6 +341,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
         Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
+        Bukkit.getPluginCommand("outlaw").setExecutor(new SetOutlawCMD());
     }
 
     private void registerSetCommands() {

@@ -81,16 +81,10 @@ public class DamageListener implements Listener {
             }
             MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
             Bukkit.getPluginManager().callEvent(event);
-//            if (event.isCancelled()) {
-//                return;
-//            } else {
-//                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()), victim, damager);
-//            }
         }
 
-        // todo: fix this. might need to properly listen for arrow, might need new outlaw checks.
         // only listen for when a player swings or fires an arrow
-        if (damager instanceof Player) {// || (damager instanceof Arrow && ((Arrow) damager).getShooter() instanceof Player)
+        if (damager instanceof Player) {
 
             Player pl = (Player) damager;
 
@@ -130,18 +124,21 @@ public class DamageListener implements Listener {
                 int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
 
                 // outlaw check
-                if (victim.hasMetadata("NPC")) return;
+                if (victim.hasMetadata("NPC"))
+                    return;
                 if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
                     return;
                 }
 
                 // ensure correct class/weapon combo (archers and bows, etc)
-                if (!matchClass(pl)) return;
+                if (!matchClass(pl))
+                    return;
 
                 // ---------------------------
                 // successful damage
-                if (((Player) damager).getCooldown(artifact.getType()) != 0) return;
-                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false, false);
+                if (((Player) damager).getCooldown(artifact.getType()) != 0)
+                    return;
+                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false, true);
                 ((Player) damager).setCooldown(artifact.getType(), 15);
                 // ---------------------------
 

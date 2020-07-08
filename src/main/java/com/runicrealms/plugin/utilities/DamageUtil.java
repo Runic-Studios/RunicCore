@@ -215,6 +215,7 @@ public class DamageUtil {
                 if (monster.getTarget() == null) monster.setTarget(caster);
             }
             recipient.setHealth(newHP);
+            recipient.setNoDamageTicks(0);
             recipient.damage(0.0000000000001);
         } else if (recipient instanceof Player) {
             DamageListener.applySlainMechanics(caster, (Player) recipient);

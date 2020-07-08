@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -22,7 +23,8 @@ public class PlayerLevelListener implements Listener {
     public void onLevelUp(PlayerLevelChangeEvent e) {
 
         Player pl = e.getPlayer();
-        if (pl.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
+        if (pl.getLevel() > PlayerLevelUtil.getMaxLevel())
+            return; // insurance
         PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
 
         // update player's level
@@ -30,7 +32,8 @@ public class PlayerLevelListener implements Listener {
 
         // grab the player's new info
         String className = playerCache.getClassName();
-        if (className == null) return;
+        if (className == null)
+            return;
         int classLevel = playerCache.getClassLevel();
 
         HealthUtils.setPlayerMaxHealth(pl);
@@ -39,8 +42,10 @@ public class PlayerLevelListener implements Listener {
         pl.setHealth(playerHealth);
         pl.setFoodLevel(20);
 
-        if (pl.getLevel() == 0) return;
+        if (pl.getLevel() == 0)
+            return;
 
+        NametagUtil.updateNametag(pl);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
         // title screen message
