@@ -27,7 +27,7 @@ public class Judgment extends Spell {
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
     private static final double UPDATES_PER_SECOND = 10;
-    private List<UUID> judgers;
+    private final List<UUID> judgers;
 
     public Judgment() {
         super("Judgment",

@@ -1,34 +1,46 @@
 package com.runicrealms.plugin.utilities;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class DirectionUtil {
+public enum DirectionEnum {
 
-    public static String getDirection(Player pl) {
+    WEST,
+    NORTHWEST,
+    NORTH,
+    NORTHEAST,
+    EAST,
+    SOUTHEAST,
+    SOUTH,
+    SOUTHWEST;
+
+    public static DirectionEnum getDirection(Player pl) {
         double rotation = (pl.getLocation().getYaw() - 90) % 360;
         if (rotation < 0) {
             rotation += 360.0;
         }
         if (0 <= rotation && rotation < 22.5) {
-            return "W"; // W
+            return DirectionEnum.WEST; // W
         } else if (22.5 <= rotation && rotation < 67.5) {
-            return "NW"; // NW
+            return DirectionEnum.NORTHWEST; // NW
         } else if (67.5 <= rotation && rotation < 112.5) {
-            return "N"; // N
+            return DirectionEnum.NORTH; // N
         } else if (112.5 <= rotation && rotation < 157.5) {
-            return "NE"; // NE
+            return DirectionEnum.NORTHEAST; // NE
         } else if (157.5 <= rotation && rotation < 202.5) {
-            return "E"; // E
+            return DirectionEnum.EAST; // E
         } else if (202.5 <= rotation && rotation < 247.5) {
-            return "SE"; // SE
+            return DirectionEnum.SOUTHEAST; // SE
         } else if (247.5 <= rotation && rotation < 292.5) {
-            return "S"; // S
+            return DirectionEnum.SOUTH; // S
         } else if (292.5 <= rotation && rotation < 337.5) {
-            return "SW"; // SW
+            return DirectionEnum.SOUTHWEST; // SW
         } else if (337.5 <= rotation && rotation < 360.0) {
-            return "W"; // W
+            return DirectionEnum.WEST; // W
         } else {
-            return "Something went wrong";
+            Bukkit.getLogger().info(ChatColor.RED + "Something went wrong");
+            return null;
         }
     }
 }

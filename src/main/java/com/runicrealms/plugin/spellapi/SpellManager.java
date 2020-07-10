@@ -161,6 +161,7 @@ public class SpellManager {
         this.spellList.add(new Ensnare());
         this.spellList.add(new ManaShield());
         this.spellList.add(new Rupture());
+        this.spellList.add(new Repent());
     }
 
     // starts the repeating task to manage player cooldowns
