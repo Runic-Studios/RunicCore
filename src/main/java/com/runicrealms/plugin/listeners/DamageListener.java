@@ -30,6 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -276,8 +277,6 @@ public class DamageListener implements Listener {
         // if player is in combat, remove them
         if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
             RunicCore.getCombatManager().removePlayer(victim.getUniqueId());
-            //victim.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You have left combat!"));
-            //ActionBarUtil.sendTimedMessage(victim, "&aYou have left combat!", 3);
         }
 
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
@@ -366,15 +365,31 @@ public class DamageListener implements Listener {
     private static void tryDropItems(Player pl) {
 
         // don't drop items in dungeon world.
-        if (pl.getWorld().getName().toLowerCase().equals("dungeons")) return;
+        if (pl.getWorld().getName().toLowerCase().equals("dungeons"))
+            return;
 
         for (int i = 9; i < 36; i++) {
             ItemStack is = pl.getInventory().getItem(i);
-            if (is == null) continue;
-            if (AttributeUtil.getCustomString(is, "soulbound").equals("true")) continue;
+            if (is == null)
+                continue;
+            if (AttributeUtil.getCustomString(is, "soulbound").equals("true"))
+                continue;
+            if (is.getItemMeta() != null
+                    && is.getItemMeta().getLore() != null
+                    && foundQuestItem(is.getItemMeta().getLore()))
+                continue;
+
             pl.getInventory().remove(is);
             pl.getWorld().dropItem(pl.getLocation(), is);
         }
+    }
+
+    private static boolean foundQuestItem(List<String> lore) {
+        for (String s : lore) {
+            if (ChatColor.stripColor(s).contains("Quest Item"))
+                return true;
+        }
+        return false;
     }
 
     private static String checkForDungeon(Player pl) {
@@ -390,7 +405,15 @@ public class DamageListener implements Listener {
         // check the region for the keyword 'mine'
         // ignore the rest of this event if the player cannot mine
         for (ProtectedRegion region : regions) {
-            if (region.getId().contains("library")) {
+            if (region.getId().contains("sebathscave")) {
+                Location caveEntrance = new Location(Bukkit.getWorld("dungeons"), -1874.5, 177, -522.5, 90, 0);
+                pl.teleport(caveEntrance);
+                return "sebathscave";
+            } else if (region.getId().contains("odinskeep")) {
+                Location keepEntrance = new Location(Bukkit.getWorld("dungeons"), -534.5, 120, -177.5, 180, 0);
+                pl.teleport(keepEntrance);
+                return "odinskeep";
+            } else if (region.getId().contains("library")) {
                 Location libraryEntrance = new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0);
                 pl.teleport(libraryEntrance);
                 return "library";
