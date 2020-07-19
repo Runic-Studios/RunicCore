@@ -1,9 +1,13 @@
 package com.runicrealms.plugin.database.util;
 
+import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.output.ByteArrayOutputStream;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -78,19 +82,6 @@ public class DatabaseUtil {
         return new ItemStack[invSize]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
 
-    public static Location loadLocation(String encoded) {
-        try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
-            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            Location location = (Location) dataInput.readObject();
-            dataInput.close();
-            return location;
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
-    }
-
     public static String serializeInventory(Inventory inventory) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -128,19 +119,38 @@ public class DatabaseUtil {
         return null;
     }
 
-    /**
-     * Converts a player's location to a format we can store in JSON objects
-     */
-    public static String serializeLocation(Location location) {
+    public static Location loadLocation(Player player, PlayerMongoDataSection mongoDataSection) {
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-            dataOutput.writeObject(location);
-            dataOutput.close();
-            return Base64Coder.encodeLines(outputStream.toByteArray());
-        } catch (IOException exception) {
-            exception.printStackTrace();
+            World world = Bukkit.getWorld(mongoDataSection.get(("loc.world"), String.class));
+            double x = mongoDataSection.get("loc.x", double.class);
+            double y = mongoDataSection.get("loc.y", double.class);
+            double z = mongoDataSection.get("loc.z", double.class);
+            float yaw = Float.parseFloat(String.valueOf(mongoDataSection.get("loc.yaw", int.class)));
+            float pitch = Float.parseFloat(String.valueOf(mongoDataSection.get("loc.pitch", int.class)));
+            return new Location(world, x, y, z, yaw, pitch);
+        } catch (Exception e) {
+            // return hearth location
+            e.printStackTrace();
+            return HearthstoneListener.getHearthstoneLocation(player);
         }
-        return null;
+    }
+
+    /**
+     * This method saves the player's location as a document
+     * @param mongoDataSection the character section of player data
+     * @param location the location of the player cache (or hearthstone location)
+     */
+    public static void saveLocation(PlayerMongoDataSection mongoDataSection, Location location) {
+        try {
+            mongoDataSection.set("loc.world", location.getWorld().getName());
+            mongoDataSection.set("loc.x", location.getX());
+            mongoDataSection.set("loc.y", location.getY());
+            mongoDataSection.set("loc.z", location.getZ());
+            mongoDataSection.set("loc.yaw", (int) location.getYaw());
+            mongoDataSection.set("loc.pitch", (int) location.getPitch());
+        } catch (Exception e) {
+            Bukkit.getLogger().info(ChatColor.RED + "Save location method encountered an exception!");
+            e.printStackTrace();
+        }
     }
 }

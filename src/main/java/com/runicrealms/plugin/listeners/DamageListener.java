@@ -292,7 +292,7 @@ public class DamageListener implements Listener {
         tryDropItems(victim);
         String isDungeon = checkForDungeon(victim);
         if (isDungeon.equals("")) { // no dungeon
-            HearthstoneListener.teleportToLocation(victim);
+            victim.teleport(HearthstoneListener.getHearthstoneLocation(victim));
             victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
         }
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);

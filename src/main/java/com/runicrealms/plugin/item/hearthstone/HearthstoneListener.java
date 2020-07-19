@@ -150,7 +150,7 @@ public class HearthstoneListener implements Listener {
                     hsCooldowns.put(pl.getUniqueId(), System.currentTimeMillis());
                     currentlyUsing.remove(pl.getUniqueId());
                     pl.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2));
-                    teleportToLocation(pl);
+                    pl.teleport(getHearthstoneLocation(pl));
                     pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
                     pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your hearthstone location.");
                     return;
@@ -184,7 +184,7 @@ public class HearthstoneListener implements Listener {
         return hearthstone;
     }
 
-    public static void teleportToLocation(Player pl) {
+    public static Location getHearthstoneLocation(Player pl) {
         try {
             // get location for hearthstone
             String itemLoc = AttributeUtil.getCustomString(pl.getInventory().getItem(8), "location");
@@ -285,10 +285,9 @@ public class HearthstoneListener implements Listener {
             }
 
             loc = new Location(world, x, y, z, yaw, 0);
-            pl.teleport(loc);
+            return loc;
         } catch (Exception e) {
-            Location loc = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38, 1719.5, 0, 0);
-            pl.teleport(loc);
+            return new Location(Bukkit.getWorld("Alterra"), -2317.5, 38, 1719.5, 0, 0);
         }
     }
 }

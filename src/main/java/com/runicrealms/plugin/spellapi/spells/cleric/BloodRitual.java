@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -36,6 +37,10 @@ public class BloodRitual extends Spell {
 
         // spawn lectern at loc
         Location lecternLoc = pl.getTargetBlock(null, MAX_DIST).getLocation();
+        // ensure lectern location is on ground
+        while (lecternLoc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
+            lecternLoc = lecternLoc.getBlock().getRelative(BlockFace.DOWN).getLocation();
+        // move it one block up
         lecternLoc.setY(pl.getLocation().clone().add(0, 1, 0).getY());
         BlockData data = lecternLoc.getBlock().getBlockData();
         for (Player loaded : RunicCore.getCacheManager().getLoadedPlayers()) {
@@ -44,6 +49,7 @@ public class BloodRitual extends Spell {
         }
 
         // warmup block
+        Location finalLecternLoc = lecternLoc;
         new BukkitRunnable() {
             int count = 1;
 
@@ -51,14 +57,14 @@ public class BloodRitual extends Spell {
             public void run() {
                 if (count > WARMUP) {
                     this.cancel();
-                    pl.getWorld().playSound(lecternLoc, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2.0f);
-                    pl.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, lecternLoc, 1, 0, 0, 0, 0);
+                    pl.getWorld().playSound(finalLecternLoc, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2.0f);
+                    pl.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, finalLecternLoc, 1, 0, 0, 0, 0);
                     for (Player nearby : RunicCore.getCacheManager().getLoadedPlayers()) {
-                        if (nearby.getLocation().distanceSquared(lecternLoc) <= Math.pow(50, 2)) {
-                            nearby.sendBlockChange(lecternLoc, data);
+                        if (nearby.getLocation().distanceSquared(finalLecternLoc) <= Math.pow(50, 2)) {
+                            nearby.sendBlockChange(finalLecternLoc, data);
                         }
                     }
-                    for (Entity ally : pl.getWorld().getNearbyEntities(lecternLoc, RADIUS, RADIUS, RADIUS)) {
+                    for (Entity ally : pl.getWorld().getNearbyEntities(finalLecternLoc, RADIUS, RADIUS, RADIUS)) {
                         if (!(ally instanceof Player))
                             continue;
                         if (verifyAlly(pl, ally))
@@ -66,8 +72,8 @@ public class BloodRitual extends Spell {
                     }
                 } else {
                     count += 1;
-                    pl.getWorld().playSound(lecternLoc, Sound.BLOCK_PORTAL_AMBIENT, 0.5f, 2.0f);
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, lecternLoc,
+                    pl.getWorld().playSound(finalLecternLoc, Sound.BLOCK_PORTAL_AMBIENT, 0.5f, 2.0f);
+                    pl.getWorld().spawnParticle(Particle.REDSTONE, finalLecternLoc,
                             25, 1f, 1f, 1f, new Particle.DustOptions(Color.RED, 1));
                 }
             }

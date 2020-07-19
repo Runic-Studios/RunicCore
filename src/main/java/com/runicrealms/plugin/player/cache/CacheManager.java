@@ -8,6 +8,7 @@ import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -132,13 +133,13 @@ public class CacheManager implements Listener {
             // inventory
             character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
             // location
-            character.set("location", DatabaseUtil.serializeLocation(playerCache.getLocation()));
+            character.remove("location"); // remove old save format
+            DatabaseUtil.saveLocation(character, playerCache.getLocation());
             // save data (includes nested fields)
-            if (saveAsync) {
+            if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
-            } else {
+            else
                 mongoData.save();
-            }
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Data of player cache to save was null.");
             e.printStackTrace();
@@ -199,7 +200,7 @@ public class CacheManager implements Listener {
         int rating = character.get("outlaw.rating", Integer.class);
 
         ItemStack[] inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));
-        Location location = DatabaseUtil.loadLocation(character.get("location", String.class));
+        Location location = DatabaseUtil.loadLocation(player, character);
 
         return new PlayerCache(slot,
                 player.getUniqueId(),
@@ -244,7 +245,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
         mongoDataSection.set("inventory", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
-        mongoDataSection.set("location", DatabaseUtil.serializeLocation(new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5))); // tutorial
+        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneListener.getHearthstoneLocation(player)); // tutorial
         mongoData.save();
     }
 }
