@@ -326,7 +326,7 @@ public class LoreGenerator {
 
         // grab our material, ItemMeta, ItemLore
         ItemMeta meta = goldPouch.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
 
         int currentAmount = (int) AttributeUtil.getCustomDouble(goldPouch, "goldAmount");
         int pouchSize = (int) AttributeUtil.getCustomDouble(goldPouch, "pouchSize");
@@ -340,6 +340,8 @@ public class LoreGenerator {
 
         meta.setDisplayName(ChatColor.GOLD + prefix + "Gold Pouch " + ChatColor.GREEN + ChatColor.BOLD + currentAmount + "c");
         lore.add(ChatColor.GRAY + "A pouch that holds " + ChatColor.WHITE + pouchSize + ChatColor.GRAY + " coins");
+        //lore.add("");
+        lore.add(ChatColor.DARK_GRAY + "Soulbound");
 
         // set other flags
         meta.setUnbreakable(true);

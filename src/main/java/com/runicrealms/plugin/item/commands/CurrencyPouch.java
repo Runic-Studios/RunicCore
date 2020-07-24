@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.item.commands;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
+import com.runicrealms.plugin.command.util.TabCompleteUtil;
 import com.runicrealms.plugin.item.LoreGenerator;
-import com.runicrealms.plugin.utilities.CurrencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,15 +14,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.command.util.TabCompleteUtil;
 
 import java.util.List;
 
 public class CurrencyPouch implements SubCommand {
 
-    private CurrencySC currencySC;
-    private Plugin plugin = RunicCore.getInstance();
+    private final CurrencySC currencySC;
+    private final Plugin plugin = RunicCore.getInstance();
 
     public CurrencyPouch(CurrencySC currencySC) {
         this.currencySC = currencySC;
@@ -38,7 +37,8 @@ public class CurrencyPouch implements SubCommand {
         }
 
         Player pl = Bukkit.getPlayer(args[1]);
-        if (pl == null) return;
+        if (pl == null)
+            return;
         int size = Integer.parseInt(args[2]);
 
         if (size % 64 != 0) {
@@ -48,13 +48,13 @@ public class CurrencyPouch implements SubCommand {
 
         ItemStack goldPouch = new ItemStack(Material.SHEARS);
         goldPouch = AttributeUtil.addCustomStat(goldPouch, "pouchSize", size);
+        goldPouch = AttributeUtil.addCustomStat(goldPouch, "soulbound", "true");
         LoreGenerator.generateGoldPouchLore(goldPouch);
 
-        if (pl.getInventory().firstEmpty() != -1) {
+        if (pl.getInventory().firstEmpty() != -1)
             pl.getInventory().addItem(goldPouch);
-        } else {
+        else
             pl.getWorld().dropItem(pl.getLocation(), goldPouch);
-        }
     }
 
     @Override

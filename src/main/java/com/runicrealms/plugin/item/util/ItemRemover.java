@@ -7,7 +7,10 @@ import org.bukkit.inventory.ItemStack;
 public class ItemRemover {
 
     /**
-     * Removes item based on object.
+     *
+     * @param pl
+     * @param itemStack
+     * @param amount
      */
     public static void takeItem(Player pl, ItemStack itemStack, int amount) {
         int to_take = amount;
@@ -26,7 +29,10 @@ public class ItemRemover {
     }
 
     /**
-     * Removes item based on material
+     *
+     * @param pl
+     * @param material
+     * @param amount
      */
     public static void takeItem(Player pl, Material material, int amount) {
         int to_take = amount;
