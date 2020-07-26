@@ -51,7 +51,8 @@ public class PlayerLevelUtil {
         int currentLv = playerCache.getClassLevel();
         int currentExp = playerCache.getClassExp();
 
-        if (currentLv >= MAX_LEVEL) return;
+        if (currentLv >= MAX_LEVEL)
+            return;
 
         currentExp = currentExp + expGained;
         playerCache.setClassExp(currentExp);
@@ -66,7 +67,9 @@ public class PlayerLevelUtil {
             // send a basic leveling message for all the levels that aren't milestones.
             // (10, 20, etc.)
             if (!needsMilestone) {
-                sendLevelMessage(pl);
+                pl.sendMessage("\n");
+                sendLevelMessage(pl, calculateExpectedLv(newTotalExp));
+                pl.sendMessage("\n");
             }
 
             pl.setLevel(calculateExpectedLv(newTotalExp));
@@ -87,7 +90,25 @@ public class PlayerLevelUtil {
     }
 
     private static boolean applyMileStone(Player pl, int oldLevel, String className, int classLevel) {
-        if (classLevel >= MAX_LEVEL) {
+        if (classLevel >= 5 && oldLevel < 5) {
+            sendUnlockMessage(pl, 5);
+            return true;
+        } else if (classLevel >= 10 && oldLevel < 10) {
+            sendUnlockMessage(pl, 10);
+            return true;
+        } else if (classLevel >= 15 && oldLevel < 15) {
+            sendUnlockMessage(pl, 15);
+            return true;
+        } else if (classLevel >= 25 && oldLevel < 25) {
+            sendUnlockMessage(pl, 25);
+            return true;
+        } else if (classLevel >= 35 && oldLevel < 35) {
+            sendUnlockMessage(pl, 35);
+            return true;
+        } else if (classLevel >= 40 && oldLevel < 40) {
+            sendUnlockMessage(pl, 40);
+            return true;
+        } else if (classLevel >= MAX_LEVEL) {
             Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
                     + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + classLevel + " " + className + "!");
             pl.sendMessage("\n");
@@ -96,28 +117,20 @@ public class PlayerLevelUtil {
             ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Frozen Fortress!");
             pl.sendMessage("\n");
             ClassUtil.launchFirework(pl, className);
-        } else if (classLevel >= 10  && oldLevel < 10) {
-            sendUnlockMessage(pl, 10, className, classLevel);
-            return true;
-        } else if (classLevel >= 20 && oldLevel < 20) {
-            sendUnlockMessage(pl, 20, className, classLevel);
-            return true;
-        } else if (classLevel >= 30 && oldLevel < 30) {
-            sendUnlockMessage(pl, 30, className, classLevel);
-            return true;
-        } else if (classLevel >= 40 && oldLevel < 40) {
-            pl.sendMessage("\n");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
-            pl.sendMessage("\n");
             return true;
         }
         return false;
     }
 
-    private static void sendLevelMessage(Player pl) {
+    private static void sendLevelMessage(Player pl, int classLv) {
 
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
-        if (className == null) return;
+        if (className == null)
+            return;
+
+        pl.sendTitle(
+                ChatColor.GREEN + "Level Up!",
+                ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLv, 10, 40, 10);
 
         // save player hp, restore hp.food
         int hpPerLevel = 0;
@@ -139,20 +152,42 @@ public class PlayerLevelUtil {
                 break;
         }
 
-        pl.sendMessage("\n");
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
                         + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(pl) + "✸");
-        pl.sendMessage("\n");
     }
 
-    private static void sendUnlockMessage(Player pl, int lvl, String className, int classLevel) {
-        pl.sendTitle(
-                ChatColor.GREEN + "Level Up!",
-                ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
+    private static void sendUnlockMessage(Player pl, int lvl) {
         pl.sendMessage("\n");
-        pl.sendMessage("\n");
+        sendLevelMessage(pl, lvl);
+        switch (lvl) {
+            case 5:
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "Sebath's Cave!");
+                pl.sendMessage("\n");
+                break;
+            case 10:
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "     You can now equip " + ChatColor.GREEN + "Uncommon" + ChatColor.GRAY + " items!");
+                pl.sendMessage("\n");
+                break;
+            case 15:
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "Odin's Keep!");
+                pl.sendMessage("\n");
+                break;
+            case 25:
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "     You can now equip " + ChatColor.AQUA + "Rare" + ChatColor.GRAY + " items!");
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Sunken Library!");
+                pl.sendMessage("\n");
+                break;
+            case 35:
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Crypts of Dera!");
+                pl.sendMessage("\n");
+                break;
+            case 40:
+                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "     You can now equip " + ChatColor.LIGHT_PURPLE + "Epic" + ChatColor.GRAY + " items!");
+                pl.sendMessage("\n");
+                break;
+        }
     }
 
     public static int getMaxLevel() {

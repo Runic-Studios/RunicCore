@@ -25,7 +25,7 @@ public class SoulboundListener implements Listener {
         if (e.getItemDrop().getItemStack().getItemMeta() != null) {
             ItemMeta meta = e.getItemDrop().getItemStack().getItemMeta();
             int durability = ((Damageable) meta).getDamage();
-            if ((e.getItemDrop().getItemStack().getType() == Material.SHEARS && durability != 234)) {
+            if ((e.getItemDrop().getItemStack().getType() == Material.SHEARS && durability == 234)) {
                 isGoldPouch = true;
             }
         }

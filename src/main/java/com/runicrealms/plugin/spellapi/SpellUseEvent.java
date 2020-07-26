@@ -25,11 +25,13 @@ public class SpellUseEvent implements Listener {
 
         Player pl = e.getPlayer();
         int slot = pl.getInventory().getHeldItemSlot();
-        if (e.getHand() != EquipmentSlot.HAND) return;
-
-        if (pl.getGameMode() == GameMode.CREATIVE) return;
+        if (e.getHand() != EquipmentSlot.HAND)
+            return;
+        if (pl.getGameMode() == GameMode.CREATIVE)
+            return;
         Material mat = pl.getInventory().getItemInMainHand().getType();
-        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
+        if (pl.getInventory().getItemInMainHand().getType() == Material.AIR)
+            return;
 
         // ignore spell scrolls
         if (mat != Material.POPPED_CHORUS_FRUIT
@@ -37,7 +39,8 @@ public class SpellUseEvent implements Listener {
                 && mat != Material.WOODEN_SHOVEL
                 && mat != Material.WOODEN_HOE
                 && mat != Material.WOODEN_SWORD
-                && mat != Material.WOODEN_AXE) return;
+                && mat != Material.WOODEN_AXE)
+            return;
 
         ItemStack heldItem = pl.getInventory().getItemInMainHand();
 
@@ -52,7 +55,8 @@ public class SpellUseEvent implements Listener {
 
         // determine which spell slot to search, based on the type of item (bows are flipped left, right)
         String spellSlot = determineSpellSlot(e, heldItem);
-        if (spellSlot.equals("")) return;
+        if (spellSlot.equals(""))
+            return;
 
         // determine spell to cast
         Spell spellToCast = null;
@@ -64,7 +68,8 @@ public class SpellUseEvent implements Listener {
         }
 
         // execute the spell
-        if (spellToCast == null) return;
+        if (spellToCast == null)
+            return;
 
         // verify player level
         if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel() < AttributeUtil.getCustomDouble(heldItem, "required.level")) {
