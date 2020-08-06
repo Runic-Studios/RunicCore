@@ -72,7 +72,7 @@ public class CacheManager implements Listener {
         }
     }
 
-    /**
+    /*
      * Also used on server disable and logout. Updates information about player and adds them to data queue for saving.
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
@@ -86,7 +86,7 @@ public class CacheManager implements Listener {
         }
     }
 
-    /**
+    /*
      * Writes data async
      */
     public void saveQueuedFiles(boolean limitSize, boolean saveAsync) {
@@ -132,6 +132,7 @@ public class CacheManager implements Listener {
             character.set("outlaw.rating", playerCache.getRating());
             // inventory
             character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
+            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));
             // location
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
@@ -158,7 +159,7 @@ public class CacheManager implements Listener {
         return queuedCaches;
     }
 
-    /**
+    /*
      * Grab the cache of a particular player
      */
     public PlayerCache getPlayerCache(UUID playerID) {
@@ -168,7 +169,7 @@ public class CacheManager implements Listener {
         return null;
     }
 
-    /**
+    /*
      * Check if a player has loaded a character
      */
     public boolean hasCacheLoaded(UUID playerID) {
@@ -199,7 +200,12 @@ public class CacheManager implements Listener {
         boolean isOutlaw = character.get("outlaw.enabled", Boolean.class);
         int rating = character.get("outlaw.rating", Integer.class);
 
-        ItemStack[] inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));
+        ItemStack[] inventoryContents;
+        if (character.has("inventoryNew"))
+            inventoryContents = DatabaseUtil.loadInventoryNew(character.get("inventoryNew", String.class));
+        else
+            inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));
+
         Location location = DatabaseUtil.loadLocation(player, character);
 
         return new PlayerCache(slot,
@@ -212,7 +218,7 @@ public class CacheManager implements Listener {
                 inventoryContents, location, mongoData);
     }
 
-    /**
+    /*
      * Call on-join
      */
     public void tryCreateNewPlayer(Player pl) {
@@ -228,7 +234,7 @@ public class CacheManager implements Listener {
         }
     }
 
-    /**
+    /*
      * Call from RunicCharacters
      */
     public void tryCreateNewCharacter(Player player, String className, Integer slot) {
@@ -244,7 +250,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
-        mongoDataSection.set("inventory", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
+        mongoDataSection.set("inventoryNew", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
         DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneListener.getHearthstoneLocation(player)); // tutorial
         mongoData.save();
     }

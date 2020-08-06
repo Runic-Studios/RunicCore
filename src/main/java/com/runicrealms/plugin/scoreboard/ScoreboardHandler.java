@@ -19,7 +19,6 @@ import java.util.Set;
 public class ScoreboardHandler implements Listener {
 
     public ScoreboardHandler() {
-
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -35,7 +34,6 @@ public class ScoreboardHandler implements Listener {
         Player pl = e.getPlayer();
         createScoreboard(pl);
         NametagUtil.updateNametag(pl);
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> updateSideInfo(pl), 20L);
     }
 
     private void createScoreboard(Player pl){
@@ -59,7 +57,8 @@ public class ScoreboardHandler implements Listener {
         Objective sidebar = board.getObjective("sidebar");
 
         // ensure the scoreboard objective exists
-        if (sidebar == null) { return; }
+        if (sidebar == null)
+            return;
 
         Set<String> entries;
         entries = pl.getScoreboard().getEntries();

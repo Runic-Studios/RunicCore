@@ -20,9 +20,8 @@ import java.io.IOException;
 
 public class DatabaseUtil {
 
-    /**
-     * Loads inventory from JSON object into memory
-     * @String encoded inventory data
+    /*
+    OLD METHOD
      */
     public static ItemStack[] loadInventory(String encoded) {
         try {
@@ -44,10 +43,35 @@ public class DatabaseUtil {
             }
             dataInput.close();
             return contents;
+        } catch (IndexOutOfBoundsException e) {
+            loadInventoryNew(encoded);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return new ItemStack[41]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
+        return new ItemStack[41]; // That is bad!
+    }
+
+    /**
+     * Loads inventory from JSON object into memory
+     * @String encoded inventory data
+     */
+    public static ItemStack[] loadInventoryNew(String encoded) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(encoded));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            ItemStack[] items = new ItemStack[dataInput.readInt()];
+
+            // Read the serialized inventory
+            for (int i = 0; i < items.length; i++) {
+                items[i] = (ItemStack) dataInput.readObject();
+            }
+
+            dataInput.close();
+            return items;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ItemStack[41]; // That is bad!
     }
 
     public static ItemStack[] loadInventory(String encoded, int invSize) {
@@ -82,6 +106,9 @@ public class DatabaseUtil {
         return new ItemStack[invSize]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
     }
 
+    /*
+    OLD METHOD
+     */
     public static String serializeInventory(Inventory inventory) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -99,6 +126,33 @@ public class DatabaseUtil {
             exception.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     *
+     * @param inventory
+     * @return
+     */
+    public static String serializeInventoryNew(Inventory inventory) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+            // Write the size of the inventory
+            dataOutput.writeInt(inventory.getSize());
+
+            // Save every element in the list
+            for (int i = 0; i < inventory.getSize(); i++) {
+                dataOutput.writeObject(inventory.getItem(i));
+            }
+
+            // Serialize that array
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalStateException("Cannot convert itemstacks!", e);
+        }
     }
 
     public static String serializeInventory(ItemStack[] contents) {
@@ -130,7 +184,7 @@ public class DatabaseUtil {
             return new Location(world, x, y, z, yaw, pitch);
         } catch (Exception e) {
             // return hearth location
-            e.printStackTrace();
+            Bukkit.getLogger().info("Error: legacy player location detected, re-spawning in tutorial!");
             return HearthstoneListener.getHearthstoneLocation(player);
         }
     }

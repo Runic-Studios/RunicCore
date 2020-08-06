@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -31,16 +30,13 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("FieldCanBeLocal")
 public class BowListener implements Listener {
 
-    private Plugin plugin = RunicCore.getInstance();
     private static final int ARROW_VELOCITY_MULT = 3;
 
     @EventHandler
     public void onDraw(PlayerInteractEvent e) {
 
         // null check
-        if (e.getItem() == null) {
-            return;
-        }
+        if (e.getItem() == null) return;
 
         if (e.getHand() != EquipmentSlot.HAND) return;
 
@@ -66,9 +62,7 @@ public class BowListener implements Listener {
 
         String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
         if (className == null) return;
-        if (!className.equals("Archer")) {
-            return;
-        }
+        if (!className.equals("Archer")) return;
 
         int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
 
@@ -101,7 +95,7 @@ public class BowListener implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0, 1L);
+        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         // set the cooldown
         pl.setCooldown(artifact.getType(), 15);
