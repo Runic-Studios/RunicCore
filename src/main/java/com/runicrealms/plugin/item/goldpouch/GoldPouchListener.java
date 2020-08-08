@@ -1,189 +1,174 @@
 package com.runicrealms.plugin.item.goldpouch;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.events.PouchCloseEvent;
-import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
-import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
-import java.util.UUID;
 
-/**
- * Manages the gold pouch item
- */
+@SuppressWarnings("deprecation")
 public class GoldPouchListener implements Listener {
 
-    private static final String POUCH_TITLE = ChatColor.GOLD + "Gold Pouch";
-    private final HashMap<UUID, PouchMenu> pouchLookers;
+    /*
+    Place picked up coins in pouch automatically
+     */
+    @EventHandler
+    public void onCoinPickup(PlayerAttemptPickupItemEvent e) {
 
-    public GoldPouchListener() {
-        pouchLookers = new HashMap<>();
+        if (e.getItem().getItemStack().getType() != Material.GOLD_NUGGET) return;
+        Inventory inv = e.getPlayer().getInventory();
+        for (ItemStack is : inv) {
+            if (is != null && is.getItemMeta() != null) {
+                if (is.getType() == Material.SHEARS && ((Damageable) is.getItemMeta()).getDamage() == 234) {
+
+                    // if pouch isnt full
+                    int maxAmount = (int) AttributeUtil.getCustomDouble(is, "pouchSize");
+                    int currentAmount = (int) AttributeUtil.getCustomDouble(is, "goldAmount");
+                    if (currentAmount >= maxAmount) continue;
+
+                    // update pouch w/ amount, remove coins on floor
+                    e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+                    // place gold coins in pouch, remove coins on floor
+                    int leftOverCoins = placeGoldInPouch(e.getPlayer(), is, e.getItem().getItemStack());
+                    e.setCancelled(true);
+                    e.getItem().remove();
+                    if (leftOverCoins > 0) {
+                        HashMap<Integer, ItemStack> coinsToAdd = e.getPlayer().getInventory().addItem(CurrencyUtil.goldCoin(leftOverCoins));
+                        for (ItemStack coin : coinsToAdd.values()) {
+                            e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), coin);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
     }
 
     /*
-    Fixes a dupe bug
+    Empties the pouch when a player right-clicks
      */
-//    @EventHandler(priority = EventPriority.HIGHEST)
-//    public void onGoldPouchDrop(PlayerDropItemEvent e) {
-//        if (e.getItemDrop().getItemStack().getItemMeta() == null)
-//            return;
-//        ItemMeta meta = e.getItemDrop().getItemStack().getItemMeta();
-//        int durability = ((Damageable) meta).getDamage();
-//        if (e.getItemDrop().getItemStack().getType() != Material.SHEARS || durability != 234)
-//            return;
-//        //if (pouchLookers.containsKey(e.getPlayer().getUniqueId())) {
-//            e.setCancelled(true); // todo: think of a way to drop the gold pouch
-//            e.getPlayer().sendMessage(ChatColor.RED + "You can't drop items while the gold pouch is open!");
-//        //}
-//    }
-
     @EventHandler
-    public void onPouchInteract(PlayerInteractEvent e) {
+    public void onInteract(PlayerInteractEvent e) {
+
+        if (e.getItem() == null) return;
+        if (e.getItem().getItemMeta() == null) return;
+        if (!(e.getItem().getType() == Material.SHEARS && ((Damageable) e.getItem().getItemMeta()).getDamage() == 234))
+            return;
 
         Player pl = e.getPlayer();
-        if (pl.getGameMode() != GameMode.SURVIVAL)
-            return;
-        if (e.getHand() != EquipmentSlot.HAND)
-            return;
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-        if (e.getItem() == null)
-            return;
-        if (e.getItem().getItemMeta() == null)
-            return;
-
         ItemStack pouch = e.getItem();
-        ItemMeta meta = pouch.getItemMeta();
-        int durability = ((Damageable) meta).getDamage();
-        if (pouch.getType() != Material.SHEARS || durability != 234)
+        int maxAmount = (int) AttributeUtil.getCustomDouble(pouch, "pouchSize");
+        int currentAmount = (int) AttributeUtil.getCustomDouble(pouch, "goldAmount");
+
+        if (currentAmount == 0)
             return;
 
-        int currentAmt = (int) AttributeUtil.getCustomDouble(pouch, "goldAmount");
-        int size = (int) AttributeUtil.getCustomDouble(pouch, "pouchSize");
+        e.setCancelled(true);
 
-        int menuSize = 9;
-        if (size > 576)
-            menuSize = 18;
-
-        ItemGUI coinMenu = new ItemGUI(POUCH_TITLE, menuSize, event -> {}, RunicCore.getInstance());
-        pouchLookers.put(pl.getUniqueId(), new PouchMenu(coinMenu, pouch));
-
-        // fill coins
-        int slotSize = size / 64;
-        int dummyVar = currentAmt;
-        for (int i = 0; i < slotSize; i++) {
-            int stackSize = 64;
-            if (dummyVar < 64)
-                stackSize = dummyVar;
-            coinMenu.setOption(i, CurrencyUtil.goldCoin(stackSize));
-            dummyVar -= stackSize;
-        }
-
-        // fill black glass panes
-        for (int i = slotSize; i < menuSize; i++) {
-            coinMenu.setOption(i, new ItemStack(Material.BLACK_STAINED_GLASS_PANE),
-                    "&7", "", 0, false);
-        }
-
-        coinMenu.setHandler(event -> {
-
-            if (event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) {
-                event.setWillClose(false);
-                e.setCancelled(true);
-            } else {
-                e.setCancelled(false);
-            }
-        });
-
+        // see how many in pouch, remove old pouch
         pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_SADDLE, 0.5f, 1.0f);
-        coinMenu.open(pl);
+
+        // give new pouch
+        ItemStack emptyPouch = new ItemStack(Material.SHEARS);
+        emptyPouch = AttributeUtil.addCustomStat(emptyPouch, "pouchSize", maxAmount);
+        LoreGenerator.generateGoldPouchLore(emptyPouch);
+        ItemRemover.takeItem(pl, pouch, 1);
+
+        // give coins contained inside
+        HashMap<Integer, ItemStack> pouchToAdd = pl.getInventory().addItem(emptyPouch);
+        for (ItemStack is : pouchToAdd.values()) {
+            pl.getWorld().dropItem(pl.getLocation(), is);
+        }
+
+        // give coins contained inside
+        HashMap<Integer, ItemStack> coinsToAdd = pl.getInventory().addItem(CurrencyUtil.goldCoin(currentAmount));
+        for (ItemStack is : coinsToAdd.values()) {
+            pl.getWorld().dropItem(pl.getLocation(), is);
+        }
     }
 
+    /*
+    When a player clicks on a gold pouch
+     */
     @EventHandler
     public void onClick(InventoryClickEvent e) {
 
+        // item must be gold pouch
         Player pl = (Player) e.getWhoClicked();
-        if (!e.getView().getTitle().equals(POUCH_TITLE))
+        if (e.getCurrentItem() == null) return;
+        if (e.getCurrentItem().getItemMeta() == null) return;
+        if (e.getCursor() == null) return;
+        if (!(e.getCurrentItem().getType() == Material.SHEARS && ((Damageable) e.getCurrentItem().getItemMeta()).getDamage() == 234))
             return;
 
-        // only listen for gold coins
-        if (e.getCurrentItem() != null
-                && e.getCurrentItem().getType() != Material.AIR
-                && e.getCurrentItem().getType() != Material.GOLD_NUGGET)
-            e.setCancelled(true);
+        ItemStack pouch = e.getCurrentItem();
+        int maxAmount = (int) AttributeUtil.getCustomDouble(pouch, "pouchSize");
+        int currentAmount = (int) AttributeUtil.getCustomDouble(pouch, "goldAmount");
 
-        ItemGUI itemGUI = pouchLookers.get(e.getWhoClicked().getUniqueId()).getMenu();
-        int slot = e.getRawSlot();
-        if (slot >= 0 && slot < itemGUI.getSize() && itemGUI.getOptionNames()[slot] != null) {
+        if (e.getCursor().getType() != Material.GOLD_NUGGET) return;
 
-            OptionClickEvent ope = new OptionClickEvent(e, (Player) e.getWhoClicked(), slot, itemGUI.getOptionNames()[slot]);
-            itemGUI.getHandler().onOptionClick(ope);
+        e.setCancelled(true);
 
-            if (ope.willClose())
-                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), pl::closeInventory, 1);
-            if (ope.willDestroy())
-                itemGUI.destroy();
+        // return if limit is met
+        if (currentAmount >= maxAmount) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            pl.sendMessage(ChatColor.GRAY + "The pouch is full.");
+            return;
+        }
+
+        pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+
+        // take pouch, give new pouch, take coins, distribute leftover coins
+        int leftOverCoins = placeGoldInPouch(pl, pouch, e.getCursor());
+        e.setCursor(new ItemStack(Material.AIR));
+        if (leftOverCoins > 0) {
+            HashMap<Integer, ItemStack> coinsToAdd = pl.getInventory().addItem(CurrencyUtil.goldCoin(leftOverCoins));
+            for (ItemStack is : coinsToAdd.values()) {
+                pl.getWorld().dropItem(pl.getLocation(), is);
+            }
         }
     }
 
-    @EventHandler
-    public void onPouchCloseEvent(PouchCloseEvent e) {
-        if (!e.getPlayer().getInventory().contains(e.getPouch()))
-            e.setCancelled(true);
-    }
+    /**
+     * Adds gold coins to a pouch.
+     * @param goldPouch the item to modify
+     * @param coins on the cursor
+     * @return leftOver, the amount of coins to add to player's inv if the pouch is full.
+     */
+    private int placeGoldInPouch(Player pl, ItemStack goldPouch, ItemStack coins) {
 
-    @EventHandler
-    public void onClose(InventoryCloseEvent e) {
+        int maxAmount = (int) AttributeUtil.getCustomDouble(goldPouch, "pouchSize");
+        int currentAmount = (int) AttributeUtil.getCustomDouble(goldPouch, "goldAmount");
+        int newAmount = currentAmount + coins.getAmount();
+        int leftOver = 0;
 
-        if (!(e.getPlayer() instanceof Player))
-            return;
-        if (!e.getView().getTitle().equals(POUCH_TITLE))
-            return;
-
-        ItemStack pouch = pouchLookers.get(e.getPlayer().getUniqueId()).getPouch();
-        int amount = 0;
-        for (ItemStack is : e.getInventory()) {
-            if (is == null)
-                continue;
-            if (is.getType() != Material.GOLD_NUGGET)
-                continue;
-            amount += is.getAmount();
+        if (newAmount > maxAmount) {
+            leftOver = newAmount - maxAmount;
+            newAmount = maxAmount;
         }
 
-        PouchCloseEvent event = new PouchCloseEvent((Player) e.getPlayer(), pouch, amount);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled())
-            return;
-
-        // remove old item
-        ItemRemover.takeItem((Player) e.getPlayer(), pouchLookers.get(e.getPlayer().getUniqueId()).getPouch(), 1);
-
-        // update new current amount, give new item
-        pouch = AttributeUtil.addCustomStat(pouch, "goldAmount", event.getAmount());
-        LoreGenerator.generateGoldPouchLore(pouch);
-        HashMap<Integer, ItemStack> leftOver = e.getPlayer().getInventory().addItem(pouch);
-        for (ItemStack is : leftOver.values()) {
-            e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), is);
+        // give them the new pouch
+        ItemRemover.takeItem(pl, goldPouch, 1);
+        goldPouch = AttributeUtil.addCustomStat(goldPouch, "goldAmount", newAmount);
+        LoreGenerator.generateGoldPouchLore(goldPouch);
+        HashMap<Integer, ItemStack> pouchToAdd = pl.getInventory().addItem(goldPouch);
+        for (ItemStack is : pouchToAdd.values()) {
+            pl.getWorld().dropItem(pl.getLocation(), is);
         }
 
-        // remove from pouchlookers
-        pouchLookers.remove(e.getPlayer().getUniqueId());
+        return leftOver;
     }
 }

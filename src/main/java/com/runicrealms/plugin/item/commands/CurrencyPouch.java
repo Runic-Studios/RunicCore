@@ -48,7 +48,6 @@ public class CurrencyPouch implements SubCommand {
 
         ItemStack goldPouch = new ItemStack(Material.SHEARS);
         goldPouch = AttributeUtil.addCustomStat(goldPouch, "pouchSize", size);
-        goldPouch = AttributeUtil.addCustomStat(goldPouch, "soulbound", "true");
         LoreGenerator.generateGoldPouchLore(goldPouch);
 
         if (pl.getInventory().firstEmpty() != -1)
