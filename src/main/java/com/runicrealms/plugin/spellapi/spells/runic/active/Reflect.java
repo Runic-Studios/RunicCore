@@ -24,7 +24,7 @@ public class Reflect extends Spell {
 
     private static final int DAMAGE = 10;
     private static final int DURATION = 6;
-    private List<UUID> reflectedPlrs = new ArrayList<>();
+    private final List<UUID> reflectedPlrs = new ArrayList<>();
 
     public Reflect() {
         super("Reflect",

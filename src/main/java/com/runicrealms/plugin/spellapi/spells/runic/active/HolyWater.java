@@ -45,7 +45,6 @@ public class HolyWater extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
-        pl.swingMainHand();
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         Objects.requireNonNull(meta).setColor(Color.WHITE);

@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 public class RunicMissile extends Spell {
 
     //private HashMap<UUID, List<UUID>> hasBeenHit;
-    private static int DAMAGE_AMT = 15;
+    private static final int DAMAGE_AMT = 15;
     //private final double RADIUS = 1.5;
     private final int RANGE = 10;
     private final int SPEED = 2;
@@ -53,8 +53,8 @@ public class RunicMissile extends Spell {
         //for (Vector vector : vectors) {
 
               new BukkitRunnable() {
-                Location location = pl.getEyeLocation();
-                Location startLoc = pl.getLocation();
+                final Location location = pl.getEyeLocation();
+                final Location startLoc = pl.getLocation();
 
                 @Override
                 public void run() {

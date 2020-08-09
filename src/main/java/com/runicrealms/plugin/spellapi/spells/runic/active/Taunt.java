@@ -25,7 +25,7 @@ import java.util.UUID;
 public class Taunt extends Spell {
 
     private static final int DURATION = 4;
-    private List<UUID> taunters;
+    private final List<UUID> taunters;
 
     public Taunt() {
         super ("Taunt",
