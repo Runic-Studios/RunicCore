@@ -121,12 +121,10 @@ public class Enrage extends Spell {
 
         LivingEntity le = (LivingEntity) en;
 
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
-        if (extraDamage > 0) {
-            DamageUtil.damageEntitySpell(extraDamage, le, pl, 100);
-        }
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
+
+        DamageUtil.damageEntitySpell(DAMAGE_AMT + extraDamage, le, pl, 100);
     }
 }
 
