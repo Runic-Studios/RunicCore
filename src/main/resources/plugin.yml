@@ -62,3 +62,6 @@ commands:
   outlaw:
     usage: /<commands>
     description: Toggle player outlaw mode
+  spawn:
+    usage: /<commands>
+    description: Select hearthstone

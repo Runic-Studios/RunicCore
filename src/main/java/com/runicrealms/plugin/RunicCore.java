@@ -10,6 +10,7 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.FireworkCMD;
 import com.runicrealms.plugin.command.MapLink;
 import com.runicrealms.plugin.command.RunicDamage;
+import com.runicrealms.plugin.command.SpawnCMD;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
@@ -342,6 +343,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
         Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
         Bukkit.getPluginCommand("outlaw").setExecutor(new SetOutlawCMD());
+        Bukkit.getPluginCommand("spawn").setExecutor(new SpawnCMD());
     }
 
     private void registerSetCommands() {
