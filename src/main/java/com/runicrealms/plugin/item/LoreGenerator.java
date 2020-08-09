@@ -134,7 +134,7 @@ public class LoreGenerator {
             lore.add(ChatColor.RED + "+ " + customHealth + "❤");
         }
         if (healthRegen != 0) {
-            lore.add(ChatColor.RED + "+ " + healthRegen + "❤/s");
+            lore.add(ChatColor.RED + "+ " + healthRegen + "❤/t");
         }
         if (customAttSpeed != 0) {
             double roundedSpeed = NumRounder.round(customAttSpeed);
@@ -144,7 +144,7 @@ public class LoreGenerator {
             lore.add(ChatColor.DARK_AQUA + "+ " + manaBoost + "✸");
         }
         if (manaRegen != 0) {
-            lore.add(ChatColor.DARK_AQUA + "+ " + manaRegen + "✸/s");
+            lore.add(ChatColor.DARK_AQUA + "+ " + manaRegen + "✸/t");
         }
         if (damageBoost != 0) {
             lore.add(ChatColor.RED + "+ " + (int) damageBoost + "⚔");

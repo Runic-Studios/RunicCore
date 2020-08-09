@@ -48,7 +48,7 @@ public class RegenManager implements Listener {
 
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT);
+            HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT + GearScanner.getHealthRegenBoost(online));
             Bukkit.getPluginManager().callEvent(event);
         }
     }

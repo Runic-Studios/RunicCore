@@ -71,9 +71,9 @@ public class PlayerMenuListener implements Listener {
 
                 ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
                         "\n&c❤ (Health) &ebonus: " + healthBonus +
-                                "\n&c❤/s (Regen) &ebonus: " + healthRegen +
+                                "\n&c❤/t (Regen) &ebonus: " + healthRegen +
                                 "\n&3✸ (Mana) &ebonus: " + manaBoost +
-                                "\n&3✸/s (Regen) &ebonus: " + manaRegen +
+                                "\n&3✸/t (Regen) &ebonus: " + manaRegen +
                                 "\n&c⚔ (DMG) &ebonus: " + minDamage + "-" + maxDamage +
                                 "\n&a✦ (Heal) &ebonus: " + healingBoost +
                                 "\n&3ʔ (Magic) &ebonus: " + magicBoost +
