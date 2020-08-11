@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * Method to manage player health and mana. Stores max mana in the player data file,
+ * CLass to manage player health and mana. Stores max mana in the player data file,
  * and creates a HashMap to store all current player manas.
  * @author Skyfallin_
  */
@@ -36,7 +36,6 @@ public class RegenManager implements Listener {
     // constructor
     public RegenManager() {
         currentPlayerManas = new HashMap<>();
-
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -48,7 +47,10 @@ public class RegenManager implements Listener {
 
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT + GearScanner.getHealthRegenBoost(online));
+            int regenAmt = HEALTH_REGEN_AMT + GearScanner.getHealthRegenBoost(online);
+            if (RunicCore.getCombatManager().getPlayersInCombat().get(online.getUniqueId()) == null)
+                regenAmt *= 5; // players regen a lot out of combat
+            HealthRegenEvent event = new HealthRegenEvent(online, regenAmt);
             Bukkit.getPluginManager().callEvent(event);
         }
     }
@@ -62,16 +64,19 @@ public class RegenManager implements Listener {
 
             int mana;
 
-            if (currentPlayerManas.containsKey(online.getUniqueId())) {
+            if (currentPlayerManas.containsKey(online.getUniqueId()))
                 mana = currentPlayerManas.get(online.getUniqueId());
-            } else {
+            else
                 mana = getBaseMana() + getManaPerLv(online) + GearScanner.getManaBoost(online);
-            }
 
             int maxMana = RunicCore.getCacheManager().getPlayerCache(online.getUniqueId()).getMaxMana();
             if (mana >= maxMana) continue;
 
-            ManaRegenEvent event = new ManaRegenEvent(online, MANA_REGEN_AMT);
+            int regenAmt = MANA_REGEN_AMT; // todo: not sure where else this is called, but not needed? + GearScanner.getManaRegenBoost(online)
+            if (RunicCore.getCombatManager().getPlayersInCombat().get(online.getUniqueId()) == null)
+                regenAmt *= 5; // players regen a lot out of combat
+
+            ManaRegenEvent event = new ManaRegenEvent(online, regenAmt);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 currentPlayerManas.put(online.getUniqueId(), Math.min(mana + event.getAmount(), maxMana));
