@@ -7,10 +7,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
-import com.runicrealms.plugin.command.FireworkCMD;
-import com.runicrealms.plugin.command.MapLink;
-import com.runicrealms.plugin.command.RunicDamage;
-import com.runicrealms.plugin.command.SpawnCMD;
+import com.runicrealms.plugin.command.*;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
@@ -287,6 +284,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new GroupManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new EnvironmentDMGListener(), this);
+        pm.registerEvents(new RunicExpListener(), this);
         pm.registerEvents(partyManager, this);
         pm.registerEvents(groupManager, this);
         groupManager.registerGuiEvents();
@@ -344,6 +342,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
         Bukkit.getPluginCommand("outlaw").setExecutor(new SetOutlawCMD());
         Bukkit.getPluginCommand("spawn").setExecutor(new SpawnCMD());
+        Bukkit.getPluginCommand("runicvote").setExecutor(new RunicVoteCMD());
     }
 
     private void registerSetCommands() {

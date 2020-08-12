@@ -65,3 +65,6 @@ commands:
   spawn:
     usage: /<commands>
     description: Select hearthstone
+  runicvote:
+    usage: /<commands>
+    description: Gain a voting exp bonus

@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -72,13 +73,14 @@ public class Slam extends Spell {
                         (pl.getLocation().getDirection().getX(), -10.0,
                                 pl.getLocation().getDirection().getZ()).multiply(2).normalize());
                 pl.setFallDistance(-512.0F);
-                startSlamTask(pl);
+                BukkitTask jumpTask = startSlamTask(pl);
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), jumpTask::cancel, 100L); // insurance
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
 
-    private void startSlamTask(Player pl) {
-        new BukkitRunnable() {
+    private BukkitTask startSlamTask(Player pl) {
+        return new BukkitRunnable() {
             @Override
             public void run() {
 

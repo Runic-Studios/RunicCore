@@ -3,11 +3,7 @@ package com.runicrealms.plugin.player.commands;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
-import com.runicrealms.plugin.party.Party;
-import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.shop.BoostCMD;
-import com.runicrealms.plugin.utilities.ColorUtil;
-import com.runicrealms.plugin.utilities.HologramUtil;
+import com.runicrealms.plugin.events.RunicExpEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,9 +17,6 @@ import java.util.List;
 public class ClassExpCMD implements SubCommand {
 
     private RunicGiveSC giveItemSC;
-    private static final int LV_BUFFER = 10;
-    private static double PARTY_BONUS = 15;
-    private static int RANGE = 100;
 
     public ClassExpCMD(RunicGiveSC giveItemSC) {
         this.giveItemSC = giveItemSC;
@@ -37,12 +30,12 @@ public class ClassExpCMD implements SubCommand {
         // runicgive exp [player] [amount] [quest]
         Player pl = Bukkit.getPlayer(args[1]);
         if (pl == null) return;
-        int plLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+        int exp = Integer.parseInt(args[2]);
 
         // skip all other calculations for quest exp
         if (args.length == 4) {
-            int exp = Integer.parseInt(args[2]);
-            PlayerLevelUtil.giveExperience(pl, exp);
+            RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.QUEST, 0, null);
+            Bukkit.getPluginManager().callEvent(e);
             return;
         }
 
@@ -51,68 +44,24 @@ public class ClassExpCMD implements SubCommand {
                 || RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).getSize() < 2) {
             if (args.length != 7) {
-                int exp = Integer.parseInt(args[2]);
-                PlayerLevelUtil.giveExperience(pl, exp);
+                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.DUNGEON, 0, null);
+                Bukkit.getPluginManager().callEvent(e);
             } else {
                 int mobLv = Integer.parseInt(args[6]);
-                double percent = BoostCMD.getCombatExperienceBoost()/100;
-                int exp = Integer.parseInt(args[2]);
-                int boost = (int) percent*exp;
-                exp += boost;
                 Location loc = new Location(pl.getWorld(), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
-                ChatColor expColor = ChatColor.WHITE;
-                if (mobLv > (plLv+LV_BUFFER) || mobLv < (plLv-LV_BUFFER)) {
-                    exp = 0;
-                    expColor = ChatColor.RED;
-                }
-                PlayerLevelUtil.giveExperience(pl, exp);
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + exp + " &7exp"), 0, 2.5, 0);
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName()), 0, 2.25, 0);
+                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.MOB, mobLv, loc);
+                Bukkit.getPluginManager().callEvent(e);
             }
 
-        // otherwise, apply party exp bonus
+        // otherwise, apply party exp bonus (now calculated in listener)
         } else {
-
-            Party party = RunicCore.getPartyManager().getPlayerParty(pl);
-            double boostPercent = BoostCMD.getCombatExperienceBoost()/100;
-            int exp = Integer.parseInt(args[2]);
-            int boost = (int) boostPercent*exp;
-            exp += boost;
-            int originalExp = Integer.parseInt(args[2]) + boost;
-            double percent = PARTY_BONUS / 100;
-            int extraAmt = (int) (exp * percent);
-            if (extraAmt < 1) {
-                extraAmt = 1;
-            }
-            exp += extraAmt;
-
-            int nearbyMembers = 0;
-            for (Player member : party.getMembersWithLeader()) {
-                if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
-                if (pl.getLocation().distance(member.getLocation()) < RANGE) {
-                    nearbyMembers += 1;
-                }
-            }
-
-            for (Player member : party.getMembersWithLeader()) {
-                if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
-                if (pl.getLocation().distance(member.getLocation()) < RANGE) {
-                    int mobLv = Integer.parseInt(args[6]);
-                    int memberLv = RunicCore.getCacheManager().getPlayerCache(member.getUniqueId()).getClassLevel();
-                    if (mobLv > (memberLv+LV_BUFFER) || mobLv < (memberLv-LV_BUFFER)) {
-                        PlayerLevelUtil.giveExperience(member, 0);
-                        Location loc = new Location(member.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                        HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
-                    } else {
-                        PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
-                    }
-                }
-            }
-
             if (args.length == 7) {
                 Location loc = new Location(pl.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.6, 0);
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName() + "&7's Party"), 0, 2.3, 0);
+                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[6]), loc);
+                Bukkit.getPluginManager().callEvent(e);
+            } else {
+                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[6]), null);
+                Bukkit.getPluginManager().callEvent(e);
             }
         }
     }
@@ -140,6 +89,5 @@ public class ClassExpCMD implements SubCommand {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
-        //return TabCompleteUtil.getPlayers(commandSender, strings, RunicCore.getInstance());
     }
 }
