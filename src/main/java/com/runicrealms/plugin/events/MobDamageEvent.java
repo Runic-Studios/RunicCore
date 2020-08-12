@@ -5,7 +5,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
+/*
  * This custom event is called when a player receives damage from a mob. Currently only applies to monsters.
  * Called in DamageListener, rather than the util.
  */
@@ -17,6 +17,13 @@ public class MobDamageEvent extends Event implements Cancellable {
     private final boolean applyMechanics;
     private boolean isCancelled;
 
+    /**
+     *
+     * @param amount the amount to be dealt to the player
+     * @param damager the mob who damaged the player
+     * @param victim the player who suffered damage
+     * @param applyMechanics whether or not to apply knockback
+     */
     public MobDamageEvent(int amount, Entity damager, Entity victim, boolean applyMechanics) {
         this.amount = amount;
         this.damager = damager;

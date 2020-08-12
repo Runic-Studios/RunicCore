@@ -26,8 +26,8 @@ public class WoundingShot extends Spell {
     private static final int DAMAGE = 20;
     private static final int DURATION = 5;
     private static final double PERCENT = 50;
-    private List<Arrow> cripplingArrs = new ArrayList<>();
-    private List<UUID> crippledPlrs = new ArrayList<>();
+    private final List<Arrow> cripplingArrs = new ArrayList<>();
+    private final List<UUID> crippledPlrs = new ArrayList<>();
 
     public WoundingShot() {
         super("Wounding Shot",
@@ -113,7 +113,6 @@ public class WoundingShot extends Spell {
 
     @EventHandler
     public void onCrippledHeal(SpellHealEvent e) {
-
         if (crippledPlrs.contains(e.getEntity().getUniqueId())) {
             double percent = PERCENT/100;
             int newAmt = (int) (e.getAmount()*percent);

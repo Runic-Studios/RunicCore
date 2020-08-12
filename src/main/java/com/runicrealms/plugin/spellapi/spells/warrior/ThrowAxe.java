@@ -26,8 +26,8 @@ public class ThrowAxe extends Spell {
 
     private static final int DAMAGE = 20;
     private static final int DURATION = 3;
-    private HashMap<UUID, UUID> hasBeenHit;
-    private List<UUID> silenced;
+    private final HashMap<UUID, UUID> hasBeenHit;
+    private final List<UUID> silenced;
 
     public ThrowAxe() {
         super("Throw Axe",
@@ -91,9 +91,6 @@ public class ThrowAxe extends Spell {
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
     }
 
-    /**
-     * Debuff our enemy
-     */
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
         if (silenced.contains(e.getDamager().getUniqueId())) {

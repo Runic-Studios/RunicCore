@@ -162,6 +162,9 @@ public class SpellManager {
         this.spellList.add(new ManaShield());
         this.spellList.add(new Rupture());
         this.spellList.add(new Repent());
+        this.spellList.add(new Cripple());
+        this.spellList.add(new ArcaneShot());
+        this.spellList.add(new SanguineShot());
     }
 
     // starts the repeating task to manage player cooldowns

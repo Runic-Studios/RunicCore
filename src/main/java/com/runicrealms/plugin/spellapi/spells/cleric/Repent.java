@@ -29,7 +29,7 @@ public class Repent extends Spell {
                         "\nenemies within " + (int) RADIUS + " blocks are" +
                         "\nthrown away from the mark" +
                         "\nand slowed for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 1, 20);// todo 15s
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 20);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Repent extends Spell {
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
 
             pl.getWorld().playSound(ground, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
-            pl.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, ground, 1, RADIUS, RADIUS, RADIUS, 0);
+            pl.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, ground.clone().add(0, 1, 0), 25, 0.2, 0.2, 0.2, 0);
             for (Entity en : pl.getWorld().getNearbyEntities(ground, RADIUS, RADIUS, RADIUS)) {
                 if (!(en instanceof LivingEntity))
                     continue;
