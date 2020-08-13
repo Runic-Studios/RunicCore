@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
@@ -113,6 +114,7 @@ public class GoldPouchListener implements Listener {
         if (e.getCursor() == null) return;
         if (!(e.getCurrentItem().getType() == Material.SHEARS && ((Damageable) e.getCurrentItem().getItemMeta()).getDamage() == 234))
             return;
+        if (!isPlayerCraftingInv(e.getView())) return; // fixes bank dupe bugs
 
         ItemStack pouch = e.getCurrentItem();
         int maxAmount = (int) AttributeUtil.getCustomDouble(pouch, "pouchSize");
@@ -140,6 +142,10 @@ public class GoldPouchListener implements Listener {
                 pl.getWorld().dropItem(pl.getLocation(), is);
             }
         }
+    }
+
+    private static boolean isPlayerCraftingInv(InventoryView view) {
+        return view.getTopInventory().getSize() == 5;
     }
 
     /**
