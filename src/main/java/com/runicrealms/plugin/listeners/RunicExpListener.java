@@ -7,7 +7,6 @@ import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
-import jdk.internal.jline.internal.Nullable;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -75,7 +74,7 @@ public class RunicExpListener implements Listener {
      * @param mobLv of mob (if applicable)
      * @param loc of mob (if applicable)
      */
-    private void distributePartyExp(Party party, Player pl, int exp, int extraAmt, int mobLv, @Nullable Location loc) {
+    private void distributePartyExp(Party party, Player pl, int exp, int extraAmt, int mobLv, Location loc) {
 
         int nearbyMembers = 0;
         for (Player member : party.getMembersWithLeader()) {
