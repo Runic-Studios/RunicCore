@@ -62,7 +62,6 @@ public class CacheManager implements Listener {
      * IMPORTANT: Inventory and Location and saved here
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
-        Bukkit.broadcastMessage("SAVING INV AND LOCATION");
         Player pl = Bukkit.getPlayer(playerCache.getPlayerID());
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
