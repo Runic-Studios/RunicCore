@@ -64,7 +64,7 @@ public class StaffListener implements Listener {
          e.setCancelled(true);
 
         // check for mage
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null) return;
         if (!className.equals("Mage")) {
             return;
@@ -82,7 +82,7 @@ public class StaffListener implements Listener {
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
         int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
 
-        if (reqLv > RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel()) {
+        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
             pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
             pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
             return;

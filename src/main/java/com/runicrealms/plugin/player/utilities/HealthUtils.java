@@ -27,7 +27,7 @@ public class HealthUtils {
     public static void setPlayerMaxHealth(Player pl) {
 
         // grab the player's new info
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
 
         // for new players
         if (className == null) {
@@ -36,7 +36,7 @@ public class HealthUtils {
         }
 
         // grab player's level
-        int classLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+        int classLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
 
         // save player hp
         int hpPerLevel = 0;
@@ -82,7 +82,7 @@ public class HealthUtils {
 
         // todo: come up w/ a better system for this
 //        int valuePerHeart;
-//        switch (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName()) {
+//        switch (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName()) {
 //            case "Archer":
 //                valuePerHeart = 3;
 //                break;

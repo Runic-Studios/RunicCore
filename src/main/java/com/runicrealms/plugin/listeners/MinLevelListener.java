@@ -27,7 +27,7 @@ public class MinLevelListener implements Listener {
         ItemStack equippedItem = e.getNewArmorPiece();
         if (ItemTypeEnum.matchType(equippedItem) == ItemTypeEnum.OFFHAND)
             return;
-        int plLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+        int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
         int reqLv = (int) AttributeUtil.getCustomDouble(equippedItem, "required.level");
 
         if (plLv < reqLv) {
@@ -46,7 +46,7 @@ public class MinLevelListener implements Listener {
         if (ItemTypeEnum.matchType(e.getCursor()) != ItemTypeEnum.OFFHAND)
             return;
         Player pl = (Player) e.getWhoClicked();
-        int plLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+        int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
         int reqLv = (int) AttributeUtil.getCustomDouble(e.getCursor(), "required.level");
         if (plLv < reqLv) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);

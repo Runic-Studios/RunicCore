@@ -59,15 +59,15 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
         switch (lowerArg) {
             case "class":
-                return RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
             case "class_prefix":
-                return RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName().substring(0, 2);
+                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().substring(0, 2);
             case "level":
                 return pl.getLevel() + "";
             case "prof":
-                return RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfName();
+                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfName();
             case "prof_level":
-                return RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfLevel() + "";
+                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfLevel() + "";
             default:
                 return "";
         }

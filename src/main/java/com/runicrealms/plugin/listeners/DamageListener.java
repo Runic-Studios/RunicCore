@@ -33,7 +33,6 @@ import org.bukkit.scoreboard.Score;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -105,7 +104,7 @@ public class DamageListener implements Listener {
             }
             // -------------------
 
-            if (reqLv > RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel()) {
+            if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
                 pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
                 pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
                 e.setCancelled(true);
@@ -160,7 +159,7 @@ public class DamageListener implements Listener {
 
     private boolean matchClass(Player pl) {
         ItemStack mainHand = pl.getInventory().getItemInMainHand();
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:
@@ -282,7 +281,7 @@ public class DamageListener implements Listener {
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
         // set their current mana to max
-        int maxMana = RunicCore.getCacheManager().getPlayerCache(victim.getUniqueId()).getMaxMana();
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(victim).getMaxMana();
         RunicCore.getRegenManager().getCurrentManaList().put(victim.getUniqueId(), maxMana);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
@@ -336,14 +335,12 @@ public class DamageListener implements Listener {
         if (damager instanceof Player) {
 
             String nameDam = damager.getName();
-            UUID p1 = damager.getUniqueId();
-            UUID p2 = victim.getUniqueId();
-            double ratingP1 = RunicCore.getCacheManager().getPlayerCache(p1).getRating();
-            double ratingP2 = RunicCore.getCacheManager().getPlayerCache(p2).getRating();
+            double ratingP1 = RunicCore.getCacheManager().getPlayerCaches().get((Player) damager).getRating();
+            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
 
             // if both players are outlaws, amend the death message to display their rating
-            if (RunicCore.getCacheManager().getPlayerCache(p1).getIsOutlaw()
-                    && RunicCore.getCacheManager().getPlayerCache(p2).getIsOutlaw()) {
+            if (RunicCore.getCacheManager().getPlayerCaches().get(damager).getIsOutlaw()
+                    && RunicCore.getCacheManager().getPlayerCaches().get(victim).getIsOutlaw()) {
                 nameDam = ChatColor.RED + "[" + (int) ratingP1 + "] " + ChatColor.WHITE + nameDam;
                 nameVic = ChatColor.RED + "[" + (int) ratingP2 + "] " + ChatColor.WHITE + nameVic;
                 Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);

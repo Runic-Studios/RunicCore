@@ -72,7 +72,7 @@ public class SpellUseEvent implements Listener {
             return;
 
         // verify player level
-        if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel() < AttributeUtil.getCustomDouble(heldItem, "required.level")) {
+        if (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel() < AttributeUtil.getCustomDouble(heldItem, "required.level")) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
             ActionBarUtil.sendTimedMessage(pl, "&cYour level is too low to cast this!", 3);
             return;

@@ -21,7 +21,7 @@ public class BloodRitual extends Spell {
 
     private static final int HEALING_AMT = 60;
     private static final int MAX_DIST = 10;
-    private static final float RADIUS = 5f;
+    private static final float RADIUS = 10f;
     private static final int WARMUP = 4;
 
     // constructor

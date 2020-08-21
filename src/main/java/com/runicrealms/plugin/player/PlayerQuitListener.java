@@ -10,33 +10,29 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-/**
- * Saves player data async
+/*
+ * Saves player data async when they logout and removes them from the queue
  */
 public class PlayerQuitListener implements Listener {
 
     @EventHandler
     public void onLoadedQuit(CharacterQuitEvent e) {
-        saveCharacterRemoveQueue(e.getPlayer());
-    }
 
-    private void saveCharacterRemoveQueue(Player pl) {
-        // get player cache (if they've loaded in)i
-        if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()) != null) {
+        // get player cache (if they've loaded in)
+        if (RunicCore.getCacheManager().getPlayerCaches().get(e.getPlayer()) == null) return;
 
-            PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
-            UUID cacheID = playerCache.getPlayerID();
+        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCaches().get(e.getPlayer());
+        UUID cacheID = playerCache.getPlayerID();
 
-            // remove player data from data queue!
-            RunicCore.getCacheManager().getQueuedCaches().removeIf(n -> (n.getPlayerID() == cacheID));
+        RunicCore.getCacheManager().getPlayerCaches().remove(e.getPlayer());
 
-            // update cache, save it
-            RunicCore.getCacheManager().savePlayerCache(playerCache, false);
-            RunicCore.getCacheManager().setFieldsSaveFile(playerCache, pl, true);
+        // remove player data from data queue, remove them from memory
+        RunicCore.getCacheManager().getQueuedCaches().removeIf(n -> (n.getPlayerID() == cacheID));
 
-            // remove them from cached queue
-            RunicCore.getCacheManager().getPlayerCaches().remove(playerCache);
-        }
+        // update cache, save it
+        RunicCore.getCacheManager().savePlayerCache(playerCache, false);
+        RunicCore.getCacheManager().setFieldsSaveFile(playerCache, e.getPlayer(), true);
+
     }
 
     @EventHandler

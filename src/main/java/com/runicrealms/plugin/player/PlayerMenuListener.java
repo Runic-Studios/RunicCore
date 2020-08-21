@@ -40,7 +40,7 @@ public class PlayerMenuListener implements Listener {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
-            for (PlayerCache cache : RunicCore.getCacheManager().getPlayerCaches()) {
+            for (PlayerCache cache : RunicCore.getCacheManager().getPlayerCaches().values()) {
 
                 Player pl = Bukkit.getPlayer(cache.getPlayerID());
                 if (pl == null) continue;

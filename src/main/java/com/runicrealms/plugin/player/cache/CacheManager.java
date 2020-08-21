@@ -3,7 +3,6 @@ package com.runicrealms.plugin.player.cache;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
@@ -19,63 +18,51 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CacheManager implements Listener {
 
-    private final HashSet<Player> loadedPlayers;
-    private final HashSet<PlayerCache> playerCaches;
-
-    private final ConcurrentLinkedQueue<PlayerCache> queuedCaches;
     private static final int CACHE_PERIOD = 30;
-    private static final int SAVE_PERIOD = 15;
+
+    private final ConcurrentHashMap<Player, PlayerCache> playerCaches;
+    private final ConcurrentLinkedQueue<PlayerCache> queuedCaches;
 
     public CacheManager() {
 
-        loadedPlayers = new HashSet<>();
-        playerCaches = new HashSet<>();
+        playerCaches = new ConcurrentHashMap<>();
         queuedCaches = new ConcurrentLinkedQueue<>();
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 saveCaches();
-            }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD*20); // 10s delay, 30 sec period
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
                 saveQueuedFiles(true, true);
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), (100+CACHE_PERIOD), SAVE_PERIOD*20); // wait for save, 15 sec period
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD*20); // 10s delay, 30 sec period
     }
 
     @EventHandler
     public void onLoad(CharacterLoadEvent e) {
-        loadedPlayers.add(Bukkit.getPlayer(e.getPlayerCache().getPlayerID()));
-    }
-
-    @EventHandler
-    public void onQuit(CharacterQuitEvent e) {
-        loadedPlayers.remove(e.getPlayer());
+        playerCaches.put(e.getPlayer(), e.getPlayerCache());
     }
 
     /**
      * Takes information stored in a player cache and writes it to config in RunicCharacters
      */
     public void saveCaches() {
-        for (PlayerCache playerCache : playerCaches) {
+        for (PlayerCache playerCache : playerCaches.values()) {
             savePlayerCache(playerCache, true);
         }
     }
 
     /*
      * Also used on server disable and logout. Updates information about player and adds them to data queue for saving.
+     * IMPORTANT: Inventory and Location and saved here
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
+        Bukkit.broadcastMessage("SAVING INV AND LOCATION");
         Player pl = Bukkit.getPlayer(playerCache.getPlayerID());
         playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
         playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
@@ -147,11 +134,11 @@ public class CacheManager implements Listener {
         }
     }
 
-    public HashSet<Player> getLoadedPlayers() {
-        return loadedPlayers;
+    public ConcurrentHashMap.KeySetView<Player, PlayerCache> getLoadedPlayers() {
+        return playerCaches.keySet();
     }
 
-    public HashSet<PlayerCache> getPlayerCaches() {
+    public ConcurrentHashMap<Player, PlayerCache> getPlayerCaches() {
         return playerCaches;
     }
 
@@ -160,23 +147,10 @@ public class CacheManager implements Listener {
     }
 
     /*
-     * Grab the cache of a particular player
-     */
-    public PlayerCache getPlayerCache(UUID playerID) {
-        for (PlayerCache cache : playerCaches) {
-            if (cache.getPlayerID() == playerID) return cache;
-        }
-        return null;
-    }
-
-    /*
      * Check if a player has loaded a character
      */
-    public boolean hasCacheLoaded(UUID playerID) {
-        for (PlayerCache cache : playerCaches) {
-            if (cache.getPlayerID() == playerID) return true;
-        }
-        return false;
+    public boolean hasCacheLoaded(Player pl) {
+        return playerCaches.get(pl) != null;
     }
 
     public PlayerCache buildPlayerCache(Player player, Integer slot) {

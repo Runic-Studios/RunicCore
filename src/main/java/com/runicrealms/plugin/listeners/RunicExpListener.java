@@ -39,7 +39,7 @@ public class RunicExpListener implements Listener {
         if (!isInParty(pl)) {
             if (e.getLocation() != null) { // world mobs
                 Location loc = e.getLocation();
-                int plLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+                int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
                 ChatColor expColor = ChatColor.WHITE;
                 if (e.getMobLevel() > (plLv + LV_BUFFER) || e.getMobLevel() < (plLv - LV_BUFFER)) {
                     e.setAmount(0);
@@ -87,7 +87,7 @@ public class RunicExpListener implements Listener {
         for (Player member : party.getMembersWithLeader()) {
             if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
             if (pl.getLocation().distance(member.getLocation()) < RANGE) {
-                int memberLv = RunicCore.getCacheManager().getPlayerCache(member.getUniqueId()).getClassLevel();
+                int memberLv = RunicCore.getCacheManager().getPlayerCaches().get(member).getClassLevel();
                 if (mobLv > (memberLv+LV_BUFFER) || mobLv < (memberLv-LV_BUFFER)) {
                     PlayerLevelUtil.giveExperience(member, 0);
                     HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);

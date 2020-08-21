@@ -8,8 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 public class PlayerLevelUtil {
 
     private static final int MAX_LEVEL = 60;
@@ -43,8 +41,7 @@ public class PlayerLevelUtil {
      */
     public static void giveExperience(Player pl, int expGained) {
 
-        UUID playerID = pl.getUniqueId();
-        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(playerID);
+        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCaches().get(pl);
         if (playerCache == null) return;
 
         String className = playerCache.getClassName();
@@ -73,8 +70,8 @@ public class PlayerLevelUtil {
             }
 
             pl.setLevel(calculateExpectedLv(newTotalExp));
-            RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setClassLevel(calculateExpectedLv(newTotalExp));
-            currentLv = RunicCore.getCacheManager().getPlayerCache(playerID).getClassLevel();
+            RunicCore.getCacheManager().getPlayerCaches().get(pl).setClassLevel(calculateExpectedLv(newTotalExp));
+            currentLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLv);
@@ -124,7 +121,7 @@ public class PlayerLevelUtil {
 
     private static void sendLevelMessage(Player pl, int classLv) {
 
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null)
             return;
 

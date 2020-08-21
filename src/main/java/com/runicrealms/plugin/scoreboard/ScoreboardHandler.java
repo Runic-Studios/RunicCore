@@ -111,13 +111,13 @@ public class ScoreboardHandler implements Listener {
 
     private String manaAsString(Player pl) {
         int mana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
-        int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
     private String playerClass(Player pl) {
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
-        int currentLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
         String display;
         if (className == null) {
             display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
@@ -131,8 +131,8 @@ public class ScoreboardHandler implements Listener {
     }
 
     private String playerProf(Player pl) {
-        String profName = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfName();
-        int currentLevel = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfLevel();
+        String profName = RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfName();
+        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfLevel();
         String display;
         if (profName == null) {
             display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
@@ -148,7 +148,7 @@ public class ScoreboardHandler implements Listener {
     private String playerGuild(Player pl) {
         try {
             String display;
-            String guild = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getGuild();
+            String guild = RunicCore.getCacheManager().getPlayerCaches().get(pl).getGuild();
             if (!guild.toLowerCase().equals("none")) {
                 display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
             } else {

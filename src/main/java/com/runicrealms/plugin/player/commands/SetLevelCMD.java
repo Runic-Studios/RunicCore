@@ -17,7 +17,7 @@ import java.util.Objects;
 public class SetLevelCMD implements SubCommand {
 
     private SetSC set;
-    private Plugin plugin = RunicCore.getInstance();
+    private final Plugin plugin = RunicCore.getInstance();
 
     public SetLevelCMD(SetSC set) {
         this.set = set;
@@ -51,14 +51,14 @@ public class SetLevelCMD implements SubCommand {
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         sender.setLevel(0);
-        RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setClassExp(0);
+        RunicCore.getCacheManager().getPlayerCaches().get(sender).setClassExp(0);
         PlayerLevelUtil.giveExperience(sender, expAtLevel);
-        RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setClassLevel(expectedLv);
+        RunicCore.getCacheManager().getPlayerCaches().get(sender).setClassLevel(expectedLv);
 
         /*
         IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the class level!
         */
-        RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setClassExp(expAtLevel);
+        RunicCore.getCacheManager().getPlayerCaches().get(sender).setClassExp(expAtLevel);
     }
 
     @Override

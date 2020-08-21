@@ -25,7 +25,7 @@ public class PlayerLevelListener implements Listener {
         Player pl = e.getPlayer();
         if (pl.getLevel() > PlayerLevelUtil.getMaxLevel())
             return; // insurance
-        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId());
+        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCaches().get(pl);
 
         // update player's level
         playerCache.setClassLevel(pl.getLevel());
@@ -70,7 +70,7 @@ public class PlayerLevelListener implements Listener {
         // grab the player's new info
         String className;
         try {
-            className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+            className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }

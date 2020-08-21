@@ -60,7 +60,7 @@ public class RegenManager implements Listener {
         for (Player online : Bukkit.getOnlinePlayers()) {
 
             // ensure they have loaded a character
-            if (!RunicCore.getCacheManager().hasCacheLoaded(online.getUniqueId())) continue;
+            if (!RunicCore.getCacheManager().hasCacheLoaded(online)) continue;
 
             int mana;
 
@@ -69,7 +69,7 @@ public class RegenManager implements Listener {
             else
                 mana = getBaseMana() + getManaPerLv(online) + GearScanner.getManaBoost(online);
 
-            int maxMana = RunicCore.getCacheManager().getPlayerCache(online.getUniqueId()).getMaxMana();
+            int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(online).getMaxMana();
             if (mana >= maxMana) continue;
 
             int regenAmt = MANA_REGEN_AMT; // todo: not sure where else this is called, but not needed? + GearScanner.getManaRegenBoost(online)
@@ -117,9 +117,9 @@ public class RegenManager implements Listener {
 
     public int getManaPerLv(Player pl) {
 
-        if (RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName() == null)
+        if (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName() == null)
             return 0;
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
 
         switch(className.toLowerCase()) {
             case "archer":
@@ -144,12 +144,10 @@ public class RegenManager implements Listener {
         }
 
         int mana = currentPlayerManas.get(pl.getUniqueId());
-        int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
 
-        if (mana < maxMana) {
-
+        if (mana < maxMana)
             currentPlayerManas.put(pl.getUniqueId(), Math.min(mana + amt, maxMana));
-        }
     }
 
     public void subtractMana(Player pl, int amt) {

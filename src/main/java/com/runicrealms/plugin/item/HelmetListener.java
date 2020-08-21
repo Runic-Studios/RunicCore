@@ -33,7 +33,7 @@ public class HelmetListener implements Listener {
         Material material = pl.getInventory().getItemInMainHand().getType();
         ItemMeta meta = pl.getInventory().getItemInMainHand().getItemMeta();
         int slot = pl.getInventory().getHeldItemSlot();
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (material != Material.SHEARS) return;
 
         // helmet durabilities are: 5, 10, 15, 20, 25
@@ -121,7 +121,7 @@ public class HelmetListener implements Listener {
         if (!view.getTopInventory().toString().contains("CraftInventoryCrafting")) return;
 
         Player pl = (Player) e.getWhoClicked();
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
 
         ItemStack helmet = e.getCurrentItem();
         ItemMeta meta = e.getCurrentItem().getItemMeta();
@@ -205,7 +205,7 @@ public class HelmetListener implements Listener {
         if (e.getSlot() != 39) return;
 
         Player pl = (Player) e.getWhoClicked();
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         ItemStack helmet = e.getCursor();
         ItemMeta meta = helmet.getItemMeta();
 

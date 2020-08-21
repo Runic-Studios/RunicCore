@@ -48,30 +48,30 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public void execute(Player player, SpellItemType type) {
+    public void execute(Player pl, SpellItemType type) {
 
-        if (!RunicCore.getSpellManager().isOnCooldown(player, this.getName())) { // ensure spell is not on cooldown
+        if (!RunicCore.getSpellManager().isOnCooldown(pl, this.getName())) { // ensure spell is not on cooldown
 
             // verify class
             if (this.getReqClass() != ClassEnum.RUNIC) {
                 if (!this.getReqClass().toString().toLowerCase().equals
-                        (RunicCore.getCacheManager().getPlayerCache(player.getUniqueId()).getClassName().toLowerCase())) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                    ActionBarUtil.sendTimedMessage(player, "&cYour class cannot cast this spell!", 3);
+                        (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase())) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                    ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
                     return;
                 }
             }
 
-            if (!verifyMana(player)) return; // verify the mana
+            if (!verifyMana(pl)) return; // verify the mana
 
-            if (!this.attemptToExecute(player)) return; // check additional conditions
+            if (!this.attemptToExecute(pl)) return; // check additional conditions
 
             // cast the spell
-            int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
-            RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
-            RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
-            this.executeSpell(player, type);
+            int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
+            RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), currentMana - this.manaCost);
+            pl.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
+            RunicCore.getSpellManager().addCooldown(pl, this, this.getCooldown());
+            this.executeSpell(pl, type);
         }
     }
 

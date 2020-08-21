@@ -59,7 +59,7 @@ public class TutorialCMD implements SubCommand {
         if (pl == null) return;
 
         // get player class
-        String classStr = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String classStr = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (classStr == null) return;
 
         pl.playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);

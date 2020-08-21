@@ -6,8 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 @SuppressWarnings("FieldCanBeLocal")
 public class OutlawManager {
 
@@ -15,7 +13,7 @@ public class OutlawManager {
     private final RatingCalculator rc = new RatingCalculator();
 
     public static boolean isOutlaw(Player pl) {
-        return RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getIsOutlaw();
+        return RunicCore.getCacheManager().getPlayerCaches().get(pl).getIsOutlaw();
     }
 
     /**
@@ -25,8 +23,6 @@ public class OutlawManager {
      */
     public void onKill(Player damager, Player victim) {
 
-        UUID p1 = damager.getUniqueId();
-        UUID p2 = victim.getUniqueId();
         Party p1Party = RunicCore.getPartyManager().getPlayerParty(damager);
         Party p2Party = RunicCore.getPartyManager().getPlayerParty(victim);
         int r1 = 0;
@@ -35,8 +31,8 @@ public class OutlawManager {
         // todo: add proportion calculator?
         // if the player has a party, calculate that party's average rating
         // otherwise, the r1 is simply the player's current rating
-        r1 = getR1(p1, p1Party, r1);
-        r2 = getR1(p2, p2Party, r2);
+        r1 = getR1(damager, p1Party, r1);
+        r2 = getR1(victim, p2Party, r2);
 
         // calculate new score for a win "+"
         int newRatingP1 = rc.calculateRating(r1, r2, "+", rc.determineK(r1));
@@ -45,8 +41,8 @@ public class OutlawManager {
         int newRatingP2 = rc.calculateRating(r2, r1, "-", rc.determineK(r2));
 
         // update rating values
-        RunicCore.getCacheManager().getPlayerCache(p1).setRating(newRatingP1);
-        RunicCore.getCacheManager().getPlayerCache(p2).setRating(newRatingP2);
+        RunicCore.getCacheManager().getPlayerCaches().get(damager).setRating(newRatingP1);
+        RunicCore.getCacheManager().getPlayerCaches().get(victim).setRating(newRatingP2);
 
         // send players messages and effects
         int changeP1 = newRatingP1 - r1;
@@ -62,14 +58,14 @@ public class OutlawManager {
      * @param r1
      * @return
      */
-    private int getR1(UUID p1, Party p1Party, int r1) {
+    private int getR1(Player p1, Party p1Party, int r1) {
         if (p1Party != null) {
             for (Player partyMember : p1Party.getMembers()) {
-                r1 += RunicCore.getCacheManager().getPlayerCache(partyMember.getUniqueId()).getRating();
+                r1 += RunicCore.getCacheManager().getPlayerCaches().get(partyMember).getRating();
             }
             r1 = r1 / (p1Party.getSize());
         } else {
-            r1 = RunicCore.getCacheManager().getPlayerCache(p1).getRating();
+            r1 = RunicCore.getCacheManager().getPlayerCaches().get(p1).getRating();
         }
         return r1;
     }

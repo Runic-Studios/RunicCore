@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.enums.ItemTypeEnum;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -9,8 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
 
 /**
  * Listener which prevents classes from wearing incorrect types of armor
@@ -27,7 +27,7 @@ public class ArmorTypeListener implements Listener {
 
         ItemStack equippedItem = e.getNewArmorPiece();
         Player pl = e.getPlayer();
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
 
         ItemTypeEnum armorType = ItemTypeEnum.matchType(equippedItem);
 

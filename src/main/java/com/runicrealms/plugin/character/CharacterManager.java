@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class CharacterManager implements Listener {
 
-    private static Map<UUID, Integer> selectedCharacters = new HashMap<UUID, Integer>();
+    private static final Map<UUID, Integer> selectedCharacters = new HashMap<UUID, Integer>();
 
     public static Map<UUID, Integer> getSelectedCharacters() {
         return selectedCharacters;
@@ -22,7 +22,7 @@ public class CharacterManager implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        PlayerCache cache = RunicCore.getCacheManager().getPlayerCache(event.getPlayer().getUniqueId());
+        PlayerCache cache = RunicCore.getCacheManager().getPlayerCaches().get(event.getPlayer());
         if (cache != null) {
             CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent(cache, event.getPlayer());
             Bukkit.getPluginManager().callEvent(characterQuitEvent);

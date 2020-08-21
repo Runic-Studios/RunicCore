@@ -60,13 +60,13 @@ public class BowListener implements Listener {
         // only apply cooldown if its not already active
         if (cooldown != 0) return;
 
-        String className = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null) return;
         if (!className.equals("Archer")) return;
 
         int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
 
-        if (reqLv > RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel()) {
+        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
             pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
             pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
             e.setCancelled(true);

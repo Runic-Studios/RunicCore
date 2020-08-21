@@ -22,8 +22,8 @@ public class SetOutlawCMD implements CommandExecutor {
             return true;
 
         // toggle their current outlaw status, set thier rating to default
-        RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setOutlaw(!OutlawManager.isOutlaw(pl));
-        RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setRating(RunicCore.getOutlawManager().getBaseRating());
+        RunicCore.getCacheManager().getPlayerCaches().get(pl).setOutlaw(!OutlawManager.isOutlaw(pl));
+        RunicCore.getCacheManager().getPlayerCaches().get(pl).setRating(RunicCore.getOutlawManager().getBaseRating());
 
         NametagUtil.updateNametag(pl);
         return true;

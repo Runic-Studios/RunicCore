@@ -18,7 +18,7 @@ import java.util.List;
 public class SetProfLevelCMD implements SubCommand {
 
     private SetSC set;
-    private Plugin plugin = RunicCore.getInstance();
+    private final Plugin plugin = RunicCore.getInstance();
 
     public SetProfLevelCMD(SetSC set) {
         this.set = set;
@@ -42,14 +42,14 @@ public class SetProfLevelCMD implements SubCommand {
         if (args.length == 1) {
             sender.sendMessage(ChatColor.RED + "Correct usage: /set proflevel [level] or /set proflevel [player] [level]");
         } else if (args.length == 2) {
-            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfLevel(Integer.parseInt(args[1]));
+            RunicCore.getCacheManager().getPlayerCaches().get(sender).setProfLevel(Integer.parseInt(args[1]));
             // ----------------------
             // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
             int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
             // ----------------------
-            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfExp(expAtLevel);
+            RunicCore.getCacheManager().getPlayerCaches().get(sender).setProfExp(expAtLevel);
 
-            String profName = RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).getProfName();
+            String profName = RunicCore.getCacheManager().getPlayerCaches().get(sender).getProfName();
             if (Integer.parseInt(args[1]) == 30) {
 
                 sender.sendMessage("\n");
@@ -73,12 +73,12 @@ public class SetProfLevelCMD implements SubCommand {
         } else if (args.length == 3) {
             Player player = Bukkit.getPlayer(args[1]);
             if (player == null) return;
-            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfLevel(Integer.parseInt(args[1]));
+            RunicCore.getCacheManager().getPlayerCaches().get(sender).setProfLevel(Integer.parseInt(args[1]));
             // ----------------------
             // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
             int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
             // ----------------------
-            RunicCore.getCacheManager().getPlayerCache(sender.getUniqueId()).setProfExp(expAtLevel);
+            RunicCore.getCacheManager().getPlayerCaches().get(sender).setProfExp(expAtLevel);
         }
     }
 

@@ -7,8 +7,8 @@ import org.bukkit.event.HandlerList;
 
 public class CharacterQuitEvent extends Event {
 
-    private PlayerCache cache;
-    private Player player;
+    private final PlayerCache cache;
+    private final Player player;
 
     private static final HandlerList handlers = new HandlerList();
 

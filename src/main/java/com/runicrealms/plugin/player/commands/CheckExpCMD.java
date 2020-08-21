@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.player.commands;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.command.supercommands.SuperCommand;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.runicrealms.plugin.command.supercommands.SuperCommand;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -25,16 +25,16 @@ public class CheckExpCMD extends SuperCommand {
 
             Player pl = (Player) sender;
 
-            int classLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassLevel();
-            int classExp = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getClassExp();
+            int classLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
+            int classExp = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassExp();
             int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
             int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv+1);
             double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
             NumberFormat toDecimal = new DecimalFormat("#0.00");
             String classProgressFormatted = toDecimal.format(proportion);
 
-            int profLv = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfLevel();
-            int profExp = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getProfExp();
+            int profLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfLevel();
+            int profExp = RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfExp();
             int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
             int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv+1);
             double progress = (double) (profExp-profExpAtLevel) / (profTotalExpToLevel-profExpAtLevel);

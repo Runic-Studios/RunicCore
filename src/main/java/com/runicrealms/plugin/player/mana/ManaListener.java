@@ -34,7 +34,7 @@ public class ManaListener implements Listener {
         int maxMana = playerCache.getMaxMana();
         if (maxMana == 0) {
             maxMana = RunicCore.getRegenManager().getBaseMana()+(RunicCore.getRegenManager().getManaPerLv(pl)*pl.getLevel());
-            RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setMaxMana(maxMana);
+            RunicCore.getCacheManager().getPlayerCaches().get(pl).setMaxMana(maxMana);
         }
         // store player's current mana
         RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
@@ -93,7 +93,7 @@ public class ManaListener implements Listener {
         Player pl = e.getPlayer();
         if (pl.getLevel() > RunicCore.getRegenManager().getBaseMana()) return;
         calculateMana(pl);
-        int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
         RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
     }
 
@@ -112,9 +112,9 @@ public class ManaListener implements Listener {
 
         // update stored mana in config, update scoreboard
         int newMaxMana = RunicCore.getRegenManager().getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
-        RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).setMaxMana(newMaxMana);
+        RunicCore.getCacheManager().getPlayerCaches().get(pl).setMaxMana(newMaxMana);
 
-        int maxMana = RunicCore.getCacheManager().getPlayerCache(pl.getUniqueId()).getMaxMana();
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
         if (currentMana > maxMana) {
             RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);

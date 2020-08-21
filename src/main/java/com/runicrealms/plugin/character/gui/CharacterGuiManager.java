@@ -274,7 +274,7 @@ public class CharacterGuiManager implements Listener {
                                     CharacterLoadEvent characterLoadEvent = new CharacterLoadEvent(
                                             RunicCore.getCacheManager().buildPlayerCache((Player) event.getWhoClicked(), slot),
                                             (Player) event.getWhoClicked());
-                                    RunicCore.getCacheManager().getPlayerCaches().add(characterLoadEvent.getPlayerCache());
+                                    RunicCore.getCacheManager().getPlayerCaches().put(characterLoadEvent.getPlayer(), characterLoadEvent.getPlayerCache());
                                     Bukkit.getPluginManager().callEvent(characterLoadEvent);
                                 }
                             } else if (event.getCurrentItem().getType() == creationIcon.getType()) {
