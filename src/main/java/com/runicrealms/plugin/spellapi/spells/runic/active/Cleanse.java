@@ -31,7 +31,7 @@ public class Cleanse extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 2.0F);
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
         pl.setGlowing(true);
-        for(PotionEffect effect : pl.getActivePotionEffects()) {
+        for (PotionEffect effect : pl.getActivePotionEffects()) {
             pl.removePotionEffect(effect.getType());
         }
         Cone.coneEffect(pl, Particle.REDSTONE, 2, 0, 20L, Color.WHITE);
