@@ -7,18 +7,20 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
-import org.bukkit.entity.Snowball;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -30,12 +32,13 @@ public class Fireball extends Spell {
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 25;
     private static final int CHILL_DURATION = 8;
-    private static final int ROOT_DURATION = 3;
+    private static final int FREEZE_DURATION = 4;
+
     private SmallFireball fireball;
     private SmallFireball fireballLeft;
     private SmallFireball fireballRight;
     private Snowball snowball;
-    private HashSet<UUID> chilledPlayers;
+    private static Map<UUID, BukkitTask> chilledPlayers;
 
     public Fireball() {
         super ("Fireball",
@@ -77,7 +80,7 @@ public class Fireball extends Spell {
         this.fireCone = false;
         this.applyBurn = false;
         this.iceBolt = iceBolt;
-        this.chilledPlayers = new HashSet<>();
+        chilledPlayers = new HashMap<>();
     }
 
     @Override
@@ -124,15 +127,14 @@ public class Fireball extends Spell {
                 DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, 100);
                 victim.getWorld().spawnParticle(Particle.SNOWBALL, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                if (!chilledPlayers.contains(victim.getUniqueId())) {
-                    chilledPlayers.add(victim.getUniqueId());
-                    Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> chilledPlayers.remove(victim.getUniqueId()), CHILL_DURATION*20L);
-                    Cone.coneEffect(victim, Particle.REDSTONE, CHILL_DURATION, 0, 20L, Color.AQUA);
+                if (!chilledPlayers.containsKey(victim.getUniqueId())) {
+                    chilledPlayers.put(victim.getUniqueId(), Cone.coneEffect(victim, Particle.REDSTONE, CHILL_DURATION, 0, 20L, Color.AQUA));
+                    victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHILL_DURATION * 20, 2));
+                    Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> chilledPlayers.remove(victim.getUniqueId()), CHILL_DURATION * 20L);
                 } else {
+                    chilledPlayers.get(victim.getUniqueId()).cancel(); // cancel particle task
                     chilledPlayers.remove(victim.getUniqueId());
-                    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
-                    victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, ROOT_DURATION*20, 2));
-                    victim.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, ROOT_DURATION*20, 100000));
+                    trapEntity(victim, Material.ICE, FREEZE_DURATION);
                 }
             }
             return;
@@ -158,13 +160,49 @@ public class Fireball extends Spell {
 
             if (applyBurn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT/2), victim, player, 50);
+                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, 50);
                     victim.getWorld().spawnParticle
                             (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                        }, 20L);
+                }, 20L);
             }
         }
+    }
+
+    private final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+
+    private void trapEntity(Entity en, Material material, int duration) {
+        Map<Block, BlockData> changedBlocks = new HashMap<>();
+        Location[] locs = new Location[]{en.getLocation(), en.getLocation().add(0,1,0)};
+        for (Location loc : locs) {
+            for (BlockFace bf : cage) {
+                Block block = loc.getBlock().getRelative(bf, 1);
+                changedBlocks.put(block, block.getBlockData());
+                block.setType(material);
+            }
+        }
+        // also block above the player
+        Block top = en.getLocation().add(0,2,0).getBlock();
+        changedBlocks.put(top, top.getBlockData());
+        top.setType(material);
+        // todo: add ice block below their feet?
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            for (Block block : changedBlocks.keySet()) {
+                block.setType(changedBlocks.get(block).getMaterial());
+            }
+        }, duration * 20L);
+    }
+
+    public static int getChillDuration() {
+        return CHILL_DURATION;
+    }
+
+    public static int getFreezeDuration() {
+        return FREEZE_DURATION;
+    }
+
+    public static Map<UUID, BukkitTask> getChilledPlayers() {
+        return chilledPlayers;
     }
 }
 

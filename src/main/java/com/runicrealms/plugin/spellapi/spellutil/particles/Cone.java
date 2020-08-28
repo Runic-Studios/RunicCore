@@ -6,15 +6,16 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Cone {
 
-    public static void coneEffect(final LivingEntity player, Particle particle, int DURATION, int delay, long period, Color color){
+    public static BukkitTask coneEffect(final LivingEntity player, Particle particle, int DURATION, int delay, long period, Color color){
 
-        new BukkitRunnable(){
+        return new BukkitRunnable(){
 
             int count = 1;
             double phi = 0;

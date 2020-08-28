@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -21,8 +22,8 @@ import java.util.UUID;
 
 public class Blizzard extends Spell {
 
+    private final boolean increaseDuration;
     private static final int DAMAGE_AMOUNT = 15;
-    //private int duration = 5;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -36,18 +37,22 @@ public class Blizzard extends Spell {
                         "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
                         "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                // todo: if this works, just add a 'set descripton'
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
+        this.increaseDuration = false;
         this.snowballMap = new HashMap<>();
     }
 
-//    public Blizzard(int duration) {
-//        super("Blizzard",
-//                "",
-//                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
-//        this.duration = duration;
-//        this.snowballMap = new HashMap<>();
-//    }
+    public Blizzard(boolean increaseDuration) {
+        super("Blizzard",
+                "You summon a cloud of snow that" +
+                        "\nrains down snowballs for " + DURATION + " seconds," +
+                        "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
+                        "\nto enemies and slowing them!" +
+                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
+        this.increaseDuration = increaseDuration;
+        this.snowballMap = new HashMap<>();
+    }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
@@ -61,9 +66,11 @@ public class Blizzard extends Spell {
             public void run() {
 
                 // cancel after duration
-                if (System.currentTimeMillis() - startTime >= DURATION * 1000) {
+                int durationIncrease = 0;
+                if (increaseDuration)
+                    durationIncrease = DURATION_INCREASE();
+                if (System.currentTimeMillis() - startTime >= DURATION + durationIncrease * 1000)
                     this.cancel();
-                }
 
                 Location cloudLoc = new Location(pl.getWorld(), lookLoc.getX(),
                         pl.getLocation().getY(), lookLoc.getZ()).add(0, 7.5, 0);
@@ -108,15 +115,16 @@ public class Blizzard extends Spell {
         e.setCancelled(true);
 
         // ignore NPCs
-        if (!le.hasMetadata("NPC")) {
+        if (le.hasMetadata("NPC")) return;
+        if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
-            // skip the caster
-            if (victim.getUniqueId() == shooter.getUniqueId()) return;
-
-            if (verifyEnemy(shooter, le)) {
-                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, GEM_BOOST);
-                victim.setLastDamageCause(e);
-                le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
+        if (verifyEnemy(shooter, le)) {
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, GEM_BOOST);
+            victim.setLastDamageCause(e);
+            le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
+            if (increaseDuration) {
+                Fireball.getChilledPlayers().put(victim.getUniqueId(), Cone.coneEffect(victim, Particle.REDSTONE, Fireball.getChillDuration(), 0, 20L, Color.AQUA));
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> Fireball.getChilledPlayers().remove(victim.getUniqueId()), Fireball.getChillDuration() * 20L);
             }
         }
     }
@@ -125,6 +133,10 @@ public class Blizzard extends Spell {
         Snowball snowball = pl.getWorld().spawn(loc, Snowball.class);
         snowball.setVelocity(vec);
         snowballMap.put(snowball, pl.getUniqueId());
+    }
+
+    public static int DURATION_INCREASE() {
+        return 3;
     }
 }
 
