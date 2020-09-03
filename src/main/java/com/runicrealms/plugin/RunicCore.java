@@ -187,9 +187,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         mobHealthManager.fullClean();
 
         // motd
-        String motd = ColorUtil.format
-                ("&d&l                RUNIC REALMS\n" +
-                        "&f&l           A New Adventure Begins");
+        String motd = ColorUtil.format("                    &d&lRUNIC REALMS&r" +
+                "\n            &f&l1.8 - The Dungeons Patch!");
         MinecraftServer.getServer().setMotd(motd);
     }
 

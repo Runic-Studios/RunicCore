@@ -7,8 +7,6 @@ import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -74,8 +72,8 @@ public class Taunt extends Spell {
                 ((Monster) en).setTarget(pl);
                 //MythicMobs.inst().getAPIHelper().taunt(en, pl);
                 //((ActiveMob) en).getThreatTable().asMap().put((AbstractEntity) pl, ((ActiveMob) en).getThreatTable().getTopTargetThreat() * 3.0D); //1.1
-                MythicMobs.inst().getAPIHelper().addThreat(en, pl, 10000);
-                ((ActiveMob) en).getThreatTable().threatGain((AbstractEntity) pl, ((ActiveMob) en).getThreatTable().getTopTargetThreat() * 3.0D);
+                MythicMobs.inst().getAPIHelper().addThreat(en, pl, 1000);
+                //((ActiveMob) en).getThreatTable().threatGain((AbstractEntity) pl, ((ActiveMob) en).getThreatTable().getTopTargetThreat() * 3.0D);
             }
         }
     }

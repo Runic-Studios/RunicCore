@@ -6,8 +6,10 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -84,14 +86,24 @@ public class UnholyGround extends Spell {
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
             if (taunted.contains(en.getUniqueId())) continue;
-
-            if (en instanceof Monster) { //  || victim instanceof Wolf || victim instanceof PolarBear
-                taunted.add(en.getUniqueId());
-                ((Monster) en).setTarget(pl);
-                MythicMobs.inst().getAPIHelper().taunt(en, pl);
-                en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                en.getWorld().spawnParticle
-                        (Particle.VILLAGER_ANGRY, en.getLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
+            if (verifyEnemy(pl, en)) {
+                LivingEntity victim = (LivingEntity) en;
+                if (victim instanceof Monster) {
+                    ActiveMob am = MythicMobs.inst().getMobManager().getMythicMobInstance(en);
+                    taunted.add(en.getUniqueId());
+                    ((Monster) victim).setTarget(pl);
+//                    for (AbstractEntity target : am.getThreatTable().getAllThreatTargets()) {
+//                        Bukkit.broadcastMessage(target.getName() + "'s threat: " + am.getThreatTable().getThreat(target));
+//                    }
+                    MythicMobs.inst().getAPIHelper().addThreat(en, pl, 1000);
+                    MythicMobs.inst().getAPIHelper().addThreat(en, pl, am.getThreatTable().getTopTargetThreat() * 1.2D);
+//                    Bukkit.broadcastMessage("---");
+//                    for (AbstractEntity target : am.getThreatTable().getAllThreatTargets()) {
+//                        Bukkit.broadcastMessage(target.getName() + "'s threat: " + am.getThreatTable().getThreat(target));
+//                    }
+                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
+                    victim.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, victim.getEyeLocation(), 1, 0.3F, 0.3F, 0.3F, 0);
+                }
             }
         }
     }
