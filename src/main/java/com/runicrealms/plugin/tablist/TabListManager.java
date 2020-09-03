@@ -10,8 +10,10 @@ import com.runicrealms.runicguilds.api.RunicGuildsAPI;
 import com.runicrealms.runicguilds.data.GuildUtil;
 import com.runicrealms.runicguilds.guilds.Guild;
 import com.runicrealms.runicguilds.guilds.GuildMember;
+import net.minecraft.server.v1_15_R1.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,19 +22,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-// TODO: fix flickering, fix pings in text component always being '0'
 public class TabListManager implements Listener {
 
     private final Tabbed tabbed;
 
-    // constructor
     public TabListManager(Plugin plugin) {
         this.tabbed = new Tabbed(plugin);
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, plugin);
         updateTablists();
     }
 
-    /**
+    /*
      * Keeps party column updated w/ player health.
      */
     private void updateTablists() {
@@ -68,12 +68,13 @@ public class TabListManager implements Listener {
         // header, footer
         tab.setHeaderFooter
                 (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Runic Realms\n"
-                                + ChatColor.WHITE + ChatColor.BOLD + "A New Adventure Begins!",
-                ChatColor.DARK_GREEN + "Visit our website: " + ChatColor.GREEN + "www.runicrealms.com");
+                                + ChatColor.WHITE + ChatColor.BOLD + "Patch 1.8 - The Dungeons Patch!",
+                ChatColor.DARK_GREEN + "Our website: " + ChatColor.GREEN + "www.runicrealms.com" +
+                        "\n" + ChatColor.DARK_AQUA + "Our Discord: " + ChatColor.GREEN + "discord.gg/5FjVVd4");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem
-                (ChatColor.YELLOW + "" + ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]",0, Skins.getDot(ChatColor.YELLOW)));
+                (ChatColor.YELLOW + "" + ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]", 0, Skins.getDot(ChatColor.YELLOW)));
 
         // fill column with online players, stop after first column
         try {
@@ -81,7 +82,7 @@ public class TabListManager implements Listener {
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (i > 19) break;
                 if (online.hasMetadata("NPC")) continue;
-                tab.set(0, i + 1, new TextTabItem(online.getName(), 0, Skins.getPlayer(online)));
+                tab.set(0, i + 1, new TextTabItem(online.getName(), getPing(online), Skins.getPlayer(online)));
                 i++;
             }
 
@@ -98,7 +99,7 @@ public class TabListManager implements Listener {
                     if (j > 19) break;
                     Player plMem = Bukkit.getPlayer(guildy.getUUID());
                     if (plMem == null) continue;
-                    tab.set(1, j + 1, new TextTabItem(plMem.getName(), 0, Skins.getPlayer(plMem)));
+                    tab.set(1, j + 1, new TextTabItem(plMem.getName(), getPing(plMem), Skins.getPlayer(plMem)));
                     j++;
                 }
             }
@@ -126,10 +127,23 @@ public class TabListManager implements Listener {
             int k = 0;
             for (Player member : party.getMembersWithLeader()) {
                 if (k > 19) break;
-                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", 0, Skins.getPlayer(member)));
+                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
                 k++;
             }
         }
+    }
+
+    /**
+     * Gets the players ping by using NMS to access the internal 'ping' field in
+     * EntityPlayer
+     *
+     * @param player
+     *            the player whose ping to get
+     * @return the player's ping
+     */
+    private static int getPing(Player player) {
+        EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
+        return entityPlayer.ping;
     }
 
     // update tablist on player quit

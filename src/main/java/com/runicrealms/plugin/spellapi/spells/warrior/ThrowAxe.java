@@ -68,6 +68,16 @@ public class ThrowAxe extends Spell {
                 projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
 
                 for (Entity en : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
+                    if (verifyAlly(pl, en)) {
+                        hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits
+                        en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
+                        en.getWorld().spawnParticle
+                                (Particle.SPELL_MOB, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        en.teleport(pl);
+                        en.getWorld().spawnParticle
+                                (Particle.SPELL_MOB, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        projectile.remove();
+                    }
                     if (verifyEnemy(pl, en)) {
                         if (hasBeenHit.get(pl.getUniqueId()) == en.getUniqueId()) continue;
                         hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits

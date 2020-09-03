@@ -22,8 +22,8 @@ public class UnholyGround extends Spell {
     private static final double PERCENT = 75;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
-    private List<UUID> taunted = new ArrayList<>();
-    private HashMap<UUID, Location> taunters = new HashMap<>();
+    private final List<UUID> taunted = new ArrayList<>();
+    private final HashMap<UUID, Location> taunters = new HashMap<>();
 
     public UnholyGround() {
         super("Unholy Ground",
