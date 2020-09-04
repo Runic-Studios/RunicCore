@@ -81,6 +81,9 @@ public class DamageListener implements Listener {
             }
             MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
             Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
+                        (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
         }
 
         // only listen for when a player swings or fires an arrow

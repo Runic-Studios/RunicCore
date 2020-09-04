@@ -3,11 +3,10 @@ package com.runicrealms.plugin.events;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
+/*
  * This custom event is called when a player successfully weapon attacks an enemy with their artifact,
  * i.e., it is not on cooldown. Called in the DamageUtil.
  * Can specify the cause of the event, ranged or melee, for use with on-hit runic spells,
@@ -16,9 +15,9 @@ import org.bukkit.event.HandlerList;
 public class WeaponDamageEvent extends Event implements Cancellable {
 
     private int amount;
-    private Player player;
-    private Entity entity;
-    private boolean isRanged;
+    private final Player player;
+    private final Entity entity;
+    private final boolean isRanged;
     private boolean isCancelled;
 
     public WeaponDamageEvent(int amount, Player damager, Entity victim, boolean isRanged) {

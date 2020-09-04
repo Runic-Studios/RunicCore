@@ -70,10 +70,7 @@ public class Taunt extends Spell {
                 en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.1f, 0.2f);
                 victim.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, victim.getEyeLocation(), 1, 0.3F, 0.3F, 0.3F, 0);
                 ((Monster) en).setTarget(pl);
-                //MythicMobs.inst().getAPIHelper().taunt(en, pl);
-                //((ActiveMob) en).getThreatTable().asMap().put((AbstractEntity) pl, ((ActiveMob) en).getThreatTable().getTopTargetThreat() * 3.0D); //1.1
                 MythicMobs.inst().getAPIHelper().addThreat(en, pl, 1000);
-                //((ActiveMob) en).getThreatTable().threatGain((AbstractEntity) pl, ((ActiveMob) en).getThreatTable().getTopTargetThreat() * 3.0D);
             }
         }
     }

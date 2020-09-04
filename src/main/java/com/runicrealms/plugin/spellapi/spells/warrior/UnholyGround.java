@@ -92,15 +92,8 @@ public class UnholyGround extends Spell {
                     ActiveMob am = MythicMobs.inst().getMobManager().getMythicMobInstance(en);
                     taunted.add(en.getUniqueId());
                     ((Monster) victim).setTarget(pl);
-//                    for (AbstractEntity target : am.getThreatTable().getAllThreatTargets()) {
-//                        Bukkit.broadcastMessage(target.getName() + "'s threat: " + am.getThreatTable().getThreat(target));
-//                    }
                     MythicMobs.inst().getAPIHelper().addThreat(en, pl, 1000);
                     MythicMobs.inst().getAPIHelper().addThreat(en, pl, am.getThreatTable().getTopTargetThreat() * 1.2D);
-//                    Bukkit.broadcastMessage("---");
-//                    for (AbstractEntity target : am.getThreatTable().getAllThreatTargets()) {
-//                        Bukkit.broadcastMessage(target.getName() + "'s threat: " + am.getThreatTable().getThreat(target));
-//                    }
                     victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                     victim.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, victim.getEyeLocation(), 1, 0.3F, 0.3F, 0.3F, 0);
                 }

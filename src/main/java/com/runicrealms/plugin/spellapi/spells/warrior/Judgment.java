@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -24,8 +25,10 @@ import static java.lang.Math.sin;
 
 public class Judgment extends Spell {
 
+    private final boolean willShield;
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
+    private static final int SHIELD_AMT = 200;
     private static final double UPDATES_PER_SECOND = 10;
     private final List<UUID> judgers;
 
@@ -39,6 +42,20 @@ public class Judgment extends Spell {
                         "\nthis time, you may not move.",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 9, 35);
         judgers = new ArrayList<>();
+        this.willShield = false;
+    }
+
+    public Judgment(boolean willShield) {
+        super("Judgment",
+                "You summon a barrier of magic" +
+                        "\naround yourself for " + BUBBLE_DURATION + " seconds!" +
+                        "\nThe barrier repels enemies and" +
+                        "\nprevents them from entering, but" +
+                        "\nallies may pass through it. During" +
+                        "\nthis time, you may not move.",
+                ChatColor.WHITE, ClassEnum.WARRIOR, 9, 35);
+        judgers = new ArrayList<>();
+        this.willShield = willShield;
     }
 
     @Override
@@ -58,6 +75,16 @@ public class Judgment extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         pl.getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
         judgers.add(pl.getUniqueId());
+
+        // tier set
+        if (willShield) {
+            HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
+            for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
+                if (verifyAlly(pl, en)) {
+                    HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, true, false, false);
+                }
+            }
+        }
 
         // Begin spell event
         final long startTime = System.currentTimeMillis();
@@ -110,6 +137,10 @@ public class Judgment extends Spell {
         if (!judgers.contains(e.getPlayer().getUniqueId())) return;
         if (e.getTo() == null) return;
         if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
+    }
+
+    public static int getShieldAmt() {
+        return SHIELD_AMT;
     }
 }
 

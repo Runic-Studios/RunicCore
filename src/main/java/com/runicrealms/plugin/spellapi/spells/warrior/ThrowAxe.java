@@ -85,15 +85,17 @@ public class ThrowAxe extends Spell {
                     if (canHitAllies) {
                         if (en.equals(pl)) continue;
                         if (verifyAlly(pl, en)) {
-                            hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits
-                            en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
-                            en.getWorld().spawnParticle
-                                    (Particle.SPELL_INSTANT, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                            en.teleport(pl);
-                            en.getWorld().spawnParticle
-                                    (Particle.SPELL_INSTANT, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                            projectile.remove();
-                            return;
+                            if (en instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) en)) { // normal ally check allows for non-party spells, so this prevents axe trolling
+                                hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits
+                                en.getWorld().playSound(en.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
+                                en.getWorld().spawnParticle
+                                        (Particle.SPELL_INSTANT, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                                en.teleport(pl);
+                                en.getWorld().spawnParticle
+                                        (Particle.SPELL_INSTANT, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                                projectile.remove();
+                                return;
+                            }
                         }
                     }
                     if (verifyEnemy(pl, en)) {
@@ -110,34 +112,28 @@ public class ThrowAxe extends Spell {
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                hasBeenHit.clear();
-                silenced.clear();
-            }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
+            hasBeenHit.clear();
+            silenced.clear();
+        }, DURATION * 20L);
     }
 
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
-        if (silenced.contains(e.getDamager().getUniqueId())) {
+        if (silenced.contains(e.getDamager().getUniqueId()))
             e.setCancelled(true);
-        }
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (silenced.contains(e.getPlayer().getUniqueId())) {
+        if (silenced.contains(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
-        }
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (silenced.contains(e.getPlayer().getUniqueId())) {
+        if (silenced.contains(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
-        }
     }
 }
 
