@@ -2,21 +2,26 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Rejuvenate extends Spell {
 
+    private final boolean healOverTime;
+    private static final int HOT_DURATION = 5; // heal-over-time
     private final HashMap<UUID, List<UUID>> hasBeenHit;
     private static final int HEAL_AMT = 45;
     private final double RADIUS = 1.5;
@@ -33,6 +38,17 @@ public class Rejuvenate extends Spell {
                 "\nall allies it passes through!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
         this.hasBeenHit = new HashMap<>();
+        this.healOverTime = false;
+    }
+
+    public Rejuvenate(boolean healOverTime) {
+        super("Rejuvenate",
+                "You launch a beam of healing magic," +
+                        "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
+                        "\nall allies it passes through!",
+                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
+        this.hasBeenHit = new HashMap<>();
+        this.healOverTime = healOverTime;
     }
 
     // spell execute code
@@ -43,6 +59,22 @@ public class Rejuvenate extends Spell {
 
         // heal the caster
         HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
+        if (healOverTime) {
+            new BukkitRunnable() {
+                int count = 1;
+
+                @Override
+                public void run() {
+                    if (count > HOT_DURATION)
+                        this.cancel();
+                    else {
+                        count += 1;
+                        HealUtil.healPlayer((HEAL_AMT + GearScanner.getHealingBoost(pl)) / HOT_DURATION,
+                                pl, pl, false, false, false);
+                    }
+                }
+            }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
+        }
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -63,9 +95,9 @@ public class Rejuvenate extends Spell {
                 public void run() {
                     location.add(vector);
                     // 10 block range before spell dies out naturally
-                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
+                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE)
                         this.cancel();
-                    }
+
                     pl.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
                     pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 10, 0, 0, 0, 0);
                     allyCheck(pl, location);
@@ -77,61 +109,70 @@ public class Rejuvenate extends Spell {
     // checks for allies near the beam, stops multiple healing of the same player
     @SuppressWarnings("deprecation")
     private void allyCheck(Player pl, Location location) {
-
-        for (Entity e : Objects.requireNonNull
-                (location.getWorld()).getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-
-            if (!e.getType().isAlive()) return;
-            LivingEntity le = (LivingEntity) e;
-
-            if (le == (pl)) { continue; }
-
-            // only listen for players
-            if (!(le instanceof Player)) return;
-
-            // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
-            // multiple times
-            Player ally = (Player) le;
-            if (hasBeenHit.containsKey(ally.getUniqueId())) {
-                List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                if (uuids.contains(pl.getUniqueId())) {
-                    break;
+        for (Entity e : pl.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
+            if (verifyAlly(pl, e)) {
+                // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
+                // multiple times
+                Player ally = (Player) e;
+                if (hasBeenHit.containsKey(ally.getUniqueId())) {
+                    List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                    if (uuids.contains(pl.getUniqueId())) {
+                        break;
+                    } else {
+                        uuids.add(pl.getUniqueId());
+                        hasBeenHit.put(ally.getUniqueId(), uuids);
+                    }
                 } else {
+                    List<UUID> uuids = new ArrayList<>();
                     uuids.add(pl.getUniqueId());
                     hasBeenHit.put(ally.getUniqueId(), uuids);
                 }
-            } else {
-                List<UUID> uuids = new ArrayList<>();
-                uuids.add(pl.getUniqueId());
-                hasBeenHit.put(ally.getUniqueId(), uuids);
-            }
 
-            // ignore NPCs
-            if (le.hasMetadata("NPC")) continue;
+                // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
+                        uuids.remove(pl.getUniqueId());
+                        hasBeenHit.put(ally.getUniqueId(), uuids);
+                    }
+                }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
-            // can't be hit by the same player's beam for SUCCESSIVE_COOLDOWN secs
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                    uuids.remove(pl.getUniqueId());
-                    hasBeenHit.put(ally.getUniqueId(), uuids);
+                if (ally.getHealth() == ally.getMaxHealth()) {
+                    ally.sendMessage(
+                            ChatColor.WHITE + pl.getName()
+                                    + ChatColor.GRAY + " tried to heal you, but you are at full health.");
+                    ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+
+                } else {
+                    HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+
+                    if (healOverTime) {
+                        new BukkitRunnable() {
+                            int count = 1;
+
+                            @Override
+                            public void run() {
+                                if (count > HOT_DURATION)
+                                    this.cancel();
+                                else {
+                                    count += 1;
+                                    HealUtil.healPlayer((HEAL_AMT + GearScanner.getHealingBoost(pl)) / HOT_DURATION,
+                                            ally, pl, false, false, false);
+                                }
+                            }
+                        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
+                    }
+
+                    // stop the beam if it hits a player
+                    break;
                 }
-            }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
-
-            if (ally.getHealth() == ally.getMaxHealth()) {
-                ally.sendMessage(
-                        ChatColor.WHITE + pl.getName()
-                                + ChatColor.GRAY + " tried to heal you, but you are at full health.");
-                ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-
-            } else {
-                HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
-                pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-
-                // stop the beam if it hits a player
-                break;
             }
         }
+    }
+
+    public static int getHotDuration() {
+        return HOT_DURATION;
     }
 }

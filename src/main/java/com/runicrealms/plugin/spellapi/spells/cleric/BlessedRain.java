@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -18,12 +19,14 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("FieldCanBeLocal")
 public class BlessedRain extends Spell {
 
+    private final boolean blessedFire;
+    private final boolean restoreMana;
     private static final int HEALING_AMT = 15;
     private static final int DURATION = 5;
     private static final int PERIOD = 1;
     private static final float RADIUS = 5f;
     private static final double GEM_BOOST = 50;
-    private final boolean blessedFire;
+    private static final double MANA_PERCENT = 35;
 
     // constructor
     public BlessedRain() {
@@ -35,13 +38,15 @@ public class BlessedRain extends Spell {
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
         this.blessedFire = false;
+        this.restoreMana = false;
     }
 
     /**
-     * Used for
+     * Used for GUILD and RAID tier sets
      * @param blessedFire whether to use the alternative skill of the tier set
+     * @param restoreMana whether to restore mana for RAID tier set
      */
-    public BlessedRain(boolean blessedFire) {
+    public BlessedRain(boolean blessedFire, boolean restoreMana) {
         super("Blessed Rain",
                 "For " + DURATION + " seconds, you summon healing" +
                         "\nwaters, conjuring a ring of light magic" +
@@ -50,6 +55,7 @@ public class BlessedRain extends Spell {
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 25);
         this.blessedFire = blessedFire;
+        this.restoreMana = restoreMana;
     }
 
     @Override
@@ -63,11 +69,9 @@ public class BlessedRain extends Spell {
             int count = 1;
             @Override
             public void run() {
-
-                if (count > DURATION) {
+                if (count > DURATION)
                     this.cancel();
-                } else {
-
+                else {
                     count += 1;
                     spawnRing(pl, loc);
                 }
@@ -135,8 +139,14 @@ public class BlessedRain extends Spell {
                 Player ally = (Player) entity;
                 if (verifyAlly(pl, ally)) {
                     HealUtil.healPlayer(HEALING_AMT, ally, pl, true, true, false);
+                    if (restoreMana)
+                        RunicCore.getRegenManager().addMana(ally, (int) ((HEALING_AMT + GearScanner.getHealingBoost(pl)) * (MANA_PERCENT / 100)), false);
                 }
             }
         }
+    }
+
+    public static double getManaPercent() {
+        return MANA_PERCENT;
     }
 }
