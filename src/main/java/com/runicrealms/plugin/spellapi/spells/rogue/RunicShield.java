@@ -22,7 +22,7 @@ import java.util.UUID;
 public class RunicShield extends Spell {
 
     private static final int DURATION = 7;
-    private List<UUID> shielded = new ArrayList<>();
+    private final List<UUID> shielded = new ArrayList<>();
 
     public RunicShield() {
         super("Runic Shield",

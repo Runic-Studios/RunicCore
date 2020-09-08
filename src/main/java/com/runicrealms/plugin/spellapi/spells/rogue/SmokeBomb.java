@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Objects;
@@ -22,6 +23,8 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class SmokeBomb extends Spell {
 
+    private final boolean frostBomb;
+    private static final int FROSTBOMB_DURATION = 4;
     private static final int DAMAGE_AMT = 15;
     private static final int DURATION = 2;
     private static final int RADIUS = 5;
@@ -34,6 +37,17 @@ public class SmokeBomb extends Spell {
                         "\nslows enemies within " + RADIUS + " blocks" +
                         "\nfor " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
+        this.frostBomb = false;
+    }
+
+    public SmokeBomb(boolean frostBomb) {
+        super("Smoke Bomb",
+                "You fire a cloud of toxic smoke" +
+                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
+                        "\nslows enemies within " + RADIUS + " blocks" +
+                        "\nfor " + DURATION + " seconds!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
+        this.frostBomb = frostBomb;
     }
 
     // spell execute code
@@ -43,6 +57,8 @@ public class SmokeBomb extends Spell {
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         Objects.requireNonNull(meta).setColor(Color.YELLOW);
+        Color thrownPotionColor = frostBomb ? Color.AQUA : Color.YELLOW;
+        Objects.requireNonNull(meta).setColor(thrownPotionColor);
         item.setItemMeta(meta);
         thrownPotion = pl.launchProjectile(ThrownPotion.class);
         thrownPotion.setItem(item);
@@ -55,33 +71,55 @@ public class SmokeBomb extends Spell {
     public void onPotionBreak(PotionSplashEvent e) {
 
         // only listen for our fireball
-        if (!(e.getPotion().equals(this.thrownPotion)))
-            return;
-        if (!(e.getPotion().getShooter() instanceof Player))
-            return;
+        if (!(e.getPotion().equals(this.thrownPotion))) return;
+        if (!(e.getPotion().getShooter() instanceof Player)) return;
 
         e.setCancelled(true);
-
         ThrownPotion expiredBomb = e.getPotion();
         Location loc = expiredBomb.getLocation();
         Player pl = (Player) e.getPotion().getShooter();
 
-        if (pl == null)
-            return;
+        if (pl == null) return;
 
         expiredBomb.getWorld().playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_BLAZE_SHOOT, 0.5F, 1.0F);
 
-        pl.getWorld().spawnParticle(Particle.REDSTONE, loc,
-                50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
+        if (!frostBomb) {
+            pl.getWorld().spawnParticle(Particle.REDSTONE, loc,
+                    50, 1f, 1f, 1f, new Particle.DustOptions(Color.YELLOW, 20));
+            damageNearby(pl, loc);
+        } else {
+            new BukkitRunnable() {
+                int count = 1;
+                @Override
+                public void run() {
+                    if (count > FROSTBOMB_DURATION)
+                        this.cancel();
+                    else {
+                        count += 1;
+                        pl.getWorld().spawnParticle(Particle.REDSTONE, loc,
+                                50, 1f, 1f, 1f, new Particle.DustOptions(Color.AQUA, 20));
+                        damageNearby(pl, loc);
+                    }
+                }
+            }.runTaskTimer(plugin, 0, 20L);
+        }
+    }
 
+    private void damageNearby(Player pl, Location loc) {
         for (Entity entity : pl.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (entity instanceof LivingEntity && verifyEnemy(pl, entity)) {
                 LivingEntity victim = (LivingEntity) entity;
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
+                if (frostBomb)
+                    victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, DURATION * 20, 2));
             }
         }
+    }
+
+    public static int getFrostbombDuration() {
+        return FROSTBOMB_DURATION;
     }
 }
 
