@@ -112,8 +112,6 @@ public class SmokeBomb extends Spell {
                 LivingEntity victim = (LivingEntity) entity;
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
-                if (frostBomb)
-                    victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, DURATION * 20, 2));
             }
         }
     }
