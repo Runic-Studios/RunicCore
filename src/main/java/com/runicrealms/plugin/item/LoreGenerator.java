@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.armor.TierSetEnum;
+import com.runicrealms.plugin.armor.tierset.TierSetEnum;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
