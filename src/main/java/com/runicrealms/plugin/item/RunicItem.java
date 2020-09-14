@@ -17,24 +17,24 @@ public class RunicItem {
     /*
     Info to build item in constructor.
      */
-    private Material mat;
-    private ChatColor tier;
-    private String name;
+    private final Material mat;
+    private final ChatColor tier;
+    private final String name;
     private int durability;
 
     /*
     Required level to equip/use item
      */
-    private int reqLevel;
+    private final int reqLevel;
 
     /*
     Stat bonuses of item (gems and the like)
      */
-    private int healthBonus;
-    private int manaBonus;
-    private int damageBonus;
-    private int healingBonus;
-    private int magicBonus;
+    private final int healthBonus;
+    private final int manaBonus;
+    private final int damageBonus;
+    private final int healingBonus;
+    private final int magicBonus;
     private int shield;
 
     /*

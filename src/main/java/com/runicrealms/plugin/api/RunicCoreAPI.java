@@ -1,11 +1,14 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.items.MythicItem;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class RunicCoreAPI {
@@ -20,6 +23,10 @@ public class RunicCoreAPI {
         MythicItem mi = MythicMobs.inst().getItemManager().getItem(itemName).get();
         AbstractItemStack abstractItemStack = mi.generateItemStack(amount);
         return BukkitAdapter.adapt(abstractItemStack);
+    }
+
+    public static PlayerCache getPlayerCache(Player player) {
+        return RunicCore.getCacheManager().getPlayerCaches().get(player);
     }
 
     public static void registerRunicItemShop(RunicItemShop shop) {
