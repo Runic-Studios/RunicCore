@@ -8,16 +8,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Objects;
+import java.util.Set;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class LootChestManager {
 
     private static final int TASK_INTERVAL = 15; // seconds
 
-    private HashSet<LootChest> lootChests; // maps chest to respawn time
-    private LinkedHashMap<LootChest, Long> queuedChests;
-    private RunicCore plugin = RunicCore.getInstance();
+    private final HashSet<LootChest> lootChests; // maps chest to respawn time
+    private final LinkedHashMap<LootChest, Long> queuedChests;
+    private final RunicCore plugin = RunicCore.getInstance();
 
     public LootChestManager() {
 

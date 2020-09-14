@@ -1,14 +1,12 @@
 package com.runicrealms.plugin.item.commands;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.command.subcommands.SubCommand;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.util.TabCompleteUtil;
-import com.runicrealms.plugin.item.LoreGenerator;
+import com.runicrealms.plugin.utilities.CurrencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,9 +44,7 @@ public class CurrencyPouch implements SubCommand {
             return;
         }
 
-        ItemStack goldPouch = new ItemStack(Material.SHEARS);
-        goldPouch = AttributeUtil.addCustomStat(goldPouch, "pouchSize", size);
-        LoreGenerator.generateGoldPouchLore(goldPouch);
+        ItemStack goldPouch = CurrencyUtil.goldPouch(size);
 
         if (pl.getInventory().firstEmpty() != -1)
             pl.getInventory().addItem(goldPouch);

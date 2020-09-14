@@ -156,7 +156,7 @@ public class LootChestListener implements Listener {
      * This event adds a new workstation to the file, so long as the player is opped and holding a green wool.
      * The event then listens for the player's chat response, and adds the block to the file accordingly.
      */
-    private ArrayList<UUID> chatters = new ArrayList<>();
+    private final ArrayList<UUID> chatters = new ArrayList<>();
     @EventHandler
     public void onLocationAdd(PlayerInteractEvent e) {
 

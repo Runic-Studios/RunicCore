@@ -4,8 +4,8 @@ import org.bukkit.Location;
 
 public class LootChest {
 
-    private String tier;
-    private Location location;
+    private final String tier;
+    private final Location location;
 
     public LootChest(String tier, Location location) {
         this.tier = tier;

@@ -34,6 +34,7 @@ import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.mounts.MountListener;
 import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.scrapper.ScrapperListener;
+import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.item.shops.ShopManager;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.npc.Build;
@@ -283,6 +284,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
+        pm.registerEvents(new RunicShopManager(), this);
         pm.registerEvents(partyManager, this);
         pm.registerEvents(groupManager, this);
         groupManager.registerGuiEvents();

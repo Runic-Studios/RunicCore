@@ -2,11 +2,11 @@ package com.runicrealms.plugin.item.shops;
 
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashMap;
 
 public class ShopManager {
 
-    private HashMap<Player, Shop> shops;
+    private final HashMap<Player, Shop> shops;
 
     public ShopManager() {
         this.shops = new HashMap<>();

@@ -1,5 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.item.LoreGenerator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
  */
 public class CurrencyUtil {
 
-    /**
+    /*
      * A single gold coin, the smallest unit of currency
      */
     public static ItemStack goldCoin() {
@@ -39,5 +41,17 @@ public class CurrencyUtil {
             coin.setItemMeta(meta);
         }
         return coin;
+    }
+
+    /**
+     *
+     * @param size how many coins the pouch can hold
+     * @return GoldPouch ItemStack
+     */
+    public static ItemStack goldPouch(int size) {
+        ItemStack goldPouch = new ItemStack(Material.SHEARS);
+        goldPouch = AttributeUtil.addCustomStat(goldPouch, "pouchSize", size);
+        LoreGenerator.generateGoldPouchLore(goldPouch);
+        return goldPouch;
     }
 }
