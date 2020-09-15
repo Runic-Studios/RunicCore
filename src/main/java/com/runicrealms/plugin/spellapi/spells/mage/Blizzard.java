@@ -69,7 +69,7 @@ public class Blizzard extends Spell {
                 int durationIncrease = 0;
                 if (increaseDuration)
                     durationIncrease = DURATION_INCREASE();
-                if (System.currentTimeMillis() - startTime >= DURATION + durationIncrease * 1000)
+                if (System.currentTimeMillis() - startTime >= (DURATION + durationIncrease) * 1000)
                     this.cancel();
 
                 Location cloudLoc = new Location(pl.getWorld(), lookLoc.getX(),
