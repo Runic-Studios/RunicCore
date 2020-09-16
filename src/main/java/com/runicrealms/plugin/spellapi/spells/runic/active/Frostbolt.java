@@ -5,6 +5,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,7 +19,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -44,17 +44,7 @@ public class Frostbolt extends Spell {
         snowball.setVelocity(velocity);
         snowball.setShooter(player);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
-
-        // more particles
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (snowball.isDead()) {
-                    this.cancel();
-                }
-                snowball.getWorld().spawnParticle(Particle.SNOWBALL, snowball.getLocation(), 1, 0, 0, 0, 0);
-            }
-        }.runTaskTimer(plugin, 0, 1);
+        EntityTrail.entityTrail(snowball, Particle.SNOWBALL);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

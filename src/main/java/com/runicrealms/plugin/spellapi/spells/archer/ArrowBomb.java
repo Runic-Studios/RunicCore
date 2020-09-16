@@ -26,7 +26,7 @@ import java.util.UUID;
 public class ArrowBomb extends Spell {
 
     // globals
-    private HashMap<Arrow, UUID> bombArrow;
+    private final HashMap<Arrow, UUID> bombArrow;
     private static final int DAMAGE = 15;
     private static final int RADIUS = 3;
 
@@ -66,6 +66,7 @@ public class ArrowBomb extends Spell {
 
                     this.cancel();
                     arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
+                    arrowLoc.getWorld().spawnParticle(Particle.FLAME, arrowLoc, 25, 0.5, 0.5, 0.5, 0);
                     arrowLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 10, 0, 0, 0, 0);
 
                     // hit them baddies

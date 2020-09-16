@@ -5,6 +5,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
+import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -91,6 +92,7 @@ public class Fireball extends Spell {
             snowball.setVelocity(velocity);
             snowball.setShooter(player);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+            EntityTrail.entityTrail(snowball, Particle.SNOWBALL);
             return;
         }
         fireball = player.launchProjectile(SmallFireball.class);
@@ -98,6 +100,7 @@ public class Fireball extends Spell {
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);
         fireball.setVelocity(velocity);
         fireball.setShooter(player);
+        EntityTrail.entityTrail(fireball, Particle.FLAME);
         if (fireCone) {
             Vector left = rotateVectorAroundY(velocity, -22.5);
             Vector right = rotateVectorAroundY(velocity, 22.5);
@@ -105,10 +108,12 @@ public class Fireball extends Spell {
             fireballLeft.setIsIncendiary(false);
             fireballLeft.setVelocity(left);
             fireballLeft.setShooter(player);
+            EntityTrail.entityTrail(fireballLeft, Particle.FLAME);
             fireballRight = player.launchProjectile(SmallFireball.class);
             fireballRight.setIsIncendiary(false);
             fireballRight.setVelocity(right);
             fireballRight.setShooter(player);
+            EntityTrail.entityTrail(fireballRight, Particle.FLAME);
         }
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1);
     }

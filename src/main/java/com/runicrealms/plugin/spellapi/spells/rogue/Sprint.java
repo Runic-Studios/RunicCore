@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 public class Sprint extends Spell {
 
     // global variables
-    private boolean flame;
+    private final boolean flame;
     private static final int DURATION = 5;
     private static final int SPEED_AMPLIFIER = 2;
 
