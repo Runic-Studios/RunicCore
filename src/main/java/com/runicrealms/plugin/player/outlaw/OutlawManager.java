@@ -2,9 +2,13 @@ package com.runicrealms.plugin.player.outlaw;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.Party;
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class OutlawManager {
@@ -17,9 +21,9 @@ public class OutlawManager {
     }
 
     /**
-     *
-     * @param damager
-     * @param victim
+     * Method to calculate rating changes for outlaw kills
+     * @param damager player to receive rating
+     * @param victim player to lose rating
      */
     public void onKill(Player damager, Player victim) {
 
@@ -28,7 +32,6 @@ public class OutlawManager {
         int r1 = 0;
         int r2 = 0;
 
-        // todo: add proportion calculator?
         // if the player has a party, calculate that party's average rating
         // otherwise, the r1 is simply the player's current rating
         r1 = getR1(damager, p1Party, r1);
@@ -52,7 +55,7 @@ public class OutlawManager {
     }
 
     /**
-     *
+     * Method to distribute rating based on party size
      * @param p1
      * @param p1Party
      * @param r1
@@ -83,5 +86,21 @@ public class OutlawManager {
 
     public int getBaseRating() {
         return BASE_RATING;
+    }
+
+    public static Map<Player, Integer> getOutlawRatings() {
+        Map<Player, Integer> ratings = new HashMap<>();
+        ConcurrentHashMap<Player, PlayerCache> playerCaches = RunicCore.getCacheManager().getPlayerCaches();
+        for (Player player : playerCaches.keySet()) {
+            if (!playerCaches.get(player).getIsOutlaw()) continue; // ignore non-outlaws
+            ratings.put(player, playerCaches.get(player).getRating()); // store all online player's ratings
+        }
+        List<Map.Entry<Player, Integer>> list = new ArrayList<>(ratings.entrySet());
+        list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder())); // sort descending order
+        Map<Player, Integer> result = new LinkedHashMap<>();
+        for (Map.Entry<Player, Integer> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 }
