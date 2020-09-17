@@ -222,7 +222,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
         mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
         mongoDataSection.set("outlaw.enabled", false);
-        mongoDataSection.set("outlaw.rating", RunicCore.getOutlawManager().getBaseRating());
+        mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
         mongoDataSection.set("inventoryNew", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
         DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneListener.getHearthstoneLocation(player)); // tutorial
         mongoData.save();

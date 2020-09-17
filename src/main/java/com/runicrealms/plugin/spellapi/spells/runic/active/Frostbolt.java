@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.runic.active;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -60,23 +58,7 @@ public class Frostbolt extends Spell {
         if (pl == null) return;
 
         LivingEntity victim = (LivingEntity) event.getEntity();
-
-        // ignore NPCs
-        if (victim.hasMetadata("NPC")) return;
-
-        // outlaw check
-        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
-            return;
-        }
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-            if (victim instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) victim)) {
-                    return;
-                }
-            }
-        }
+        if (!verifyEnemy(pl, victim)) return;
 
         // cancel the event, apply spell mechanics
         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);

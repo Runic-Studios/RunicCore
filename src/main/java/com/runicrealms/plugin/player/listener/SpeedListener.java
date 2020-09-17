@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player.outlaw;
+package com.runicrealms.plugin.player.listener;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.runicrealms.plugin.item.GearScanner;

@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
@@ -143,11 +142,11 @@ public class BowListener implements Listener {
             }
         }
 
-        ItemStack artifact = damager.getInventory().getItemInMainHand();
+//        ItemStack artifact = damager.getInventory().getItemInMainHand();
 
         // retrieve the weapon damage, cooldown
-        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+//        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
+//        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
 
         // remove the arrow with nms magic
 //        new BukkitRunnable() {
@@ -156,17 +155,12 @@ public class BowListener implements Listener {
 //            }
 //        }.runTaskLater(RunicCore.getInstance(), 3);
 
-        int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+//        int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
 
         // spawn the damage indicator if the arrow is an autoattack
-        if (arrow.getCustomName() == null) return;
+//        if (arrow.getCustomName() == null) return;
 
-        // outlaw check
-        if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(damager))) {
-            return;
-        }
-
-        //DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
+//        DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
     }
 
     /**
@@ -258,11 +252,6 @@ public class BowListener implements Listener {
             if (arrow.getCustomName() == null) return;
 
             e.setCancelled(true);
-
-            // outlaw check
-            if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(damager))) {
-                return;
-            }
 
             DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
         }

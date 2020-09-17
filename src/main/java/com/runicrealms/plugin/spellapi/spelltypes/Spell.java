@@ -3,14 +3,7 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,8 +14,6 @@ import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import java.util.Set;
 
 public abstract class Spell implements ISpell, Listener {
 
@@ -133,25 +124,6 @@ public abstract class Spell implements ISpell, Listener {
 
         // ignore NPCs
         if (livingVictim.hasMetadata("NPC")) return false;
-
-        // outlaw check
-        if (livingVictim instanceof Player && (!OutlawManager.isOutlaw(((Player) livingVictim)) || !OutlawManager.isOutlaw(caster))) {
-
-            // for PvP zones, grab all regions the player is standing in
-            // -----------------------------------------------------------------------------------------
-            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            RegionQuery query = container.createQuery();
-            ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(caster.getLocation()));
-            Set<ProtectedRegion> regions = set.getRegions();
-            if (regions == null) return false;
-            for (ProtectedRegion region : regions) {
-                if (region.getId().contains("pvp")) {
-                    return true;
-                }
-            }
-            // -----------------------------------------------------------------------------------------
-            return false;
-        }
 
         // skip party members
         if (victim instanceof Player) {

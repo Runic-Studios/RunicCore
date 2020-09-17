@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player;
+package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import org.bukkit.event.EventHandler;

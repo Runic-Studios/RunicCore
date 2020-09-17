@@ -5,7 +5,6 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.listeners.DamageListener;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
@@ -54,11 +53,6 @@ public class DamageUtil {
             }
         }
 
-        // outlaw check
-        if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
-            return;
-        }
-
         // apply the damage
         damageEntity(dmgAmt, recipient, caster, false);
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
@@ -100,11 +94,6 @@ public class DamageUtil {
                     return;
                 }
             }
-        }
-
-        // outlaw check
-        if (recipient instanceof Player && (!OutlawManager.isOutlaw(((Player) recipient)) || !OutlawManager.isOutlaw(caster))) {
-            return;
         }
 
         damageEntity(dmgAmt, recipient, caster, isRanged);

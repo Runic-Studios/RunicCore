@@ -43,7 +43,7 @@ import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
 import com.runicrealms.plugin.party.PartyManager;
-import com.runicrealms.plugin.player.*;
+import com.runicrealms.plugin.player.PlayerHungerManager;
 import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.combat.CombatListener;
 import com.runicrealms.plugin.player.combat.CombatManager;
@@ -51,11 +51,9 @@ import com.runicrealms.plugin.player.combat.ExpListener;
 import com.runicrealms.plugin.player.combat.PlayerLevelListener;
 import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.player.gear.OffhandListener;
+import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.RegenManager;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
-import com.runicrealms.plugin.player.outlaw.SetOutlawCMD;
-import com.runicrealms.plugin.player.outlaw.SpeedListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.shop.BoostCMD;
@@ -81,6 +79,9 @@ import java.util.Arrays;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
+    // global variables
+    private static final int BASE_OUTLAW_RATING = 1500;
+
     // handlers
     private static RunicCore instance;
     private static CombatManager combatManager;
@@ -95,7 +96,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static BossTagger bossTagger;
     private static ShopManager shopManager;
     private static CacheManager cacheManager;
-    private static OutlawManager outlawManager;
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
@@ -116,7 +116,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static BossTagger getBossTagger() { return bossTagger; }
     public static ShopManager getShopManager() { return shopManager; }
     public static CacheManager getCacheManager() { return cacheManager; }
-    public static OutlawManager getOutlawManager() { return outlawManager; }
     public static ProtocolManager getProtocolManager() { return protocolManager; }
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
     public static PartyChannel getPartyChatChannel() { return partyChannel; }
@@ -124,6 +123,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static GroupChannel getGroupChatChannel() { return groupChannel; }
     public static PaperCommandManager getCommandManager() {
         return commandManager;
+    }
+    public static int getBaseOutlawRating() {
+        return BASE_OUTLAW_RATING;
     }
 
     public void onEnable() {
@@ -144,7 +146,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         bossTagger = new BossTagger();
         shopManager = new ShopManager();
         cacheManager = new CacheManager();
-        outlawManager = new OutlawManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
         groupManager = new GroupManager();
@@ -210,7 +211,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         bossTagger = null;
         shopManager = null;
         cacheManager = null;
-        outlawManager = null;
         databaseManager = null;
         groupManager = null;
         partyChannel = null;
@@ -340,7 +340,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
         Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
-        Bukkit.getPluginCommand("outlaw").setExecutor(new SetOutlawCMD());
         Bukkit.getPluginCommand("spawn").setExecutor(new SpawnCMD());
         Bukkit.getPluginCommand("runicvote").setExecutor(new RunicVoteCMD());
     }

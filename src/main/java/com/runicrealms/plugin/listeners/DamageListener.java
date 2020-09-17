@@ -6,7 +6,6 @@ import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -129,9 +128,6 @@ public class DamageListener implements Listener {
                 // outlaw check
                 if (victim.hasMetadata("NPC"))
                     return;
-                if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
-                    return;
-                }
 
                 // ensure correct class/weapon combo (archers and bows, etc)
                 if (!matchClass(pl))
@@ -253,13 +249,13 @@ public class DamageListener implements Listener {
         e.setCancelled(true);
 
         // apply new death mechanics
-        applyDeathMechanics(victim);
+        applyDeathMechanics(null, victim);
     }
 
-    private static void applyDeathMechanics(Player victim) {
+    private static void applyDeathMechanics(Entity killer, Player victim) {
 
         // call runic death event
-        RunicDeathEvent event = new RunicDeathEvent(victim);
+        RunicDeathEvent event = new RunicDeathEvent(killer, victim);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -313,7 +309,7 @@ public class DamageListener implements Listener {
         }
 
         // apply new death mechanics
-        applyDeathMechanics(victim);
+        applyDeathMechanics(damager, victim);
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
@@ -324,11 +320,6 @@ public class DamageListener implements Listener {
 
         // broadcast the death message
         broadcastSlainDeathMessage(damager, victim);
-
-        // apply outlaw mechanics if the player is an outlaw AND the killer is an outlaw
-        if (damager instanceof Player && OutlawManager.isOutlaw((Player) damager) && OutlawManager.isOutlaw(victim)) {
-            RunicCore.getOutlawManager().onKill((Player) damager, victim);
-        }
     }
 
     private static void broadcastSlainDeathMessage(Entity damager, Player victim) {

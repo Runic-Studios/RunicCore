@@ -16,7 +16,7 @@ import java.util.UUID;
 // todo: add hunter info?
 public class PlayerCache {
 
-    private int characterSlot;
+    private final int characterSlot;
 
     private UUID playerID;
     private String guild;
@@ -37,7 +37,7 @@ public class PlayerCache {
     private ItemStack[] inventoryContents;
     private Location location;
 
-    private PlayerMongoData mongoData;
+    private final PlayerMongoData mongoData;
 
     /**
      * Created when a player selects a class for the first time
@@ -55,7 +55,7 @@ public class PlayerCache {
         this.currentHealth = HealthUtils.getBaseHealth();
         this.maxMana = RunicCore.getRegenManager().getBaseMana();
         this.isOutlaw = false;
-        this.rating = RunicCore.getOutlawManager().getBaseRating();
+        this.rating = RunicCore.getBaseOutlawRating();
         this.inventoryContents = new ItemStack[41]; // empty inventory, todo: this may be bugged
         this.location = new Location(Bukkit.getWorld("Alterra"), -2317.5, 38.5, 1719.5); // tutorial
         this.mongoData = mongoData;

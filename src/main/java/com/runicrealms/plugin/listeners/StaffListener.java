@@ -2,7 +2,6 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -128,11 +127,6 @@ public class StaffListener implements Listener {
                                 if (e instanceof ArmorStand && e.isInvulnerable()) continue;
 
                                 LivingEntity victim = (LivingEntity) e;
-
-                                // outlaw check
-                                if (victim instanceof Player && (!OutlawManager.isOutlaw(((Player) victim)) || !OutlawManager.isOutlaw(pl))) {
-                                    continue;
-                                }
 
                                 // skip party members
                                 if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {

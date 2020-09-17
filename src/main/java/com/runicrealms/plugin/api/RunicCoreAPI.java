@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.outlaw.OutlawManager;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
@@ -12,9 +11,11 @@ import io.lumine.xikage.mythicmobs.items.MythicItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
-
 public class RunicCoreAPI {
+
+    public static int getBaseOutlawRating() {
+        return RunicCore.getBaseOutlawRating();
+    }
 
     /**
      * Gets the MythicMobs item w/ internal name matching string
@@ -26,13 +27,6 @@ public class RunicCoreAPI {
         MythicItem mi = MythicMobs.inst().getItemManager().getItem(itemName).get();
         AbstractItemStack abstractItemStack = mi.generateItemStack(amount);
         return BukkitAdapter.adapt(abstractItemStack);
-    }
-
-    /*
-    Gets a list of the outlaw ratings of online players, sorted high --> low
-     */
-    public static Map<Player, Integer> getOutlawRatings() {
-        return OutlawManager.getOutlawRatings();
     }
 
     public static PlayerCache getPlayerCache(Player player) {
