@@ -25,7 +25,7 @@ public class Enflame extends Spell {
 
     private final boolean areaOfEffect;
     private static final int DURATION = 5;
-    private static final double PERCENT = 100;
+    private static final double PERCENT = 50;
     private static final int RADIUS = 5;
     private final HashSet<UUID> flamers = new HashSet<>();
 
@@ -33,7 +33,7 @@ public class Enflame extends Spell {
         super("Enflame",
                 "For " + DURATION + " seconds, you ignite your blade" +
                         "\nwith pure flame, causing your weapon⚔" +
-                        "\nattacks to deal twice the damage for" +
+                        "\nattacks to deal " + (int) (PERCENT+100) + "% damage for" +
                         "\nthe duration!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
         this.areaOfEffect = false;
@@ -47,7 +47,7 @@ public class Enflame extends Spell {
         super("Enflame",
                 "For " + DURATION + " seconds, you ignite your blade" +
                         "\nwith pure flame, causing your weapon⚔" +
-                        "\nattacks to deal twice the damage for" +
+                        "\nattacks to deal " + (int) (PERCENT+100) + "% damage for" +
                         "\nthe duration!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
         this.areaOfEffect = areaOfEffect;

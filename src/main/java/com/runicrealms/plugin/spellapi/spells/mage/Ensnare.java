@@ -25,7 +25,7 @@ public class Ensnare extends Spell {
                         "\nyour target location for " + DURATION +
                         "\nseconds, snaring enemies caught" +
                         "\nin the web!",
-                ChatColor.WHITE, ClassEnum.MAGE, 12, 30); // todo: cooldown
+                ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
     }
 
     @Override

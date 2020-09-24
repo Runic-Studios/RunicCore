@@ -40,7 +40,7 @@ public class Judgment extends Spell {
                         "\nprevents them from entering, but" +
                         "\nallies may pass through it. During" +
                         "\nthis time, you may not move.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 9, 35);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
         judgers = new ArrayList<>();
         this.willShield = false;
     }
@@ -53,7 +53,7 @@ public class Judgment extends Spell {
                         "\nprevents them from entering, but" +
                         "\nallies may pass through it. During" +
                         "\nthis time, you may not move.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 9, 35);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
         judgers = new ArrayList<>();
         this.willShield = willShield;
     }

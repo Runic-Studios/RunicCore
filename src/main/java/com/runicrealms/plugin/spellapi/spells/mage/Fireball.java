@@ -139,6 +139,7 @@ public class Fireball extends Spell {
                 } else {
                     chilledPlayers.get(victim.getUniqueId()).cancel(); // cancel particle task
                     chilledPlayers.remove(victim.getUniqueId());
+                    victim.setVelocity(new Vector().multiply(0));
                     trapEntity(victim, Material.ICE, FREEZE_DURATION);
                 }
             }

@@ -108,7 +108,7 @@ public abstract class Spell implements ISpell, Listener {
      * @return whether target is valid
      */
     @Override
-    public boolean verifyEnemy(Player caster, Entity victim) {
+    public boolean verifyEnemy(Player caster, Entity victim) { // TODO: this shouldn't count players unless we in duel
 
         // bugfix for armor stands
         if (victim instanceof ArmorStand) return false;
