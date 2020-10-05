@@ -4,10 +4,12 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.plugin.player.combat.CombatListener;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.items.MythicItem;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,6 +33,10 @@ public class RunicCoreAPI {
 
     public static PlayerCache getPlayerCache(Player player) {
         return RunicCore.getCacheManager().getPlayerCaches().get(player);
+    }
+
+    public static void tagCombat(Player damager, Entity victim) {
+        CombatListener.tagCombat(damager, victim);
     }
 
     public static void registerRunicItemShop(RunicItemShop shop) {

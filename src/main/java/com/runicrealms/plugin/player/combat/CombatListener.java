@@ -51,7 +51,7 @@ public class CombatListener implements Listener {
         tagCombat(e.getPlayer(), e.getEntity());
     }
 
-    private void tagCombat(Player damager, Entity victim) {
+    public static void tagCombat(Player damager, Entity victim) {
 
         // ignore NPCs
         if (victim.hasMetadata("NPC")) return;
@@ -84,7 +84,7 @@ public class CombatListener implements Listener {
         tagPartyCombat((Player) victim, victim);
     }
 
-    private void tagPartyCombat(Player pl, Entity e) {
+    private static void tagPartyCombat(Player pl, Entity e) {
         if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
 
             for (Player member : RunicCore.getPartyManager().getPlayerParty(pl).getMembersWithLeader()) {
@@ -106,7 +106,7 @@ public class CombatListener implements Listener {
         }
     }
 
-    private void dismount(Player pl) {
+    private static void dismount(Player pl) {
         if (MountListener.mounted.containsKey(pl.getUniqueId())) {
             MountListener.mounted.get(pl.getUniqueId()).remove();
             MountListener.mounted.remove(pl.getUniqueId());
