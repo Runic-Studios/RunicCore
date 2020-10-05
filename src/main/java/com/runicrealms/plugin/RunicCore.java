@@ -285,6 +285,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
         pm.registerEvents(new RunicShopManager(), this);
+        pm.registerEvents(new SpellVerifyListener(), this);
         pm.registerEvents(partyManager, this);
         pm.registerEvents(groupManager, this);
         groupManager.registerGuiEvents();

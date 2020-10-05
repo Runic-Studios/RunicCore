@@ -3,14 +3,17 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
-import io.lumine.xikage.mythicmobs.MythicMobs;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -108,29 +111,10 @@ public abstract class Spell implements ISpell, Listener {
      * @return whether target is valid
      */
     @Override
-    public boolean verifyEnemy(Player caster, Entity victim) { // TODO: this shouldn't count players unless we in duel
-
-        // bugfix for armor stands
-        if (victim instanceof ArmorStand) return false;
-
-        // target must be alive
-        if (!(victim instanceof LivingEntity)) return false;
-        LivingEntity livingVictim = (LivingEntity) victim;
-
-        if (victim instanceof Horse && !MythicMobs.inst().getMobManager().isActiveMob(victim.getUniqueId())) return false;
-
-        // ignnore caster
-        if (caster.equals(victim)) return false;
-
-        // ignore NPCs
-        if (livingVictim.hasMetadata("NPC")) return false;
-
-        // skip party members
-        if (victim instanceof Player) {
-            return RunicCore.getPartyManager().getPlayerParty(caster) == null
-                    || !RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) victim);
-        }
-        return true;
+    public boolean verifyEnemy(Player caster, Entity victim) {
+        EnemyVerifyEvent e = new EnemyVerifyEvent(caster, victim);
+        Bukkit.getServer().getPluginManager().callEvent(e);
+        return !e.isCancelled();
     }
 
     @Override
