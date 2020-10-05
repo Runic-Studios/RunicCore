@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.item.lootchests;
 
-import com.runicrealms.plugin.artifact.utilities.ItemUtil;
+import com.runicrealms.plugin.artifact.util.ItemUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.professions.gathering.GatheringUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
