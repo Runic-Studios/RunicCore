@@ -13,6 +13,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
+
 public class RunicCoreAPI {
 
     public static int getBaseOutlawRating() {
@@ -21,13 +23,27 @@ public class RunicCoreAPI {
 
     /**
      * Gets the MythicMobs item w/ internal name matching string
-     * @param itemName internal name of item
+     * @param itemName internal name of item (NOT DISPLAY NAME)
      * @param amount of itemstack
      * @return an ItemStack
      */
     public static ItemStack getMythicItem(String itemName, int amount) {
         MythicItem mi = MythicMobs.inst().getItemManager().getItem(itemName).get();
         AbstractItemStack abstractItemStack = mi.generateItemStack(amount);
+        return BukkitAdapter.adapt(abstractItemStack);
+    }
+
+    /**
+     * Gets the MythicMobs item w/ internal name matching string, randomizes stack size
+     * @param internalName internal name of item (NOT DISPLAY NAME)
+     * @param rand some Random object
+     * @param minStackSize minimum size of stack
+     * @param maxStackSize max size of stack
+     * @return an ItemStack
+     */
+    public static ItemStack getMythicItem(String internalName, Random rand, int minStackSize, int maxStackSize) {
+        MythicItem mi = MythicMobs.inst().getItemManager().getItem(internalName).get();
+        AbstractItemStack abstractItemStack = mi.generateItemStack(rand.nextInt(maxStackSize - minStackSize) + minStackSize);
         return BukkitAdapter.adapt(abstractItemStack);
     }
 
