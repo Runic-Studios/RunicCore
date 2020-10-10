@@ -50,7 +50,8 @@ public class SpellManager {
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
 
-        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> SpellManager.this.removeCooldown(player, spell), (long) cooldownTime * 20);
+        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
+                () -> SpellManager.this.removeCooldown(player, spell), (long) cooldownTime * 20);
 
     }
 
@@ -76,9 +77,7 @@ public class SpellManager {
     }
 
     private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
-        if(!this.cooldown.containsKey(player.getUniqueId())) {
-            return;
-        }
+        if(!this.cooldown.containsKey(player.getUniqueId())) return;
         HashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
         playerSpellsOnCooldown.remove(spell);
         this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
@@ -179,7 +178,10 @@ public class SpellManager {
                         List<String> cdString = new ArrayList<>();
 
                         for(Spell spell : spells.keySet()) {
-                            cdString.add(ChatColor.RED + spell.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) +/*+ ChatColor.RED +*/ "s");
+                            if (getUserCooldown(player, spell) <= 0)
+                                removeCooldown(player, spell); // insurance
+                            else
+                                cdString.add(ChatColor.RED + spell.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
                         }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
