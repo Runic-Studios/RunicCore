@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TeleportUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -11,7 +12,10 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.*;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -139,8 +143,9 @@ public class Fireball extends Spell {
                 } else {
                     chilledPlayers.get(victim.getUniqueId()).cancel(); // cancel particle task
                     chilledPlayers.remove(victim.getUniqueId());
-                    victim.setVelocity(new Vector().multiply(0));
-                    trapEntity(victim, Material.ICE, FREEZE_DURATION);
+                    Location toBeTrapped = victim.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
+                    trapEntity(toBeTrapped, Material.ICE, FREEZE_DURATION);
+                    Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> TeleportUtil.teleportEntity(victim, toBeTrapped), 2L);
                 }
             }
             return;
@@ -177,9 +182,9 @@ public class Fireball extends Spell {
 
     private final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
-    private void trapEntity(Entity en, Material material, int duration) {
+    private void trapEntity(Location location, Material material, int duration) {
         Map<Block, BlockData> changedBlocks = new HashMap<>();
-        Location[] locs = new Location[]{en.getLocation(), en.getLocation().add(0,1,0)};
+        Location[] locs = new Location[]{location, location.clone().add(0,1,0)};
         for (Location loc : locs) {
             for (BlockFace bf : cage) {
                 Block block = loc.getBlock().getRelative(bf, 1);
@@ -188,7 +193,7 @@ public class Fireball extends Spell {
             }
         }
         // also block above the player
-        Block top = en.getLocation().add(0,2,0).getBlock();
+        Block top = location.clone().add(0,2,0).getBlock();
         changedBlocks.put(top, top.getBlockData());
         top.setType(material);
         // todo: add ice block below their feet?
