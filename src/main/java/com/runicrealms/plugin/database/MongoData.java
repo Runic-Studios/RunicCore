@@ -4,7 +4,7 @@ import org.bson.Document;
 
 import java.util.Set;
 
-public interface MongoData {
+public interface MongoData extends Data {
 
     public void set(String key, Object value);
 
