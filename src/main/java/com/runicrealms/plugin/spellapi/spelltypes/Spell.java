@@ -20,53 +20,50 @@ import org.bukkit.util.Vector;
 
 public abstract class Spell implements ISpell, Listener {
 
+    private boolean isPassive = false;
+    private final int manaCost;
+    private final double cooldown;
     private final String name;
     private final String description;
     private final ChatColor color;
     private final ClassEnum reqClass;
-    private final double cooldown;
     protected RunicCore plugin = RunicCore.getInstance();
-    private final int manaCost;
-    private boolean isPassive = false;
 
-    public Spell(String name, String description, ChatColor color, ClassEnum reqClass, double cooldown, int manaCost) {
-
+    public Spell(String name, String description, ChatColor color,
+                 ClassEnum reqClass, double cooldown, int manaCost) {
         this.name = name;
         this.description = description;
         this.color = color;
         this.reqClass = reqClass;
         this.cooldown = cooldown;
         this.manaCost = manaCost;
-
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public void execute(Player pl, SpellItemType type) {
 
-        if (!RunicCore.getSpellManager().isOnCooldown(pl, this.getName())) { // ensure spell is not on cooldown
+        if (RunicCore.getSpellManager().isOnCooldown(pl, this.getName())) return; // ensure spell is not on cooldown
 
-            // verify class
-            if (this.getReqClass() != ClassEnum.RUNIC) {
-                if (!this.getReqClass().toString().toLowerCase().equals
-                        (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase())) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                    ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
-                    return;
-                }
+        // verify class
+        if (this.getReqClass() != ClassEnum.RUNIC) {
+            if (!this.getReqClass().toString().toLowerCase().equals
+                    (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase())) {
+                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
+                return;
             }
-
-            if (!verifyMana(pl)) return; // verify the mana
-
-            if (!this.attemptToExecute(pl)) return; // check additional conditions
-
-            // cast the spell
-            int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
-            RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), currentMana - this.manaCost);
-            pl.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
-            RunicCore.getSpellManager().addCooldown(pl, this, this.getCooldown());
-            this.executeSpell(pl, type);
         }
+
+        if (!verifyMana(pl)) return; // verify the mana
+        if (!this.attemptToExecute(pl)) return; // check additional conditions
+
+        // cast the spell
+        int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
+        RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), currentMana - this.manaCost);
+        pl.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
+        RunicCore.getSpellManager().addCooldown(pl, this, this.getCooldown());
+        this.executeSpell(pl, type);
     }
 
     private boolean verifyMana(Player player) {
@@ -179,7 +176,9 @@ public abstract class Spell implements ISpell, Listener {
         return true;
     }
 
-    public void executeSpell(Player player, SpellItemType type){}
+    public void executeSpell(Player player, SpellItemType type) {
+
+    }
 
     // determines which spell to cast
     @Override
@@ -187,4 +186,21 @@ public abstract class Spell implements ISpell, Listener {
         String spell = AttributeUtil.getSpell(item, spellSlot);
         return spell.equals(getName());
     }
+
+    /**
+     * Add a custom status effect to an entity.
+     * @param entity to be silenced
+     * @param effectEnum which status effect to add
+     * @param duration (in seconds) of effect
+     */
+    @Override
+    public void addStatusEffect(Entity entity, EffectEnum effectEnum, int duration) {
+        if (effectEnum == EffectEnum.SILENCE) {
+            RunicCore.getSpellManager().getSilencedEntities().add(entity.getUniqueId());
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 0.2f);
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
+                    () -> RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId()), duration * 20L);
+        }
+    }
+
 }

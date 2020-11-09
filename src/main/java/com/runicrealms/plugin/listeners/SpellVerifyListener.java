@@ -8,7 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 /*
-This verifies... stuff
+ * This listener is called when a spell attempts to activate the spell logic on an entity.
+ * Used to prevent non-pvpers from taking damage/effects (See RunicPvP)
  */
 public class SpellVerifyListener implements Listener {
 
@@ -20,19 +21,35 @@ public class SpellVerifyListener implements Listener {
         Entity victim = e.getVictim();
 
         // bugfix for armor stands
-        if (victim instanceof ArmorStand) e.setCancelled(true);
+        if (victim instanceof ArmorStand) {
+            e.setCancelled(true);
+            return;
+        }
 
         // target must be alive
-        if (!(victim instanceof LivingEntity)) e.setCancelled(true);
+        if (!(victim instanceof LivingEntity)) {
+            e.setCancelled(true);
+            return;
+        }
+
         LivingEntity livingVictim = (LivingEntity) victim;
 
-        if (victim instanceof Horse && !MythicMobs.inst().getMobManager().isActiveMob(victim.getUniqueId())) e.setCancelled(true);
+        if (victim instanceof Horse && !MythicMobs.inst().getMobManager().isActiveMob(victim.getUniqueId())) {
+            e.setCancelled(true);
+            return;
+        }
 
         // ignnore caster
-        if (caster.equals(victim)) e.setCancelled(true);
+        if (caster.equals(victim)) {
+            e.setCancelled(true);
+            return;
+        }
 
         // ignore NPCs
-        if (livingVictim.hasMetadata("NPC")) e.setCancelled(true);
+        if (livingVictim.hasMetadata("NPC")) {
+            e.setCancelled(true);
+            return;
+        }
 
         // skip party members
         if (victim instanceof Player) {
