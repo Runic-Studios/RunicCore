@@ -81,9 +81,8 @@ public class SpellUseEvent implements Listener {
         // call spell event
         SpellCastEvent event = new SpellCastEvent(pl, spellToCast);
         Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled() && event.willExecute()) {
+        if (!event.isCancelled() && event.willExecute())
             event.getSpellCasted().execute(pl, spellItemType);
-        }
     }
 
     private String determineSpellSlot(PlayerInteractEvent e, ItemStack item) {

@@ -2,9 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -13,13 +11,14 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class ThrowAxe extends Spell {
@@ -27,7 +26,6 @@ public class ThrowAxe extends Spell {
     private static final int DAMAGE = 20;
     private static final int DURATION = 3;
     private final HashMap<UUID, UUID> hasBeenHit;
-    private final List<UUID> silenced;
     private final boolean canHitAllies;
 
     public ThrowAxe() {
@@ -38,7 +36,6 @@ public class ThrowAxe extends Spell {
                         "\nfrom dealing damage for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
-        silenced = new ArrayList<>();
         this.canHitAllies = false;
     }
 
@@ -50,7 +47,6 @@ public class ThrowAxe extends Spell {
                         "\nfrom dealing damage for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
-        silenced = new ArrayList<>();
         this.canHitAllies = canHitAllies;
     }
 
@@ -81,59 +77,38 @@ public class ThrowAxe extends Spell {
                 Location loc = projectile.getLocation();
                 projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
 
-                for (Entity en : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
+                for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
                     if (canHitAllies) {
-                        if (en.equals(pl)) continue;
-                        if (verifyAlly(pl, en)) {
-                            if (en instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) en)) { // normal ally check allows for non-party spells, so this prevents axe trolling
-                                hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits
-                                en.getWorld().playSound(en.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
-                                en.getWorld().spawnParticle
-                                        (Particle.SPELL_INSTANT, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                                en.teleport(pl);
-                                en.getWorld().spawnParticle
-                                        (Particle.SPELL_INSTANT, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        if (entity.equals(pl)) continue;
+                        if (verifyAlly(pl, entity)) {
+                            if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
+                                hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+                                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
+                                entity.getWorld().spawnParticle
+                                        (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                                entity.teleport(pl);
+                                entity.getWorld().spawnParticle
+                                        (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                                 projectile.remove();
                                 return;
                             }
                         }
                     }
-                    if (verifyEnemy(pl, en)) {
-                        if (hasBeenHit.get(pl.getUniqueId()) == en.getUniqueId()) continue;
-                        hasBeenHit.put(pl.getUniqueId(), en.getUniqueId()); // prevent concussive hits
-                        silenced.add(en.getUniqueId());
-                        en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                        en.getWorld().spawnParticle
-                                (Particle.VILLAGER_ANGRY, en.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) en, pl, false, true);
+                    if (verifyEnemy(pl, entity)) {
+                        if (hasBeenHit.get(pl.getUniqueId()) == entity.getUniqueId()) continue;
+                        hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+                        addStatusEffect(entity, EffectEnum.SILENCE, DURATION);
+                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
+                        entity.getWorld().spawnParticle
+                                (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) entity, pl, false, true);
                         projectile.remove();
                     }
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
-            hasBeenHit.clear();
-            silenced.clear();
-        }, DURATION * 20L);
-    }
-
-    @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (silenced.contains(e.getDamager().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        if (silenced.contains(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-        if (silenced.contains(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), hasBeenHit::clear, DURATION * 20L);
     }
 }
 

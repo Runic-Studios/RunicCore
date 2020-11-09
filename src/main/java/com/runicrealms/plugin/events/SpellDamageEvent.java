@@ -3,7 +3,6 @@ package com.runicrealms.plugin.events;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -14,8 +13,8 @@ import org.bukkit.event.HandlerList;
 public class SpellDamageEvent extends Event implements Cancellable {
 
     private int amount;
-    private Player player;
-    private Entity entity;
+    private final Player player;
+    private final Entity entity;
     private boolean isCancelled;
 
     public SpellDamageEvent(int amount, Entity victim, Player damager) {
