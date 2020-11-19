@@ -47,7 +47,14 @@ public class SpellManager implements Listener {
         return silencedEntities;
     }
 
+    /**
+     *
+     * @param player
+     * @param spell
+     * @param cooldownTime
+     */
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
+
         if(this.cooldown.containsKey(player.getUniqueId())) {
             HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
@@ -59,14 +66,13 @@ public class SpellManager implements Listener {
         }
 
         plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
-                () -> SpellManager.this.removeCooldown(player, spell), (long) cooldownTime * 20);
+                () -> removeCooldown(player, spell), (long) cooldownTime * 20);
 
     }
 
     public boolean isOnCooldown(Player player, String spellName) {
-        if(!this.cooldown.containsKey(player.getUniqueId())){
+        if(!this.cooldown.containsKey(player.getUniqueId()))
             return false;
-        }
         HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
