@@ -17,6 +17,10 @@ import java.util.Random;
 
 public class RunicCoreAPI {
 
+    /**
+     * Returns the base outlaw rating
+     * @return the base rating (1500)
+     */
     public static int getBaseOutlawRating() {
         return RunicCore.getBaseOutlawRating();
     }
@@ -47,14 +51,28 @@ public class RunicCoreAPI {
         return BukkitAdapter.adapt(abstractItemStack);
     }
 
+    /**
+     * Returns specified player cache in-memory for player
+     * @param player to get cache for
+     * @return a PlayerCache for player with wrapper data
+     */
     public static PlayerCache getPlayerCache(Player player) {
         return RunicCore.getCacheManager().getPlayerCaches().get(player);
     }
 
+    /**
+     * This is used in other plugins to... ugh... idek.
+     * @param damager
+     * @param victim
+     */
     public static void tagCombat(Player damager, Entity victim) {
         CombatListener.tagCombat(damager, victim);
     }
 
+    /**
+     * This does.. um. Idek.
+     * @param shop
+     */
     public static void registerRunicItemShop(RunicItemShop shop) {
         RunicShopManager.registerShop(shop);
     }
