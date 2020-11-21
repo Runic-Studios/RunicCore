@@ -1,4 +1,24 @@
 package com.runicrealms.plugin.spellapi.skilltrees;
 
-public class PerkBaseStat {
+import com.runicrealms.plugin.player.stat.BaseStatEnum;
+
+public class PerkBaseStat extends Perk {
+
+    private final int bonusAmount;
+    private final BaseStatEnum baseStatEnum;
+
+    public PerkBaseStat(int cost, int minPointsReq, int currentlyAllocatedPoints,
+                        int maxAllocatedPoints, BaseStatEnum baseStatEnum, int bonusAmount) {
+        super(cost, minPointsReq, currentlyAllocatedPoints, maxAllocatedPoints);
+        this.baseStatEnum = baseStatEnum;
+        this.bonusAmount = bonusAmount;
+    }
+
+    public int getBonusAmount() {
+        return bonusAmount;
+    }
+
+    public BaseStatEnum getBaseStatEnum() {
+        return baseStatEnum;
+    }
 }

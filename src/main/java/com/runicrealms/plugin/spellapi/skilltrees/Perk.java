@@ -4,11 +4,20 @@ public abstract class Perk {
 
     private int cost;
     private int minPointsReq;
+    private int currentlyAllocatedPoints;
     private int maxAllocatedPoints;
 
-    public Perk(int cost, int minPointsReq, int maxAllocatedPoints) {
+    /**
+     * A perk is a....
+     * @param cost how many skill points spent per allocation, generally 1
+     * @param minPointsReq minimum points required IN CURRENT SUB-TREE to purchase perk (prevent buying ultimate spells from other classes)
+     * @param currentlyAllocatedPoints how many points the player has currently spent on the perk
+     * @param maxAllocatedPoints how many points can be spent on the perk
+     */
+    public Perk(int cost, int minPointsReq, int currentlyAllocatedPoints, int maxAllocatedPoints) {
         this.cost = cost;
         this.minPointsReq = minPointsReq;
+        this.currentlyAllocatedPoints = currentlyAllocatedPoints;
         this.maxAllocatedPoints = maxAllocatedPoints;
     }
 
@@ -26,6 +35,14 @@ public abstract class Perk {
 
     public void setMinPointsReq(int minPointsReq) {
         this.minPointsReq = minPointsReq;
+    }
+
+    public int getCurrentlyAllocatedPoints() {
+        return currentlyAllocatedPoints;
+    }
+
+    public void setCurrentlyAllocatedPoints(int currentlyAllocatedPoints) {
+        this.currentlyAllocatedPoints = currentlyAllocatedPoints;
     }
 
     public int getMaxAllocatedPoints() {
