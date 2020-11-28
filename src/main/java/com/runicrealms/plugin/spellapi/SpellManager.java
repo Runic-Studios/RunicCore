@@ -5,6 +5,7 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
+import com.runicrealms.plugin.spellapi.spells.archer.scout.SummonSentry;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
@@ -178,6 +179,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Cripple());
         this.spellList.add(new ArcaneShot());
         this.spellList.add(new SanguineShot());
+        this.spellList.add(new SummonSentry());
     }
 
     // starts the repeating task to manage player cooldowns

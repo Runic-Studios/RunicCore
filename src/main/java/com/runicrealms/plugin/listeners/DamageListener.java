@@ -48,6 +48,7 @@ public class DamageListener implements Listener {
 
         if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
         if (e.getDamager() instanceof SmallFireball) return;
+        if (e.getDamager() instanceof Arrow) return;
         if (e.getDamage() <= 0) return;
 
         Entity damager = e.getDamager();
