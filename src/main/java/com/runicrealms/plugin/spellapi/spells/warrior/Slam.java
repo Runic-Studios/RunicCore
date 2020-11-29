@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Slam extends Spell {
+public class Slam extends Spell<ClassEnum> {
 
     private final boolean ignite;
     private static final double KNOCKUP_AMT = 0.2;

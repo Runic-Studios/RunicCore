@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.SubClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -18,7 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public abstract class Spell implements ISpell, Listener {
+public abstract class Spell<T extends Enum<T>> implements ISpell<T>, Listener {
 
     private boolean isPassive = false;
     private final int manaCost;
@@ -26,11 +27,11 @@ public abstract class Spell implements ISpell, Listener {
     private final String name;
     private final String description;
     private final ChatColor color;
-    private final ClassEnum reqClass;
+    private final Enum<T> reqClass;
     protected RunicCore plugin = RunicCore.getInstance();
 
     public Spell(String name, String description, ChatColor color,
-                 ClassEnum reqClass, double cooldown, int manaCost) {
+                 Enum<T> reqClass, double cooldown, int manaCost) {
         this.name = name;
         this.description = description;
         this.color = color;
@@ -46,13 +47,23 @@ public abstract class Spell implements ISpell, Listener {
         if (RunicCore.getSpellManager().isOnCooldown(pl, this.getName())) return; // ensure spell is not on cooldown
 
         // verify class
+        boolean canCast = false;
         if (this.getReqClass() != ClassEnum.RUNIC) {
-            if (!this.getReqClass().toString().toLowerCase().equals
-                    (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase())) {
-                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
-                return;
+            if (this.getReqClass() instanceof ClassEnum) {
+                if (this.getReqClass().toString().toLowerCase().equals
+                        (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
+                    canCast = true;
+            } else if (this.getReqClass() instanceof SubClassEnum) { // todo: check sub-class
+                if (((SubClassEnum) this.getReqClass()).getBaseClass().getName().toLowerCase().equals
+                        (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
+                canCast = true;
             }
+        }
+
+        if (!canCast) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
+            return;
         }
 
         if (!verifyMana(pl)) return; // verify the mana
@@ -130,7 +141,7 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public ClassEnum getReqClass() {
+    public Enum<T> getReqClass() {
         return reqClass;
     }
 

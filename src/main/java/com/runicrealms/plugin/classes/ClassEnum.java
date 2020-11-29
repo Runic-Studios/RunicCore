@@ -19,6 +19,11 @@ public enum ClassEnum {
         return this.name;
     }
 
+    /**
+     * Returns the enum value of a class string
+     * @param name of class
+     * @return enum of class
+     */
     public static ClassEnum getFromName(String name) {
         for (ClassEnum classType : ClassEnum.values()) {
             if (classType.getName().equalsIgnoreCase(name)) {

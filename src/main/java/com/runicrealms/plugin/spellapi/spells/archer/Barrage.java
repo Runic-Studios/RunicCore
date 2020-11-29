@@ -141,9 +141,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Barrage extends Spell {
+public class Barrage extends Spell<ClassEnum> {
 
-    private HashMap<Arrow, UUID> bArrows;
+    private final HashMap<Arrow, UUID> bArrows;
     private static final int DAMAGE = 7;
 
     public Barrage() {

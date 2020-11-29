@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Sprint extends Spell {
+public class Sprint extends Spell<ClassEnum> {
 
     // global variables
     private final boolean flame;

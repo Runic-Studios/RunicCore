@@ -5,6 +5,8 @@ import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.CombatListener;
+import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
+import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
@@ -58,6 +60,15 @@ public class RunicCoreAPI {
      */
     public static PlayerCache getPlayerCache(Player player) {
         return RunicCore.getCacheManager().getPlayerCaches().get(player);
+    }
+
+    /**
+     * Returns a SkillTreeGUI for the given player
+     * @param player to build skill tree for
+     * @return SkillTreeGUI
+     */
+    public static SkillTreeGUI skillTreeGUI(Player player) {
+        return new SkillTreeGUI(player, MageTreeUtil.pyromancerSkillTree()); // todo: grab their sub-class data
     }
 
     /**
