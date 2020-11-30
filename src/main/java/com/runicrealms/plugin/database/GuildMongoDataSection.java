@@ -59,7 +59,7 @@ public class GuildMongoDataSection implements MongoDataSection {
     }
 
     @Override
-    public void saveParent() {
+    public void save() {
         this.parent.save();
         this.refresh();
     }
