@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
@@ -14,32 +17,44 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class SpellManager {
+public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
-    private final RunicCore plugin = RunicCore.getInstance();
     private final HashMap<UUID, HashMap<Spell, Long>> cooldown;
+    private final HashSet<UUID> silencedEntities;
+    private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldown = new HashMap<>();
-
+        this.silencedEntities = new HashSet<>();
         this.registerSpells();
         this.startCooldownTask();
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public List<Spell> getSpells() {
         return this.spellList;
     }
 
+    public HashSet<UUID> getSilencedEntities() {
+        return silencedEntities;
+    }
+
+    /**
+     *
+     * @param player
+     * @param spell
+     * @param cooldownTime
+     */
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
+
         if(this.cooldown.containsKey(player.getUniqueId())) {
             HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
@@ -51,14 +66,13 @@ public class SpellManager {
         }
 
         plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
-                () -> SpellManager.this.removeCooldown(player, spell), (long) cooldownTime * 20);
+                () -> removeCooldown(player, spell), (long) cooldownTime * 20);
 
     }
 
     public boolean isOnCooldown(Player player, String spellName) {
-        if(!this.cooldown.containsKey(player.getUniqueId())){
+        if(!this.cooldown.containsKey(player.getUniqueId()))
             return false;
-        }
         HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
@@ -189,5 +203,23 @@ public class SpellManager {
                 }
             }
         }.runTaskTimer(this.plugin, 0, 10);
+    }
+
+    @EventHandler
+    public void onMobDamage(MobDamageEvent e) {
+        if (silencedEntities.contains(e.getDamager().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        if (silencedEntities.contains(e.getPlayer().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        if (silencedEntities.contains(e.getPlayer().getUniqueId()))
+            e.setCancelled(true);
     }
 }

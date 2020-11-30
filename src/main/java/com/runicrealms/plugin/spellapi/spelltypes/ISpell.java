@@ -27,5 +27,7 @@ public interface ISpell {
     boolean verifyAlly(Player caster, Entity recipient); // checks for valid healing, shielding targets
 
     boolean verifyEnemy(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
+
+    void addStatusEffect(Entity entity, EffectEnum effectEnum, int duration);
 }
 

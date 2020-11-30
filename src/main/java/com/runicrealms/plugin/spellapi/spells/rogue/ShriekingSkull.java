@@ -3,12 +3,13 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
@@ -18,10 +19,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 @SuppressWarnings("FieldCanBeLocal")
 public class ShriekingSkull extends Spell {
 
@@ -30,7 +27,6 @@ public class ShriekingSkull extends Spell {
     private static final double LAUNCH_MULT = 1.5;
     private static final double SKULL_SPEED = 0.8;
     private WitherSkull skull;
-    private final Set<UUID> silenced = new HashSet<>();
 
     public ShriekingSkull() {
         super ("Shrieking Skull",
@@ -102,28 +98,8 @@ public class ShriekingSkull extends Spell {
         victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getLocation(),
                 15, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.BLACK, 2));
 
-        if (willSilence) {
-            silenced.add(victim.getUniqueId());
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), silenced::clear, POTION_DURATION * 20L);
-        }
-    }
-
-    @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (silenced.contains(e.getDamager().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        if (silenced.contains(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-        if (silenced.contains(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
+        if (willSilence)
+            addStatusEffect(victim, EffectEnum.SILENCE, POTION_DURATION);
     }
 }
 
