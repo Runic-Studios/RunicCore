@@ -55,11 +55,6 @@ public class PlayerMongoDataSection implements MongoDataSection {
     }
 
     @Override
-    public void save() {
-
-    }
-
-    @Override
     public Document getDocument() {
         return this.document;
     }
