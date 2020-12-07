@@ -23,7 +23,7 @@ public class SkillTreeGUI implements InventoryHolder {
     private final SkillTree skillTree;
 
     public SkillTreeGUI(Player player, SkillTree skillTree) {
-        this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&r&6Skill Tree"));
+        this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&a&lSkill Tree"));
         this.player = player;
         this.skillTree = skillTree;
         openMenu();
@@ -47,7 +47,7 @@ public class SkillTreeGUI implements InventoryHolder {
         this.inventory.clear();
         this.inventory.setItem(0, backButton());
         int i = 0;
-        int[] perkSlots = new int[]{10, 12, 14, 16, 28, 30, 32, 34, 46, 48, 50, 52};
+        int[] perkSlots = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
         for (Perk perk : skillTree.getPerks()) {
             ItemStack test = new ItemStack(Material.PAPER);
             ItemMeta meta = test.getItemMeta();
@@ -62,12 +62,16 @@ public class SkillTreeGUI implements InventoryHolder {
 
         int[] downArrowSlots = new int[]{19, 23, 37, 41};
         int[] upArrowSlots = new int[]{21, 25, 39, 43};
-        // todo: rightArrowSlots
+        int[] rightArrowSlots = new int[]{13, 47, 51};
+
         for (int downArrowSlot : downArrowSlots) {
             this.inventory.setItem(downArrowSlot, arrow(Material.RED_STAINED_GLASS_PANE));
         }
         for (int upArrowSlot : upArrowSlots) {
             this.inventory.setItem(upArrowSlot, arrow(Material.GREEN_STAINED_GLASS_PANE));
+        }
+        for (int rightArrowSlot : rightArrowSlots) {
+            this.inventory.setItem(rightArrowSlot, arrow(Material.BROWN_STAINED_GLASS_PANE));
         }
     }
 

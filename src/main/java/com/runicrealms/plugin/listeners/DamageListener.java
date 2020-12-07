@@ -99,12 +99,10 @@ public class DamageListener implements Listener {
 
             // --------------------
             // for punching 'n stuff
-            if (damage == 0) {
+            if (damage == 0)
                 damage = 1;
-            }
-            if (maxDamage == 0) {
+            if (maxDamage == 0)
                 maxDamage = 1;
-            }
             // -------------------
 
             if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
@@ -115,8 +113,8 @@ public class DamageListener implements Listener {
             }
 
             // check for cooldown
-            if (artifactType.equals(WeaponEnum.HAND)
-                    || artifactType.equals(WeaponEnum.STAFF)
+            if (artifactType.equals(WeaponEnum.NONE)
+                    //|| artifactType.equals(WeaponEnum.STAFF)
                     || artifactType.equals(WeaponEnum.BOW)) {
                 damage = 1;
                 maxDamage = 1;
@@ -131,7 +129,7 @@ public class DamageListener implements Listener {
                     return;
 
                 // ensure correct class/weapon combo (archers and bows, etc)
-                if (!matchClass(pl))
+                if (!matchClass(pl, true))
                     return;
 
                 // ---------------------------
@@ -157,47 +155,57 @@ public class DamageListener implements Listener {
         applySlainMechanics(e.getDamager(), ((Player) victim));
     }
 
-    private boolean matchClass(Player pl) {
+    public static boolean matchClass(Player pl, boolean sendMessage) {
         ItemStack mainHand = pl.getInventory().getItemInMainHand();
         String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:
                 if (!className.equals("Archer")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    pl.sendMessage(weaponMessage(className));
+                    if (sendMessage) {
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(weaponMessage(className));
+                    }
                     return false;
                 } else {
                     return true;
                 }
             case WOODEN_SHOVEL:
                 if (!className.equals("Cleric")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    pl.sendMessage(weaponMessage(className));
+                    if (sendMessage) {
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(weaponMessage(className));
+                    }
                     return false;
                 } else {
                     return true;
                 }
             case WOODEN_HOE:
                 if (!className.equals("Mage")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    pl.sendMessage(weaponMessage(className));
+                    if (sendMessage) {
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(weaponMessage(className));
+                    }
                     return false;
                 } else {
                     return true;
                 }
             case WOODEN_SWORD:
                 if (!className.equals("Rogue")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    pl.sendMessage(weaponMessage(className));
+                    if (sendMessage) {
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(weaponMessage(className));
+                    }
                     return false;
                 } else {
                     return true;
                 }
             case WOODEN_AXE:
                 if (!className.equals("Warrior")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                    pl.sendMessage(weaponMessage(className));
+                    if (sendMessage) {
+                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        pl.sendMessage(weaponMessage(className));
+                    }
                     return false;
                 } else {
                     return true;

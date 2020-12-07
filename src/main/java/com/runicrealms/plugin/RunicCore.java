@@ -58,7 +58,7 @@ import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.spellapi.SpellManager;
-import com.runicrealms.plugin.spellapi.SpellUseEvent;
+import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.TutorialCMD;
@@ -253,7 +253,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
-        pm.registerEvents(new SpellUseEvent(), this);
+        pm.registerEvents(new SpellUseListener(), this);
         pm.registerEvents(new WeaponCDListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
