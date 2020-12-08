@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 
 public abstract class Perk {
 
-    private final int perkID;
+    private final Integer perkID;
     private int cost;
     private int minPointsReq;
     private int currentlyAllocatedPoints;
@@ -24,7 +24,7 @@ public abstract class Perk {
         this.maxAllocatedPoints = maxAllocatedPoints;
     }
 
-    public int getPerkID() {
+    public Integer getPerkID() {
         return perkID;
     }
 

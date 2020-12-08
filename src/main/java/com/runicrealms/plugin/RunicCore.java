@@ -59,6 +59,7 @@ import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
+import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.TutorialCMD;
@@ -103,6 +104,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static GroupManager groupManager;
     private static GroupChannel groupChannel;
     private static PaperCommandManager commandManager;
+    private static SkillTreeManager skillTreeManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -122,6 +124,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static PartyChannel getPartyChatChannel() { return partyChannel; }
     public static GroupManager getGroupManager() { return groupManager; }
     public static GroupChannel getGroupChatChannel() { return groupChannel; }
+    public static SkillTreeManager getSkillTreeManager() {
+        return skillTreeManager;
+    }
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
@@ -150,6 +155,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
         groupManager = new GroupManager();
+        skillTreeManager = new SkillTreeManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
         //commandManager.registerCommand(new GroupCommand());
@@ -215,6 +221,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         databaseManager = null;
         groupManager = null;
         partyChannel = null;
+        skillTreeManager = null;
     }
 
     @EventHandler
@@ -223,6 +230,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         Save current state of player data
          */
         getLogger().info(" §cRunicCore has been disabled.");
+        getSkillTreeManager().saveSkillTrees(false); // have to save trees first (they don't save data, only section)
         getCacheManager().saveCaches(); // save player data
         getCacheManager().saveQueuedFiles(false, false); // saves SYNC
         /*

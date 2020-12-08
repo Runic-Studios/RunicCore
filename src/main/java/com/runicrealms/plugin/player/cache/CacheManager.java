@@ -37,10 +37,11 @@ public class CacheManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
+                RunicCore.getSkillTreeManager().saveSkillTrees(true);
                 saveCaches();
                 saveQueuedFiles(true, true);
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD*20); // 10s delay, 30 sec period
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD * 20); // 10s delay, 30 sec period
     }
 
     @EventHandler

@@ -45,10 +45,9 @@ public class SkillTreeGUI implements InventoryHolder {
     }
 
     /**
-     *
+     * Opens the inventory associated w/ this GUI, ordering perks
      */
     private void openMenu() {
-
         this.inventory.clear();
         this.inventory.setItem(0, backButton());
         int i = 0;
