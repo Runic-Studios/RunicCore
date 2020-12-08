@@ -54,4 +54,19 @@ public class SkillTree {
         }
         treeDataSection.save();
     }
+
+    /**
+     * Removes all saved perks for given player, for use in point resets
+     * @param mongoData called from PlayerCache
+     * @param slot of selected class
+     */
+    public void resetTree(PlayerMongoData mongoData, int slot) {
+        MongoDataSection treeDataSection = mongoData.getCharacter(slot);
+        for (Perk perk : perks) {
+            if (perk.getCurrentlyAllocatedPoints() == 0) continue;
+            perk.setCurrentlyAllocatedPoints(0);
+            treeDataSection.remove(PATH_LOCATION);
+        }
+        treeDataSection.save();
+    }
 }
