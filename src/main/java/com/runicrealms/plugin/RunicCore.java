@@ -230,7 +230,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         Save current state of player data
          */
         getLogger().info(" §cRunicCore has been disabled.");
-        getSkillTreeManager().saveSkillTrees(false); // have to save trees first (they don't save data, only section)
         getCacheManager().saveCaches(); // save player data
         getCacheManager().saveQueuedFiles(false, false); // saves SYNC
         /*

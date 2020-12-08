@@ -63,12 +63,24 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Returns Skill Tree for specified player
+     * @param player to lookup
+     * @return Skill Tree
+     */
+    public static SkillTree getSkillTree(Player player) {
+        return RunicCore.getSkillTreeManager().getSkillTree(player);
+    }
+
+    /**
      * Returns a SkillTreeGUI for the given player
      * @param player to build skill tree for
      * @return SkillTreeGUI
      */
     public static SkillTreeGUI skillTreeGUI(Player player) {
-        return new SkillTreeGUI(player, new SkillTree(player)); // todo: grab their sub-class data
+        if (RunicCore.getSkillTreeManager().getSkillTree(player) != null)
+            return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().getSkillTree(player));
+        else
+            return new SkillTreeGUI(player, new SkillTree(player));
     }
 
     /**

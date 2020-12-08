@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.cache;
 
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -37,7 +38,6 @@ public class CacheManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                RunicCore.getSkillTreeManager().saveSkillTrees(true);
                 saveCaches();
                 saveQueuedFiles(true, true);
             }
@@ -86,8 +86,7 @@ public class CacheManager implements Listener {
         if (limit < 1)
             return;
         for (int i = 0; i < limit; i++) {
-            if (queuedCaches.size() < 1)
-                continue;
+            if (queuedCaches.size() < 1) continue;
             PlayerCache queued = queuedCaches.iterator().next();
             setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()), saveAsync);
             queuedCaches.remove(queued);
@@ -123,6 +122,9 @@ public class CacheManager implements Listener {
             // location
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
+            // skill trees
+            if (RunicCoreAPI.getSkillTree(player) != null)
+                RunicCoreAPI.getSkillTree(player).save(mongoData, slot);
             // save data (includes nested fields)
             if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
