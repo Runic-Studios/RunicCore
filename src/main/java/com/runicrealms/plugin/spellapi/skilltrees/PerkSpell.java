@@ -4,9 +4,9 @@ public class PerkSpell extends Perk {
 
     private final String spellName;
 
-    public PerkSpell(int cost, int minPointsReq, int currentlyAllocatedPoints,
+    public PerkSpell(int perkID, int cost, int minPointsReq, int currentlyAllocatedPoints,
                      int maxAllocatedPoints, String spellName) {
-        super(cost, minPointsReq, currentlyAllocatedPoints, maxAllocatedPoints);
+        super(perkID, cost, minPointsReq, currentlyAllocatedPoints, maxAllocatedPoints);
         this.spellName = spellName;
     }
 

@@ -13,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
@@ -29,6 +30,7 @@ public class SkillTreeGUI implements InventoryHolder {
         openMenu();
     }
 
+    @NotNull
     @Override
     public Inventory getInventory() {
         return this.inventory;
@@ -42,6 +44,9 @@ public class SkillTreeGUI implements InventoryHolder {
         return this.skillTree;
     }
 
+    /**
+     *
+     */
     private void openMenu() {
 
         this.inventory.clear();

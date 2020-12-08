@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.HashSet;
@@ -31,88 +32,102 @@ public class SpellUseListener implements Listener {
 
     @EventHandler
     public void onWeaponInteract(PlayerInteractEvent e) {
-        if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         WeaponEnum heldItemType = WeaponEnum.matchType(e.getPlayer().getInventory().getItemInMainHand());
         if (heldItemType == WeaponEnum.NONE) return;
         if (!DamageListener.matchClass(e.getPlayer(), false)) return;
         Player pl = e.getPlayer();
-        if (!casters.contains(pl.getUniqueId())) {
-            casters.add(pl.getUniqueId());
-            pl.sendTitle
-                    (
-                            "", ChatColor.LIGHT_PURPLE + "[R] - " + ChatColor.DARK_GRAY + "[1] [2] [3] [4]", 0, 100, 0
-                    );
+        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (!casters.contains(pl.getUniqueId())) {
+                casters.add(pl.getUniqueId());
+                pl.sendTitle
+                        (
+                                "", ChatColor.LIGHT_PURPLE + "[R] - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
+                        );
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> casters.remove(pl.getUniqueId()), SPELL_TIMEOUT * 20);
+            } else {
+                castSpell(pl, 3);
+            }
+        } else {
+            if (!casters.contains(pl.getUniqueId())) return;
+            castSpell(pl, 2);
         }
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> casters.remove(pl.getUniqueId()), SPELL_TIMEOUT);
     }
 
     @EventHandler
     public void onSpellCast(PlayerItemHeldEvent e) {
         if (!casters.contains(e.getPlayer().getUniqueId())) return;
-        switch (e.getNewSlot()) {
-            case 0:
+        if (e.getNewSlot() != 0) return;
+        e.setCancelled(true);
+        castSpell(e.getPlayer(), 1);
+    }
 
-            case 1:
-            case 2:
-            case 3:
-                e.setCancelled(true);
-                casters.remove(e.getPlayer().getUniqueId());
-                e.getPlayer().sendTitle
-                        (
-                                "",
-                                ChatColor.LIGHT_PURPLE + "[R] - "
-                                        + determineSelectedSlot(e.getNewSlot()), 0, 15, 0
-                        );
-                castSelectedSpell(e.getPlayer(), e.getNewSlot());
-                break;
-        }
+    @EventHandler
+    public void onSwapHands(PlayerSwapHandItemsEvent e) {
+        if (!casters.contains(e.getPlayer().getUniqueId())) return;
+        castSpell(e.getPlayer(), 4);
+    }
+
+    /**
+     * Removes the player from casters set and executes spell logic
+     * @param pl who casted the spell
+     * @param number which spell to execute (1, 2, 3, 4)
+     */
+    private void castSpell(Player pl, int number) {
+        casters.remove(pl.getUniqueId());
+        pl.sendTitle
+                (
+                        "",
+                        ChatColor.LIGHT_PURPLE + "[R] - "
+                                + determineSelectedSlot(number), 0, 15, 0
+                );
+        castSelectedSpell(pl, number);
     }
 
     /**
      * Determines which UI button to lightup.
-     * @param slot from the held item event
+     * @param number which of the four spells to execute
      * @return A String corresponding to the new UI to display
      */
-    private String determineSelectedSlot(int slot) {
+    private String determineSelectedSlot(int number) {
         String selectedSpell = "";
-        switch (slot) {
-            case 0:
-                selectedSpell = ChatColor.LIGHT_PURPLE + "[1] " + ChatColor.DARK_GRAY + "[2] [3] [4]";
-                break;
+        switch (number) {
             case 1:
-                selectedSpell = ChatColor.DARK_GRAY + "[1] " + ChatColor.LIGHT_PURPLE + "[2] " + ChatColor.DARK_GRAY + "[3] [4]";
+                selectedSpell = ChatColor.LIGHT_PURPLE + "[1] " + ChatColor.DARK_GRAY + "[L] [R] [F]";
                 break;
             case 2:
-                selectedSpell = ChatColor.DARK_GRAY + "[1] [2] " + ChatColor.LIGHT_PURPLE + "[3] " + ChatColor.DARK_GRAY + "[4]";
+                selectedSpell = ChatColor.DARK_GRAY + "[1] " + ChatColor.LIGHT_PURPLE + "[L] " + ChatColor.DARK_GRAY + "[R] [F]";
                 break;
             case 3:
-                selectedSpell = ChatColor.DARK_GRAY + "[1] [2] [3] " + ChatColor.LIGHT_PURPLE + "[4]";
+                selectedSpell = ChatColor.DARK_GRAY + "[1] [L] " + ChatColor.LIGHT_PURPLE + "[R] " + ChatColor.DARK_GRAY + "[F]";
+                break;
+            case 4:
+                selectedSpell = ChatColor.DARK_GRAY + "[1] [L] [R] " + ChatColor.LIGHT_PURPLE + "[F]";
                 break;
         }
             return selectedSpell;
     }
 
     /**
-     * Determines which spell to case based on the selected slot.
+     * Determines which spell to case based on the selected number.
      * @param pl caster of spell
-     * @param slot slot of held item event
+     * @param number which spell number to cast (1, 2, 3, 4)
      */
-    private void castSelectedSpell(Player pl, int slot) {
+    private void castSelectedSpell(Player pl, int number) {
         Spell spellToCast = null;
-        switch (slot) {
-            case 0:
+        switch (number) {
+            case 1:
                 spellToCast = RunicCore.getSpellManager().getSpellByName("Sprint");
                 break;
-            case 1:
+            case 2:
                 spellToCast = RunicCore.getSpellManager().getSpellByName("Smoke Bomb");
                 break;
-            case 2:
+            case 3:
                 spellToCast = RunicCore.getSpellManager().getSpellByName("Cloak");
                 break;
-            case 3:
-                spellToCast = RunicCore.getSpellManager().getSpellByName("Rupture");
+            case 4:
+                spellToCast = RunicCore.getSpellManager().getSpellByName("Slice and Dice");
                 break;
         }
         if (spellToCast == null) return;
