@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
-import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
+import com.runicrealms.plugin.spellapi.skilltrees.util.RogueTreeUtil;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class SkillTree {
 
     public SkillTree(Player player) {
         this.player = player;
-        perks = MageTreeUtil.pyromancerPerkList(); // todo: determine 3 sub-trees to show based on class, then from there
+        perks = RogueTreeUtil.assassinPerkList(); // todo: determine 3 sub-trees to show based on class, then from there
         RunicCore.getSkillTreeManager().getSkillTrees().add(this);
         // get sub-class, load default
         // get allocatin data from db, populate

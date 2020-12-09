@@ -33,9 +33,9 @@ public class SmokeBomb extends Spell<SubClassEnum> {
     public SmokeBomb() {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke" +
-                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
-                        "\nslows enemies within " + RADIUS + " blocks" +
-                        "\nfor " + DURATION + " seconds!",
+                        " that deals " + DAMAGE_AMT + " spellʔ damage and" +
+                        " slows enemies within " + RADIUS + " blocks" +
+                        " for " + DURATION + " seconds!",
                 ChatColor.WHITE, SubClassEnum.ASSASSIN, 6, 15);
         this.frostBomb = false;
     }

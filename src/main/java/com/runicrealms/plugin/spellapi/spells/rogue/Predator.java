@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic.passive;
+package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
@@ -27,7 +27,7 @@ public class Predator extends Spell {
     public Predator() {
         super ("Predator",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance" +
-                        "\nto blind them for " + DURATION + " second(s)!",
+                        " to blind them for " + DURATION + " second(s)!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }

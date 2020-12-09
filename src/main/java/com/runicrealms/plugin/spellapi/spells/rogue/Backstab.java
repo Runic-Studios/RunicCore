@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic.passive;
+package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
@@ -20,7 +20,7 @@ public class Backstab extends Spell {
     public Backstab() {
         super("Backstab",
                 "Damaging an enemy from behind" +
-                        "\ndeals " + DAMAGE_AMT  + " additional damage!",
+                        " deals " + DAMAGE_AMT  + " additional damage!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }

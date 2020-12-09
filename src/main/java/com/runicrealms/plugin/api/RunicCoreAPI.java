@@ -6,7 +6,9 @@ import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.CombatListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
+import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
@@ -69,6 +71,14 @@ public class RunicCoreAPI {
      */
     public static SkillTree getSkillTree(Player player) {
         return RunicCore.getSkillTreeManager().getSkillTree(player);
+    }
+
+    public static Spell getSpell(String name) {
+        return RunicCore.getSpellManager().getSpellByName(name);
+    }
+
+    public static RuneGUI runeGUI(Player player) {
+        return new RuneGUI(player);
     }
 
     /**

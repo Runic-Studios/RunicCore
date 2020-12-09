@@ -23,9 +23,9 @@ public class SliceAndDice extends Spell<SubClassEnum> {
     public SliceAndDice() {
         super("Slice and Dice",
                 "You launch yourself backwards" +
-                        "\nin the air then blink forward," +
-                        "\nslashing enemies within " + RADIUS + " blocks" +
-                        "\nfor " + DAMAGE_AMT + " weapon⚔ damage!",
+                        " in the air then blink forward," +
+                        " slashing enemies within " + RADIUS + " blocks" +
+                        " for " + DAMAGE_AMT + " weapon⚔ damage!",
                 ChatColor.WHITE, SubClassEnum.ASSASSIN, 15, 30);
     }
 
