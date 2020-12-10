@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,8 +19,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.ChatPaginator;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 public class SkillTreeGUI implements InventoryHolder {
 
@@ -54,7 +56,7 @@ public class SkillTreeGUI implements InventoryHolder {
     private void openMenu() {
 
         this.inventory.clear();
-        this.inventory.setItem(0, backButton());
+        this.inventory.setItem(0, GUIUtil.backButton());
         int i = 0;
         int[] perkSlots = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
         for (Perk perk : skillTree.getPerks()) {
@@ -97,10 +99,11 @@ public class SkillTreeGUI implements InventoryHolder {
                         ChatColor.WHITE + "]"
                     );
             meta.setLore(Arrays.asList(ChatPaginator.wordWrap
-                    (ChatColor.YELLOW + "Character Stat\n" + ChatColor.GRAY + ((PerkBaseStat) perk).getBaseStatEnum().getDescription(), 25)));
+                    ("\n" + ChatColor.YELLOW + "Character Stat " + ChatColor.GRAY +
+                            ((PerkBaseStat) perk).getBaseStatEnum().getDescription(), 25)));
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
-            String spellType = spell.getIsPassive() ? "PASSIVE SPELL " : "ACTIVE SPELL";
+            String spellType = spell.isPassive() ? "PASSIVE SPELL " : "ACTIVE SPELL ";
             meta.setDisplayName
                     (
                         ChatColor.GREEN + spell.getName() +
@@ -110,21 +113,17 @@ public class SkillTreeGUI implements InventoryHolder {
                         ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
                         ChatColor.WHITE + "]"
                     );
-            meta.setLore(Arrays.asList(ChatPaginator.wordWrap(ChatColor.GOLD + ""
-                    + ChatColor.BOLD + spellType + ChatColor.GRAY + spell.getDescription(), 25)));
+            List<String> lore = new ArrayList<>
+                    (Arrays.asList(ChatPaginator.wordWrap("\n" + ChatColor.GOLD + "" +
+                    ChatColor.BOLD + spellType + ChatColor.GRAY + spell.getDescription(), 25)));
+            if (!spell.isPassive())
+                lore.add(ChatColor.DARK_AQUA + "Costs " + spell.getManaCost() + "✸");
+            lore.add("");
+            lore.add(ChatColor.AQUA + "» Click to purchase");
+            meta.setLore(lore);
         }
         perkItem.setItemMeta(meta);
         return perkItem;
-    }
-
-    private static ItemStack backButton() {
-        ItemStack backButton = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        ItemMeta meta = backButton.getItemMeta();
-        if (meta == null) return backButton;
-        meta.setDisplayName(ChatColor.RED + "Return");
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Return to the class selection screen"));
-        backButton.setItemMeta(meta);
-        return backButton;
     }
 
     private static ItemStack arrow(Material material) {

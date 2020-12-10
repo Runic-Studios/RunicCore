@@ -8,10 +8,20 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class GUIItem {
+public class GUIUtil {
+
+    public static ItemStack backButton() {
+        ItemStack backButton = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+        ItemMeta meta = backButton.getItemMeta();
+        if (meta == null) return backButton;
+        meta.setDisplayName(ChatColor.RED + "Return");
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Return to the previous menu"));
+        backButton.setItemMeta(meta);
+        return backButton;
+    }
 
     // creates the visual menu w/ String
     public static ItemStack dispItem(Material material, ChatColor color, String displayName, String description) {

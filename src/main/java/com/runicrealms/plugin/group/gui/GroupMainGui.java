@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.group.gui;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.GUIItem;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,17 +24,17 @@ public class GroupMainGui implements Listener {
 
     public static void initInventory() {
         inventory = Bukkit.createInventory(null, 27, invTitle);
-        inventory.setItem(11, GUIItem.dispItem(Material.WRITABLE_BOOK, "&eCreate a Group", new String[] {
+        inventory.setItem(11, GUIUtil.dispItem(Material.WRITABLE_BOOK, "&eCreate a Group", new String[] {
                 "&7Groups are a way for you complete",
                 "&7challenging content with other players,",
                 "&7like running a dungeon or fighting a boss."
         }));
-        inventory.setItem(13, GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {
+        inventory.setItem(13, GUIUtil.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {
                 "&7Join another player's group to complete",
                 "&7a common goal, like finishing a quest",
                 "&7or fighting a boss!"
         }));
-        inventory.setItem(15, GUIItem.dispItem(Material.PAPER, "&eInfo on Your Group", new String[] {
+        inventory.setItem(15, GUIUtil.dispItem(Material.PAPER, "&eInfo on Your Group", new String[] {
                 "&7Get info on your current group!"
         }));
     }

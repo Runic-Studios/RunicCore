@@ -3,7 +3,7 @@ package com.runicrealms.plugin.group.gui;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.group.Group;
 import com.runicrealms.plugin.group.GroupPurpose;
-import com.runicrealms.plugin.utilities.GUIItem;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,11 +23,11 @@ import java.util.Map;
 public class GroupJoinGui implements Listener {
 
     private static final Map<Player, PlayerGuiInfo> viewers = new HashMap<>();
-    private static final ItemStack blankSlot = GUIItem.dispItem(Material.BLACK_STAINED_GLASS_PANE, " ", new String[] {});
-    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
-    private static final ItemStack previousArrow = GUIItem.dispItem(Material.ARROW, "&ePrevious Page", new String[] {});
-    private static final ItemStack nextArrow = GUIItem.dispItem(Material.ARROW, "&eNext Page", new String[] {});
-    private static final ItemStack guiIcon = GUIItem.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {});
+    private static final ItemStack blankSlot = GUIUtil.dispItem(Material.BLACK_STAINED_GLASS_PANE, " ", new String[] {});
+    private static final ItemStack backArrow = GUIUtil.dispItem(Material.ARROW, "&cBack");
+    private static final ItemStack previousArrow = GUIUtil.dispItem(Material.ARROW, "&ePrevious Page", new String[] {});
+    private static final ItemStack nextArrow = GUIUtil.dispItem(Material.ARROW, "&eNext Page", new String[] {});
+    private static final ItemStack guiIcon = GUIUtil.dispItem(Material.IRON_SWORD, "&eJoin a Group", new String[] {});
 
     public static void display(Player player, Integer page) {
         Inventory inventory = Bukkit.createInventory(null, 54, "Join a Group");
@@ -46,7 +46,7 @@ public class GroupJoinGui implements Listener {
                     Group group = iterator.next().getValue();
                     ItemStack icon = group.getIcon();
                     if (group.getPurpose().getMaxMembers() <= group.getMembers().size()) {
-                        GUIItem.setName(icon, icon.getItemMeta().getDisplayName() + " &c&lFULL");
+                        GUIUtil.setName(icon, icon.getItemMeta().getDisplayName() + " &c&lFULL");
                     } else {
                         slots.put(slot, group);
                     }
@@ -61,7 +61,7 @@ public class GroupJoinGui implements Listener {
             player.openInventory(inventory);
             viewers.put(player, new PlayerGuiInfo(page, slots));
         } else {
-            inventory.setItem(13, GUIItem.dispItem(Material.BARRIER, "&cNo Active Groups", new String[] {}));
+            inventory.setItem(13, GUIUtil.dispItem(Material.BARRIER, "&cNo Active Groups", new String[] {}));
             player.closeInventory();
             player.openInventory(inventory);
             viewers.put(player, new PlayerGuiInfo(page, new HashMap<>()));

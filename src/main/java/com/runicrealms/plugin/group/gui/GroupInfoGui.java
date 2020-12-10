@@ -2,7 +2,7 @@ package com.runicrealms.plugin.group.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.group.Group;
-import com.runicrealms.plugin.utilities.GUIItem;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +21,7 @@ import java.util.Set;
 public class GroupInfoGui implements Listener {
 
     private static final Set<Player> viewers = new HashSet<>();
-    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final ItemStack backArrow = GUIUtil.dispItem(Material.ARROW, "&cBack");
 
     public static void display(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, "Group Info");
@@ -29,14 +29,14 @@ public class GroupInfoGui implements Listener {
         if (RunicCore.getGroupManager().getPlayerGroup(player) != null) {
             Group group = RunicCore.getGroupManager().getPlayerGroup(player);
             inventory.setItem(3, group.getIcon());
-            inventory.setItem(5, GUIItem.dispItem(Material.BARRIER, "&cLeave your group", new String[] {}));
+            inventory.setItem(5, GUIUtil.dispItem(Material.BARRIER, "&cLeave your group", new String[] {}));
             int slot = 9;
             for (Player member : group.getMemberIcons().keySet()) {
                 inventory.setItem(slot, group.getMemberIcons().get(player));
                 slot++;
             }
         } else {
-            inventory.setItem(13, GUIItem.dispItem(Material.BARRIER, "&cYou are not in a group", new String[] {
+            inventory.setItem(13, GUIUtil.dispItem(Material.BARRIER, "&cYou are not in a group", new String[] {
                     "&7Group members and more info would show up here"
             }));
         }

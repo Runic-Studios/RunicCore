@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.group.gui;
 
 import com.runicrealms.plugin.group.GroupPurpose;
-import com.runicrealms.plugin.utilities.GUIItem;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,12 +20,12 @@ public class GroupCreateChooseTypeGui implements Listener {
 
     private static final Set<Player> viewers = new HashSet<>();
     private static Inventory inventory;
-    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final ItemStack backArrow = GUIUtil.dispItem(Material.ARROW, "&cBack");
 
     public static void initInventory() {
         inventory = Bukkit.createInventory(null, 27, "Choose Group Type");
         inventory.setItem(0, backArrow);
-        inventory.setItem(4, GUIItem.dispItem(Material.PAPER, "&eChoose Group Type", new String[] {
+        inventory.setItem(4, GUIUtil.dispItem(Material.PAPER, "&eChoose Group Type", new String[] {
                 "&7When creating a group, you must choose",
                 "&7the purpose of the group. There are",
                 "&7sub-purposes under each of these categories."

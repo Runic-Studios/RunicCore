@@ -2,7 +2,7 @@ package com.runicrealms.plugin.group.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.group.GroupPurpose;
-import com.runicrealms.plugin.utilities.GUIItem;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class GroupCreateChoosePurposeGui implements Listener {
 
     private static final Map<Player, Map<Integer, GroupPurpose>> viewers = new HashMap<>();
-    private static final ItemStack backArrow = GUIItem.dispItem(Material.ARROW, "&cBack");
+    private static final ItemStack backArrow = GUIUtil.dispItem(Material.ARROW, "&cBack");
 
     public static void display(Player player, GroupPurpose.Type type) {
         Inventory inventory = Bukkit.createInventory(null, 27, "Group Purpose - " + type.getName());
@@ -33,7 +33,7 @@ public class GroupCreateChoosePurposeGui implements Listener {
             if (purpose.getType() == type) {
                 ItemStack icon = purpose.getIcon();
                 if (RunicCore.getGroupManager().getGroups().containsKey(purpose)) {
-                    GUIItem.setName(icon, icon.getItemMeta().getDisplayName() + " &c&lACTIVE");
+                    GUIUtil.setName(icon, icon.getItemMeta().getDisplayName() + " &c&lACTIVE");
                 }
                 inventory.setItem(slot, icon);
                 slots.put(slot, purpose);

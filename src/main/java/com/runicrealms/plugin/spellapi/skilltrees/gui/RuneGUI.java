@@ -52,9 +52,10 @@ public class RuneGUI implements InventoryHolder {
         ItemMeta meta = skillTreeButton.getItemMeta();
         if (meta == null) return skillTreeButton;
         meta.setDisplayName(ChatColor.GREEN + "Open Skill Trees");
-        String lore = ChatColor.GRAY + "Open the skill tree for the " +
+        String lore = ChatColor.GRAY + "Open the skill trees for the " +
                 ChatColor.GREEN + classEnum.getName() +
-                ChatColor.GRAY + " subclass!";
+                ChatColor.GRAY + " class! Earn skill points by leveling-up " +
+                "and spend them on unique and powerful perks!";
         String[] loreArr = ChatPaginator.wordWrap(lore, 25);
         meta.setLore(Arrays.asList(loreArr));
         skillTreeButton.setItemMeta(meta);

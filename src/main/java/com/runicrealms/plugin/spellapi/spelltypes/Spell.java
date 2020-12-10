@@ -175,7 +175,7 @@ public abstract class Spell<T extends Enum<T>> implements ISpell<T>, Listener {
         }
     }
 
-    public boolean getIsPassive() {
+    public boolean isPassive() {
         return isPassive;
     }
 

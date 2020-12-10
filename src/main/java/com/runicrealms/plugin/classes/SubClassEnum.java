@@ -1,41 +1,59 @@
 package com.runicrealms.plugin.classes;
 
+import org.bukkit.Material;
+
 public enum SubClassEnum {
 
     // archer
-    MARKSMAN("Marksman", ClassEnum.ARCHER),
-    SCOUT("Scout", ClassEnum.ARCHER),
-    WARDEN("Warden", ClassEnum.ARCHER),
+    MARKSMAN("Marksman", ClassEnum.ARCHER, Material.GREEN_GLAZED_TERRACOTTA, "Shoot bows"),
+    SCOUT("Scout", ClassEnum.ARCHER, Material.LIME_GLAZED_TERRACOTTA, ""),
+    WARDEN("Warden", ClassEnum.ARCHER, Material.CYAN_GLAZED_TERRACOTTA, ""),
     // cleric
-    BARD("Bard", ClassEnum.CLERIC),
-    EXEMPLAR("Exemplar", ClassEnum.CLERIC),
-    PRIEST("Priest", ClassEnum.CLERIC),
+    BARD("Bard", ClassEnum.CLERIC, Material.ORANGE_GLAZED_TERRACOTTA, ""),
+    EXEMPLAR("Exemplar", ClassEnum.CLERIC, Material.YELLOW_GLAZED_TERRACOTTA, ""),
+    PRIEST("Priest", ClassEnum.CLERIC, Material.PINK_GLAZED_TERRACOTTA, ""),
     // mage
-    CRYOMANCER("Cryomancer", ClassEnum.MAGE),
-    PYROMANCER("Pyromancer", ClassEnum.MAGE),
-    WARLOCK("Warlock", ClassEnum.MAGE),
+    CRYOMANCER("Cryomancer", ClassEnum.MAGE, Material.LIGHT_BLUE_GLAZED_TERRACOTTA, ""),
+    PYROMANCER("Pyromancer", ClassEnum.MAGE, Material.RED_GLAZED_TERRACOTTA, ""),
+    WARLOCK("Warlock", ClassEnum.MAGE, Material.PURPLE_GLAZED_TERRACOTTA, ""),
     // rogue
-    ASSASSIN("Assassin", ClassEnum.ROGUE),
-    DUELIST("Duelist", ClassEnum.ROGUE),
-    SWINDLER("Swindler", ClassEnum.ROGUE),
+    ASSASSIN("Assassin", ClassEnum.ROGUE, Material.BLACK_GLAZED_TERRACOTTA,
+            "Assassin kills stuff fast!"),
+    DUELIST("Duelist", ClassEnum.ROGUE, Material.BROWN_GLAZED_TERRACOTTA,
+            "Duelist focuses on a single enemy!"),
+    SWINDLER("Swindler", ClassEnum.ROGUE, Material.BLUE_GLAZED_TERRACOTTA,
+            "Swindler uses parlor tricks!"),
     // warior
-    BERSERKER("Berserker", ClassEnum.WARRIOR),
-    GUARDIAN("Guardian", ClassEnum.WARRIOR),
-    INQUISITOR("Inquisitor", ClassEnum.WARRIOR);
+    BERSERKER("Berserker", ClassEnum.WARRIOR, Material.GRAY_GLAZED_TERRACOTTA, ""),
+    GUARDIAN("Guardian", ClassEnum.WARRIOR, Material.WHITE_GLAZED_TERRACOTTA, ""),
+    INQUISITOR("Inquisitor", ClassEnum.WARRIOR, Material.LIGHT_GRAY_GLAZED_TERRACOTTA, "");
 
     private final String name;
     private final ClassEnum baseClass;
+    private final Material itemStack;
+    private final String description;
 
-    SubClassEnum(String name, ClassEnum baseClass) {
+    SubClassEnum(String name, ClassEnum baseClass, Material itemStack, String description) {
         this.name = name;
         this.baseClass = baseClass;
+        this.itemStack = itemStack;
+        this.description = description;
     }
 
     public String getName() {
         return this.name;
     }
+
     public ClassEnum getBaseClass() {
         return this.baseClass;
+    }
+
+    public Material getMaterial() {
+        return this.itemStack;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     /**

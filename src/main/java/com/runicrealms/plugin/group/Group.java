@@ -1,14 +1,13 @@
 package com.runicrealms.plugin.group;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.GUIItem;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.plugin.utilities.HeadUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class Group {
         this.members.add(player);
         this.rebuildIcons();
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            this.memberIcons.put(player, GUIItem.setName(HeadUtil.getHead(player), "&e" + player.getName()));
+            this.memberIcons.put(player, GUIUtil.setName(HeadUtil.getHead(player), "&e" + player.getName()));
         });
     }
 
@@ -76,8 +75,8 @@ public class Group {
                 count = 0;
             }
         }
-        GUIItem.setLore(this.icon, builder.toString().split("\n"));
-        GUIItem.setName(this.icon, this.icon.getItemMeta().getDisplayName() + " &6" + "[" + this.members.size() + "/" + this.purpose.getMaxMembers() + "]");
+        GUIUtil.setLore(this.icon, builder.toString().split("\n"));
+        GUIUtil.setName(this.icon, this.icon.getItemMeta().getDisplayName() + " &6" + "[" + this.members.size() + "/" + this.purpose.getMaxMembers() + "]");
     }
 
     public ItemStack getIcon() {
