@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
+import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,10 +36,11 @@ public class SkillTreeGUIListener implements Listener {
         ItemMeta itemMeta = item.getItemMeta();
         Material material = item.getType();
 
+        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
         if (material == Material.LIGHT_GRAY_STAINED_GLASS_PANE)
-            pl.openInventory(RunicCoreAPI.runeGUI(pl).getInventory());
+            pl.openInventory(new SubClassGUI(pl).getInventory());
 
 
 //        if (material == Material.GREEN_STAINED_GLASS_PANE) {

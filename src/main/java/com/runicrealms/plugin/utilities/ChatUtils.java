@@ -2,10 +2,19 @@ package com.runicrealms.plugin.utilities;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.util.ChatPaginator;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ChatUtils {
 
     private final static int CENTER_PX = 154;
+    private static final int LINE_LENGTH = 25;
+
+    public static List<String> formattedText(String text) {
+        return Arrays.asList(ChatPaginator.wordWrap(text, LINE_LENGTH));
+    }
 
     public static void sendCenteredMessage(Player player, String message){
         if(message == null || message.equals("")) player.sendMessage("");

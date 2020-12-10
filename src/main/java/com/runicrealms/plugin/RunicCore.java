@@ -62,6 +62,7 @@ import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.RuneGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
+import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.TutorialCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -297,6 +298,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellVerifyListener(), this);
         pm.registerEvents(new SkillTreeGUIListener(), this);
         pm.registerEvents(new RuneGUIListener(), this);
+        pm.registerEvents(new SubClassGUIListener(), this);
         pm.registerEvents(partyManager, this);
         pm.registerEvents(groupManager, this);
         groupManager.registerGuiEvents();

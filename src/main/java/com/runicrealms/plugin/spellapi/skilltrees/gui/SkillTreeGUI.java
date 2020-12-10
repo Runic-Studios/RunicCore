@@ -6,6 +6,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
@@ -16,11 +17,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.ChatPaginator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SkillTreeGUI implements InventoryHolder {
@@ -30,7 +29,8 @@ public class SkillTreeGUI implements InventoryHolder {
     private final SkillTree skillTree;
 
     public SkillTreeGUI(Player player, SkillTree skillTree) {
-        this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&a&lSkill Tree"));
+        this.inventory = Bukkit.createInventory(this, 54,
+                ColorUtil.format("&a&l" + skillTree.getSubClassEnum().getName() + " Skill Tree"));
         this.player = player;
         this.skillTree = skillTree;
         openMenu();
@@ -98,9 +98,8 @@ public class SkillTreeGUI implements InventoryHolder {
                         ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
                         ChatColor.WHITE + "]"
                     );
-            meta.setLore(Arrays.asList(ChatPaginator.wordWrap
-                    ("\n" + ChatColor.YELLOW + "Character Stat " + ChatColor.GRAY +
-                            ((PerkBaseStat) perk).getBaseStatEnum().getDescription(), 25)));
+            meta.setLore(ChatUtils.formattedText
+                    (("\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getBaseStatEnum().getDescription())));
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
             String spellType = spell.isPassive() ? "PASSIVE SPELL " : "ACTIVE SPELL ";
@@ -114,8 +113,8 @@ public class SkillTreeGUI implements InventoryHolder {
                         ChatColor.WHITE + "]"
                     );
             List<String> lore = new ArrayList<>
-                    (Arrays.asList(ChatPaginator.wordWrap("\n" + ChatColor.GOLD + "" +
-                    ChatColor.BOLD + spellType + ChatColor.GRAY + spell.getDescription(), 25)));
+                    (ChatUtils.formattedText("\n" + ChatColor.GOLD + "" + ChatColor.BOLD +
+                            spellType + ChatColor.GRAY + spell.getDescription()));
             if (!spell.isPassive())
                 lore.add(ChatColor.DARK_AQUA + "Costs " + spell.getManaCost() + "✸");
             lore.add("");

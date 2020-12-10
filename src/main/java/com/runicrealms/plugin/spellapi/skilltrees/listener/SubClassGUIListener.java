@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import com.runicrealms.plugin.utilities.GUIUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,15 +35,16 @@ public class SubClassGUIListener implements Listener {
         ItemStack item = e.getCurrentItem();
         Material material = item.getType();
 
+        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
         if (material == GUIUtil.backButton().getType())
             pl.openInventory(new RuneGUI(pl).getInventory());
         else if (e.getRawSlot() == 11) // sub-class 1
-            pl.openInventory(new SubClassGUI(pl).getInventory());
+            pl.openInventory(RunicCoreAPI.skillTreeGUI(pl, 1).getInventory());
         else if (e.getRawSlot() == 13) // sub-class 2
-            Bukkit.broadcastMessage("spell selector here");
+            pl.openInventory(RunicCoreAPI.skillTreeGUI(pl, 2).getInventory());
         else // sub-class 3
-            pl.closeInventory();
+            pl.openInventory(RunicCoreAPI.skillTreeGUI(pl, 3).getInventory());
     }
 }

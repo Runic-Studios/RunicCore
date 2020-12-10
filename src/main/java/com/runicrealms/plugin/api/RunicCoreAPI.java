@@ -84,13 +84,14 @@ public class RunicCoreAPI {
     /**
      * Returns a SkillTreeGUI for the given player
      * @param player to build skill tree for
+     * @param position the position of sub-class (1, 2, or 3)
      * @return SkillTreeGUI
      */
-    public static SkillTreeGUI skillTreeGUI(Player player) {
+    public static SkillTreeGUI skillTreeGUI(Player player, int position) {
         if (RunicCore.getSkillTreeManager().getSkillTree(player) != null)
             return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().getSkillTree(player));
         else
-            return new SkillTreeGUI(player, new SkillTree(player));
+            return new SkillTreeGUI(player, new SkillTree(player, position));
     }
 
     /**

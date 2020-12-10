@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,10 +11,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.ChatPaginator;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class RuneGUI implements InventoryHolder {
@@ -42,29 +41,33 @@ public class RuneGUI implements InventoryHolder {
      */
     private void openMenu() {
         this.inventory.clear();
-        this.inventory.setItem(11, skillTreeButton(ClassEnum.MAGE));
+        this.inventory.setItem(11, skillTreeButton());
         this.inventory.setItem(13, spellEditorButton());
         this.inventory.setItem(15, closeButton());
     }
 
-    public static ItemStack skillTreeButton(ClassEnum classEnum) {
+    public ItemStack skillTreeButton() {
         ItemStack skillTreeButton = new ItemStack(Material.PAPER);
         ItemMeta meta = skillTreeButton.getItemMeta();
         if (meta == null) return skillTreeButton;
         meta.setDisplayName(ChatColor.GREEN + "Open Skill Trees");
         String lore = ChatColor.GRAY + "Open the skill trees for the " +
-                ChatColor.GREEN + classEnum.getName() +
+                ChatColor.GREEN + RunicCoreAPI.getPlayerCache(player).getClassName() +
                 ChatColor.GRAY + " class! Earn skill points by leveling-up " +
                 "and spend them on unique and powerful perks!";
-        String[] loreArr = ChatPaginator.wordWrap(lore, 25);
-        meta.setLore(Arrays.asList(loreArr));
+        meta.setLore(ChatUtils.formattedText(lore));
         skillTreeButton.setItemMeta(meta);
         return skillTreeButton;
     }
 
-    // todo: read their currently set spells
     public static ItemStack spellEditorButton() {
         ItemStack spellEditorButton = new ItemStack(Material.NETHER_WART);
+        ItemMeta meta = spellEditorButton.getItemMeta();
+        if (meta == null) return spellEditorButton;
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Open Spell Editor");
+        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spells! " +
+                "Set spells to be executed by different key combos!"));
+        spellEditorButton.setItemMeta(meta);
         return spellEditorButton;
     }
 

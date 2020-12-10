@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
-import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,9 +34,10 @@ public class RuneGUIListener implements Listener {
         ItemStack item = e.getCurrentItem();
         Material material = item.getType();
 
+        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
-        if (material == RuneGUI.skillTreeButton(ClassEnum.MAGE).getType())
+        if (material == runeGUI.skillTreeButton().getType())
             pl.openInventory(new SubClassGUI(pl).getInventory());
         else if (material == RuneGUI.spellEditorButton().getType())
             Bukkit.broadcastMessage("spell selector here");
