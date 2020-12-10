@@ -69,8 +69,8 @@ public class RunicCoreAPI {
      * @param player to lookup
      * @return Skill Tree
      */
-    public static SkillTree getSkillTree(Player player) {
-        return RunicCore.getSkillTreeManager().getSkillTree(player);
+    public static SkillTree getSkillTree(Player player, int position) {
+        return RunicCore.getSkillTreeManager().searchSkillTree(player, position);
     }
 
     public static Spell getSpell(String name) {
@@ -88,8 +88,8 @@ public class RunicCoreAPI {
      * @return SkillTreeGUI
      */
     public static SkillTreeGUI skillTreeGUI(Player player, int position) {
-        if (RunicCore.getSkillTreeManager().getSkillTree(player) != null)
-            return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().getSkillTree(player));
+        if (RunicCore.getSkillTreeManager().searchSkillTree(player, position) != null)
+            return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().searchSkillTree(player, position));
         else
             return new SkillTreeGUI(player, new SkillTree(player, position));
     }

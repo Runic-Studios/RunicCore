@@ -24,7 +24,7 @@ public class SkillTree {
         this.player = player;
         // get sub-class, load default
         perks = getSkillTreeBySubClass(subClassEnum);
-        RunicCore.getSkillTreeManager().getSkillTrees().add(this); // todo: by potision?
+        RunicCore.getSkillTreeManager().getSkillTree(position).add(this);
         // get allocatin data from db, populate
         updateValuesFromDB();
     }
@@ -59,7 +59,7 @@ public class SkillTree {
         MongoDataSection treeDataSection = mongoData.getCharacter(slot);
         for (Perk perk : perks) {
             if (perk.getCurrentlyAllocatedPoints() == 0) continue;
-            treeDataSection.set(PATH_LOCATION + "." + perk.getPerkID(), perk.getCurrentlyAllocatedPoints());
+            treeDataSection.set(PATH_LOCATION + "." + position + "." + perk.getPerkID(), perk.getCurrentlyAllocatedPoints());
         }
         treeDataSection.save();
     }
@@ -74,7 +74,7 @@ public class SkillTree {
         for (Perk perk : perks) {
             if (perk.getCurrentlyAllocatedPoints() == 0) continue;
             perk.setCurrentlyAllocatedPoints(0);
-            treeDataSection.remove(PATH_LOCATION);
+            treeDataSection.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections
         }
         treeDataSection.save();
         mongoData.save();

@@ -9,12 +9,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 
+/**
+ * Caches three skill trees per-player, one for each sub-class.
+ */
 public class SkillTreeManager implements Listener {
 
-    private final HashSet<SkillTree> skillTrees;
+    private final HashSet<SkillTree> skillTreeOne; // first sub-class
+    private final HashSet<SkillTree> skillTreeTwo; // second sub-class
+    private final HashSet<SkillTree> skillTreeThree; // third sub-class
 
     public SkillTreeManager() {
-        skillTrees = new HashSet<>();
+        skillTreeOne = new HashSet<>();
+        skillTreeTwo = new HashSet<>();
+        skillTreeThree = new HashSet<>();
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
@@ -26,13 +33,37 @@ public class SkillTreeManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                skillTrees.remove(getSkillTree(e.getPlayer()));
+                skillTreeOne.remove(searchSkillTree(e.getPlayer(), 1));
+                skillTreeTwo.remove(searchSkillTree(e.getPlayer(), 2));
+                skillTreeThree.remove(searchSkillTree(e.getPlayer(), 3));
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
 
-    public HashSet<SkillTree> getSkillTrees() {
-        return skillTrees;
+    /**
+     *
+     * @param position
+     * @return
+     */
+    public HashSet<SkillTree> getSkillTree(int position) {
+        if (position == 1)
+            return skillTreeOne;
+        else if (position == 2)
+            return skillTreeTwo;
+        else
+            return skillTreeThree;
+    }
+
+    public HashSet<SkillTree> getSkillTreeOne() {
+        return skillTreeOne;
+    }
+
+    public HashSet<SkillTree> getSkillTreeTwo() {
+        return skillTreeTwo;
+    }
+
+    public HashSet<SkillTree> getSkillTreeThree() {
+        return skillTreeThree;
     }
 
     /**
@@ -40,8 +71,9 @@ public class SkillTreeManager implements Listener {
      * @param player to search for in cache
      * @return player's cached SkillTree
      */
-    public SkillTree getSkillTree(Player player) {
-        for (SkillTree skillTree : skillTrees) {
+    public SkillTree searchSkillTree(Player player, int position) {
+        HashSet<SkillTree> toSearch = getSkillTree(position);
+        for (SkillTree skillTree : toSearch) {
             if (skillTree.getPlayer().equals(player))
                 return skillTree;
         }

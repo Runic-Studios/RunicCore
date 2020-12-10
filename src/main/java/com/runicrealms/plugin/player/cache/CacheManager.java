@@ -123,8 +123,12 @@ public class CacheManager implements Listener {
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
             // skill trees
-            if (RunicCoreAPI.getSkillTree(player) != null)
-                RunicCoreAPI.getSkillTree(player).save(mongoData, slot);
+            if (RunicCoreAPI.getSkillTree(player, 1) != null)
+                RunicCoreAPI.getSkillTree(player, 1).save(mongoData, slot);
+            if (RunicCoreAPI.getSkillTree(player, 2) != null)
+                RunicCoreAPI.getSkillTree(player, 2).save(mongoData, slot);
+            if (RunicCoreAPI.getSkillTree(player, 3) != null)
+                RunicCoreAPI.getSkillTree(player, 3).save(mongoData, slot);
             // save data (includes nested fields)
             if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
