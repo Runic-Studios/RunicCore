@@ -27,6 +27,7 @@ public class SkillTreeGUI implements InventoryHolder {
     private final Inventory inventory;
     private final Player player;
     private final SkillTree skillTree;
+    private static final int[] PERK_SLOTS = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
 
     public SkillTreeGUI(Player player, SkillTree skillTree) {
         this.inventory = Bukkit.createInventory(this, 54,
@@ -59,10 +60,10 @@ public class SkillTreeGUI implements InventoryHolder {
         this.inventory.setItem(0, GUIUtil.backButton());
         this.inventory.setItem(4, infoItem());
         int i = 0;
-        int[] perkSlots = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
+
         for (Perk perk : skillTree.getPerks()) {
             ItemStack item = buildPerkItem(perk);
-            this.inventory.setItem(perkSlots[i++], item);
+            this.inventory.setItem(PERK_SLOTS[i++], item);
         }
 
         int[] downArrowSlots = new int[]{19, 23, 37, 41};
@@ -84,6 +85,7 @@ public class SkillTreeGUI implements InventoryHolder {
         ItemStack infoItem = new ItemStack(skillTree.getSubClassEnum().getMaterial());
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
+        meta.setDisplayName(ChatColor.GREEN + skillTree.getSubClassEnum().getName() + " Tree Info");
         String lore = "&7Skill Points: 0";
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
@@ -143,5 +145,9 @@ public class SkillTreeGUI implements InventoryHolder {
         meta.setDisplayName(ChatColor.GRAY + "");
         arrow.setItemMeta(meta);
         return arrow;
+    }
+
+    public static int[] getPerkSlots() {
+        return PERK_SLOTS;
     }
 }
