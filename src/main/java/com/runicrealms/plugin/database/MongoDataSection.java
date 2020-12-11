@@ -20,7 +20,7 @@ public interface MongoDataSection extends Data {
 
     public MongoData getParentData();
 
-    public void saveParent();
+    public void save();
 
     public Set<String> getKeys();
 
