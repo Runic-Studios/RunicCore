@@ -13,7 +13,7 @@ public class ChatUtils {
     private static final int LINE_LENGTH = 25;
 
     public static List<String> formattedText(String text) {
-        return Arrays.asList(ChatPaginator.wordWrap(text, LINE_LENGTH));
+        return Arrays.asList(ChatPaginator.wordWrap(ColorUtil.format(text), LINE_LENGTH));
     }
 
     public static void sendCenteredMessage(Player player, String message){

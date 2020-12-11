@@ -57,6 +57,7 @@ public class SkillTreeGUI implements InventoryHolder {
 
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
+        this.inventory.setItem(4, infoItem());
         int i = 0;
         int[] perkSlots = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
         for (Perk perk : skillTree.getPerks()) {
@@ -77,6 +78,16 @@ public class SkillTreeGUI implements InventoryHolder {
         for (int rightArrowSlot : rightArrowSlots) {
             this.inventory.setItem(rightArrowSlot, arrow(Material.BROWN_STAINED_GLASS_PANE));
         }
+    }
+
+    private ItemStack infoItem() {
+        ItemStack infoItem = new ItemStack(skillTree.getSubClassEnum().getMaterial());
+        ItemMeta meta = infoItem.getItemMeta();
+        assert meta != null;
+        String lore = "&7Skill Points: 0";
+        meta.setLore(ChatUtils.formattedText(lore));
+        infoItem.setItemMeta(meta);
+        return infoItem;
     }
 
     /**
