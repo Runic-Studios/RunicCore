@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spellutil;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 
 public class TeleportUtil {
