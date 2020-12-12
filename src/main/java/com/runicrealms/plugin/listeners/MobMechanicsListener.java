@@ -2,6 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Horse;
@@ -9,9 +10,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.util.Vector;
 
-public final class MobHealthListener implements Listener {
+public final class MobMechanicsListener implements Listener {
 
     @EventHandler
     public void updateHealthBarSpellDamage(SpellDamageEvent e) {
@@ -113,5 +116,17 @@ public final class MobHealthListener implements Listener {
 
         String healthStr = healthColor + "" + (int) currentHealth;
         return firstHalf + healthStr + secHalf;
+    }
+
+    @EventHandler
+    public void onBurn(EntityCombustEvent event){
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onMythicMobDeath(MythicMobDeathEvent e) {
+        Vector vec = e.getEntity().getLocation().toVector().subtract
+                (e.getKiller().getLocation().toVector()).setY(0).normalize().multiply(1.5);
+        e.getEntity().setVelocity(vec);
     }
 }

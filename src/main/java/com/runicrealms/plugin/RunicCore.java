@@ -261,7 +261,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerLevelListener(), this);
         pm.registerEvents(new HelmetListener(), this);
         pm.registerEvents(new CraftingListener(), this);
-        pm.registerEvents(new MobHealthListener(), this);
+        pm.registerEvents(new MobMechanicsListener(), this);
         pm.registerEvents(new CombatListener(), this);
         pm.registerEvents(new PlayerRegenListener(), this);
         pm.registerEvents(new PlayerMenuListener(), this);
@@ -276,7 +276,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new ScrapperListener(), this);
-        pm.registerEvents(new MobBurnListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
