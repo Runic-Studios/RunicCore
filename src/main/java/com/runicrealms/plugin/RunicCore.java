@@ -17,8 +17,6 @@ import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.group.GroupChannel;
 import com.runicrealms.plugin.group.GroupManager;
-import com.runicrealms.plugin.healthbars.MobHealthBars;
-import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.item.BossTagger;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.MobTagger;
@@ -91,7 +89,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static CombatManager combatManager;
     private static LootChestManager lootChestManager;
     private static RegenManager regenManager;
-    private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
     private static ScoreboardHandler scoreboardHandler;
     private static SpellManager spellManager;
@@ -145,7 +142,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         combatManager = new CombatManager();
         lootChestManager = new LootChestManager();
         regenManager = new RegenManager();
-        mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
         scoreboardHandler = new ScoreboardHandler();
         spellManager = new SpellManager();
@@ -193,10 +189,6 @@ public class RunicCore extends JavaPlugin implements Listener {
             new PlaceholderAPI().register();
         }
 
-        // clean any stray armor stands, evokers
-        mobHealthManager.insurancePolicy();
-        mobHealthManager.fullClean();
-
         // motd
         String motd = ColorUtil.format("                    &d&lRUNIC REALMS&r" +
                 "\n            &f&l1.8 - The Dungeons Patch!");
@@ -211,7 +203,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         instance = null;
         lootChestManager = null;
         regenManager = null;
-        mobHealthManager = null;
         partyManager = null;
         scoreboardHandler = null;
         spellManager = null;
@@ -270,7 +261,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerLevelListener(), this);
         pm.registerEvents(new HelmetListener(), this);
         pm.registerEvents(new CraftingListener(), this);
-        pm.registerEvents(new MobHealthBars(), this);
+        pm.registerEvents(new MobHealthListener(), this);
         pm.registerEvents(new CombatListener(), this);
         pm.registerEvents(new PlayerRegenListener(), this);
         pm.registerEvents(new PlayerMenuListener(), this);
