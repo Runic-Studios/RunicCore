@@ -5,6 +5,7 @@ import com.runicrealms.plugin.item.ItemNameGenerator;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.TieredItemGenerator;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -15,12 +16,22 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class ItemUtils {
+
+    /**
+     * Returns
+     * @param value from minecraft-heads.com
+     * @return
+     */
+    public static ItemStack getHead(String value) {
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+        UUID hashAsId = new UUID(value.hashCode(), value.hashCode());
+        return Bukkit.getUnsafe().modifyItemStack(skull,
+                "{SkullOwner:{Id:\"" + hashAsId + "\",Properties:{textures:[{Value:\"" + value + "\"}]}}}"
+        );
+    }
 
     public static ItemStack generateCommonArmor() {
 

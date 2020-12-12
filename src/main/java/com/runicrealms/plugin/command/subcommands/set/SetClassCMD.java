@@ -13,8 +13,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-import static com.runicrealms.plugin.classes.SelectClass.setConfig;
 import static com.runicrealms.plugin.classes.SelectClass.setPlayerClass;
+import static com.runicrealms.plugin.classes.SelectClass.setupCache;
 
 public class SetClassCMD implements SubCommand {
 
@@ -85,7 +85,7 @@ public class SetClassCMD implements SubCommand {
 
             setPlayerClass(pl, formattedStr, true);
 
-            setConfig(pl, formattedStr);
+            setupCache(pl, formattedStr);
 
             // set the player's slot to 0 (the artifact)
             pl.getInventory().setHeldItemSlot(0);

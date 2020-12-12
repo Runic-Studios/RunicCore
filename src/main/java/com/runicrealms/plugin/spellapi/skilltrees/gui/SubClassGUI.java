@@ -7,7 +7,6 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -56,9 +55,7 @@ public class SubClassGUI implements InventoryHolder {
     private ItemStack subClassItem(int position) {
         SubClassEnum subClassEnum = SubClassUtil.determineSubClass(player, position);
         String displayName = subClassEnum.getName();
-        Material itemType = subClassEnum.getMaterial();
-
-        ItemStack subClassItem = new ItemStack(itemType);
+        ItemStack subClassItem = subClassEnum.getItemStack();
         ItemMeta meta = subClassItem.getItemMeta();
         if (meta == null) return subClassItem;
         meta.setDisplayName(ChatColor.GREEN + displayName);

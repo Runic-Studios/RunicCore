@@ -13,6 +13,9 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.items.MythicItem;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,14 +34,20 @@ public class RunicCoreAPI {
 
     /**
      * Gets the MythicMobs item w/ internal name matching string
-     * @param itemName internal name of item (NOT DISPLAY NAME)
+     * @param internalName internal name of item (NOT DISPLAY NAME)
      * @param amount of itemstack
      * @return an ItemStack
      */
-    public static ItemStack getMythicItem(String itemName, int amount) {
-        MythicItem mi = MythicMobs.inst().getItemManager().getItem(itemName).get();
-        AbstractItemStack abstractItemStack = mi.generateItemStack(amount);
-        return BukkitAdapter.adapt(abstractItemStack);
+    public static ItemStack getMythicItem(String internalName, int amount) {
+        try {
+            MythicItem mi = MythicMobs.inst().getItemManager().getItem(internalName).get();
+            AbstractItemStack abstractItemStack = mi.generateItemStack(amount);
+            return BukkitAdapter.adapt(abstractItemStack);
+        } catch (NullPointerException e) {
+            Bukkit.getServer().getLogger().info(ChatColor.RED + "There was an error getting mythic item.");
+            e.printStackTrace();
+            return new ItemStack(Material.STONE);
+        }
     }
 
     /**
@@ -50,9 +59,15 @@ public class RunicCoreAPI {
      * @return an ItemStack
      */
     public static ItemStack getMythicItem(String internalName, Random rand, int minStackSize, int maxStackSize) {
-        MythicItem mi = MythicMobs.inst().getItemManager().getItem(internalName).get();
-        AbstractItemStack abstractItemStack = mi.generateItemStack(rand.nextInt(maxStackSize - minStackSize) + minStackSize);
-        return BukkitAdapter.adapt(abstractItemStack);
+        try {
+            MythicItem mi = MythicMobs.inst().getItemManager().getItem(internalName).get();
+            AbstractItemStack abstractItemStack = mi.generateItemStack(rand.nextInt(maxStackSize - minStackSize) + minStackSize);
+            return BukkitAdapter.adapt(abstractItemStack);
+        } catch (NullPointerException e) {
+            Bukkit.getServer().getLogger().info(ChatColor.RED + "There was an error getting mythic item.");
+            e.printStackTrace();
+            return new ItemStack(Material.STONE);
+        }
     }
 
     /**

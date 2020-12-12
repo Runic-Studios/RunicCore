@@ -82,7 +82,7 @@ public class SkillTreeGUI implements InventoryHolder {
     }
 
     private ItemStack infoItem() {
-        ItemStack infoItem = new ItemStack(skillTree.getSubClassEnum().getMaterial());
+        ItemStack infoItem = new ItemStack(skillTree.getSubClassEnum().getItemStack());
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + skillTree.getSubClassEnum().getName() + " Tree Info");
