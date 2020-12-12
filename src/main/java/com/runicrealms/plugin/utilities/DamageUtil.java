@@ -137,7 +137,7 @@ public class DamageUtil {
 //        recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player && knockBack) {
-            KnockbackUtil.knockbackPlayer(damager, (Player) recipient);
+            KnockbackUtil.knockbackMeleePlayer(damager, (Player) recipient);
         }
 
         // apply custom mechanics if the player were to die
@@ -185,16 +185,12 @@ public class DamageUtil {
 
         if (recipient instanceof Player) {
             if (isRanged) {
-                KnockbackUtil.knockbackRanged(caster, recipient);
+                KnockbackUtil.knockbackRangedPlayer((Player) recipient);
             } else {
-                KnockbackUtil.knockbackPlayer(caster, (Player) recipient);
+                KnockbackUtil.knockbackMeleePlayer(caster, (Player) recipient);
             }
         } else {
-            if (isRanged) {
-                KnockbackUtil.knockbackRanged(caster, recipient);
-            } else {
-                KnockbackUtil.knockbackMob(caster, recipient);
-            }
+            KnockbackUtil.knockBackMob(recipient, isRanged);
         }
 
         // apply custom mechanics if the player were to die
