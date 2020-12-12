@@ -185,12 +185,12 @@ public class DamageUtil {
 
         if (recipient instanceof Player) {
             if (isRanged) {
-                KnockbackUtil.knockbackRangedPlayer((Player) recipient);
+                KnockbackUtil.knockbackRangedPlayer(caster, (Player) recipient);
             } else {
                 KnockbackUtil.knockbackMeleePlayer(caster, (Player) recipient);
             }
         } else {
-            KnockbackUtil.knockBackMob(recipient, isRanged);
+            KnockbackUtil.knockBackMob(caster, recipient, isRanged);
         }
 
         // apply custom mechanics if the player were to die

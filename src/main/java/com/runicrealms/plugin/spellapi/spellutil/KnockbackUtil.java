@@ -35,12 +35,13 @@ public class KnockbackUtil {
 
     /**
      * Controls strength of on-hit knockback for melee attacks against other players.
+     * @param damager player who attacked
      * @param victim player who was hit
      */
-    public static void knockbackRangedPlayer(Player victim) {
-        Vector v = victim.getLocation().getDirection().multiply(-0.35);
-        v.setY(0.2);
-        victim.setVelocity(v);
+    public static void knockbackRangedPlayer(Player damager, Player victim) {
+        Vector vector = damager.getLocation().getDirection().multiply(0.35);
+        vector.setY(0.2);
+        victim.setVelocity(vector);
     }
 
     /**
@@ -48,12 +49,12 @@ public class KnockbackUtil {
      * @param entity entity to be hit back
      * @param isRanged whether the attack came from a melee or ranged hit
      */
-    public static void knockBackMob(Entity entity, boolean isRanged) {
-        double multiplier = -0.75;
+    public static void knockBackMob(Player damager, Entity entity, boolean isRanged) {
+        double multiplier = 0.75;
         if (isRanged)
-            multiplier = -0.5;
-        Vector v = entity.getLocation().getDirection().multiply(multiplier);
-        v.setY(0.225);
+            multiplier = 0.5;
+        Vector vector = damager.getLocation().getDirection().multiply(multiplier);
+        vector.setY(0.225);
         // no boss knockback!
         if (MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) {
             ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
@@ -61,7 +62,7 @@ public class KnockbackUtil {
                 return;
             }
         }
-        entity.setVelocity(v);
+        entity.setVelocity(vector);
     }
 }
 
