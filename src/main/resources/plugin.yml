@@ -6,7 +6,7 @@ description: Core plugin for the "Runic Realms" server
 author: Skyfallin, Excel, Destiny
 loadbefore: [Quests]
 softdepend: [PlaceholderAPI]
-depend: [MythicMobs, RunicChat]
+depend: [MythicMobs, NBTAPI, RunicChat]
 commands:
   artifactinfo:
     usage: /<commands>

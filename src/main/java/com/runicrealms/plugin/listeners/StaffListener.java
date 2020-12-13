@@ -2,9 +2,9 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,25 +14,21 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Handles the mage auto-attack
+ * @author Skyfallin
+ */
 public class StaffListener implements Listener {
 
-    // globals
-    private static final double BEAM_WIDTH = 2.0;
+    private static final int STAFF_COOLDOWN = 15; // ticks (1s)
     private static final int RADIUS = 5;
-    private static final double RANGE = 6.0;
-    private static final int SPEED_MULT = 3;
-    private final HashMap<UUID, List<UUID>> hasBeenHit = new HashMap<>();
+    private static final int MAX_DIST = 8;
+    private static final double BEAM_HITBOX_SIZE = 1.5;
 
-    // creates the mage ranged auto-attack
     @EventHandler
     public void onStaffAttack(PlayerInteractEvent e) {
 
@@ -65,18 +61,42 @@ public class StaffListener implements Listener {
         // check for mage
         String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null) return;
-        if (!className.equals("Mage")) {
-            return;
-        }
+        if (!className.equals("Mage")) return;
 
-        staffAttack(artifact, pl);
+        staffAttack(pl, artifact);
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 20);
+        pl.setCooldown(artifact.getType(), STAFF_COOLDOWN);
     }
 
-    private void staffAttack(ItemStack artifact, Player pl) {
+    private void staffAttack(Player player, ItemStack itemStack) {
+        createStaffParticle(player, player.getEyeLocation(), player.getTargetBlock(null, MAX_DIST).getLocation(), itemStack);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+    }
 
-        // retrieve the weapon damage, cooldown
+    private void createStaffParticle(Player pl, Location point1, Location point2, ItemStack itemStack) {
+        double space = 0.6;
+        double distance = point1.distance(point2);
+        Vector p1 = point1.toVector();
+        Vector p2 = point2.toVector();
+        Vector vector = p2.clone().subtract(p1).normalize().multiply(space);
+        for (double length = 0; length < distance; p1.add(vector)) {
+            Location vectorLocation = p1.toLocation(pl.getWorld());
+            for (Entity en : pl.getWorld().getNearbyEntities(p1.toLocation(pl.getWorld()), RADIUS, RADIUS, RADIUS)) {
+                EnemyVerifyEvent e = new EnemyVerifyEvent(pl, en);
+                Bukkit.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled() && en.getLocation().distanceSquared(vectorLocation) <= BEAM_HITBOX_SIZE * BEAM_HITBOX_SIZE) {
+                    damageStaff(pl, (LivingEntity) en, itemStack);
+                    return;
+                }
+            }
+            pl.getWorld().spawnParticle(Particle.CRIT_MAGIC,
+                    new Location(pl.getWorld(), p1.getX(), p1.getY(), p1.getZ()), 25, 0, 0, 0, 0);
+            length += space;
+        }
+    }
+
+    private void damageStaff(Player pl, LivingEntity victim, ItemStack artifact) {
+
         int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
         int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
         int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
@@ -87,99 +107,14 @@ public class StaffListener implements Listener {
             return;
         }
 
-        // create our vector to be used later
-        Vector vector = pl.getEyeLocation().getDirection().normalize().multiply(SPEED_MULT);
+        // apply attack effects, random damage amount
+        if (maxDamage != 0) {
+            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+            DamageUtil.damageEntityWeapon(randomNum, victim, pl, true, false);
+        } else {
+            DamageUtil.damageEntityWeapon(maxDamage, victim, pl, true, false);
+        }
 
-        // play sound effect
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
-
-        // particle effect
-        new BukkitRunnable() {
-
-            final Location location = pl.getEyeLocation();
-            final Location startLoc = pl.getLocation();
-
-            @Override
-            public void run() {
-
-                // vector, particles
-                location.add(vector);
-                location.getWorld().spawnParticle(Particle.CRIT_MAGIC, location, 25, 0.1f, 0.1f, 0.1f, 0);
-                location.getWorld().spawnParticle(Particle.REDSTONE, location,
-                        25, 0.1f, 0.1f, 0.1f, new Particle.DustOptions(Color.WHITE, 1));
-
-                // range before spell dies out naturally
-                if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
-                    this.cancel();
-                }
-
-                // get nearby entities
-                for (Entity e : location.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-                    if (e.getLocation().distance(location) <= BEAM_WIDTH) {
-                        if (e != (pl)) {
-                            if (e.getType().isAlive()) {
-
-                                // bugfix for armor stands
-                                if (e instanceof ArmorStand && e.getVehicle() != null) {
-                                    e = e.getVehicle();
-                                }
-
-                                if (e instanceof ArmorStand && e.isInvulnerable()) continue;
-
-                                LivingEntity victim = (LivingEntity) e;
-
-                                // skip party members
-                                if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-                                    if (e instanceof Player) {
-                                        if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) e)) {
-                                            continue;
-                                        }
-                                    }
-                                }
-
-                                // skip NPCs
-                                if (victim.hasMetadata("NPC")) continue;
-
-                                // prevent player from being hit by the same attack
-                                if (hasBeenHit.containsKey(victim.getUniqueId())) {
-                                    List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
-                                    if (uuids.contains(pl.getUniqueId())) {
-                                        break;
-                                    } else {
-                                        uuids.add(pl.getUniqueId());
-                                        hasBeenHit.put(victim.getUniqueId(), uuids);
-                                    }
-                                } else {
-                                    List<UUID> uuids = new ArrayList<>();
-                                    uuids.add(pl.getUniqueId());
-                                    hasBeenHit.put(victim.getUniqueId(), uuids);
-                                }
-
-                                // can't be hit by the same player's beam for 1 tick
-                                new BukkitRunnable() {
-                                    @Override
-                                    public void run() {
-                                        List<UUID> uuids = hasBeenHit.get(victim.getUniqueId());
-                                        uuids.remove(pl.getUniqueId());
-                                        hasBeenHit.put(victim.getUniqueId(), uuids);
-                                    }
-                                }.runTaskLater(RunicCore.getInstance(), 1L);
-
-                                // apply attack effects, random damage amount
-                                if (maxDamage != 0) {
-                                    int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-                                    DamageUtil.damageEntityWeapon(randomNum, victim, pl, true, false);
-                                } else {
-                                    DamageUtil.damageEntityWeapon(maxDamage, victim, pl, true, false);
-                                }
-
-                                pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                                this.cancel();
-                            }
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
+        pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
     }
 }
