@@ -51,7 +51,16 @@ public class SkillTreeGUIListener implements Listener {
         else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n-> n == e.getRawSlot())) {
             int perkPosition = ArrayUtils.indexOf(SkillTreeGUI.getPerkSlots(), e.getRawSlot());
             Perk perk = skillTreeGUI.getSkillTree().getPerks().get(perkPosition);
-            attemptToPurchasePerk(perk);
+            //attemptToPurchasePerk(perk);
+            skillTreeGUI.getSkillTree().attemptToPurchasePerk(perk);
+            for (Perk p : skillTreeGUI.getSkillTree().getPerks()) {
+                if (p.getCurrentlyAllocatedPoints() > 0) {
+                    if (perk instanceof PerkBaseStat)
+                        Bukkit.broadcastMessage(((PerkBaseStat) perk).getBaseStatEnum().getName());
+                    else
+                        Bukkit.broadcastMessage(((PerkSpell) perk).getSpellName());
+                }
+            }
         }
     }
 

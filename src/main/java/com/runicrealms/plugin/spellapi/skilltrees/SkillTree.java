@@ -5,6 +5,7 @@ import com.runicrealms.plugin.classes.SubClassEnum;
 import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
+import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.spellapi.skilltrees.util.*;
 import org.bukkit.entity.Player;
 
@@ -29,22 +30,6 @@ public class SkillTree {
         updateValuesFromDB();
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public SubClassEnum getSubClassEnum() {
-        return subClassEnum;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public List<Perk> getPerks() {
-        return perks;
-    }
-
     // todo: grab data from DB once
     public void updateValuesFromDB() {
 
@@ -52,16 +37,13 @@ public class SkillTree {
 
     /**
      * Saves all perks which have at least 1 point allocated to DB!
-     * @param mongoData called from PlayerCache
-     * @param slot of selected class
+     * @param character The character section of a DB object
      */
-    public void save(PlayerMongoData mongoData, int slot) {
-        MongoDataSection treeDataSection = mongoData.getCharacter(slot);
+    public void save(PlayerMongoDataSection character) {
         for (Perk perk : perks) {
             if (perk.getCurrentlyAllocatedPoints() == 0) continue;
-            treeDataSection.set(PATH_LOCATION + "." + position + "." + perk.getPerkID(), perk.getCurrentlyAllocatedPoints());
+            character.set(PATH_LOCATION + "." + position + "." + perk.getPerkID(), perk.getCurrentlyAllocatedPoints());
         }
-        treeDataSection.save();
     }
 
     /**
@@ -120,5 +102,29 @@ public class SkillTree {
                 return WarriorTreeUtil.inquisitorPerkList();
         }
         return null;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public SubClassEnum getSubClassEnum() {
+        return subClassEnum;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public List<Perk> getPerks() {
+        return perks;
+    }
+
+    /**
+     *
+     * @param perk
+     */
+    public void attemptToPurchasePerk(Perk perk) {
+        perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
     }
 }

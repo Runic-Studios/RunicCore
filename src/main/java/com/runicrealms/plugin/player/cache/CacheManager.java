@@ -2,11 +2,11 @@ package com.runicrealms.plugin.player.cache;
 
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -30,18 +30,21 @@ public class CacheManager implements Listener {
     private final ConcurrentHashMap<Player, PlayerCache> playerCaches;
     private final ConcurrentLinkedQueue<PlayerCache> queuedCaches;
 
+    /*
+    Saves files ASYNC
+     */
     public CacheManager() {
 
         playerCaches = new ConcurrentHashMap<>();
         queuedCaches = new ConcurrentLinkedQueue<>();
 
-        new BukkitRunnable() {
+        new BukkitRunnable() { // Asynchronously
             @Override
             public void run() {
                 saveCaches();
                 saveQueuedFiles(true, true);
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD * 20); // 10s delay, 30 sec period
+        }.runTaskTimer(RunicCore.getInstance(), 100L, CACHE_PERIOD * 20); // 10s delay, 30 sec period
     }
 
     @EventHandler
@@ -98,6 +101,9 @@ public class CacheManager implements Listener {
             int slot = playerCache.getCharacterSlot();
             PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
             PlayerMongoDataSection character = mongoData.getCharacter(slot);
+            CacheSaveEvent e = new CacheSaveEvent(player, mongoData, character);
+            Bukkit.getPluginManager().callEvent(e);
+            if (e.isCancelled()) return;
             if (playerCache.getClassName() != null)
                 character.set("class.name", playerCache.getClassName());
             character.set("class.level", playerCache.getClassLevel());
@@ -117,12 +123,12 @@ public class CacheManager implements Listener {
             character.set("outlaw.enabled", playerCache.getIsOutlaw());
             character.set("outlaw.rating", playerCache.getRating());
             // skill trees
-            if (RunicCoreAPI.getSkillTree(player, 1) != null)
-                RunicCoreAPI.getSkillTree(player, 1).save(mongoData, slot);
-            if (RunicCoreAPI.getSkillTree(player, 2) != null)
-                RunicCoreAPI.getSkillTree(player, 2).save(mongoData, slot);
-            if (RunicCoreAPI.getSkillTree(player, 3) != null)
-                RunicCoreAPI.getSkillTree(player, 3).save(mongoData, slot);
+//            if (RunicCoreAPI.getSkillTree(player, 1) != null)
+//                RunicCoreAPI.getSkillTree(player, 1).save(mongoData, slot);
+//            if (RunicCoreAPI.getSkillTree(player, 2) != null)
+//                RunicCoreAPI.getSkillTree(player, 2).save(mongoData, slot);
+//            if (RunicCoreAPI.getSkillTree(player, 3) != null)
+//                RunicCoreAPI.getSkillTree(player, 3).save(mongoData, slot);
             // location
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
