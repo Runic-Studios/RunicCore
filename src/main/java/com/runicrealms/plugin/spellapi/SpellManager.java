@@ -23,17 +23,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
-    private final HashMap<UUID, HashMap<Spell, Long>> cooldown;
+    private final ConcurrentHashMap<UUID, HashMap<Spell, Long>> cooldown;
     private final HashSet<UUID> silencedEntities;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
-        this.cooldown = new HashMap<>();
+        this.cooldown = new ConcurrentHashMap<>();
         this.silencedEntities = new HashSet<>();
         this.registerSpells();
         this.startCooldownTask();

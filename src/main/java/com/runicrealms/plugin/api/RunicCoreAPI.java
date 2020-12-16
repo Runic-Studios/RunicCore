@@ -92,6 +92,18 @@ public class RunicCoreAPI {
         return RunicCore.getSpellManager().getSpellByName(name);
     }
 
+    /**
+     * Used to determine whether two players are in a party.
+     * @param first The first player
+     * @param second The second player
+     * @return boolean, whether they are in the same party
+     */
+    public static boolean isPartyMember(Player first, Player second) {
+        if (RunicCore.getPartyManager().getPlayerParty(first) == null) return false;
+        if (RunicCore.getPartyManager().getPlayerParty(second) == null) return false;
+        return RunicCore.getPartyManager().getPlayerParty(first).hasMember(second);
+    }
+
     public static RuneGUI runeGUI(Player player) {
         return new RuneGUI(player);
     }

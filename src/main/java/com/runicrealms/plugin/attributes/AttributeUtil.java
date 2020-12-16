@@ -3,6 +3,7 @@ package com.runicrealms.plugin.attributes;
 import de.tr7zw.nbtapi.NBTCompoundList;
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.NBTListCompound;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class AttributeUtil {
@@ -91,6 +92,7 @@ public class AttributeUtil {
 
     // searches for a custom stat on an item
     public static double getCustomDouble(ItemStack item, String statName) {
+        if (item.getType() == Material.AIR) return 0;
         NBTItem nbti = new NBTItem(item);
         if (nbti.hasKey(statName)) {
             return nbti.getDouble(statName);
@@ -101,6 +103,7 @@ public class AttributeUtil {
 
     // above method but with Strings
     public static String getCustomString(ItemStack item, String statName) {
+        if (item.getType() == Material.AIR) return "";
         NBTItem nbti = new NBTItem(item);
         if (nbti.hasKey(statName)) {
             return nbti.getString(statName);
@@ -111,6 +114,7 @@ public class AttributeUtil {
 
     // searches for a given stat on an item
     public static double getGenericDouble(ItemStack item, String name) {
+        if (item.getType() == Material.AIR) return 0;
         double amount = 0;
         NBTItem nbti = new NBTItem(item);
         NBTCompoundList list = nbti.getCompoundList("Attributes");

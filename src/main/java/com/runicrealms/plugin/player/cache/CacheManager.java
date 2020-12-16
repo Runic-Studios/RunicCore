@@ -116,12 +116,6 @@ public class CacheManager implements Listener {
             // outlaw
             character.set("outlaw.enabled", playerCache.getIsOutlaw());
             character.set("outlaw.rating", playerCache.getRating());
-            // inventory
-            character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
-            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));
-            // location
-            character.remove("location"); // remove old save format
-            DatabaseUtil.saveLocation(character, playerCache.getLocation());
             // skill trees
             if (RunicCoreAPI.getSkillTree(player, 1) != null)
                 RunicCoreAPI.getSkillTree(player, 1).save(mongoData, slot);
@@ -129,6 +123,12 @@ public class CacheManager implements Listener {
                 RunicCoreAPI.getSkillTree(player, 2).save(mongoData, slot);
             if (RunicCoreAPI.getSkillTree(player, 3) != null)
                 RunicCoreAPI.getSkillTree(player, 3).save(mongoData, slot);
+            // location
+            character.remove("location"); // remove old save format
+            DatabaseUtil.saveLocation(character, playerCache.getLocation());
+            // inventory
+            character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
+            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));
             // save data (includes nested fields)
             if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
