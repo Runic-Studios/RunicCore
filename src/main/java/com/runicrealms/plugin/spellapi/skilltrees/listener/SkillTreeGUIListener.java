@@ -1,12 +1,9 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
-import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
-import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -51,23 +48,8 @@ public class SkillTreeGUIListener implements Listener {
         else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n-> n == e.getRawSlot())) {
             int perkPosition = ArrayUtils.indexOf(SkillTreeGUI.getPerkSlots(), e.getRawSlot());
             Perk perk = skillTreeGUI.getSkillTree().getPerks().get(perkPosition);
-            //attemptToPurchasePerk(perk);
             skillTreeGUI.getSkillTree().attemptToPurchasePerk(perk);
-            for (Perk p : skillTreeGUI.getSkillTree().getPerks()) {
-                if (p.getCurrentlyAllocatedPoints() > 0) {
-                    if (perk instanceof PerkBaseStat)
-                        Bukkit.broadcastMessage(((PerkBaseStat) perk).getBaseStatEnum().getName());
-                    else
-                        Bukkit.broadcastMessage(((PerkSpell) perk).getSpellName());
-                }
-            }
+            skillTreeGUI.getInventory().setItem(e.getRawSlot(), skillTreeGUI.buildPerkItem(perk));
         }
-    }
-
-    private void attemptToPurchasePerk(Perk perk) {
-        if (perk instanceof PerkBaseStat)
-            Bukkit.broadcastMessage(((PerkBaseStat) perk).getBaseStatEnum().getName());
-        else
-            Bukkit.broadcastMessage(((PerkSpell) perk).getSpellName());
     }
 }

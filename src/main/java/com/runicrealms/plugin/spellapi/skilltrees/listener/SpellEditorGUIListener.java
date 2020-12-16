@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
-import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class RuneGUIListener implements Listener {
+public class SpellEditorGUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
@@ -21,15 +21,15 @@ public class RuneGUIListener implements Listener {
          */
         if (e.getClickedInventory() == null) return;
         if (!(e.getClickedInventory().getHolder() instanceof RuneGUI)) return;
-        RuneGUI runeGUI = (RuneGUI) e.getClickedInventory().getHolder();
-        if (!e.getWhoClicked().equals(runeGUI.getPlayer())) {
+        SpellEditorGUI spellEditorGUI = (SpellEditorGUI) e.getClickedInventory().getHolder();
+        if (!e.getWhoClicked().equals(spellEditorGUI.getPlayer())) {
             e.setCancelled(true);
             e.getWhoClicked().closeInventory();
             return;
         }
         Player pl = (Player) e.getWhoClicked();
         if (e.getCurrentItem() == null) return;
-        if (runeGUI.getInventory().getItem(e.getRawSlot()) == null) return;
+        if (spellEditorGUI.getInventory().getItem(e.getRawSlot()) == null) return;
 
         ItemStack item = e.getCurrentItem();
         Material material = item.getType();
@@ -37,8 +37,8 @@ public class RuneGUIListener implements Listener {
         pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
-        if (material == runeGUI.skillTreeButton().getType())
-            pl.openInventory(new SubClassGUI(pl).getInventory());
+        if (material == GUIUtil.backButton().getType())
+            pl.openInventory(new RuneGUI(pl).getInventory());
         else if (material == RuneGUI.spellEditorButton().getType())
             pl.openInventory(new SpellEditorGUI(pl).getInventory());
         else

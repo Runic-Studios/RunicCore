@@ -97,7 +97,7 @@ public class SkillTreeGUI implements InventoryHolder {
      * @param perk Perk to create lore for (can be base stat or spell)
      * @return ItemStack for use in inventory
      */
-    private ItemStack buildPerkItem(Perk perk) {
+    public ItemStack buildPerkItem(Perk perk) {
         ItemStack perkItem = new ItemStack(Material.PAPER);
         ItemMeta meta = perkItem.getItemMeta();
         assert meta != null;

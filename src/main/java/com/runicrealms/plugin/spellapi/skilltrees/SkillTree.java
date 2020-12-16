@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.SubClassEnum;
 import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.database.MongoDataSection;
@@ -30,9 +31,24 @@ public class SkillTree {
         updateValuesFromDB();
     }
 
-    // todo: grab data from DB once
-    public void updateValuesFromDB() {
+    /**
+     *
+     * @param perk
+     */
+    public void attemptToPurchasePerk(Perk perk) {
+        perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
+    }
 
+    /*
+    ?????
+     */
+    private void updateValuesFromDB() {
+        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
+        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position);
+        for (String key : perkSection.getKeys()) {
+            getPerk(Integer.parseInt(key)).setCurrentlyAllocatedPoints(Integer.parseInt(perkSection.get(key).toString()));
+        }
     }
 
     /**
@@ -52,13 +68,13 @@ public class SkillTree {
      * @param slot of selected class
      */
     public void resetTree(PlayerMongoData mongoData, int slot) {
-        MongoDataSection treeDataSection = mongoData.getCharacter(slot);
+        MongoDataSection character = mongoData.getCharacter(slot);
         for (Perk perk : perks) {
             if (perk.getCurrentlyAllocatedPoints() == 0) continue;
             perk.setCurrentlyAllocatedPoints(0);
-            treeDataSection.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections
+            character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections
         }
-        treeDataSection.save();
+        character.save();
         mongoData.save();
     }
 
@@ -122,9 +138,14 @@ public class SkillTree {
 
     /**
      *
-     * @param perk
+     * @param perkID
+     * @return
      */
-    public void attemptToPurchasePerk(Perk perk) {
-        perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
+    public Perk getPerk(int perkID) {
+        for (Perk perk : perks) {
+            if (perk.getPerkID() == perkID)
+                return perk;
+        }
+        return null;
     }
 }
