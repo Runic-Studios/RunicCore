@@ -81,10 +81,10 @@ public class RunicCoreAPI {
     }
 
     /**
-     *
-     * @param player
-     * @param number
-     * @return
+     * Gets the spell in the associated 'slot' from player spell wrapper.
+     * @param player to grab spell for
+     * @param number of spell slot (1, 2, 3, 4)
+     * @return a Spell object to be used elsewhere
      */
     public static Spell getPlayerSpell(Player player, int number) {
         Spell spellToCast = null;
@@ -92,15 +92,23 @@ public class RunicCoreAPI {
         switch (number) {
             case 1:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
+                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
             case 2:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellLeftClick());
+                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
             case 3:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
+                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
             case 4:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
+                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
         }
         return spellToCast;

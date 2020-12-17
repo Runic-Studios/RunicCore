@@ -61,26 +61,27 @@ public class PlayerSpellWrapper {
      * Reset in-memory spells for player, such as a skill point reset.
      */
     public void clearSpells() {
-        switch (RunicCoreAPI.getPlayerCache(player).getClassName()) {
-            case "Archer":
-                this.spellHotbarOne = DEFAULT_ARCHER;
-                break;
-            case "Cleric":
-                this.spellHotbarOne = DEFAULT_CLERIC;
-                break;
-            case "Mage":
-                this.spellHotbarOne = DEFAULT_MAGE;
-                break;
-            case "Rogue":
-                this.spellHotbarOne = DEFAULT_ROGUE;
-                break;
-            case "Warrior":
-                this.spellHotbarOne = DEFAULT_WARRIOR;
-                break;
-        }
+        this.spellHotbarOne = determineDefaultSpell(player);
         this.spellLeftClick = "";
         this.spellRightClick = "";
         this.spellSwapHands = "";
+    }
+
+    public static String determineDefaultSpell(Player player) {
+        switch (RunicCoreAPI.getPlayerCache(player).getClassName()) {
+            case "Archer":
+                return DEFAULT_ARCHER;
+            case "Cleric":
+                return DEFAULT_CLERIC;
+            case "Mage":
+                return DEFAULT_MAGE;
+            case "Rogue":
+                return DEFAULT_ROGUE;
+            case "Warrior":
+                return DEFAULT_WARRIOR;
+            default:
+                return "";
+        }
     }
 
     public Player getPlayer() {

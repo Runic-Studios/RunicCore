@@ -80,8 +80,8 @@ public class SkillTreeManager implements Listener {
             new PlayerSpellWrapper(player,
                     (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION));
         else
-            new PlayerSpellWrapper(player, "Fireball", "Sprint",
-                "Smoke Bomb", "Slice and Dice"); // todo: defaults
+            new PlayerSpellWrapper(player, PlayerSpellWrapper.determineDefaultSpell(e.getPlayer()), "",
+                    "", "");
     }
 
     /**
