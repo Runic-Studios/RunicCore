@@ -5,6 +5,7 @@ import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.CombatListener;
+import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
@@ -77,6 +78,32 @@ public class RunicCoreAPI {
      */
     public static PlayerCache getPlayerCache(Player player) {
         return RunicCore.getCacheManager().getPlayerCaches().get(player);
+    }
+
+    /**
+     *
+     * @param player
+     * @param number
+     * @return
+     */
+    public static Spell getPlayerSpell(Player player, int number) {
+        Spell spellToCast = null;
+        PlayerSpellWrapper playerSpellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player);
+        switch (number) {
+            case 1:
+                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
+                break;
+            case 2:
+                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellLeftClick());
+                break;
+            case 3:
+                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
+                break;
+            case 4:
+                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
+                break;
+        }
+        return spellToCast;
     }
 
     /**

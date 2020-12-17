@@ -9,6 +9,7 @@ import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,12 +28,14 @@ public class SkillTreeManager implements Listener {
     private final HashSet<SkillTree> skillTreeSetOne; // first sub-class
     private final HashSet<SkillTree> skillTreeSetTwo; // second sub-class
     private final HashSet<SkillTree> skillTreeSetThree; // third sub-class
+    private final HashSet<PlayerSpellWrapper> playerSpellWrappers;
 
     public SkillTreeManager() {
         spentPoints = new HashMap<>();
         skillTreeSetOne = new HashSet<>();
         skillTreeSetTwo = new HashSet<>();
         skillTreeSetThree = new HashSet<>();
+        this.playerSpellWrappers = new HashSet<>();
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
@@ -49,25 +52,36 @@ public class SkillTreeManager implements Listener {
             RunicCoreAPI.getSkillTree(e.getPlayer(), 3).save(e.getMongoDataSection());
         if (spentPoints.get(e.getPlayer().getUniqueId()) != 0)
             saveSpentPoints(e.getPlayer(), e.getMongoDataSection());
+        if (getPlayerSpellWrapper(e.getPlayer()) != null)
+            saveSpells(getPlayerSpellWrapper(e.getPlayer()), e.getMongoDataSection());
     }
 
     /**
-     * Setup in-memory map of "spent points," tracking how many skill points a player has already allocated
-     * from the total available at-level.
+     * Setup in-memory map of all three sub-class skill trees and "spent points," tracking how many
+     * skill points a player has already allocated from the total available at-level.
      */
     @EventHandler
     public void onLoad(CharacterLoadEvent e) {
         Player player = e.getPlayer();
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        new SkillTree(player, 1);
+        new SkillTree(player, 2);
+        new SkillTree(player, 3);
         int points = 0;
         if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION))
-            points = Integer.parseInt(character.get(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION).toString());
+            points = character.get(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, Integer.class);
         if (points < 0) // insurance
             points = 0;
         if (points > PlayerLevelUtil.getMaxLevel() - 9)
             points = PlayerLevelUtil.getMaxLevel() - 9;
         spentPoints.put(player.getUniqueId(), points);
+        if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION))
+            new PlayerSpellWrapper(player,
+                    (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION));
+        else
+            new PlayerSpellWrapper(player, "Fireball", "Sprint",
+                "Smoke Bomb", "Slice and Dice"); // todo: defaults
     }
 
     /**
@@ -91,6 +105,19 @@ public class SkillTreeManager implements Listener {
      */
     private void saveSpentPoints(Player player, PlayerMongoDataSection character) {
         character.set(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(player));
+    }
+
+    /**
+     * Saves the alt-specific spell setup for given player
+     * @param playerSpellWrapper wrapper of in-memory spells
+     * @param character character section of mongo
+     */
+    private void saveSpells(PlayerSpellWrapper playerSpellWrapper, PlayerMongoDataSection character) {
+        PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION);
+        spells.set(PlayerSpellWrapper.PATH_1, playerSpellWrapper.getSpellHotbarOne());
+        spells.set(PlayerSpellWrapper.PATH_2, playerSpellWrapper.getSpellLeftClick());
+        spells.set(PlayerSpellWrapper.PATH_3, playerSpellWrapper.getSpellRightClick());
+        spells.set(PlayerSpellWrapper.PATH_4, playerSpellWrapper.getSpellSwapHands());
     }
 
     /**
@@ -121,6 +148,23 @@ public class SkillTreeManager implements Listener {
 
     public HashSet<SkillTree> getSkillTreeSetThree() {
         return skillTreeSetThree;
+    }
+
+    public HashSet<PlayerSpellWrapper> getPlayerSpellWrappers() {
+        return playerSpellWrappers;
+    }
+
+    /**
+     * Gets the spell wrapper for given player
+     * @param player to return wrapper for
+     * @return spell wrapper
+     */
+    public PlayerSpellWrapper getPlayerSpellWrapper(Player player) {
+        for (PlayerSpellWrapper playerSpellWrapper : playerSpellWrappers) {
+            if (playerSpellWrapper.getPlayer().equals(player))
+                return playerSpellWrapper;
+        }
+        return null;
     }
 
     /**

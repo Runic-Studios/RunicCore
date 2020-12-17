@@ -4,6 +4,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -54,7 +55,8 @@ public class SkillTreeGUIListener implements Listener {
                 previous = skillTreeGUI.getSkillTree().getPerks().get(perkPosition - 1); // grab previous perk to ensure they follow path
             Perk perk = skillTreeGUI.getSkillTree().getPerks().get(perkPosition);
             skillTreeGUI.getSkillTree().attemptToPurchasePerk(previous, perk);
-            skillTreeGUI.getInventory().setItem(e.getRawSlot(), skillTreeGUI.buildPerkItem(perk));
+            skillTreeGUI.getInventory().setItem(e.getRawSlot(),
+                    SkillTreeGUI.buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase"));
             skillTreeGUI.getInventory().setItem(SkillTreeGUI.getInfoItemPosition(), skillTreeGUI.infoItem());
         }
     }

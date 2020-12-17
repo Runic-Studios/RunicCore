@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
@@ -115,21 +116,7 @@ public class SpellUseListener implements Listener {
      * @param number which spell number to cast (1, 2, 3, 4)
      */
     private void castSelectedSpell(Player pl, int number) {
-        Spell spellToCast = null;
-        switch (number) {
-            case 1:
-                spellToCast = RunicCore.getSpellManager().getSpellByName("Sprint");
-                break;
-            case 2:
-                spellToCast = RunicCore.getSpellManager().getSpellByName("Smoke Bomb");
-                break;
-            case 3:
-                spellToCast = RunicCore.getSpellManager().getSpellByName("Cloak");
-                break;
-            case 4:
-                spellToCast = RunicCore.getSpellManager().getSpellByName("Slice and Dice");
-                break;
-        }
+        Spell spellToCast = RunicCoreAPI.getPlayerSpell(pl, number);
         if (spellToCast == null) return;
         SpellCastEvent event = new SpellCastEvent(pl, spellToCast);
         Bukkit.getPluginManager().callEvent(event);

@@ -63,7 +63,7 @@ public class SkillTreeGUI implements InventoryHolder {
         int i = 0;
 
         for (Perk perk : skillTree.getPerks()) {
-            ItemStack item = buildPerkItem(perk);
+            ItemStack item = buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase");
             this.inventory.setItem(PERK_SLOTS[i++], item);
         }
 
@@ -98,41 +98,47 @@ public class SkillTreeGUI implements InventoryHolder {
      * @param perk Perk to create lore for (can be base stat or spell)
      * @return ItemStack for use in inventory
      */
-    public ItemStack buildPerkItem(Perk perk) {
+    public static ItemStack buildPerkItem(Perk perk, boolean displayPoints, String description) {
         ItemStack perkItem = new ItemStack(Material.PAPER);
         ItemMeta meta = perkItem.getItemMeta();
         assert meta != null;
         if (perk instanceof PerkBaseStat) {
-            meta.setDisplayName
-                    (
-                        ChatColor.GREEN + ((PerkBaseStat) perk).getBaseStatEnum().getName() +
-                        ChatColor.WHITE + " [" +
-                        ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
-                        ChatColor.WHITE + "/" +
-                        ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
-                        ChatColor.WHITE + "]"
-                    );
+            if (displayPoints)
+                meta.setDisplayName
+                        (
+                            ChatColor.GREEN + ((PerkBaseStat) perk).getBaseStatEnum().getName() +
+                            ChatColor.WHITE + " [" +
+                            ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
+                            ChatColor.WHITE + "/" +
+                            ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
+                            ChatColor.WHITE + "]"
+                        );
+            else
+                meta.setDisplayName(ChatColor.GREEN + ((PerkBaseStat) perk).getBaseStatEnum().getName());
             meta.setLore(ChatUtils.formattedText
                     (("\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getBaseStatEnum().getDescription())));
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
             String spellType = spell.isPassive() ? "PASSIVE SPELL " : "ACTIVE SPELL ";
-            meta.setDisplayName
-                    (
-                        ChatColor.GREEN + spell.getName() +
-                        ChatColor.WHITE + " [" +
-                        ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
-                        ChatColor.WHITE + "/" +
-                        ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
-                        ChatColor.WHITE + "]"
-                    );
+            if (displayPoints)
+                meta.setDisplayName
+                        (
+                            ChatColor.GREEN + spell.getName() +
+                            ChatColor.WHITE + " [" +
+                            ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
+                            ChatColor.WHITE + "/" +
+                            ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
+                            ChatColor.WHITE + "]"
+                        );
+            else
+                meta.setDisplayName(ChatColor.GREEN + spell.getName());
             List<String> lore = new ArrayList<>
                     (ChatUtils.formattedText("\n" + ChatColor.GOLD + "" + ChatColor.BOLD +
                             spellType + ChatColor.GRAY + spell.getDescription()));
             if (!spell.isPassive())
                 lore.add(ChatColor.DARK_AQUA + "Costs " + spell.getManaCost() + "✸");
             lore.add("");
-            lore.add(ChatColor.AQUA + "» Click to purchase");
+            lore.add(description);
             meta.setLore(lore);
         }
         perkItem.setItemMeta(meta);

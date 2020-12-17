@@ -58,7 +58,7 @@ public class SpellEditorGUI implements InventoryHolder {
         return skillTreeButton;
     }
 
-    private ItemStack spellButtonHotbarOne() {
+    public static ItemStack spellButtonHotbarOne() {
         ItemStack spellEditorButton = new ItemStack(Material.GREEN_WOOL);
         ItemMeta meta = spellEditorButton.getItemMeta();
         if (meta == null) return spellEditorButton;

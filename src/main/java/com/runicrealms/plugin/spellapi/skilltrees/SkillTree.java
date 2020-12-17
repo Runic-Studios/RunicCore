@@ -22,6 +22,7 @@ public class SkillTree {
     private final List<Perk> perks;
     public static final String PATH_LOCATION = "skillTree";
     public static final String POINTS_LOCATION = "spentPoints";
+    public static final String SPELLS_LOCATION = "spells";
 
     public SkillTree(Player player, int position) {
         this.position = position;
@@ -83,7 +84,8 @@ public class SkillTree {
         if (!character.has(PATH_LOCATION + "." + position)) return;  // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position);
         for (String key : perkSection.getKeys()) {
-            getPerk(Integer.parseInt(key)).setCurrentlyAllocatedPoints(Integer.parseInt(perkSection.get(key).toString()));
+            if (getPerk(Integer.parseInt(key)) == null) continue;
+            getPerk(Integer.parseInt(key)).setCurrentlyAllocatedPoints(perkSection.get(key, Integer.class));
         }
     }
 
@@ -99,8 +101,9 @@ public class SkillTree {
     }
 
     /**
-     *
-     * @param player
+     * Resets the skill trees for given player. ALL THREE skill trees will be wiped from memory / DB,
+     * and spent points will be reset to 0 in DB and memory.
+     * @param player to reset tree for
      */
     public static void resetTree(Player player) {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
@@ -109,9 +112,10 @@ public class SkillTree {
         character.save();
         mongoData.save();
         RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 1));
-        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 2));
-        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 3));
+        RunicCore.getSkillTreeManager().getSkillTreeSetTwo().remove(RunicCoreAPI.getSkillTree(player, 2));
+        RunicCore.getSkillTreeManager().getSkillTreeSetThree().remove(RunicCoreAPI.getSkillTree(player, 3));
         RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(), 0);
+        RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).clearSpells();
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
     }
 
@@ -178,7 +182,7 @@ public class SkillTree {
      * @param perkID ID of perk
      * @return the Perk object
      */
-    public Perk getPerk(int perkID) {
+    private Perk getPerk(int perkID) {
         for (Perk perk : perks) {
             if (perk.getPerkID() == perkID)
                 return perk;
