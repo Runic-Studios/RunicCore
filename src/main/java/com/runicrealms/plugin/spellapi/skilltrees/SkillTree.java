@@ -70,6 +70,8 @@ public class SkillTree {
         RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(),
                 RunicCoreAPI.getSpentPoints(player) + perk.getCost());
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
+        player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
     }
 
     /**

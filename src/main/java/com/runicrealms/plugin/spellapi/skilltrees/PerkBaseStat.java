@@ -7,9 +7,9 @@ public class PerkBaseStat extends Perk {
     private final int bonusAmount;
     private final BaseStatEnum baseStatEnum;
 
-    public PerkBaseStat(int perkID, int cost, int minPointsReq, int currentlyAllocatedPoints,
-                        int maxAllocatedPoints, BaseStatEnum baseStatEnum, int bonusAmount) {
-        super(perkID, cost, minPointsReq, currentlyAllocatedPoints, maxAllocatedPoints);
+    public PerkBaseStat(int perkID, int cost, int currentlyAllocatedPoints, int maxAllocatedPoints,
+                        BaseStatEnum baseStatEnum, int bonusAmount) {
+        super(perkID, cost, currentlyAllocatedPoints, maxAllocatedPoints);
         this.baseStatEnum = baseStatEnum;
         this.bonusAmount = bonusAmount;
     }
