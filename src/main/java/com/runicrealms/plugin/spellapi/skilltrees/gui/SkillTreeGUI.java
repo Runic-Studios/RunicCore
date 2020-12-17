@@ -24,6 +24,7 @@ import java.util.List;
 
 public class SkillTreeGUI implements InventoryHolder {
 
+    private static final int INFO_ITEM_POSITION = 4;
     private final Inventory inventory;
     private final Player player;
     private final SkillTree skillTree;
@@ -58,7 +59,7 @@ public class SkillTreeGUI implements InventoryHolder {
 
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
-        this.inventory.setItem(4, infoItem());
+        this.inventory.setItem(INFO_ITEM_POSITION, infoItem());
         int i = 0;
 
         for (Perk perk : skillTree.getPerks()) {
@@ -81,12 +82,12 @@ public class SkillTreeGUI implements InventoryHolder {
         }
     }
 
-    private ItemStack infoItem() {
+    public ItemStack infoItem() {
         ItemStack infoItem = new ItemStack(skillTree.getSubClassEnum().getItemStack());
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + skillTree.getSubClassEnum().getName() + " Tree Info");
-        String lore = "&7Skill Points: 0";
+        String lore = "&7Remaining Skill Points: &a" + skillTree.getAvailablePoints();
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
         return infoItem;
@@ -149,5 +150,9 @@ public class SkillTreeGUI implements InventoryHolder {
 
     public static int[] getPerkSlots() {
         return PERK_SLOTS;
+    }
+
+    public static int getInfoItemPosition() {
+        return INFO_ITEM_POSITION;
     }
 }

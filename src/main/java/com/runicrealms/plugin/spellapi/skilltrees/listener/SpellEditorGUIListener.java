@@ -20,7 +20,7 @@ public class SpellEditorGUIListener implements Listener {
         Preliminary checks
          */
         if (e.getClickedInventory() == null) return;
-        if (!(e.getClickedInventory().getHolder() instanceof RuneGUI)) return;
+        if (!(e.getClickedInventory().getHolder() instanceof SpellEditorGUI)) return;
         SpellEditorGUI spellEditorGUI = (SpellEditorGUI) e.getClickedInventory().getHolder();
         if (!e.getWhoClicked().equals(spellEditorGUI.getPlayer())) {
             e.setCancelled(true);

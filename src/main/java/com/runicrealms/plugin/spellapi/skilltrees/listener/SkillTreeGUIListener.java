@@ -47,9 +47,15 @@ public class SkillTreeGUIListener implements Listener {
             pl.openInventory(new SubClassGUI(pl).getInventory());
         else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n-> n == e.getRawSlot())) {
             int perkPosition = ArrayUtils.indexOf(SkillTreeGUI.getPerkSlots(), e.getRawSlot());
+            Perk previous;
+            if (perkPosition == 0)
+                previous = null;
+            else
+                previous = skillTreeGUI.getSkillTree().getPerks().get(perkPosition - 1); // grab previous perk to ensure they follow path
             Perk perk = skillTreeGUI.getSkillTree().getPerks().get(perkPosition);
-            skillTreeGUI.getSkillTree().attemptToPurchasePerk(perk);
+            skillTreeGUI.getSkillTree().attemptToPurchasePerk(previous, perk);
             skillTreeGUI.getInventory().setItem(e.getRawSlot(), skillTreeGUI.buildPerkItem(perk));
+            skillTreeGUI.getInventory().setItem(SkillTreeGUI.getInfoItemPosition(), skillTreeGUI.infoItem());
         }
     }
 }

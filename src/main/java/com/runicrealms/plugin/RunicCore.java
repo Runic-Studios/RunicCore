@@ -14,6 +14,7 @@ import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
+import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.group.GroupChannel;
 import com.runicrealms.plugin.group.GroupManager;
@@ -58,6 +59,7 @@ import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
+import com.runicrealms.plugin.spellapi.skilltrees.cmd.ResetTreeCMD;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.RuneGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
@@ -158,6 +160,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
         //commandManager.registerCommand(new GroupCommand());
+        commandManager.registerCommand(new ResetTreeCMD());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
         });
@@ -225,7 +228,7 @@ public class RunicCore extends JavaPlugin implements Listener {
          */
         getLogger().info(" §cRunicCore has been disabled.");
         getCacheManager().saveCaches(); // save player data
-        getCacheManager().saveQueuedFiles(false, false); // saves SYNC
+        getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
         /*
         Notify RunicRestart
          */

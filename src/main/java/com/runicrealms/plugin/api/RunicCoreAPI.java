@@ -92,6 +92,10 @@ public class RunicCoreAPI {
         return RunicCore.getSpellManager().getSpellByName(name);
     }
 
+    public static int getSpentPoints(Player player) {
+        return RunicCore.getSkillTreeManager().getSpentPoints().get(player.getUniqueId());
+    }
+
     /**
      * Used to determine whether two players are in a party.
      * @param first The first player

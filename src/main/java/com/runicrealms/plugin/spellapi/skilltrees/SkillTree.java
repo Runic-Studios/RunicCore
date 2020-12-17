@@ -8,6 +8,8 @@ import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.spellapi.skilltrees.util.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -18,7 +20,8 @@ public class SkillTree {
     private final SubClassEnum subClassEnum;
     private final Player player;
     private final List<Perk> perks;
-    private static final String PATH_LOCATION = "skillTree";
+    public static final String PATH_LOCATION = "skillTree";
+    public static final String POINTS_LOCATION = "spentPoints";
 
     public SkillTree(Player player, int position) {
         this.position = position;
@@ -32,19 +35,50 @@ public class SkillTree {
     }
 
     /**
-     *
-     * @param perk
+     * Cacluates the available skill points of the player.
+     * First point is given at level 10, so first 9 levels are ignored.
+     * @return available skill points to spend
      */
-    public void attemptToPurchasePerk(Perk perk) {
+    public int getAvailablePoints() {
+        int spentPoints = RunicCoreAPI.getSpentPoints(player);
+        return player.getLevel() - 9 - spentPoints;
+    }
+
+    /**
+     * Attempts to purchase perk selected from inv click event.
+     * Will fail for a variety of reasons, or succeeds, updates currently allocated points, and
+     * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
+     * @param perk the perk attempting to be purchased
+     */
+    public void attemptToPurchasePerk(Perk previous, Perk perk) {
+        int getAvailablePoints = getAvailablePoints();
+        if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "You have already purchased this perk!");
+            return;
+        }
+        if (previous != null && previous.getCurrentlyAllocatedPoints() < previous.getMaxAllocatedPoints()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "You must purchase all previous perks first!");
+            return;
+        }
+        if (getAvailablePoints <= 0 || getAvailablePoints < perk.getCost()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "You don't have enough skill points to purchase this!");
+            return;
+        }
+        RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(),
+                RunicCoreAPI.getSpentPoints(player) + perk.getCost());
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
     }
 
-    /*
-    ?????
+    /**
+     * Populates currently allocated points from DB once on skill tree load
      */
     private void updateValuesFromDB() {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        if (!character.has(PATH_LOCATION + "." + position)) return;  // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position);
         for (String key : perkSection.getKeys()) {
             getPerk(Integer.parseInt(key)).setCurrentlyAllocatedPoints(Integer.parseInt(perkSection.get(key).toString()));
@@ -63,19 +97,20 @@ public class SkillTree {
     }
 
     /**
-     * Removes all saved perks for given player, for use in point resets
-     * @param mongoData called from PlayerCache
-     * @param slot of selected class
+     *
+     * @param player
      */
-    public void resetTree(PlayerMongoData mongoData, int slot) {
-        MongoDataSection character = mongoData.getCharacter(slot);
-        for (Perk perk : perks) {
-            if (perk.getCurrentlyAllocatedPoints() == 0) continue;
-            perk.setCurrentlyAllocatedPoints(0);
-            character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections
-        }
+    public static void resetTree(Player player) {
+        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
+        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
         character.save();
         mongoData.save();
+        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 1));
+        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 2));
+        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 3));
+        RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(), 0);
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
     }
 
     /**
@@ -137,9 +172,9 @@ public class SkillTree {
     }
 
     /**
-     *
-     * @param perkID
-     * @return
+     * Returns specified perk by ID.
+     * @param perkID ID of perk
+     * @return the Perk object
      */
     public Perk getPerk(int perkID) {
         for (Perk perk : perks) {

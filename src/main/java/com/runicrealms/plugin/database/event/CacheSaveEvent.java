@@ -16,6 +16,7 @@ public class CacheSaveEvent extends Event implements Cancellable {
     private final Player player;
     private final PlayerMongoData mongoData;
     private final PlayerMongoDataSection mongoDataSection;
+    private final CacheSaveReason cacheSaveReason;
     private boolean isCancelled;
 
     /**
@@ -23,11 +24,14 @@ public class CacheSaveEvent extends Event implements Cancellable {
      * @param player player of cache
      * @param mongoData object file of player in DB
      * @param mongoDataSection section of object file being saved (typically character section)
+     * @param cacheSaveReason why the cache was saved (logout, shutdown, etc.)
      */
-    public CacheSaveEvent(Player player, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection) {
+    public CacheSaveEvent(Player player, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection,
+                          CacheSaveReason cacheSaveReason) {
         this.player = player;
         this.mongoData = mongoData;
         this.mongoDataSection = mongoDataSection;
+        this.cacheSaveReason = cacheSaveReason;
         this.isCancelled = false;
     }
 
@@ -41,6 +45,10 @@ public class CacheSaveEvent extends Event implements Cancellable {
 
     public PlayerMongoDataSection getMongoDataSection() {
         return this.mongoDataSection;
+    }
+
+    public CacheSaveReason cacheSaveReason() {
+        return this.cacheSaveReason;
     }
 
     @Override

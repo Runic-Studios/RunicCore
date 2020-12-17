@@ -32,6 +32,9 @@ commands:
   mana:
     usage: /<commands>
     description: sets your mana to full
+  resettree:
+    usage: /<commands>
+    description: reset skill tree
   runicgive:
     usage: /<commands>
     description: give yourself something

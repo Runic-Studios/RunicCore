@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +32,7 @@ public class PlayerQuitListener implements Listener {
 
         // update cache, save it
         RunicCore.getCacheManager().savePlayerCache(playerCache, false);
-        RunicCore.getCacheManager().setFieldsSaveFile(playerCache, e.getPlayer(), true);
+        RunicCore.getCacheManager().setFieldsSaveFile(playerCache, e.getPlayer(), true, CacheSaveReason.LOGOUT);
 
     }
 
