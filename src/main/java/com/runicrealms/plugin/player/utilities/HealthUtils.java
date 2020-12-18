@@ -30,26 +30,10 @@ public class HealthUtils {
         int classLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
 
         // save player hp
-        int hpPerLevel = 0;
-        switch (className.toLowerCase()) {
-            case "archer":
-                hpPerLevel = PlayerLevelUtil.getArcherHpLv();
-                break;
-            case "cleric":
-                hpPerLevel = PlayerLevelUtil.getClericHpLv();
-                break;
-            case "mage":
-                hpPerLevel = PlayerLevelUtil.getMageHpLv();
-                break;
-            case "rogue":
-                hpPerLevel = PlayerLevelUtil.getRogueHpLv();
-                break;
-            case "warrior":
-                hpPerLevel = PlayerLevelUtil.getWarriorHpLv();
-                break;
-        }
+        double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className, false);
+        double coefficient = PlayerLevelUtil.determineHealthLvByClass(className, true);
 
-        int total = BASE_HEALTH + (hpPerLevel * classLevel) + GearScanner.getHealthBoost(pl);
+        int total = (int) (BASE_HEALTH + (coefficient * Math.pow(classLevel, 2)) + (hpPerLevel * classLevel) + GearScanner.getHealthBoost(pl));
 
         pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(total);
         pl.setHealthScale(HEART_AMOUNT);

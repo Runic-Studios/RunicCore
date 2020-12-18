@@ -12,16 +12,21 @@ public class PlayerLevelUtil {
 
     private static final int MAX_LEVEL = 60;
 
-    private static final int ARCHER_HP_LV = 5;
+    private static final int ARCHER_HP_LV = 6;
     private static final int CLERIC_HP_LV = 7;
     private static final int MAGE_HP_LV = 3;
-    private static final int ROGUE_HP_LV = 6;
-    private static final int WARRIOR_HP_LV = 10;
+    private static final int ROGUE_HP_LV = 9;
+    private static final int WARRIOR_HP_LV = 12;
 
-    /*
-    Here is our exp curve!
-    At level 50, the player is ~ halfway to max, w/ 997,500
-    At level 60, the player needs 1,647,000 total exp
+    private static final double TANK_COEFFICIENT = 0.3;
+    private static final double DAMAGE_COEFFICIENT = 0.2;
+
+    /**
+     * Here is our exp curve!
+     * At level 50, the player is ~ halfway to max, w/ 997,500
+     * At level 60, the player needs 1,647,000 total exp
+     * @param currentLv the current level of the player
+     * @return the experience they've earned at that level
      */
     public static int calculateTotalExp(int currentLv) {
         int cubed = (int) Math.pow((currentLv+5), 3);
@@ -130,29 +135,56 @@ public class PlayerLevelUtil {
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLv, 10, 40, 10);
 
         // save player hp, restore hp.food
-        int hpPerLevel = 0;
+        ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
+        int gainedHealth = calculateHealthAtLevel(classLv, className) - calculateHealthAtLevel(classLv - 1, className);
+        ChatUtils.sendCenteredMessage(pl,
+                ChatColor.RED + "" + ChatColor.BOLD + "+" + gainedHealth + "❤ "
+                        + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(pl) + "✸");
+    }
+
+    /**
+     * Calculates the base health of the player based on class and current level
+     * @param currentLv their class level
+     * @param className their class name
+     * @return the HP they should have based on scaling
+     */
+    private static int calculateHealthAtLevel(int currentLv, String className) {
+        double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className, false);
+        double coefficient = PlayerLevelUtil.determineHealthLvByClass(className, true);
+        return (int) (HealthUtils.getBaseHealth() + (coefficient * Math.pow(currentLv, 2)) + (hpPerLevel * currentLv));
+    }
+
+    /**
+     * May return either the scaling coefficient or linear hp-per-level of class based on boolean flag value
+     * @param className name of class
+     * @param returnCoefficient whether to return linear hp-per-level or coefficient scaling
+     * @return um can return either dis might be bad but to lazy to write two methods
+     */
+    public static double determineHealthLvByClass(String className, boolean returnCoefficient) {
         switch (className.toLowerCase()) {
             case "archer":
-                hpPerLevel = ARCHER_HP_LV;
-                break;
+                if (returnCoefficient)
+                    return PlayerLevelUtil.getDamageCoefficient();
+                return PlayerLevelUtil.getArcherHpLv();
             case "cleric":
-                hpPerLevel = CLERIC_HP_LV;
-                break;
+                if (returnCoefficient)
+                    return PlayerLevelUtil.getTankCoefficient();
+                return PlayerLevelUtil.getClericHpLv();
             case "mage":
-                hpPerLevel = MAGE_HP_LV;
-                break;
+                if (returnCoefficient)
+                    return PlayerLevelUtil.getDamageCoefficient();
+                return PlayerLevelUtil.getMageHpLv();
             case "rogue":
-                hpPerLevel = ROGUE_HP_LV;
-                break;
+                if (returnCoefficient)
+                    return PlayerLevelUtil.getDamageCoefficient();
+                return PlayerLevelUtil.getRogueHpLv();
             case "warrior":
-                hpPerLevel = WARRIOR_HP_LV;
-                break;
+                if (returnCoefficient)
+                    return PlayerLevelUtil.getTankCoefficient();
+                return PlayerLevelUtil.getWarriorHpLv();
+            default:
+                throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
         }
-
-        ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
-        ChatUtils.sendCenteredMessage(pl,
-                ChatColor.RED + "" + ChatColor.BOLD + "+" + hpPerLevel + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(pl) + "✸");
     }
 
     private static void sendUnlockMessage(Player pl, int lvl) {
@@ -209,5 +241,13 @@ public class PlayerLevelUtil {
 
     public static int getWarriorHpLv() {
         return WARRIOR_HP_LV;
+    }
+
+    public static double getTankCoefficient() {
+        return TANK_COEFFICIENT;
+    }
+
+    public static double getDamageCoefficient() {
+        return DAMAGE_COEFFICIENT;
     }
 }
