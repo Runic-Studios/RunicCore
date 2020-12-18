@@ -16,10 +16,12 @@ public class SpellGUI implements InventoryHolder {
 
     private final Inventory inventory;
     private final Player player;
+    private final String spellSlot;
 
-    public SpellGUI(Player player) {
+    public SpellGUI(Player player, String spellSlot) {
         this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&a&lAvailable Spells"));
         this.player = player;
+        this.spellSlot = spellSlot;
         openMenu();
     }
 
@@ -31,6 +33,10 @@ public class SpellGUI implements InventoryHolder {
 
     public Player getPlayer() {
         return this.player;
+    }
+
+    public String getSpellSlot() {
+        return  this.spellSlot;
     }
 
     /**

@@ -92,7 +92,7 @@ public class RunicCoreAPI {
         switch (number) {
             case 1:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
-                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                if (playerSpellWrapper.getSpellHotbarOne().equals(""))
                     player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
             case 2:
@@ -102,12 +102,12 @@ public class RunicCoreAPI {
                 break;
             case 3:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
-                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                if (playerSpellWrapper.getSpellRightClick().equals(""))
                     player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
             case 4:
                 spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
-                if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                if (playerSpellWrapper.getSpellSwapHands().equals(""))
                     player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                 break;
         }

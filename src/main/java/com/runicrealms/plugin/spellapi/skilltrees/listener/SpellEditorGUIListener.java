@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
+import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellGUI;
@@ -41,7 +42,7 @@ public class SpellEditorGUIListener implements Listener {
         if (material == GUIUtil.backButton().getType())
             pl.openInventory(new RuneGUI(pl).getInventory());
         else if (material == SpellEditorGUI.spellButtonHotbarOne().getType())
-            pl.openInventory(new SpellGUI(pl).getInventory());
+            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_1).getInventory());
         else
             pl.closeInventory();
     }

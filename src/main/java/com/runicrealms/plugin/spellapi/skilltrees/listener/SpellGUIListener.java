@@ -1,9 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
-import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellGUI;
 import com.runicrealms.plugin.utilities.GUIUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -40,9 +41,11 @@ public class SpellGUIListener implements Listener {
 
         if (material == GUIUtil.backButton().getType())
             pl.openInventory(new SpellEditorGUI(pl).getInventory());
-        else if (material == RuneGUI.spellEditorButton().getType())
-            pl.openInventory(new SpellEditorGUI(pl).getInventory());
-        else
+        else if (material == Material.PAPER) {
+            RunicCore.getSkillTreeManager().getPlayerSpellWrapper(pl).setSpellLeftClick
+                    (ChatColor.stripColor(spellGUI.getInventory().getItem(e.getRawSlot()).getItemMeta().getDisplayName()));
+
+        } else
             pl.closeInventory();
     }
 }
