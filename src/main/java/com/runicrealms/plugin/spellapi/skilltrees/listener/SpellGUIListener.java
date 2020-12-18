@@ -48,8 +48,7 @@ public class SpellGUIListener implements Listener {
             pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
             pl.sendMessage(ChatColor.LIGHT_PURPLE + "You've set the spell in this slot to " + spellName + ChatColor.LIGHT_PURPLE + "!");
             pl.openInventory(new SpellEditorGUI(pl).getInventory());
-        } else
-            pl.closeInventory();
+        }
     }
 
     /**

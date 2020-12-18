@@ -88,28 +88,32 @@ public class RunicCoreAPI {
      */
     public static Spell getPlayerSpell(Player player, int number) {
         Spell spellToCast = null;
-        PlayerSpellWrapper playerSpellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player);
-        switch (number) {
-            case 1:
-                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
-                if (playerSpellWrapper.getSpellHotbarOne().equals(""))
-                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
-                break;
-            case 2:
-                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellLeftClick());
-                if (playerSpellWrapper.getSpellLeftClick().equals(""))
-                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
-                break;
-            case 3:
-                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
-                if (playerSpellWrapper.getSpellRightClick().equals(""))
-                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
-                break;
-            case 4:
-                spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
-                if (playerSpellWrapper.getSpellSwapHands().equals(""))
-                    player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
-                break;
+        try {
+            PlayerSpellWrapper playerSpellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player);
+            switch (number) {
+                case 1:
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
+                    if (playerSpellWrapper.getSpellHotbarOne().equals(""))
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    break;
+                case 2:
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellLeftClick());
+                    if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    break;
+                case 3:
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
+                    if (playerSpellWrapper.getSpellRightClick().equals(""))
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    break;
+                case 4:
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
+                    if (playerSpellWrapper.getSpellSwapHands().equals(""))
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    break;
+            }
+        } catch (NullPointerException e) {
+
         }
         return spellToCast;
     }
