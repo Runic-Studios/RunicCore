@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.skilltrees.gui;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
+import com.runicrealms.plugin.spellapi.skilltrees.util.*;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
@@ -45,16 +46,40 @@ public class SpellGUI implements InventoryHolder {
     private void openMenu() {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
-        int i = 9;
+        this.inventory.setItem(9, SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
+                false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
+        int i = 10;
         grabUnlockedSpellsFromTree(1, i);
         grabUnlockedSpellsFromTree(2, i);
         grabUnlockedSpellsFromTree(3, i);
     }
 
     /**
-     *
-     * @param treePosition
-     * @param index
+     * Returns a dummy 'perk' that is used to represent the default spell for each class.
+     * @return a perk that can be used to build an itemstack
+     */
+    private Perk determineDefaultSpellPerk() {
+        switch (RunicCoreAPI.getPlayerCache(player).getClassName()) {
+            case "Archer":
+                return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
+            case "Cleric":
+                return ClericTreeUtil.DEFAULT_CLERIC_SPELL_PERK;
+            case "Mage":
+                return MageTreeUtil.DEFAULT_MAGE_SPELL_PERK;
+            case "Rogue":
+                return RogueTreeUtil.DEFAULT_ROGUE_SPELL_PERK;
+            case "Warrior":
+                return WarriorTreeUtil.DEFAULT_WARRIOR_SPELL_PERK;
+            default:
+                throw new IllegalStateException("Unexpected value: " + RunicCoreAPI.getPlayerCache(player).getClassName());
+        }
+    }
+
+    /**
+     * Populates the items in the spell inventory starting at index to all unlocked 'active' spells for the given
+     * skill tree.
+     * @param treePosition (which of the three sub-trees?) (1, 2, 3)
+     * @param index which index to begin filling items
      */
     private void grabUnlockedSpellsFromTree(int treePosition, int index) {
         if (RunicCoreAPI.getSkillTree(player, treePosition) == null) return;

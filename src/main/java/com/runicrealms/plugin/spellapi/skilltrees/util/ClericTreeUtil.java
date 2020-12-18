@@ -10,6 +10,8 @@ import java.util.List;
 
 public class ClericTreeUtil {
 
+    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, "Cleric");
+
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(36, 1, 0, 1, "Smoke Bomb"));

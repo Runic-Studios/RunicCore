@@ -10,6 +10,8 @@ import java.util.List;
 
 public class ArcherTreeUtil {
 
+    public static Perk DEFAULT_ARCHER_SPELL_PERK = new PerkSpell(995, 0, 1, 1, "Barrage");
+
     public static List<Perk> marksmanPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(0, 1, 0, 1, "Smoke Bomb"));

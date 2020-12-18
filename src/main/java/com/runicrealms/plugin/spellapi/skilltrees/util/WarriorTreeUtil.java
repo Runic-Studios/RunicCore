@@ -10,6 +10,8 @@ import java.util.List;
 
 public class WarriorTreeUtil {
 
+    public static Perk DEFAULT_WARRIOR_SPELL_PERK = new PerkSpell(997, 0, 1, 1, "Slam");
+
     public static List<Perk> berserkerPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(144, 1, 0, 1, "Smoke Bomb"));

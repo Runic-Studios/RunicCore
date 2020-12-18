@@ -10,6 +10,8 @@ import java.util.List;
 
 public class RogueTreeUtil {
 
+    public static Perk DEFAULT_ROGUE_SPELL_PERK = new PerkSpell(998, 0, 1, 1, "Sprint");
+
     public static List<Perk> assassinPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(108, 1, 0, 1, "Smoke Bomb"));

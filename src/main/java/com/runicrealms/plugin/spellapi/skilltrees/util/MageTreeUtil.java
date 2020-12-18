@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class MageTreeUtil {
 
+    public static Perk DEFAULT_MAGE_SPELL_PERK = new PerkSpell(997, 0, 1, 1, "Fireball");
+
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(72, 1, 0, 1, "Fire Aura"));

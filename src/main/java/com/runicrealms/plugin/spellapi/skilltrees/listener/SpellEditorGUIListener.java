@@ -41,8 +41,14 @@ public class SpellEditorGUIListener implements Listener {
 
         if (material == GUIUtil.backButton().getType())
             pl.openInventory(new RuneGUI(pl).getInventory());
-        else if (material == SpellEditorGUI.spellButtonHotbarOne().getType())
+        else if (e.getRawSlot() == SpellEditorGUI.SPELL_ONE_INDEX)
             pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_1).getInventory());
+        else if (e.getRawSlot() == SpellEditorGUI.SPELL_TWO_INDEX)
+            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_2).getInventory());
+        else if (e.getRawSlot() == SpellEditorGUI.SPELL_THREE_INDEX)
+            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_3).getInventory());
+        else if (e.getRawSlot() == SpellEditorGUI.SPELL_FOUR_INDEX)
+            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_4).getInventory());
         else
             pl.closeInventory();
     }
