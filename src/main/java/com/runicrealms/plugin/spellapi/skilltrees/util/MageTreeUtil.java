@@ -18,18 +18,18 @@ public class MageTreeUtil {
 
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(72, 1, 0, 1, "Fire Aura"));
-        perks.add(new PerkBaseStat(73, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkBaseStat(74, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(75, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(76, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkSpell(77, 1, 0, 1, "Fire Blast"));
-        perks.add(new PerkBaseStat(78, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(79, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 5));
-        perks.add(new PerkSpell(80, 1, 0, 1, "Meteor Shower"));
-        perks.add(new PerkBaseStat(81, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(82, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(83, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkSpell(72, 1, 0, 1, "Ice Block")); // entomb yourself in ice (healing), then explode, dealing damage
+        perks.add(new PerkBaseStat(73, 1, 0, 5, BaseStatEnum.VITALITY, 1));
+        perks.add(new PerkSpell(74, 1, 0, 1, "Icebolt")); // change fireball to icebolt, slows now
+        perks.add(new PerkBaseStat(75, 1, 0, 3, BaseStatEnum.WISDOM, 1));
+        perks.add(new PerkBaseStat(76, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(77, 1, 0, 1, "Frostbite"));
+        perks.add(new PerkBaseStat(78, 1, 0, 3, BaseStatEnum.VITALITY, 1));
+        perks.add(new PerkBaseStat(79, 1, 0, 3, BaseStatEnum.WISDOM, 1));
+        perks.add(new PerkBaseStat(80, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(81, 1, 0, 1, "Blizzard"));
+        perks.add(new PerkBaseStat(82, 1, 0, 3, BaseStatEnum.VITALITY, 1));
+        perks.add(new PerkSpell(83, 1, 0, 1, "Whiteout")); // like tier-set, tag w/ two icebolts or blizzard to encase in ice
         return perks;
     }
 
@@ -37,33 +37,33 @@ public class MageTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(84, 1, 0, 1, "Fire Aura"));
         perks.add(new PerkBaseStat(85, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkBaseStat(86, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(87, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(88, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast"));
-        perks.add(new PerkBaseStat(90, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(91, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 5));
-        perks.add(new PerkSpell(92, 1, 0, 1, "Meteor Shower"));
-        perks.add(new PerkBaseStat(93, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(94, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(95, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkSpell(86, 1, 0, 1, "Scald")); // fireball deals small aoe
+        perks.add(new PerkBaseStat(87, 1, 0, 3, BaseStatEnum.WISDOM, 1));
+        perks.add(new PerkBaseStat(88, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast")); // stun
+        perks.add(new PerkBaseStat(90, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkBaseStat(91, 1, 0, 3, BaseStatEnum.WISDOM, 1));
+        perks.add(new PerkBaseStat(92, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(93, 1, 0, 1, "Meteor Shower"));
+        perks.add(new PerkBaseStat(94, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(95, 1, 0, 1, "Blazing Speed")); // gain speed increase during fire aura
         return perks;
     }
 
     public static List<Perk> warlockPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(96, 1, 0, 1, "Fire Aura"));
+        perks.add(new PerkSpell(96, 1, 0, 1, "Arcane Orb"));
         perks.add(new PerkBaseStat(97, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkBaseStat(98, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(99, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(100, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkSpell(101, 1, 0, 1, "Fire Blast"));
-        perks.add(new PerkBaseStat(102, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(103, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 5));
-        perks.add(new PerkSpell(104, 1, 0, 1, "Meteor Shower"));
-        perks.add(new PerkBaseStat(105, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(106, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
-        perks.add(new PerkBaseStat(107, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkSpell(98, 1, 0, 1, "Shadowbolt")); // fireball is now enderpearl, blinds for 0.5s
+        perks.add(new PerkBaseStat(99, 1, 0, 3, BaseStatEnum.WISDOM, 1));
+        perks.add(new PerkBaseStat(100, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(101, 1, 0, 1, "Blink"));
+        perks.add(new PerkBaseStat(102, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkBaseStat(103, 1, 0, 3, BaseStatEnum.WISDOM, 1));
+        perks.add(new PerkBaseStat(104, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(105, 1, 0, 1, "Plague Bomb"));
+        perks.add(new PerkBaseStat(106, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
+        perks.add(new PerkSpell(107, 1, 0, 1, "Doombolt")); // after using blink, youre next shadowbolt silences
         return perks;
     }
 }

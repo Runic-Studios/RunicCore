@@ -2,11 +2,11 @@ package com.runicrealms.plugin.player.stat;
 
 public enum BaseStatEnum {
 
-    DEXTERITY("Dexterity", "DEX", "Ranged damage"), // ranged damage / speed
-    INTELLIGENCE("Intelligence", "INT", "Magic damage and mana"), // spell damage
-    STRENGTH("Strength", "STR", "Melee damage"), // weapon damage (melee)
-    VITALITY("Vitality", "VIT", "Health and defense"), // health / defense
-    WISDOM("Wisdom", "WIS", "Healing"); // healing / mana
+    DEXTERITY("Dexterity", "DEX", "Ranged damage movement speed"),
+    INTELLIGENCE("Intelligence", "INT", "Magic damage and max mana"),
+    STRENGTH("Strength", "STR", "Melee damage"),
+    VITALITY("Vitality", "VIT", "Defense and health regen"),
+    WISDOM("Wisdom", "WIS", "Spell Healing and mana regen");
 
     private final String name;
     private final String prefix;
