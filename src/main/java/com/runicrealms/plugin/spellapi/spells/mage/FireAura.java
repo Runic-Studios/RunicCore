@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class FireAura extends Spell<SubClassEnum> {
+public class FireAura extends Spell {
 
     private static final int DURATION = 6;
     private static final int DAMAGE_AMT = 15;
@@ -32,7 +32,7 @@ public class FireAura extends Spell<SubClassEnum> {
                         "\n" + "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage" +
                         "\nand slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
-                ChatColor.WHITE, SubClassEnum.PYROMANCER, 10, 20);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
     }
 
     // spell execute code

@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Harpoon extends Spell<SubClassEnum> {
+public class Harpoon extends Spell {
 
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
@@ -24,7 +24,7 @@ public class Harpoon extends Spell<SubClassEnum> {
                 "You launch a projectile harpoon" +
                         "\nwhich pulls your enemy towards" +
                         "\nyou!",
-                ChatColor.WHITE, SubClassEnum.SWINDLER, 12, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 12, 15);
     }
 
     // spell execute code

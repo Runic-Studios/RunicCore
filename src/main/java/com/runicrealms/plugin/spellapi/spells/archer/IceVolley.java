@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.TeleportUtil;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class IceVolley extends Spell<SubClassEnum> {
+public class IceVolley extends Spell {
 
     private final boolean pullOnFinalShot;
     private static final int RADIUS = 5;
@@ -38,7 +38,7 @@ public class IceVolley extends Spell<SubClassEnum> {
                         "\neach dealing " + DAMAGE + " spellʔ damage" +
                         "\nand slowing enemies hit!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
-                ChatColor.WHITE, SubClassEnum.WARDEN, 6, 30);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 30);
         this.vArrows = new HashMap<>();
         this.pullOnFinalShot = false;
     }
@@ -49,7 +49,7 @@ public class IceVolley extends Spell<SubClassEnum> {
                         "\neach dealing " + DAMAGE + " spellʔ damage" +
                         "\nand slowing enemies hit!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
-                ChatColor.WHITE, SubClassEnum.WARDEN, 6, 30);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 30);
         this.vArrows = new HashMap<>();
         this.pullOnFinalShot = pullOnFinalShot;
     }

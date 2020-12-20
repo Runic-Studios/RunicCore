@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Fireball extends Spell<ClassEnum> {
+public class Fireball extends Spell {
 
     private final boolean fireCone;
     private final boolean applyBurn;

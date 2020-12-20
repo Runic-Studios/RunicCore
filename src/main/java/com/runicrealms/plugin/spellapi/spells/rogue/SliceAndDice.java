@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -14,7 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SliceAndDice extends Spell<SubClassEnum> {
+public class SliceAndDice extends Spell {
 
     private static final int DAMAGE_AMT = 25;
     private static final int RADIUS = 3;
@@ -26,7 +26,7 @@ public class SliceAndDice extends Spell<SubClassEnum> {
                         " in the air then blink forward," +
                         " slashing enemies within " + RADIUS + " blocks" +
                         " for " + DAMAGE_AMT + " weapon⚔ damage!",
-                ChatColor.WHITE, SubClassEnum.ASSASSIN, 15, 30);
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 30);
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.classes.SubClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -19,7 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public abstract class Spell<T extends Enum<T>> implements ISpell<T>, Listener {
+public abstract class Spell implements ISpell, Listener {
 
     private boolean isPassive = false;
     private final int manaCost;
@@ -27,11 +26,11 @@ public abstract class Spell<T extends Enum<T>> implements ISpell<T>, Listener {
     private final String name;
     private final String description;
     private final ChatColor color;
-    private final Enum<T> reqClass;
+    private final ClassEnum reqClass;
     protected RunicCore plugin = RunicCore.getInstance();
 
     public Spell(String name, String description, ChatColor color,
-                 Enum<T> reqClass, double cooldown, int manaCost) {
+                 ClassEnum reqClass, double cooldown, int manaCost) {
         this.name = name;
         this.description = description;
         this.color = color;
@@ -49,15 +48,9 @@ public abstract class Spell<T extends Enum<T>> implements ISpell<T>, Listener {
         // verify class
         boolean canCast = false;
         if (this.getReqClass() != ClassEnum.RUNIC) {
-            if (this.getReqClass() instanceof ClassEnum) {
-                if (this.getReqClass().toString().toLowerCase().equals
-                        (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
-                    canCast = true;
-            } else if (this.getReqClass() instanceof SubClassEnum) { // todo: check sub-class
-                if (((SubClassEnum) this.getReqClass()).getBaseClass().getName().toLowerCase().equals
-                        (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
+            if (this.getReqClass().toString().toLowerCase().equals
+                    (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
                 canCast = true;
-            }
         }
 
         if (!canCast) {
@@ -141,7 +134,7 @@ public abstract class Spell<T extends Enum<T>> implements ISpell<T>, Listener {
     }
 
     @Override
-    public Enum<T> getReqClass() {
+    public ClassEnum getReqClass() {
         return reqClass;
     }
 

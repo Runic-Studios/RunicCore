@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Cloak extends Spell<SubClassEnum> {
+public class Cloak extends Spell {
 
     private static final int DURATION = 5;
     private final Set<UUID> cloakers;
@@ -37,7 +37,7 @@ public class Cloak extends Spell<SubClassEnum> {
                         " immune to damage from monsters!" +
                         " Dealing damage ends the effect" +
                         " early.",
-                ChatColor.WHITE, SubClassEnum.ASSASSIN, 15, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 15);
         cloakers = new HashSet<>();
         hasDealtDamage = new HashSet<>();
     }

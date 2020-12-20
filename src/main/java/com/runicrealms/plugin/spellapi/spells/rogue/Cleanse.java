@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -14,14 +14,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Cleanse extends Spell<SubClassEnum> {
+public class Cleanse extends Spell {
 
     public Cleanse() {
         super("Cleanse",
-                "You cleanse negative effects" +
-                        "\non you, freeing you from" +
-                        "\nblindness and slows!",
-                ChatColor.WHITE, SubClassEnum.SWINDLER, 6, 15);
+                "You cleanse negative effects " +
+                        "on you, freeing you from " +
+                        "blindness and slows!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
     }
 
     // spell execute code

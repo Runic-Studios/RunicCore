@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Sprint extends Spell<ClassEnum> {
+public class Sprint extends Spell {
 
     // global variables
     private final boolean flame;
@@ -31,8 +31,8 @@ public class Sprint extends Spell<ClassEnum> {
     // constructor
     public Sprint() {
         super("Sprint",
-                "For " + DURATION + " seconds, you gain a" +
-                        "\nmassive boost of speed!",
+                "For " + DURATION + " seconds, you gain a " +
+                        "massive boost of speed!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 10, 10);
         flame = false;
     }

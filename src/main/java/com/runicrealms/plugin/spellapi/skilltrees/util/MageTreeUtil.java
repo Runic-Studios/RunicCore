@@ -61,7 +61,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(102, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkBaseStat(103, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(104, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkSpell(105, 1, 0, 1, "Plague Bomb"));
+        perks.add(new PerkSpell(105, 1, 0, 1, "Shadow Bomb"));
         perks.add(new PerkBaseStat(106, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(107, 1, 0, 1, "Doombolt")); // after using blink, youre next shadowbolt silences
         return perks;

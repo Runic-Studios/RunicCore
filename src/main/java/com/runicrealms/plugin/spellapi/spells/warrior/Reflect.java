@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Reflect extends Spell<SubClassEnum> {
+// todo: make passive
+public class Reflect extends Spell {
 
     private static final int DAMAGE = 10;
     private static final int DURATION = 6;
@@ -32,7 +33,7 @@ public class Reflect extends Spell<SubClassEnum> {
                         "\nenchantment! Enemies who strike" +
                         "\nyou suffer " + DAMAGE + " spellʔ damage" +
                         "\neach attack!",
-                ChatColor.WHITE, SubClassEnum.GUARDIAN, 16, 20);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 16, 20);
     }
 
     // spell execute code

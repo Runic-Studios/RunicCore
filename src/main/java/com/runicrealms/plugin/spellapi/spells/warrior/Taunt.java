@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Taunt extends Spell<SubClassEnum> {
+public class Taunt extends Spell {
 
     private static final int DURATION = 4;
     private final List<UUID> taunters;
@@ -31,7 +31,7 @@ public class Taunt extends Spell<SubClassEnum> {
         super ("Taunt",
                 "For " + DURATION + " seconds, damaging monsters" +
                         "\ngenerates a large amount of threat!",
-                ChatColor.WHITE, SubClassEnum.GUARDIAN, 12, 20);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 12, 20);
         taunters = new ArrayList<>();
     }
 

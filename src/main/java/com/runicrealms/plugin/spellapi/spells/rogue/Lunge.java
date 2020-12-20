@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -13,16 +13,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Lunge extends Spell<SubClassEnum> {
+public class Lunge extends Spell {
 
     private static final double HEIGHT = 1.2;
 
     public Lunge() {
         super("Lunge",
-                "You lunge forward into the air," +
-                        "\ntaking reduced fall damage on" +
-                        "\nimpact!",
-                ChatColor.WHITE, SubClassEnum.DUELIST, 8, 15);
+                "You lunge forward into the air, " +
+                        "taking reduced fall damage on " +
+                        "impact!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 8, 15);
     }
 
     @Override

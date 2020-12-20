@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ShadowBomb extends Spell<SubClassEnum> {
+public class ShadowBomb extends Spell {
 
     private static final int DAMAGE_AMT = 20;
     private static final int DURATION = 6;
@@ -31,12 +31,12 @@ public class ShadowBomb extends Spell<SubClassEnum> {
 
     public ShadowBomb() {
         super("Shadow Bomb",
-                "You launch a magical vial of shadow," +
-                        "\ndealing " + (DAMAGE_AMT*DURATION/PERIOD) + " spellʔ damage over " +
-                        "\n" + DURATION + " seconds to enemies within" +
-                        "\n" + RADIUS + " blocks of the cloud." +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
-                ChatColor.WHITE, SubClassEnum.WARLOCK, 10, 25);
+                "You launch a magical vial of shadow, " +
+                        "dealing " + (DAMAGE_AMT*DURATION/PERIOD) + " spellʔ damage over " +
+                        DURATION + " seconds to enemies within " +
+                        RADIUS + " blocks of the cloud. " +
+                        ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
     }
 
     // spell execute code

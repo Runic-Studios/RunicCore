@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class HolyNova extends Spell<SubClassEnum> {
+public class HolyNova extends Spell {
 
     private static final int DAMAGE_AMT = 5;
     private static final int DURATION = 5;
@@ -34,7 +34,7 @@ public class HolyNova extends Spell<SubClassEnum> {
                         "\nthat deal " + DAMAGE_AMT + " spellʔ damage to enemies" +
                         "\nand restore✦ " + HEAL_AMT + " health to allies!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
-                ChatColor.WHITE, SubClassEnum.PRIEST, 12, 25);
+                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
     }
 
     @Override

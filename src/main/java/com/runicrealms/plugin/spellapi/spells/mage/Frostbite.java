@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Frostbite extends Spell<SubClassEnum> {
+public class Frostbite extends Spell {
 
     private static final int DURATION = 3;
     private static final int MAX_DIST = 10;
@@ -24,8 +24,8 @@ public class Frostbite extends Spell<SubClassEnum> {
                 "You conjure icy tendrils at" +
                         "\nyour target location for " + DURATION +
                         "\nseconds, snaring enemies caught" +
-                        "\nin the web!",
-                ChatColor.WHITE, SubClassEnum.CRYOMANCER, 15, 30);
+                        "\nin the frost!",
+                ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
     }
 
     @Override

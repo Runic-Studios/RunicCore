@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Windstride extends Spell<SubClassEnum> {
+public class Windstride extends Spell {
 
     // globals
     private static final int BUFF_DURATION = 10;
@@ -25,7 +25,7 @@ public class Windstride extends Spell<SubClassEnum> {
                 "For " + BUFF_DURATION + " seconds, you grant a massive" +
                         "\nspeed boost to yourself and all" +
                         "\nallies within " + RADIUS + " blocks!",
-                ChatColor.WHITE, SubClassEnum.BARD, 20, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 20, 15);
     }
 
     // spell execute code

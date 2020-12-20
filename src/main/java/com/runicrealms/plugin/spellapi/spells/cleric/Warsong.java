@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Warsong extends Spell<SubClassEnum> {
+public class Warsong extends Spell {
 
     private final double bonus;
     private static final int DURATION = 6;
@@ -32,7 +32,7 @@ public class Warsong extends Spell<SubClassEnum> {
                         "\nFor " + DURATION + " seconds, the buff increases the" +
                         "\nweapon⚔ damage of you and your allies" +
                         "\nby " + (int) PERCENT + "%!",
-                ChatColor.WHITE, SubClassEnum.BARD, 15, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
         singers = new ArrayList<>();
         this.bonus = 0;
     }
@@ -44,7 +44,7 @@ public class Warsong extends Spell<SubClassEnum> {
                         "\nFor " + DURATION + " seconds, the buff increases the" +
                         "\nweapon⚔ damage of you and your allies" +
                         "\nby " + (int) PERCENT + "%!",
-                ChatColor.WHITE, SubClassEnum.BARD, 15, 15);
+                ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
         singers = new ArrayList<>();
         this.bonus = bonus;
     }

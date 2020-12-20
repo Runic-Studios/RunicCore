@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Rejuvenate extends Spell<ClassEnum> {
+public class Rejuvenate extends Spell {
 
     private final boolean healOverTime;
     private static final int HOT_DURATION = 5; // heal-over-time

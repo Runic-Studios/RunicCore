@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ManaShield extends Spell<SubClassEnum> {
+public class ManaShield extends Spell {
 
     private static final int DURATION = 5;
     private final List<UUID> shielded = new ArrayList<>();
@@ -31,7 +31,7 @@ public class ManaShield extends Spell<SubClassEnum> {
                 "For " + DURATION + " seconds, all damage" +
                         "\nyou receive is taken from" +
                         "\nyour mana instead!",
-                ChatColor.WHITE, SubClassEnum.CRYOMANCER, 15, 0);
+                ChatColor.WHITE, ClassEnum.MAGE, 15, 0);
     }
 
     // spell execute code

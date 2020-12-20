@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SmokeBomb extends Spell<SubClassEnum> {
+public class SmokeBomb extends Spell {
 
     private final boolean frostBomb;
     private static final int FROSTBOMB_DURATION = 4;
@@ -36,7 +36,7 @@ public class SmokeBomb extends Spell<SubClassEnum> {
                         " that deals " + DAMAGE_AMT + " spellʔ damage and" +
                         " slows enemies within " + RADIUS + " blocks" +
                         " for " + DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.ASSASSIN, 6, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
         this.frostBomb = false;
     }
 
@@ -46,7 +46,7 @@ public class SmokeBomb extends Spell<SubClassEnum> {
                         "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
                         "\nslows enemies within " + RADIUS + " blocks" +
                         "\nfor " + DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.ASSASSIN, 6, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
         this.frostBomb = frostBomb;
     }
 

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -21,20 +21,21 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ThrowAxe extends Spell<SubClassEnum> {
+public class ThrowAxe extends Spell {
 
     private static final int DAMAGE = 20;
     private static final int DURATION = 3;
     private final HashMap<UUID, UUID> hasBeenHit;
     private final boolean canHitAllies;
 
+    // todo: add knockup?
     public ThrowAxe() {
         super("Throw Axe",
                 "You throw your artifact, dealing" +
                         "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.INQUISITOR, 10, 20);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = false;
     }
@@ -45,7 +46,7 @@ public class ThrowAxe extends Spell<SubClassEnum> {
                         "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
                         "\nhit and silencing it, preventing it" +
                         "\nfrom dealing damage for " + DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.INQUISITOR, 10, 20);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = canHitAllies;
     }

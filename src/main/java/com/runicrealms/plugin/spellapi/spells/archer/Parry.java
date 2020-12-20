@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -13,14 +13,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Parry extends Spell<SubClassEnum> {
+public class Parry extends Spell {
 
     private static final double LAUNCH_PATH_MULT = 1.5;
 
     // constructor
     public Parry() {
-        super("Parry", "You launch yourself backwards in the air!",
-                ChatColor.WHITE, SubClassEnum.MARKSMAN, 8, 15);
+        super("Parry",
+                "You launch yourself backwards in the air!",
+                ChatColor.WHITE, ClassEnum.ARCHER, 8, 15);
     }
 
     @Override

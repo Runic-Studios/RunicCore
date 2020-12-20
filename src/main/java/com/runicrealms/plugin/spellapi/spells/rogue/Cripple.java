@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Cripple extends Spell<SubClassEnum> {
+public class Cripple extends Spell {
 
     private static final int DURATION = 3;
     private static final double PERCENT = 35;
@@ -34,7 +34,7 @@ public class Cripple extends Spell<SubClassEnum> {
                         "\nblocks, disorienting them and" +
                         "\nreducing their damage by " + (int) PERCENT + "%" +
                         "\nfor " + DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.DUELIST, 15, 20);
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
         crippledEntities = new HashSet<>();
     }
 

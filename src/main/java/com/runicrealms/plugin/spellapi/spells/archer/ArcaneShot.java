@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ArcaneShot extends Spell<SubClassEnum> {
+public class ArcaneShot extends Spell {
 
     private static final int DAMAGE = 15;
     private static final int DURATION = 5;
@@ -31,7 +31,7 @@ public class ArcaneShot extends Spell<SubClassEnum> {
                         "\ntarget and silences it for " + DURATION +
                         "\nseconds, preventing it from" +
                         "\ndealing damage!",
-                ChatColor.WHITE, SubClassEnum.MARKSMAN, 12, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 12, 25);
     }
 
     @Override

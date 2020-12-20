@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Leech extends Spell<SubClassEnum> {
+public class Leech extends Spell {
 
     private static final int BUFF_DURATION = 6;
     private static final int HEAL_AMT = 10;
@@ -25,10 +25,10 @@ public class Leech extends Spell<SubClassEnum> {
 
     public Leech() {
         super("Leech",
-                "For " + BUFF_DURATION + " seconds, your weapon⚔" +
-                        "\nattacks restore✦ " + HEAL_AMT + " of your" +
-                        "\nhealth!",
-                ChatColor.WHITE, SubClassEnum.BERSERKER, 20, 35);
+                "For " + BUFF_DURATION + " seconds, your weapon⚔ " +
+                        "attacks restore✦ " + HEAL_AMT + " of your " +
+                        "health!",
+                ChatColor.WHITE, ClassEnum.WARRIOR, 20, 35);
     }
 
     @Override

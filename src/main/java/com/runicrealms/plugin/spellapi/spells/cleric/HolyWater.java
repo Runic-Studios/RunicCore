@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class HolyWater extends Spell<SubClassEnum> {
+public class HolyWater extends Spell {
 
     private static final int DURATION = 6;
     private static final double PERCENT = 25;
@@ -37,7 +37,7 @@ public class HolyWater extends Spell<SubClassEnum> {
                         "\nreceive an additional " + (int) PERCENT + "% health" +
                         "\nfrom all healing✦ spells for " + DURATION +
                         "\nseconds!",
-                ChatColor.WHITE, SubClassEnum.PRIEST, 10, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 10, 20);
         affectedPlayers = new HashMap<>();
     }
 

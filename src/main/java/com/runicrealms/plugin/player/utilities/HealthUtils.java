@@ -30,8 +30,8 @@ public class HealthUtils {
         int classLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
 
         // save player hp
-        double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className, false);
-        double coefficient = PlayerLevelUtil.determineHealthLvByClass(className, true);
+        double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className);
+        double coefficient = PlayerLevelUtil.getHealthLevelCoefficient();
 
         int total = (int) (BASE_HEALTH + (coefficient * Math.pow(classLevel, 2)) + (hpPerLevel * classLevel) + GearScanner.getHealthBoost(pl));
 

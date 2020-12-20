@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class Grapple extends Spell<SubClassEnum> {
+public class Grapple extends Spell {
 
     // globals
     private final HashMap<Arrow, UUID> hooks = new HashMap<>();
@@ -33,7 +33,7 @@ public class Grapple extends Spell<SubClassEnum> {
                 "You fire a grappling hook which pulls" +
                         "\nyou to your target location, up to a max" +
                         "\nof " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, SubClassEnum.SCOUT, 15, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 15, 25);
     }
 
     // spell execute code

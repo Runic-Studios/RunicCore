@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic.passive;
+package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;

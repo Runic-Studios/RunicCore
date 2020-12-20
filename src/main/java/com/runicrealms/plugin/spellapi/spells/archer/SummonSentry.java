@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.api.ArmorStandAPI;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -20,7 +20,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SummonSentry extends Spell<SubClassEnum> {
+public class SummonSentry extends Spell {
 
     private static final int DAMAGE_AMOUNT = 50;
     private static final int DURATION = 20;
@@ -37,7 +37,7 @@ public class SummonSentry extends Spell<SubClassEnum> {
                         "\nat all enemies within " + RADIUS + " blocks," +
                         "\ndealing " + PERCENT + "% weapon+ damage" +
                         "\nand blinding them!",
-                ChatColor.WHITE, SubClassEnum.SCOUT, 30, 75);
+                ChatColor.WHITE, ClassEnum.ARCHER, 30, 75);
     }
 
     @Override

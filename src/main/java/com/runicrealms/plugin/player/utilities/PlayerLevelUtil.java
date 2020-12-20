@@ -12,14 +12,16 @@ public class PlayerLevelUtil {
 
     private static final int MAX_LEVEL = 60;
 
+    /*
+    Class-specific level coefficients
+     */
     private static final int ARCHER_HP_LV = 6;
-    private static final int CLERIC_HP_LV = 7;
-    private static final int MAGE_HP_LV = 3;
-    private static final int ROGUE_HP_LV = 9;
+    private static final int CLERIC_HP_LV = 10;
+    private static final int MAGE_HP_LV = 4;
+    private static final int ROGUE_HP_LV = 6;
     private static final int WARRIOR_HP_LV = 12;
 
-    private static final double TANK_COEFFICIENT = 0.3;
-    private static final double DAMAGE_COEFFICIENT = 0.2;
+    private static final double HEALTH_LEVEL_COEFFICIENT = 0.2;
 
     /**
      * Here is our exp curve!
@@ -149,38 +151,26 @@ public class PlayerLevelUtil {
      * @return the HP they should have based on scaling
      */
     private static int calculateHealthAtLevel(int currentLv, String className) {
-        double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className, false);
-        double coefficient = PlayerLevelUtil.determineHealthLvByClass(className, true);
-        return (int) (HealthUtils.getBaseHealth() + (coefficient * Math.pow(currentLv, 2)) + (hpPerLevel * currentLv));
+        double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className);
+        return (int) (HealthUtils.getBaseHealth() + (HEALTH_LEVEL_COEFFICIENT * Math.pow(currentLv, 2)) + (hpPerLevel * currentLv));
     }
 
     /**
      * May return either the scaling coefficient or linear hp-per-level of class based on boolean flag value
      * @param className name of class
-     * @param returnCoefficient whether to return linear hp-per-level or coefficient scaling
      * @return um can return either dis might be bad but to lazy to write two methods
      */
-    public static double determineHealthLvByClass(String className, boolean returnCoefficient) {
+    public static double determineHealthLvByClass(String className) {
         switch (className.toLowerCase()) {
             case "archer":
-                if (returnCoefficient)
-                    return PlayerLevelUtil.getDamageCoefficient();
                 return PlayerLevelUtil.getArcherHpLv();
             case "cleric":
-                if (returnCoefficient)
-                    return PlayerLevelUtil.getTankCoefficient();
                 return PlayerLevelUtil.getClericHpLv();
             case "mage":
-                if (returnCoefficient)
-                    return PlayerLevelUtil.getDamageCoefficient();
                 return PlayerLevelUtil.getMageHpLv();
             case "rogue":
-                if (returnCoefficient)
-                    return PlayerLevelUtil.getDamageCoefficient();
                 return PlayerLevelUtil.getRogueHpLv();
             case "warrior":
-                if (returnCoefficient)
-                    return PlayerLevelUtil.getTankCoefficient();
                 return PlayerLevelUtil.getWarriorHpLv();
             default:
                 throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
@@ -243,11 +233,7 @@ public class PlayerLevelUtil {
         return WARRIOR_HP_LV;
     }
 
-    public static double getTankCoefficient() {
-        return TANK_COEFFICIENT;
-    }
-
-    public static double getDamageCoefficient() {
-        return DAMAGE_COEFFICIENT;
+    public static double getHealthLevelCoefficient() {
+        return HEALTH_LEVEL_COEFFICIENT;
     }
 }

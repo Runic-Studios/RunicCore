@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ArcaneOrb extends Spell<SubClassEnum> {
+public class ArcaneOrb extends Spell {
 
     private static final int DURATION = 10;
     private static final double PERCENT = 25;
@@ -32,7 +32,7 @@ public class ArcaneOrb extends Spell<SubClassEnum> {
                         "\ndamage you deal is increased by " + (int) PERCENT + "%" +
                         "\nif you stand within " + RADIUS + " blocks" +
                         "\nof the orb!",
-                ChatColor.WHITE, SubClassEnum.WARLOCK, 15, 30);
+                ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
     }
 
     @Override

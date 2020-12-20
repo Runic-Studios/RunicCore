@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class Smite extends Spell<SubClassEnum> {
+public class Smite extends Spell {
 
     private static final int DAMAGE_AMT = 8;
     private static final float RADIUS = 3f;
@@ -23,7 +23,7 @@ public class Smite extends Spell<SubClassEnum> {
                 "You smite all enemies within " + (int) RADIUS + " blocks," +
                         "\ndealing " + DAMAGE_AMT + " spellʔ damage to them." +
                         "\nUndead enemies take double damage!",
-                ChatColor.WHITE, SubClassEnum.EXEMPLAR, 8, 20);
+                ChatColor.WHITE, ClassEnum.CLERIC, 8, 20);
     }
 
     @Override

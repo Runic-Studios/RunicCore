@@ -6,11 +6,11 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
-import com.runicrealms.plugin.spellapi.spells.mage.Frostbite;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
 import com.runicrealms.plugin.spellapi.spells.runic.active.*;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.*;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Marksman;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import net.md_5.bungee.api.ChatMessageType;
@@ -50,10 +50,10 @@ public class SpellManager implements Listener {
     }
 
     /**
-     *
-     * @param player
-     * @param spell
-     * @param cooldownTime
+     * Adds spell to player, spell cooldown map
+     * @param player to add cooldown to
+     * @param spell to apply cooldown to
+     * @param cooldownTime of spell
      */
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
 
@@ -147,7 +147,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new Eruption());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Shadowbolt());
-        this.spellList.add(new Absolution());
         this.spellList.add(new Insanity());
         this.spellList.add(new Marksman());
         this.spellList.add(new Manawell());
@@ -160,7 +159,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new Frostbite());
         this.spellList.add(new ManaShield());
         this.spellList.add(new SliceAndDice());
-        this.spellList.add(new Repent());
         this.spellList.add(new Cripple());
         this.spellList.add(new ArcaneShot());
         this.spellList.add(new SummonSentry());

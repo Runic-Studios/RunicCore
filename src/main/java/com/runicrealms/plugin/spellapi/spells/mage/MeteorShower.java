@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -22,24 +22,24 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class MeteorShower extends Spell<SubClassEnum> {
+public class MeteorShower extends Spell {
 
-    private boolean fireCone;
-    private boolean applyBurn;
+    private final boolean fireCone;
+    private final boolean applyBurn;
     private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 35;
     private SmallFireball meteor;
     private SmallFireball meteorLeft;
     private SmallFireball meteorRight;
-    private HashMap<UUID, UUID> hasBeenHit;
+    private final HashMap<UUID, UUID> hasBeenHit;
 
     public MeteorShower() {
         super ("Meteor Shower",
                 "You launch four projectile meteors" +
                         "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
-                ChatColor.WHITE, SubClassEnum.PYROMANCER, 10, 25);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
         fireCone = false;
         applyBurn = false;
@@ -55,7 +55,7 @@ public class MeteorShower extends Spell<SubClassEnum> {
                 "You launch four projectile meteors" +
                         "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
-                ChatColor.WHITE, SubClassEnum.PYROMANCER, 10, 25);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
         this.fireCone = fireCone;
         this.applyBurn = applyBurn;

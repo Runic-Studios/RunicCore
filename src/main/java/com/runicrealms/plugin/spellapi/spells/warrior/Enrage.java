@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -22,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Enrage extends Spell<SubClassEnum> {
+public class Enrage extends Spell {
 
     private final boolean skipSlow;
     private int extraDamage = 0;
@@ -38,7 +38,7 @@ public class Enrage extends Spell<SubClassEnum> {
                         "\nyou gain an immense boost of speed" +
                         "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
                         "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.BERSERKER, 10, 25);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 25);
         skipSlow = false;
     }
 
@@ -49,7 +49,7 @@ public class Enrage extends Spell<SubClassEnum> {
                         "\nyou gain an immense boost of speed" +
                         "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
                         "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, SubClassEnum.BERSERKER, 10, 25);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 25);
         this.skipSlow = skipSlow;
         this.extraDamage = extraDamage;
     }

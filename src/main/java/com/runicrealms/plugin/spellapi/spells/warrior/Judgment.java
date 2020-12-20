@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -23,7 +23,7 @@ import java.util.UUID;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Judgment extends Spell<SubClassEnum> {
+public class Judgment extends Spell {
 
     private final boolean willShield;
     private static final int BUBBLE_DURATION = 8;
@@ -40,7 +40,7 @@ public class Judgment extends Spell<SubClassEnum> {
                         "\nprevents them from entering, but" +
                         "\nallies may pass through it. During" +
                         "\nthis time, you may not move.",
-                ChatColor.WHITE, SubClassEnum.INQUISITOR, 30, 35);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
         judgers = new ArrayList<>();
         this.willShield = false;
     }
@@ -53,7 +53,7 @@ public class Judgment extends Spell<SubClassEnum> {
                         "\nprevents them from entering, but" +
                         "\nallies may pass through it. During" +
                         "\nthis time, you may not move.",
-                ChatColor.WHITE, SubClassEnum.INQUISITOR, 30, 35);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
         judgers = new ArrayList<>();
         this.willShield = willShield;
     }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class Blizzard extends Spell<SubClassEnum> {
+public class Blizzard extends Spell {
 
     private final boolean increaseDuration;
     private static final int DAMAGE_AMOUNT = 15;
@@ -37,7 +37,7 @@ public class Blizzard extends Spell<SubClassEnum> {
                         "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
                         "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, SubClassEnum.CRYOMANCER, 10, 35);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
         this.increaseDuration = false;
         this.snowballMap = new HashMap<>();
     }
@@ -49,7 +49,7 @@ public class Blizzard extends Spell<SubClassEnum> {
                         "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
                         "\nto enemies and slowing them!" +
                         "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, SubClassEnum.CRYOMANCER, 10, 35);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
         this.increaseDuration = increaseDuration;
         this.snowballMap = new HashMap<>();
     }

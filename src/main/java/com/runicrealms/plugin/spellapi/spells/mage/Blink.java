@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -14,7 +14,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Blink extends Spell<SubClassEnum> {
+public class Blink extends Spell {
 
     // instance variables
     private static final int MAX_DIST = 8;
@@ -22,9 +22,9 @@ public class Blink extends Spell<SubClassEnum> {
     // constructor
     public Blink() {
         super("Blink",
-                "You teleport forward, up to" +
-                        "\na distance of " + MAX_DIST + " blocks!",
-                ChatColor.WHITE, SubClassEnum.WARLOCK, 10, 20);
+                "You teleport forward, up to " +
+                        "a distance of " + MAX_DIST + " blocks!",
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
     }
 
     // spell execute code

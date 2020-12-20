@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class PowerShot extends Spell<SubClassEnum> {
+public class PowerShot extends Spell {
 
     private final boolean doExplosion;
     private final boolean spreadArrows;
@@ -34,7 +34,7 @@ public class PowerShot extends Spell<SubClassEnum> {
         super("Power Shot",
                 "You launch an enchanted, flaming arrow" +
                 "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, SubClassEnum.MARKSMAN, 8, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
         searingArrows = new ArrayList<>();
         hasBeenHit = new HashSet<>();
         doExplosion = false;
@@ -45,7 +45,7 @@ public class PowerShot extends Spell<SubClassEnum> {
         super("Power Shot",
                 "You launch an enchanted, flaming arrow" +
                         "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, SubClassEnum.MARKSMAN, cooldown, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, cooldown, 25);
         searingArrows = new ArrayList<>();
         hasBeenHit = new HashSet<>();
         this.doExplosion = doExplosion;

@@ -1,11 +1,12 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
+import com.runicrealms.plugin.classes.ClassEnum;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public interface ISpell<T extends Enum<T>> {
+public interface ISpell {
 
     String getName(); // returns the spell name
 
@@ -15,7 +16,7 @@ public interface ISpell<T extends Enum<T>> {
 
     String getDescription(); // returns the spell description
 
-    Enum<T> getReqClass();
+    ClassEnum getReqClass();
 
     void execute(Player player, SpellItemType type); // casts the spell
 
