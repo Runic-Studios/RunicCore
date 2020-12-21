@@ -22,13 +22,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
-    private final ConcurrentHashMap<UUID, HashMap<Spell, Long>> cooldown;
+    private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
     private final HashSet<UUID> silencedEntities;
     private final RunicCore plugin = RunicCore.getInstance();
 
@@ -58,11 +61,11 @@ public class SpellManager implements Listener {
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
 
         if(this.cooldown.containsKey(player.getUniqueId())) {
-            HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+            ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         } else {
-            HashMap<Spell, Long> playerSpellsOnCooldown = new HashMap<>();
+            ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = new ConcurrentHashMap<>();
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
@@ -75,7 +78,7 @@ public class SpellManager implements Listener {
     public boolean isOnCooldown(Player player, String spellName) {
         if(!this.cooldown.containsKey(player.getUniqueId()))
             return false;
-        HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
 
@@ -84,7 +87,7 @@ public class SpellManager implements Listener {
         double cooldownRemaining = 0;
 
         if(isOnCooldown(player, spell.getName())) {
-            HashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
+            ConcurrentHashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
             if(cd.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spell.getName()))) {
                 cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
@@ -94,7 +97,7 @@ public class SpellManager implements Listener {
 
     private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
         if(!this.cooldown.containsKey(player.getUniqueId())) return;
-        HashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
         playerSpellsOnCooldown.remove(spell);
         this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
@@ -172,7 +175,7 @@ public class SpellManager implements Listener {
 
                 for(Player player : Bukkit.getOnlinePlayers()) {
                     if(cooldown.containsKey(player.getUniqueId())) {
-                        HashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
+                        ConcurrentHashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
                         List<String> cdString = new ArrayList<>();
 
                         for(Spell spell : spells.keySet()) {
