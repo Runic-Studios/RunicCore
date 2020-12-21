@@ -119,6 +119,12 @@ public class SkillTreeGUI implements InventoryHolder {
                     (("\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getBaseStatEnum().getDescription())));
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
+            if (spell == null) {
+                meta.setDisplayName(ChatColor.RED + "Error");
+                perkItem.setItemMeta(meta);
+                Bukkit.getServer().getLogger().info(ChatColor.RED + "Error, perk spell not found.");
+                return perkItem;
+            }
             String spellType = spell.isPassive() ? "PASSIVE SPELL " : "ACTIVE SPELL ";
             if (displayPoints)
                 meta.setDisplayName
