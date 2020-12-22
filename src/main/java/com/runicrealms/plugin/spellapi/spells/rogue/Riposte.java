@@ -40,7 +40,8 @@ public class Riposte extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
         ripostePlayers.add(pl);
-        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20, Color.OLIVE);
+        // todo: sound
+        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20, Color.fromRGB(210, 180, 140));
         Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> ripostePlayers.remove(pl), DURATION * 20L);
     }
 
@@ -50,6 +51,7 @@ public class Riposte extends Spell {
         Player hurtPl = (Player) e.getEntity();
         double newDamage = e.getAmount() * PERCENT_DMG;
         e.setCancelled(true);
+        // todo: sound
         DamageUtil.damageEntitySpell(newDamage, e.getPlayer(), hurtPl, 0);
     }
 
@@ -58,7 +60,8 @@ public class Riposte extends Spell {
         if (!ripostePlayers.contains(e.getEntity())) return;
         Player hurtPl = (Player) e.getEntity();
         double newDamage = e.getAmount() * PERCENT_DMG;
-        e.setCancelled(true); // todo: particles, sounds
+        e.setCancelled(true);
+        // todo: sound
         DamageUtil.damageEntityWeapon(newDamage, e.getPlayer(), hurtPl, e.getIsRanged(), true);
     }
 
@@ -68,7 +71,8 @@ public class Riposte extends Spell {
         if (!(e.getDamager() instanceof LivingEntity)) return;
         Player hurtPl = (Player) e.getVictim();
         double newDamage = e.getAmount() * PERCENT_DMG;
-        e.setCancelled(true); // todo: particles, sounds
+        e.setCancelled(true);
+        // todo: sound
         DamageUtil.damageEntityWeapon(newDamage, (LivingEntity) e.getDamager(), hurtPl, false, true);
     }
 }

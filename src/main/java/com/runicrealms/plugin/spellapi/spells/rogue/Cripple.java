@@ -24,16 +24,16 @@ import java.util.UUID;
 public class Cripple extends Spell {
 
     private static final int DURATION = 3;
-    private static final double PERCENT = 35;
+    private static final double PERCENT = 65;
     private static final int RADIUS = 3;
     private final Set<UUID> crippledEntities;
 
     public Cripple() {
         super("Cripple",
-                "You cripple enemies within " + RADIUS +
-                        "\nblocks, disorienting them and" +
-                        "\nreducing their damage by " + (int) PERCENT + "%" +
-                        "\nfor " + DURATION + " seconds!",
+                "You cripple enemies within " + RADIUS + " " +
+                        "blocks, disorienting them and " +
+                        "reducing their damage by " + (int) PERCENT + "% " +
+                        "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
         crippledEntities = new HashSet<>();
     }

@@ -5,7 +5,7 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -26,24 +26,20 @@ public class Kneebreak extends Spell {
 
     public Kneebreak() {
         super ("Kneebreak",
-                "Damaging an enemy has a " + (int) PERCENT + "% chance" +
-                        "\nto slow them for " + DURATION + " second(s)!",
+                "Damaging an enemy has a " + PERCENT + "% chance " +
+                        "to slow them for " + DURATION + " second(s)!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }
 
     @EventHandler
-    public void onIcyHit(SpellDamageEvent e) {
+    public void onKneebreakHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         applySlow(e.getPlayer(), e.getEntity());
     }
 
     @EventHandler
-    public void onIcyHit(WeaponDamageEvent e) {
-//        // ignore ranged attacks
-//        if (e.getIsRanged()) {
-//            return;
-//        }
+    public void onKneebreakHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         applySlow(e.getPlayer(), e.getEntity());
     }
@@ -58,8 +54,8 @@ public class Kneebreak extends Spell {
         if (verifyEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
-            victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
-                    5, 0.5F, 0.5F, 0.5F, 0, Material.SAND.createBlockData()); // todo: check particle
+            victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getLocation(),
+                    25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 3));
             victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, SLOW_MULT));
         }
     }

@@ -30,11 +30,11 @@ public class PlayerSpellWrapper {
 
     /**
      * Constructs a spell wrapper for the given player with specified spells, which can be left blank.
-     * @param player
-     * @param spellHotbarOne
-     * @param spellLeftClick
-     * @param spellRightClick
-     * @param spellSwapHands
+     * @param player to generate wrapper for
+     * @param spellHotbarOne spell assigned to hotbar 1
+     * @param spellLeftClick spell assigned to left-click
+     * @param spellRightClick spell assigned to right-click
+     * @param spellSwapHands spell assigned to swap hands
      */
     public PlayerSpellWrapper(Player player, String spellHotbarOne, String spellLeftClick,
                               String spellRightClick, String spellSwapHands) {
@@ -48,9 +48,9 @@ public class PlayerSpellWrapper {
     }
 
     /**
-     *
-     * @param player
-     * @param spells
+     * Constructs a player spell wrapper from DB
+     * @param player player to generate wrapper for
+     * @param spells spells section of DB for character
      */
     public PlayerSpellWrapper(Player player, PlayerMongoDataSection spells) {
         this.player = player;
