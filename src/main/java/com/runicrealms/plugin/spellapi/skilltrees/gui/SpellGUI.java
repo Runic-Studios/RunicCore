@@ -86,6 +86,7 @@ public class SpellGUI implements InventoryHolder {
         for (Perk perk : RunicCoreAPI.getSkillTree(player, treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
+            if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
             if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
             this.getInventory().setItem(index, SkillTreeGUI.buildPerkItem(perk, false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
             index++;

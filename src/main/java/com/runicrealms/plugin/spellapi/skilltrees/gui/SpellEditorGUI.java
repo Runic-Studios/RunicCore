@@ -56,16 +56,21 @@ public class SpellEditorGUI implements InventoryHolder {
 
     private ItemStack ancientRune() {
         ItemStack skillTreeButton = new ItemStack(Material.POPPED_CHORUS_FRUIT);
-        ItemMeta meta = skillTreeButton.getItemMeta();
-        if (meta == null) return skillTreeButton;
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Your Spell Setup:");
-        String spellOne = "&d[1] &7Spell Hotbar 1: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellHotbarOne();
-        String spellTwo = "&d[L] &7Spell Left-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellLeftClick();
-        String spellThree = "&d[R] &7Spell Right-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellRightClick();
-        String spellFour = "&d[F] &7Spell Swap-hands: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellSwapHands();
-        meta.setLore(Arrays.asList(ColorUtil.format(spellOne), ColorUtil.format(spellTwo),
-                ColorUtil.format(spellThree), ColorUtil.format(spellFour)));
-        skillTreeButton.setItemMeta(meta);
+        try {
+            ItemMeta meta = skillTreeButton.getItemMeta();
+            if (meta == null) return skillTreeButton;
+            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Your Spell Setup:");
+            String spellOne = "&d[1] &7Spell Hotbar 1: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellHotbarOne();
+            String spellTwo = "&d[L] &7Spell Left-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellLeftClick();
+            String spellThree = "&d[R] &7Spell Right-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellRightClick();
+            String spellFour = "&d[F] &7Spell Swap-hands: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellSwapHands();
+            meta.setLore(Arrays.asList(ColorUtil.format(spellOne), ColorUtil.format(spellTwo),
+                    ColorUtil.format(spellThree), ColorUtil.format(spellFour)));
+            skillTreeButton.setItemMeta(meta);
+        } catch (NullPointerException e) {
+            Bukkit.getServer().getLogger().info("test");
+            e.printStackTrace();
+        }
         return skillTreeButton;
     }
 

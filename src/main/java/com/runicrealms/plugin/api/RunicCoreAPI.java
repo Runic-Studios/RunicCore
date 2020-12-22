@@ -136,6 +136,16 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Used in Spell class to check if player has a passive applied!
+     * @param player to check passive for
+     * @param passive name of passive spell
+     * @return boolean value whether passive found
+     */
+    public static boolean hasPassive(Player player, String passive) {
+        return RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getPassives().contains(passive);
+    }
+
+    /**
      * Used to determine whether two players are in a party.
      * @param first The first player
      * @param second The second player

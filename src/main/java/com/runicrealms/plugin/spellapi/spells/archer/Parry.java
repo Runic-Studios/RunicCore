@@ -42,12 +42,10 @@ public class Parry extends Spell {
         new BukkitRunnable() {
             @Override
             public void run() {
-
-                if (pl.isOnGround()) {
+                if (pl.isOnGround())
                     this.cancel();
-                } else {
+                else
                     pl.setFallDistance(-8.0F);
-                }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
     }

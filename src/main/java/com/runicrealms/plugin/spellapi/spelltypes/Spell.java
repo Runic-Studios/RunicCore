@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
@@ -103,6 +104,11 @@ public abstract class Spell implements ISpell, Listener {
                     || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
         }
         return true;
+    }
+
+    @Override
+    public boolean hasPassive(Player player, String passive) {
+        return RunicCoreAPI.hasPassive(player, passive);
     }
 
     /**

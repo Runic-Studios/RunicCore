@@ -165,6 +165,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Cripple());
         this.spellList.add(new ArcaneShot());
         this.spellList.add(new SummonSentry());
+        this.spellList.add(new Challenger());
     }
 
     // starts the repeating task to manage player cooldowns

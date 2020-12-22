@@ -7,6 +7,7 @@ import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.skilltrees.util.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -86,6 +87,19 @@ public class SkillTree {
         for (String key : perkSection.getKeys()) {
             if (getPerk(Integer.parseInt(key)) == null) continue;
             getPerk(Integer.parseInt(key)).setCurrentlyAllocatedPoints(perkSection.get(key, Integer.class));
+        }
+    }
+
+    /**
+     *
+     * @param playerSpellWrapper
+     */
+    public void applyPassives(PlayerSpellWrapper playerSpellWrapper) {
+        for (Perk perk : perks) {
+            if (perk instanceof PerkBaseStat) continue;
+            if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
+            if (!RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
+            playerSpellWrapper.getPassives().add(((PerkSpell) perk).getSpellName());
         }
     }
 

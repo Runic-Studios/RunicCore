@@ -5,6 +5,8 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
+
 /**
  *
  */
@@ -15,15 +17,16 @@ public class PlayerSpellWrapper {
     private String spellLeftClick;
     private String spellRightClick;
     private String spellSwapHands;
+    private final HashSet<String> passives;
     public static final String PATH_1 = "hotBarOne";
     public static final String PATH_2 = "leftClick";
     public static final String PATH_3 = "rightClick";
     public static final String PATH_4 = "swapHands";
-    public static final String DEFAULT_ARCHER = "Barrage";
-    public static final String DEFAULT_CLERIC = "Rejuvenate";
-    public static final String DEFAULT_MAGE = "Fireball";
-    public static final String DEFAULT_ROGUE = "Sprint";
-    public static final String DEFAULT_WARRIOR = "Slam";
+    private static final String DEFAULT_ARCHER = "Barrage";
+    private static final String DEFAULT_CLERIC = "Rejuvenate";
+    private static final String DEFAULT_MAGE = "Fireball";
+    private static final String DEFAULT_ROGUE = "Sprint";
+    private static final String DEFAULT_WARRIOR = "Slam";
 
     /**
      *
@@ -40,6 +43,7 @@ public class PlayerSpellWrapper {
         this.spellLeftClick = spellLeftClick;
         this.spellRightClick = spellRightClick;
         this.spellSwapHands = spellSwapHands;
+        passives = new HashSet<>();
         RunicCore.getSkillTreeManager().getPlayerSpellWrappers().add(this);
     }
 
@@ -54,6 +58,11 @@ public class PlayerSpellWrapper {
         this.spellLeftClick = spells.get(PATH_2, String.class);
         this.spellRightClick = spells.get(PATH_3, String.class);
         this.spellSwapHands = spells.get(PATH_4, String.class);
+        passives = new HashSet<>();
+        // call each skill tree and populate
+        RunicCoreAPI.getSkillTree(player, 1).applyPassives(this);
+        RunicCoreAPI.getSkillTree(player, 2).applyPassives(this);
+        RunicCoreAPI.getSkillTree(player, 3).applyPassives(this);
         RunicCore.getSkillTreeManager().getPlayerSpellWrappers().add(this);
     }
 
@@ -65,6 +74,7 @@ public class PlayerSpellWrapper {
         this.spellLeftClick = "";
         this.spellRightClick = "";
         this.spellSwapHands = "";
+        this.passives.clear();
     }
 
     public static String determineDefaultSpell(Player player) {
@@ -122,5 +132,9 @@ public class PlayerSpellWrapper {
 
     public void setSpellSwapHands(String spellSwapHands) {
         this.spellSwapHands = spellSwapHands;
+    }
+
+    public HashSet<String> getPassives() {
+        return passives;
     }
 }
