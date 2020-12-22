@@ -31,18 +31,17 @@ public class Siphon extends Spell {
 
     @EventHandler
     public void onDrainingHit(SpellDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         restoreMana(e.getPlayer(), e.getEntity());
     }
 
     @EventHandler
     public void onDrainingHit(WeaponDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         restoreMana(e.getPlayer(), e.getEntity());
     }
 
     private void restoreMana(Player pl, Entity en) {
-
-        if (getRunicPassive(pl) == null) return;
-        if (!getRunicPassive(pl).equals(this)) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;

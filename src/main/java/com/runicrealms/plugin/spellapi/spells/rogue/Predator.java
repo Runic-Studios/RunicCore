@@ -34,18 +34,17 @@ public class Predator extends Spell {
 
     @EventHandler
     public void onBlindingHit(SpellDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         applyBlind(e.getPlayer(), e.getEntity());
     }
 
     @EventHandler
     public void onBlindingHit(WeaponDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         applyBlind(e.getPlayer(), e.getEntity());
     }
 
     private void applyBlind(Player pl, Entity en) {
-
-        if (getRunicPassive(pl) == null) return;
-        if (!getRunicPassive(pl).equals(this)) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;

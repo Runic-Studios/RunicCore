@@ -32,8 +32,7 @@ public class Resolve extends Spell {
         if (!(e.getEntity() instanceof Player)) return;
         Player hurtPl = (Player) e.getEntity();
 
-        if (getRunicPassive(hurtPl) == null) return;
-        if (!getRunicPassive(hurtPl).equals(this)) return;
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
 
         double percent = PERCENT_HP / 100;
         double threshold = percent * hurtPl.getMaxHealth();
@@ -48,8 +47,7 @@ public class Resolve extends Spell {
         if (!(e.getEntity() instanceof Player)) return;
         Player hurtPl = (Player) e.getEntity();
 
-        if (getRunicPassive(hurtPl) == null) return;
-        if (!getRunicPassive(hurtPl).equals(this)) return;
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
 
         double percent = PERCENT_HP / 100;
         double threshold = percent * hurtPl.getMaxHealth();
@@ -64,8 +62,7 @@ public class Resolve extends Spell {
         if (!(e.getVictim() instanceof Player)) return;
         Player hurtPl = (Player) e.getVictim();
 
-        if (getRunicPassive(hurtPl) == null) return;
-        if (!getRunicPassive(hurtPl).equals(this)) return;
+        if (!hasPassive(hurtPl, this.getName())) return;
 
         double percent = PERCENT_HP / 100;
         double threshold = percent * hurtPl.getMaxHealth();

@@ -33,18 +33,17 @@ public class Agility extends Spell {
 
     @EventHandler
     public void onSpeedyHit(SpellDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         getSpeed(e.getPlayer(), e.getEntity());
     }
 
     @EventHandler
     public void onSpeedyHit(WeaponDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         getSpeed(e.getPlayer(), e.getEntity());
     }
 
     private void getSpeed(Player pl, Entity en) {
-
-        if (getRunicPassive(pl) == null) return;
-        if (!getRunicPassive(pl).equals(this)) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;

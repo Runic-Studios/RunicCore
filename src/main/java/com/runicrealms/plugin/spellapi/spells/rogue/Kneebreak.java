@@ -34,6 +34,7 @@ public class Kneebreak extends Spell {
 
     @EventHandler
     public void onIcyHit(SpellDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         applySlow(e.getPlayer(), e.getEntity());
     }
 
@@ -43,13 +44,11 @@ public class Kneebreak extends Spell {
 //        if (e.getIsRanged()) {
 //            return;
 //        }
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         applySlow(e.getPlayer(), e.getEntity());
     }
 
     private void applySlow(Player pl, Entity en) {
-
-        if (getRunicPassive(pl) == null) return;
-        if (!getRunicPassive(pl).equals(this)) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;

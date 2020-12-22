@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
@@ -56,7 +57,7 @@ public class Lunge extends Spell {
             e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST) // fires FIRST
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (!lungers.contains(e.getPlayer())) return;
         e.setAmount((int) (e.getAmount() * PERCENT_MULT));

@@ -30,8 +30,7 @@ public class Manawell extends Spell {
     @EventHandler
     public void onSpellCast(SpellCastEvent e) {
 
-        if (getRunicPassive(e.getCaster()) == null) return;
-        if (!getRunicPassive(e.getCaster()).equals(this)) return;
+        if (!hasPassive(e.getCaster(), this.getName())) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;

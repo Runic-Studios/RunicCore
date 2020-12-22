@@ -29,18 +29,17 @@ public class Marksman extends Spell {
 
     @EventHandler
     public void onNauseaHit(SpellDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         e.setAmount(applyNausea(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
     @EventHandler
     public void onNauseaHit(WeaponDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         e.setAmount(applyNausea(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
     private int applyNausea(Player pl, Entity en, int originalAmt) {
-
-        if (getRunicPassive(pl) == null) return originalAmt;
-        if (!getRunicPassive(pl).equals(this)) return originalAmt;
 
         int distance = (int) pl.getLocation().distance(en.getLocation());
         if (distance < DISTANCE) return originalAmt;

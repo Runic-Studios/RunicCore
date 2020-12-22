@@ -165,15 +165,6 @@ public abstract class Spell implements ISpell, Listener {
         return newVector;
     }
 
-    public Spell getRunicPassive(Player pl) {
-        try {
-            String spell = AttributeUtil.getSpell(pl.getInventory().getItem(0), "primarySpell"); // passive
-            return RunicCore.getSpellManager().getSpellByName(spell);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public boolean isPassive() {
         return isPassive;
     }

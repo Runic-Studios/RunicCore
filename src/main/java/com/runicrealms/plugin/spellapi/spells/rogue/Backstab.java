@@ -27,18 +27,17 @@ public class Backstab extends Spell {
 
     @EventHandler
     public void onDamage(SpellDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         e.setAmount(doBackstab(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
     @EventHandler
     public void onDamage(WeaponDamageEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
         e.setAmount(doBackstab(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
     private int doBackstab(Player pl, Entity en, int originalAmt) {
-
-        if (getRunicPassive(pl) == null) return originalAmt;
-        if (!getRunicPassive(pl).equals(this)) return originalAmt;
 
         /*
         if the dot-product of both entitys' vectors is greater than 0 (positive),

@@ -43,8 +43,7 @@ public class Insanity extends Spell {
 
     private void applyNausea(Player pl, Entity en) {
 
-        if (getRunicPassive(pl) == null) return;
-        if (!getRunicPassive(pl).equals(this)) return;
+        if (!hasPassive(pl, this.getName())) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
