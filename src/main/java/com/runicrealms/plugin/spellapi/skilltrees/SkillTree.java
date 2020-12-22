@@ -70,8 +70,10 @@ public class SkillTree {
             return;
         }
         RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(),
-                RunicCoreAPI.getSpentPoints(player) + perk.getCost());
+                RunicCoreAPI.getSpentPoints(player) + perk.getCost()); // spend a point
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
+        if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
+            applyPassives(RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
     }
@@ -91,15 +93,16 @@ public class SkillTree {
     }
 
     /**
-     *
-     * @param playerSpellWrapper
+     * Loops through currently purchased perks to store passives in memory
+     * @param playerSpellWrapper the wrapper object to store the passives in
      */
     public void applyPassives(PlayerSpellWrapper playerSpellWrapper) {
         for (Perk perk : perks) {
             if (perk instanceof PerkBaseStat) continue;
             if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
             if (!RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
-            playerSpellWrapper.getPassives().add(((PerkSpell) perk).getSpellName());
+            if (perk.getCurrentlyAllocatedPoints() >= perk.getCost())
+                playerSpellWrapper.getPassives().add(((PerkSpell) perk).getSpellName());
         }
     }
 

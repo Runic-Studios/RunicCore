@@ -23,7 +23,7 @@ public class Challenger extends Spell {
                 "Your weapon⚔ attacks also deal " + (int) (HEALTH_MULT * 100) +
                         "% of your enemy's max health! Capped at " + DAMAGE_CAP +
                         " versus monsters.",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 

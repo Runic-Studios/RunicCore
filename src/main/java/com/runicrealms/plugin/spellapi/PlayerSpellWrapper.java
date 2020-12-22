@@ -29,7 +29,7 @@ public class PlayerSpellWrapper {
     private static final String DEFAULT_WARRIOR = "Slam";
 
     /**
-     *
+     * Constructs a spell wrapper for the given player with specified spells, which can be left blank.
      * @param player
      * @param spellHotbarOne
      * @param spellLeftClick

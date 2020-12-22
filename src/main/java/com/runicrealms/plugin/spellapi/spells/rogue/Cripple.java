@@ -43,11 +43,11 @@ public class Cripple extends Spell {
 
         // spell variables, vectors
         pl.swingMainHand();
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
 
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
             if (!verifyEnemy(pl, en)) continue;
-            en.getWorld().playSound(en.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
             en.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) en).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
             crippledEntities.add(en.getUniqueId());
             en.sendMessage(ChatColor.RED + "You have been crippled!");

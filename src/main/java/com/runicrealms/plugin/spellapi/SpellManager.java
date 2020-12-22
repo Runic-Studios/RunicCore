@@ -167,6 +167,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new SummonSentry());
         this.spellList.add(new Challenger());
         this.spellList.add(new Riposte());
+        this.spellList.add(new Kneebreak());
     }
 
     // starts the repeating task to manage player cooldowns

@@ -49,8 +49,8 @@ public class SpellGUI implements InventoryHolder {
         this.inventory.setItem(9, SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
                 false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
         int i = 10;
-        grabUnlockedSpellsFromTree(1, i);
-        grabUnlockedSpellsFromTree(2, i);
+        i = grabUnlockedSpellsFromTree(1, i);
+        i = grabUnlockedSpellsFromTree(2, i);
         grabUnlockedSpellsFromTree(3, i);
     }
 
@@ -81,8 +81,8 @@ public class SpellGUI implements InventoryHolder {
      * @param treePosition (which of the three sub-trees?) (1, 2, 3)
      * @param index which index to begin filling items
      */
-    private void grabUnlockedSpellsFromTree(int treePosition, int index) {
-        if (RunicCoreAPI.getSkillTree(player, treePosition) == null) return;
+    private int grabUnlockedSpellsFromTree(int treePosition, int index) {
+        if (RunicCoreAPI.getSkillTree(player, treePosition) == null) return index;
         for (Perk perk : RunicCoreAPI.getSkillTree(player, treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
@@ -91,5 +91,6 @@ public class SpellGUI implements InventoryHolder {
             this.getInventory().setItem(index, SkillTreeGUI.buildPerkItem(perk, false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
             index++;
         }
+        return index;
     }
 }

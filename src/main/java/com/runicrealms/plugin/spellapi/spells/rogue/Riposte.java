@@ -6,9 +6,12 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -30,13 +33,14 @@ public class Riposte extends Spell {
                         "incoming attacks, avoiding the hit and dealing " +
                         (int) (PERCENT_DMG * 100) + " damage back to your attacker! " +
                         "Capped at " + DAMAGE_CAP + " against monsters.",
-                ChatColor.WHITE, ClassEnum.RUNIC, 20, 20);
+                ChatColor.WHITE, ClassEnum.ROGUE, 20, 20);
         ripostePlayers = new HashSet<>();
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
         ripostePlayers.add(pl);
+        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20, Color.OLIVE);
         Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> ripostePlayers.remove(pl), DURATION * 20L);
     }
 
