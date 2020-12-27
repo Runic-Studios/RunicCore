@@ -14,9 +14,9 @@ public class ClericTreeUtil {
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(36, 1, 0, 1, "Warsong"));
+        perks.add(new PerkSpell(36, 1, 0, 1, "Warsong")); // only mage damage
         perks.add(new PerkBaseStat(37, 1, 0, 5, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(38, 1, 0, 1, "Improvisation")); // melee attacks X% chance to heal nearby allies or damage nearby enemies
+        perks.add(new PerkSpell(38, 1, 0, 1, "Improvisation")); // melee attacks X% chance to buff nearby allies weapon damage
         perks.add(new PerkBaseStat(39, 1, 0, 3, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkBaseStat(40, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(41, 1, 0, 1, "Windstride"));
@@ -25,7 +25,7 @@ public class ClericTreeUtil {
         perks.add(new PerkBaseStat(44, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkSpell(45, 1, 0, 1, "Discord"));
         perks.add(new PerkBaseStat(46, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(47, 1, 0, 1, "Dissonance")); // melee attacks against players have X% chance to swap them to random hotbar slot!
+        perks.add(new PerkSpell(47, 1, 0, 1, "Dissonance")); // melee attacks against players have X% chance to swap them to random hotbar slot! against monsters, chance to silence
         // against monsters, chance to silence them.
         return perks;
     }
@@ -41,7 +41,7 @@ public class ClericTreeUtil {
         perks.add(new PerkBaseStat(54, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(55, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(56, 1, 0, 5, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(57, 1, 0, 1, "Consecration")); // AoE, high dmg, slow
+        perks.add(new PerkSpell(57, 1, 0, 1, "Consecration")); // AoE, high dmg, slow. you take X% damage directed at allies who stand in the ring
         perks.add(new PerkBaseStat(58, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(59, 1, 0, 1, "Righteous Blade")); // your melee attacks have X% chance to heal nearby allies
         return perks;

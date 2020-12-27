@@ -201,6 +201,10 @@ public abstract class Spell implements ISpell, Listener {
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 0.2f);
             Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
                     () -> RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId()), duration * 20L);
+        } else if (effectEnum == EffectEnum.STUN) {
+            RunicCore.getSpellManager().getStunnedEntities().add(entity.getUniqueId());
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
+                    () -> RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId()), duration * 20L);
         }
     }
 

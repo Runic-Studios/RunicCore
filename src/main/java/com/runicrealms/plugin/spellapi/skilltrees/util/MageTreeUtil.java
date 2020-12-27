@@ -40,7 +40,7 @@ public class MageTreeUtil {
         perks.add(new PerkSpell(86, 1, 0, 1, "Scald")); // fireball deals small aoe
         perks.add(new PerkBaseStat(87, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(88, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast")); // stun
+        perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast"));
         perks.add(new PerkBaseStat(90, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkBaseStat(91, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(92, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));

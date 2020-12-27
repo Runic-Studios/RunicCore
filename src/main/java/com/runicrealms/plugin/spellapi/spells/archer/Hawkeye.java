@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic.passive;
+package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
@@ -13,16 +13,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Marksman extends Spell {
+public class Hawkeye extends Spell {
 
     private static final int AMOUNT = 10;
     private static final int DISTANCE = 10;
 
-    public Marksman() {
-        super ("Marksman",
-                "Damaging an enemy from " + DISTANCE + " blocks" +
-                        "\naway or farther deals " + AMOUNT + " additional" +
-                        "\ndamage!",
+    public Hawkeye() {
+        super ("Hawkeye",
+                "Damaging an enemy from " + DISTANCE + " blocks " +
+                        "away or farther deals " + AMOUNT + " additional " +
+                        "damage!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }

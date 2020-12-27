@@ -46,7 +46,7 @@ public class Riposte extends Spell {
     }
 
     @EventHandler
-    public void onResolvedHit(SpellDamageEvent e) {
+    public void onRiposteHit(SpellDamageEvent e) {
         if (!ripostePlayers.contains(e.getEntity())) return;
         Player hurtPl = (Player) e.getEntity();
         double newDamage = e.getAmount() * PERCENT_DMG;
@@ -56,7 +56,7 @@ public class Riposte extends Spell {
     }
 
     @EventHandler
-    public void onResolvedHit(WeaponDamageEvent e) {
+    public void onRiposteHit(WeaponDamageEvent e) {
         if (!ripostePlayers.contains(e.getEntity())) return;
         Player hurtPl = (Player) e.getEntity();
         double newDamage = e.getAmount() * PERCENT_DMG;

@@ -9,7 +9,6 @@ import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
 import com.runicrealms.plugin.spellapi.spells.runic.active.*;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.Marksman;
 import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -20,6 +19,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -33,12 +33,14 @@ public class SpellManager implements Listener {
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
     private final HashSet<UUID> silencedEntities;
+    private final HashSet<UUID> stunnedEntities;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldown = new ConcurrentHashMap<>();
         this.silencedEntities = new HashSet<>();
+        this.stunnedEntities = new HashSet<>();
         this.registerSpells();
         this.startCooldownTask();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -46,6 +48,10 @@ public class SpellManager implements Listener {
 
     public List<Spell> getSpells() {
         return this.spellList;
+    }
+
+    public HashSet<UUID> getStunnedEntities() {
+        return stunnedEntities;
     }
 
     public HashSet<UUID> getSilencedEntities() {
@@ -151,7 +157,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new HolyWater());
         this.spellList.add(new Shadowbolt());
         this.spellList.add(new Insanity());
-        this.spellList.add(new Marksman());
+        this.spellList.add(new Hawkeye());
         this.spellList.add(new Manawell());
         this.spellList.add(new Agility());
         this.spellList.add(new Predator());
@@ -168,6 +174,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Challenger());
         this.spellList.add(new Riposte());
         this.spellList.add(new Kneebreak());
+        this.spellList.add(new FireBlast());
     }
 
     // starts the repeating task to manage player cooldowns
@@ -211,5 +218,13 @@ public class SpellManager implements Listener {
     public void onSpellDamage(SpellDamageEvent e) {
         if (silencedEntities.contains(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        if (stunnedEntities.isEmpty()) return;
+        if (!stunnedEntities.contains(e.getPlayer().getUniqueId())) return;
+        if (e.getTo() == null) return;
+        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
     }
 }
