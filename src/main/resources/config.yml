@@ -10,3 +10,12 @@ class-icons:
     material: 'WOODEN_HOE'
   rogue:
     material: 'WOODEN_SWORD'
+queue-recommended:
+  grinding: 5
+  mini-bosses: 3
+  dungeons:
+    sabaths-cave: 3
+    odins-keep: 5
+    sunken-library: 5
+    crypts-of-dera: 5
+    the-frozen-fortress: 10

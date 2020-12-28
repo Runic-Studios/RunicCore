@@ -23,6 +23,9 @@ commands:
   spell:
     usage: /<commands>
     description: Base for all oldspells commands
+  group:
+    usage: /<commands>
+    description: Base for all party commands
   party:
     usage: /<commands>
     description: Base for all party commands

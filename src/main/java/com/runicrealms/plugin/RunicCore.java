@@ -16,7 +16,7 @@ import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
-import com.runicrealms.plugin.group.GroupChannel;
+import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.item.BossTagger;
 import com.runicrealms.plugin.item.HelmetListener;
@@ -101,7 +101,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
     private static GroupManager groupManager;
-    private static GroupChannel groupChannel;
     private static PaperCommandManager commandManager;
     private static SkillTreeManager skillTreeManager;
 
@@ -122,7 +121,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
     public static PartyChannel getPartyChatChannel() { return partyChannel; }
     public static GroupManager getGroupManager() { return groupManager; }
-    public static GroupChannel getGroupChatChannel() { return groupChannel; }
     public static SkillTreeManager getSkillTreeManager() {
         return skillTreeManager;
     }
@@ -156,7 +154,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         skillTreeManager = new SkillTreeManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
-        //commandManager.registerCommand(new GroupCommand());
+        commandManager.registerCommand(new GroupCommand());
         commandManager.registerCommand(new ResetTreeCMD());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
@@ -281,7 +279,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
-        pm.registerEvents(new GroupManager(), this);
+        //pm.registerEvents(new GroupManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
@@ -293,13 +291,11 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellEditorGUIListener(), this);
         pm.registerEvents(new SpellGUIListener(), this);
         pm.registerEvents(partyManager, this);
-        pm.registerEvents(groupManager, this);
-        groupManager.registerGuiEvents();
+//        pm.registerEvents(groupManager, this);
+//        groupManager.registerGuiEvents();
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
-        groupChannel = new GroupChannel();
-        RunicChat.getRunicChatAPI().registerChatChannel(groupChannel);
     }
 
     // TODO: replace ALL commands w ACF
