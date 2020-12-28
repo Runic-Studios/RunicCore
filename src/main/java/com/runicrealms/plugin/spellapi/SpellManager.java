@@ -175,6 +175,9 @@ public class SpellManager implements Listener {
         this.spellList.add(new Riposte());
         this.spellList.add(new Kneebreak());
         this.spellList.add(new FireBlast());
+        this.spellList.add(new Scald());
+        this.spellList.add(new FireAura());
+        this.spellList.add(new BlazingSpeed());
     }
 
     // starts the repeating task to manage player cooldowns

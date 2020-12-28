@@ -37,7 +37,7 @@ public class MageTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(84, 1, 0, 1, "Fire Aura"));
         perks.add(new PerkBaseStat(85, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkSpell(86, 1, 0, 1, "Scald")); // fireball deals small aoe
+        perks.add(new PerkSpell(86, 1, 0, 1, "Scald"));
         perks.add(new PerkBaseStat(87, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(88, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast"));
@@ -46,7 +46,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(92, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(93, 1, 0, 1, "Meteor Shower"));
         perks.add(new PerkBaseStat(94, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkSpell(95, 1, 0, 1, "Blazing Speed")); // gain speed increase during fire aura
+        perks.add(new PerkSpell(95, 1, 0, 1, "Blazing Speed"));
         return perks;
     }
 

@@ -279,7 +279,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
-        //pm.registerEvents(new GroupManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
@@ -291,8 +290,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellEditorGUIListener(), this);
         pm.registerEvents(new SpellGUIListener(), this);
         pm.registerEvents(partyManager, this);
-//        pm.registerEvents(groupManager, this);
-//        groupManager.registerGuiEvents();
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

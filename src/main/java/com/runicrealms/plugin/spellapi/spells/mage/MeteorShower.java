@@ -36,9 +36,9 @@ public class MeteorShower extends Spell {
 
     public MeteorShower() {
         super ("Meteor Shower",
-                "You launch four projectile meteors" +
-                        "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
-                        "\nimpact!",
+                "You launch four projectile meteors " +
+                        "that deal " + DAMAGE_AMOUNT + " spellʔ damage on " +
+                        "impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
         fireCone = false;

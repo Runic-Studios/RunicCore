@@ -50,9 +50,9 @@ public class KnockbackUtil {
      * @param isRanged whether the attack came from a melee or ranged hit
      */
     public static void knockBackMob(Player damager, Entity entity, boolean isRanged) {
-        double multiplier = 0.75;
+        double multiplier = 0.5;
         if (isRanged)
-            multiplier = 0.5;
+            multiplier = 0.4;
         Vector vector = damager.getLocation().getDirection().multiply(multiplier);
         vector.setY(0.225);
         // no boss knockback!
