@@ -12,7 +12,7 @@ public class BlazingSpeed extends Spell {
 
     public BlazingSpeed() {
         super ("Blazing Speed",
-                "While your Fire Aura is active, " +
+                "While your &aFire Aura &7is active, " +
                         "you gain a boost of speed!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);

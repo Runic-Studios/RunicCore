@@ -16,15 +16,15 @@ import java.util.List;
 @SuppressWarnings("FieldCanBeLocal")
 public class Frostbite extends Spell {
 
-    private static final int DURATION = 3;
+    private static final int DURATION = 4;
     private static final int MAX_DIST = 10;
 
     public Frostbite() {
         super("Frostbite",
-                "You conjure icy tendrils at" +
-                        "\nyour target location for " + DURATION +
-                        "\nseconds, snaring enemies caught" +
-                        "\nin the frost!",
+                "You conjure icy tendrils at " +
+                        "your target location for " + DURATION +
+                        "s, snaring enemies caught " +
+                        "in the frost!",
                 ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
     }
 
@@ -45,6 +45,8 @@ public class Frostbite extends Spell {
         for (Block b : cobWebShape) {
             if (b.getType() == Material.AIR) {
                 b.setType(Material.COBWEB);
+                pl.getWorld().spawnParticle(Particle.REDSTONE, lookLocBlock.getLocation(),
+                        25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 2));
                 pl.getWorld().spawnParticle(Particle.REDSTONE, lookLocBlock.getLocation(),
                         25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 2));
                 blocksToRevert.add(b);

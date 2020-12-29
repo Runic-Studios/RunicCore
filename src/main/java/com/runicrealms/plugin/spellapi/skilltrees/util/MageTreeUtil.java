@@ -18,9 +18,9 @@ public class MageTreeUtil {
 
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(72, 1, 0, 1, "Ice Block")); // entomb yourself in ice (healing), then explode, dealing damage
+        perks.add(new PerkSpell(72, 1, 0, 1, "Ice Block"));
         perks.add(new PerkBaseStat(73, 1, 0, 5, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(74, 1, 0, 1, "Icebolt")); // change fireball to icebolt, slows now
+        perks.add(new PerkSpell(74, 1, 0, 1, "Cold Touch"));
         perks.add(new PerkBaseStat(75, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(76, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(77, 1, 0, 1, "Frostbite"));
@@ -29,7 +29,7 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(80, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(81, 1, 0, 1, "Blizzard"));
         perks.add(new PerkBaseStat(82, 1, 0, 3, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(83, 1, 0, 1, "Whiteout")); // like tier-set, tag w/ two icebolts or blizzard to encase in ice
+        perks.add(new PerkSpell(83, 1, 0, 1, "Icy Affinity"));
         return perks;
     }
 

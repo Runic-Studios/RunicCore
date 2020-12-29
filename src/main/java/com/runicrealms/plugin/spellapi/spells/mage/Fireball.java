@@ -184,9 +184,9 @@ public class Fireball extends Spell {
         }
     }
 
-    private final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+    private static final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
-    private void trapEntity(Location location, Material material, int duration) {
+    public static void trapEntity(Location location, Material material, int duration) {
         Map<Block, BlockData> changedBlocks = new HashMap<>();
         Location[] locs = new Location[]{location, location.clone().add(0,1,0)};
         for (Location loc : locs) {

@@ -8,7 +8,10 @@ import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
-import com.runicrealms.plugin.spellapi.spells.runic.active.*;
+import com.runicrealms.plugin.spellapi.spells.runic.active.Bolt;
+import com.runicrealms.plugin.spellapi.spells.runic.active.Eruption;
+import com.runicrealms.plugin.spellapi.spells.runic.active.RunicMissile;
+import com.runicrealms.plugin.spellapi.spells.runic.active.Shadowbolt;
 import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -178,6 +181,9 @@ public class SpellManager implements Listener {
         this.spellList.add(new Scald());
         this.spellList.add(new FireAura());
         this.spellList.add(new BlazingSpeed());
+        this.spellList.add(new IceBlock());
+        this.spellList.add(new ColdTouch());
+        this.spellList.add(new IcyAffinity());
     }
 
     // starts the repeating task to manage player cooldowns

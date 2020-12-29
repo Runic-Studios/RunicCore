@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.spells.runic.active;
+package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -31,7 +31,7 @@ public class Frostbolt extends Spell {
                 "You launch a projectile bolt of ice" +
                         "\nthat deals " + DAMAGE_AMT + " spellʔ damage on" +
                         "\nimpact and slows its target!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 5, 20);
+                ChatColor.WHITE, ClassEnum.MAGE, 5, 20);
     }
 
     // spell execute code

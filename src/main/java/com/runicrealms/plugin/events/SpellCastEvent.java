@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  */
 public class SpellCastEvent extends Event implements Cancellable {
 
-    private Player caster;
+    private final Player caster;
     private Spell spellCasted;
-    private Entity[] recipients;
+    private final Entity[] recipients;
     private boolean isCancelled;
     private boolean willExecute; // for tier sets
 
