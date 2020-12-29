@@ -166,6 +166,7 @@ public class Fireball extends Spell {
             victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
 
+            // scald
             if (hasPassive(player, "Scald")) {
                 for (Entity en : fireball.getNearbyEntities(Scald.getRadius(), Scald.getRadius(), Scald.getRadius())) {
                     if (!verifyEnemy(player, en)) continue;

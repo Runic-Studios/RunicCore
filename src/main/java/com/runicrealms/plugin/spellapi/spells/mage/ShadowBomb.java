@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -27,25 +28,22 @@ public class ShadowBomb extends Spell {
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
-    private static final double GEM_BOOST = 50;
 
     public ShadowBomb() {
         super("Shadow Bomb",
                 "You launch a magical vial of shadow, " +
                         "dealing " + (DAMAGE_AMT*DURATION/PERIOD) + " spellʔ damage over " +
                         DURATION + " seconds to enemies within " +
-                        RADIUS + " blocks of the cloud. " +
-                        ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
+                        RADIUS + " blocks of the cloud. ",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
     }
 
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
-        pl.swingMainHand();
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        Objects.requireNonNull(meta).setColor(Color.GREEN);
+        Objects.requireNonNull(meta).setColor(Color.PURPLE);
         item.setItemMeta(meta);
         thrownPotion = pl.launchProjectile(ThrownPotion.class);
         thrownPotion.setItem(item);
@@ -72,14 +70,17 @@ public class ShadowBomb extends Spell {
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1.0F);
 
         expiredBomb.getWorld().spawnParticle(Particle.REDSTONE, loc,
-                50, 1f, 1f, 1f, new Particle.DustOptions(Color.GREEN, 10));
+                50, 1f, 1f, 1f, new Particle.DustOptions(Color.PURPLE, 10));
 
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
             LivingEntity le = (LivingEntity) en;
-            if (verifyEnemy(pl, le)) {
-                damageOverTime(le, pl);
-            }
+            if (!verifyEnemy(pl, le)) continue;
+            damageOverTime(le, pl);
+            // Doom (passive)
+            if (pl == null) continue;
+            if (((Doom) RunicCore.getSpellManager().getSpellByName("Doom")).getDoomers().contains(pl.getUniqueId()))
+                addStatusEffect(le, EffectEnum.SILENCE, Doom.getDuration());
         }
     }
 
@@ -95,7 +96,7 @@ public class ShadowBomb extends Spell {
                     le.getWorld().playSound(le.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
                     le.getWorld().spawnParticle(Particle.REDSTONE, le.getLocation(),
                             50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GREEN, 1));
-                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, GEM_BOOST);
+                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
