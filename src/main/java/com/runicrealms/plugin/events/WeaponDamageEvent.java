@@ -17,13 +17,23 @@ public class WeaponDamageEvent extends Event implements Cancellable {
     private int amount;
     private final Player player;
     private final Entity entity;
+    private final boolean isAutoAttack;
     private final boolean isRanged;
     private boolean isCancelled;
 
-    public WeaponDamageEvent(int amount, Player damager, Entity victim, boolean isRanged) {
+    /**
+     * Create an event w/ all the info we need!
+     * @param amount of damage to inflict
+     * @param damager player who is causing damage
+     * @param victim who is receiving damage
+     * @param isAutoAttack whether the attack is a physical spell or a basic attack
+     * @param isRanged whether the attack is a ranged physical spell (archers)
+     */
+    public WeaponDamageEvent(int amount, Player damager, Entity victim, boolean isAutoAttack, boolean isRanged) {
         this.amount = amount;
         this.player = damager;
         this.entity = victim;
+        this.isAutoAttack = isAutoAttack;
         this.isRanged = isRanged;
         this.isCancelled = false;
     }
@@ -42,6 +52,10 @@ public class WeaponDamageEvent extends Event implements Cancellable {
 
     public Entity getEntity() {
         return this.entity;
+    }
+
+    public boolean getIsAutoAttack() {
+        return this.isAutoAttack;
     }
 
     public boolean getIsRanged() {

@@ -74,7 +74,7 @@ public class StaffListener implements Listener {
     }
 
     private void createStaffParticle(Player pl, Location point1, Location point2, ItemStack itemStack) {
-        double space = 0.6;
+        double space = 0.5;
         double distance = point1.distance(point2);
         Vector p1 = point1.toVector();
         Vector p2 = point2.toVector();
@@ -110,9 +110,9 @@ public class StaffListener implements Listener {
         // apply attack effects, random damage amount
         if (maxDamage != 0) {
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            DamageUtil.damageEntityWeapon(randomNum, victim, pl, true, false);
+            DamageUtil.damageEntityWeapon(randomNum, victim, pl, true, true, false);
         } else {
-            DamageUtil.damageEntityWeapon(maxDamage, victim, pl, true, false);
+            DamageUtil.damageEntityWeapon(maxDamage, victim, pl, true, true, false);
         }
 
         pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

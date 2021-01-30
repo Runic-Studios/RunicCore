@@ -4,9 +4,9 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -62,8 +62,7 @@ public class Lunge extends Spell {
         if (!lungers.contains(e.getPlayer())) return;
         e.setAmount((int) (e.getAmount() * PERCENT_MULT));
         e.getPlayer().getWorld().playSound(e.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
-        e.getEntity().getWorld().spawnParticle(Particle.CRIT, ((LivingEntity) e.getEntity()).getEyeLocation(),
-                25, 0.5f, 0.5f, 0.5f, 0);
+        SlashEffect.slashHorizontal(e.getPlayer());
         lungers.remove(e.getPlayer());
     }
 }

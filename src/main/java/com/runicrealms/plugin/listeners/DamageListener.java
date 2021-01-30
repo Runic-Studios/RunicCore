@@ -136,7 +136,7 @@ public class DamageListener implements Listener {
                 // successful damage
                 if (((Player) damager).getCooldown(artifact.getType()) != 0)
                     return;
-                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, false, true);
+                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, true, false, true);
                 ((Player) damager).setCooldown(artifact.getType(), 15);
                 // ---------------------------
 

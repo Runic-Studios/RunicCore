@@ -79,7 +79,7 @@ public class ShadowBomb extends Spell {
             damageOverTime(le, pl);
             // Doom (passive)
             if (pl == null) continue;
-            if (((Doom) RunicCore.getSpellManager().getSpellByName("Doom")).getDoomers().contains(pl.getUniqueId()))
+            if (Doom.getDoomers().contains(pl.getUniqueId()))
                 addStatusEffect(le, EffectEnum.SILENCE, Doom.getDuration());
         }
     }

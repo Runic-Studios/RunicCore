@@ -16,7 +16,7 @@ public class WarriorTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(144, 1, 0, 1, "Enrage"));
         perks.add(new PerkBaseStat(145, 1, 0, 5, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkSpell(146, 1, 0, 1, "Cleave")); // during enrage, your melee attacks cleave enemies
+        perks.add(new PerkSpell(146, 1, 0, 1, "Cleave"));
         perks.add(new PerkBaseStat(147, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(148, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkSpell(149, 1, 0, 1, "Leech"));

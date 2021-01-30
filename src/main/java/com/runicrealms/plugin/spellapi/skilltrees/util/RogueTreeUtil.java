@@ -33,13 +33,13 @@ public class RogueTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(120, 1, 0, 1, "Lunge"));
         perks.add(new PerkBaseStat(121, 1, 0, 5, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkSpell(122, 1, 0, 1, "Challenger")); // attacks deal X% of targets max-health (capped vs monsters)
+        perks.add(new PerkSpell(122, 1, 0, 1, "Challenger"));
         perks.add(new PerkBaseStat(123, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(124, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkSpell(125, 1, 0, 1, "Cripple"));
         perks.add(new PerkBaseStat(126, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(127, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkBaseStat(129, 1, 0, 5, BaseStatEnum.DEXTERITY, 1)); // might need to increase
+        perks.add(new PerkBaseStat(129, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkSpell(128, 1, 0, 1, "Riposte"));
         perks.add(new PerkBaseStat(130, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkSpell(131, 1, 0, 1, "Kneebreak"));

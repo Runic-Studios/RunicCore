@@ -6,13 +6,9 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -20,7 +16,7 @@ import java.util.UUID;
 public class Leech extends Spell {
 
     private static final int BUFF_DURATION = 6;
-    private static final int HEAL_AMT = 10;
+    private static final int HEAL_AMT = 20;
     private final HashSet<UUID> leechers = new HashSet<>();
 
     public Leech() {
@@ -43,12 +39,10 @@ public class Leech extends Spell {
         leechers.add(pl.getUniqueId());
 
         // remove buff
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                leechers.remove(pl.getUniqueId());
-            }
-        }.runTaskLater(plugin, BUFF_DURATION * 20);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> {
+            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.5f, 1.0f);
+            leechers.remove(pl.getUniqueId());
+        }, BUFF_DURATION * 20L);
     }
 
     /*

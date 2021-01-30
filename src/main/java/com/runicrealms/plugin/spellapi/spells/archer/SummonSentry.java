@@ -31,12 +31,12 @@ public class SummonSentry extends Spell {
 
     public SummonSentry() {
         super("Summon Sentry",
-                "You conjure an enchanted" +
-                        "\ncrossbow at your location!" +
-                        "\nFor " + DURATION + "s, the crossbow fires" +
-                        "\nat all enemies within " + RADIUS + " blocks," +
-                        "\ndealing " + PERCENT + "% weapon+ damage" +
-                        "\nand blinding them!",
+                "You conjure an enchanted " +
+                        "crossbow at your location! " +
+                        "For " + DURATION + "s, the crossbow fires " +
+                        "at all enemies within " + RADIUS + " blocks, " +
+                        "dealing " + PERCENT + "% weapon+ damage " +
+                        "and blinding them!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 30, 75);
     }
 
@@ -106,7 +106,7 @@ public class SummonSentry extends Spell {
         if (!e.getDamager().hasMetadata("player")) return;
         e.setCancelled(true);
         Player pl = Bukkit.getPlayer(e.getDamager().getMetadata("player").get(0).asString());
-        DamageUtil.damageEntityWeapon(DAMAGE_AMOUNT, (LivingEntity) e.getEntity(), pl, true, true);
+        DamageUtil.damageEntityWeapon(DAMAGE_AMOUNT, (LivingEntity) e.getEntity(), pl, false, true, true);
     }
 }
 

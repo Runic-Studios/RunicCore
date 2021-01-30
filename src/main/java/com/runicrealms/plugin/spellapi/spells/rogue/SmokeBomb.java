@@ -34,7 +34,7 @@ public class SmokeBomb extends Spell {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke " +
                         "that deals " + DAMAGE_AMT + " spellʔ damage, slows and " +
-                        "blinds enemies within " + RADIUS + " blocks" +
+                        "blinds enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
         this.frostBomb = false;

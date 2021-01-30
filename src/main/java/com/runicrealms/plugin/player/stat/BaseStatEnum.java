@@ -5,7 +5,7 @@ public enum BaseStatEnum {
     DEXTERITY("Dexterity", "DEX", "Ranged damage movement speed"),
     INTELLIGENCE("Intelligence", "INT", "Magic damage and max mana"),
     STRENGTH("Strength", "STR", "Melee damage"),
-    VITALITY("Vitality", "VIT", "Defense and health regen"),
+    VITALITY("Vitality", "VIT", "Defense and health regen"), // defense = damage reduction todo: write simple event
     WISDOM("Wisdom", "WIS", "Spell Healing and mana regen");
 
     private final String name;

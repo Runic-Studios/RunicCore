@@ -5,25 +5,31 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Harpoon extends Spell {
 
+    private static final int DAMAGE_AMT = 35;
+    private static final int DURATION = 3;
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
 
     public Harpoon() {
         super ("Harpoon",
-                "You launch a projectile harpoon" +
-                        "\nwhich pulls your enemy towards" +
-                        "\nyou!",
+                "You launch a projectile harpoon " +
+                        "which deals " + DAMAGE_AMT + " weapon⚔ damage, " +
+                        "pulls your enemy towards you, and slows them for " +
+                        DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 12, 15);
     }
 
@@ -43,10 +49,12 @@ public class Harpoon extends Spell {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (trident.isDead())
+                if (trident.isDead() || trident.isOnGround()) {
                     this.cancel();
+                    trident.remove();
+                }
                 trident.getWorld().spawnParticle(Particle.REDSTONE, trident.getLocation(),
-                        10, 0, 0, 0, 0, new Particle.DustOptions(Color.AQUA, 1));
+                        10, 0, 0, 0, 0, new Particle.DustOptions(Color.TEAL, 1));
             }
         }.runTaskTimer(plugin, 0, 1);
     }
@@ -74,6 +82,9 @@ public class Harpoon extends Spell {
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3.0D;
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
         //final double hPower = 0.5D;
+
+        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, true);
+        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
 
         new BukkitRunnable() {
             @Override

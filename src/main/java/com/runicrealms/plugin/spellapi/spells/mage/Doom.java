@@ -10,12 +10,12 @@ import java.util.HashSet;
 import java.util.UUID;
 
 /**
- * Logic for hit found in Fireball.
+ * Logic for hit found in Shadow Bomb
  */
 public class Doom extends Spell {
 
     private static final int DURATION = 2;
-    private final HashSet<UUID> doomers;
+    private static final HashSet<UUID> doomers = new HashSet<>();
 
     public Doom() {
         super ("Doom",
@@ -23,7 +23,6 @@ public class Doom extends Spell {
                         "your next &Shadow Bomb " +
                         "&7silences its target(s) for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
-        doomers = new HashSet<>();
         this.setIsPassive(true);
     }
 
@@ -38,7 +37,7 @@ public class Doom extends Spell {
         return DURATION;
     }
 
-    public HashSet<UUID> getDoomers() {
+    public static HashSet<UUID> getDoomers() {
         return doomers;
     }
 }

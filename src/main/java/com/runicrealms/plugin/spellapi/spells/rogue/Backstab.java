@@ -15,12 +15,12 @@ import org.bukkit.event.EventHandler;
 @SuppressWarnings("FieldCanBeLocal")
 public class Backstab extends Spell {
 
-    private static final int DAMAGE_AMT = 10;
+    private static final double PERCENT = .5;
 
     public Backstab() {
         super("Backstab",
-                "Damaging an enemy from behind" +
-                        " deals " + DAMAGE_AMT  + " additional damage!",
+                "Damaging an enemy from behind " +
+                        "deals " + (int) (PERCENT * 100 + 100)  + "% damage!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }
@@ -50,7 +50,7 @@ public class Backstab extends Spell {
             LivingEntity le = (LivingEntity) en;
             le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
             le.getWorld().playSound(le.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.5f, 1.0f);
-            return originalAmt+DAMAGE_AMT;
+            return (int) (originalAmt + (originalAmt * PERCENT));
         }
 
         return originalAmt;

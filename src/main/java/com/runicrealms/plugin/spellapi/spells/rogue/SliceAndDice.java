@@ -51,14 +51,14 @@ public class SliceAndDice extends Spell {
                 pl.teleport(original);
                 pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
                 pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
-                VectorUtil.drawLine(pl, Particle.REDSTONE, Color.BLACK, original, current, 1.0);
+                VectorUtil.drawLine(pl, Particle.REDSTONE, Color.BLACK, original, current, 0.5);
                 pl.swingMainHand();
                 for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                     if (!(en instanceof LivingEntity))
                         continue;
                     if (verifyEnemy(pl, en)) {
                         pl.getWorld().spawnParticle(Particle.SWEEP_ATTACK, ((LivingEntity) en).getEyeLocation(), 5, 0, 0, 0, 0);
-                        DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, true);
+                        DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, false, true);
                     }
                 }
             }
