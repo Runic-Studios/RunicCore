@@ -1,6 +1,11 @@
 package com.runicrealms.plugin.party;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.party.event.LeaveReason;
+import com.runicrealms.plugin.party.event.PartyEvent;
+import com.runicrealms.plugin.party.event.PartyJoinEvent;
+import com.runicrealms.plugin.party.event.PartyLeaveEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,10 +20,16 @@ public class Party {
     private final Set<Invite> invites;
     private Player leader;
 
+    /**
+     * Create a player party! Also calls the custom party event.
+     * @param leader player who created the party
+     */
     public Party(Player leader) {
         this.members = new HashSet<>();
         this.invites = new HashSet<>();
         this.leader = leader;
+        PartyEvent partyEvent = new PartyEvent(this);
+        Bukkit.getPluginManager().callEvent(partyEvent);
     }
 
     public Player getLeader() {
@@ -31,6 +42,11 @@ public class Party {
         return invite;
     }
 
+    /**
+     * Method called when a player accepts an invite to a party.
+     * @param player who accepted invite
+     * @return whether player joined party
+     */
     public boolean acceptMemberInvite(Player player) {
         this.members.add(player);
         Invite playerInvite = null;
@@ -43,13 +59,22 @@ public class Party {
         if (playerInvite != null) {
             playerInvite.inviteAccepted();
             this.invites.remove(playerInvite);
+            PartyJoinEvent partyJoinEvent = new PartyJoinEvent(this, player);
+            Bukkit.getPluginManager().callEvent(partyJoinEvent);
             return true;
         }
         return false;
     }
 
-    public void kickMember(Player player) {
+    /**
+     * Called when a player is kicked from the party
+     * @param player to be kicked
+     * @param leaveReason reason the player left
+     */
+    public void kickMember(Player player, LeaveReason leaveReason) {
         this.members.remove(player);
+        PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(this, player, leaveReason);
+        Bukkit.getPluginManager().callEvent(partyLeaveEvent);
     }
 
     public void setLeader(Player player) {

@@ -25,7 +25,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkBaseStat(152, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkSpell(153, 1, 0, 1, "Whirlwind"));
         perks.add(new PerkBaseStat(154, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkSpell(155, 1, 0, 1, "Last Resort")); // upon death, revive with X% health. cannot occur >1 every Ys
+        perks.add(new PerkSpell(155, 1, 0, 1, "Last Resort"));
         return perks;
     }
 

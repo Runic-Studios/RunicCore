@@ -3,6 +3,8 @@ package com.runicrealms.plugin.party;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.party.event.LeaveReason;
+import com.runicrealms.plugin.party.event.PartyLeaveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -84,6 +86,8 @@ public class PartyCommand extends BaseCommand {
             RunicCore.getPartyManager().updatePlayerParty(member, null);
             RunicCore.getTabListManager().setupTab(member);
         }
+        PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
+        Bukkit.getPluginManager().callEvent(partyLeaveEvent);
         RunicCore.getPartyManager().getParties().remove(party);
     }
 
@@ -138,7 +142,8 @@ public class PartyCommand extends BaseCommand {
         if (kicked == player) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou cannot kick yourself!")); return; }
         if (RunicCore.getPartyManager().getPlayerParty(kicked) == null) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is not in your party!")); return; }
         if (RunicCore.getPartyManager().getPlayerParty(kicked) != party) { player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is not in your party!")); return; }
-        party.getMembers().remove(kicked);
+        //party.getMembers().remove(kicked);
+        party.kickMember(kicked, LeaveReason.KICK);
         RunicCore.getPartyManager().updatePlayerParty(kicked, null);
         RunicCore.getTabListManager().setupTab(kicked);
         for (Player member : party.getMembersWithLeader()) {
@@ -155,12 +160,16 @@ public class PartyCommand extends BaseCommand {
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
         if (party.getLeader() == player) {
             party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
+            PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
+            Bukkit.getPluginManager().callEvent(partyLeaveEvent);
             for (Player member : party.getMembersWithLeader()) {
                 RunicCore.getPartyManager().updatePlayerParty(member, null);
                 RunicCore.getTabListManager().setupTab(member);
             }
         } else {
             party.sendMessageInChannel(player.getName() + " has been removed this party &7Reason: left");
+            PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, player, LeaveReason.LEAVE);
+            Bukkit.getPluginManager().callEvent(partyLeaveEvent);
             party.getMembers().remove(player);
             RunicCore.getPartyManager().updatePlayerParty(player, null);
             RunicCore.getTabListManager().setupTab(player);
