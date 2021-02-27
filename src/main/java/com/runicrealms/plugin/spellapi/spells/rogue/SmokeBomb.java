@@ -32,20 +32,20 @@ public class SmokeBomb extends Spell {
 
     public SmokeBomb() {
         super("Smoke Bomb",
-                "You fire a cloud of toxic smoke" +
-                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
-                        "\nslows enemies within " + RADIUS + " blocks" +
-                        "\nfor " + DURATION + " seconds!",
+                "You fire a cloud of toxic smoke " +
+                        "that deals " + DAMAGE_AMT + " spellʔ damage, slows and " +
+                        "blinds enemies within " + RADIUS + " blocks " +
+                        "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
         this.frostBomb = false;
     }
 
     public SmokeBomb(boolean frostBomb) {
         super("Smoke Bomb",
-                "You fire a cloud of toxic smoke" +
-                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage and" +
-                        "\nslows enemies within " + RADIUS + " blocks" +
-                        "\nfor " + DURATION + " seconds!",
+                "You fire a cloud of toxic smoke " +
+                        "that deals " + DAMAGE_AMT + " spellʔ damage, slows and " +
+                        "blinds enemies within " + RADIUS + " blocks " +
+                        "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
         this.frostBomb = frostBomb;
     }
@@ -111,6 +111,7 @@ public class SmokeBomb extends Spell {
             if (entity instanceof LivingEntity && verifyEnemy(pl, entity)) {
                 LivingEntity victim = (LivingEntity) entity;
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
+                victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 2));
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
             }
         }

@@ -6,6 +6,7 @@ import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import static org.bukkit.Color.*;
@@ -88,9 +89,14 @@ public class SelectClass {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);
     }
 
-    public static void setConfig(Player pl, String className) {
-        HealthUtils.setBaseHealth(pl);
-        HealthUtils.setHeartDisplay(pl);
+    /**
+     * Setup some basic cache info for players.
+     * @param pl to setup cache for
+     * @param className name of class
+     */
+    public static void setupCache(Player pl, String className) {
+        pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(HealthUtils.getBaseHealth());
+        pl.setHealthScale(HealthUtils.getHeartAmount());
         pl.setLevel(0);
         pl.setExp(0);
         RunicCore.getCacheManager().getPlayerCaches().get(pl).setClassName(className);

@@ -38,16 +38,21 @@ public class LootChestManager {
         /*
         Initial spawning of chests from flatfile storage
          */
-        for (String id : locations.getKeys(false)) {
-            String tier = locations.getString(id + ".tier");
-            World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
-            double x = locations.getDouble(id + ".x");
-            double y = locations.getDouble(id + ".y");
-            double z = locations.getDouble(id + ".z");
-            Location loc = new Location(world, x, y, z);
-            LootChest lootChest = new LootChest(tier, loc);
-            lootChests.add(lootChest);
-            lootChest.getLocation().getBlock().setType(Material.CHEST);
+        try {
+            for (String id : locations.getKeys(false)) {
+                String tier = locations.getString(id + ".tier");
+                World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
+                double x = locations.getDouble(id + ".x");
+                double y = locations.getDouble(id + ".y");
+                double z = locations.getDouble(id + ".z");
+                Location loc = new Location(world, x, y, z);
+                LootChest lootChest = new LootChest(tier, loc);
+                lootChests.add(lootChest);
+                lootChest.getLocation().getBlock().setType(Material.CHEST);
+            }
+        } catch (NullPointerException e) {
+            Bukkit.getServer().getLogger().info(ChatColor.RED + "Error: there was an error loading loot chests!");
+            e.printStackTrace();
         }
 
         new BukkitRunnable() {

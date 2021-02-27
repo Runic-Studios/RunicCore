@@ -24,21 +24,21 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class MeteorShower extends Spell {
 
-    private boolean fireCone;
-    private boolean applyBurn;
+    private final boolean fireCone;
+    private final boolean applyBurn;
     private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 35;
     private SmallFireball meteor;
     private SmallFireball meteorLeft;
     private SmallFireball meteorRight;
-    private HashMap<UUID, UUID> hasBeenHit;
+    private final HashMap<UUID, UUID> hasBeenHit;
 
     public MeteorShower() {
         super ("Meteor Shower",
-                "You launch four projectile meteors" +
-                        "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
-                        "\nimpact!",
+                "You launch four projectile meteors " +
+                        "that deal " + DAMAGE_AMOUNT + " spellʔ damage on " +
+                        "impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
         fireCone = false;

@@ -14,11 +14,10 @@ import com.runicrealms.plugin.command.supercommands.CurrencySC;
 import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
+import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
-import com.runicrealms.plugin.group.GroupChannel;
+import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
-import com.runicrealms.plugin.healthbars.MobHealthBars;
-import com.runicrealms.plugin.healthbars.MobHealthManager;
 import com.runicrealms.plugin.item.BossTagger;
 import com.runicrealms.plugin.item.HelmetListener;
 import com.runicrealms.plugin.item.MobTagger;
@@ -58,7 +57,10 @@ import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.spellapi.SpellManager;
-import com.runicrealms.plugin.spellapi.SpellUseEvent;
+import com.runicrealms.plugin.spellapi.SpellUseListener;
+import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
+import com.runicrealms.plugin.spellapi.skilltrees.cmd.ResetTreeCMD;
+import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.tutorial.TutorialCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -87,7 +89,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static CombatManager combatManager;
     private static LootChestManager lootChestManager;
     private static RegenManager regenManager;
-    private static MobHealthManager mobHealthManager;
     private static PartyManager partyManager;
     private static ScoreboardHandler scoreboardHandler;
     private static SpellManager spellManager;
@@ -100,8 +101,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
     private static GroupManager groupManager;
-    private static GroupChannel groupChannel;
     private static PaperCommandManager commandManager;
+    private static SkillTreeManager skillTreeManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -120,7 +121,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
     public static PartyChannel getPartyChatChannel() { return partyChannel; }
     public static GroupManager getGroupManager() { return groupManager; }
-    public static GroupChannel getGroupChatChannel() { return groupChannel; }
+    public static SkillTreeManager getSkillTreeManager() {
+        return skillTreeManager;
+    }
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
@@ -137,7 +140,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         combatManager = new CombatManager();
         lootChestManager = new LootChestManager();
         regenManager = new RegenManager();
-        mobHealthManager = new MobHealthManager();
         partyManager = new PartyManager();
         scoreboardHandler = new ScoreboardHandler();
         spellManager = new SpellManager();
@@ -149,9 +151,11 @@ public class RunicCore extends JavaPlugin implements Listener {
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
         groupManager = new GroupManager();
+        skillTreeManager = new SkillTreeManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
-        //commandManager.registerCommand(new GroupCommand());
+        commandManager.registerCommand(new GroupCommand());
+        commandManager.registerCommand(new ResetTreeCMD());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
         });
@@ -184,10 +188,6 @@ public class RunicCore extends JavaPlugin implements Listener {
             new PlaceholderAPI().register();
         }
 
-        // clean any stray armor stands, evokers
-        mobHealthManager.insurancePolicy();
-        mobHealthManager.fullClean();
-
         // motd
         String motd = ColorUtil.format("                    &d&lRUNIC REALMS&r" +
                 "\n            &f&l1.8 - The Dungeons Patch!");
@@ -202,7 +202,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         instance = null;
         lootChestManager = null;
         regenManager = null;
-        mobHealthManager = null;
         partyManager = null;
         scoreboardHandler = null;
         spellManager = null;
@@ -214,6 +213,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         databaseManager = null;
         groupManager = null;
         partyChannel = null;
+        skillTreeManager = null;
     }
 
     @EventHandler
@@ -223,7 +223,7 @@ public class RunicCore extends JavaPlugin implements Listener {
          */
         getLogger().info(" §cRunicCore has been disabled.");
         getCacheManager().saveCaches(); // save player data
-        getCacheManager().saveQueuedFiles(false, false); // saves SYNC
+        getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
         /*
         Notify RunicRestart
          */
@@ -252,7 +252,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerQuitListener(), this);
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
-        pm.registerEvents(new SpellUseEvent(), this);
+        pm.registerEvents(new SpellUseListener(), this);
         pm.registerEvents(new WeaponCDListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
@@ -260,7 +260,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerLevelListener(), this);
         pm.registerEvents(new HelmetListener(), this);
         pm.registerEvents(new CraftingListener(), this);
-        pm.registerEvents(new MobHealthBars(), this);
+        pm.registerEvents(new MobMechanicsListener(), this);
         pm.registerEvents(new CombatListener(), this);
         pm.registerEvents(new PlayerRegenListener(), this);
         pm.registerEvents(new PlayerMenuListener(), this);
@@ -275,25 +275,24 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new ScrapperListener(), this);
-        pm.registerEvents(new MobBurnListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new SpeedListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
-        pm.registerEvents(new GroupManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
         pm.registerEvents(new RunicShopManager(), this);
         pm.registerEvents(new SpellVerifyListener(), this);
+        pm.registerEvents(new SkillTreeGUIListener(), this);
+        pm.registerEvents(new RuneGUIListener(), this);
+        pm.registerEvents(new SubClassGUIListener(), this);
+        pm.registerEvents(new SpellEditorGUIListener(), this);
+        pm.registerEvents(new SpellGUIListener(), this);
         pm.registerEvents(partyManager, this);
-        pm.registerEvents(groupManager, this);
-        groupManager.registerGuiEvents();
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
-        groupChannel = new GroupChannel();
-        RunicChat.getRunicChatAPI().registerChatChannel(groupChannel);
     }
 
     // TODO: replace ALL commands w ACF

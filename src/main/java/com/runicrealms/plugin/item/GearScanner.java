@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -41,7 +42,8 @@ public class GearScanner {
         if (chestplate != null) armorAndOffhand.add(pl.getInventory().getChestplate());
         if (leggings != null) armorAndOffhand.add(pl.getInventory().getLeggings());
         if (boots != null) armorAndOffhand.add(pl.getInventory().getBoots());
-        if (AttributeUtil.getCustomString(offhand, "offhand").equals("true")) {
+        if (offhand.getType() != Material.AIR
+                && AttributeUtil.getCustomString(offhand, "offhand").equals("true")) {
             armorAndOffhand.add(pl.getInventory().getItemInOffHand());
         }
         return armorAndOffhand;
@@ -99,11 +101,15 @@ public class GearScanner {
 
     public static int getMinDamage(Player pl) {
         ItemStack item = pl.getInventory().getItemInMainHand();
+        if (item.getType() == Material.AIR)
+            return 0;
         return (int) AttributeUtil.getCustomDouble(item, "custom.minDamage");
     }
 
     public static int getMaxDamage(Player pl) {
         ItemStack item = pl.getInventory().getItemInMainHand();
+        if (item.getType() == Material.AIR)
+            return 0;
         return (int) AttributeUtil.getCustomDouble(item, "custom.maxDamage");
     }
 

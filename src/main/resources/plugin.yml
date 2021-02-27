@@ -6,7 +6,7 @@ description: Core plugin for the "Runic Realms" server
 author: Skyfallin, Excel, Destiny
 loadbefore: [Quests]
 softdepend: [PlaceholderAPI]
-depend: [MythicMobs, RunicChat, RunicNpcs]
+depend: [MythicMobs, NBTAPI, RunicChat]
 commands:
   artifactinfo:
     usage: /<commands>
@@ -23,6 +23,9 @@ commands:
   spell:
     usage: /<commands>
     description: Base for all oldspells commands
+  group:
+    usage: /<commands>
+    description: Base for all party commands
   party:
     usage: /<commands>
     description: Base for all party commands
@@ -32,6 +35,9 @@ commands:
   mana:
     usage: /<commands>
     description: sets your mana to full
+  resettree:
+    usage: /<commands>
+    description: reset skill tree
   runicgive:
     usage: /<commands>
     description: give yourself something

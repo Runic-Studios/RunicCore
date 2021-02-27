@@ -23,9 +23,9 @@ import java.util.UUID;
 public class Grapple extends Spell {
 
     // globals
-    private HashMap<Arrow, UUID> hooks = new HashMap<>();
-    private HashMap<UUID, Long> safefall = new HashMap<>();
-    private static double HOOK_LENGTH = 30.0;
+    private final HashMap<Arrow, UUID> hooks = new HashMap<>();
+    private final HashMap<UUID, Long> safefall = new HashMap<>();
+    private static final double HOOK_LENGTH = 30.0;
 
     // constructor
     public Grapple() {

@@ -6,6 +6,8 @@ import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.database.event.CacheSaveEvent;
+import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -29,18 +31,21 @@ public class CacheManager implements Listener {
     private final ConcurrentHashMap<Player, PlayerCache> playerCaches;
     private final ConcurrentLinkedQueue<PlayerCache> queuedCaches;
 
+    /*
+    Saves files ASYNC
+     */
     public CacheManager() {
 
         playerCaches = new ConcurrentHashMap<>();
         queuedCaches = new ConcurrentLinkedQueue<>();
 
-        new BukkitRunnable() {
+        new BukkitRunnable() { // Asynchronously
             @Override
             public void run() {
                 saveCaches();
-                saveQueuedFiles(true, true);
+                saveQueuedFiles(true, true, CacheSaveReason.PERIODIC);
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, CACHE_PERIOD*20); // 10s delay, 30 sec period
+        }.runTaskTimer(RunicCore.getInstance(), 100L, CACHE_PERIOD * 20); // 10s delay, 30 sec period
     }
 
     @EventHandler
@@ -75,7 +80,7 @@ public class CacheManager implements Listener {
     /*
      * Writes data async
      */
-    public void saveQueuedFiles(boolean limitSize, boolean saveAsync) {
+    public void saveQueuedFiles(boolean limitSize, boolean saveAsync, CacheSaveReason cacheSaveReason) {
         int limit;
         if (limitSize) {
             limit = (int) Math.ceil(queuedCaches.size() / 4.0);
@@ -85,19 +90,22 @@ public class CacheManager implements Listener {
         if (limit < 1)
             return;
         for (int i = 0; i < limit; i++) {
-            if (queuedCaches.size() < 1)
-                continue;
+            if (queuedCaches.size() < 1) continue;
             PlayerCache queued = queuedCaches.iterator().next();
-            setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()), saveAsync);
+            setFieldsSaveFile(queued, Bukkit.getPlayer(queued.getPlayerID()), saveAsync, cacheSaveReason);
             queuedCaches.remove(queued);
         }
     }
 
-    public void setFieldsSaveFile(PlayerCache playerCache, Player player, boolean saveAsync) {
+    public void setFieldsSaveFile(PlayerCache playerCache, Player player, boolean saveAsync,
+                                  CacheSaveReason cacheSaveReason) {
         try {
             int slot = playerCache.getCharacterSlot();
             PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
             PlayerMongoDataSection character = mongoData.getCharacter(slot);
+            CacheSaveEvent e = new CacheSaveEvent(player, mongoData, character, cacheSaveReason);
+            Bukkit.getPluginManager().callEvent(e);
+            if (e.isCancelled()) return;
             if (playerCache.getClassName() != null)
                 character.set("class.name", playerCache.getClassName());
             character.set("class.level", playerCache.getClassLevel());
@@ -116,12 +124,12 @@ public class CacheManager implements Listener {
             // outlaw
             character.set("outlaw.enabled", playerCache.getIsOutlaw());
             character.set("outlaw.rating", playerCache.getRating());
-            // inventory
-            character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
-            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));
             // location
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
+            // inventory
+            character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
+            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));
             // save data (includes nested fields)
             if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);

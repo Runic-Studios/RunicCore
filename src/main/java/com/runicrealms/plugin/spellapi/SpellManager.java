@@ -8,8 +8,9 @@ import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
-import com.runicrealms.plugin.spellapi.spells.runic.active.*;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.*;
+import com.runicrealms.plugin.spellapi.spells.runic.active.Bolt;
+import com.runicrealms.plugin.spellapi.spells.runic.active.Eruption;
+import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import net.md_5.bungee.api.ChatMessageType;
@@ -19,21 +20,28 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
-    private final HashMap<UUID, HashMap<Spell, Long>> cooldown;
+    private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
     private final HashSet<UUID> silencedEntities;
+    private final HashSet<UUID> stunnedEntities;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
-        this.cooldown = new HashMap<>();
+        this.cooldown = new ConcurrentHashMap<>();
         this.silencedEntities = new HashSet<>();
+        this.stunnedEntities = new HashSet<>();
         this.registerSpells();
         this.startCooldownTask();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -43,24 +51,28 @@ public class SpellManager implements Listener {
         return this.spellList;
     }
 
+    public HashSet<UUID> getStunnedEntities() {
+        return stunnedEntities;
+    }
+
     public HashSet<UUID> getSilencedEntities() {
         return silencedEntities;
     }
 
     /**
-     *
-     * @param player
-     * @param spell
-     * @param cooldownTime
+     * Adds spell to player, spell cooldown map
+     * @param player to add cooldown to
+     * @param spell to apply cooldown to
+     * @param cooldownTime of spell
      */
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
 
         if(this.cooldown.containsKey(player.getUniqueId())) {
-            HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+            ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         } else {
-            HashMap<Spell, Long> playerSpellsOnCooldown = new HashMap<>();
+            ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = new ConcurrentHashMap<>();
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
@@ -73,7 +85,7 @@ public class SpellManager implements Listener {
     public boolean isOnCooldown(Player player, String spellName) {
         if(!this.cooldown.containsKey(player.getUniqueId()))
             return false;
-        HashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
 
@@ -82,7 +94,7 @@ public class SpellManager implements Listener {
         double cooldownRemaining = 0;
 
         if(isOnCooldown(player, spell.getName())) {
-            HashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
+            ConcurrentHashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
             if(cd.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spell.getName()))) {
                 cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
@@ -92,7 +104,7 @@ public class SpellManager implements Listener {
 
     private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
         if(!this.cooldown.containsKey(player.getUniqueId())) return;
-        HashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown =  this.cooldown.get(player.getUniqueId());
         playerSpellsOnCooldown.remove(spell);
         this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
@@ -115,11 +127,9 @@ public class SpellManager implements Listener {
         this.spellList.add(new Sprint());
         this.spellList.add(new Parry());
         this.spellList.add(new Blink());
-        this.spellList.add(new Cleave());
         this.spellList.add(new MeteorShower());
         this.spellList.add(new Windstride());
         this.spellList.add(new Rejuvenate());
-        this.spellList.add(new Discharge());
         this.spellList.add(new Enrage());
         this.spellList.add(new Judgment());
         this.spellList.add(new SmokeBomb());
@@ -130,14 +140,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Cloak());
         this.spellList.add(new HolyNova());
         this.spellList.add(new Blizzard());
-        this.spellList.add(new BlessedRain());
-        this.spellList.add(new Sandstorm());
         this.spellList.add(new Frostbite());
-        this.spellList.add(new RottingShot());
-        this.spellList.add(new UnholyGround());
-        this.spellList.add(new RunicShield());
-        this.spellList.add(new ShriekingSkull());
-        this.spellList.add(new WoundingShot());
         this.spellList.add(new ThrowAxe());
         this.spellList.add(new ArcaneOrb());
         this.spellList.add(new Lunge());
@@ -146,38 +149,45 @@ public class SpellManager implements Listener {
         this.spellList.add(new Reflect());
         this.spellList.add(new Siphon());
         this.spellList.add(new IceVolley());
-        this.spellList.add(new ArrowBomb());
-        this.spellList.add(new SearingShot());
-        this.spellList.add(new BarkShield());
-        this.spellList.add(new Enflame());
-        this.spellList.add(new Heal());
+        this.spellList.add(new PowerShot());
         this.spellList.add(new Smite());
-        this.spellList.add(new Sandstorm());
-        this.spellList.add(new PlagueBomb());
+        this.spellList.add(new ShadowBomb());
         this.spellList.add(new Bolt());
         this.spellList.add(new Cleanse());
         this.spellList.add(new Eruption());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Shadowbolt());
-        this.spellList.add(new Absolution());
         this.spellList.add(new Insanity());
-        this.spellList.add(new Marksman());
+        this.spellList.add(new Hawkeye());
         this.spellList.add(new Manawell());
         this.spellList.add(new Agility());
         this.spellList.add(new Predator());
         this.spellList.add(new Resolve());
         this.spellList.add(new Taunt());
-        this.spellList.add(new RunicMissile());
-        this.spellList.add(new Battlecry());
         this.spellList.add(new Leech());
-        this.spellList.add(new BloodRitual());
-        this.spellList.add(new Ensnare());
+        this.spellList.add(new Frostbite());
         this.spellList.add(new ManaShield());
-        this.spellList.add(new Rupture());
-        this.spellList.add(new Repent());
+        this.spellList.add(new SliceAndDice());
         this.spellList.add(new Cripple());
         this.spellList.add(new ArcaneShot());
-        this.spellList.add(new SanguineShot());
+        this.spellList.add(new SummonSentry());
+        this.spellList.add(new Challenger());
+        this.spellList.add(new Riposte());
+        this.spellList.add(new Kneebreak());
+        this.spellList.add(new FireBlast());
+        this.spellList.add(new Scald());
+        this.spellList.add(new FireAura());
+        this.spellList.add(new BlazingSpeed());
+        this.spellList.add(new IceBlock());
+        this.spellList.add(new ColdTouch());
+        this.spellList.add(new IcyAffinity());
+        this.spellList.add(new ShadowTouch());
+        this.spellList.add(new Doom());
+        this.spellList.add(new TwistOfFate());
+        this.spellList.add(new Cleave());
+        this.spellList.add(new Whirlwind());
+        this.spellList.add(new LastResort());
+        this.spellList.add(new Rescue());
     }
 
     // starts the repeating task to manage player cooldowns
@@ -188,7 +198,7 @@ public class SpellManager implements Listener {
 
                 for(Player player : Bukkit.getOnlinePlayers()) {
                     if(cooldown.containsKey(player.getUniqueId())) {
-                        HashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
+                        ConcurrentHashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
                         List<String> cdString = new ArrayList<>();
 
                         for(Spell spell : spells.keySet()) {
@@ -221,5 +231,13 @@ public class SpellManager implements Listener {
     public void onSpellDamage(SpellDamageEvent e) {
         if (silencedEntities.contains(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        if (stunnedEntities.isEmpty()) return;
+        if (!stunnedEntities.contains(e.getPlayer().getUniqueId())) return;
+        if (e.getTo() == null) return;
+        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
     }
 }

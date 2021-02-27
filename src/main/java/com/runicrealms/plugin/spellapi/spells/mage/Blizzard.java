@@ -28,15 +28,13 @@ public class Blizzard extends Spell {
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
     private final HashMap<Snowball, UUID> snowballMap;
-    private static final double GEM_BOOST = 50;
 
     public Blizzard() {
         super("Blizzard",
-                "You summon a cloud of snow that" +
-                        "\nrains down snowballs for " + DURATION + " seconds," +
-                        "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
-                        "\nto enemies and slowing them!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                "You summon a cloud of snow that " +
+                        "rains down snowballs for " + DURATION + " seconds, " +
+                        "each dealing " + DAMAGE_AMOUNT + " spellʔ damage " +
+                        "to enemies and slowing them!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
         this.increaseDuration = false;
         this.snowballMap = new HashMap<>();
@@ -119,7 +117,7 @@ public class Blizzard extends Spell {
         if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
         if (verifyEnemy(shooter, le)) {
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, GEM_BOOST);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, 100);
             victim.setLastDamageCause(e);
             le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
             if (increaseDuration) {

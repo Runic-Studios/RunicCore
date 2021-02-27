@@ -1,0 +1,54 @@
+package com.runicrealms.plugin.spellapi.spells.mage;
+
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.TeleportUtil;
+import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
+@SuppressWarnings("FieldCanBeLocal")
+public class IceBlock extends Spell {
+
+    private static final int DAMAGE_AMT = 25;
+    private static final int DURATION = 5;
+    private static final double PERCENT = .25;
+    private static final int RADIUS = 5;
+
+    public IceBlock() {
+        super("Ice Block",
+                "You entomb yourself in ice for " + DURATION +
+                        "s! After, the ice block explodes, dealing " + DAMAGE_AMT + " spellʔ damage " +
+                        "to enemies within " + RADIUS + " blocks!",
+                ChatColor.WHITE, ClassEnum.MAGE, 18, 20);
+    }
+
+    @Override
+    public void executeSpell(Player pl, SpellItemType type) {
+        // on-use
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
+        Location toBeTrapped = pl.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
+        Fireball.trapEntity(pl.getLocation(), Material.ICE, DURATION);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> TeleportUtil.teleportEntity(pl, toBeTrapped), 2L);
+        // after duration
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
+            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.2f, 2.0f);
+            pl.getWorld().spawnParticle(Particle.SNOWBALL, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
+            for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+                if (!verifyEnemy(pl, en)) continue;
+                en.getWorld().spawnParticle(Particle.SNOWBALL, en.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, 100);
+            }
+        }, DURATION * 20L);
+    }
+
+    public static double getPercent() {
+        return PERCENT;
+    }
+}
+

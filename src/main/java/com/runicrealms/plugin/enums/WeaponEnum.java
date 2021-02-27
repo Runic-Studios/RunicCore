@@ -4,11 +4,16 @@ import org.bukkit.inventory.ItemStack;
 
 public enum WeaponEnum {
 
-    BOW, MACE, STAFF, SWORD, AXE, PICKAXE, HAND;
+    BOW, MACE, STAFF, SWORD, AXE, PICKAXE, NONE;
 
-    public static WeaponEnum matchType(final ItemStack itemStack){
-        if(itemStack == null) { return null; }
-        switch (itemStack.getType()){
+    /**
+     * Returns the type of held weapon. If none found, returns 'none'
+     * @param itemStack item in hand
+     * @return type of runic weapon held
+     */
+    public static WeaponEnum matchType(final ItemStack itemStack) {
+        if (itemStack == null) return null;
+        switch (itemStack.getType()) {
             case BOW:
                 return BOW;
             case WOODEN_SHOVEL:
@@ -42,7 +47,7 @@ public enum WeaponEnum {
             case DIAMOND_PICKAXE:
                 return PICKAXE;
             default:
-                return HAND;
+                return NONE;
         }
     }
 }

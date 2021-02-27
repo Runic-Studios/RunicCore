@@ -58,7 +58,8 @@ public class DamageUtil {
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
-    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged, boolean bypassNoTick) {
+    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
+                                          boolean isAutoAttack, boolean isRanged, boolean bypassNoTick) {
 
         // no damage ticks delay
         if (!bypassNoTick && recipient.getNoDamageTicks() > 0) return;
@@ -78,7 +79,7 @@ public class DamageUtil {
         }
 
         // call an event, apply modifiers if necessary
-        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isRanged);
+        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isAutoAttack, isRanged);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
@@ -137,7 +138,7 @@ public class DamageUtil {
 //        recipient.setLastDamageCause(e);
 
         if (recipient instanceof Player && knockBack) {
-            KnockbackUtil.knockbackPlayer(damager, (Player) recipient);
+            KnockbackUtil.knockbackMeleePlayer(damager, (Player) recipient);
         }
 
         // apply custom mechanics if the player were to die
@@ -185,16 +186,12 @@ public class DamageUtil {
 
         if (recipient instanceof Player) {
             if (isRanged) {
-                KnockbackUtil.knockbackRanged(caster, recipient);
+                KnockbackUtil.knockbackRangedPlayer(caster, (Player) recipient);
             } else {
-                KnockbackUtil.knockbackPlayer(caster, (Player) recipient);
+                KnockbackUtil.knockbackMeleePlayer(caster, (Player) recipient);
             }
         } else {
-            if (isRanged) {
-                KnockbackUtil.knockbackRanged(caster, recipient);
-            } else {
-                KnockbackUtil.knockbackMob(caster, recipient);
-            }
+            KnockbackUtil.knockBackMob(caster, recipient, isRanged);
         }
 
         // apply custom mechanics if the player were to die

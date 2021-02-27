@@ -58,7 +58,7 @@ public class PlayerJoinListener implements Listener {
                 pl.updateInventory();
 
                 HealthUtils.setPlayerMaxHealth(pl);
-                HealthUtils.setHeartDisplay(pl);
+                pl.setHealthScale(HealthUtils.getHeartAmount());
 
                 // update player's level (this will change storedHealth, but we alrdy got variable hehe)
                 pl.setLevel(e.getPlayerCache().getClassLevel());
@@ -110,7 +110,7 @@ public class PlayerJoinListener implements Listener {
 
             // heal player
             HealthUtils.setPlayerMaxHealth(pl);
-            HealthUtils.setHeartDisplay(pl);
+            pl.setHealthScale(HealthUtils.getHeartAmount());
             int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
             pl.setHealth(playerHealth);
             pl.setFoodLevel(20);

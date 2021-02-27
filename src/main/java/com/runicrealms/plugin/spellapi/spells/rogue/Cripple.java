@@ -24,16 +24,16 @@ import java.util.UUID;
 public class Cripple extends Spell {
 
     private static final int DURATION = 3;
-    private static final double PERCENT = 35;
+    private static final double PERCENT = 65;
     private static final int RADIUS = 3;
     private final Set<UUID> crippledEntities;
 
     public Cripple() {
         super("Cripple",
-                "You cripple enemies within " + RADIUS +
-                        "\nblocks, disorienting them and" +
-                        "\nreducing their damage by " + (int) PERCENT + "%" +
-                        "\nfor " + DURATION + " seconds!",
+                "You cripple enemies within " + RADIUS + " " +
+                        "blocks, disorienting them and " +
+                        "reducing their damage by " + (int) PERCENT + "% " +
+                        "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
         crippledEntities = new HashSet<>();
     }
@@ -43,11 +43,11 @@ public class Cripple extends Spell {
 
         // spell variables, vectors
         pl.swingMainHand();
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
 
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
             if (!verifyEnemy(pl, en)) continue;
-            en.getWorld().playSound(en.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
             en.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) en).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
             crippledEntities.add(en.getUniqueId());
             en.sendMessage(ChatColor.RED + "You have been crippled!");

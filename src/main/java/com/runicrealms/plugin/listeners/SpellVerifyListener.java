@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.entity.*;
@@ -52,10 +52,13 @@ public class SpellVerifyListener implements Listener {
         }
 
         // skip party members
-        if (victim instanceof Player) {
-            if(RunicCore.getPartyManager().getPlayerParty(caster) != null
-                    & !RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) victim))
-                e.setCancelled(true);
-        }
+//        if (victim instanceof Player) {
+//            if(RunicCore.getPartyManager().getPlayerParty(caster) != null
+//                    & !RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) victim))
+//                e.setCancelled(true);
+//        }
+        if (!(victim instanceof Player)) return;
+        if (RunicCoreAPI.isPartyMember(caster, (Player) victim))
+            e.setCancelled(true);
     }
 }

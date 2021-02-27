@@ -1,88 +1,54 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.UUID;
 
 public class Enrage extends Spell {
 
-    private final boolean skipSlow;
-    private int extraDamage = 0;
-    private static final int CHANNEL_DURATION = 3;
-    private static final int BUFF_DURATION = 10;
+    private static final int CHANNEL_DURATION = 2;
+    private static final int BUFF_DURATION = 8;
     private static final int DAMAGE_AMT = 5;
-    private final HashSet<UUID> ragers = new HashSet<>();
+    private static final HashSet<UUID> ragers = new HashSet<>();
 
     public Enrage() {
         super("Enrage",
-                "For " + CHANNEL_DURATION + " seconds, you channel a deep" +
-                        "\nrage, slowing your speed. After," +
-                        "\nyou gain an immense boost of speed" +
-                        "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
-                        "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 25);
-        skipSlow = false;
+                "For " + CHANNEL_DURATION + "s, you channel a deep " +
+                        "rage, slowing your speed. After, " +
+                        "you gain an immense boost of speed " +
+                        "and your weapon⚔ attacks deal " + DAMAGE_AMT + " extra " +
+                        "spellʔ damage for " + BUFF_DURATION + "s!",
+                ChatColor.WHITE, ClassEnum.WARRIOR, 12, 25);
     }
-
-    public Enrage(boolean skipSlow, int extraDamage) {
-        super("Enrage",
-                "For " + CHANNEL_DURATION + " seconds, you channel a deep" +
-                        "\nrage, slowing your speed. After," +
-                        "\nyou gain an immense boost of speed" +
-                        "\nand your weapon⚔ attacks deal " + DAMAGE_AMT + " extra" +
-                        "\nspellʔ damage for " + BUFF_DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 25);
-        this.skipSlow = skipSlow;
-        this.extraDamage = extraDamage;
-    }
-
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
         // apply preliminary particle effects
-        if (!skipSlow) {
-            pl.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHANNEL_DURATION * 20, 2));
-            pl.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, CHANNEL_DURATION * 20, 2));
-            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
-            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
-            new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(Particle.REDSTONE, pl.getLocation(), Color.RED);
-            pl.sendMessage(ChatColor.GRAY + "You begin to feel a surge of power!");
-        }
+        pl.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHANNEL_DURATION * 20, 2));
+        pl.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, CHANNEL_DURATION * 20, 2));
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
+        new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(Particle.REDSTONE, pl.getLocation(), Color.RED);
+        //pl.sendMessage(ChatColor.GRAY + "You begin to feel a surge of power!");
 
-        if (!skipSlow) {
-            // after the player has channeled the spell
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    enrage(pl);
-                }
-            }.runTaskLater(RunicCore.getInstance(), CHANNEL_DURATION * 20);
-        } else {
-            enrage(pl);
-        }
+        // after the player has channeled the spell
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> enrage(pl), CHANNEL_DURATION * 20L);
     }
 
     private void enrage(Player pl) {
-
-        pl.sendMessage(ChatColor.GREEN + "You become enraged!");
 
         // particles, sounds
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 1.0f);
@@ -95,13 +61,11 @@ public class Enrage extends Spell {
         ragers.add(pl.getUniqueId());
 
         // remove damage buff
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                ragers.remove(pl.getUniqueId());
-                pl.sendMessage(ChatColor.GRAY + "You no longer feel enraged.");
-            }
-        }.runTaskLater(plugin, BUFF_DURATION * 20);
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> {
+            // sound
+            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.0f);
+            ragers.remove(pl.getUniqueId());
+        }, BUFF_DURATION * 20L);
     }
 
     /*
@@ -110,8 +74,8 @@ public class Enrage extends Spell {
     @EventHandler
     public void onSuccessfulHit(WeaponDamageEvent e) {
 
+        if (!e.getIsAutoAttack()) return;
         if (!ragers.contains(e.getPlayer().getUniqueId())) return;
-
         if(e.isCancelled()) return;
 
         Player pl = e.getPlayer();
@@ -124,7 +88,15 @@ public class Enrage extends Spell {
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
 
-        DamageUtil.damageEntitySpell(DAMAGE_AMT + extraDamage, le, pl, 100);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
+    }
+
+    public static int getBuffDuration() {
+        return BUFF_DURATION;
+    }
+
+    public static HashSet<UUID> getRagers() {
+        return ragers;
     }
 }
 

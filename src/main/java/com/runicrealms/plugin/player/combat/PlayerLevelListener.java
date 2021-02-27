@@ -37,7 +37,7 @@ public class PlayerLevelListener implements Listener {
         int classLevel = playerCache.getClassLevel();
 
         HealthUtils.setPlayerMaxHealth(pl);
-        HealthUtils.setHeartDisplay(pl);
+        pl.setHealthScale(HealthUtils.getHeartAmount());
         int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         pl.setHealth(playerHealth);
         pl.setFoodLevel(20);

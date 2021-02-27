@@ -12,7 +12,7 @@ public class PartyChannel extends ChatChannel {
 
     @Override
     public String getPrefix() {
-        return "&a[&2Party&a] &a[%core_class_prefix%|%core_level%] &r";
+        return "&2[Party] &a[%core_class_prefix%|%core_level%] &r";
     }
 
     public String getConsolePrefix() {

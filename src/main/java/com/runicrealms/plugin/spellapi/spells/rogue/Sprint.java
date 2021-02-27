@@ -31,8 +31,8 @@ public class Sprint extends Spell {
     // constructor
     public Sprint() {
         super("Sprint",
-                "For " + DURATION + " seconds, you gain a" +
-                        "\nmassive boost of speed!",
+                "For " + DURATION + " seconds, you gain a " +
+                        "massive boost of speed!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 10, 10);
         flame = false;
     }

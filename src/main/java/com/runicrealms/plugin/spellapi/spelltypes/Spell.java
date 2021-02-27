@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
@@ -16,6 +17,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public abstract class Spell implements ISpell, Listener {
@@ -46,13 +49,17 @@ public abstract class Spell implements ISpell, Listener {
         if (RunicCore.getSpellManager().isOnCooldown(pl, this.getName())) return; // ensure spell is not on cooldown
 
         // verify class
+        boolean canCast = false;
         if (this.getReqClass() != ClassEnum.RUNIC) {
-            if (!this.getReqClass().toString().toLowerCase().equals
-                    (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase())) {
-                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
-                return;
-            }
+            if (this.getReqClass().toString().toLowerCase().equals
+                    (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
+                canCast = true;
+        }
+
+        if (!canCast) {
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            ActionBarUtil.sendTimedMessage(pl, "&cYour class cannot cast this spell!", 3);
+            return;
         }
 
         if (!verifyMana(pl)) return; // verify the mana
@@ -99,6 +106,11 @@ public abstract class Spell implements ISpell, Listener {
                     || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
         }
         return true;
+    }
+
+    @Override
+    public boolean hasPassive(Player player, String passive) {
+        return RunicCoreAPI.hasPassive(player, passive);
     }
 
     /**
@@ -155,16 +167,7 @@ public abstract class Spell implements ISpell, Listener {
         return newVector;
     }
 
-    public Spell getRunicPassive(Player pl) {
-        try {
-            String spell = AttributeUtil.getSpell(pl.getInventory().getItem(0), "primarySpell"); // passive
-            return RunicCore.getSpellManager().getSpellByName(spell);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public boolean getIsPassive() {
+    public boolean isPassive() {
         return isPassive;
     }
 
@@ -197,9 +200,17 @@ public abstract class Spell implements ISpell, Listener {
     public void addStatusEffect(Entity entity, EffectEnum effectEnum, int duration) {
         if (effectEnum == EffectEnum.SILENCE) {
             RunicCore.getSpellManager().getSilencedEntities().add(entity.getUniqueId());
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 0.2f);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
             Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
                     () -> RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId()), duration * 20L);
+        } else if (effectEnum == EffectEnum.STUN) {
+            RunicCore.getSpellManager().getStunnedEntities().add(entity.getUniqueId());
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
+                    () -> RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId()), duration * 20L);
+            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration * 20, 3));
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration * 20, 127));
+            }
         }
     }
 

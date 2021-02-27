@@ -32,11 +32,11 @@ public class Cloak extends Spell {
     public Cloak() {
         super("Cloak",
                 "For " + DURATION + " seconds, you vanish completely," +
-                        "\ncausing you to appear invisible to" +
-                        "\nplayers. During this time, you are" +
-                        "\nimmune to damage from monsters!" +
-                        "\nDealing damage ends the effect" +
-                        "\nearly.",
+                        " causing you to appear invisible to" +
+                        " players. During this time, you are" +
+                        " immune to damage from monsters!" +
+                        " Dealing damage ends the effect" +
+                        " early.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 15);
         cloakers = new HashSet<>();
         hasDealtDamage = new HashSet<>();

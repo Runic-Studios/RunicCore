@@ -12,10 +12,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -169,6 +166,14 @@ public class Fireball extends Spell {
             victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
 
+            // scald
+            if (hasPassive(player, "Scald")) {
+                for (Entity en : fireball.getNearbyEntities(Scald.getRadius(), Scald.getRadius(), Scald.getRadius())) {
+                    if (!verifyEnemy(player, en)) continue;
+                    DamageUtil.damageEntitySpell(DAMAGE_AMOUNT * Scald.getDamagePercent(), (LivingEntity) en, player, 100);
+                }
+            }
+
             if (applyBurn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                     DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, 50);
@@ -180,9 +185,9 @@ public class Fireball extends Spell {
         }
     }
 
-    private final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+    private static final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
-    private void trapEntity(Location location, Material material, int duration) {
+    public static void trapEntity(Location location, Material material, int duration) {
         Map<Block, BlockData> changedBlocks = new HashMap<>();
         Location[] locs = new Location[]{location, location.clone().add(0,1,0)};
         for (Location loc : locs) {

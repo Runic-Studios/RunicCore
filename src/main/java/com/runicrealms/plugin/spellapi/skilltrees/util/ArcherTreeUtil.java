@@ -1,0 +1,65 @@
+package com.runicrealms.plugin.spellapi.skilltrees.util;
+
+import com.runicrealms.plugin.player.stat.BaseStatEnum;
+import com.runicrealms.plugin.spellapi.skilltrees.Perk;
+import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
+import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArcherTreeUtil {
+
+    public static Perk DEFAULT_ARCHER_SPELL_PERK = new PerkSpell(995, 0, 1, 1, "Barrage");
+
+    public static List<Perk> marksmanPerkList() {
+        List<Perk> perks = new ArrayList<>();
+        perks.add(new PerkSpell(0, 1, 0, 1, "Power Shot")); // dmg/mark for more dmg
+        perks.add(new PerkBaseStat(1, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
+        perks.add(new PerkSpell(2, 1, 0, 1, "Hawkeye"));
+        perks.add(new PerkBaseStat(3, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkBaseStat(4, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
+        perks.add(new PerkSpell(5, 1, 0, 1, "Parry"));
+        perks.add(new PerkBaseStat(6, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkBaseStat(7, 1, 0, 3, BaseStatEnum.DEXTERITY, 5));
+        perks.add(new PerkSpell(8, 1, 0, 1, "Kill Shot"));
+        perks.add(new PerkBaseStat(9, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkBaseStat(10, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
+        perks.add(new PerkSpell(11, 1, 0, 1, "Ranger's Focus")); // Landing X consecutive attacks on the same target w/o swapping deals an addtional Y damage
+        return perks;
+    }
+
+    public static List<Perk> scoutPerkList() {
+        List<Perk> perks = new ArrayList<>();
+        perks.add(new PerkSpell(12, 1, 0, 1, "Grapple"));
+        perks.add(new PerkBaseStat(13, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
+        perks.add(new PerkSpell(14, 1, 0, 1, "Grounded")); // First attack after hitting grapple roots enemy, deals X% additional damage
+        perks.add(new PerkBaseStat(15, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkBaseStat(16, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
+        perks.add(new PerkSpell(17, 1, 0, 1, "Flare")); // reveals nearby enemies / debuffs them damage mark
+        perks.add(new PerkBaseStat(18, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkBaseStat(19, 1, 0, 3, BaseStatEnum.DEXTERITY, 5));
+        perks.add(new PerkSpell(20, 1, 0, 1, "Summon Sentry"));
+        perks.add(new PerkBaseStat(21, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
+        perks.add(new PerkBaseStat(22, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
+        perks.add(new PerkSpell(23, 1, 0, 1, "Acrobat")); // You "shake off" one harmful spell. Cannot occur more than once Xs
+        return perks;
+    }
+
+    public static List<Perk> wardenPerkList() {
+        List<Perk> perks = new ArrayList<>();
+        perks.add(new PerkSpell(24, 1, 0, 1, "Arcane Shot")); // silence
+        perks.add(new PerkBaseStat(25, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
+        perks.add(new PerkSpell(26, 1, 0, 1, "Frozen Touch")); // melee attacks slow enemies for Xs on-hit
+        perks.add(new PerkBaseStat(27, 1, 0, 3, BaseStatEnum.VITALITY, 3));
+        perks.add(new PerkBaseStat(28, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
+        perks.add(new PerkSpell(29, 1, 0, 1, "Ice Volley")); // spread of 5 (old barrage)
+        perks.add(new PerkBaseStat(30, 1, 0, 3, BaseStatEnum.VITALITY, 3));
+        perks.add(new PerkBaseStat(31, 1, 0, 3, BaseStatEnum.DEXTERITY, 5));
+        perks.add(new PerkSpell(32, 1, 0, 1, "Binding Shot")); // like inquisitor portal
+        perks.add(new PerkBaseStat(33, 1, 0, 3, BaseStatEnum.VITALITY, 3));
+        perks.add(new PerkBaseStat(34, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
+        perks.add(new PerkSpell(35, 1, 0, 1, "Survival Instinct")); // after taking dmg t.w. reduce you below X% health, gain a 'bark shield' that immune weapon damage. cannot occur >1 every Ys
+        return perks;
+    }
+}
