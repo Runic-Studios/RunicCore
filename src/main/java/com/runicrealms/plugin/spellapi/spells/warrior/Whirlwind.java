@@ -20,8 +20,8 @@ import java.util.Objects;
 public class Whirlwind extends Spell {
 
     private static final int DAMAGE_AMT = 35;
-    private static final int DURATION = 6;
-    private static final float RADIUS = 2.5f;
+    private static final int DURATION = 10;
+    private static final float RADIUS = 2f;
 
     // constructor
     public Whirlwind() {
@@ -60,6 +60,8 @@ public class Whirlwind extends Spell {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
 
         Location location1 = pl.getEyeLocation();
+        Location location2 = pl.getEyeLocation().add(0, 1, 0);
+        Location location3 = pl.getEyeLocation().subtract(0, 1, 0);
         int particles = 50;
         float radius = RADIUS;
 
@@ -68,9 +70,9 @@ public class Whirlwind extends Spell {
             angle = 2 * Math.PI * i / particles;
             x = Math.cos(angle) * radius;
             z = Math.sin(angle) * radius;
-            location1.add(x, 0, z);
-            pl.getWorld().spawnParticle(Particle.CLOUD, location1, 1, 0, 0, 0, 0);
-            location1.subtract(x, 0, z);
+            spawnCloud(pl, location1, x, z);
+            spawnCloud(pl, location2, x, z);
+            spawnCloud(pl, location3, x, z);
         }
 
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
@@ -79,5 +81,11 @@ public class Whirlwind extends Spell {
             if (!verifyEnemy(pl, en)) continue;
             DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
         }
+    }
+
+    private void spawnCloud(Player pl, Location location, double x, double z) {
+        location.add(x, 0, z);
+        pl.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 0);
+        location.subtract(x, 0, z);
     }
 }

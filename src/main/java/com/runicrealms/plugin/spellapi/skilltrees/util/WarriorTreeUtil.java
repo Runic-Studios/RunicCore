@@ -29,9 +29,10 @@ public class WarriorTreeUtil {
         return perks;
     }
 
+    // todo
     public static List<Perk> guardianPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(156, 1, 0, 1, "Rescue")); // throw your axe and pull ally to you, granting them X% hp shield
+        perks.add(new PerkSpell(156, 1, 0, 1, "Rescue"));
         perks.add(new PerkBaseStat(157, 1, 0, 5, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkSpell(158, 1, 0, 1, "Taunt")); // on-hit threat
         perks.add(new PerkBaseStat(159, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
@@ -46,6 +47,7 @@ public class WarriorTreeUtil {
         return perks;
     }
 
+    // todo
     public static List<Perk> inquisitorPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(168, 1, 0, 1, "Throw Axe")); // silence

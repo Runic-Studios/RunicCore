@@ -2,14 +2,13 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.utilities.FloatingItemUtil;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -21,34 +20,22 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ThrowAxe extends Spell {
+public class Rescue extends Spell {
 
-    private static final int DAMAGE = 20;
     private static final int DURATION = 3;
+    private static final double PERCENT = .25;
     private final HashMap<UUID, UUID> hasBeenHit;
     private final boolean canHitAllies;
 
-    // todo: add knockup?
-    public ThrowAxe() {
-        super("Throw Axe",
-                "You throw your weapon, dealing" +
-                        "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
-                        "\nhit and silencing it, preventing it" +
-                        "\nfrom dealing damage for " + DURATION + " seconds!",
+    public Rescue() {
+        super("Rescue",
+                "You throw your weapon, stopping at " +
+                        "the first ally hit and pulling them to you! " +
+                        "You and your ally both gain a shield■ " +
+                        "equal to " + (int) (PERCENT * 100) + "% of your health!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = false;
-    }
-
-    public ThrowAxe(boolean canHitAllies) {
-        super("Throw Axe",
-                "You throw your weapon, dealing" +
-                        "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
-                        "\nhit and silencing it, preventing it" +
-                        "\nfrom dealing damage for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
-        hasBeenHit = new HashMap<>();
-        this.canHitAllies = canHitAllies;
     }
 
     @Override
@@ -81,6 +68,7 @@ public class ThrowAxe extends Spell {
                 for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
                     if (canHitAllies) {
                         if (entity.equals(pl)) continue;
+                        if (hasBeenHit.containsKey(entity.getUniqueId())) continue;
                         if (verifyAlly(pl, entity)) {
                             if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
                                 hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
@@ -91,25 +79,22 @@ public class ThrowAxe extends Spell {
                                 entity.getWorld().spawnParticle
                                         (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                                 projectile.remove();
+                                shieldCasterAndAlly(pl, (Player) entity);
                                 return;
                             }
                         }
-                    }
-                    if (verifyEnemy(pl, entity)) {
-                        if (hasBeenHit.get(pl.getUniqueId()) == entity.getUniqueId()) continue;
-                        hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                        addStatusEffect(entity, EffectEnum.SILENCE, DURATION);
-                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
-                        entity.getWorld().spawnParticle
-                                (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) entity, pl, false, false, true);
-                        projectile.remove();
                     }
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), hasBeenHit::clear, DURATION * 20L);
+    }
+
+    private void shieldCasterAndAlly(Player caster, Player ally) {
+        double amount = caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT;
+        HealUtil.shieldPlayer(amount, caster, caster, true, false, false);
+        HealUtil.shieldPlayer(amount, ally, caster, true, false, false);
     }
 }
 
