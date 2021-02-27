@@ -46,6 +46,9 @@ public class GearScanner {
                 && AttributeUtil.getCustomString(offhand, "offhand").equals("true")) {
             armorAndOffhand.add(pl.getInventory().getItemInOffHand());
         }
+        // insurance policy
+        armorAndOffhand.removeIf(item -> item == null || item.getType() == Material.AIR);
+
         return armorAndOffhand;
     }
 
