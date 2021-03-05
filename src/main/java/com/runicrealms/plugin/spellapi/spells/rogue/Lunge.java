@@ -35,14 +35,16 @@ public class Lunge extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         // spell variables, vectors
-        Vector look = pl.getLocation().getDirection();
-        Vector launchPath = new Vector(look.getX(), 1.0, look.getZ()).normalize();
+        Location location = pl.getLocation();
+        Vector look = location.getDirection();
+        Vector launchPath = new Vector(look.getX(), 0, look.getZ()).normalize();
 
         // particles, sounds
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.8f);
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
                 25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
+        pl.teleport(location.add(0, 0.5, 1));
         pl.setVelocity(launchPath.multiply(LAUNCH_PATH_MULT));
 
         lungers.add(pl);
