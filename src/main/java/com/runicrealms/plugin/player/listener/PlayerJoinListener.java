@@ -54,8 +54,8 @@ public class PlayerJoinListener implements Listener {
             public void run() {
 
                 // set their inventory
-                pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
-                pl.updateInventory();
+                //pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
+                //pl.updateInventory();
 
                 HealthUtils.setPlayerMaxHealth(pl);
                 pl.setHealthScale(HealthUtils.getHeartAmount());

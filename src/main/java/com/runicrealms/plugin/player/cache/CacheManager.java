@@ -128,8 +128,8 @@ public class CacheManager implements Listener {
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
             // inventory
-            character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
-            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));
+            /*character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
+            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));*/
             // save data (includes nested fields)
             if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
@@ -181,11 +181,11 @@ public class CacheManager implements Listener {
         boolean isOutlaw = character.get("outlaw.enabled", Boolean.class);
         int rating = character.get("outlaw.rating", Integer.class);
 
-        ItemStack[] inventoryContents;
+        /*ItemStack[] inventoryContents;
         if (character.has("inventoryNew"))
             inventoryContents = DatabaseUtil.loadInventoryNew(character.get("inventoryNew", String.class));
         else
-            inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));
+            inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));*/
 
         Location location = DatabaseUtil.loadLocation(player, character);
 
@@ -196,7 +196,7 @@ public class CacheManager implements Listener {
                 profLevel, profExp,
                 currentHealth, maxMana,
                 isOutlaw, rating,
-                inventoryContents, location, mongoData);
+                /*inventoryContents*/null, location, mongoData);
     }
 
     /*
@@ -231,7 +231,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        mongoDataSection.set("inventoryNew", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
+        //mongoDataSection.set("inventoryNew", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
         DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneListener.getHearthstoneLocation(player)); // tutorial
         mongoData.save();
     }
