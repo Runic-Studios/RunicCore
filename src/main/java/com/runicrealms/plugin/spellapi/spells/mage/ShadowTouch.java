@@ -18,7 +18,7 @@ public class ShadowTouch extends Spell {
     public ShadowTouch() {
         super ("Shadow Touch",
                 "Your &aFireball &7spell is now &aShadowbolt&7, " +
-                        "blinding its target for " + Shadowbolt.getDuration() + "s!",
+                        "silencing its target for " + Shadowbolt.getDuration() + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
     }

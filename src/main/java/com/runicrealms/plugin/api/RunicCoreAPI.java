@@ -157,6 +157,15 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Returns simple boolean. If yes, player has party. If no, they don't.
+     * @param player to check for party
+     * @return true if party, false if none
+     */
+    public static boolean hasParty(Player player) {
+        return RunicCore.getPartyManager().getPlayerParty(player) != null;
+    }
+
+    /**
      * Used to determine whether two players are in a party.
      * @param first The first player
      * @param second The second player

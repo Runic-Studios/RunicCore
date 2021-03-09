@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -23,16 +24,17 @@ public class ArcaneOrb extends Spell {
     private static final int DURATION = 10;
     private static final double PERCENT = 25;
     private static final int RADIUS = 10;
-    private final HashMap<UUID, Location> buffed = new HashMap<>();
+    private final HashMap<UUID, Location> buffed;
 
     public ArcaneOrb() {
         super("Arcane Orb",
                 "You summon an orb of arcane magic! " +
-                        "For the next " + DURATION + " seconds, all spellʔ " +
-                        "damage you deal is increased by " + (int) PERCENT + "% " +
-                        "if you stand within " + RADIUS + " blocks " +
+                        "For the next " + DURATION + " seconds, you and your allies " +
+                        "receive a " + (int) PERCENT + "% bonus to all spellʔ" +
+                        "damage dealt by standing within " + RADIUS + " blocks " +
                         "of the orb!",
                 ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
+        buffed = new HashMap<>();
     }
 
     @Override
@@ -41,13 +43,18 @@ public class ArcaneOrb extends Spell {
         Location loc = pl.getLocation().clone().add(0, 2, 0);
         Location circleLoc = loc.clone().subtract(0, 2, 0);
         buffed.put(pl.getUniqueId(), circleLoc);
+        if (RunicCoreAPI.hasParty(pl)) {
+            for (Player ally : RunicCore.getPartyManager().getPlayerParty(pl).getMembers()) // add allies
+                buffed.put(ally.getUniqueId(), circleLoc);
+        }
         new BukkitRunnable() {
             int count = 1;
             @Override
             public void run() {
                 if (count > DURATION) {
                     this.cancel();
-                    buffed.remove(pl.getUniqueId());
+                    //buffed.remove(pl.getUniqueId());
+                    buffed.clear();
                 } else {
                     count += 1;
                     spawnSphere(loc);
