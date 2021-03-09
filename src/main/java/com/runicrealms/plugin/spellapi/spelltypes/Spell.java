@@ -197,19 +197,19 @@ public abstract class Spell implements ISpell, Listener {
      * @param duration (in seconds) of effect
      */
     @Override
-    public void addStatusEffect(Entity entity, EffectEnum effectEnum, int duration) {
+    public void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration) {
         if (effectEnum == EffectEnum.SILENCE) {
             RunicCore.getSpellManager().getSilencedEntities().add(entity.getUniqueId());
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
             Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
-                    () -> RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId()), duration * 20L);
+                    () -> RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId()), (long) (duration * 20L));
         } else if (effectEnum == EffectEnum.STUN) {
             RunicCore.getSpellManager().getStunnedEntities().add(entity.getUniqueId());
             Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
-                    () -> RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId()), duration * 20L);
+                    () -> RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId()), (long) (duration * 20L));
             if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration * 20, 3));
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration * 20, 127));
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration * 20), 3));
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
             }
         }
     }

@@ -24,12 +24,8 @@ import java.util.UUID;
 
 public class SpellUseListener implements Listener {
 
-    private final HashSet<UUID> casters;
+    private static final HashSet<UUID> casters = new HashSet<>();
     private static final int SPELL_TIMEOUT = 5;
-
-    public SpellUseListener() {
-        casters = new HashSet<>();
-    }
 
     @EventHandler
     public void onWeaponInteract(PlayerInteractEvent e) {
@@ -122,6 +118,10 @@ public class SpellUseListener implements Listener {
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled() && event.willExecute())
             event.getSpellCasted().execute(pl, SpellItemType.ARTIFACT);
+    }
+
+    public static HashSet<UUID> getCasters() {
+        return casters;
     }
 }
 

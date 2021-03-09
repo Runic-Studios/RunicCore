@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -62,6 +63,7 @@ public class StaffListener implements Listener {
         String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
         if (className == null) return;
         if (!className.equals("Mage")) return;
+        if (RunicCoreAPI.isCasting(pl)) return;
 
         staffAttack(pl, artifact);
         // set the cooldown

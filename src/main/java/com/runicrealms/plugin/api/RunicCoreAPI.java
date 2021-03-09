@@ -6,6 +6,7 @@ import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.CombatListener;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
+import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
@@ -24,6 +25,16 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Random;
 
 public class RunicCoreAPI {
+
+    /**
+     * Determine whether the player is in casting mode to cancel certain interactions.
+     * @param player to check
+     * @return boolean value, whether player is in casting set
+     */
+    public static boolean isCasting(Player player) {
+        // determine whether player is casting
+        return SpellUseListener.getCasters().contains(player.getUniqueId());
+    }
 
     /**
      * Returns the base outlaw rating
