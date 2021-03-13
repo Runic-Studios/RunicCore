@@ -16,13 +16,14 @@ import java.util.UUID;
 public class Doom extends Spell {
 
     private static final int DURATION = 2;
+    private static final double PERCENT_REDUCTION = .75;
     private static final HashSet<UUID> doomers = new HashSet<>();
 
     public Doom() {
         super ("Doom",
                 "After casting your &aBlink &7spell, " +
-                        "you are immune to all damage for " +
-                        DURATION + "s!",
+                        "you gain " + (int) (PERCENT_REDUCTION * 100) + "% " +
+                        "damage reduction for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
     }
@@ -30,23 +31,23 @@ public class Doom extends Spell {
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
         if (!doomers.contains(e.getVictim().getUniqueId())) return;
-        e.setCancelled(true);
+        e.setAmount((int) (e.getAmount() * (1-PERCENT_REDUCTION)));
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
         if (!doomers.contains(e.getEntity().getUniqueId())) return;
-        e.setCancelled(true);
+        e.setAmount((int) (e.getAmount() * (1-PERCENT_REDUCTION)));
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (!doomers.contains(e.getEntity().getUniqueId())) return;
-        e.setCancelled(true);
+        e.setAmount((int) (e.getAmount() * (1-PERCENT_REDUCTION)));
     }
 
     @EventHandler
-    public void onWeaponDamage(SpellCastEvent e) {
+    public void onBlinkCast(SpellCastEvent e) {
         if (!hasPassive(e.getCaster(), this.getName())) return;
         if (!(e.getSpell() instanceof Blink)) return;
         doomers.add(e.getCaster().getUniqueId());
