@@ -148,10 +148,9 @@ public class Barrage extends Spell {
 
     public Barrage() {
         super("Barrage",
-                "You rapid-fire a volley of five arrows," +
-                        "\neach dealing " + DAMAGE + " weapon⚔ damage" +
-                        "\nto enemies hit!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
+                "You rapid-fire a volley of five arrows, " +
+                        "each dealing " + DAMAGE + " weapon⚔ damage " +
+                        "to enemies hit!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 6, 20);
         this.bArrows = new HashMap<>();
     }

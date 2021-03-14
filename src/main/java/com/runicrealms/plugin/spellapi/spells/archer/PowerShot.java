@@ -41,17 +41,6 @@ public class PowerShot extends Spell {
         spreadArrows = false;
     }
 
-    public PowerShot(boolean doExplosion, boolean spreadArrows, int cooldown) {
-        super("Power Shot",
-                "You launch an enchanted, flaming arrow" +
-                        "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
-                ChatColor.WHITE, ClassEnum.ARCHER, cooldown, 25);
-        searingArrows = new ArrayList<>();
-        hasBeenHit = new HashSet<>();
-        this.doExplosion = doExplosion;
-        this.spreadArrows = spreadArrows;
-    }
-
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
