@@ -27,6 +27,15 @@ import java.util.Random;
 public class RunicCoreAPI {
 
     /**
+     * Quickly grab a string representing the class the player is using, in lowercase!
+     * @param player to grab class for
+     * @return lowercase string representing their primary class
+     */
+    public static String getPlayerClass(Player player) {
+        return RunicCoreAPI.getPlayerCache(player).getClassName().toLowerCase();
+    }
+
+    /**
      * Determine whether the player is in casting mode to cancel certain interactions.
      * @param player to check
      * @return boolean value, whether player is in casting set

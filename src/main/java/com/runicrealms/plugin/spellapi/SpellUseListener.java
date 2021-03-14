@@ -24,8 +24,15 @@ import java.util.UUID;
 
 public class SpellUseListener implements Listener {
 
-    private static final HashSet<UUID> casters = new HashSet<>();
     private static final int SPELL_TIMEOUT = 5;
+    private static final String ACTIVATE_RIGHT = "R";
+    private static final String ACTIVATE_LEFT = "L";
+    private static final HashSet<UUID> casters = new HashSet<>();
+
+    enum ClickType {
+        LEFT,
+        RIGHT
+    }
 
     @EventHandler
     public void onWeaponInteract(PlayerInteractEvent e) {
@@ -35,20 +42,35 @@ public class SpellUseListener implements Listener {
         if (heldItemType == WeaponEnum.NONE) return;
         if (!DamageListener.matchClass(e.getPlayer(), false)) return;
         Player pl = e.getPlayer();
-        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (!casters.contains(pl.getUniqueId())) {
-                casters.add(pl.getUniqueId());
-                pl.sendTitle
-                        (
-                                "", ChatColor.LIGHT_PURPLE + "[R] - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
-                        );
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> casters.remove(pl.getUniqueId()), SPELL_TIMEOUT * 20);
-            } else {
-                castSpell(pl, 3);
-            }
+        String className = RunicCoreAPI.getPlayerClass(pl); // lowercase
+        boolean isArcher = className.equals("archer");
+        if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
+                activateSpellMode(pl, ClickType.LEFT, 2, isArcher);
+        else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
+                activateSpellMode(pl, ClickType.RIGHT, 3, isArcher);
+    }
+
+    /**
+     * Handles spell logic for left and right-click spells, checking to 'flip' system for archer.
+     * @param pl player to cast
+     * @param clickType left or right
+     * @param whichSpellToCast should be spell '2' for left, '3' for right
+     * @param isArcher whether to flip UI for archer
+     */
+    private void activateSpellMode(Player pl, ClickType clickType, int whichSpellToCast, boolean isArcher) {
+        if (!casters.contains(pl.getUniqueId())) {
+            if (clickType != ClickType.LEFT && isArcher) return;
+            if (clickType != ClickType.RIGHT && !isArcher) return;
+            casters.add(pl.getUniqueId());
+            String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
+            pl.sendTitle
+                    (
+                            "", ChatColor.LIGHT_PURPLE + prefix +
+                                    " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
+                    );
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> casters.remove(pl.getUniqueId()), SPELL_TIMEOUT * 20);
         } else {
-            if (!casters.contains(pl.getUniqueId())) return;
-            castSpell(pl, 2);
+            castSpell(pl, whichSpellToCast, RunicCoreAPI.getPlayerClass(pl).equals("archer"));
         }
     }
 
@@ -57,13 +79,13 @@ public class SpellUseListener implements Listener {
         if (!casters.contains(e.getPlayer().getUniqueId())) return;
         if (e.getNewSlot() != 0) return;
         e.setCancelled(true);
-        castSpell(e.getPlayer(), 1);
+        castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
     }
 
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
         if (!casters.contains(e.getPlayer().getUniqueId())) return;
-        castSpell(e.getPlayer(), 4);
+        castSpell(e.getPlayer(), 4, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
     }
 
     /**
@@ -71,12 +93,13 @@ public class SpellUseListener implements Listener {
      * @param pl who casted the spell
      * @param number which spell to execute (1, 2, 3, 4)
      */
-    private void castSpell(Player pl, int number) {
+    private void castSpell(Player pl, int number, boolean isArcher) {
         casters.remove(pl.getUniqueId());
+        String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
         pl.sendTitle
                 (
                         "",
-                        ChatColor.LIGHT_PURPLE + "[R] - "
+                        ChatColor.LIGHT_PURPLE + prefix + " - "
                                 + determineSelectedSlot(number), 0, 15, 0
                 );
         castSelectedSpell(pl, number);
