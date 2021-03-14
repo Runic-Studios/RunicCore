@@ -11,6 +11,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -214,4 +215,18 @@ public abstract class Spell implements ISpell, Listener {
         }
     }
 
+    /**
+     * Used for execute skills that rely on percent missing health.
+     * @param entity mob/player to check hp for
+     * @param percent multiplier for missing health (.25 * missing health, etc.)
+     * @return the percent times missing health
+     */
+    @Override
+    public int percentMissingHealth(Entity entity, double percent) {
+        if (!(entity instanceof LivingEntity)) return 0;
+        LivingEntity le = (LivingEntity) entity;
+        double max = le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double missing = max - le.getHealth();
+        return (int) (missing * percent);
+    }
 }

@@ -17,15 +17,19 @@ import org.bukkit.util.Vector;
 public class SliceAndDice extends Spell {
 
     private static final int DAMAGE_AMT = 25;
+    private static final int DAMAGE_CAP = 200;
+    private static final double PERCENT = .25;
     private static final int RADIUS = 3;
     private static final double LAUNCH_PATH_MULT = 1.5;
 
     public SliceAndDice() {
         super("Slice and Dice",
-                "You launch yourself backwards" +
-                        " in the air then blink forward," +
-                        " slashing enemies within " + RADIUS + " blocks" +
-                        " for " + DAMAGE_AMT + " weapon⚔ damage!",
+                "You launch yourself backwards " +
+                        "in the air then blink forward, " +
+                        "slashing enemies within " + RADIUS + " blocks " +
+                        "for (&f" + DAMAGE_AMT + " + " + PERCENT +"x " +
+                        "their missing health&7) as weapon⚔ damage! " +
+                        "Capped at " + DAMAGE_CAP + " against monsters.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 30);
     }
 
@@ -58,7 +62,10 @@ public class SliceAndDice extends Spell {
                         continue;
                     if (verifyEnemy(pl, en)) {
                         pl.getWorld().spawnParticle(Particle.SWEEP_ATTACK, ((LivingEntity) en).getEyeLocation(), 5, 0, 0, 0, 0);
-                        DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, false, true);
+                        int amount = DAMAGE_AMT + percentMissingHealth(en, PERCENT);
+                        if (!(en instanceof Player) && amount > DAMAGE_CAP)
+                            amount = DAMAGE_CAP;
+                        DamageUtil.damageEntityWeapon(amount, (LivingEntity) en, pl, false, false, true);
                     }
                 }
             }

@@ -32,7 +32,7 @@ public class TwistOfFate extends Spell {
                         "have their restoring✦ effects inverted " +
                         "for " + DURATION + "s, suffering damage " +
                         "instead! Against monsters, this ability will " +
-                        "silence for the duration instead.",
+                        "silence for the duration.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 1, 15); // 20
         invertedPlayers = new HashSet<>();
     }
@@ -110,5 +110,7 @@ public class TwistOfFate extends Spell {
             }
         }
     }
+    // todo: heal event?
+    // todo: custom regen event
 }
 

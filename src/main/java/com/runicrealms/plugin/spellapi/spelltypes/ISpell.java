@@ -31,5 +31,7 @@ public interface ISpell {
     boolean verifyEnemy(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
 
     void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration);
+
+    int percentMissingHealth(Entity entity, double percent);
 }
 
