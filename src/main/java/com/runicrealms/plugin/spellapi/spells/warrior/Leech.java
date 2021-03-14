@@ -50,10 +50,8 @@ public class Leech extends Spell {
      */
     @EventHandler
     public void onSuccessfulHit(WeaponDamageEvent e) {
-        if (!leechers.contains(e.getPlayer().getUniqueId()))
-            return;
-        if(e.isCancelled())
-            return;
+        if (!leechers.contains(e.getPlayer().getUniqueId())) return;
+        if (e.isCancelled()) return;
         Player pl = e.getPlayer();
         HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
     }

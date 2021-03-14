@@ -55,7 +55,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(170, 1, 0, 1, "Condemn")); // deal X% more damage to silenced enemies
         perks.add(new PerkBaseStat(171, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(172, 1, 0, 3, BaseStatEnum.VITALITY, 3));
-        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke")); // slow/dmg then mark to take X% more damage from all sources
+        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke")); // knockup/slow/dmg
         perks.add(new PerkBaseStat(174, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(175, 1, 0, 3, BaseStatEnum.VITALITY, 5));
         perks.add(new PerkSpell(176, 1, 0, 1, "Rift")); // vaccuum-like portal that draws in enemies

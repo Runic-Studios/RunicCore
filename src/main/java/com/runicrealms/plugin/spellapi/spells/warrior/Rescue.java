@@ -23,9 +23,8 @@ import java.util.UUID;
 public class Rescue extends Spell {
 
     private static final int DURATION = 3;
-    private static final double PERCENT = .25;
+    private static final double PERCENT = .45;
     private final HashMap<UUID, UUID> hasBeenHit;
-    private final boolean canHitAllies;
 
     public Rescue() {
         super("Rescue",
@@ -35,7 +34,6 @@ public class Rescue extends Spell {
                         "equal to " + (int) (PERCENT * 100) + "% of your health!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
-        this.canHitAllies = false;
     }
 
     @Override
@@ -55,9 +53,8 @@ public class Rescue extends Spell {
             public void run() {
 
                 if (projectile.isOnGround() || projectile.isDead()) {
-                    if (projectile.isOnGround()) {
+                    if (projectile.isOnGround())
                         projectile.remove();
-                    }
                     this.cancel();
                     return;
                 }
@@ -66,22 +63,20 @@ public class Rescue extends Spell {
                 projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
 
                 for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
-                    if (canHitAllies) {
-                        if (entity.equals(pl)) continue;
-                        if (hasBeenHit.containsKey(entity.getUniqueId())) continue;
-                        if (verifyAlly(pl, entity)) {
-                            if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
-                                hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
-                                entity.getWorld().spawnParticle
-                                        (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                                entity.teleport(pl);
-                                entity.getWorld().spawnParticle
-                                        (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                                projectile.remove();
-                                shieldCasterAndAlly(pl, (Player) entity);
-                                return;
-                            }
+                    if (entity.equals(pl)) continue; // skip caster
+                    if (hasBeenHit.containsKey(entity.getUniqueId())) continue;
+                    if (verifyAlly(pl, entity)) {
+                        if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
+                            hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+                            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
+                            entity.getWorld().spawnParticle
+                                    (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                            entity.teleport(pl);
+                            entity.getWorld().spawnParticle
+                                    (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                            projectile.remove();
+                            shieldCasterAndAlly(pl, (Player) entity);
+                            return;
                         }
                     }
                 }
