@@ -16,69 +16,61 @@ import org.bukkit.event.EventHandler;
 public class Resolve extends Spell {
 
     private static final double PERCENT_HP = 25;
-    private static final double PERCENT_DMG = 50;
+    private static final double PERCENT_DMG = 75;
 
     public Resolve() {
         super ("Resolve",
-                "While below " + (int) PERCENT_HP + "% health, you" +
-                        "\ntake " + (int) PERCENT_DMG + "% damage!",
+                "While below " + (int) PERCENT_HP + "% health, you " +
+                        "receive a " + (int) PERCENT_DMG + "% damage reduction " +
+                        "buff!",
                 ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
         this.setIsPassive(true);
     }
 
     @EventHandler
     public void onResolvedHit(SpellDamageEvent e) {
-
         if (!(e.getEntity() instanceof Player)) return;
-        Player hurtPl = (Player) e.getEntity();
-
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
-
-        double percent = PERCENT_HP / 100;
-        double threshold = percent * hurtPl.getMaxHealth();
-        if (hurtPl.getHealth() > threshold) return;
-
-        e.setAmount(getResolved(hurtPl, e.getAmount()));
+        Player hurtPlayer = (Player) e.getEntity();
+        if (!shouldReduceDamage(hurtPlayer)) return;
+        e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
     }
 
     @EventHandler
     public void onResolvedHit(WeaponDamageEvent e) {
-
         if (!(e.getEntity() instanceof Player)) return;
-        Player hurtPl = (Player) e.getEntity();
-
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
-
-        double percent = PERCENT_HP / 100;
-        double threshold = percent * hurtPl.getMaxHealth();
-        if (hurtPl.getHealth() > threshold) return;
-
-        e.setAmount(getResolved(hurtPl, e.getAmount()));
+        Player hurtPlayer = (Player) e.getEntity();
+        if (!shouldReduceDamage(hurtPlayer)) return;
+        e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
     }
 
     @EventHandler
     public void onMobHit(MobDamageEvent e) {
-
         if (!(e.getVictim() instanceof Player)) return;
-        Player hurtPl = (Player) e.getVictim();
-
-        if (!hasPassive(hurtPl, this.getName())) return;
-
-        double percent = PERCENT_HP / 100;
-        double threshold = percent * hurtPl.getMaxHealth();
-        if (hurtPl.getHealth() > threshold) return;
-
-        e.setAmount(getResolved(hurtPl, e.getAmount()));
+        Player hurtPlayer = (Player) e.getVictim();
+        if (!shouldReduceDamage(hurtPlayer)) return;
+        e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
     }
 
-    private int getResolved(Player pl, int damage) {
+    /**
+     * Quick check to see if player is within Resolve health threshold.
+     * @param hurtPlayer player to check hp for
+     * @return true if damage should be reduced, false if not
+     */
+    private boolean shouldReduceDamage(Player hurtPlayer) {
+        if (!hasPassive(hurtPlayer, this.getName())) return false;
+        double percent = PERCENT_HP / 100;
+        double threshold = percent * hurtPlayer.getMaxHealth();
+        return hurtPlayer.getHealth() < threshold;
+    }
 
-        // reduce damage
+    /*
+    Calculates resolved damage to apply
+     */
+    private int getResolvedDamage(Player pl, int damage) {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 2.0f);
         pl.getWorld().spawnParticle(Particle.BLOCK_DUST, pl.getEyeLocation(),
                 5, 0.5F, 0.5F, 0.5F, 0, Material.OAK_WOOD.createBlockData());
-
-        double percent = PERCENT_DMG / 100;
+        double percent = (100 - PERCENT_DMG) / 100;
         return (int) (damage * percent);
     }
 }

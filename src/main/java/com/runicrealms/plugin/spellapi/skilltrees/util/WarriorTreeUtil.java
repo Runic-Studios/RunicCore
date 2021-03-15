@@ -34,7 +34,7 @@ public class WarriorTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(156, 1, 0, 1, "Rescue"));
         perks.add(new PerkBaseStat(157, 1, 0, 5, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(158, 1, 0, 1, "Taunt")); // on-hit threat
+        perks.add(new PerkSpell(158, 1, 0, 1, "Taunt"));
         perks.add(new PerkBaseStat(159, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(160, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkSpell(161, 1, 0, 1, "Ray of Light")); // fire vector beam, teleport to first ally hit, granting you and them X% dmg reduction
