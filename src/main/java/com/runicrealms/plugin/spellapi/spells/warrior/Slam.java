@@ -24,10 +24,10 @@ public class Slam extends Spell {
 
     public Slam() {
         super("Slam",
-                "You charge fearlessly into the air!" +
-                        "\nUpon hitting the ground, you deal " +
-                        "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
-                        "\n" + RADIUS + " blocks and knock them up!",
+                "You charge fearlessly into the air! " +
+                        "Upon hitting the ground, you deal " +
+                        DAMAGE_AMT + " weapon⚔ damage to enemies within " +
+                        RADIUS + " blocks and knock them up!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
         ignite = false;
     }

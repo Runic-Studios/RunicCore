@@ -93,20 +93,17 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public boolean verifyAlly(Player caster, Entity ally) {
 
-        // target must be alive
-        if (!(ally instanceof LivingEntity)) return false;
-        LivingEntity livingAlly = (LivingEntity) ally;
+        // target must be a player
+        if (!(ally instanceof Player)) return false;
+        Player playerAlly = (Player) ally;
 
         // ignore NPCs
-        if (livingAlly.hasMetadata("NPC")) return false;
-        if (livingAlly instanceof ArmorStand) return false;
+        if (playerAlly.hasMetadata("NPC")) return false;
+        if (playerAlly instanceof ArmorStand) return false;
 
         // skip the target player if the caster has a party and the target is NOT in it
-        if (ally instanceof Player) {
-            return RunicCore.getPartyManager().getPlayerParty(caster) == null
-                    || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
-        }
-        return true;
+        return RunicCore.getPartyManager().getPlayerParty(caster) == null
+                || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
     }
 
     @Override

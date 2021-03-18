@@ -29,7 +29,6 @@ public class WarriorTreeUtil {
         return perks;
     }
 
-    // todo
     public static List<Perk> guardianPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(156, 1, 0, 1, "Rescue"));
@@ -37,11 +36,11 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(158, 1, 0, 1, "Taunt"));
         perks.add(new PerkBaseStat(159, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(160, 1, 0, 3, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(161, 1, 0, 1, "Ray of Light")); // fire vector beam, teleport to first ally hit, granting you and them X% dmg reduction
+        perks.add(new PerkSpell(161, 1, 0, 1, "Bolster"));
         perks.add(new PerkBaseStat(162, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(163, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(164, 1, 0, 5, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkSpell(165, 1, 0, 1, "Judgment")); // add flat shield
+        perks.add(new PerkSpell(165, 1, 0, 1, "Judgment"));
         perks.add(new PerkBaseStat(166, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkSpell(167, 1, 0, 1, "Resolve"));
         return perks;
@@ -55,7 +54,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(170, 1, 0, 1, "Condemn")); // deal X% more damage to silenced enemies
         perks.add(new PerkBaseStat(171, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(172, 1, 0, 3, BaseStatEnum.VITALITY, 3));
-        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke")); // knockup/slow/dmg
+        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke")); // knockup/slow/dmg (infernoblade particle)
         perks.add(new PerkBaseStat(174, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(175, 1, 0, 3, BaseStatEnum.VITALITY, 5));
         perks.add(new PerkSpell(176, 1, 0, 1, "Rift")); // vaccuum-like portal that draws in enemies

@@ -16,8 +16,8 @@ public class Taunt extends Spell {
     public Taunt() {
         super ("Taunt",
                 "Your basic weapon⚔ attacks passively " +
-                        "generate a large amount of threat against " +
-                        "monsters!",
+                        "generate threat against monsters, " +
+                        "causing them to attack you!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
         this.setIsPassive(true);
     }
@@ -33,7 +33,7 @@ public class Taunt extends Spell {
         if (verifyEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
             if (!(victim instanceof Monster || victim instanceof Wolf || victim instanceof PolarBear)) return;
-            en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.1f, 0.2f);
+            en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.05f, 0.2f);
             victim.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, victim.getEyeLocation(), 1, 0.3F, 0.3F, 0.3F, 0);
             if (victim instanceof Monster) ((Monster) en).setTarget(pl);
             MythicMobs.inst().getAPIHelper().addThreat(en, pl, 1000);

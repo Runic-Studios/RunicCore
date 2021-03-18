@@ -25,7 +25,6 @@ import static java.lang.Math.sin;
 
 public class Judgment extends Spell {
 
-    private final boolean willShield;
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
     private static final int SHIELD_AMT = 200;
@@ -34,28 +33,14 @@ public class Judgment extends Spell {
 
     public Judgment() {
         super("Judgment",
-                "You summon a barrier of magic" +
-                        "\naround yourself for " + BUBBLE_DURATION + " seconds!" +
-                        "\nThe barrier repels enemies and" +
-                        "\nprevents them from entering, but" +
-                        "\nallies may pass through it. During" +
-                        "\nthis time, you may not move.",
+                "You summon a barrier of magic " +
+                        "around yourself for " + BUBBLE_DURATION + " seconds! The barrier repels enemies and " +
+                        "prevents them from entering, but allies may pass through freely! " +
+                        "You and allies within the barrier during the initial cast are " +
+                        "shielded■ for " + SHIELD_AMT + " health! " +
+                        "During this time, you may not move.",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
         judgers = new ArrayList<>();
-        this.willShield = false;
-    }
-
-    public Judgment(boolean willShield) {
-        super("Judgment",
-                "You summon a barrier of magic" +
-                        "\naround yourself for " + BUBBLE_DURATION + " seconds!" +
-                        "\nThe barrier repels enemies and" +
-                        "\nprevents them from entering, but" +
-                        "\nallies may pass through it. During" +
-                        "\nthis time, you may not move.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
-        judgers = new ArrayList<>();
-        this.willShield = willShield;
     }
 
     @Override
@@ -76,13 +61,10 @@ public class Judgment extends Spell {
         pl.getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
         judgers.add(pl.getUniqueId());
 
-        // tier set
-        if (willShield) {
-            HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
-            for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-                if (verifyAlly(pl, en)) {
-                    HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, true, false, false);
-                }
+        HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
+        for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
+            if (verifyAlly(pl, en)) {
+                HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, true, false, false);
             }
         }
 

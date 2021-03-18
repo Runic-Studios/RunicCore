@@ -23,7 +23,7 @@ import java.util.UUID;
 public class Rescue extends Spell {
 
     private static final int DURATION = 3;
-    private static final double PERCENT = .45;
+    private static final double PERCENT = .25;
     private final HashMap<UUID, UUID> hasBeenHit;
 
     public Rescue() {
@@ -60,7 +60,7 @@ public class Rescue extends Spell {
                 }
 
                 Location loc = projectile.getLocation();
-                projectile.getWorld().spawnParticle(Particle.CRIT, projectile.getLocation(), 1, 0, 0, 0, 0);
+                projectile.getWorld().spawnParticle(Particle.SPELL_INSTANT, projectile.getLocation(), 1, 0, 0, 0, 0);
 
                 for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
                     if (entity.equals(pl)) continue; // skip caster
