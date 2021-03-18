@@ -6,8 +6,7 @@ public enum ClassEnum {
     CLERIC("Cleric"),
     MAGE("Mage"),
     ROGUE("Rogue"),
-    WARRIOR("Warrior"),
-    RUNIC("Runic");
+    WARRIOR("Warrior");
 
     private final String name;
 

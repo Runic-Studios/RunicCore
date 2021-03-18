@@ -25,9 +25,9 @@ public class Agility extends Spell {
 
     public Agility() {
         super ("Agility",
-                "Damaging an enemy has a " + (int) PERCENT + "% chance" +
-                        "\nto grant you speed for " + DURATION + " second(s)!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                "Damaging an enemy has a " + (int) PERCENT + "% chance " +
+                        "to grant you speed for " + DURATION + "s!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 

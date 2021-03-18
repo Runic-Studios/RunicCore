@@ -25,7 +25,7 @@ public class Siphon extends Spell {
         super ("Siphon",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance" +
                         "\nto restore✦ " + AMOUNT + " of your mana!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 

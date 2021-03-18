@@ -36,11 +36,11 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(158, 1, 0, 1, "Taunt"));
         perks.add(new PerkBaseStat(159, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(160, 1, 0, 3, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(161, 1, 0, 1, "Bolster"));
+        perks.add(new PerkSpell(161, 1, 0, 1, "Bolster")); // todo: spawn a warbanner which gives damage reduction buff to allies w/in radius (arcane orb particles, banner). warbanner can be destroyed by non-allies
         perks.add(new PerkBaseStat(162, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(163, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(164, 1, 0, 5, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkSpell(165, 1, 0, 1, "Judgment"));
+        perks.add(new PerkSpell(165, 1, 0, 1, "Judgment")); // todo: 'sneak' to cancel, shield increases exponentially for allies inside shield each tick
         perks.add(new PerkBaseStat(166, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkSpell(167, 1, 0, 1, "Resolve"));
         return perks;
@@ -49,7 +49,7 @@ public class WarriorTreeUtil {
     // todo
     public static List<Perk> inquisitorPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(168, 1, 0, 1, "Throw Axe")); // silence
+        perks.add(new PerkSpell(168, 1, 0, 1, "Throw Axe"));
         perks.add(new PerkBaseStat(169, 1, 0, 5, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkSpell(170, 1, 0, 1, "Condemn")); // deal X% more damage to silenced enemies
         perks.add(new PerkBaseStat(171, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
@@ -60,7 +60,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(176, 1, 0, 1, "Rift")); // vaccuum-like portal that draws in enemies
         perks.add(new PerkBaseStat(177, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(178, 1, 0, 3, BaseStatEnum.VITALITY, 3));
-        perks.add(new PerkSpell(179, 1, 0, 1, "Subdue")); // melee attacks have X% chance to silence
+        perks.add(new PerkSpell(179, 1, 0, 1, "Subdue"));
         return perks;
     }
 }

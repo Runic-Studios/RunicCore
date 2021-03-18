@@ -23,7 +23,7 @@ public class Resolve extends Spell {
                 "While below " + (int) PERCENT_HP + "% health, you " +
                         "receive a " + (int) PERCENT_DMG + "% damage reduction " +
                         "buff!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
         this.setIsPassive(true);
     }
 

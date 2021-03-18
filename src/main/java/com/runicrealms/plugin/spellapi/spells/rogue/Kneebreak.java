@@ -27,8 +27,8 @@ public class Kneebreak extends Spell {
     public Kneebreak() {
         super ("Kneebreak",
                 "Damaging an enemy has a " + PERCENT + "% chance " +
-                        "to slow them for " + DURATION + " second(s)!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                        "to slow them for " + DURATION + "s!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 

@@ -51,11 +51,11 @@ public abstract class Spell implements ISpell, Listener {
 
         // verify class
         boolean canCast = false;
-        if (this.getReqClass() != ClassEnum.RUNIC) {
+        //if (this.getReqClass() != ClassEnum.RUNIC) {
             if (this.getReqClass().toString().toLowerCase().equals
                     (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
                 canCast = true;
-        }
+        //}
 
         if (!canCast) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

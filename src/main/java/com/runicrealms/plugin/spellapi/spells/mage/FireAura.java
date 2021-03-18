@@ -26,7 +26,7 @@ public class FireAura extends Spell {
         super ("Fire Aura",
                 "For " + DURATION + " seconds, you conjure a terrible " +
                         "firestorm, damaging enemies within " + RADIUS + " blocks " +
-                        "every " + PERIOD + " second(s) for " + DAMAGE_AMT + " spellʔ damage!",
+                        "every " + PERIOD + "s for " + DAMAGE_AMT + " spellʔ damage!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
     }
 

@@ -21,7 +21,7 @@ public class Backstab extends Spell {
         super("Backstab",
                 "Damaging an enemy from behind " +
                         "deals " + (int) (PERCENT * 100 + 100)  + "% damage!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 

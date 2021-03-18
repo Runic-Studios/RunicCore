@@ -28,13 +28,12 @@ public class ThrowAxe extends Spell {
     private final HashMap<UUID, UUID> hasBeenHit;
     private final boolean canHitAllies;
 
-    // todo: add knockup?
     public ThrowAxe() {
         super("Throw Axe",
-                "You throw your weapon, dealing" +
-                        "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
-                        "\nhit and silencing it, preventing it" +
-                        "\nfrom dealing damage for " + DURATION + " seconds!",
+                "You throw your weapon, dealing " +
+                        DAMAGE + " weapon⚔ damage to the first enemy " +
+                        "hit and silencing it, preventing it " +
+                        "from dealing damage for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = false;
@@ -42,10 +41,10 @@ public class ThrowAxe extends Spell {
 
     public ThrowAxe(boolean canHitAllies) {
         super("Throw Axe",
-                "You throw your weapon, dealing" +
-                        "\n" + DAMAGE + " weapon⚔ damage to the first enemy" +
-                        "\nhit and silencing it, preventing it" +
-                        "\nfrom dealing damage for " + DURATION + " seconds!",
+                "You throw your weapon, dealing " +
+                        DAMAGE + " weapon⚔ damage to the first enemy " +
+                        "hit and silencing it, preventing it " +
+                        "from dealing damage for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = canHitAllies;

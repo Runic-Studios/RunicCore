@@ -46,6 +46,15 @@ public class RunicCoreAPI {
     }
 
     /**
+     *
+     * @param entity
+     * @return
+     */
+    public static boolean isSilenced(Entity entity) {
+        return RunicCore.getSpellManager().getSilencedEntities().contains(entity.getUniqueId());
+    }
+
+    /**
      * Returns the base outlaw rating
      * @return the base rating (1500)
      */

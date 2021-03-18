@@ -23,7 +23,7 @@ public class Hawkeye extends Spell {
                 "Damaging an enemy from " + DISTANCE + " blocks " +
                         "away or farther deals " + AMOUNT + " additional " +
                         "damage!",
-                ChatColor.WHITE, ClassEnum.RUNIC, 0, 0);
+                ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
         this.setIsPassive(true);
     }
 
