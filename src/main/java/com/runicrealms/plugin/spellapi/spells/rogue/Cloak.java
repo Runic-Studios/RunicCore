@@ -26,20 +26,19 @@ public class Cloak extends Spell {
 
     private static final int DURATION = 5;
     private final Set<UUID> cloakers;
-    private final Set<UUID> hasDealtDamage;
+    private final Set<UUID> markedForEarlyReveal;
 
-    // constructor
     public Cloak() {
         super("Cloak",
-                "For " + DURATION + " seconds, you vanish completely," +
-                        " causing you to appear invisible to" +
-                        " players. During this time, you are" +
-                        " immune to damage from monsters!" +
-                        " Dealing damage ends the effect" +
-                        " early.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 15, 15);
+                "For " + DURATION + " seconds, you vanish completely, " +
+                        "causing you to appear invisible to " +
+                        "players. During this time, you are " +
+                        "immune to damage from monsters! " +
+                        "Dealing damage or taking damage from " +
+                        "players ends the effect early.",
+                ChatColor.WHITE, ClassEnum.ROGUE, 30, 15);
         cloakers = new HashSet<>();
-        hasDealtDamage = new HashSet<>();
+        markedForEarlyReveal = new HashSet<>();
     }
 
     @Override
@@ -68,7 +67,7 @@ public class Cloak extends Spell {
             int count = 0;
             @Override
             public void run() {
-                if (count >= DURATION || hasDealtDamage.contains(pl.getUniqueId())) {
+                if (count >= DURATION || markedForEarlyReveal.contains(pl.getUniqueId())) {
                     this.cancel();
                     cloakers.remove(pl.getUniqueId());
                     for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
@@ -78,7 +77,7 @@ public class Cloak extends Spell {
                     pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                             new Particle.DustOptions(Color.BLACK, 3));
                     pl.sendMessage(ChatColor.GRAY + "You reappeared!");
-                    hasDealtDamage.remove(pl.getUniqueId());
+                    markedForEarlyReveal.remove(pl.getUniqueId());
                 } else {
                     count++;
                 }
@@ -98,24 +97,23 @@ public class Cloak extends Spell {
             e.setCancelled(true);
     }
 
-    /**
-     * Reveal the player after dealing damage
-     */
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (!cloakers.contains(e.getPlayer().getUniqueId()))
-            return;
-        if (hasDealtDamage.contains(e.getPlayer().getUniqueId()))
-            return;
-        hasDealtDamage.add(e.getPlayer().getUniqueId());
+        if (!(cloakers.contains(e.getPlayer().getUniqueId())
+                || cloakers.contains(e.getEntity().getUniqueId()))) return;
+        if (cloakers.contains(e.getPlayer().getUniqueId()))
+            markedForEarlyReveal.add(e.getPlayer().getUniqueId());
+        else
+            markedForEarlyReveal.add(e.getEntity().getUniqueId());
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!cloakers.contains(e.getPlayer().getUniqueId()))
-            return;
-        if (hasDealtDamage.contains(e.getPlayer().getUniqueId()))
-            return;
-        hasDealtDamage.add(e.getPlayer().getUniqueId());
+        if (!(cloakers.contains(e.getPlayer().getUniqueId())
+                || cloakers.contains(e.getEntity().getUniqueId()))) return;
+        if (cloakers.contains(e.getPlayer().getUniqueId()))
+            markedForEarlyReveal.add(e.getPlayer().getUniqueId());
+        else
+            markedForEarlyReveal.add(e.getEntity().getUniqueId());
     }
 }

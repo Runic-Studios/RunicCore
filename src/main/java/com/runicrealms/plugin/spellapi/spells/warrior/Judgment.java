@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -27,18 +28,20 @@ public class Judgment extends Spell {
 
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
-    private static final int SHIELD_AMT = 200;
+    private static final int SHIELD_AMT = 25;
+    private static final int SHIELD_PERIOD = 2;
     private static final double UPDATES_PER_SECOND = 10;
     private final List<UUID> judgers;
 
     public Judgment() {
         super("Judgment",
                 "You summon a barrier of magic " +
-                        "around yourself for " + BUBBLE_DURATION + " seconds! The barrier repels enemies and " +
-                        "prevents them from entering, but allies may pass through freely! " +
-                        "You and allies within the barrier during the initial cast are " +
+                        "around yourself for " + BUBBLE_DURATION + "s! The barrier " +
+                        "prevents enemies from entering, but allies may pass through freely! " +
+                        "Every " + SHIELD_PERIOD + "s, allies within the barrier are " +
                         "shielded■ for " + SHIELD_AMT + " health! " +
-                        "During this time, you may not move.",
+                        "During this time, you may not move. " +
+                        "Sneak to cancel the spell early.",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
         judgers = new ArrayList<>();
     }
@@ -61,12 +64,17 @@ public class Judgment extends Spell {
         pl.getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
         judgers.add(pl.getUniqueId());
 
-        HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
-        for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-            if (verifyAlly(pl, en)) {
-                HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, true, false, false);
+        BukkitTask shieldTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
+                for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
+                    if (verifyAlly(pl, en)) {
+                        HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, true, false, false);
+                    }
+                }
             }
-        }
+        }.runTaskTimer(plugin, SHIELD_PERIOD * 20L, SHIELD_PERIOD * 20L);
 
         // Begin spell event
         final long startTime = System.currentTimeMillis();
@@ -87,10 +95,11 @@ public class Judgment extends Spell {
                     loc.subtract(x,y,z);
                 }
 
-                // Spell duration
+                // Spell duration, allow cancel by sneaking
                 long timePassed = System.currentTimeMillis() - startTime;
-                if (timePassed > BUBBLE_DURATION * 1000) {
+                if (timePassed > BUBBLE_DURATION * 1000 || pl.isSneaking()) {
                     this.cancel();
+                    shieldTask.cancel();
                     judgers.clear();
                     return;
                 }

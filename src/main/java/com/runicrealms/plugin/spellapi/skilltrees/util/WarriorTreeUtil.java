@@ -36,11 +36,11 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(158, 1, 0, 1, "Taunt"));
         perks.add(new PerkBaseStat(159, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(160, 1, 0, 3, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(161, 1, 0, 1, "Bolster")); // todo: spawn a warbanner which gives damage reduction buff to allies w/in radius (arcane orb particles, banner). warbanner can be destroyed by non-allies
+        perks.add(new PerkSpell(161, 1, 0, 1, "Bolster"));
         perks.add(new PerkBaseStat(162, 1, 0, 3, BaseStatEnum.STRENGTH, 1));
         perks.add(new PerkBaseStat(163, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(164, 1, 0, 5, BaseStatEnum.STRENGTH, 1));
-        perks.add(new PerkSpell(165, 1, 0, 1, "Judgment")); // todo: 'sneak' to cancel, shield increases exponentially for allies inside shield each tick
+        perks.add(new PerkSpell(165, 1, 0, 1, "Judgment"));
         perks.add(new PerkBaseStat(166, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkSpell(167, 1, 0, 1, "Resolve"));
         return perks;

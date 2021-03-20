@@ -20,7 +20,7 @@ import java.util.HashSet;
 public class Riposte extends Spell {
 
     private static final int DAMAGE_CAP = 50;
-    private static final int DURATION = 5;
+    private static final int DURATION = 2;
     private static final double PERCENT_DMG = .65;
     private final HashSet<Entity> ripostePlayers;
 

@@ -15,8 +15,8 @@ import org.bukkit.event.EventPriority;
 @SuppressWarnings("FieldCanBeLocal")
 public class Challenger extends Spell {
 
-    private static final int DAMAGE_CAP = 50;
-    private static final double HEALTH_MULT = .03;
+    private static final int DAMAGE_CAP = 35;
+    private static final double HEALTH_MULT = .02;
 
     public Challenger() {
         super("Challenger",

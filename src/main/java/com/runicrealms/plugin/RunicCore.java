@@ -289,6 +289,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SubClassGUIListener(), this);
         pm.registerEvents(new SpellEditorGUIListener(), this);
         pm.registerEvents(new SpellGUIListener(), this);
+        pm.registerEvents(new CreatureSpawnListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
