@@ -187,8 +187,9 @@ public class SpellManager implements Listener {
         this.spellList.add(new LastResort());
         this.spellList.add(new Rescue());
         this.spellList.add(new Bolster());
-        this.spellList.add(new Subdue());
         this.spellList.add(new Condemn());
+        this.spellList.add(new Subdue());
+        this.spellList.add(new Rebuke());
     }
 
     // starts the repeating task to manage player cooldowns

@@ -51,10 +51,10 @@ public class WarriorTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(168, 1, 0, 1, "Throw Axe"));
         perks.add(new PerkBaseStat(169, 1, 0, 5, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(170, 1, 0, 1, "Condemn")); // deal X% more damage to silenced enemies
+        perks.add(new PerkSpell(170, 1, 0, 1, "Condemn"));
         perks.add(new PerkBaseStat(171, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(172, 1, 0, 3, BaseStatEnum.VITALITY, 3));
-        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke")); // knockup/slow/dmg (infernoblade particle)
+        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke"));
         perks.add(new PerkBaseStat(174, 1, 0, 3, BaseStatEnum.STRENGTH, 3));
         perks.add(new PerkBaseStat(175, 1, 0, 3, BaseStatEnum.VITALITY, 5));
         perks.add(new PerkSpell(176, 1, 0, 1, "Rift")); // vaccuum-like portal that draws in enemies
