@@ -13,14 +13,14 @@ import org.bukkit.event.EventHandler;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Doom extends Spell {
+public class Shadowmeld extends Spell {
 
     private static final int DURATION = 2;
     private static final double PERCENT_REDUCTION = .75;
     private static final HashSet<UUID> doomers = new HashSet<>();
 
-    public Doom() {
-        super ("Doom",
+    public Shadowmeld() {
+        super ("Shadowmeld",
                 "After casting your &aBlink &7spell, " +
                         "you gain " + (int) (PERCENT_REDUCTION * 100) + "% " +
                         "damage reduction for " + DURATION + "s!",

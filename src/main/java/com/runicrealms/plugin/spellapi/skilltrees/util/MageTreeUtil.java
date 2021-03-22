@@ -54,7 +54,7 @@ public class MageTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(96, 1, 0, 1, "Shadow Bomb"));
         perks.add(new PerkBaseStat(97, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
-        perks.add(new PerkSpell(98, 1, 0, 1, "Doom"));
+        perks.add(new PerkSpell(98, 1, 0, 1, "Shadowmeld"));
         perks.add(new PerkBaseStat(99, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(100, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(101, 1, 0, 1, "Blink"));

@@ -1,50 +1,66 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.ChatColor;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
+import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+
+import java.util.HashSet;
+import java.util.Random;
+import java.util.UUID;
 
 public class DivineShield extends Spell {
 
     private static final int DURATION = 2;
     private static final double PERCENT = .10;
     private static final double PERCENT_REDUCTION = .75;
+    private final HashSet<UUID> shieldedPlayers;
 
     public DivineShield() {
         super ("Divine Shield",
-                "Your healing<3 spells have a " + PERCENT + "% " +
-                        "chance to grant a divine shield to your ally, " +
-                        "granting them " + PERCENT_REDUCTION + "% damage " +
+                "Your healing✦ spells have a " + (int) (PERCENT * 100) + "% " +
+                        "chance to grant a divine shield to your allies, " +
+                        "granting them " + (int) (PERCENT_REDUCTION * 100) + "% damage " +
                         "reduction for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
         this.setIsPassive(true);
+        shieldedPlayers = new HashSet<>();
     }
 
-//    @EventHandler
-//    public void onSpellCast(SpellCastEvent e) {
-//
-//        if (!hasPassive(e.getCaster(), this.getName())) return;
-//
-//        Random rand = new Random();
-//        int roll = rand.nextInt(100) + 1;
-//        if (roll > (PERCENT * 100)) return;
-//
-//        if (RunicCore.getPartyManager().getPlayerParty(e.getCaster()) == null) return;
-//        Set<Player> allies = RunicCore.getPartyManager().getPlayerParty(e.getCaster()).getMembersWithLeader();
-//
-//        for (Player ally : allies) {
-//            if (verifyAlly(e.getCaster(), ally)) {
-//                if (!e.getCaster().getWorld().equals(ally.getWorld())) continue;
-//                if (e.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS*RADIUS) continue;
-//                e.getCaster().getWorld().playSound(e.getCaster().getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
-//                e.getCaster().playSound(e.getCaster().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
-//                ally.getWorld().playSound(ally.getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
-//                ally.getWorld().spawnParticle(Particle.SPELL_WITCH, ally.getEyeLocation(), 3, 0.3F, 0.3F, 0.3F, 0);
-//                HealUtil.healPlayer(e.getSpell().getManaCost(), ally, e.getCaster(), false, false, false);
-//            }
-//        }
-//    }
+    @EventHandler
+    public void onHealingSpell(SpellHealEvent e) {
+        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        Random rand = new Random();
+        int roll = rand.nextInt(100) + 1;
+        if (roll > (PERCENT * 100)) return;
+        e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 2.0f);
+        shieldedPlayers.add(e.getEntity().getUniqueId());
+        Cone.coneEffect((LivingEntity) e.getEntity(), Particle.REDSTONE, DURATION, 0, 20, Color.WHITE);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> shieldedPlayers.remove(e.getEntity().getUniqueId()), DURATION * 20L);
+    }
 
-    // todo on heal
+    @EventHandler
+    public void onMobDamage(MobDamageEvent e) {
+        if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    }
+
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        if (!shieldedPlayers.contains(e.getEntity().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        if (!shieldedPlayers.contains(e.getEntity().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    }
 }
 

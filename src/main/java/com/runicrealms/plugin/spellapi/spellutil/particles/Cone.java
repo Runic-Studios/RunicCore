@@ -13,6 +13,16 @@ import static java.lang.Math.sin;
 
 public class Cone {
 
+    /**
+     * Creates a helix cone around given player.
+     * @param player player to create particle around
+     * @param particle type of particle to use
+     * @param DURATION length of effect (in seconds)
+     * @param delay delay of effect (in ticks)
+     * @param period of effect (in ticks)
+     * @param color color of effect if using redstone
+     * @return return BukkitTask that can be cancelled
+     */
     public static BukkitTask coneEffect(final LivingEntity player, Particle particle, int DURATION, int delay, long period, Color color){
 
         return new BukkitRunnable(){

@@ -183,7 +183,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new ColdTouch());
         this.spellList.add(new IcyAffinity());
         this.spellList.add(new ShadowTouch());
-        this.spellList.add(new Doom());
+        this.spellList.add(new Shadowmeld());
         this.spellList.add(new TwistOfFate());
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());

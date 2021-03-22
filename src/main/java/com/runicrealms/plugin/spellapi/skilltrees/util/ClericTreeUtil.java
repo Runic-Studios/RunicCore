@@ -60,7 +60,7 @@ public class ClericTreeUtil {
         perks.add(new PerkBaseStat(68, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(69, 1, 0, 1, "Soul Link"));
         perks.add(new PerkBaseStat(70, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(71, 1, 0, 1, "Divine Shield")); // white cone
+        perks.add(new PerkSpell(71, 1, 0, 1, "Divine Shield"));
         return perks;
     }
 }

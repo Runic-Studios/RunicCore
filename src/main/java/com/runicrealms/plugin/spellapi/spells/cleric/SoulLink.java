@@ -33,7 +33,8 @@ public class SoulLink extends Spell {
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 2.0f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.25f);
+        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
         affectedAllies.add(pl);
         double totalCurrentHealth = pl.getHealth();
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
