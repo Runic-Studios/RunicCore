@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.Objects;
 
@@ -25,22 +26,21 @@ public class HolyNova extends Spell {
     private static final int HEAL_AMT = 8;
     private static final float RADIUS = 5f;
     private static final double GEM_BOOST = 50;
+    private static final double KNOCKBACK_MULT = -1.25;
 
     // constructor
     public HolyNova() {
         super("Holy Nova",
-                "For " + DURATION + " seconds, you pulse with holy" +
-                        "\npower, conjuring rings of light" +
-                        "\nthat deal " + DAMAGE_AMT + " spellʔ damage to enemies" +
-                        "\nand restore✦ " + HEAL_AMT + " health to allies!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: " + (int) GEM_BOOST + "%",
+                "For " + DURATION + "s, you pulse with holy " +
+                        "power, conjuring rings of light " +
+                        "that deal " + DAMAGE_AMT + " spellʔ damage to enemies " +
+                        "and push them back! The rings restore✦ " +
+                        HEAL_AMT + " health to allies!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
-
-        // begin effect
         BukkitRunnable nova = new BukkitRunnable() {
             @Override
             public void run() {
@@ -48,8 +48,6 @@ public class HolyNova extends Spell {
             }
         };
         nova.runTaskTimer(RunicCore.getInstance(), 0, 20);
-
-        // cancel effect
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -80,18 +78,18 @@ public class HolyNova extends Spell {
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
 
             if (!(en instanceof LivingEntity)) continue;
-
             LivingEntity le = (LivingEntity) en;
 
             // Executes the damage aspect of spell
             if (verifyEnemy(pl, en)) {
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, GEM_BOOST);
+                Vector force = pl.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
+                en.setVelocity(force);
             }
 
             // heal party members
-            if (en instanceof Player && verifyAlly(pl, en)) {
+            if (en instanceof Player && verifyAlly(pl, en))
                 HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, false);
-            }
         }
     }
 }

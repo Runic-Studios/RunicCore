@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Warsong extends Spell {
+public class Spellsong extends Spell {
 
     private final double bonus;
     private static final int DURATION = 6;
@@ -25,8 +25,8 @@ public class Warsong extends Spell {
     private static final int RADIUS = 10;
     private final List<UUID> singers;
 
-    public Warsong() {
-        super("Warsong",
+    public Spellsong() {
+        super("Spellsong",
                 "You sing a song of battle, granting a buff" +
                         "\nto all party members within " + RADIUS + " blocks!" +
                         "\nFor " + DURATION + " seconds, the buff increases the" +
@@ -37,7 +37,7 @@ public class Warsong extends Spell {
         this.bonus = 0;
     }
 
-    public Warsong(int bonus) {
+    public Spellsong(int bonus) {
         super("Warsong",
                 "You sing a song of battle, granting a buff" +
                         "\nto all party members within " + RADIUS + " blocks!" +

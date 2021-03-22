@@ -9,15 +9,14 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
-/**
- * Logic for hit found in Fireball.
- */
 public class IcyAffinity extends Spell {
+
+    private static final double PERCENT = .25;
 
     public IcyAffinity() {
         super ("Icy Affinity",
                 "Your &aIceblock &7spell now restores✦ " +
-                        (int) (IceBlock.getPercent() * 100) + "% of your health!",
+                        (int) (PERCENT * 100) + "% of your health!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
     }
@@ -27,7 +26,7 @@ public class IcyAffinity extends Spell {
         if (!hasPassive(e.getCaster(), this.getName())) return;
         if (!(e.getSpell() instanceof IceBlock)) return;
         Player pl = e.getCaster();
-        HealUtil.healPlayer((int) (pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * IceBlock.getPercent()),
+        HealUtil.healPlayer((int) (pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT),
                 pl, pl, false, false, false);
     }
 }

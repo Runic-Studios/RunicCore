@@ -42,8 +42,8 @@ public class Rebuke extends Spell {
         while (startLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
             startLocation = startLocation.getBlock().getRelative(BlockFace.DOWN).getLocation();
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
-
         Location finalBeamLocation = startLocation;
+
         new BukkitRunnable() {
 
             @Override

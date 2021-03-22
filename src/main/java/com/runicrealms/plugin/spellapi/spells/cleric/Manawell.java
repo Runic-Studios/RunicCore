@@ -16,13 +16,13 @@ import java.util.Set;
 
 public class Manawell extends Spell {
 
-    private static final double PERCENT = 7;
+    private static final double PERCENT = 10;
     private static final double RADIUS = 100;
 
     public Manawell() {
         super ("Manawell",
-                "Spending mana has a " + (int) PERCENT + "% chance" +
-                        "\nto heal allies for the amount spent!",
+                "Spending mana has a " + (int) PERCENT + "% chance " +
+                        "to heal allies for the amount spent!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
         this.setIsPassive(true);
     }

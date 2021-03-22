@@ -3,8 +3,8 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.TeleportUtil;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,7 +27,10 @@ public class Rift extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
         Location castLocation = pl.getLocation();
+        while (castLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
+            castLocation = castLocation.getBlock().getRelative(BlockFace.DOWN).getLocation();
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 2.0F);
+        Location finalCastLocation = castLocation;
         new BukkitRunnable() {
             int count = 1;
             @Override
@@ -36,7 +39,7 @@ public class Rift extends Spell {
                     this.cancel();
                 else {
                     count++;
-                    spawnRift(pl, castLocation);
+                    spawnRift(pl, finalCastLocation);
                 }
             }
         }.runTaskTimer(plugin, 0, 20L);
@@ -56,7 +59,7 @@ public class Rift extends Spell {
         for (Entity en : pl.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
             if (!verifyEnemy(pl, en)) continue;
             LivingEntity victim = (LivingEntity) en;
-            TeleportUtil.teleportEntity(victim, castLocation);
+            victim.teleport(castLocation);
         }
     }
 

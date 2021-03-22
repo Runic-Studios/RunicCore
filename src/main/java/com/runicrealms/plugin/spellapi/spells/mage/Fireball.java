@@ -4,14 +4,10 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.TeleportUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +17,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,38 +46,6 @@ public class Fireball extends Spell {
         fireCone = false;
         applyBurn = false;
         iceBolt = false;
-    }
-
-    /**
-     * Overriden method for tier set bonuses
-     * @param fireCone 2-set bonus to apply a cone of projectiles
-     * @param applyBurn 4-set bonus to apply burn effect
-     */
-    public Fireball(boolean fireCone, boolean applyBurn) {
-        super ("Fireball",
-                "You launch a projectile fireball" +
-                        "\nthat deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
-                        "\nimpact!",
-                ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
-        this.fireCone = fireCone;
-        this.applyBurn = applyBurn;
-        this.iceBolt = false;
-    }
-
-    /**
-     * Overriden method for tier set bonuses
-     * @param iceBolt swap spell
-     */
-    public Fireball(boolean iceBolt) {
-        super ("Fireball",
-                "You launch a projectile fireball" +
-                        "\nthat deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
-                        "\nimpact!",
-                ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
-        this.fireCone = false;
-        this.applyBurn = false;
-        this.iceBolt = iceBolt;
-        chilledPlayers = new HashMap<>();
     }
 
     @Override
@@ -141,8 +104,8 @@ public class Fireball extends Spell {
                     chilledPlayers.get(victim.getUniqueId()).cancel(); // cancel particle task
                     chilledPlayers.remove(victim.getUniqueId());
                     Location toBeTrapped = victim.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
-                    trapEntity(toBeTrapped, Material.ICE, FREEZE_DURATION);
-                    Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> TeleportUtil.teleportEntity(victim, toBeTrapped), 2L);
+                    //trapEntity(toBeTrapped, Material.ICE, FREEZE_DURATION);
+                    Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> victim.teleport(toBeTrapped), 2L);
                 }
             }
             return;
@@ -183,30 +146,6 @@ public class Fireball extends Spell {
                 }, 20L);
             }
         }
-    }
-
-    private static final BlockFace[] cage = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
-
-    public static void trapEntity(Location location, Material material, int duration) {
-        Map<Block, BlockData> changedBlocks = new HashMap<>();
-        Location[] locs = new Location[]{location, location.clone().add(0,1,0)};
-        for (Location loc : locs) {
-            for (BlockFace bf : cage) {
-                Block block = loc.getBlock().getRelative(bf, 1);
-                changedBlocks.put(block, block.getBlockData());
-                block.setType(material);
-            }
-        }
-        // also block above the player
-        Block top = location.clone().add(0,2,0).getBlock();
-        changedBlocks.put(top, top.getBlockData());
-        top.setType(material);
-        // todo: add ice block below their feet?
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            for (Block block : changedBlocks.keySet()) {
-                block.setType(changedBlocks.get(block).getMaterial());
-            }
-        }, duration * 20L);
     }
 
     public static int getChillDuration() {

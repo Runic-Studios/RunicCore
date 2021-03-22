@@ -5,6 +5,7 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
+import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
@@ -119,7 +120,9 @@ public class SpellManager implements Listener {
         return foundSpell;
     }
 
-
+    /**
+     * Add all spell classes to spell manager
+     */
     private void registerSpells() {
         this.spellList.add(new Fireball());
         this.spellList.add(new Frostbolt());
@@ -144,7 +147,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new ArcaneOrb());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
-        this.spellList.add(new Warsong());
+        this.spellList.add(new Spellsong());
         this.spellList.add(new Reflect());
         this.spellList.add(new Siphon());
         this.spellList.add(new IceVolley());
@@ -191,6 +194,8 @@ public class SpellManager implements Listener {
         this.spellList.add(new Subdue());
         this.spellList.add(new Rebuke());
         this.spellList.add(new Rift());
+        this.spellList.add(new SoulLink());
+        this.spellList.add(new DivineShield());
     }
 
     // starts the repeating task to manage player cooldowns

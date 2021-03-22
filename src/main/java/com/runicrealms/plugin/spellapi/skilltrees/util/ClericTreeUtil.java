@@ -14,16 +14,16 @@ public class ClericTreeUtil {
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(36, 1, 0, 1, "Warsong")); // only mage damage
+        perks.add(new PerkSpell(36, 1, 0, 1, "Spellsong")); // only spell damage
         perks.add(new PerkBaseStat(37, 1, 0, 5, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(38, 1, 0, 1, "Improvisation")); // melee attacks X% chance to buff nearby allies weapon damage
         perks.add(new PerkBaseStat(39, 1, 0, 3, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkBaseStat(40, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(41, 1, 0, 1, "Windstride"));
+        perks.add(new PerkSpell(41, 1, 0, 1, "Windstride")); // todo, buff
         perks.add(new PerkBaseStat(42, 1, 0, 3, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkBaseStat(43, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(44, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
-        perks.add(new PerkSpell(45, 1, 0, 1, "Discord"));
+        perks.add(new PerkSpell(45, 1, 0, 1, "Discord")); // AOE stun
         perks.add(new PerkBaseStat(46, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(47, 1, 0, 1, "Dissonance")); // melee attacks against players have X% chance to swap them to random hotbar slot! against monsters, chance to silence
         // against monsters, chance to silence them.
@@ -32,9 +32,9 @@ public class ClericTreeUtil {
 
     public static List<Perk> exemplarList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(48, 1, 0, 1, "Smite")); // AoE, high damage, knockback
+        perks.add(new PerkSpell(48, 1, 0, 1, "Smite")); // AoE, high damage, knockback? slow? silence?, travel on ground like rebuke?
         perks.add(new PerkBaseStat(49, 1, 0, 5, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(50, 1, 0, 1, "Penance")); // rejuvenate is now penance (white particles), damages monsters if it goes through em
+        perks.add(new PerkSpell(50, 1, 0, 1, "Absolution")); // rejuvenate is now purify (white particles), also removes silences
         perks.add(new PerkBaseStat(51, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(52, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(53, 1, 0, 1, "Repent")); // stun like pyro fire blast
@@ -49,18 +49,18 @@ public class ClericTreeUtil {
 
     public static List<Perk> priestList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(60, 1, 0, 1, "Holy Water")); // should also damage mobs
+        perks.add(new PerkSpell(60, 1, 0, 1, "Holy Water"));
         perks.add(new PerkBaseStat(61, 1, 0, 5, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(62, 1, 0, 1, "Healing Stream")); // allies hit by holy water receive X% addtional healing for Ys
+        perks.add(new PerkSpell(62, 1, 0, 1, "Manawell"));
         perks.add(new PerkBaseStat(63, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkBaseStat(64, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(65, 1, 0, 1, "Holy Aura"));
+        perks.add(new PerkSpell(65, 1, 0, 1, "Holy Nova"));
         perks.add(new PerkBaseStat(66, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkBaseStat(67, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(68, 1, 0, 5, BaseStatEnum.INTELLIGENCE, 1));
         perks.add(new PerkSpell(69, 1, 0, 1, "Soul Link"));
         perks.add(new PerkBaseStat(70, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(71, 1, 0, 1, "Manawell"));
+        perks.add(new PerkSpell(71, 1, 0, 1, "Divine Shield")); // white cone
         return perks;
     }
 }

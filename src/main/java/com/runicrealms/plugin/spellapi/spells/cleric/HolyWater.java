@@ -5,8 +5,10 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
@@ -24,34 +26,36 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class HolyWater extends Spell {
 
+    private static final int DAMAGE = 15;
     private static final int DURATION = 6;
-    private static final double PERCENT = 25;
     private static final int RADIUS = 5;
+    private static final double PERCENT = 35;
+    private static final double POTION_SPEED_MULT = 1.25;
     private ThrownPotion thrownPotion;
     private final HashMap<UUID, HashSet<UUID>> affectedPlayers;
 
     public HolyWater() {
         super("Holy Water",
-                "You throw a magical vial of light!" +
-                        "\nAllies within " + RADIUS + " blocks of the light" +
-                        "\nreceive an additional " + (int) PERCENT + "% health" +
-                        "\nfrom all healing✦ spells for " + DURATION +
-                        "\nseconds!",
+                "You throw a magical vial of light! " +
+                        "Allies within " + RADIUS + " blocks of the light " +
+                        "receive an additional " + (int) PERCENT + "% health " +
+                        "from all healing✦ spells for " + DURATION + "s! " +
+                        "Against enemies, the vial deals " + DAMAGE + " spellʔ " +
+                        "damage!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 10, 20);
         affectedPlayers = new HashMap<>();
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        Objects.requireNonNull(meta).setColor(Color.WHITE);
+        Objects.requireNonNull(meta).setColor(Color.AQUA);
         item.setItemMeta(meta);
         thrownPotion = pl.launchProjectile(ThrownPotion.class);
         thrownPotion.setItem(item);
-        final Vector velocity = pl.getLocation().getDirection().normalize().multiply(1.25);
+        final Vector velocity = pl.getLocation().getDirection().normalize().multiply(POTION_SPEED_MULT);
         thrownPotion.setVelocity(velocity);
         thrownPotion.setShooter(pl);
 
@@ -66,7 +70,7 @@ public class HolyWater extends Spell {
     @EventHandler
     public void onPotionBreak(PotionSplashEvent e) {
 
-        // only listen for our fireball
+        // only listen for our potion
         if (!(e.getPotion().equals(this.thrownPotion))) return;
         if (!(e.getPotion().getShooter() instanceof Player)) return;
 
@@ -87,9 +91,10 @@ public class HolyWater extends Spell {
         HashSet<UUID> allies = new HashSet<>();
         affectedPlayers.put(pl.getUniqueId(), allies);
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (verifyAlly(pl, en)) {
+            if (verifyAlly(pl, en))
                 affectedPlayers.get(pl.getUniqueId()).add(en.getUniqueId());
-            }
+            if (verifyEnemy(pl, en))
+                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, 100);
         }
     }
 
@@ -103,9 +108,7 @@ public class HolyWater extends Spell {
         if (!affectedPlayers.get(caster.getUniqueId()).contains(e.getEntity().getUniqueId())) return;
         double percent = PERCENT / 100;
         int extraAmt = (int) (e.getAmount() * percent);
-        if (extraAmt < 1) {
-            extraAmt = 1;
-        }
+        if (extraAmt < 1) extraAmt = 1;
         e.setAmount(e.getAmount() + extraAmt);
     }
 }

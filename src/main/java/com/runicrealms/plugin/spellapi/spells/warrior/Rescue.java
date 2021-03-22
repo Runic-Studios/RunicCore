@@ -20,7 +20,7 @@ public class Rescue extends Spell {
 
     private static final double DURATION = 1.5;
     private static final double LAUNCH_MULT = 1.5;
-    private static final double PERCENT = .25;
+    private static final double PERCENT = .15;
     private static final double RADIUS = 1.5;
     private final HashMap<UUID, UUID> hasBeenHit;
 

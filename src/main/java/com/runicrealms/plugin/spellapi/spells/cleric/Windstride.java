@@ -4,7 +4,10 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -49,8 +52,6 @@ public class Windstride extends Spell {
                 if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
                     if (le instanceof Player) {
                         if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) le)) {
-                            // send player info message
-                            le.sendMessage(ChatColor.GREEN + "You feel the wind at your back!");
                             applySpell((Player) le);
                         }
                     }
@@ -69,9 +70,5 @@ public class Windstride extends Spell {
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION * 20, SPEED_AMPLIFIER));
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
                 25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
-
-        // begin system to remove effects
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(),
-                () -> pl.sendMessage(ChatColor.GRAY + "The strength of the wind leaves you."), BUFF_DURATION * 20);
     }
 }

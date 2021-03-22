@@ -46,9 +46,9 @@ public class Frostbite extends Spell {
             if (b.getType() == Material.AIR) {
                 b.setType(Material.COBWEB);
                 pl.getWorld().spawnParticle(Particle.REDSTONE, lookLocBlock.getLocation(),
-                        25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 2));
+                        10, 0.75f, 0.75f, 0.75f, new Particle.DustOptions(Color.WHITE, 1));
                 pl.getWorld().spawnParticle(Particle.REDSTONE, lookLocBlock.getLocation(),
-                        25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 2));
+                        10, 0.75f, 0.75f, 0.75f, new Particle.DustOptions(Color.AQUA, 1));
                 blocksToRevert.add(b);
             }
         }
@@ -60,7 +60,7 @@ public class Frostbite extends Spell {
                     b.setType(Material.AIR);
                 }
             }
-        }.runTaskLater(RunicCore.getInstance(), DURATION * 20L); // todo: make this run before server shutdown? will it?
+        }.runTaskLater(RunicCore.getInstance(), DURATION * 20L);
     }
 
     /**

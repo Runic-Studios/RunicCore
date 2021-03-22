@@ -28,7 +28,7 @@ public class Judgment extends Spell {
 
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
-    private static final int SHIELD_AMT = 25;
+    private static final int SHIELD_AMT = 35;
     private static final int SHIELD_PERIOD = 2;
     private static final double UPDATES_PER_SECOND = 10;
     private final List<UUID> judgers;

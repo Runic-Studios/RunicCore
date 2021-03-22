@@ -137,6 +137,7 @@ public class SpellUseListener implements Listener {
     private void castSelectedSpell(Player pl, int number) {
         Spell spellToCast = RunicCoreAPI.getPlayerSpell(pl, number);
         if (spellToCast == null) return;
+        if (RunicCore.getSpellManager().isOnCooldown(pl, spellToCast.getName())) return;
         SpellCastEvent event = new SpellCastEvent(pl, spellToCast);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled() && event.willExecute())

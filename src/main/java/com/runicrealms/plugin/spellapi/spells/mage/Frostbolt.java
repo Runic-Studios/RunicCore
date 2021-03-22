@@ -22,23 +22,22 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Frostbolt extends Spell {
 
-    private static final double SPEED = 2;
     private static final int DAMAGE_AMT = 15;
+    private static final double SPEED_MULT = 2.5;
     private Snowball snowball;
 
     public Frostbolt() {
         super("Frostbolt",
-                "You launch a projectile bolt of ice" +
-                        "\nthat deals " + DAMAGE_AMT + " spellʔ damage on" +
-                        "\nimpact and slows its target!",
+                "You launch a projectile bolt of ice " +
+                        "that deals " + DAMAGE_AMT + " spellʔ damage on " +
+                        "impact and slows its target!",
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 20);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         snowball = player.launchProjectile(Snowball.class);
-        final Vector velocity = player.getLocation().getDirection().normalize().multiply(SPEED);
+        final Vector velocity = player.getLocation().getDirection().normalize().multiply(SPEED_MULT);
         snowball.setVelocity(velocity);
         snowball.setShooter(player);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);

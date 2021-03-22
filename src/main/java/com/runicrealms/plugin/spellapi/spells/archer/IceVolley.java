@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.TeleportUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
@@ -135,7 +134,7 @@ public class IceVolley extends Spell {
             if (verifyEnemy(player, en)) {
                 en.getWorld().playSound(en.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.0f);
                 en.getWorld().spawnParticle(Particle.SPELL_WITCH, en.getLocation(), 25, 0, 0, 0, 0);
-                TeleportUtil.teleportEntity(en, location);
+                en.teleport(location);
             }
         }
     }
