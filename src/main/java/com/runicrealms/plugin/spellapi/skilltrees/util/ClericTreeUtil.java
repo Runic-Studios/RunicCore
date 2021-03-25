@@ -32,7 +32,7 @@ public class ClericTreeUtil {
 
     public static List<Perk> exemplarList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(48, 1, 0, 1, "Smite")); // AoE, high damage, knockback? slow? silence?, travel on ground like rebuke?
+        perks.add(new PerkSpell(48, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(49, 1, 0, 5, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(50, 1, 0, 1, "Absolution")); // rejuvenate is now purify (white particles), also removes silences
         perks.add(new PerkBaseStat(51, 1, 0, 3, BaseStatEnum.VITALITY, 1));
@@ -41,9 +41,9 @@ public class ClericTreeUtil {
         perks.add(new PerkBaseStat(54, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(55, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(56, 1, 0, 5, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(57, 1, 0, 1, "Consecration")); // AoE, high dmg, slow. you take X% damage directed at allies who stand in the ring
+        perks.add(new PerkSpell(57, 1, 0, 1, "Consecration")); // AoE, med dmg, slow. you take X% damage directed at allies who stand in the ring
         perks.add(new PerkBaseStat(58, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(59, 1, 0, 1, "Righteous Blade")); // your melee attacks have X% chance to heal nearby allies
+        perks.add(new PerkSpell(59, 1, 0, 1, "Righteous Blade")); // your melee attacks have X% chance to heal yourself and nearby allies
         return perks;
     }
 

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Improvisation extends Spell {
 
     private static final int DURATION = 2;
-    private static final int PERCENT = 99;
+    private static final int PERCENT = 10;
     private static final int RADIUS = 10;
     private static final double PERCENT_DAMAGE = .45;
     private final HashSet<UUID> buffedPlayers;
@@ -28,7 +28,7 @@ public class Improvisation extends Spell {
         super ("Improvisation",
                 "Your melee weapon⚔ attacks have a " + PERCENT + "% chance " +
                         "to grant yourself and nearby allies within " + RADIUS + " " +
-                        "blocks a " + PERCENT_DAMAGE + "% weapon⚔ damage buff " +
+                        "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% weapon⚔ damage buff " +
                         "for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);

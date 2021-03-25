@@ -27,7 +27,7 @@ public class Rebuke extends Spell {
     public Rebuke() {
         super("Rebuke",
                 "You launch a ripple of magic, colliding with the first enemy hit, " +
-                        "dealing " + DAMAGE + "weapon⚔ damage, launching them into the " +
+                        "dealing " + DAMAGE + " weapon⚔ damage, launching them into the " +
                         "air, and slowing them for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
     }

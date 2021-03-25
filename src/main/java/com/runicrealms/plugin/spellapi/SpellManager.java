@@ -9,7 +9,6 @@ import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
-import com.runicrealms.plugin.spellapi.spells.runic.active.Bolt;
 import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -154,7 +153,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new PowerShot());
         this.spellList.add(new Smite());
         this.spellList.add(new ShadowBomb());
-        this.spellList.add(new Bolt());
         this.spellList.add(new Cleanse());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Shadowbolt());
