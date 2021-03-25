@@ -54,7 +54,7 @@ public class WeaponDamageEvent extends Event implements Cancellable {
         return this.entity;
     }
 
-    public boolean getIsAutoAttack() {
+    public boolean isAutoAttack() {
         return this.isAutoAttack;
     }
 

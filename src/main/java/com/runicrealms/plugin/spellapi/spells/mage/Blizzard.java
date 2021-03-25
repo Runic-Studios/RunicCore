@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -37,18 +36,6 @@ public class Blizzard extends Spell {
                         "to enemies and slowing them!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
         this.increaseDuration = false;
-        this.snowballMap = new HashMap<>();
-    }
-
-    public Blizzard(boolean increaseDuration) {
-        super("Blizzard",
-                "You summon a cloud of snow that" +
-                        "\nrains down snowballs for " + DURATION + " seconds," +
-                        "\neach dealing " + DAMAGE_AMOUNT + " spellʔ damage" +
-                        "\nto enemies and slowing them!" +
-                        "\n" + ChatColor.DARK_RED + "Gem Bonus: 50%",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
-        this.increaseDuration = increaseDuration;
         this.snowballMap = new HashMap<>();
     }
 
@@ -120,10 +107,6 @@ public class Blizzard extends Spell {
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, 100);
             victim.setLastDamageCause(e);
             le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
-            if (increaseDuration) {
-                Fireball.getChilledPlayers().put(victim.getUniqueId(), Cone.coneEffect(victim, Particle.REDSTONE, Fireball.getChillDuration(), 0, 20L, Color.AQUA));
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> Fireball.getChilledPlayers().remove(victim.getUniqueId()), Fireball.getChillDuration() * 20L);
-            }
         }
     }
 

@@ -4,21 +4,17 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-
-import java.util.Map;
-import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Fireball extends Spell {
@@ -28,20 +24,17 @@ public class Fireball extends Spell {
     private final boolean iceBolt;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 25;
-    private static final int CHILL_DURATION = 8;
-    private static final int FREEZE_DURATION = 4;
 
     private SmallFireball fireball;
     private SmallFireball fireballLeft;
     private SmallFireball fireballRight;
     private Snowball snowball;
-    private static Map<UUID, BukkitTask> chilledPlayers;
 
     public Fireball() {
         super ("Fireball",
-                "You launch a projectile fireball" +
-                        "\nthat deals " + DAMAGE_AMOUNT + " spellʔ damage on" +
-                        "\nimpact!",
+                "You launch a projectile fireball " +
+                        "that deals " + DAMAGE_AMOUNT + " spellʔ damage on " +
+                        "impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
         fireCone = false;
         applyBurn = false;
@@ -96,17 +89,6 @@ public class Fireball extends Spell {
                 DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, 100);
                 victim.getWorld().spawnParticle(Particle.SNOWBALL, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                if (!chilledPlayers.containsKey(victim.getUniqueId())) {
-                    chilledPlayers.put(victim.getUniqueId(), Cone.coneEffect(victim, Particle.REDSTONE, CHILL_DURATION, 0, 20L, Color.AQUA));
-                    victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHILL_DURATION * 20, 2));
-                    Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> chilledPlayers.remove(victim.getUniqueId()), CHILL_DURATION * 20L);
-                } else {
-                    chilledPlayers.get(victim.getUniqueId()).cancel(); // cancel particle task
-                    chilledPlayers.remove(victim.getUniqueId());
-                    Location toBeTrapped = victim.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
-                    //trapEntity(toBeTrapped, Material.ICE, FREEZE_DURATION);
-                    Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> victim.teleport(toBeTrapped), 2L);
-                }
             }
             return;
         }
@@ -146,18 +128,6 @@ public class Fireball extends Spell {
                 }, 20L);
             }
         }
-    }
-
-    public static int getChillDuration() {
-        return CHILL_DURATION;
-    }
-
-    public static int getFreezeDuration() {
-        return FREEZE_DURATION;
-    }
-
-    public static Map<UUID, BukkitTask> getChilledPlayers() {
-        return chilledPlayers;
     }
 }
 

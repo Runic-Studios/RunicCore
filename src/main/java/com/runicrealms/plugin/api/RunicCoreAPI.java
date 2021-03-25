@@ -42,7 +42,7 @@ public class RunicCoreAPI {
      */
     public static boolean isCasting(Player player) {
         // determine whether player is casting
-        return SpellUseListener.getCasters().contains(player.getUniqueId());
+        return SpellUseListener.getCasters().containsKey(player.getUniqueId());
     }
 
     /**

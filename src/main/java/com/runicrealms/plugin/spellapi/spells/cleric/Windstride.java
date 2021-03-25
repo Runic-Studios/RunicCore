@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -9,7 +8,6 @@ import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -17,46 +15,24 @@ import org.bukkit.potion.PotionEffectType;
 @SuppressWarnings("FieldCanBeLocal")
 public class Windstride extends Spell {
 
-    // globals
     private static final int BUFF_DURATION = 10;
     private static final int SPEED_AMPLIFIER = 2;
     private static final int RADIUS = 10;
 
-    // constructor
     public Windstride() {
         super("Windstride",
-                "For " + BUFF_DURATION + " seconds, you grant a massive" +
-                        "\nspeed boost to yourself and all" +
-                        "\nallies within " + RADIUS + " blocks!",
+                "For " + BUFF_DURATION + "s, you grant a massive " +
+                        "speed boost to yourself and all " +
+                        "allies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 20, 15);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
-
-        // apply the spell effects
         applySpell(pl);
-
-        // if the user has a party, each party member gets the effects as well.
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-
-            for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-
-                if (!(en instanceof LivingEntity)) continue;
-                LivingEntity le = (LivingEntity) en;
-
-                // skip our player, skip non-player entities
-                if (le == pl)  continue;
-
-                if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-                    if (le instanceof Player) {
-                        if (RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) le)) {
-                            applySpell((Player) le);
-                        }
-                    }
-                }
-            }
+        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!verifyAlly(pl, en)) continue;
+            applySpell((Player) en);
         }
     }
 

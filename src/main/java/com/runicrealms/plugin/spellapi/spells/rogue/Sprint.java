@@ -37,14 +37,6 @@ public class Sprint extends Spell {
         flame = false;
     }
 
-    public Sprint(boolean flame) {
-        super("Sprint",
-                "For " + DURATION + " seconds, you gain a" +
-                        "\nmassive boost of speed!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 10, 10);
-        this.flame = flame;
-    }
-
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {

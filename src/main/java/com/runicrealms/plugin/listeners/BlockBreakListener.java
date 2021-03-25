@@ -83,10 +83,6 @@ public class BlockBreakListener implements Listener {
                 e.setCancelled(false);
                 break;
         }
-
-        if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            e.setCancelled(true);
-        }
     }
 
     /**

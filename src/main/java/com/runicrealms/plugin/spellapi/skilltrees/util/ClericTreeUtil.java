@@ -10,16 +10,16 @@ import java.util.List;
 
 public class ClericTreeUtil {
 
-    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, "Cleric");
+    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, "Rejuvenate");
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(36, 1, 0, 1, "Spellsong")); // only spell damage
+        perks.add(new PerkSpell(36, 1, 0, 1, "Spellsong"));
         perks.add(new PerkBaseStat(37, 1, 0, 5, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(38, 1, 0, 1, "Improvisation")); // melee attacks X% chance to buff nearby allies weapon damage
+        perks.add(new PerkSpell(38, 1, 0, 1, "Improvisation"));
         perks.add(new PerkBaseStat(39, 1, 0, 3, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkBaseStat(40, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(41, 1, 0, 1, "Windstride")); // todo, buff
+        perks.add(new PerkSpell(41, 1, 0, 1, "Windstride"));
         perks.add(new PerkBaseStat(42, 1, 0, 3, BaseStatEnum.DEXTERITY, 1));
         perks.add(new PerkBaseStat(43, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(44, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));

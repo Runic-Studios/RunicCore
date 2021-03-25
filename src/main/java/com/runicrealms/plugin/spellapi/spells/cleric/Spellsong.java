@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -27,26 +27,14 @@ public class Spellsong extends Spell {
 
     public Spellsong() {
         super("Spellsong",
-                "You sing a song of battle, granting a buff" +
-                        "\nto all party members within " + RADIUS + " blocks!" +
-                        "\nFor " + DURATION + " seconds, the buff increases the" +
-                        "\nweapon⚔ damage of you and your allies" +
-                        "\nby " + (int) PERCENT + "%!",
+                "You sing a song of battle, granting a buff " +
+                        "to all allies within " + RADIUS + " blocks! " +
+                        "For " + DURATION + "s, the buff increases the " +
+                        "spellʔ damage of you and your allies " +
+                        "by " + (int) PERCENT + "%!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
         singers = new ArrayList<>();
         this.bonus = 0;
-    }
-
-    public Spellsong(int bonus) {
-        super("Warsong",
-                "You sing a song of battle, granting a buff" +
-                        "\nto all party members within " + RADIUS + " blocks!" +
-                        "\nFor " + DURATION + " seconds, the buff increases the" +
-                        "\nweapon⚔ damage of you and your allies" +
-                        "\nby " + (int) PERCENT + "%!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
-        singers = new ArrayList<>();
-        this.bonus = bonus;
     }
 
     // spell execute code
@@ -54,11 +42,7 @@ public class Spellsong extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 2.0F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.2F);
-        pl.getWorld().spawnParticle
-                (Particle.NOTE, pl.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
+        startParticleTask(pl);
 
         // buff caster
         singers.add(pl.getUniqueId());
@@ -76,11 +60,30 @@ public class Spellsong extends Spell {
             public void run() {
                 singers.clear();
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION * 20L);
+    }
+
+    private void startParticleTask(Player pl) {
+        new BukkitRunnable() {
+            int count = 1;
+            @Override
+            public void run() {
+                if (count > DURATION) {
+                    this.cancel();
+                    return;
+                }
+                count++;
+                pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
+                pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
+                pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.2F);
+                pl.getWorld().spawnParticle
+                        (Particle.NOTE, pl.getEyeLocation(), 15, 0.75F, 0.75F, 0.75F, 0);
+            }
+        }.runTaskTimer(plugin, 0, 20L);
     }
 
     @EventHandler
-    public void onArtfactHit(WeaponDamageEvent e) {
+    public void onSpellHit(SpellDamageEvent e) {
 
         Player damager = e.getPlayer();
         if (singers == null) return;
@@ -88,9 +91,7 @@ public class Spellsong extends Spell {
 
         double percent = (PERCENT + bonus) / 100;
         int extraAmt = (int) (e.getAmount() * percent);
-        if (extraAmt < 1) {
-            extraAmt = 1;
-        }
+        if (extraAmt < 1) extraAmt = 1;
         e.setAmount(e.getAmount() + extraAmt);
         damager.getWorld().playSound(damager.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
         e.getEntity().getWorld().spawnParticle

@@ -18,8 +18,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class SpellUseListener implements Listener {
@@ -27,7 +29,7 @@ public class SpellUseListener implements Listener {
     private static final int SPELL_TIMEOUT = 5;
     private static final String ACTIVATE_RIGHT = "R";
     private static final String ACTIVATE_LEFT = "L";
-    private static final HashSet<UUID> casters = new HashSet<>();
+    private static final HashMap<UUID, BukkitTask> casters = new HashMap<>();
 
     enum ClickType {
         LEFT,
@@ -58,25 +60,38 @@ public class SpellUseListener implements Listener {
      * @param isArcher whether to flip UI for archer
      */
     private void activateSpellMode(Player pl, ClickType clickType, int whichSpellToCast, boolean isArcher) {
-        if (!casters.contains(pl.getUniqueId())) {
+        if (!casters.containsKey(pl.getUniqueId())) {
             if (clickType != ClickType.LEFT && isArcher) return;
             if (clickType != ClickType.RIGHT && !isArcher) return;
-            casters.add(pl.getUniqueId());
+            casters.put(pl.getUniqueId(), castTimeoutTask(pl));
             String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
             pl.sendTitle
                     (
                             "", ChatColor.LIGHT_PURPLE + prefix +
                                     " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
                     );
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> casters.remove(pl.getUniqueId()), SPELL_TIMEOUT * 20);
         } else {
             castSpell(pl, whichSpellToCast, RunicCoreAPI.getPlayerClass(pl).equals("archer"));
         }
     }
 
+    /**
+     * Fixes a bug where timeout task wouldn't cancel on spell cast
+     * @param pl player to begin timeout task for
+     * @return a task to be cancelled if they cast
+     */
+    private BukkitTask castTimeoutTask(Player pl) {
+        return  new BukkitRunnable() {
+            @Override
+            public void run() {
+                casters.remove(pl.getUniqueId());
+            }
+        }.runTaskLater(RunicCore.getInstance(), SPELL_TIMEOUT * 20L);
+    }
+
     @EventHandler
     public void onSpellCast(PlayerItemHeldEvent e) {
-        if (!casters.contains(e.getPlayer().getUniqueId())) return;
+        if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
         if (e.getNewSlot() != 0) return;
         e.setCancelled(true);
         castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
@@ -84,7 +99,7 @@ public class SpellUseListener implements Listener {
 
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
-        if (!casters.contains(e.getPlayer().getUniqueId())) return;
+        if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
         castSpell(e.getPlayer(), 4, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
     }
 
@@ -94,6 +109,7 @@ public class SpellUseListener implements Listener {
      * @param number which spell to execute (1, 2, 3, 4)
      */
     private void castSpell(Player pl, int number, boolean isArcher) {
+        casters.get(pl.getUniqueId()).cancel(); // cancel timeout task
         casters.remove(pl.getUniqueId());
         String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
         pl.sendTitle
@@ -144,7 +160,7 @@ public class SpellUseListener implements Listener {
             event.getSpellCasted().execute(pl, SpellItemType.ARTIFACT);
     }
 
-    public static HashSet<UUID> getCasters() {
+    public static HashMap<UUID, BukkitTask> getCasters() {
         return casters;
     }
 }

@@ -32,16 +32,6 @@ public class Slam extends Spell {
         ignite = false;
     }
 
-    public Slam(boolean ignite) {
-        super("Slam",
-                "You charge fearlessly into the air!" +
-                        "\nUpon hitting the ground, you deal " +
-                        "\n" + DAMAGE_AMT + " weapon⚔ damage to enemies within" +
-                        "\n" + RADIUS + " blocks and knock them up!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
-        this.ignite = ignite;
-    }
-
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 

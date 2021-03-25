@@ -74,7 +74,7 @@ public class Enrage extends Spell {
     @EventHandler
     public void onSuccessfulHit(WeaponDamageEvent e) {
 
-        if (!e.getIsAutoAttack()) return;
+        if (!e.isAutoAttack()) return;
         if (!ragers.contains(e.getPlayer().getUniqueId())) return;
         if(e.isCancelled()) return;
 

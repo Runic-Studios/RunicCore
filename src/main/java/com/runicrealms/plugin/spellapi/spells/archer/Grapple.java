@@ -78,7 +78,6 @@ public class Grapple extends Spell {
                             @Override
                             public void run() {
                                 safefall.remove(uuid);
-                                pl.sendMessage(ChatColor.GRAY + "You lost safefall!");
                             }
                         }.runTaskLater(RunicCore.getInstance(), 40);
                     }

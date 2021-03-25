@@ -29,7 +29,7 @@ public class Cleave extends Spell {
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!Enrage.getRagers().contains(e.getPlayer().getUniqueId())) return;
-        if (!e.getIsAutoAttack()) return; // only listen for basic attacks
+        if (!e.isAutoAttack()) return; // only listen for basic attacks
         // aoe
         Player pl = e.getPlayer();
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {

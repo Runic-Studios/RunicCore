@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -20,35 +19,22 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Rejuvenate extends Spell {
 
-    private final boolean healOverTime;
-    private static final int HOT_DURATION = 5; // heal-over-time
-    private final HashMap<UUID, List<UUID>> hasBeenHit;
     private static final int HEAL_AMT = 45;
+    private static final int RANGE = 15;
+    private static final int BEAM_SPEED = 3;
     private final double RADIUS = 1.5;
-    private final int RANGE = 15;
-    private final int SPEED = 3;
+    private final HashMap<UUID, List<UUID>> hasBeenHit;
 
     // in seconds
     private final int SUCCESSIVE_COOLDOWN = 2;
 
     public Rejuvenate() {
         super("Rejuvenate",
-                "You launch a beam of healing magic," +
-                "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
-                "\nall allies it passes through!",
+                "You launch a beam of healing magic, " +
+                "restoring✦ " + HEAL_AMT + " health to yourself and " +
+                "all allies it passes through!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
         this.hasBeenHit = new HashMap<>();
-        this.healOverTime = false;
-    }
-
-    public Rejuvenate(boolean healOverTime) {
-        super("Rejuvenate",
-                "You launch a beam of healing magic," +
-                        "\nrestoring✦ " + HEAL_AMT + " health to yourself and" +
-                        "\nall allies it passes through!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
-        this.hasBeenHit = new HashMap<>();
-        this.healOverTime = healOverTime;
     }
 
     // spell execute code
@@ -59,28 +45,12 @@ public class Rejuvenate extends Spell {
 
         // heal the caster
         HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
-        if (healOverTime) {
-            new BukkitRunnable() {
-                int count = 1;
-
-                @Override
-                public void run() {
-                    if (count > HOT_DURATION)
-                        this.cancel();
-                    else {
-                        count += 1;
-                        HealUtil.healPlayer((HEAL_AMT + GearScanner.getHealingBoost(pl)) / HOT_DURATION,
-                                pl, pl, false, false, false);
-                    }
-                }
-            }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
-        }
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
 
         // particle effect, spell effects
-        Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(SPEED);
+        Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
         startTask(pl, new Vector[]{middle});
     }
 
@@ -148,31 +118,10 @@ public class Rejuvenate extends Spell {
                     HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
                     pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
 
-                    if (healOverTime) {
-                        new BukkitRunnable() {
-                            int count = 1;
-
-                            @Override
-                            public void run() {
-                                if (count > HOT_DURATION)
-                                    this.cancel();
-                                else {
-                                    count += 1;
-                                    HealUtil.healPlayer((HEAL_AMT + GearScanner.getHealingBoost(pl)) / HOT_DURATION,
-                                            ally, pl, false, false, false);
-                                }
-                            }
-                        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
-                    }
-
                     // stop the beam if it hits a player
                     break;
                 }
             }
         }
-    }
-
-    public static int getHotDuration() {
-        return HOT_DURATION;
     }
 }
