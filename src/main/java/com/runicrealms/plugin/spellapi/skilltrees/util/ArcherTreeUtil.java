@@ -25,7 +25,7 @@ public class ArcherTreeUtil {
         perks.add(new PerkSpell(8, 1, 0, 1, "Kill Shot"));
         perks.add(new PerkBaseStat(9, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(10, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(11, 1, 0, 1, "Ranger's Focus")); // Landing X consecutive attacks on the same target w/o swapping deals an addtional Y damage
+        perks.add(new PerkSpell(11, 1, 0, 1, "Ranger's Focus")); // todo: change Landing X consecutive attacks on the same target w/o swapping deals an addtional Y damage
         return perks;
     }
 

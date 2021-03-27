@@ -5,10 +5,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,15 +44,17 @@ public class Discord extends Spell {
     }
 
     private void summonLightning(LivingEntity livingEntity, boolean spawnBoltAtEntity) {
+        int particleAmount;
         Location boltLoc;
-        if (spawnBoltAtEntity)
+        if (spawnBoltAtEntity) {
+            particleAmount = 5;
             boltLoc = livingEntity.getEyeLocation();
-        else
-            boltLoc = livingEntity.getTargetBlock(null, MAX_DIST).getLocation();
-        //livingEntity.getWorld().spigot().strikeLightning(boltLoc);
-        boltLoc.getWorld().strikeLightning(boltLoc);
-        // livingEntity.getWorld().spigot().strikeLightningEffect(boltLoc, true);
-        //livingEntity.getWorld().strikeLightning(boltLoc, false);
+        } else {
+            particleAmount = 25;
+            boltLoc = livingEntity.getTargetBlock(null, MAX_DIST).getRelative(BlockFace.UP).getLocation();
+        }
+        livingEntity.getWorld().spigot().strikeLightningEffect(boltLoc, true);
+        livingEntity.getWorld().spawnParticle(Particle.CRIT_MAGIC, boltLoc, particleAmount, 0.3f, 0.3f, 0.3f, 0);
         livingEntity.getWorld().playSound(boltLoc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 1.0f);
     }
 }

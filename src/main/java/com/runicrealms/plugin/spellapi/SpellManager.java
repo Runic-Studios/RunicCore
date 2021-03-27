@@ -196,6 +196,10 @@ public class SpellManager implements Listener {
         this.spellList.add(new DivineShield());
         this.spellList.add(new Improvisation());
         this.spellList.add(new Discord());
+        this.spellList.add(new Repent());
+        this.spellList.add(new Dissonance());
+        this.spellList.add(new Absolution());
+        this.spellList.add(new Purify());
     }
 
     // starts the repeating task to manage player cooldowns
