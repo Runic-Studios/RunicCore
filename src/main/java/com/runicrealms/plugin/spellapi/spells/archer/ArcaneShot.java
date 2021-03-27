@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -30,7 +29,7 @@ public class ArcaneShot extends Spell {
                         "\ndeals " + DAMAGE + " spellʔ damage to its" +
                         "\ntarget and silences it for " + DURATION +
                         "\nseconds, preventing it from" +
-                        "\ndealing damage!",
+                        "\nhealing or dealing damage!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 12, 25);
     }
 
@@ -77,14 +76,5 @@ public class ArcaneShot extends Spell {
 
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, 0.5f, 2.0f);
-    }
-
-    @EventHandler
-    public void onSpellHeal(SpellHealEvent e) {
-        if (RunicCore.getSpellManager().getSilencedEntities().contains(e.getEntity().getUniqueId())) {
-            double percent = PERCENT/100;
-            int newAmt = (int) (e.getAmount()*percent);
-            e.setAmount(newAmt);
-        }
     }
 }

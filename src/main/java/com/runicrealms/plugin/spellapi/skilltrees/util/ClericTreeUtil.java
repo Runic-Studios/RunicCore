@@ -26,7 +26,6 @@ public class ClericTreeUtil {
         perks.add(new PerkSpell(45, 1, 0, 1, "Discord"));
         perks.add(new PerkBaseStat(46, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(47, 1, 0, 1, "Dissonance"));
-        // against monsters, chance to silence them.
         return perks;
     }
 
@@ -34,7 +33,7 @@ public class ClericTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(48, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(49, 1, 0, 5, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(50, 1, 0, 1, "Absolution")); // ?
+        perks.add(new PerkSpell(50, 1, 0, 1, "Absolution"));
         perks.add(new PerkBaseStat(51, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(52, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkSpell(53, 1, 0, 1, "Repent")); // stun like pyro fire blast

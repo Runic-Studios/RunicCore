@@ -115,8 +115,10 @@ public class Purify extends Spell {
                 } else {
                     HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
                     pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-                    if (RunicCoreAPI.isSilenced(ally))
+                    if (RunicCoreAPI.isSilenced(ally)) {
+                        RunicCore.getSpellManager().getSilencedEntities().get(ally.getUniqueId()).cancel(); // fixes bugs
                         RunicCore.getSpellManager().getSilencedEntities().remove(ally.getUniqueId());
+                    }
                     // stop the beam if it hits a player
                     break;
                 }

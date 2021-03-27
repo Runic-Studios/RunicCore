@@ -46,12 +46,12 @@ public class RunicCoreAPI {
     }
 
     /**
-     *
-     * @param entity
-     * @return
+     * Checks whether an entity is silenced.
+     * @param entity to check
+     * @return true if silenced
      */
     public static boolean isSilenced(Entity entity) {
-        return RunicCore.getSpellManager().getSilencedEntities().contains(entity.getUniqueId());
+        return RunicCore.getSpellManager().getSilencedEntities().containsKey(entity.getUniqueId());
     }
 
     /**

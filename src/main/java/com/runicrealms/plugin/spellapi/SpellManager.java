@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
@@ -21,9 +22,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,15 +34,15 @@ public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
-    private final HashSet<UUID> silencedEntities;
-    private final HashSet<UUID> stunnedEntities;
+    private final HashMap<UUID, BukkitTask> silencedEntities;
+    private final HashMap<UUID, BukkitTask> stunnedEntities;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldown = new ConcurrentHashMap<>();
-        this.silencedEntities = new HashSet<>();
-        this.stunnedEntities = new HashSet<>();
+        this.silencedEntities = new HashMap<>();
+        this.stunnedEntities = new HashMap<>();
         this.registerSpells();
         this.startCooldownTask();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -50,11 +52,11 @@ public class SpellManager implements Listener {
         return this.spellList;
     }
 
-    public HashSet<UUID> getStunnedEntities() {
+    public HashMap<UUID, BukkitTask> getStunnedEntities() {
         return stunnedEntities;
     }
 
-    public HashSet<UUID> getSilencedEntities() {
+    public HashMap<UUID, BukkitTask> getSilencedEntities() {
         return silencedEntities;
     }
 
@@ -229,26 +231,32 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
-        if (silencedEntities.contains(e.getDamager().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        if (silencedEntities.contains(e.getPlayer().getUniqueId()))
+        if (silencedEntities.containsKey(e.getDamager().getUniqueId()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (silencedEntities.contains(e.getPlayer().getUniqueId()))
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onSpellHeal(SpellHealEvent e) {
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
         if (stunnedEntities.isEmpty()) return;
-        if (!stunnedEntities.contains(e.getPlayer().getUniqueId())) return;
+        if (!stunnedEntities.containsKey(e.getPlayer().getUniqueId())) return;
         if (e.getTo() == null) return;
         if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
     }
