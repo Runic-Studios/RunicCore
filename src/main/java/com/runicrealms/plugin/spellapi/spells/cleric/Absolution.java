@@ -10,9 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-/**
- * Logic for hit found in Fireball.
- */
 public class Absolution extends Spell {
 
     public Absolution() {

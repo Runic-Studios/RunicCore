@@ -202,6 +202,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Dissonance());
         this.spellList.add(new Absolution());
         this.spellList.add(new Purify());
+        this.spellList.add(new RighteousBlade());
     }
 
     // starts the repeating task to manage player cooldowns
