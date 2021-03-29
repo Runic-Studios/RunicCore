@@ -85,6 +85,10 @@ public class ScoreboardHandler implements Listener {
         health.setScore(2);
         Score mana = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(manaAsString(pl));
         mana.setScore(1);
+        if (!shieldAsString(pl).equals("")) {
+            Score shield = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(shieldAsString(pl));
+            shield.setScore(0);
+        }
     }
 
     private void updatePlayerInfo(Player pl) {
@@ -113,6 +117,16 @@ public class ScoreboardHandler implements Listener {
         int mana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
+    }
+
+    private String shieldAsString(Player player) {
+        double shield;
+        try {
+            shield = RunicCore.getCombatManager().getShieldedPlayers().get(player.getUniqueId());
+        } catch (NullPointerException e) {
+            return "";
+        }
+        return ChatColor.WHITE + "■ " + (int) shield + " (Shield)";
     }
 
     private String playerClass(Player pl) {

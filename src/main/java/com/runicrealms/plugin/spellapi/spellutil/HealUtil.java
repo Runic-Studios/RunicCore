@@ -5,13 +5,10 @@ import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class HealUtil  {
 
@@ -113,8 +110,6 @@ public class HealUtil  {
         HologramUtil.createShieldHologram(recipient, recipient.getLocation().add(0, 1.5, 0), shieldAmt);
         recipient.playSound(recipient.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 0.5f);
         recipient.getWorld().spawnParticle(Particle.SPELL_INSTANT, recipient.getEyeLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
-        recipient.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, (int) (999 * 20L), 1));
-        recipient.sendMessage(ChatColor.GREEN + "You are now shielded■ for " + ChatColor.WHITE + (int) shieldAmt + ChatColor.GREEN + " health!"); // todo: remove in damage listener
 
         // call a new health regen event to communicate with all the other events that depend on this.
         //Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, shieldAmt, EntityRegainHealthEvent.RegainReas on.CUSTOM));
