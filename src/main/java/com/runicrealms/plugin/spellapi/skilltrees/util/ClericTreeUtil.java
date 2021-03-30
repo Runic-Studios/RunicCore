@@ -36,13 +36,13 @@ public class ClericTreeUtil {
         perks.add(new PerkSpell(50, 1, 0, 1, "Absolution"));
         perks.add(new PerkBaseStat(51, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(52, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(53, 1, 0, 1, "Repent")); // stun like pyro fire blast
+        perks.add(new PerkSpell(53, 1, 0, 1, "Consecration"));
         perks.add(new PerkBaseStat(54, 1, 0, 3, BaseStatEnum.VITALITY, 1));
         perks.add(new PerkBaseStat(55, 1, 0, 3, BaseStatEnum.WISDOM, 1));
         perks.add(new PerkBaseStat(56, 1, 0, 5, BaseStatEnum.VITALITY, 1));
-        perks.add(new PerkSpell(57, 1, 0, 1, "Consecration")); // AoE, med dmg, slow.
+        perks.add(new PerkSpell(57, 1, 0, 1, "Ray of Light"));
         perks.add(new PerkBaseStat(58, 1, 0, 3, BaseStatEnum.WISDOM, 1));
-        perks.add(new PerkSpell(59, 1, 0, 1, "Righteous Blade")); // ?
+        perks.add(new PerkSpell(59, 1, 0, 1, "Righteous Blade"));
         return perks;
     }
 

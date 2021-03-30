@@ -198,11 +198,12 @@ public class SpellManager implements Listener {
         this.spellList.add(new DivineShield());
         this.spellList.add(new Improvisation());
         this.spellList.add(new Discord());
-        this.spellList.add(new Repent());
+        this.spellList.add(new RayOfLight());
         this.spellList.add(new Dissonance());
         this.spellList.add(new Absolution());
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
+        this.spellList.add(new Consecration());
     }
 
     // starts the repeating task to manage player cooldowns
@@ -232,25 +233,29 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
-        if (silencedEntities.containsKey(e.getDamager().getUniqueId()))
+        if (silencedEntities.containsKey(e.getDamager().getUniqueId())
+                || stunnedEntities.containsKey(e.getDamager().getUniqueId()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId()))
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onSpellHeal(SpellHealEvent e) {
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId()))
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId()))
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
     }
 
