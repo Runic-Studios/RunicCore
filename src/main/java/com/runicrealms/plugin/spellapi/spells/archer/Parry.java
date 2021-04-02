@@ -32,7 +32,8 @@ public class Parry extends Spell {
         super("Parry",
                 "You launch yourself backwards in the air, " +
                         "shooting a flurry of five arrows in front " +
-                        "of you, each dealing " + DAMAGE + " weapon⚔ damage!",
+                        "of you, each dealing " + DAMAGE + " weapon⚔ " +
+                        "damage!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 8, 15);
         parryArrows = new ArrayList<>();
         hasBeenHit = new HashSet<>();

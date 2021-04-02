@@ -2,8 +2,11 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
@@ -16,90 +19,67 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class PowerShot extends Spell {
 
-    private final boolean doExplosion;
-    private final boolean spreadArrows;
     private static final int DAMAGE = 50;
-    private static final int RADIUS = 3;
-    private final List<Arrow> searingArrows;
-    private final HashSet<UUID> hasBeenHit;
+    private static final int DURATION = 4;
+    private static final double PERCENT_INCREASE = .25;
+    private final List<Arrow> powerShots;
+    private static final HashMap<UUID, UUID> markedEntities = new HashMap<>();
 
     public PowerShot() {
         super("Power Shot",
-                "You launch an enchanted, flaming arrow" +
-                "\nwhich deals " + DAMAGE + " spellʔ damage on-hit!",
+                "You launch an enchanted arrow which " +
+                        "deals " + DAMAGE + " spellʔ damage on-hit! " +
+                        "For " + DURATION + "s, the enemy is afflicted " +
+                        "with &aHunter's Mark&7, increasing all damage you " +
+                        "deal to them by " + (int) (PERCENT_INCREASE * 100) + "%!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
-        searingArrows = new ArrayList<>();
-        hasBeenHit = new HashSet<>();
-        doExplosion = false;
-        spreadArrows = false;
+        powerShots = new ArrayList<>();
     }
 
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
-
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1f);
         pl.getWorld().playSound(pl.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
-
         Vector vec = pl.getEyeLocation().getDirection().normalize().multiply(2);
-        Vector left = rotateVectorAroundY(vec, -22.5);
-        Vector leftMid = rotateVectorAroundY(vec, -11.25);
-        Vector rightMid = rotateVectorAroundY(vec, 11.25);
-        Vector right = rotateVectorAroundY(vec, 22.5);
-
-        if (spreadArrows) {
-            startTask(pl, new Vector[]{vec, left, leftMid, rightMid, right});
-        } else {
-            startTask(pl, new Vector[]{vec});
-        }
+        startTask(pl, vec);
     }
 
-    private void startTask(Player pl, Vector[] vectors) {
-        for (Vector vector : vectors) {
-            Arrow searing = pl.launchProjectile(Arrow.class);
-            searing.setVelocity(vector);
-            searing.setShooter(pl);
-            searingArrows.add(searing);
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Location arrowLoc = searing.getLocation();
-                    searing.getWorld().spawnParticle(Particle.FLAME, arrowLoc,
-                            10, 0, 0, 0, 0);
-                    if (searing.isDead() || searing.isOnGround()) {
-                        this.cancel();
-                        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
-                        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
-                        searing.getWorld().spawnParticle(Particle.LAVA, arrowLoc, 10, 0, 0, 0, 0);
-                    }
+    private void startTask(Player pl, Vector vector) {
+        Arrow powerShot = pl.launchProjectile(Arrow.class);
+        powerShot.setVelocity(vector);
+        powerShot.setShooter(pl);
+        powerShots.add(powerShot);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location arrowLoc = powerShot.getLocation();
+                powerShot.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc,
+                        10, 0, 0, 0, 0);
+                if (powerShot.isDead() || powerShot.isOnGround()) {
+                    this.cancel();
+                    pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
+                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
+                    powerShot.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 25, 0.5f, 0.5f, 0.5f, 0);
                 }
-            }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
-        }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
     }
 
 
     @EventHandler
     public void onSearingArrowHit(EntityDamageByEntityEvent e) {
 
-        // only listen for arrows
-        if (!(e.getDamager() instanceof Arrow)) {
-            return;
-        }
-
-        // listen for player fired arrow
+        if (!(e.getDamager() instanceof Arrow)) return;
         Arrow arrow = (Arrow) e.getDamager();
-        if (!(arrow.getShooter() instanceof Player)) {
-            return;
-        }
-
-        // deal magic damage if arrow in in the barrage hashmap
-        if (!searingArrows.contains(arrow)) return;
+        if (!(arrow.getShooter() instanceof Player)) return;
+        if (!powerShots.contains(arrow)) return;
 
         e.setCancelled(true);
 
@@ -108,28 +88,31 @@ public class PowerShot extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        if (verifyEnemy(pl, le) && !hasBeenHit.contains(le.getUniqueId())) {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(le.getUniqueId()), 20L);
+        if (verifyEnemy(pl, le)) {
             DamageUtil.damageEntitySpell(DAMAGE, le, pl, 100);
-
-            if (doExplosion) {
-
-                // hit them baddies
-                for (Entity en : arrow.getWorld().getNearbyEntities(arrow.getLocation(), RADIUS, RADIUS, RADIUS)) {
-                    if (en.equals(le)) continue; // skip original target
-                    if (verifyEnemy(pl, en) && !hasBeenHit.contains(en.getUniqueId())) {
-                        hasBeenHit.add(en.getUniqueId()); // prevent multiple explosions on single target
-                        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(en.getUniqueId()), 20L);
-                        en.getWorld().playSound(en.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
-                        en.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, en.getLocation(), 10, 0, 0, 0, 0);
-                        DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, 100);
-                    }
-                }
-            }
+            markedEntities.put(pl.getUniqueId(), le.getUniqueId());
+            Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> markedEntities.remove(le.getUniqueId()), DURATION * 20L);
         }
     }
 
-    public static int getRadius() {
-        return RADIUS;
+    @EventHandler
+    public void onSpellDamage(SpellDamageEvent e) {
+        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
+    }
+
+    @EventHandler
+    public void onWeaponDamage(WeaponDamageEvent e) {
+        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
+    }
+
+    private double huntersMarkDamage(Player caster, Entity victim, double eventDamage) {
+        if (!markedEntities.containsKey(caster.getUniqueId())) return eventDamage;
+        if (markedEntities.get(caster.getUniqueId()) != victim.getUniqueId()) return eventDamage;
+        return eventDamage + (eventDamage * PERCENT_INCREASE);
+    }
+
+    public static HashMap<UUID, UUID> huntersMarkMap() {
+        return markedEntities;
     }
 }

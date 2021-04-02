@@ -28,18 +28,18 @@ public class Hawkeye extends Spell {
     }
 
     @EventHandler
-    public void onNauseaHit(SpellDamageEvent e) {
+    public void onRangedHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        e.setAmount(applyNausea(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount(hawkeyeHit(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
     @EventHandler
-    public void onNauseaHit(WeaponDamageEvent e) {
+    public void onRangedHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        e.setAmount(applyNausea(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount(hawkeyeHit(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
-    private int applyNausea(Player pl, Entity en, int originalAmt) {
+    private int hawkeyeHit(Player pl, Entity en, int originalAmt) {
 
         int distance = (int) pl.getLocation().distance(en.getLocation());
         if (distance < DISTANCE) return originalAmt;
