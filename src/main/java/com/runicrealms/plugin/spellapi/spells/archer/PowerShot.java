@@ -92,7 +92,7 @@ public class PowerShot extends Spell {
             DamageUtil.damageEntitySpell(DAMAGE, le, pl, 100);
             markedEntities.put(pl.getUniqueId(), le.getUniqueId());
             Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> markedEntities.remove(le.getUniqueId()), DURATION * 20L);
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> markedEntities.remove(pl.getUniqueId()), DURATION * 20L);
         }
     }
 
