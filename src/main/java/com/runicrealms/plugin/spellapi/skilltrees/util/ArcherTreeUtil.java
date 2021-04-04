@@ -31,12 +31,12 @@ public class ArcherTreeUtil {
 
     public static List<Perk> scoutPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(12, 1, 0, 1, "Grapple")); // affect against enemy?
+        perks.add(new PerkSpell(12, 1, 0, 1, "Grapple"));
         perks.add(new PerkBaseStat(13, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
-        perks.add(new PerkSpell(14, 1, 0, 1, "Grounded")); // First attack after hitting grapple roots enemy, deals X% additional damage
+        perks.add(new PerkSpell(14, 1, 0, 1, "Grounded")); // First attack after successfully hitting grapple roots enemy, deals X% additional damage
         perks.add(new PerkBaseStat(15, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(16, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(17, 1, 0, 1, "Flare")); // reveals nearby enemies / debuffs them damage mark
+        perks.add(new PerkSpell(17, 1, 0, 1, "Flare")); // Dispel all positive effects on nearby enemies, removing speed or invis and causing blindness for Xs!
         perks.add(new PerkBaseStat(18, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(19, 1, 0, 3, BaseStatEnum.DEXTERITY, 5));
         perks.add(new PerkSpell(20, 1, 0, 1, "Summon Sentry")); // ?

@@ -219,6 +219,14 @@ public abstract class Spell implements ISpell, Listener {
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration * 20), 3));
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
             }
+        } else if (effectEnum == EffectEnum.ROOT) {
+            BukkitTask task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    RunicCore.getSpellManager().getRootedEntites().remove(entity.getUniqueId());
+                }
+            }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
+            RunicCore.getSpellManager().getRootedEntites().put(entity.getUniqueId(), task);
         }
     }
 

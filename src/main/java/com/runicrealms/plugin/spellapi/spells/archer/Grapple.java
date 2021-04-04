@@ -22,21 +22,18 @@ import java.util.UUID;
 
 public class Grapple extends Spell {
 
-    // globals
     private final HashMap<Arrow, UUID> hooks = new HashMap<>();
     private final HashMap<UUID, Long> safefall = new HashMap<>();
     private static final double HOOK_LENGTH = 30.0;
 
-    // constructor
     public Grapple() {
         super("Grapple",
-                "You fire a grappling hook which pulls" +
-                        "\nyou to your target location, up to a max" +
-                        "\nof " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 15, 25);
+                "You fire a grappling hook which pulls " +
+                        "you to your target location, up to a max " +
+                        "of " + (int) HOOK_LENGTH + " blocks!",
+                ChatColor.WHITE, ClassEnum.ARCHER, 14, 25);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
@@ -44,7 +41,6 @@ public class Grapple extends Spell {
         startTask(pl);
     }
 
-    // handles the grappling hook
     private void startTask(Player pl) {
         Vector direction = pl.getEyeLocation().getDirection().normalize().multiply(2);
         Arrow arrow = pl.launchProjectile(Arrow.class);

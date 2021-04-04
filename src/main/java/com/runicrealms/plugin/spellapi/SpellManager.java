@@ -34,6 +34,7 @@ public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
+    private final HashMap<UUID, BukkitTask> rootedEntities;
     private final HashMap<UUID, BukkitTask> silencedEntities;
     private final HashMap<UUID, BukkitTask> stunnedEntities;
     private final RunicCore plugin = RunicCore.getInstance();
@@ -41,6 +42,7 @@ public class SpellManager implements Listener {
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldown = new ConcurrentHashMap<>();
+        this.rootedEntities = new HashMap<>();
         this.silencedEntities = new HashMap<>();
         this.stunnedEntities = new HashMap<>();
         this.registerSpells();
@@ -52,12 +54,16 @@ public class SpellManager implements Listener {
         return this.spellList;
     }
 
-    public HashMap<UUID, BukkitTask> getStunnedEntities() {
-        return stunnedEntities;
+    public HashMap<UUID, BukkitTask> getRootedEntites() {
+        return rootedEntities;
     }
 
     public HashMap<UUID, BukkitTask> getSilencedEntities() {
         return silencedEntities;
+    }
+
+    public HashMap<UUID, BukkitTask> getStunnedEntities() {
+        return stunnedEntities;
     }
 
     /**
@@ -235,6 +241,7 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
+        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getDamager().getUniqueId())
                 || stunnedEntities.containsKey(e.getDamager().getUniqueId()))
             e.setCancelled(true);
@@ -242,6 +249,7 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
+        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
                 || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
@@ -249,6 +257,7 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onSpellHeal(SpellHealEvent e) {
+        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
                 || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
@@ -256,6 +265,7 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
+        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
                 || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
             e.setCancelled(true);
@@ -263,8 +273,9 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        if (stunnedEntities.isEmpty()) return;
-        if (!stunnedEntities.containsKey(e.getPlayer().getUniqueId())) return;
+        if (rootedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (!(rootedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))) return;
         if (e.getTo() == null) return;
         if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
     }

@@ -20,13 +20,13 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class BearTrap extends Spell {
 
-    private static final double DURATION = 1.5;
+    private static final double DURATION = 3;
     private final HashMap<UUID, HashMap<UUID, Integer>> ensnareMap;
 
     public BearTrap() {
         super ("Bear Trap",
                 "Damaging an enemy afflicted by &aHunter's Mark " +
-                        "&73 times stuns them for " + DURATION + "s!",
+                        "&73 times roots them for " + (int) DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
         this.setIsPassive(true);
         ensnareMap = new HashMap<>();
@@ -61,7 +61,7 @@ public class BearTrap extends Spell {
         } else {
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
             Cone.coneEffect(victim, Particle.CRIT, DURATION, 0, 20L, Color.WHITE);
-            addStatusEffect(victim, EffectEnum.STUN, DURATION);
+            addStatusEffect(victim, EffectEnum.ROOT, DURATION);
             ensnareMap.remove(damager.getUniqueId());
         }
     }

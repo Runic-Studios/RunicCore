@@ -5,5 +5,6 @@ public enum EffectEnum {
     SILENCE,
     SLOW,
     SPEED,
-    STUN
+    STUN,
+    ROOT
 }
