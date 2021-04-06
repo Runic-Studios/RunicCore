@@ -199,6 +199,7 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration) {
         if (effectEnum == EffectEnum.SILENCE) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
             BukkitTask task = new BukkitRunnable() {
                 @Override
@@ -208,6 +209,7 @@ public abstract class Spell implements ISpell, Listener {
             }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
             RunicCore.getSpellManager().getSilencedEntities().put(entity.getUniqueId(), task);
         } else if (effectEnum == EffectEnum.STUN) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "stunned!");
             BukkitTask task = new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -220,6 +222,7 @@ public abstract class Spell implements ISpell, Listener {
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
             }
         } else if (effectEnum == EffectEnum.ROOT) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "rooted!");
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
             BukkitTask task = new BukkitRunnable() {
                 @Override

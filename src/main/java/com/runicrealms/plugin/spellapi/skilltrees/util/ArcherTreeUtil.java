@@ -48,18 +48,18 @@ public class ArcherTreeUtil {
 
     public static List<Perk> wardenPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(24, 1, 0, 1, "Arcane Shot")); // silence
+        perks.add(new PerkSpell(24, 1, 0, 1, "Arcane Shot"));
         perks.add(new PerkBaseStat(25, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
-        perks.add(new PerkSpell(26, 1, 0, 1, "Icebrand")); // melee attacks slow enemies for Xs on-hit
+        perks.add(new PerkSpell(26, 1, 0, 1, "Icebrand"));
         perks.add(new PerkBaseStat(27, 1, 0, 3, BaseStatEnum.VITALITY, 3));
         perks.add(new PerkBaseStat(28, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(29, 1, 0, 1, "Ice Volley")); // spread of 5 (old barrage), slows
+        perks.add(new PerkSpell(29, 1, 0, 1, "Ice Volley"));
         perks.add(new PerkBaseStat(30, 1, 0, 3, BaseStatEnum.VITALITY, 3));
         perks.add(new PerkBaseStat(31, 1, 0, 3, BaseStatEnum.DEXTERITY, 5));
-        perks.add(new PerkSpell(32, 1, 0, 1, "Binding Shot")); // like inquisitor portal, roots them to a location
+        perks.add(new PerkSpell(32, 1, 0, 1, "Binding Shot"));
         perks.add(new PerkBaseStat(33, 1, 0, 3, BaseStatEnum.VITALITY, 3));
         perks.add(new PerkBaseStat(34, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(35, 1, 0, 1, "Feign Death")); // after taking dmg t.w. reduce you below X% health, gain a 'bark shield' that immune weapon damage. cannot occur >1 every Ys
+        perks.add(new PerkSpell(35, 1, 0, 1, "Survival Instinct"));
         return perks;
     }
 }

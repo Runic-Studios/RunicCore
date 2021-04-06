@@ -215,7 +215,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Icebrand());
         this.spellList.add(new IceVolley());
         this.spellList.add(new BindingShot());
-        this.spellList.add(new FeignDeath());
+        this.spellList.add(new SurvivalInstinct());
     }
 
     // starts the repeating task to manage player cooldowns
