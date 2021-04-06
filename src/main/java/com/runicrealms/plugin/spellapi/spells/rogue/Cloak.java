@@ -26,7 +26,7 @@ public class Cloak extends Spell {
 
     private static final int DURATION = 5;
     private final Set<UUID> cloakers;
-    private final Set<UUID> markedForEarlyReveal;
+    private static final HashSet<UUID> markedForEarlyReveal = new HashSet<>();
 
     public Cloak() {
         super("Cloak",
@@ -38,7 +38,6 @@ public class Cloak extends Spell {
                         "players ends the effect early.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 30, 15);
         cloakers = new HashSet<>();
-        markedForEarlyReveal = new HashSet<>();
     }
 
     @Override
@@ -115,5 +114,9 @@ public class Cloak extends Spell {
             markedForEarlyReveal.add(e.getPlayer().getUniqueId());
         else
             markedForEarlyReveal.add(e.getEntity().getUniqueId());
+    }
+
+    public static HashSet<UUID> getMarkedForEarlyReveal() {
+        return markedForEarlyReveal;
     }
 }

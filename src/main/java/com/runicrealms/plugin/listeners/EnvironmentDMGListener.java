@@ -2,8 +2,10 @@ package com.runicrealms.plugin.listeners;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import org.bukkit.entity.Firework;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class EnvironmentDMGListener implements Listener {
@@ -18,5 +20,14 @@ public class EnvironmentDMGListener implements Listener {
                 e.setCancelled(true);
             }
         } // todo: ELSE handle fall damgage, lava, fire, etc.
+    }
+
+    /*
+    Fireworks
+     */
+    @EventHandler
+    public void onFireworkDamage(EntityDamageByEntityEvent e) {
+        if (e.getDamager() instanceof Firework)
+            e.setCancelled(true);
     }
 }

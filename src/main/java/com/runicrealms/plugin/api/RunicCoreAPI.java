@@ -46,12 +46,30 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Checks whether an entity is rooted.
+     * @param entity to check
+     * @return true if rooted
+     */
+    public static boolean isRooted(Entity entity) {
+        return RunicCore.getSpellManager().getRootedEntites().containsKey(entity.getUniqueId());
+    }
+
+    /**
      * Checks whether an entity is silenced.
      * @param entity to check
      * @return true if silenced
      */
     public static boolean isSilenced(Entity entity) {
         return RunicCore.getSpellManager().getSilencedEntities().containsKey(entity.getUniqueId());
+    }
+
+    /**
+     * Checks whether an entity is stunned.
+     * @param entity to check
+     * @return true if stunned
+     */
+    public static boolean isStunned(Entity entity) {
+        return RunicCore.getSpellManager().getStunnedEntities().containsKey(entity.getUniqueId());
     }
 
     /**

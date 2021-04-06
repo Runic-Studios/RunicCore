@@ -220,6 +220,7 @@ public abstract class Spell implements ISpell, Listener {
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
             }
         } else if (effectEnum == EffectEnum.ROOT) {
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
             BukkitTask task = new BukkitRunnable() {
                 @Override
                 public void run() {

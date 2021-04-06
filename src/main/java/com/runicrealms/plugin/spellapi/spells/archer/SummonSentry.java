@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 public class SummonSentry extends Spell {
 
     private static final int DAMAGE_AMOUNT = 50;
-    private static final int DURATION = 20;
+    private static final int DURATION = 8;
     private static final int PERCENT = 100;
     private static final int POTION_DURATION = 1;
     private static final int RADIUS = 10;
@@ -35,9 +35,9 @@ public class SummonSentry extends Spell {
                         "crossbow at your location! " +
                         "For " + DURATION + "s, the crossbow fires " +
                         "at all enemies within " + RADIUS + " blocks, " +
-                        "dealing " + PERCENT + "% weapon+ damage " +
-                        "and blinding them!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 30, 75);
+                        "dealing " + PERCENT + "% weapon⚔ damage " +
+                        "and blinding them for " + POTION_DURATION + "s!",
+                ChatColor.WHITE, ClassEnum.ARCHER, 16, 75);
     }
 
     @Override

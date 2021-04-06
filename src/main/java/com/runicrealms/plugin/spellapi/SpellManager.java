@@ -10,7 +10,6 @@ import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
-import com.runicrealms.plugin.spellapi.spells.runic.passive.Siphon;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import net.md_5.bungee.api.ChatMessageType;
@@ -156,8 +155,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new Harpoon());
         this.spellList.add(new Spellsong());
         this.spellList.add(new Reflect());
-        this.spellList.add(new Siphon());
-        this.spellList.add(new IceVolley());
         this.spellList.add(new PowerShot());
         this.spellList.add(new Smite());
         this.spellList.add(new ShadowBomb());
@@ -176,8 +173,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new ManaShield());
         this.spellList.add(new SliceAndDice());
         this.spellList.add(new Cripple());
-        this.spellList.add(new ArcaneShot());
-        this.spellList.add(new SummonSentry());
         this.spellList.add(new Challenger());
         this.spellList.add(new Riposte());
         this.spellList.add(new Kneebreak());
@@ -212,6 +207,15 @@ public class SpellManager implements Listener {
         this.spellList.add(new Consecration());
         this.spellList.add(new KillShot());
         this.spellList.add(new BearTrap());
+        this.spellList.add(new WingClip());
+        this.spellList.add(new Flare());
+        this.spellList.add(new SummonSentry());
+        this.spellList.add(new EscapeArtist());
+        this.spellList.add(new ArcaneShot());
+        this.spellList.add(new Icebrand());
+        this.spellList.add(new IceVolley());
+        this.spellList.add(new BindingShot());
+        this.spellList.add(new FeignDeath());
     }
 
     // starts the repeating task to manage player cooldowns

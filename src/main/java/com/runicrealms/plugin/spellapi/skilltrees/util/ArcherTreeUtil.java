@@ -33,16 +33,16 @@ public class ArcherTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(12, 1, 0, 1, "Grapple"));
         perks.add(new PerkBaseStat(13, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
-        perks.add(new PerkSpell(14, 1, 0, 1, "Grounded")); // First attack after successfully hitting grapple roots enemy, deals X% additional damage
+        perks.add(new PerkSpell(14, 1, 0, 1, "Wing Clip"));
         perks.add(new PerkBaseStat(15, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(16, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(17, 1, 0, 1, "Flare")); // Dispel all positive effects on nearby enemies, removing speed or invis and causing blindness for Xs!
+        perks.add(new PerkSpell(17, 1, 0, 1, "Flare"));
         perks.add(new PerkBaseStat(18, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(19, 1, 0, 3, BaseStatEnum.DEXTERITY, 5));
-        perks.add(new PerkSpell(20, 1, 0, 1, "Summon Sentry")); // ?
+        perks.add(new PerkSpell(20, 1, 0, 1, "Summon Sentry"));
         perks.add(new PerkBaseStat(21, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(22, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(23, 1, 0, 1, "Escape Artist")); // If silenced or stunned, you completely "shake off" the effect. Cannot occur more than once Xs
+        perks.add(new PerkSpell(23, 1, 0, 1, "Escape Artist"));
         return perks;
     }
 
@@ -59,7 +59,7 @@ public class ArcherTreeUtil {
         perks.add(new PerkSpell(32, 1, 0, 1, "Binding Shot")); // like inquisitor portal, roots them to a location
         perks.add(new PerkBaseStat(33, 1, 0, 3, BaseStatEnum.VITALITY, 3));
         perks.add(new PerkBaseStat(34, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));
-        perks.add(new PerkSpell(35, 1, 0, 1, "Survival Instinct")); // after taking dmg t.w. reduce you below X% health, gain a 'bark shield' that immune weapon damage. cannot occur >1 every Ys
+        perks.add(new PerkSpell(35, 1, 0, 1, "Feign Death")); // after taking dmg t.w. reduce you below X% health, gain a 'bark shield' that immune weapon damage. cannot occur >1 every Ys
         return perks;
     }
 }

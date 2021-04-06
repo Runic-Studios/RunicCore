@@ -3,6 +3,7 @@ package com.runicrealms.plugin.classes.utilities;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.entity.Firework;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 
@@ -11,8 +12,8 @@ public class ClassUtil {
     /**
      * Launches a firework of the specified color.
      */
-    public static void launchFirework(Player p, Color color) {
-        Firework firework = p.getWorld().spawn(p.getEyeLocation(), Firework.class);
+    public static void launchFirework(LivingEntity livingEntity, Color color) {
+        Firework firework = livingEntity.getWorld().spawn(livingEntity.getEyeLocation(), Firework.class);
         FireworkMeta meta = firework.getFireworkMeta();
         meta.setPower(0);
         meta.addEffect(FireworkEffect.builder().with(FireworkEffect.Type.BALL_LARGE).withColor(color).build());
