@@ -44,12 +44,19 @@ public class SpellEditorGUIListener implements Listener {
         else if (e.getRawSlot() == SpellEditorGUI.SPELL_ONE_INDEX)
             pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_1).getInventory());
         else if (e.getRawSlot() == SpellEditorGUI.SPELL_TWO_INDEX)
-            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_2).getInventory());
+            if (SpellEditorGUI.hasSlotUnlocked(pl, SpellEditorGUI.getSlotReq2()))
+                pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_2).getInventory());
+            else
+                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
         else if (e.getRawSlot() == SpellEditorGUI.SPELL_THREE_INDEX)
-            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_3).getInventory());
+            if (SpellEditorGUI.hasSlotUnlocked(pl, SpellEditorGUI.getSlotReq3()))
+                pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_3).getInventory());
+            else
+                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
         else if (e.getRawSlot() == SpellEditorGUI.SPELL_FOUR_INDEX)
-            pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_4).getInventory());
-        else
-            pl.closeInventory();
+            if (SpellEditorGUI.hasSlotUnlocked(pl, SpellEditorGUI.getSlotReq4()))
+                pl.openInventory(new SpellGUI(pl, PlayerSpellWrapper.PATH_4).getInventory());
+            else
+                pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
     }
 }
