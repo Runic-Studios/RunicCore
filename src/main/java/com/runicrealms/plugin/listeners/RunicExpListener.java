@@ -16,7 +16,7 @@ import org.bukkit.event.Listener;
 
 public class RunicExpListener implements Listener {
 
-    private static final int LV_BUFFER = 10;
+    private static final int LEVEL_CUTOFF = 5;
     private static final double PARTY_BONUS = 15;
     private static final int RANGE = 100;
 
@@ -41,7 +41,7 @@ public class RunicExpListener implements Listener {
                 Location loc = e.getLocation();
                 int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
                 ChatColor expColor = ChatColor.WHITE;
-                if (e.getMobLevel() > (plLv + LV_BUFFER) || e.getMobLevel() < (plLv - LV_BUFFER)) {
+                if (e.getMobLevel() > (plLv + LEVEL_CUTOFF) || e.getMobLevel() < (plLv - LEVEL_CUTOFF)) {
                     e.setAmount(0);
                     expColor = ChatColor.RED;
                 }
@@ -88,7 +88,7 @@ public class RunicExpListener implements Listener {
             if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
             if (pl.getLocation().distance(member.getLocation()) < RANGE) {
                 int memberLv = RunicCore.getCacheManager().getPlayerCaches().get(member).getClassLevel();
-                if (mobLv > (memberLv+LV_BUFFER) || mobLv < (memberLv-LV_BUFFER)) {
+                if (mobLv > (memberLv+ LEVEL_CUTOFF) || mobLv < (memberLv- LEVEL_CUTOFF)) {
                     PlayerLevelUtil.giveExperience(member, 0);
                     HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
                 } else {
