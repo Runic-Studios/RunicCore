@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -22,16 +23,21 @@ public class LootChestManager {
     private final LinkedHashMap<LootChest, Long> queuedChests;
     private final RunicCore plugin = RunicCore.getInstance();
 
+    private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
+            "chests.yml");
+    private final FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
+    private final ConfigurationSection locations = chestConfig.getConfigurationSection("Chests.Locations");
+
     public LootChestManager() {
 
         lootChests = new HashSet<>();
         queuedChests = new LinkedHashMap<>();
 
-        // store all chest locations in a set
-        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-                "chests.yml");
-        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
-        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
+//        // store all chest locations in a set
+//        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
+//                "chests.yml");
+//        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
+//        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
 
         if (locations == null) return;
 
@@ -46,7 +52,7 @@ public class LootChestManager {
                 double y = locations.getDouble(id + ".y");
                 double z = locations.getDouble(id + ".z");
                 Location loc = new Location(world, x, y, z);
-                LootChest lootChest = new LootChest(tier, loc);
+                LootChest lootChest = new LootChest(id, tier, loc);
                 lootChests.add(lootChest);
                 lootChest.getLocation().getBlock().setType(Material.CHEST);
             }
@@ -78,7 +84,7 @@ public class LootChestManager {
         int limit = (int) Math.ceil(queuedChests.size() / 4) + 1;
         int count = 0;
 
-        Set<LootChest> remove = new HashSet<LootChest>();
+        Set<LootChest> remove = new HashSet<>();
         for (LootChest chest : queuedChests.keySet()) {
             if (queuedChests.size() < 1) continue;
             if (count >= limit) break;
@@ -146,6 +152,10 @@ public class LootChestManager {
         return null;
     }
 
+    public HashSet<LootChest> getLootChests() {
+        return lootChests;
+    }
+
     public LinkedHashMap<LootChest, Long> getQueuedChests() {
         return queuedChests;
     }
@@ -156,5 +166,38 @@ public class LootChestManager {
                 return queuedChest;
         }
         return null;
+    }
+
+    /**
+     * Checks whether there is a loot chest at target location.
+     * @param location of loot chest
+     * @return true if found, false if not
+     */
+    public boolean isLootChest(Location location) {
+        return RunicCore.getLootChestManager().getLootChest(location) != null; // chest doesn't match saved chest locations
+    }
+
+    /**
+     * Completely erases a loot chest at target location,
+     * both removing it from memory and config.
+     * @param location location of chest
+     */
+    public void removeLootChest(Location location) {
+        LootChest chestToRemove = getLootChest(location);
+        lootChests.remove(chestToRemove); // remove chest from memory
+        try {
+            for (String chest_id : locations.getKeys(false)) {
+                if (!chest_id.equals(chestToRemove.getId())) continue;
+                locations.set(chest_id, null);
+            }
+        } catch (NullPointerException e) {
+            Bukkit.getServer().getLogger().info(ChatColor.RED + "Error: there was an error removing loot chest!");
+            e.printStackTrace();
+        }
+        try {
+            chestConfig.save(chests);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

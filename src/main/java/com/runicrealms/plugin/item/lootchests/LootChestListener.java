@@ -31,6 +31,10 @@ import java.util.UUID;
  */
 public class LootChestListener implements Listener {
 
+    private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
+            "chests.yml");
+    private final FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onChestInteract(PlayerInteractEvent e) {
 
@@ -83,6 +87,11 @@ public class LootChestListener implements Listener {
         }
     }
 
+    /**
+     * Command to generate the chest loot for player
+     * @param pl player who opened chest
+     * @param tier tier of loot chest
+     */
     private void openChestGUI(Player pl, String tier) {
 
         Random rand = new Random();
@@ -155,6 +164,7 @@ public class LootChestListener implements Listener {
     /**
      * This event adds a new workstation to the file, so long as the player is opped and holding a green wool.
      * The event then listens for the player's chat response, and adds the block to the file accordingly.
+     * NEW: If the player is holding red wool, they can remove a chest.
      */
     private final ArrayList<UUID> chatters = new ArrayList<>();
     @EventHandler
@@ -165,15 +175,23 @@ public class LootChestListener implements Listener {
         if (e.getHand() != EquipmentSlot.HAND) return;
 
         if (pl.getInventory().getItemInMainHand().getType() == Material.AIR) return;
+        if (!e.hasBlock() || e.getClickedBlock() == null) return;
+        Location chestLocation = e.getClickedBlock().getLocation();
         Material heldItemType = pl.getInventory().getItemInMainHand().getType();
+        if (heldItemType == Material.RED_WOOL) {
+            if (RunicCore.getLootChestManager().isLootChest(chestLocation)) {
+                RunicCore.getLootChestManager().removeLootChest(e.getClickedBlock().getLocation());
+                pl.sendMessage(ChatColor.GREEN + "Loot chest removed!");
+                // remove
+            } else {
+                pl.sendMessage(ChatColor.RED + "Error: no loot chest found at location");
+            }
+            e.setCancelled(true);
+            return;
+        }
         if (heldItemType != Material.PURPLE_WOOL) return;
-        if (!e.hasBlock()) return;
+        e.setCancelled(true);
         Block b = e.getClickedBlock();
-
-        // retrieve the data file
-        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-                "chests.yml");
-        FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
 
         // save data file
         try {
@@ -221,10 +239,10 @@ public class LootChestListener implements Listener {
                 return;
             }
 
-            // retrieve the data file
-            File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-                    "chests.yml");
-            FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
+//            // retrieve the data file
+//            File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
+//                    "chests.yml");
+//            FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
 
             if (!chestConfig.isSet("Chests.NEXT_ID")) {
                 chestConfig.set("Chests.NEXT_ID", 0);
