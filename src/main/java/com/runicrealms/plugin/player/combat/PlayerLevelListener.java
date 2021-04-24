@@ -77,15 +77,15 @@ public class PlayerLevelListener implements Listener {
 
         switch (className.toLowerCase()) {
             case "archer":
-                return (PlayerLevelUtil.getArcherHpLv()*pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getArcherHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
             case "cleric":
-                return (PlayerLevelUtil.getClericHpLv()*pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getClericHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
             case "mage":
-                return (PlayerLevelUtil.getMageHpLv()*pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getMageHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
             case "rogue":
-                return (PlayerLevelUtil.getRogueHpLv()*pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getRogueHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
             case "warrior":
-                return (PlayerLevelUtil.getWarriorHpLv()*pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getWarriorHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
         }
 
         return HealthUtils.getBaseHealth();

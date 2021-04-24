@@ -103,20 +103,25 @@ public class SkillTreeGUI implements InventoryHolder {
         ItemMeta meta = perkItem.getItemMeta();
         assert meta != null;
         if (perk instanceof PerkBaseStat) {
-            if (displayPoints)
+            if (displayPoints) {
                 meta.setDisplayName
                         (
-                            ChatColor.GREEN + ((PerkBaseStat) perk).getBaseStatEnum().getName() +
-                            ChatColor.WHITE + " [" +
-                            ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
-                            ChatColor.WHITE + "/" +
-                            ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
-                            ChatColor.WHITE + "]"
+                                ChatColor.GREEN + ((PerkBaseStat) perk).getBaseStatEnum().getName() +
+                                ((PerkBaseStat) perk).getBaseStatEnum().getIcon() +
+                                ChatColor.WHITE + " [" +
+                                ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
+                                ChatColor.WHITE + "/" +
+                                ChatColor.GREEN + +perk.getMaxAllocatedPoints() +
+                                ChatColor.WHITE + "]"
                         );
-            else
+            } else {
                 meta.setDisplayName(ChatColor.GREEN + ((PerkBaseStat) perk).getBaseStatEnum().getName());
-            meta.setLore(ChatUtils.formattedText
-                    (("\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getBaseStatEnum().getDescription())));
+            }
+            meta.setLore(
+                                ChatUtils.formattedText
+                                (("\n&7Bonus per point: &a+" + ((PerkBaseStat) perk).getBonusAmount() +
+                                "\n\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getBaseStatEnum().getDescription()))
+                        );
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
             if (spell == null) {

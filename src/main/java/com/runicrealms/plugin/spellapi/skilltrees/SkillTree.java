@@ -74,6 +74,8 @@ public class SkillTree {
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
         if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
             applyPassives(RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player));
+        else if (perk instanceof PerkBaseStat)
+            RunicCore.getPlayerStatManager().getPlayerStatContainer(player).increaseStat(((PerkBaseStat) perk).getBaseStatEnum(), ((PerkBaseStat) perk).getBonusAmount());
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
     }
@@ -133,6 +135,7 @@ public class SkillTree {
         RunicCore.getSkillTreeManager().getSkillTreeSetThree().remove(RunicCoreAPI.getSkillTree(player, 3));
         RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(), 0);
         RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).clearSpells();
+        RunicCore.getPlayerStatManager().getPlayerStatContainer(player).resetValues();
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
     }
 

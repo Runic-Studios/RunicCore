@@ -1,12 +1,13 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.mysterybox.MysteryLoot;
 import com.runicrealms.plugin.mysterybox.animation.Animation;
 import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.combat.PlayerLevelListener;
+import com.runicrealms.plugin.player.stat.BaseStatEnum;
+import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
@@ -53,31 +54,28 @@ public class PlayerMenuListener implements Listener {
                         "\n&fClick here &7to view\n&7the quest journal!");
 
                 ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
-                        "\n&aFeature Coming Soon!");
+                        "\n&aFeature Coming Soon!"); // todo: remove?
 
                 // item 3 must update dynamically
                 String healthBonus = statBoost(
-                        (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() - PlayerLevelListener.getHpAtLevel(pl));
-                String healthRegen = statBoost(GearScanner.getHealthRegenBoost(pl));
-                String manaBoost = statBoost(GearScanner.getManaBoost(pl));
-                String manaRegen = statBoost(GearScanner.getManaRegenBoost(pl));
-
-                String healingBoost = statBoost(GearScanner.getHealingBoost(pl));
-                String magicBoost = statBoost(GearScanner.getMagicBoost(pl));
-                String shieldAmt = statBoost(GearScanner.getShieldAmt(pl));
-
-                String minDamage = statBoost(GearScanner.getMinDamage(pl) + GearScanner.getAttackBoost(pl));
-                int maxDamage = (GearScanner.getMaxDamage(pl) + GearScanner.getAttackBoost(pl));
+                        (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()
+                                - PlayerLevelUtil.calculateHealthAtLevel(cache.getClassLevel(), cache.getClassName()));
+                String dexterity = statBoost(RunicCoreAPI.getPlayerDexterity(pl));
+                String intelligence = statBoost(RunicCoreAPI.getPlayerIntelligence(pl));
+                String strength = statBoost(RunicCoreAPI.getPlayerStrength(pl));
+                String vitality = statBoost(RunicCoreAPI.getPlayerVitality(pl));
+                String wisdom = statBoost(RunicCoreAPI.getPlayerWisdom(pl));
 
                 ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
-                        "\n&c❤ (Health) &ebonus: " + healthBonus +
-                                "\n&c❤/t (Regen) &ebonus: " + healthRegen +
-                                "\n&3✸ (Mana) &ebonus: " + manaBoost +
-                                "\n&3✸/t (Regen) &ebonus: " + manaRegen +
-                                "\n&c⚔ (DMG) &ebonus: " + minDamage + "-" + maxDamage +
-                                "\n&a✦ (Heal) &ebonus: " + healingBoost +
-                                "\n&3ʔ (Magic) &ebonus: " + magicBoost +
-                                "\n&f■ (Shield) &ebonus: " + shieldAmt);
+                        "\n&7Your character stats improve" + "" +
+                                "\n&7your potency in battle!" +
+                                "\n&7Earn them from..." + // todo:
+                                "\n\n&c❤ (Health) &7bonus: " + healthBonus +
+                                "\n&e✦ (" + BaseStatEnum.DEXTERITY.getPrefix() + "): " + dexterity +
+                                "\n&3ʔ (" + BaseStatEnum.INTELLIGENCE.getPrefix() + "): " + intelligence +
+                                "\n&c⚔ (" + BaseStatEnum.STRENGTH.getPrefix() + "): " + strength +
+                                "\n&f■ (" + BaseStatEnum.VITALITY.getPrefix() + "): " + vitality +
+                                "\n&a✸ (" + BaseStatEnum.WISDOM.getPrefix() + "): " + wisdom);
 
                 InventoryView view = pl.getOpenInventory();
 
@@ -157,7 +155,7 @@ public class PlayerMenuListener implements Listener {
         if (stat > 0) {
             return "&a+" + stat;
         } else {
-            return  "&7+" + stat;
+            return "&7+" + stat;
         }
     }
 

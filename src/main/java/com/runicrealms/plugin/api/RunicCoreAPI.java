@@ -246,4 +246,44 @@ public class RunicCoreAPI {
     public static void registerRunicItemShop(RunicItemShop shop) {
         RunicShopManager.registerShop(shop);
     }
+
+    public static int getPlayerDexterity(Player player) {
+        try {
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getDexterity();
+        } catch (NullPointerException e) {
+            return 0;
+        }
+    }
+
+    public static int getPlayerIntelligence(Player player) {
+        try {
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getIntelligence();
+        } catch (NullPointerException e) {
+            return 0;
+        }
+    }
+
+    public static int getPlayerStrength(Player player) {
+        try {
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getStrength();
+        } catch (NullPointerException e) {
+            return 0;
+        }
+    }
+
+    public static int getPlayerVitality(Player player) {
+        try {
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getVitality();
+        } catch (NullPointerException e) {
+            return 0;
+        }
+    }
+
+    public static int getPlayerWisdom(Player player) {
+        try {
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getWisdom();
+        } catch (NullPointerException e) {
+            return 0;
+        }
+    }
 }

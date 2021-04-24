@@ -53,6 +53,7 @@ import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.RegenManager;
+import com.runicrealms.plugin.player.stat.PlayerStatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.shop.BoostCMD;
@@ -103,6 +104,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static GroupManager groupManager;
     private static PaperCommandManager commandManager;
     private static SkillTreeManager skillTreeManager;
+    private static PlayerStatManager playerStatManager;
 
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
@@ -126,6 +128,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
     public static PaperCommandManager getCommandManager() {
         return commandManager;
+    }
+    public static PlayerStatManager getPlayerStatManager() {
+        return playerStatManager;
     }
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
@@ -152,6 +157,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         databaseManager = new DatabaseManager();
         groupManager = new GroupManager();
         skillTreeManager = new SkillTreeManager();
+        playerStatManager = new PlayerStatManager();
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new GroupCommand());
@@ -194,10 +200,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         MinecraftServer.getServer().setMotd(motd);
     }
 
+    /*
+    Prevent memory leaks
+     */
     public void onDisable() {
-        /*
-        let's prevent memory leaks, shall we?
-         */
         combatManager = null;
         instance = null;
         lootChestManager = null;
@@ -214,6 +220,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         groupManager = null;
         partyChannel = null;
         skillTreeManager = null;
+        playerStatManager = null;
     }
 
     @EventHandler

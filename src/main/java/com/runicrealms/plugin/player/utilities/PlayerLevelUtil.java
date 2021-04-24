@@ -150,7 +150,7 @@ public class PlayerLevelUtil {
      * @param className their class name
      * @return the HP they should have based on scaling
      */
-    private static int calculateHealthAtLevel(int currentLv, String className) {
+    public static int calculateHealthAtLevel(int currentLv, String className) {
         double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className);
         return (int) (HealthUtils.getBaseHealth() + (HEALTH_LEVEL_COEFFICIENT * Math.pow(currentLv, 2)) + (hpPerLevel * currentLv));
     }
