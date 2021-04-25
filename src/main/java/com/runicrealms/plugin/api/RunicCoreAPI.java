@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class RunicCoreAPI {
 
@@ -247,41 +248,41 @@ public class RunicCoreAPI {
         RunicShopManager.registerShop(shop);
     }
 
-    public static int getPlayerDexterity(Player player) {
+    public static int getPlayerDexterity(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getDexterity();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getDexterity();
         } catch (NullPointerException e) {
             return 0;
         }
     }
 
-    public static int getPlayerIntelligence(Player player) {
+    public static int getPlayerIntelligence(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getIntelligence();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getIntelligence();
         } catch (NullPointerException e) {
             return 0;
         }
     }
 
-    public static int getPlayerStrength(Player player) {
+    public static int getPlayerStrength(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getStrength();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getStrength();
         } catch (NullPointerException e) {
             return 0;
         }
     }
 
-    public static int getPlayerVitality(Player player) {
+    public static int getPlayerVitality(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getVitality();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getVitality();
         } catch (NullPointerException e) {
             return 0;
         }
     }
 
-    public static int getPlayerWisdom(Player player) {
+    public static int getPlayerWisdom(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(player).getWisdom();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getWisdom();
         } catch (NullPointerException e) {
             return 0;
         }

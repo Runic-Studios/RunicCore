@@ -29,6 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Controls the player menu in the inventory crafting slots
@@ -43,6 +44,7 @@ public class PlayerMenuListener implements Listener {
 
             for (PlayerCache cache : RunicCore.getCacheManager().getPlayerCaches().values()) {
 
+                UUID uuid = cache.getPlayerID();
                 Player pl = Bukkit.getPlayer(cache.getPlayerID());
                 if (pl == null) continue;
 
@@ -60,11 +62,11 @@ public class PlayerMenuListener implements Listener {
                 String healthBonus = statBoost(
                         (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()
                                 - PlayerLevelUtil.calculateHealthAtLevel(cache.getClassLevel(), cache.getClassName()));
-                String dexterity = statBoost(RunicCoreAPI.getPlayerDexterity(pl));
-                String intelligence = statBoost(RunicCoreAPI.getPlayerIntelligence(pl));
-                String strength = statBoost(RunicCoreAPI.getPlayerStrength(pl));
-                String vitality = statBoost(RunicCoreAPI.getPlayerVitality(pl));
-                String wisdom = statBoost(RunicCoreAPI.getPlayerWisdom(pl));
+                String dexterity = statBoost(RunicCoreAPI.getPlayerDexterity(uuid));
+                String intelligence = statBoost(RunicCoreAPI.getPlayerIntelligence(uuid));
+                String strength = statBoost(RunicCoreAPI.getPlayerStrength(uuid));
+                String vitality = statBoost(RunicCoreAPI.getPlayerVitality(uuid));
+                String wisdom = statBoost(RunicCoreAPI.getPlayerWisdom(uuid));
 
                 ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
                         "\n&7Your character stats improve" + "" +

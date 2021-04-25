@@ -11,10 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerStatManager implements Listener {
 
-    private final HashMap<Player, StatContainer> playerStatMap;
+    private final HashMap<UUID, StatContainer> playerStatMap;
 
     public PlayerStatManager() {
         playerStatMap = new HashMap<>();
@@ -24,7 +25,7 @@ public class PlayerStatManager implements Listener {
     @EventHandler
     public void onLoad(CharacterLoadEvent e) {
         StatContainer statContainer = new StatContainer(e.getPlayer());
-        playerStatMap.put(e.getPlayer(), statContainer);
+        playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
         grabBaseStatsFromTree(e.getPlayer(), 1);
         grabBaseStatsFromTree(e.getPlayer(), 2);
         grabBaseStatsFromTree(e.getPlayer(), 3);
@@ -34,7 +35,7 @@ public class PlayerStatManager implements Listener {
 
     @EventHandler
     public void onQuit(CharacterQuitEvent e) {
-        playerStatMap.remove(e.getPlayer());
+        playerStatMap.remove(e.getPlayer().getUniqueId());
     }
 
     /**
@@ -50,11 +51,11 @@ public class PlayerStatManager implements Listener {
             PerkBaseStat perkBaseStat = (PerkBaseStat) perk;
             BaseStatEnum baseStatEnum = perkBaseStat.getBaseStatEnum();
             int amount = perkBaseStat.getBonusAmount() * perkBaseStat.getCurrentlyAllocatedPoints();
-            playerStatMap.get(player).increaseStat(baseStatEnum, amount);
+            playerStatMap.get(player.getUniqueId()).increaseStat(baseStatEnum, amount);
         }
     }
 
-    public StatContainer getPlayerStatContainer(Player player) {
-        return playerStatMap.get(player);
+    public StatContainer getPlayerStatContainer(UUID uuid) {
+        return playerStatMap.get(uuid);
     }
 }
