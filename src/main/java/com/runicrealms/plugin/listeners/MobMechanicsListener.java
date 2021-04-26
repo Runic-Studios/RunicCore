@@ -62,7 +62,7 @@ public final class MobMechanicsListener implements Listener {
                 + createHealthDisplay(le, damage)
                 + ChatColor.YELLOW + "]";
         if (MythicMobs.inst().getMobManager().getActiveMob(le.getUniqueId()).isPresent()) // delay by 1 tick to display correct health
-            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> createMythicHealthDisplay(le, damage));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> createMythicHealthDisplay(le));
         else
             le.setCustomName(healthBar);
     }
@@ -70,10 +70,9 @@ public final class MobMechanicsListener implements Listener {
     /**
      * Uses the MythicMobs skills system to update the MM health bars, since disguises breaks the default method.
      * @param livingEntity MythicMob to update healthbar for
-     * @param damage damage of event
      */
-    private static void createMythicHealthDisplay(LivingEntity livingEntity, int damage) {
-        int numColorBars = calculateNumColors(livingEntity, damage);
+    private static void createMythicHealthDisplay(LivingEntity livingEntity) {
+        int numColorBars = calculateNumColors(livingEntity);
         MythicMobs.inst().getAPIHelper().castSkill(livingEntity, "UpdateHealthBar_" + numColorBars);
     }
 
@@ -85,7 +84,7 @@ public final class MobMechanicsListener implements Listener {
      */
     private static String createHealthDisplay(LivingEntity livingEntity, int damage) {
 
-        int numColorBars = calculateNumColors(livingEntity, damage);
+        int numColorBars = calculateNumColors(livingEntity);
 
         // colors correspond to percentage of health remaining
         String firstHalf = ChatColor.GREEN + "" + "|||||";
@@ -138,17 +137,13 @@ public final class MobMechanicsListener implements Listener {
     /**
      * Calculates the number of health bars that should be colored based on entity's remaining health.
      * @param livingEntity entity that took damage
-     * @param damage damage from event
      * @return number of bars to color-in
      */
-    private static int calculateNumColors(LivingEntity livingEntity, int damage) {
+    private static int calculateNumColors(LivingEntity livingEntity) {
         double maxHealth = livingEntity.getMaxHealth();
         double currentHealth;
-        if (damage == 0)
-            currentHealth = livingEntity.getHealth();
-        else
-            currentHealth = Math.max(livingEntity.getHealth() - damage, 0);
+        currentHealth = Math.max(livingEntity.getHealth(), 0);
         int healthPercentage = (int) ((currentHealth / maxHealth) * 100.0D);
-        return healthPercentage/10;
+        return healthPercentage / 10;
     }
 }

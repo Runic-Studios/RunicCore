@@ -409,6 +409,7 @@ public class DamageListener implements Listener {
                 Location caveEntrance = new Location(Bukkit.getWorld("dungeons"), -1874.5, 177, -522.5, 90, 0);
                 pl.teleport(caveEntrance);
                 return "sebathscave";
+                // todo: crystal cavern
             } else if (region.getId().contains("odinskeep")) {
                 Location keepEntrance = new Location(Bukkit.getWorld("dungeons"), -534.5, 120, -177.5, 180, 0);
                 pl.teleport(keepEntrance);

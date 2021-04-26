@@ -8,6 +8,15 @@ public enum BaseStatEnum {
     VITALITY("Vitality", "VIT", "■", "Gain damage reduction and health regen!"), // defense = damage reduction todo: write simple event
     WISDOM("Wisdom", "WIS", "✸", "Gain more spell healing and mana regen!");
 
+    private static final double RANGED_DMG_MULT = 1;
+    private static final double MOVEMENT_SPEED_MULT = 1;
+    private static final double MAGIC_DMG_MULT = 1;
+    private static final double MANA_MANA_MULT = 1;
+    private static final double MELEE_DMG_MULT = 1;
+    private static final double DAMAGE_REDUCTION_MULT = 1;
+    private static final double HEALTH_REGEN_MULT = 1;
+    private static final double SPELL_HEALING_MULT = 1;
+    private static final double MANA_REGEN_MULT = 1;
     private final String name;
     private final String prefix;
     private final String icon;
@@ -34,6 +43,42 @@ public enum BaseStatEnum {
 
     public String getDescription() {
         return description;
+    }
+
+    public static double getRangedDmgMult() {
+        return RANGED_DMG_MULT;
+    }
+
+    public static double getMovementSpeedMult() {
+        return MOVEMENT_SPEED_MULT;
+    }
+
+    public static double getMagicDmgMult() {
+        return MAGIC_DMG_MULT;
+    }
+
+    public static double getManaManaMult() {
+        return MANA_MANA_MULT;
+    }
+
+    public static double getMeleeDmgMult() {
+        return MELEE_DMG_MULT;
+    }
+
+    public static double getDamageReductionMult() {
+        return DAMAGE_REDUCTION_MULT;
+    }
+
+    public static double getHealthRegenMult() {
+        return HEALTH_REGEN_MULT;
+    }
+
+    public static double getSpellHealingMult() {
+        return SPELL_HEALING_MULT;
+    }
+
+    public static double getManaRegenMult() {
+        return MANA_REGEN_MULT;
     }
 
     /**

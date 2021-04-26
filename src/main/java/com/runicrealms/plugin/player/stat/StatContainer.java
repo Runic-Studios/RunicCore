@@ -86,6 +86,7 @@ public class StatContainer {
                 wisdom += value;
                 break;
         }
+        // todo: call custom statupdateevent
     }
 
     public void resetValues() {
