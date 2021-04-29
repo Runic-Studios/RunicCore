@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.stat;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class StatContainer {
@@ -86,14 +87,19 @@ public class StatContainer {
                 wisdom += value;
                 break;
         }
-        // todo: call custom statupdateevent
+        // call custom event for listeners
+        StatChangeEvent statChangeEvent = new StatChangeEvent(this.player, this);
+        Bukkit.getPluginManager().callEvent(statChangeEvent);
     }
 
     public void resetValues() {
-        dexterity = 0;
-        intelligence = 0;
-        strength = 0;
-        vitality = 0;
-        wisdom = 0;
+        this.dexterity = 0;
+        this.intelligence = 0;
+        this.strength = 0;
+        this.vitality = 0;
+        this.wisdom = 0;
+        // call custom event for listeners
+        StatChangeEvent statChangeEvent = new StatChangeEvent(this.player, this);
+        Bukkit.getPluginManager().callEvent(statChangeEvent);
     }
 }

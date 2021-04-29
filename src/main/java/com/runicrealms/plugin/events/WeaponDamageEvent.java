@@ -58,7 +58,7 @@ public class WeaponDamageEvent extends Event implements Cancellable {
         return this.isAutoAttack;
     }
 
-    public boolean getIsRanged() {
+    public boolean isRanged() {
         return this.isRanged;
     }
 

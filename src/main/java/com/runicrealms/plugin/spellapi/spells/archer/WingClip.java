@@ -39,7 +39,7 @@ public class WingClip extends Spell {
 
     @EventHandler
     public void onRangedHit(WeaponDamageEvent e) {
-        if (!e.getIsRanged()) return;
+        if (!e.isRanged()) return;
         if (!e.isAutoAttack()) return;
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!(wingClippers.contains(e.getPlayer().getUniqueId()))) return;

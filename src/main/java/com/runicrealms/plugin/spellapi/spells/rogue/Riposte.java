@@ -57,7 +57,7 @@ public class Riposte extends Spell {
         Player hurtPl = (Player) e.getEntity();
         double newDamage = e.getAmount() * PERCENT_DMG;
         e.setCancelled(true);
-        DamageUtil.damageEntityWeapon(newDamage, e.getPlayer(), hurtPl, false, e.getIsRanged(), true);
+        DamageUtil.damageEntityWeapon(newDamage, e.getPlayer(), hurtPl, false, e.isRanged(), true);
     }
 
     @EventHandler

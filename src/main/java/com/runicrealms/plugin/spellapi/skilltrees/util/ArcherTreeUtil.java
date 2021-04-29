@@ -15,7 +15,7 @@ public class ArcherTreeUtil {
     public static List<Perk> marksmanPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(0, 1, 0, 1, "Power Shot"));
-        perks.add(new PerkBaseStat(1, 1, 0, 5, BaseStatEnum.DEXTERITY, 1));
+        perks.add(new PerkBaseStat(1, 1, 0, 5, BaseStatEnum.DEXTERITY, 2));
         perks.add(new PerkSpell(2, 1, 0, 1, "Hawkeye"));
         perks.add(new PerkBaseStat(3, 1, 0, 3, BaseStatEnum.INTELLIGENCE, 3));
         perks.add(new PerkBaseStat(4, 1, 0, 3, BaseStatEnum.DEXTERITY, 3));

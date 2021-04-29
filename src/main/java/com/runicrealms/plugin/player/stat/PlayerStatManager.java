@@ -15,8 +15,6 @@ import java.util.UUID;
 
 public class PlayerStatManager implements Listener {
 
-    private static final double INT_PERCENT_MULT = 1.0;
-    private static final double STR_PERCENT_MULT = 1.0;
     private final HashMap<UUID, StatContainer> playerStatMap;
 
     public PlayerStatManager() {

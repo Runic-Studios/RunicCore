@@ -34,7 +34,7 @@ public class Icebrand extends Spell {
     @EventHandler
     public void onKneebreakHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        if (!e.getIsRanged()) return;
+        if (!e.isRanged()) return;
         if (!e.isAutoAttack()) return;
         applySlow(e.getPlayer(), e.getEntity());
     }

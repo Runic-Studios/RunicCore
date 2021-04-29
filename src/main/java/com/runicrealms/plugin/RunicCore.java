@@ -53,6 +53,7 @@ import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.RegenManager;
+import com.runicrealms.plugin.player.stat.BaseStatListener;
 import com.runicrealms.plugin.player.stat.PlayerStatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
@@ -297,6 +298,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellEditorGUIListener(), this);
         pm.registerEvents(new SpellGUIListener(), this);
         pm.registerEvents(new CreatureSpawnListener(), this);
+        pm.registerEvents(new BaseStatListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
