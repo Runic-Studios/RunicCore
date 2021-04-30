@@ -5,6 +5,7 @@ import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.CombatListener;
+import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
@@ -286,5 +287,13 @@ public class RunicCoreAPI {
         } catch (NullPointerException e) {
             return 0;
         }
+    }
+
+    /**
+     * Update the appropriate max mana for given player, based on gear, level, and stats.
+     * @param player player to calculate mana for
+     */
+    public static void updateMaxMana(Player player) {
+        ManaListener.calculateMana(player);
     }
 }

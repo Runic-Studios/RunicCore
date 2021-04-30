@@ -11,7 +11,7 @@ public enum BaseStatEnum {
     private static final double RANGED_DMG_MULT = 1.0;
     private static final double MOVEMENT_SPEED_MULT = 1.0;
     private static final double MAGIC_DMG_MULT = 1.0;
-    private static final double MANA_MANA_MULT = 1.0;
+    private static final double MAX_MANA_MULT = 1.0;
     private static final double MELEE_DMG_MULT = 1.0;
     private static final double DAMAGE_REDUCTION_MULT = 1.0;
     private static final double HEALTH_REGEN_MULT = 1.0;
@@ -60,8 +60,8 @@ public enum BaseStatEnum {
         return MAGIC_DMG_MULT / 100;
     }
 
-    public static double getManaManaMult() {
-        return MANA_MANA_MULT / 100;
+    public static double getMaxManaMult() {
+        return MAX_MANA_MULT / 100;
     }
 
     public static double getMeleeDmgMult() {

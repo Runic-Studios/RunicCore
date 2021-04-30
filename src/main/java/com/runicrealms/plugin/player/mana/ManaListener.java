@@ -2,10 +2,12 @@ package com.runicrealms.plugin.player.mana;
 
 import com.codingforcookies.armorequip.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.plugin.player.stat.BaseStatEnum;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -97,7 +99,7 @@ public class ManaListener implements Listener {
         RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
     }
 
-    private void calculateMana(Player pl) {
+    public static void calculateMana(Player pl) {
 
         // grab player's armor, offhand
         ArrayList<ItemStack> armorAndOffhand = GearScanner.armorAndOffHand(pl);
@@ -112,7 +114,9 @@ public class ManaListener implements Listener {
 
         // update stored mana in config, update scoreboard
         int newMaxMana = RunicCore.getRegenManager().getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
-        RunicCore.getCacheManager().getPlayerCaches().get(pl).setMaxMana(newMaxMana);
+        // grab extra mana from intelligence
+        double intelligenceManaBoost = newMaxMana * (BaseStatEnum.getMaxManaMult() * RunicCoreAPI.getPlayerIntelligence(pl.getUniqueId()));
+        RunicCore.getCacheManager().getPlayerCaches().get(pl).setMaxMana((int) (newMaxMana + intelligenceManaBoost));
 
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
