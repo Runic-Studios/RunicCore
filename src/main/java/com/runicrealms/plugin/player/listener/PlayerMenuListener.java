@@ -176,7 +176,7 @@ public class PlayerMenuListener implements Listener {
         String intelligenceString = statPrefix(intelligence) + df.format(magicDmgPercent) + "% Magic Dmg" +
                 "\n" + statPrefix(intelligence) + df.format(maxManaPercent) + "% Max Mana\n";
         String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg\n";
-        String vitalityString = statPrefix(vitality) + defensePercent + "% Defense" +
+        String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" +
                 "\n" + statPrefix(vitality) + df.format(healthRegenPercent) + "% Health Regen\n";
         String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
                 "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
