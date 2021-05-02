@@ -50,7 +50,12 @@ public class PlayerMenuListener implements Listener {
                 if (pl == null) continue;
 
                 ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
-                        "\n&7Here are your stats and stuff!\n\n" + combatPercentages(uuid));
+                        "\n&7Here are the combat bonuses" +
+                                "\n&7of your character! They" +
+                                "\n&7come from your stats," +
+                                "\n&7which you can check below" +
+                                "\n&7in &eCharacter Stats&7!\n\n" +
+                                combatPercentages(uuid));
 
                 //item 2
                 ItemStack questJournal = item(pl, Material.BOOK, "&6Quest Journal",
@@ -69,8 +74,8 @@ public class PlayerMenuListener implements Listener {
                                 "\n&7Earn them from your" +
                                 "\n&dSkill Tree &7or from items!" +
                                 "\n&7Check your bonuses above" +
-                                "\n&7in Character Info!" +
-                                "\n\n&c❤ (Health) &7bonus: " + statPrefix(healthBonus) + healthBonus +
+                                "\n&7in &eCharacter Info&7!" +
+                                "\n\n&c❤ (Health): " + statPrefix(healthBonus) + healthBonus +
                                 "\n" + formattedStat("Dexterity", RunicCoreAPI.getPlayerDexterity(uuid)) +
                                 "\n" + formattedStat("Intelligence", RunicCoreAPI.getPlayerIntelligence(uuid)) +
                                 "\n" + formattedStat("Strength", RunicCoreAPI.getPlayerStrength(uuid)) +
