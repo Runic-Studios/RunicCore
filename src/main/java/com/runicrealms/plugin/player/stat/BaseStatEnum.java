@@ -13,15 +13,25 @@ public enum BaseStatEnum {
 //    CRIT("Crit", "CRIT", ChatColor.YELLOW, "⚔⚔", ""),
 //    DODGE("Dodge", "DODGE", ChatColor.WHITE, "","");
 
+    /*
+    Combat multipliers
+     */
     private static final double MOVEMENT_SPEED_MULT = 1.0;
-    private static final double RANGED_DMG_MULT = 1.0;
+    private static final double RANGED_DMG_MULT = 0.9;
     private static final double MAGIC_DMG_MULT = 1.0;
     private static final double MAX_MANA_MULT = 1.0;
-    private static final double MELEE_DMG_MULT = 1.0;
+    private static final double MELEE_DMG_MULT = 1.1;
     private static final double DAMAGE_REDUCTION_MULT = 1.0;
     private static final double HEALTH_REGEN_MULT = 1.0;
     private static final double SPELL_HEALING_MULT = 1.0;
     private static final double MANA_REGEN_MULT = 1.0;
+    /*
+    Damage caps
+     */
+    private static final int DAMAGE_REDUCTION_CAP = 40;
+    /*
+    Enum fields
+     */
     private final String name;
     private final String prefix;
     private final ChatColor chatColor;
@@ -93,6 +103,10 @@ public enum BaseStatEnum {
 
     public static double getManaRegenMult() {
         return MANA_REGEN_MULT / 100;
+    }
+
+    public static int getDamageReductionCap() {
+        return DAMAGE_REDUCTION_CAP;
     }
 
     /**

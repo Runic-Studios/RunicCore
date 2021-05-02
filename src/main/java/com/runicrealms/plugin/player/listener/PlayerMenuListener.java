@@ -173,6 +173,8 @@ public class PlayerMenuListener implements Listener {
         double maxManaPercent = (BaseStatEnum.getMaxManaMult() * 100) * intelligence;
         double meleeDmgPercent = (BaseStatEnum.getMeleeDmgMult() * 100) * strength;
         double defensePercent = (BaseStatEnum.getDamageReductionMult() * 100) * vitality;
+        if (defensePercent > BaseStatEnum.getDamageReductionCap())
+            defensePercent = BaseStatEnum.getDamageReductionCap();
         double healthRegenPercent = (BaseStatEnum.getHealthRegenMult() * 100) * vitality;
         double spellHealingPercent = (BaseStatEnum.getSpellHealingMult() * 100) * wisdom;
         double manaRegenPercent = (BaseStatEnum.getManaRegenMult() * 100) * wisdom;
@@ -181,7 +183,7 @@ public class PlayerMenuListener implements Listener {
         String intelligenceString = statPrefix(intelligence) + df.format(magicDmgPercent) + "% Magic Dmg" +
                 "\n" + statPrefix(intelligence) + df.format(maxManaPercent) + "% Max Mana\n";
         String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg\n";
-        String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" +
+        String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" + (defensePercent >= BaseStatEnum.getDamageReductionCap() ? " (Cap Reached)" : "") +
                 "\n" + statPrefix(vitality) + df.format(healthRegenPercent) + "% Health Regen\n";
         String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
                 "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";

@@ -35,6 +35,8 @@ public class BaseStatListener implements Listener {
         if (!(e.getVictim() instanceof Player)) return;
         UUID uuid = e.getVictim().getUniqueId();
         double damageMitigationPercent = BaseStatEnum.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuid);
+        if (damageMitigationPercent > BaseStatEnum.getDamageReductionCap())
+            damageMitigationPercent = BaseStatEnum.getDamageReductionCap(); // cap it
         e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 
