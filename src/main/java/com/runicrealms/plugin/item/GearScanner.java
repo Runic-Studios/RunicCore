@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -53,13 +55,22 @@ public class GearScanner {
     }
 
     public static int getHealthBoost(Player pl) {
-        int healthBoost = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            healthBoost += (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
+        int bonusHealth = RunicItemsAPI.getAddedPlayerStats(pl).getAddedHealth();
+        int test;
+        try {
+            test = RunicItemsAPI.getCachedPlayerItems(pl).getHelmet().getHealth();
+        } catch (NullPointerException e) {
+            test = 0;
         }
-        return healthBoost;
+        Bukkit.broadcastMessage("added health is: " + bonusHealth + ", and our test is : " + test);
+        return bonusHealth;
+//        int healthBoost = 0;
+//        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
+//
+//        for (ItemStack item : armorAndOffhand) {
+//            healthBoost += (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
+//        }
+//        return healthBoost;
     }
 
     public static int getHealthRegenBoost(Player pl) {
@@ -144,49 +155,5 @@ public class GearScanner {
             shieldAmt += (int) AttributeUtil.getCustomDouble(item, "custom.shield");
         }
         return shieldAmt;
-    }
-
-    public static int getCritEnchant(Player pl) {
-        int critEnchant = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("crit"))
-                critEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
-        }
-        return critEnchant;
-    }
-
-    public static int getDodgeEnchant(Player pl) {
-        int dodgeEnchant = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("dodge"))
-                dodgeEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
-        }
-        return dodgeEnchant;
-    }
-
-    public static int getSpeedEnchant(Player pl) {
-        int speedEnchant = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("speed"))
-                speedEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
-        }
-        return speedEnchant;
-    }
-
-    public static int getThornsEnchant(Player pl) {
-        int thornsEnchant = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            if (AttributeUtil.getCustomString(item, "scroll.enchantment").equalsIgnoreCase("thorns"))
-                thornsEnchant += (int) AttributeUtil.getCustomDouble(item, "scroll.percent");
-        }
-        return thornsEnchant;
     }
 }

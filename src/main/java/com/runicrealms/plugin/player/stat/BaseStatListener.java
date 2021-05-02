@@ -12,6 +12,9 @@ public class BaseStatListener implements Listener {
 
     private static final float DEFAULT_WALKSPEED = 0.2f;
     // todo: add vitality to spell, weapon damage event
+    // todo: add hard cap to dmg reduction from vitality
+    // todo: update gear scanner, add runic items api
+    // todo: update runic artifacts using runic items api and new spells (maybe not - prob in items)
 
     @EventHandler
     public void onHealthRegen(HealthRegenEvent e) {

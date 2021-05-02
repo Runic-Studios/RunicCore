@@ -1,15 +1,20 @@
 package com.runicrealms.plugin.player.stat;
 
+import org.bukkit.ChatColor;
+
 public enum BaseStatEnum {
 
-    DEXTERITY("Dexterity", "DEX", "✦", "Deal more ranged damage and gain movement speed!"),
-    INTELLIGENCE("Intelligence", "INT", "ʔ", "Deal more spell damage and gain more max mana!"),
-    STRENGTH("Strength", "STR", "⚔", "Deal more melee weapon damage!"),
-    VITALITY("Vitality", "VIT", "■", "Gain damage reduction and health regen!"),
-    WISDOM("Wisdom", "WIS", "✸", "Gain more spell healing and mana regen!");
+    DEXTERITY("Dexterity", "DEX", ChatColor.YELLOW, "✦", "Deal more ranged damage and gain movement speed!"),
+    INTELLIGENCE("Intelligence", "INT", ChatColor.DARK_AQUA, "ʔ", "Deal more spell damage and gain more max mana!"),
+    STRENGTH("Strength", "STR", ChatColor.RED, "⚔", "Deal more melee weapon damage!"),
+    VITALITY("Vitality", "VIT", ChatColor.WHITE, "■", "Gain damage reduction and health regen!"),
+    WISDOM("Wisdom", "WIS", ChatColor.GREEN, "✸", "Gain more spell healing and mana regen!"),
+    ATTACK_SPEED("Attack Speed", "ATK SPD", ChatColor.GRAY, "", "Determines the swing speed of your weapon!");
+//    CRIT("Crit", "CRIT", ChatColor.YELLOW, "⚔⚔", ""),
+//    DODGE("Dodge", "DODGE", ChatColor.WHITE, "","");
 
-    private static final double RANGED_DMG_MULT = 1.0;
     private static final double MOVEMENT_SPEED_MULT = 1.0;
+    private static final double RANGED_DMG_MULT = 1.0;
     private static final double MAGIC_DMG_MULT = 1.0;
     private static final double MAX_MANA_MULT = 1.0;
     private static final double MELEE_DMG_MULT = 1.0;
@@ -19,12 +24,14 @@ public enum BaseStatEnum {
     private static final double MANA_REGEN_MULT = 1.0;
     private final String name;
     private final String prefix;
+    private final ChatColor chatColor;
     private final String icon;
     private final String description;
 
-    BaseStatEnum(String name, String prefix, String icon, String description) {
+    BaseStatEnum(String name, String prefix, ChatColor chatColor, String icon, String description) {
         this.name = name;
         this.prefix = prefix;
+        this.chatColor = chatColor;
         this.icon = icon;
         this.description = description;
     }
@@ -35,6 +42,10 @@ public enum BaseStatEnum {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public ChatColor getChatColor() {
+        return chatColor;
     }
 
     public String getIcon() {

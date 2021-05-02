@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ public class PlayerMenuListener implements Listener {
                 if (pl == null) continue;
 
                 ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
-                        "\n&7Title: &aNone");
+                        "\n&7Here are your stats and stuff!\n\n" + combatPercentages(uuid));
 
                 //item 2
                 ItemStack questJournal = item(pl, Material.BOOK, "&6Quest Journal",
@@ -59,25 +60,22 @@ public class PlayerMenuListener implements Listener {
                         "\n&aFeature Coming Soon!"); // todo: remove?
 
                 // item 3 must update dynamically
-                String healthBonus = statBoost(
-                        (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()
-                                - PlayerLevelUtil.calculateHealthAtLevel(cache.getClassLevel(), cache.getClassName()));
-                String dexterity = statBoost(RunicCoreAPI.getPlayerDexterity(uuid));
-                String intelligence = statBoost(RunicCoreAPI.getPlayerIntelligence(uuid));
-                String strength = statBoost(RunicCoreAPI.getPlayerStrength(uuid));
-                String vitality = statBoost(RunicCoreAPI.getPlayerVitality(uuid));
-                String wisdom = statBoost(RunicCoreAPI.getPlayerWisdom(uuid));
+                int healthBonus = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
+                        PlayerLevelUtil.calculateHealthAtLevel(cache.getClassLevel(), cache.getClassName());
 
                 ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
-                        "\n&7Your character stats improve" + "" +
+                        "\n&7Your character stats improve" +
                                 "\n&7your potency in battle!" +
-                                "\n&7Earn them from..." + // todo:
-                                "\n\n&c❤ (Health) &7bonus: " + healthBonus +
-                                "\n&e✦ (" + BaseStatEnum.DEXTERITY.getPrefix() + "): " + dexterity +
-                                "\n&3ʔ (" + BaseStatEnum.INTELLIGENCE.getPrefix() + "): " + intelligence +
-                                "\n&c⚔ (" + BaseStatEnum.STRENGTH.getPrefix() + "): " + strength +
-                                "\n&f■ (" + BaseStatEnum.VITALITY.getPrefix() + "): " + vitality +
-                                "\n&a✸ (" + BaseStatEnum.WISDOM.getPrefix() + "): " + wisdom);
+                                "\n&7Earn them from your" +
+                                "\n&dSkill Tree &7or from items!" +
+                                "\n&7Check your bonuses above" +
+                                "\n&7in Character Info!" +
+                                "\n\n&c❤ (Health) &7bonus: " + statPrefix(healthBonus) + healthBonus +
+                                "\n" + formattedStat("Dexterity", RunicCoreAPI.getPlayerDexterity(uuid)) +
+                                "\n" + formattedStat("Intelligence", RunicCoreAPI.getPlayerIntelligence(uuid)) +
+                                "\n" + formattedStat("Strength", RunicCoreAPI.getPlayerStrength(uuid)) +
+                                "\n" + formattedStat("Vitality", RunicCoreAPI.getPlayerVitality(uuid)) +
+                                "\n" + formattedStat("Wisdom", RunicCoreAPI.getPlayerWisdom(uuid)));
 
                 InventoryView view = pl.getOpenInventory();
 
@@ -101,7 +99,7 @@ public class PlayerMenuListener implements Listener {
 
                 }
             }
-        }, 0L, 5L);
+        }, 0L, 10L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -153,12 +151,54 @@ public class PlayerMenuListener implements Listener {
         return view.getTopInventory().getSize() == PLAYER_CRAFT_INV_SIZE;
     }
 
-    private String statBoost(int stat) {
-        if (stat > 0) {
-            return "&a+" + stat;
-        } else {
-            return "&7+" + stat;
+    private String statPrefix(int stat) {
+        return stat > 0 ? "&a+" : "&7+";
+    }
+
+    private String combatPercentages(UUID uuid) {
+        int dexterity = RunicCoreAPI.getPlayerDexterity(uuid);
+        int intelligence = RunicCoreAPI.getPlayerIntelligence(uuid);
+        int strength = RunicCoreAPI.getPlayerStrength(uuid);
+        int vitality = RunicCoreAPI.getPlayerVitality(uuid);
+        int wisdom = RunicCoreAPI.getPlayerWisdom(uuid);
+        DecimalFormat df = new DecimalFormat("0.##");
+        double rangedDmgPercent = (BaseStatEnum.getRangedDmgMult() * 100) * dexterity;
+        double speedPercent = (BaseStatEnum.getMovementSpeedMult() * 100) * dexterity;
+        double magicDmgPercent = (BaseStatEnum.getMagicDmgMult() * 100) * intelligence;
+        double maxManaPercent = (BaseStatEnum.getMaxManaMult() * 100) * intelligence;
+        double meleeDmgPercent = (BaseStatEnum.getMeleeDmgMult() * 100) * strength;
+        double defensePercent = (BaseStatEnum.getDamageReductionMult() * 100) * vitality;
+        double healthRegenPercent = (BaseStatEnum.getHealthRegenMult() * 100) * vitality;
+        double spellHealingPercent = (BaseStatEnum.getSpellHealingMult() * 100) * wisdom;
+        double manaRegenPercent = (BaseStatEnum.getManaRegenMult() * 100) * wisdom;
+        String dexterityString = statPrefix(dexterity) + df.format(rangedDmgPercent) + "% Ranged Dmg" +
+                "\n" + statPrefix(dexterity) + df.format(speedPercent) + "% Speed\n";
+        String intelligenceString = statPrefix(intelligence) + df.format(magicDmgPercent) + "% Magic Dmg" +
+                "\n" + statPrefix(intelligence) + df.format(maxManaPercent) + "% Max Mana\n";
+        String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg\n";
+        String vitalityString = statPrefix(vitality) + defensePercent + "% Defense" +
+                "\n" + statPrefix(vitality) + df.format(healthRegenPercent) + "% Health Regen\n";
+        String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
+                "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
+        return dexterityString + intelligenceString + strengthString + vitalityString + wisdomString;
+    }
+
+    /**
+     * Returns a formatted string of the player's combat stats
+     * @param name name of the stat (dexterity)
+     * @param value value of the stat (RunicCoreAPI)
+     * @return a formatted string for use in the player menu
+     */
+    private String formattedStat(String name, int value) {
+        BaseStatEnum baseStatEnum = BaseStatEnum.getFromName(name);
+        if (baseStatEnum == null) {
+            Bukkit.getLogger().info("Base stat enum not found!");
+            return "";
         }
+        return baseStatEnum.getChatColor() +
+                baseStatEnum.getIcon() +
+                " (" + baseStatEnum.getPrefix() +
+                "): " + statPrefix(value) + value;
     }
 
     private ItemStack item(Player pl, Material material, String name, String description) {
