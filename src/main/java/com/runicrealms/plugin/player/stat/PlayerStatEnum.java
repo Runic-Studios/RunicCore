@@ -2,7 +2,7 @@ package com.runicrealms.plugin.player.stat;
 
 import org.bukkit.ChatColor;
 
-public enum BaseStatEnum {
+public enum PlayerStatEnum {
 
     DEXTERITY("Dexterity", "DEX", ChatColor.YELLOW, "✦", "Deal more ranged damage and gain movement speed!"),
     INTELLIGENCE("Intelligence", "INT", ChatColor.DARK_AQUA, "ʔ", "Deal more spell damage and gain more max mana!"),
@@ -38,7 +38,7 @@ public enum BaseStatEnum {
     private final String icon;
     private final String description;
 
-    BaseStatEnum(String name, String prefix, ChatColor chatColor, String icon, String description) {
+    PlayerStatEnum(String name, String prefix, ChatColor chatColor, String icon, String description) {
         this.name = name;
         this.prefix = prefix;
         this.chatColor = chatColor;
@@ -114,10 +114,10 @@ public enum BaseStatEnum {
      * @param name of stat (not case sensitive)
      * @return enum of stat
      */
-    public static BaseStatEnum getFromName(String name) {
-        for (BaseStatEnum baseStatEnum : BaseStatEnum.values()) {
-            if (baseStatEnum.getName().equalsIgnoreCase(name)) {
-                return baseStatEnum;
+    public static PlayerStatEnum getFromName(String name) {
+        for (PlayerStatEnum playerStatEnum : PlayerStatEnum.values()) {
+            if (playerStatEnum.getName().equalsIgnoreCase(name)) {
+                return playerStatEnum;
             }
         }
         return null;

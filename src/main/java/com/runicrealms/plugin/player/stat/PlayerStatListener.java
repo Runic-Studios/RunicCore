@@ -8,25 +8,26 @@ import org.bukkit.event.Listener;
 
 import java.util.UUID;
 
-public class BaseStatListener implements Listener {
+public class PlayerStatListener implements Listener {
 
     private static final float DEFAULT_WALKSPEED = 0.2f;
     // todo: add vitality to spell, weapon damage event
     // todo: add hard cap to dmg reduction from vitality
     // todo: update gear scanner, add runic items api
     // todo: update runic artifacts using runic items api and new spells (maybe not - prob in items)
+    // todo: add new magicspell, healingspell sub classes with just like 1-2 fields. then let them scale based on LEVEL
 
     @EventHandler
     public void onHealthRegen(HealthRegenEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        double healthRegenBonusPercent = BaseStatEnum.getHealthRegenMult() * RunicCoreAPI.getPlayerVitality(uuid);
+        double healthRegenBonusPercent = PlayerStatEnum.getHealthRegenMult() * RunicCoreAPI.getPlayerVitality(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * healthRegenBonusPercent)));
     }
 
     @EventHandler
     public void onManaRegen(ManaRegenEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        double manaRegenBonusPercent = BaseStatEnum.getManaRegenMult() * RunicCoreAPI.getPlayerWisdom(uuid);
+        double manaRegenBonusPercent = PlayerStatEnum.getManaRegenMult() * RunicCoreAPI.getPlayerWisdom(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * manaRegenBonusPercent)));
     }
 
@@ -34,16 +35,16 @@ public class BaseStatListener implements Listener {
     public void onMobDamage(MobDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         UUID uuid = e.getVictim().getUniqueId();
-        double damageMitigationPercent = BaseStatEnum.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuid);
-        if (damageMitigationPercent > BaseStatEnum.getDamageReductionCap())
-            damageMitigationPercent = BaseStatEnum.getDamageReductionCap(); // cap it
+        double damageMitigationPercent = PlayerStatEnum.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuid);
+        if (damageMitigationPercent > PlayerStatEnum.getDamageReductionCap())
+            damageMitigationPercent = PlayerStatEnum.getDamageReductionCap(); // cap it
         e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 
     @EventHandler
     public void onStatChangeEvent(StatChangeEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        double walkBonusPercent = BaseStatEnum.getMovementSpeedMult() * RunicCoreAPI.getPlayerDexterity(uuid);
+        double walkBonusPercent = PlayerStatEnum.getMovementSpeedMult() * RunicCoreAPI.getPlayerDexterity(uuid);
         e.getPlayer().setWalkSpeed((float) (DEFAULT_WALKSPEED + (DEFAULT_WALKSPEED * walkBonusPercent)));
         RunicCoreAPI.updateMaxMana(e.getPlayer());
     }
@@ -51,14 +52,14 @@ public class BaseStatListener implements Listener {
     @EventHandler
     public void onSpellHealing(SpellHealEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        double healAmountBonusPercent = BaseStatEnum.getSpellHealingMult() * RunicCoreAPI.getPlayerWisdom(uuid);
+        double healAmountBonusPercent = PlayerStatEnum.getSpellHealingMult() * RunicCoreAPI.getPlayerWisdom(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * healAmountBonusPercent)));
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        double magicDamageBonusPercent = BaseStatEnum.getMagicDmgMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
+        double magicDamageBonusPercent = PlayerStatEnum.getMagicDmgMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * magicDamageBonusPercent)));
     }
 
@@ -66,11 +67,11 @@ public class BaseStatListener implements Listener {
     public void onRangedDamage(WeaponDamageEvent e) {
         if (e.isRanged()) {
             UUID uuid = e.getPlayer().getUniqueId();
-            double rangedDamageBonusPercent = BaseStatEnum.getRangedDmgMult() * RunicCoreAPI.getPlayerDexterity(uuid);
+            double rangedDamageBonusPercent = PlayerStatEnum.getRangedDmgMult() * RunicCoreAPI.getPlayerDexterity(uuid);
             e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * rangedDamageBonusPercent)));
         } else {
             UUID uuid = e.getPlayer().getUniqueId();
-            double meleeDamageBonusPercent = BaseStatEnum.getMeleeDmgMult() * RunicCoreAPI.getPlayerStrength(uuid);
+            double meleeDamageBonusPercent = PlayerStatEnum.getMeleeDmgMult() * RunicCoreAPI.getPlayerStrength(uuid);
             e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * meleeDamageBonusPercent)));
         }
     }

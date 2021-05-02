@@ -75,7 +75,7 @@ public class SkillTree {
         if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
             applyPassives(RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player));
         else if (perk instanceof PerkBaseStat)
-            RunicCore.getPlayerStatManager().getPlayerStatContainer(player.getUniqueId()).increaseStat(((PerkBaseStat) perk).getBaseStatEnum(), ((PerkBaseStat) perk).getBonusAmount());
+            RunicCore.getPlayerStatManager().getPlayerStatContainer(player.getUniqueId()).increaseStat(((PerkBaseStat) perk).getPlayerStatEnum(), ((PerkBaseStat) perk).getBonusAmount());
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
     }

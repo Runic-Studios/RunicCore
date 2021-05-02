@@ -69,8 +69,8 @@ public class StatContainer {
         this.wisdom = wisdom;
     }
 
-    public void increaseStat(BaseStatEnum baseStatEnum, int value) {
-        switch (baseStatEnum) {
+    public void increaseStat(PlayerStatEnum playerStatEnum, int value) {
+        switch (playerStatEnum) {
             case DEXTERITY:
                 dexterity += value;
                 break;

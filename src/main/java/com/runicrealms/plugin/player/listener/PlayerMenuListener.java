@@ -6,7 +6,7 @@ import com.runicrealms.plugin.mysterybox.MysteryLoot;
 import com.runicrealms.plugin.mysterybox.animation.Animation;
 import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.stat.BaseStatEnum;
+import com.runicrealms.plugin.player.stat.PlayerStatEnum;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
@@ -167,23 +167,23 @@ public class PlayerMenuListener implements Listener {
         int vitality = RunicCoreAPI.getPlayerVitality(uuid);
         int wisdom = RunicCoreAPI.getPlayerWisdom(uuid);
         DecimalFormat df = new DecimalFormat("0.##");
-        double rangedDmgPercent = (BaseStatEnum.getRangedDmgMult() * 100) * dexterity;
-        double speedPercent = (BaseStatEnum.getMovementSpeedMult() * 100) * dexterity;
-        double magicDmgPercent = (BaseStatEnum.getMagicDmgMult() * 100) * intelligence;
-        double maxManaPercent = (BaseStatEnum.getMaxManaMult() * 100) * intelligence;
-        double meleeDmgPercent = (BaseStatEnum.getMeleeDmgMult() * 100) * strength;
-        double defensePercent = (BaseStatEnum.getDamageReductionMult() * 100) * vitality;
-        if (defensePercent > BaseStatEnum.getDamageReductionCap())
-            defensePercent = BaseStatEnum.getDamageReductionCap();
-        double healthRegenPercent = (BaseStatEnum.getHealthRegenMult() * 100) * vitality;
-        double spellHealingPercent = (BaseStatEnum.getSpellHealingMult() * 100) * wisdom;
-        double manaRegenPercent = (BaseStatEnum.getManaRegenMult() * 100) * wisdom;
+        double rangedDmgPercent = (PlayerStatEnum.getRangedDmgMult() * 100) * dexterity;
+        double speedPercent = (PlayerStatEnum.getMovementSpeedMult() * 100) * dexterity;
+        double magicDmgPercent = (PlayerStatEnum.getMagicDmgMult() * 100) * intelligence;
+        double maxManaPercent = (PlayerStatEnum.getMaxManaMult() * 100) * intelligence;
+        double meleeDmgPercent = (PlayerStatEnum.getMeleeDmgMult() * 100) * strength;
+        double defensePercent = (PlayerStatEnum.getDamageReductionMult() * 100) * vitality;
+        if (defensePercent > PlayerStatEnum.getDamageReductionCap())
+            defensePercent = PlayerStatEnum.getDamageReductionCap();
+        double healthRegenPercent = (PlayerStatEnum.getHealthRegenMult() * 100) * vitality;
+        double spellHealingPercent = (PlayerStatEnum.getSpellHealingMult() * 100) * wisdom;
+        double manaRegenPercent = (PlayerStatEnum.getManaRegenMult() * 100) * wisdom;
         String dexterityString = statPrefix(dexterity) + df.format(rangedDmgPercent) + "% Ranged Dmg" +
                 "\n" + statPrefix(dexterity) + df.format(speedPercent) + "% Speed\n";
         String intelligenceString = statPrefix(intelligence) + df.format(magicDmgPercent) + "% Magic Dmg" +
                 "\n" + statPrefix(intelligence) + df.format(maxManaPercent) + "% Max Mana\n";
         String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg\n";
-        String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" + (defensePercent >= BaseStatEnum.getDamageReductionCap() ? " (Cap Reached)" : "") +
+        String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" + (defensePercent >= PlayerStatEnum.getDamageReductionCap() ? " (Cap Reached)" : "") +
                 "\n" + statPrefix(vitality) + df.format(healthRegenPercent) + "% Health Regen\n";
         String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
                 "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
@@ -197,14 +197,14 @@ public class PlayerMenuListener implements Listener {
      * @return a formatted string for use in the player menu
      */
     private String formattedStat(String name, int value) {
-        BaseStatEnum baseStatEnum = BaseStatEnum.getFromName(name);
-        if (baseStatEnum == null) {
+        PlayerStatEnum playerStatEnum = PlayerStatEnum.getFromName(name);
+        if (playerStatEnum == null) {
             Bukkit.getLogger().info("Base stat enum not found!");
             return "";
         }
-        return baseStatEnum.getChatColor() +
-                baseStatEnum.getIcon() +
-                " (" + baseStatEnum.getPrefix() +
+        return playerStatEnum.getChatColor() +
+                playerStatEnum.getIcon() +
+                " (" + playerStatEnum.getPrefix() +
                 "): " + statPrefix(value) + value;
     }
 

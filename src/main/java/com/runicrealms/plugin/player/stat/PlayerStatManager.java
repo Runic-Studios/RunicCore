@@ -49,9 +49,9 @@ public class PlayerStatManager implements Listener {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkBaseStat)) continue;
             PerkBaseStat perkBaseStat = (PerkBaseStat) perk;
-            BaseStatEnum baseStatEnum = perkBaseStat.getBaseStatEnum();
+            PlayerStatEnum playerStatEnum = perkBaseStat.getPlayerStatEnum();
             int amount = perkBaseStat.getBonusAmount() * perkBaseStat.getCurrentlyAllocatedPoints();
-            playerStatMap.get(player.getUniqueId()).increaseStat(baseStatEnum, amount);
+            playerStatMap.get(player.getUniqueId()).increaseStat(playerStatEnum, amount);
         }
     }
 
