@@ -3,7 +3,6 @@ package com.runicrealms.plugin.utilities;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
@@ -14,19 +13,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class DamageUtil {
 
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, double gemBoostPercent) {
-
-        // update amount with gem values
-        int gemBoost = GearScanner.getMagicBoost(caster);
-        if (gemBoostPercent < 100) {
-            gemBoost = (int) (gemBoost * (gemBoostPercent / 100));
-        }
-        dmgAmt = dmgAmt + gemBoost;
-
-        // update w/ shield
-        if (recipient instanceof Player) {
-            int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
-            dmgAmt = dmgAmt - shieldAmt;
-        }
 
         // prevent healing
         if (dmgAmt < 0) {
@@ -63,15 +49,6 @@ public class DamageUtil {
 
         // no damage ticks delay
         if (!bypassNoTick && recipient.getNoDamageTicks() > 0) return;
-
-        // scan the gems
-        dmgAmt = dmgAmt + GearScanner.getAttackBoost(caster);
-
-        // update w/ shield
-        if (recipient instanceof Player) {
-            int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
-            dmgAmt = dmgAmt - shieldAmt;
-        }
 
         // prevent healing
         if (dmgAmt < 0) {
@@ -119,12 +96,6 @@ public class DamageUtil {
 //            ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
 //            dmgAmt = mm.getDamage();
 //        }
-
-        // update w/ shield
-        if (recipient instanceof Player) {
-            int shieldAmt = GearScanner.getShieldAmt(((Player) recipient));
-            dmgAmt = dmgAmt - shieldAmt;
-        }
 
         // prevent healing
         if (dmgAmt < 0) {

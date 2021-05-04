@@ -33,7 +33,7 @@ public class HealthUtils {
         double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className);
         double coefficient = PlayerLevelUtil.getHealthLevelCoefficient();
 
-        int total = (int) (BASE_HEALTH + (coefficient * Math.pow(classLevel, 2)) + (hpPerLevel * classLevel) + GearScanner.getHealthBoost(pl));
+        int total = (int) (BASE_HEALTH + (coefficient * Math.pow(classLevel, 2)) + (hpPerLevel * classLevel) + GearScanner.getItemHealth(pl.getUniqueId()));
 
         pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(total);
         pl.setHealthScale(HEART_AMOUNT);

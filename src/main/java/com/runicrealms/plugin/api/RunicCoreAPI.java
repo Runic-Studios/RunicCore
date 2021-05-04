@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.api;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
@@ -251,40 +252,45 @@ public class RunicCoreAPI {
 
     public static int getPlayerDexterity(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getDexterity();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getDexterity() + GearScanner.getItemDexterity(uuid);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return 0;
         }
     }
 
     public static int getPlayerIntelligence(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getIntelligence();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getIntelligence() + GearScanner.getItemIntelligence(uuid);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return 0;
         }
     }
 
     public static int getPlayerStrength(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getStrength();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getStrength() + GearScanner.getItemStrength(uuid);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return 0;
         }
     }
 
     public static int getPlayerVitality(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getVitality();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getVitality() + GearScanner.getItemVitality(uuid);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return 0;
         }
     }
 
     public static int getPlayerWisdom(UUID uuid) {
         try {
-            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getWisdom();
+            return RunicCore.getPlayerStatManager().getPlayerStatContainer(uuid).getWisdom() + GearScanner.getItemWisdom(uuid);
         } catch (NullPointerException e) {
+            e.printStackTrace();
             return 0;
         }
     }

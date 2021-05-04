@@ -1,116 +1,83 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
+import com.runicrealms.plugin.player.stat.PlayerStatEnum;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
-import java.util.ArrayList;
+import java.util.UUID;
 
 public class GearScanner {
 
-    public static ArrayList<ItemStack> armor(Player pl) {
-
-        ArrayList<ItemStack> armor = new ArrayList<>();
-        PlayerInventory inv = pl.getInventory();
-        ItemStack helmet = inv.getHelmet();
-        ItemStack chestplate = inv.getChestplate();
-        ItemStack leggings = inv.getLeggings();
-        ItemStack boots = inv.getBoots();
-
-        // add all the items to arraylist
-        if (helmet != null) armor.add(pl.getInventory().getHelmet());
-        if (chestplate != null) armor.add(pl.getInventory().getChestplate());
-        if (leggings != null) armor.add(pl.getInventory().getLeggings());
-        if (boots != null) armor.add(pl.getInventory().getBoots());
-        return armor;
+    /**
+     *
+     * @param uuid
+     * @return
+     */
+    public static int getItemHealth(UUID uuid) {
+        return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedHealth();
     }
 
-    public static ArrayList<ItemStack> armorAndOffHand(Player pl) {
-
-        ArrayList<ItemStack> armorAndOffhand = new ArrayList<>();
-        PlayerInventory inv = pl.getInventory();
-        ItemStack helmet = inv.getHelmet();
-        ItemStack chestplate = inv.getChestplate();
-        ItemStack leggings = inv.getLeggings();
-        ItemStack boots = inv.getBoots();
-        ItemStack offhand = inv.getItemInOffHand();
-
-        // add all the items to arraylist
-        if (helmet != null) armorAndOffhand.add(pl.getInventory().getHelmet());
-        if (chestplate != null) armorAndOffhand.add(pl.getInventory().getChestplate());
-        if (leggings != null) armorAndOffhand.add(pl.getInventory().getLeggings());
-        if (boots != null) armorAndOffhand.add(pl.getInventory().getBoots());
-        if (offhand.getType() != Material.AIR
-                && AttributeUtil.getCustomString(offhand, "offhand").equals("true")) {
-            armorAndOffhand.add(pl.getInventory().getItemInOffHand());
-        }
-        // insurance policy
-        armorAndOffhand.removeIf(item -> item == null || item.getType() == Material.AIR);
-
-        return armorAndOffhand;
+    /**
+     *
+     * @param uuid
+     * @return
+     */
+    public static int getItemDexterity(UUID uuid) {
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.DEXTERITY) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.DEXTERITY);
+        else
+            return 0;
     }
 
-    public static int getHealthBoost(Player pl) {
-        int bonusHealth = RunicItemsAPI.getAddedPlayerStats(pl).getAddedHealth();
-        int test;
-        try {
-            test = RunicItemsAPI.getCachedPlayerItems(pl).getHelmet().getHealth();
-        } catch (NullPointerException e) {
-            test = 0;
-        }
-        Bukkit.broadcastMessage("added health is: " + bonusHealth + ", and our test is : " + test);
-        return bonusHealth;
-//        int healthBoost = 0;
-//        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-//
-//        for (ItemStack item : armorAndOffhand) {
-//            healthBoost += (int) AttributeUtil.getCustomDouble(item, "custom.maxHealth");
-//        }
-//        return healthBoost;
+    /**
+     *
+     * @param uuid
+     * @return
+     */
+    public static int getItemIntelligence(UUID uuid) {
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.INTELLIGENCE) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.INTELLIGENCE);
+        else
+            return 0;
     }
 
-    public static int getHealthRegenBoost(Player pl) {
-        int healthRegenBoost = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            healthRegenBoost += (int) AttributeUtil.getCustomDouble(item, "custom.healthRegen");
-        }
-        return healthRegenBoost;
+    /**
+     *
+     * @param uuid
+     * @return
+     */
+    public static int getItemStrength(UUID uuid) {
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.STRENGTH) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.STRENGTH);
+        else
+            return 0;
     }
 
-    public static int getManaBoost(Player pl) {
-        int manaBoost = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            manaBoost += (int) AttributeUtil.getCustomDouble(item, "custom.manaBoost");
-        }
-        return manaBoost;
+    /**
+     *
+     * @param uuid
+     * @return
+     */
+    public static int getItemVitality(UUID uuid) {
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.VITALITY) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.VITALITY);
+        else
+            return 0;
     }
 
-    public static int getManaRegenBoost(Player pl) {
-        int manaRegen = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            manaRegen += (int) AttributeUtil.getCustomDouble(item, "custom.manaRegen");
-        }
-        return manaRegen;
-    }
-
-    public static int getAttackBoost(Player pl) {
-        int attackDamage = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            attackDamage += (int) AttributeUtil.getCustomDouble(item, "custom.attackDamage");
-        }
-        return attackDamage;
+    /**
+     *
+     * @param uuid
+     * @return
+     */
+    public static int getItemWisdom(UUID uuid) {
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.WISDOM) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.WISDOM);
+        else
+            return 0;
     }
 
     public static int getMinDamage(Player pl) {
@@ -125,35 +92,5 @@ public class GearScanner {
         if (item.getType() == Material.AIR)
             return 0;
         return (int) AttributeUtil.getCustomDouble(item, "custom.maxDamage");
-    }
-
-    public static int getHealingBoost(Player pl) {
-        int healingBoost = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            healingBoost += (int) AttributeUtil.getCustomDouble(item, "custom.healingBoost");
-        }
-        return healingBoost;
-    }
-
-    public static int getMagicBoost(Player pl) {
-        int magicBoost = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            magicBoost += (int) AttributeUtil.getCustomDouble(item, "custom.magicDamage");
-        }
-        return magicBoost;
-    }
-
-    public static int getShieldAmt(Player pl) {
-        int shieldAmt = 0;
-        ArrayList<ItemStack> armorAndOffhand = armorAndOffHand(pl);
-
-        for (ItemStack item : armorAndOffhand) {
-            shieldAmt += (int) AttributeUtil.getCustomDouble(item, "custom.shield");
-        }
-        return shieldAmt;
     }
 }

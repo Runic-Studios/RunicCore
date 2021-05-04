@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spellutil;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
@@ -24,15 +23,6 @@ public class HealUtil  {
     @SuppressWarnings("deprecation")
     public static void healPlayer(double healAmt, Player recipient, Player caster,
                                   boolean gemBoosted, boolean halveGemBoost, boolean isReducedOnCaster) {
-
-        // scan for gem values
-        if (gemBoosted) {
-            int boost = GearScanner.getHealingBoost(caster);
-            if (halveGemBoost) {
-                boost = boost/2;
-            }
-            healAmt = healAmt + boost;
-        }
 
         // spells are half effective on the caster
         if (isReducedOnCaster && recipient == caster) {
@@ -85,15 +75,6 @@ public class HealUtil  {
      */
     public static void shieldPlayer(double shieldAmt, Player recipient, Player caster,
                                   boolean gemBoosted, boolean halveGemBoost, boolean isReducedOnCaster) {
-
-        // scan for gem values
-        if (gemBoosted) {
-            int boost = GearScanner.getShieldAmt(caster);
-            if (halveGemBoost) {
-                boost = boost / 2;
-            }
-            shieldAmt = shieldAmt + boost;
-        }
 
         // spells are half effective on the caster
         if (isReducedOnCaster && recipient == caster) {

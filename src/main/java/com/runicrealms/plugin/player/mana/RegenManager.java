@@ -3,7 +3,6 @@ package com.runicrealms.plugin.player.mana;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
-import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -47,7 +46,7 @@ public class RegenManager implements Listener {
 
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            int regenAmt = HEALTH_REGEN_AMT + GearScanner.getHealthRegenBoost(online);
+            int regenAmt = HEALTH_REGEN_AMT;
             if (RunicCore.getCombatManager().getPlayersInCombat().get(online.getUniqueId()) == null)
                 regenAmt *= 5; // players regen a lot out of combat
             HealthRegenEvent event = new HealthRegenEvent(online, regenAmt);
@@ -67,7 +66,7 @@ public class RegenManager implements Listener {
             if (currentPlayerManas.containsKey(online.getUniqueId()))
                 mana = currentPlayerManas.get(online.getUniqueId());
             else
-                mana = getBaseMana() + getManaPerLv(online) + GearScanner.getManaBoost(online);
+                mana = getBaseMana() + getManaPerLv(online);
 
             int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(online).getMaxMana();
             if (mana >= maxMana) continue;
@@ -137,11 +136,6 @@ public class RegenManager implements Listener {
     }
 
     public void addMana(Player pl, int amt, boolean gemBoosted) {
-
-        if (gemBoosted) {
-            int boost = GearScanner.getHealingBoost(pl);
-            amt = amt + boost;
-        }
 
         int mana = currentPlayerManas.get(pl.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
