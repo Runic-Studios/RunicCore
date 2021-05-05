@@ -200,7 +200,7 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // motd
         String motd = ColorUtil.format("                    &d&lRUNIC REALMS&r" +
-                "\n            &f&l1.8 - The Dungeons Patch!");
+                "\n              &a&l1.9 - The Second Age!");
         MinecraftServer.getServer().setMotd(motd);
     }
 

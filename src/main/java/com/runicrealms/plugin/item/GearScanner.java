@@ -12,18 +12,18 @@ import java.util.UUID;
 public class GearScanner {
 
     /**
-     *
-     * @param uuid
-     * @return
+     * Returns the bonus health of all gear pieces the player is wearing.
+     * @param uuid uuid of player
+     * @return added item health
      */
     public static int getItemHealth(UUID uuid) {
         return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedHealth();
     }
 
     /**
-     *
-     * @param uuid
-     * @return
+     * Returns the bonus dexterity of all gear pieces the player is wearing.
+     * @param uuid uuid of player
+     * @return added item dex
      */
     public static int getItemDexterity(UUID uuid) {
         if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.DEXTERITY) != null)
@@ -33,9 +33,9 @@ public class GearScanner {
     }
 
     /**
-     *
-     * @param uuid
-     * @return
+     * Returns the bonus intelligence of all gear pieces the player is wearing.
+     * @param uuid uuid of player
+     * @return added item int
      */
     public static int getItemIntelligence(UUID uuid) {
         if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.INTELLIGENCE) != null)
@@ -45,9 +45,9 @@ public class GearScanner {
     }
 
     /**
-     *
-     * @param uuid
-     * @return
+     * Returns the bonus strength of all gear pieces the player is wearing.
+     * @param uuid uuid of player
+     * @return added item str
      */
     public static int getItemStrength(UUID uuid) {
         if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.STRENGTH) != null)
@@ -57,9 +57,9 @@ public class GearScanner {
     }
 
     /**
-     *
-     * @param uuid
-     * @return
+     * Returns the bonus vitality of all gear pieces the player is wearing.
+     * @param uuid uuid of player
+     * @return added item vit
      */
     public static int getItemVitality(UUID uuid) {
         if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.VITALITY) != null)
@@ -69,9 +69,9 @@ public class GearScanner {
     }
 
     /**
-     *
-     * @param uuid
-     * @return
+     * Returns the bonus wisdom of all gear pieces the player is wearing.
+     * @param uuid uuid of player
+     * @return added item wis
      */
     public static int getItemWisdom(UUID uuid) {
         if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.WISDOM) != null)

@@ -11,9 +11,6 @@ import java.util.UUID;
 public class PlayerStatListener implements Listener {
 
     private static final float DEFAULT_WALKSPEED = 0.2f;
-    // todo: add vitality to spell, weapon damage event
-    // todo: add hard cap to dmg reduction from vitality
-    // todo: update gear scanner, add runic items api
     // todo: update runic artifacts using runic items api and new spells (maybe not - prob in items)
     // todo: add new magicspell, healingspell sub classes with just like 1-2 fields. then let them scale based on LEVEL
 
@@ -61,6 +58,14 @@ public class PlayerStatListener implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         double magicDamageBonusPercent = PlayerStatEnum.getMagicDmgMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * magicDamageBonusPercent)));
+        /*
+        Defense
+         */
+        UUID uuidVictim = e.getEntity().getUniqueId();
+        double damageMitigationPercent = PlayerStatEnum.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
+        if (damageMitigationPercent > PlayerStatEnum.getDamageReductionCap())
+            damageMitigationPercent = PlayerStatEnum.getDamageReductionCap(); // cap it
+        e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 
     @EventHandler
@@ -74,5 +79,13 @@ public class PlayerStatListener implements Listener {
             double meleeDamageBonusPercent = PlayerStatEnum.getMeleeDmgMult() * RunicCoreAPI.getPlayerStrength(uuid);
             e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * meleeDamageBonusPercent)));
         }
+        /*
+        Defense
+         */
+        UUID uuidVictim = e.getEntity().getUniqueId();
+        double damageMitigationPercent = PlayerStatEnum.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
+        if (damageMitigationPercent > PlayerStatEnum.getDamageReductionCap())
+            damageMitigationPercent = PlayerStatEnum.getDamageReductionCap(); // cap it
+        e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 }
