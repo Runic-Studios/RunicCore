@@ -234,6 +234,15 @@ public class RunicCoreAPI {
     }
 
     /**
+     *
+     * @param player
+     * @return
+     */
+    public static boolean isInCombat(Player player) {
+        return RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId());
+    }
+
+    /**
      * This is used in other plugins to... ugh... idek.
      * @param damager
      * @param victim
