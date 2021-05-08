@@ -134,9 +134,6 @@ public class CacheManager implements Listener {
             // location
             character.remove("location"); // remove old save format
             DatabaseUtil.saveLocation(character, playerCache.getLocation());
-            // inventory
-            /*character.set("inventory", DatabaseUtil.serializeInventory(player.getInventory()));
-            character.set("inventoryNew", DatabaseUtil.serializeInventoryNew(player.getInventory()));*/
             // save data (includes nested fields)
             if (saveAsync)
                 Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), mongoData::save);
