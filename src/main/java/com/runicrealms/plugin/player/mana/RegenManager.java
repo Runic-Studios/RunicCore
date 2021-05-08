@@ -41,7 +41,7 @@ public class RegenManager implements Listener {
                 regenHealth();
                 regenMana();
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, REGEN_PERIOD *20);
+        }.runTaskTimer(RunicCore.getInstance(), 0, REGEN_PERIOD * 20);
     }
 
     private void regenHealth() {

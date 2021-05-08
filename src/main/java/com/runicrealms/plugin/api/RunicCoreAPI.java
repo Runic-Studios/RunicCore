@@ -163,7 +163,7 @@ public class RunicCoreAPI {
                     break;
             }
         } catch (NullPointerException e) {
-
+            // haha sky is lazy
         }
         return spellToCast;
     }
@@ -234,18 +234,18 @@ public class RunicCoreAPI {
     }
 
     /**
-     *
-     * @param player
-     * @return
+     * Check if the current player is in combat
+     * @param player to check
+     * @return true if player in combat
      */
     public static boolean isInCombat(Player player) {
         return RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId());
     }
 
     /**
-     * This is used in other plugins to... ugh... idek.
-     * @param damager
-     * @param victim
+     * This is used in other plugins to manually tag a player in combat
+     * @param damager the attacker
+     * @param victim the defender
      */
     public static void tagCombat(Player damager, Entity victim) {
         CombatListener.tagCombat(damager, victim);

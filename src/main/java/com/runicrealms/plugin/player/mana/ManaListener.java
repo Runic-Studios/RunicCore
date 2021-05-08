@@ -105,7 +105,12 @@ public class ManaListener implements Listener {
         RunicCore.getCacheManager().getPlayerCaches().get(pl).setMaxMana((int) (newMaxMana + intelligenceManaBoost));
 
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
-        int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
+        int currentMana;
+        try {
+            currentMana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
+        } catch (NullPointerException e) {
+            currentMana = 0;
+        }
         if (currentMana > maxMana) {
             RunicCore.getRegenManager().getCurrentManaList().put(pl.getUniqueId(), maxMana);
         }
