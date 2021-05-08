@@ -17,8 +17,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +28,7 @@ public class CacheManager implements Listener {
 
     private static final int CACHE_PERIOD = 30;
 
+    private final BukkitTask cacheSavingTask;
     private final ConcurrentHashMap<Player, PlayerCache> playerCaches;
     private final ConcurrentLinkedQueue<PlayerCache> queuedCaches;
 
@@ -39,7 +40,7 @@ public class CacheManager implements Listener {
         playerCaches = new ConcurrentHashMap<>();
         queuedCaches = new ConcurrentLinkedQueue<>();
 
-        new BukkitRunnable() { // Asynchronously
+        cacheSavingTask = new BukkitRunnable() { // Asynchronously
             @Override
             public void run() {
                 saveCaches();
@@ -74,6 +75,12 @@ public class CacheManager implements Listener {
         if (willQueue) {
             queuedCaches.removeIf(n -> (n.getPlayerID() == playerCache.getPlayerID())); // prevent duplicates
             queuedCaches.add(playerCache); // queue the file for saving
+        }
+    }
+
+    public void saveAllCachedPlayers(CacheSaveReason cacheSaveReason) {
+        for (PlayerCache playerCache : playerCaches.values()) {
+            setFieldsSaveFile(playerCache, Bukkit.getPlayer(playerCache.getPlayerID()), false, cacheSaveReason);
         }
     }
 
@@ -139,6 +146,10 @@ public class CacheManager implements Listener {
             RunicCore.getInstance().getLogger().info("[ERROR]: Data of player cache to save was null.");
             e.printStackTrace();
         }
+    }
+
+    public BukkitTask getCacheSavingTask() {
+        return cacheSavingTask;
     }
 
     public ConcurrentHashMap.KeySetView<Player, PlayerCache> getLoadedPlayers() {

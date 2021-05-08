@@ -8,9 +8,6 @@ import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.*;
-import com.runicrealms.plugin.command.essentials.GMC;
-import com.runicrealms.plugin.command.essentials.GMS;
-import com.runicrealms.plugin.command.essentials.GMSP;
 import com.runicrealms.plugin.command.subcommands.FastTravel;
 import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
 import com.runicrealms.plugin.command.supercommands.CurrencySC;
@@ -169,9 +166,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new GroupCommand());
         commandManager.registerCommand(new ResetTreeCMD());
-        commandManager.registerCommand(new GMC());
-        commandManager.registerCommand(new GMS());
-        commandManager.registerCommand(new GMSP());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
         });
@@ -240,7 +234,9 @@ public class RunicCore extends JavaPlugin implements Listener {
          */
         getLogger().info(" §cRunicCore has been disabled.");
         getCacheManager().saveCaches(); // save player data
-        getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
+        //getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
+        getCacheManager().getCacheSavingTask().cancel(); // cancel cache saving queue
+        getCacheManager().saveAllCachedPlayers(CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
         /*
         Notify RunicRestart
          */
