@@ -23,6 +23,15 @@ commands:
   spell:
     usage: /<commands>
     description: Base for all oldspells commands
+  gmc:
+    usage: /<commands>
+    description: Creative
+  gms:
+    usage: /<commands>
+    description: Survival
+  gmsp:
+    usage: /<commands>
+    description: Spectator
   group:
     usage: /<commands>
     description: Base for all party commands
