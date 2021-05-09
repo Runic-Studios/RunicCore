@@ -8,6 +8,9 @@ loadbefore: [Quests]
 softdepend: [PlaceholderAPI]
 depend: [MythicMobs, NBTAPI, RunicChat]
 commands:
+  3d:
+    usage: /<commands>
+    description: Get a 3d version of your weapon!
   artifactinfo:
     usage: /<commands>
     description: Returns info on the artifact slot.

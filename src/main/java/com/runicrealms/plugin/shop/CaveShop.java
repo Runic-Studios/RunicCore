@@ -5,6 +5,7 @@ import com.runicrealms.plugin.item.shops.RunicItemRunnable;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicShopItem;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -22,21 +23,26 @@ public class CaveShop implements RunicItemShop {
     public CaveShop() {
         availableItems = new HashMap<>();
         int nextItemIndex = 0;
-        ItemStack bow = RunicItemsAPI.generateItemFromTemplate("sanguine_longbow").generateItem();
-        availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
-        ItemStack mace = RunicItemsAPI.generateItemFromTemplate("crimson_maul").generateItem();
-        availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
-        ItemStack staff = RunicItemsAPI.generateItemFromTemplate("bloodmoon").generateItem();
-        availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
-        ItemStack sword = RunicItemsAPI.generateItemFromTemplate("scarlet_rapier").generateItem();
-        availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
-        ItemStack axe = RunicItemsAPI.generateItemFromTemplate("corruption").generateItem();
-        availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
+        try {
+            ItemStack bow = RunicItemsAPI.generateItemFromTemplate("sanguine-longbow").generateItem();
+            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                    iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
+            ItemStack mace = RunicItemsAPI.generateItemFromTemplate("crimson-maul").generateItem();
+            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                    iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
+            ItemStack staff = RunicItemsAPI.generateItemFromTemplate("bloodmoon").generateItem();
+            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                    iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
+            ItemStack sword = RunicItemsAPI.generateItemFromTemplate("scarlet-rapier").generateItem();
+            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                    iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
+            ItemStack axe = RunicItemsAPI.generateItemFromTemplate("corruption").generateItem();
+            availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                    iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
+        }
         nextItemIndex = 9;
         nextItemIndex = loadRunicArmor(nextItemIndex,
                 "sebaths-cave-archer-helmet",
@@ -75,10 +81,15 @@ public class CaveShop implements RunicItemShop {
     private int loadRunicArmor(int nextItemIndex, String... templateIds) {
         int temp = nextItemIndex;
         for (String s : templateIds) {
-            ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(s).generateItem();
-            availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, MYTHIC_CURRENCY,
-                    iconWithLore(itemStack, CaveShop.ARMOR_PRICE), runShopBuy(itemStack)));
-            nextItemIndex += 9;
+            try {
+                ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(s).generateItem();
+                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, MYTHIC_CURRENCY,
+                        iconWithLore(itemStack, CaveShop.ARMOR_PRICE), runShopBuy(itemStack)));
+                nextItemIndex += 9;
+            } catch (Exception e) {
+                Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
+                e.printStackTrace();
+            }
         }
         return temp + 1;
     }

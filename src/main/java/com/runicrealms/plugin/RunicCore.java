@@ -5,7 +5,6 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
-import com.runicrealms.plugin.artifact.donator.ThreeD;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.*;
@@ -16,6 +15,8 @@ import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
 import com.runicrealms.plugin.command.supercommands.TravelSC;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
+import com.runicrealms.plugin.donator.ThreeD;
+import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
@@ -110,6 +111,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PaperCommandManager commandManager;
     private static SkillTreeManager skillTreeManager;
     private static PlayerStatManager playerStatManager;
+    private static ThreeDManager threeDManager;
 
     // dungeon shops
     private static CaveShop caveShop;
@@ -144,6 +146,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
     public static PlayerStatManager getPlayerStatManager() {
         return playerStatManager;
+    }
+    public static ThreeDManager getThreeDManager() {
+        return threeDManager;
     }
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
@@ -262,6 +267,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyChannel = null;
         skillTreeManager = null;
         playerStatManager = null;
+        threeDManager = null;
         // dungeon shops
         caveShop = null;
         cavernShop = null;

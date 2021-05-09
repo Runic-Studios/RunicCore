@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.armor.tierset.TierSetEnum;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.ItemTypeEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -203,14 +202,14 @@ public class LoreGenerator {
 //                lore.add(ColorUtil.format(s));
 //            }
 //        }
-        String tierSet = AttributeUtil.getCustomString(item, "tierset");
-        if (!tierSet.equals("")) {
-            String tierSetLore = TierSetEnum.valueOf(tierSet.toUpperCase()).getEffectLore();
-            String[] extraEffectLore = tierSetLore.split("\n");
-            for (String s : extraEffectLore) {
-                lore.add(ColorUtil.format(s));
-            }
-        }
+//        String tierSet = AttributeUtil.getCustomString(item, "tierset");
+//        if (!tierSet.equals("")) {
+//            String tierSetLore = TierSetEnum.valueOf(tierSet.toUpperCase()).getEffectLore();
+//            String[] extraEffectLore = tierSetLore.split("\n");
+//            for (String s : extraEffectLore) {
+//                lore.add(ColorUtil.format(s));
+//            }
+//        }
 
             // add rarity
         if (dispColor == ChatColor.WHITE) {

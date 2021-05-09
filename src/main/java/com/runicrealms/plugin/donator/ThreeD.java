@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.donator;
 
-import com.runicrealms.plugin.RunicArtifacts;
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -16,7 +16,7 @@ public class ThreeD implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String lb, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (RunicArtifacts.getThreeDManager().disguiseArtifact(player, player.getInventory().getItemInMainHand())) {
+            if (RunicCore.getThreeDManager().disguiseArtifact(player, player.getInventory().getItemInMainHand())) {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 player.sendMessage(ChatColor.GREEN + "You have applied your weapon skin to your artifact!");
             } else {

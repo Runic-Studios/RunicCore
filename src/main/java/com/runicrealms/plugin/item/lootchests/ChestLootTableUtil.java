@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.item.lootchests;
 
-import com.runicrealms.plugin.artifact.util.ItemUtil;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.professions.gathering.GatheringUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
@@ -27,7 +26,7 @@ public class ChestLootTableUtil {
 
         // add the gear chance
         ItemStack commonArmor = ItemUtils.generateCommonArmor();
-        ItemStack commonWeapon = ItemUtil.generateCommonWeapon();
+//        ItemStack commonWeapon = ItemUtil.generateCommonWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(6 - 4) + 4);
@@ -56,7 +55,7 @@ public class ChestLootTableUtil {
 
         // add entries to table
         commonLootTable.addEntry(commonArmor,  35.0);
-        commonLootTable.addEntry(commonWeapon,  35.0);
+//        commonLootTable.addEntry(commonWeapon,  35.0);
         commonLootTable.addEntry(coin, 50.0);
         commonLootTable.addEntry(bread, 50.0);
 
@@ -88,7 +87,7 @@ public class ChestLootTableUtil {
 
         // add the gear chance
         ItemStack uncommonArmor = ItemUtils.generateUncommonArmor();
-        ItemStack uncommonWeapon = ItemUtil.generateUncommonWeapon();
+//        ItemStack uncommonWeapon = ItemUtil.generateUncommonWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(8 - 4) + 4);
@@ -118,7 +117,7 @@ public class ChestLootTableUtil {
 
         // add entries to table
         uncommonLootTable.addEntry(uncommonArmor,  25.0);
-        uncommonLootTable.addEntry(uncommonWeapon,  25.0);
+//        uncommonLootTable.addEntry(uncommonWeapon,  25.0);
 
         uncommonLootTable.addEntry(coin, 50.0);
         uncommonLootTable.addEntry(bread, 35.0);
@@ -152,7 +151,7 @@ public class ChestLootTableUtil {
 
         // add the gear chance
         ItemStack rareArmor = ItemUtils.generateRareArmor();
-        ItemStack rareWeapon = ItemUtil.generateRareWeapon();
+//        ItemStack rareWeapon = ItemUtil.generateRareWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(10 - 5) + 5);
@@ -183,7 +182,7 @@ public class ChestLootTableUtil {
 
         // add entries to table
         rareLootTable.addEntry(rareArmor,  25.0);
-        rareLootTable.addEntry(rareWeapon,  25.0);
+//        rareLootTable.addEntry(rareWeapon,  25.0);
         rareLootTable.addEntry(coin, 50.0);
         rareLootTable.addEntry(bread, 35.0);
 
@@ -217,7 +216,7 @@ public class ChestLootTableUtil {
 
         // add the gear chance
         ItemStack epicArmor = ItemUtils.generateEpicArmor();
-        ItemStack epicWeapon = ItemUtil.generateEpicWeapon();
+//        ItemStack epicWeapon = ItemUtil.generateEpicWeapon();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(rand.nextInt(10 - 5) + 5);
@@ -250,7 +249,7 @@ public class ChestLootTableUtil {
 
         // add entries to table
         epicLootTable.addEntry(epicArmor,  15.0);
-        epicLootTable.addEntry(epicWeapon,  15.0);
+//        epicLootTable.addEntry(epicWeapon,  15.0);
         epicLootTable.addEntry(coin, 50.0);
         epicLootTable.addEntry(bread, 35.0);
 

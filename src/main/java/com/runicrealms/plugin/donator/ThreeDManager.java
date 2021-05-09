@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.donator;
 
-import com.runicrealms.plugin.RunicArtifacts;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.util.ItemRemover;
@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ThreeDManager implements Listener {
 
     public ThreeDManager() {
-        RunicArtifacts.getInstance().getServer().getPluginManager().registerEvents(this, RunicArtifacts.getInstance());
+        RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     /*

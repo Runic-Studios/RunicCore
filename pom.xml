@@ -182,14 +182,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/NBTAPI-1.16.4.jar</systemPath>
         </dependency>
-        <!-- RunicArtifacts -->
-        <dependency>
-            <groupId>com.runicrealms.plugin</groupId>
-            <artifactId>RunicArtifacts</artifactId>
-            <version>1.15.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicArtifacts-1.15.2.jar</systemPath>
-        </dependency>
         <!-- RunicChat -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
