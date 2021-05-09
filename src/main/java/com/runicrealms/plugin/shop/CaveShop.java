@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.shop;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.item.shops.RunicItemRunnable;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
@@ -17,59 +18,62 @@ public class CaveShop implements RunicItemShop {
 
     private static final int ARMOR_PRICE = 1;
     private static final int ARTIFACT_PRICE = 2;
+    private static final int LOAD_DELAY = 10;
     private static final String MYTHIC_CURRENCY = "HeadOfSebath";
-    private final Map<Integer, RunicShopItem> availableItems;
+    private Map<Integer, RunicShopItem> availableItems;
 
     public CaveShop() {
-        availableItems = new HashMap<>();
-        int nextItemIndex = 0;
-        try {
-            ItemStack bow = RunicItemsAPI.generateItemFromTemplate("sanguine-longbow").generateItem();
-            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                    iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
-            ItemStack mace = RunicItemsAPI.generateItemFromTemplate("crimson-maul").generateItem();
-            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                    iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
-            ItemStack staff = RunicItemsAPI.generateItemFromTemplate("bloodmoon").generateItem();
-            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                    iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
-            ItemStack sword = RunicItemsAPI.generateItemFromTemplate("scarlet-rapier").generateItem();
-            availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                    iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
-            ItemStack axe = RunicItemsAPI.generateItemFromTemplate("corruption").generateItem();
-            availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
-                    iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
-        }
-        nextItemIndex = 9;
-        nextItemIndex = loadRunicArmor(nextItemIndex,
-                "sebaths-cave-archer-helmet",
-                "sebaths-cave-archer-chest",
-                "sebaths-cave-archer-leggings",
-                "sebaths-cave-archer-boots");
-        nextItemIndex = loadRunicArmor(nextItemIndex,
-                "sebaths-cave-cleric-helmet",
-                "sebaths-cave-cleric-chest",
-                "sebaths-cave-cleric-leggings",
-                "sebaths-cave-cleric-boots");
-        nextItemIndex = loadRunicArmor(nextItemIndex,
-                "sebaths-cave-mage-helmet",
-                "sebaths-cave-mage-chest",
-                "sebaths-cave-mage-leggings",
-                "sebaths-cave-mage-boots");
-        nextItemIndex = loadRunicArmor(nextItemIndex,
-                "sebaths-cave-rogue-helmet",
-                "sebaths-cave-rogue-chest",
-                "sebaths-cave-rogue-leggings",
-                "sebaths-cave-rogue-boots");
-        loadRunicArmor(nextItemIndex,
-                "sebaths-cave-warrior-helmet",
-                "sebaths-cave-warrior-chest",
-                "sebaths-cave-warrior-leggings",
-                "sebaths-cave-warrior-boots");
-        RunicCoreAPI.registerRunicItemShop(this);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            availableItems = new HashMap<>();
+            int nextItemIndex = 0;
+            try {
+                ItemStack bow = RunicItemsAPI.generateItemFromTemplate("sanguine-longbow").generateItem();
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                        iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
+                ItemStack mace = RunicItemsAPI.generateItemFromTemplate("crimson-maul").generateItem();
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                        iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
+                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("bloodmoon").generateItem();
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                        iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
+                ItemStack sword = RunicItemsAPI.generateItemFromTemplate("scarlet-rapier").generateItem();
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                        iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
+                ItemStack axe = RunicItemsAPI.generateItemFromTemplate("corruption").generateItem();
+                availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                        iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
+            }
+            nextItemIndex = 9;
+            nextItemIndex = loadRunicArmor(nextItemIndex,
+                    "sebaths-cave-archer-helmet",
+                    "sebaths-cave-archer-chest",
+                    "sebaths-cave-archer-leggings",
+                    "sebaths-cave-archer-boots");
+            nextItemIndex = loadRunicArmor(nextItemIndex,
+                    "sebaths-cave-cleric-helmet",
+                    "sebaths-cave-cleric-chest",
+                    "sebaths-cave-cleric-leggings",
+                    "sebaths-cave-cleric-boots");
+            nextItemIndex = loadRunicArmor(nextItemIndex,
+                    "sebaths-cave-mage-helmet",
+                    "sebaths-cave-mage-chest",
+                    "sebaths-cave-mage-leggings",
+                    "sebaths-cave-mage-boots");
+            nextItemIndex = loadRunicArmor(nextItemIndex,
+                    "sebaths-cave-rogue-helmet",
+                    "sebaths-cave-rogue-chest",
+                    "sebaths-cave-rogue-leggings",
+                    "sebaths-cave-rogue-boots");
+            loadRunicArmor(nextItemIndex,
+                    "sebaths-cave-warrior-helmet",
+                    "sebaths-cave-warrior-chest",
+                    "sebaths-cave-warrior-leggings",
+                    "sebaths-cave-warrior-boots");
+            RunicCoreAPI.registerRunicItemShop(this);
+        }, LOAD_DELAY * 20L);
     }
 
     /**
