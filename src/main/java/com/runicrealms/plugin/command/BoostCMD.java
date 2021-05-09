@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.shop;
+package com.runicrealms.plugin.command;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;

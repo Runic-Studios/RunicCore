@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.command.BoostCMD;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.shop.BoostCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.ChatColor;

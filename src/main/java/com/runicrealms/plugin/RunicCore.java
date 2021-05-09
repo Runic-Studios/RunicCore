@@ -5,6 +5,7 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
+import com.runicrealms.plugin.artifact.donator.ThreeD;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.command.*;
@@ -60,7 +61,7 @@ import com.runicrealms.plugin.player.stat.PlayerStatListener;
 import com.runicrealms.plugin.player.stat.PlayerStatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
-import com.runicrealms.plugin.shop.BoostCMD;
+import com.runicrealms.plugin.shop.*;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
@@ -110,6 +111,14 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static SkillTreeManager skillTreeManager;
     private static PlayerStatManager playerStatManager;
 
+    // dungeon shops
+    private static CaveShop caveShop;
+    private static CavernShop cavernShop;
+    private static KeepShop keepShop;
+    private static LibraryShop libraryShop;
+    private static CryptsShop cryptsShop;
+    private static FortressShop fortressShop;
+
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
@@ -140,6 +149,26 @@ public class RunicCore extends JavaPlugin implements Listener {
         return BASE_OUTLAW_RATING;
     }
 
+    // getters for dungeon shops
+    public static CaveShop getCaveShop() {
+        return caveShop;
+    }
+    public static CavernShop getCavernShop() {
+        return cavernShop;
+    }
+    public static KeepShop getKeepShop() {
+        return keepShop;
+    }
+    public static LibraryShop getLibraryShop() {
+        return libraryShop;
+    }
+    public static CryptsShop getCryptsShop() {
+        return cryptsShop;
+    }
+    public static FortressShop getRaidVendor() {
+        return fortressShop;
+    }
+
     public void onEnable() {
         // Load config defaults
         this.loadConfig();
@@ -162,6 +191,14 @@ public class RunicCore extends JavaPlugin implements Listener {
         groupManager = new GroupManager();
         skillTreeManager = new SkillTreeManager();
         playerStatManager = new PlayerStatManager();
+        // dungeon shops
+        caveShop = new CaveShop();
+        cavernShop = new CavernShop();
+        keepShop = new KeepShop();
+        libraryShop = new LibraryShop();
+        cryptsShop = new CryptsShop();
+        fortressShop = new FortressShop();
+        // ACF commands
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new GroupCommand());
@@ -225,6 +262,13 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyChannel = null;
         skillTreeManager = null;
         playerStatManager = null;
+        // dungeon shops
+        caveShop = null;
+        cavernShop = null;
+        keepShop = null;
+        libraryShop = null;
+        cryptsShop = null;
+        fortressShop = null;
     }
 
     @EventHandler
@@ -303,6 +347,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellGUIListener(), this);
         pm.registerEvents(new CreatureSpawnListener(), this);
         pm.registerEvents(new PlayerStatListener(), this);
+        pm.registerEvents(new RuneListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
@@ -350,6 +395,8 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // boost
         getCommand("boost").setExecutor(new BoostCMD());
+        // register 3d command
+        getCommand("3d").setExecutor(new ThreeD());
 
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
