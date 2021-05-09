@@ -13,7 +13,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +48,10 @@ public class GroupFinderDungeonUI implements InventoryHolder, Listener {
                 iconMeta.setDisplayName(reason.getItemName());
                 icon.setItemMeta(iconMeta);
                 int slot = this.inventory.firstEmpty();
-                this.inventory.setItem(slot, icon);
+                this.inventory.setItem(slot,
+                        getHead(((GroupManager.Dungeons) reason).getSkullPlayerName(),
+                                reason.getItemName(),
+                                ((GroupManager.Dungeons) reason).getItemDescription()));
                 this.reasons.put(slot, reason);
             }
         }
@@ -115,6 +120,27 @@ public class GroupFinderDungeonUI implements InventoryHolder, Listener {
         meta.setDisplayName(ColorUtil.format("&r&fBack"));
 
         item.setItemMeta(meta);
+        return item;
+    }
+
+    /**
+     *
+     * @param playerName
+     * @param displayName
+     * @param itemDescription
+     * @return
+     */
+    private static ItemStack getHead(String playerName, String displayName, String[] itemDescription) {
+        ItemStack item = new ItemStack(Material.LEGACY_SKULL_ITEM, 1, (short) 3);
+        SkullMeta skull = (SkullMeta) item.getItemMeta();
+        skull.setDisplayName(displayName);
+        ArrayList<String> lore = new ArrayList<>();
+        for (String s : itemDescription) {
+            lore.add(ColorUtil.format(s));
+        }
+        skull.setLore(lore);
+        skull.setOwner(playerName);
+        item.setItemMeta(skull);
         return item;
     }
 }

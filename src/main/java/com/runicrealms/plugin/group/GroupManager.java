@@ -173,19 +173,63 @@ public class GroupManager implements Listener {
     }
 
     public enum Dungeons implements QueueReason {
-        SEBATHS_CAVE("&eSebath’s Cave &7- Lv. 5+, Silkwood Forest", 5),
-        CRYSTAL_CAVERN("&eCrystal Cavern &7- Lv. 12+, Whaletown", 12),
-        ODINS_KEEP("&eOdin’s Keep &7- Lv. 15+, Hilstead", 15),
-        SUNKEN_LIBRARY("&eSunken Library &7- Lv. 25+, Dead Man’s Rest", 25),
-        CRYPTS_OF_DERA("&eCrypts of Dera &7- Lv. 35+, Zenyth Desert", 35),
-        THE_FROZEN_FORTRESS("&eThe Frozen Fortress &7 - Lv. 60, Frost’s End", 60);
 
+        SEBATHS_CAVE("Gritzgore", "&eSebath’s Cave",
+                new String[] {
+                        "&7Req Lv &f5+",
+                        "&7Location &fSilkwood Forest"
+                }, 5),
+        CRYSTAL_CAVERN("a_storz", "&eCrystal Cavern",
+                new String[] {
+                        "&7Req Lv &f12+",
+                        "&7Location &fWhaletown"
+                }, 12),
+        ODINS_KEEP("GoodUHCTipZAKO", "&eOdin’s Keep",
+                new String[] {
+                        "&7Req Lv &f15+",
+                        "&7Location &fHilstead"
+                }, 15),
+        SUNKEN_LIBRARY("Haku", "&eSunken Library",
+                new String[] {
+                        "&7Req Lv &f25+",
+                        "&7Location &fDead Man's Rest"
+                }, 25),
+        CRYPTS_OF_DERA("Anubis", "&eCrypts of Dera",
+                new String[] {
+                        "&7Req Lv &f35+",
+                        "&7Location &fZenyth Desert"
+                }, 35),
+        THE_FROZEN_FORTRESS("adaydremer", "&eThe Frozen Fortress",
+                new String[] {
+                        "&7Req Lv &f60",
+                        "&7Location &fFrost's End"
+                }, 60);
+
+        private final String skullPlayerName;
         private final String itemName;
+        private final String[] itemDescription;
         private final int minLevel;
 
-        Dungeons(String itemName, int minLevel) {
+        /**
+         * Used to create the UI for dungeons in the group finder.
+         * @param skullPlayerName name of the boss NPC player skin so its head can be used
+         * @param itemName display name of the item
+         * @param minLevel
+         */
+        Dungeons(String skullPlayerName, String itemName, String[] itemDescription, int minLevel) {
+            this.skullPlayerName = skullPlayerName;
             this.itemName = ColorUtil.format(itemName);
+            this.itemDescription = itemDescription;
             this.minLevel = minLevel;
+        }
+
+        public String getSkullPlayerName() {
+            return this.skullPlayerName;
+        }
+
+        // todo: add this to interface
+        public String[] getItemDescription() {
+            return this.itemDescription;
         }
 
         @Override
