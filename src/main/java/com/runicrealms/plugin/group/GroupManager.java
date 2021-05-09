@@ -174,6 +174,7 @@ public class GroupManager implements Listener {
 
     public enum Dungeons implements QueueReason {
         SEBATHS_CAVE("&eSebath’s Cave &7- Lv. 5+, Silkwood Forest", 5),
+        CRYSTAL_CAVERN("&eCrystal Cavern &7- Lv. 12+, Whaletown", 12),
         ODINS_KEEP("&eOdin’s Keep &7- Lv. 15+, Hilstead", 15),
         SUNKEN_LIBRARY("&eSunken Library &7- Lv. 25+, Dead Man’s Rest", 25),
         CRYPTS_OF_DERA("&eCrypts of Dera &7- Lv. 35+, Zenyth Desert", 35),

@@ -43,7 +43,7 @@ public class SkillTree {
      */
     public int getAvailablePoints() {
         int spentPoints = RunicCoreAPI.getSpentPoints(player);
-        return player.getLevel() - 9 - spentPoints;
+        return Math.max(0, player.getLevel() - 9 - spentPoints);
     }
 
     /**
