@@ -214,7 +214,7 @@ public class GroupManager implements Listener {
          * Used to create the UI for dungeons in the group finder.
          * @param skullPlayerName name of the boss NPC player skin so its head can be used
          * @param itemName display name of the item
-         * @param minLevel
+         * @param minLevel min level of dungeon
          */
         Dungeons(String skullPlayerName, String itemName, String[] itemDescription, int minLevel) {
             this.skullPlayerName = skullPlayerName;

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.group;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
@@ -92,7 +93,7 @@ public class GroupFinderDungeonUI implements InventoryHolder, Listener {
 
         GroupManager.QueueReason reason = this.reasons.get(slot);
 
-        PlayerCache cache = RunicCore.getCacheManager().getPlayerCaches().get(player);
+        PlayerCache cache = RunicCoreAPI.getPlayerCache(player);
 
         if (cache.getClassLevel() >= reason.getMinLevel()) {
             RunicCore.getGroupManager().addToQueue(reason, player);
