@@ -16,10 +16,10 @@ import java.util.*;
 
 public class CaveShop implements RunicItemShop {
 
-    private static final int ARMOR_PRICE = 1;
-    private static final int ARTIFACT_PRICE = 2;
+    private static final int ARMOR_PRICE = 5;
+    private static final int ARTIFACT_PRICE = 3;
     private static final int LOAD_DELAY = 10;
-    private static final String MYTHIC_CURRENCY = "HeadOfSebath";
+    private static final String MYTHIC_CURRENCY = "HeadOfEldrid";
     private Map<Integer, RunicShopItem> availableItems;
 
     public CaveShop() {
@@ -88,7 +88,7 @@ public class CaveShop implements RunicItemShop {
             try {
                 ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(s).generateItem();
                 availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, MYTHIC_CURRENCY,
-                        iconWithLore(itemStack, CaveShop.ARMOR_PRICE), runShopBuy(itemStack)));
+                        iconWithLore(itemStack, ARMOR_PRICE), runShopBuy(itemStack)));
                 nextItemIndex += 9;
             } catch (Exception e) {
                 Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
