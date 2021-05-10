@@ -33,7 +33,7 @@ public class KeepShop implements RunicItemShop {
                 ItemStack mace = RunicItemsAPI.generateItemFromTemplate("runeforged-crusher").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
-                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("runeforged_scepter").generateItem();
+                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("runeforged-scepter").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
                 ItemStack sword = RunicItemsAPI.generateItemFromTemplate("lost-runeblade").generateItem();
