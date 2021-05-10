@@ -39,7 +39,7 @@ public class KeepShop implements RunicItemShop {
                 ItemStack sword = RunicItemsAPI.generateItemFromTemplate("lost-runeblade").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
-                ItemStack axe = RunicItemsAPI.generateItemFromTemplate("odins-wrath").generateItem();
+                ItemStack axe = RunicItemsAPI.generateItemFromTemplate("jorundrs-wrath").generateItem();
                 availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
             } catch (Exception e) {
