@@ -48,27 +48,27 @@ public class CryptsShop implements RunicItemShop {
             }
             nextItemIndex = 9;
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crypts-archer-helmet",
+                    "crypts-archer-helm",
                     "crypts-archer-chest",
                     "crypts-archer-leggings",
                     "crypts-archer-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crypts-cleric-helmet",
+                    "crypts-cleric-helm",
                     "crypts-cleric-chest",
                     "crypts-cleric-leggings",
                     "crypts-cleric-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crypts-mage-helmet",
+                    "crypts-mage-helm",
                     "crypts-mage-chest",
                     "crypts-mage-leggings",
                     "crypts-mage-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crypts-rogue-helmet",
+                    "crypts-rogue-helm",
                     "crypts-rogue-chest",
                     "crypts-rogue-leggings",
                     "crypts-rogue-boots");
             loadRunicArmor(nextItemIndex,
-                    "crypts-warrior-helmet",
+                    "crypts-warrior-helm",
                     "crypts-warrior-chest",
                     "crypts-warrior-leggings",
                     "crypts-warrior-boots");

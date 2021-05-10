@@ -48,27 +48,27 @@ public class KeepShop implements RunicItemShop {
             }
             nextItemIndex = 9;
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "jorundr-keep-archer-helmet",
+                    "jorundr-keep-archer-helm",
                     "jorundr-keep-archer-chest",
                     "jorundr-keep-archer-leggings",
                     "jorundr-keep-archer-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "jorundr-keep-cleric-helmet",
+                    "jorundr-keep-cleric-helm",
                     "jorundr-keep-cleric-chest",
                     "jorundr-keep-cleric-leggings",
                     "jorundr-keep-cleric-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "jorundr-keep-mage-helmet",
+                    "jorundr-keep-mage-helm",
                     "jorundr-keep-mage-chest",
                     "jorundr-keep-mage-leggings",
                     "jorundr-keep-mage-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "jorundr-keep-rogue-helmet",
+                    "jorundr-keep-rogue-helm",
                     "jorundr-keep-rogue-chest",
                     "jorundr-keep-rogue-leggings",
                     "jorundr-keep-rogue-boots");
             loadRunicArmor(nextItemIndex,
-                    "jorundr-keep-warrior-helmet",
+                    "jorundr-keep-warrior-helm",
                     "jorundr-keep-warrior-chest",
                     "jorundr-keep-warrior-leggings",
                     "jorundr-keep-warrior-boots");

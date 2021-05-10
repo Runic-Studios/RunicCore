@@ -48,27 +48,27 @@ public class LibraryShop implements RunicItemShop {
             }
             nextItemIndex = 9;
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sunken-library-archer-helmet",
+                    "sunken-library-archer-helm",
                     "sunken-library-archer-chest",
                     "sunken-library-archer-leggings",
                     "sunken-library-archer-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sunken-library-cleric-helmet",
+                    "sunken-library-cleric-helm",
                     "sunken-library-cleric-chest",
                     "sunken-library-cleric-leggings",
                     "sunken-library-cleric-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sunken-library-mage-helmet",
+                    "sunken-library-mage-helm",
                     "sunken-library-mage-chest",
                     "sunken-library-mage-leggings",
                     "sunken-library-mage-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sunken-library-rogue-helmet",
+                    "sunken-library-rogue-helm",
                     "sunken-library-rogue-chest",
                     "sunken-library-rogue-leggings",
                     "sunken-library-rogue-boots");
             loadRunicArmor(nextItemIndex,
-                    "sunken-library-warrior-helmet",
+                    "sunken-library-warrior-helm",
                     "sunken-library-warrior-chest",
                     "sunken-library-warrior-leggings",
                     "sunken-library-warrior-boots");

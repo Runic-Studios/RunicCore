@@ -16,10 +16,10 @@ import java.util.*;
 
 public class CaveShop implements RunicItemShop {
 
-    private static final int ARMOR_PRICE = 5;
-    private static final int ARTIFACT_PRICE = 3;
+    private static final int ARMOR_PRICE = 1;
+    private static final int ARTIFACT_PRICE = 2;
     private static final int LOAD_DELAY = 10;
-    private static final String MYTHIC_CURRENCY = "HeadOfEldrid";
+    private static final String MYTHIC_CURRENCY = "HeadOfSebath";
     private Map<Integer, RunicShopItem> availableItems;
 
     public CaveShop() {

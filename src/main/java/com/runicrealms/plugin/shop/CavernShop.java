@@ -26,27 +26,27 @@ public class CavernShop implements RunicItemShop {
             availableItems = new HashMap<>();
             int nextItemIndex = 0;
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crystal-cavern-archer-helmet",
+                    "crystal-cavern-archer-helm",
                     "crystal-cavern-archer-chest",
                     "crystal-cavern-archer-leggings",
                     "crystal-cavern-archer-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crystal-cavern-cleric-helmet",
+                    "crystal-cavern-cleric-helm",
                     "crystal-cavern-cleric-chest",
                     "crystal-cavern-cleric-leggings",
                     "crystal-cavern-cleric-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crystal-cavern-mage-helmet",
+                    "crystal-cavern-mage-helm",
                     "crystal-cavern-mage-chest",
                     "crystal-cavern-mage-leggings",
                     "crystal-cavern-mage-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "crystal-cavern-rogue-helmet",
+                    "crystal-cavern-rogue-helm",
                     "crystal-cavern-rogue-chest",
                     "crystal-cavern-rogue-leggings",
                     "crystal-cavern-rogue-boots");
             loadRunicArmor(nextItemIndex,
-                    "crystal-cavern-warrior-helmet",
+                    "crystal-cavern-warrior-helm",
                     "crystal-cavern-warrior-chest",
                     "crystal-cavern-warrior-leggings",
                     "crystal-cavern-warrior-boots");
@@ -87,7 +87,7 @@ public class CavernShop implements RunicItemShop {
      */
     @Override
     public int getShopSize() {
-        return 52;
+        return 36;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class CavernShop implements RunicItemShop {
      */
     @Override
     public Collection<Integer> getNpcIds() {
-        return Collections.singletonList(32);
+        return Collections.singletonList(52);
     }
 
     @Override
