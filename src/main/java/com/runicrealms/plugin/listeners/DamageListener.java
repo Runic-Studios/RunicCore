@@ -7,6 +7,8 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItemWeapon;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -93,8 +95,16 @@ public class DamageListener implements Listener {
 
             ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
             WeaponEnum artifactType = WeaponEnum.matchType(artifact);
-            int damage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-            int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+            int damage;
+            int maxDamage;
+            try {
+                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+                damage = runicItemWeapon.getWeaponDamage().getMin();
+                maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+            } catch (Exception ex) {
+                damage = 1;
+                maxDamage = 1;
+            }
             int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
 
             // --------------------
