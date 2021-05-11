@@ -95,22 +95,22 @@ public class PlayerLevelUtil {
 
     private static boolean applyMileStone(Player pl, int oldLevel, String className, int classLevel) {
         if (classLevel >= 5 && oldLevel < 5) {
-            sendUnlockMessage(pl, 5);
+            sendLevelMessage(pl, 5);
             return true;
         } else if (classLevel >= 10 && oldLevel < 10) {
-            sendUnlockMessage(pl, 10);
+            sendLevelMessage(pl, 10);
             return true;
         } else if (classLevel >= 15 && oldLevel < 15) {
-            sendUnlockMessage(pl, 15);
+            sendLevelMessage(pl, 15);
             return true;
         } else if (classLevel >= 25 && oldLevel < 25) {
-            sendUnlockMessage(pl, 25);
+            sendLevelMessage(pl, 25);
             return true;
         } else if (classLevel >= 35 && oldLevel < 35) {
-            sendUnlockMessage(pl, 35);
+            sendLevelMessage(pl, 35);
             return true;
         } else if (classLevel >= 40 && oldLevel < 40) {
-            sendUnlockMessage(pl, 40);
+            sendLevelMessage(pl, 40);
             return true;
         } else if (classLevel >= MAX_LEVEL) {
             Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
@@ -174,38 +174,6 @@ public class PlayerLevelUtil {
                 return PlayerLevelUtil.getWarriorHpLv();
             default:
                 throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
-        }
-    }
-
-    private static void sendUnlockMessage(Player pl, int lvl) {
-        pl.sendMessage("\n");
-        sendLevelMessage(pl, lvl);
-        switch (lvl) {
-            case 5:
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "Sebath's Cave!");
-                pl.sendMessage("\n");
-                break;
-            case 10:
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "     You can now equip " + ChatColor.GREEN + "Uncommon" + ChatColor.GRAY + " items!");
-                pl.sendMessage("\n");
-                break;
-            case 15:
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "Odin's Keep!");
-                pl.sendMessage("\n");
-                break;
-            case 25:
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "     You can now equip " + ChatColor.AQUA + "Rare" + ChatColor.GRAY + " items!");
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Sunken Library!");
-                pl.sendMessage("\n");
-                break;
-            case 35:
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Crypts of Dera!");
-                pl.sendMessage("\n");
-                break;
-            case 40:
-                ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + "     You can now equip " + ChatColor.LIGHT_PURPLE + "Epic" + ChatColor.GRAY + " items!");
-                pl.sendMessage("\n");
-                break;
         }
     }
 
