@@ -30,10 +30,10 @@ public class CryptsShop implements RunicItemShop {
                 ItemStack bow = RunicItemsAPI.generateItemFromTemplate("triumph").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
-                ItemStack mace = RunicItemsAPI.generateItemFromTemplate("gilded_impaler").generateItem();
+                ItemStack mace = RunicItemsAPI.generateItemFromTemplate("gilded-impaler").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
-                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("sunflare").generateItem();
+                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("prophets-cane").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
                 ItemStack sword = RunicItemsAPI.generateItemFromTemplate("nightshade").generateItem();
