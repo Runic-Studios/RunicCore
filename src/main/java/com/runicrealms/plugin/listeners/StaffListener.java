@@ -2,9 +2,10 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItemWeapon;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -99,9 +100,20 @@ public class StaffListener implements Listener {
 
     private void damageStaff(Player pl, LivingEntity victim, ItemStack artifact) {
 
-        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
-        int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
+        int minDamage;
+        int maxDamage;
+        int reqLv;
+
+        try {
+            RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+            minDamage = runicItemWeapon.getWeaponDamage().getMin();
+            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+            reqLv = runicItemWeapon.getLevel();
+        } catch (Exception ex) {
+            minDamage = 1;
+            maxDamage = 1;
+            reqLv = 1;
+        }
 
         if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
             pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);

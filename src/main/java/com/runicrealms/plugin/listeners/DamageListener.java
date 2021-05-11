@@ -97,15 +97,17 @@ public class DamageListener implements Listener {
             WeaponEnum artifactType = WeaponEnum.matchType(artifact);
             int damage;
             int maxDamage;
+            int reqLv;
             try {
                 RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
                 damage = runicItemWeapon.getWeaponDamage().getMin();
                 maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+                reqLv = runicItemWeapon.getLevel();
             } catch (Exception ex) {
                 damage = 1;
                 maxDamage = 1;
+                reqLv = 0;
             }
-            int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
 
             // --------------------
             // for punching 'n stuff

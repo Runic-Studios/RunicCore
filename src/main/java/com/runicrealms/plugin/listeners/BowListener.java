@@ -2,10 +2,11 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItemWeapon;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
@@ -64,7 +65,13 @@ public class BowListener implements Listener {
         if (className == null) return;
         if (!className.equals("Archer")) return;
 
-        int reqLv = (int) AttributeUtil.getCustomDouble(artifact, "required.level");
+        int reqLv;
+        try {
+            RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+            reqLv = runicItemWeapon.getLevel();
+        } catch (Exception ex) {
+            reqLv = 0;
+        }
 
         if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
             pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
@@ -239,8 +246,16 @@ public class BowListener implements Listener {
             ItemStack artifact = damager.getInventory().getItemInMainHand();
 
             // retrieve the weapon damage, cooldown
-            int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-            int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
+            int minDamage;
+            int maxDamage;
+            try {
+                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+                minDamage = runicItemWeapon.getWeaponDamage().getMin();
+                maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+            } catch (Exception ex) {
+                minDamage = 1;
+                maxDamage = 1;
+            }
 
             // remove the arrow with nms magic
 //            new BukkitRunnable() {
