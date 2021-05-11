@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.player.stat.PlayerStatEnum;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.Stat;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,8 +26,8 @@ public class GearScanner {
      * @return added item dex
      */
     public static int getItemDexterity(UUID uuid) {
-        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.DEXTERITY) != null)
-            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.DEXTERITY);
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.DEXTERITY) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.DEXTERITY);
         else
             return 0;
     }
@@ -38,8 +38,8 @@ public class GearScanner {
      * @return added item int
      */
     public static int getItemIntelligence(UUID uuid) {
-        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.INTELLIGENCE) != null)
-            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.INTELLIGENCE);
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.INTELLIGENCE) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.INTELLIGENCE);
         else
             return 0;
     }
@@ -50,8 +50,8 @@ public class GearScanner {
      * @return added item str
      */
     public static int getItemStrength(UUID uuid) {
-        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.STRENGTH) != null)
-            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.STRENGTH);
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.STRENGTH) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.STRENGTH);
         else
             return 0;
     }
@@ -62,8 +62,8 @@ public class GearScanner {
      * @return added item vit
      */
     public static int getItemVitality(UUID uuid) {
-        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.VITALITY) != null)
-            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.VITALITY);
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.VITALITY) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.VITALITY);
         else
             return 0;
     }
@@ -74,8 +74,8 @@ public class GearScanner {
      * @return added item wis
      */
     public static int getItemWisdom(UUID uuid) {
-        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.WISDOM) != null)
-            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(PlayerStatEnum.WISDOM);
+        if (RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.WISDOM) != null)
+            return RunicItemsAPI.getAddedPlayerStats(uuid).getAddedStats().get(Stat.WISDOM);
         else
             return 0;
     }

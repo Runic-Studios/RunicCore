@@ -58,8 +58,8 @@ import com.runicrealms.plugin.player.listener.PlayerQuitListener;
 import com.runicrealms.plugin.player.listener.PlayerRegenListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.player.mana.RegenManager;
-import com.runicrealms.plugin.player.stat.PlayerStatListener;
-import com.runicrealms.plugin.player.stat.PlayerStatManager;
+import com.runicrealms.plugin.player.stat.StatListener;
+import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.shop.*;
@@ -110,7 +110,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static GroupManager groupManager;
     private static PaperCommandManager commandManager;
     private static SkillTreeManager skillTreeManager;
-    private static PlayerStatManager playerStatManager;
+    private static StatManager statManager;
     private static ThreeDManager threeDManager;
 
     // dungeon shops
@@ -144,8 +144,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
-    public static PlayerStatManager getPlayerStatManager() {
-        return playerStatManager;
+    public static StatManager getStatManager() {
+        return statManager;
     }
     public static ThreeDManager getThreeDManager() {
         return threeDManager;
@@ -195,7 +195,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         databaseManager = new DatabaseManager();
         groupManager = new GroupManager();
         skillTreeManager = new SkillTreeManager();
-        playerStatManager = new PlayerStatManager();
+        statManager = new StatManager();
         // dungeon shops
         caveShop = new CaveShop();
         cavernShop = new CavernShop();
@@ -266,7 +266,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         groupManager = null;
         partyChannel = null;
         skillTreeManager = null;
-        playerStatManager = null;
+        statManager = null;
         threeDManager = null;
         // dungeon shops
         caveShop = null;
@@ -352,7 +352,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellEditorGUIListener(), this);
         pm.registerEvents(new SpellGUIListener(), this);
         pm.registerEvents(new CreatureSpawnListener(), this);
-        pm.registerEvents(new PlayerStatListener(), this);
+        pm.registerEvents(new StatListener(), this);
         pm.registerEvents(new RuneListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();

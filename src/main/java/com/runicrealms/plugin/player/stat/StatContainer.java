@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.stat;
 
+import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -69,8 +70,8 @@ public class StatContainer {
         this.wisdom = wisdom;
     }
 
-    public void increaseStat(PlayerStatEnum playerStatEnum, int value) {
-        switch (playerStatEnum) {
+    public void increaseStat(Stat stat, int value) {
+        switch (stat) {
             case DEXTERITY:
                 dexterity += value;
                 break;

@@ -106,8 +106,8 @@ public class SkillTreeGUI implements InventoryHolder {
             if (displayPoints) {
                 meta.setDisplayName
                         (
-                                ChatColor.GREEN + ((PerkBaseStat) perk).getPlayerStatEnum().getName() +
-                                ((PerkBaseStat) perk).getPlayerStatEnum().getIcon() +
+                                ChatColor.GREEN + ((PerkBaseStat) perk).getStat().getName() +
+                                ((PerkBaseStat) perk).getStat().getIcon() +
                                 ChatColor.WHITE + " [" +
                                 ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
                                 ChatColor.WHITE + "/" +
@@ -115,12 +115,12 @@ public class SkillTreeGUI implements InventoryHolder {
                                 ChatColor.WHITE + "]"
                         );
             } else {
-                meta.setDisplayName(ChatColor.GREEN + ((PerkBaseStat) perk).getPlayerStatEnum().getName());
+                meta.setDisplayName(ChatColor.GREEN + ((PerkBaseStat) perk).getStat().getName());
             }
             meta.setLore(
                                 ChatUtils.formattedText
                                 (("\n&7Bonus per point: &a+" + ((PerkBaseStat) perk).getBonusAmount() +
-                                "\n\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getPlayerStatEnum().getDescription()))
+                                "\n\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getStat().getDescription()))
                         );
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());

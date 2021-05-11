@@ -5,7 +5,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.stat.PlayerStatEnum;
+import com.runicrealms.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -101,7 +101,7 @@ public class ManaListener implements Listener {
         // update stored mana in config, update scoreboard
         int newMaxMana = RunicCore.getRegenManager().getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(pl) * pl.getLevel()) + totalItemManaBoost;
         // grab extra mana from intelligence
-        double intelligenceManaBoost = newMaxMana * (PlayerStatEnum.getMaxManaMult() * RunicCoreAPI.getPlayerIntelligence(pl.getUniqueId()));
+        double intelligenceManaBoost = newMaxMana * (Stat.getMaxManaMult() * RunicCoreAPI.getPlayerIntelligence(pl.getUniqueId()));
         RunicCore.getCacheManager().getPlayerCaches().get(pl).setMaxMana((int) (newMaxMana + intelligenceManaBoost));
 
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();

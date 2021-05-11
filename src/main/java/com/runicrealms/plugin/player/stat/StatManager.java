@@ -6,6 +6,7 @@ import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
+import com.runicrealms.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,11 +14,11 @@ import org.bukkit.event.Listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class PlayerStatManager implements Listener {
+public class StatManager implements Listener {
 
     private final HashMap<UUID, StatContainer> playerStatMap;
 
-    public PlayerStatManager() {
+    public StatManager() {
         playerStatMap = new HashMap<>();
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
@@ -49,9 +50,9 @@ public class PlayerStatManager implements Listener {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkBaseStat)) continue;
             PerkBaseStat perkBaseStat = (PerkBaseStat) perk;
-            PlayerStatEnum playerStatEnum = perkBaseStat.getPlayerStatEnum();
+            Stat stat = perkBaseStat.getStat();
             int amount = perkBaseStat.getBonusAmount() * perkBaseStat.getCurrentlyAllocatedPoints();
-            playerStatMap.get(player.getUniqueId()).increaseStat(playerStatEnum, amount);
+            playerStatMap.get(player.getUniqueId()).increaseStat(stat, amount);
         }
     }
 
