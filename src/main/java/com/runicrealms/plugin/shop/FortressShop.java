@@ -19,7 +19,7 @@ public class FortressShop implements RunicItemShop {
     private static final int ARMOR_PRICE = 5;
     private static final int ARTIFACT_PRICE = 3;
     private static final int LOAD_DELAY = 10;
-    private static final String MYTHIC_CURRENCY = "HeadOfSebath";
+    private static final String MYTHIC_CURRENCY = "HeadOfEldrid";
     private Map<Integer, RunicShopItem> availableItems;
 
     public FortressShop() {
@@ -27,19 +27,19 @@ public class FortressShop implements RunicItemShop {
             availableItems = new HashMap<>();
             int nextItemIndex = 0;
             try {
-                ItemStack bow = RunicItemsAPI.generateItemFromTemplate("sanguine-longbow").generateItem();
+                ItemStack bow = RunicItemsAPI.generateItemFromTemplate("winters-howl").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
-                ItemStack mace = RunicItemsAPI.generateItemFromTemplate("crimson-maul").generateItem();
+                ItemStack mace = RunicItemsAPI.generateItemFromTemplate("chillrend").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
-                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("bloodmoon").generateItem();
+                ItemStack staff = RunicItemsAPI.generateItemFromTemplate("permafrost").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
-                ItemStack sword = RunicItemsAPI.generateItemFromTemplate("scarlet-rapier").generateItem();
+                ItemStack sword = RunicItemsAPI.generateItemFromTemplate("blade-of-the-betrayer").generateItem();
                 availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
-                ItemStack axe = RunicItemsAPI.generateItemFromTemplate("corruption").generateItem();
+                ItemStack axe = RunicItemsAPI.generateItemFromTemplate("frosts-edge").generateItem();
                 availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
                         iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
             } catch (Exception e) {
@@ -48,30 +48,30 @@ public class FortressShop implements RunicItemShop {
             }
             nextItemIndex = 9;
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sebaths-cave-archer-helmet",
-                    "sebaths-cave-archer-chest",
-                    "sebaths-cave-archer-leggings",
-                    "sebaths-cave-archer-boots");
+                    "frozen-fortress-archer-helm",
+                    "frozen-fortress-archer-chest",
+                    "frozen-fortress-archer-leggings",
+                    "frozen-fortress-archer-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sebaths-cave-cleric-helmet",
-                    "sebaths-cave-cleric-chest",
-                    "sebaths-cave-cleric-leggings",
-                    "sebaths-cave-cleric-boots");
+                    "frozen-fortress-cleric-helm",
+                    "frozen-fortress-cleric-chest",
+                    "frozen-fortress-cleric-leggings",
+                    "frozen-fortress-cleric-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sebaths-cave-mage-helmet",
-                    "sebaths-cave-mage-chest",
-                    "sebaths-cave-mage-leggings",
-                    "sebaths-cave-mage-boots");
+                    "frozen-fortress-mage-helm",
+                    "frozen-fortress-mage-chest",
+                    "frozen-fortress-mage-leggings",
+                    "frozen-fortress-mage-boots");
             nextItemIndex = loadRunicArmor(nextItemIndex,
-                    "sebaths-cave-rogue-helmet",
-                    "sebaths-cave-rogue-chest",
-                    "sebaths-cave-rogue-leggings",
-                    "sebaths-cave-rogue-boots");
+                    "frozen-fortress-rogue-helm",
+                    "frozen-fortress-rogue-chest",
+                    "frozen-fortress-rogue-leggings",
+                    "frozen-fortress-rogue-boots");
             loadRunicArmor(nextItemIndex,
-                    "sebaths-cave-warrior-helmet",
-                    "sebaths-cave-warrior-chest",
-                    "sebaths-cave-warrior-leggings",
-                    "sebaths-cave-warrior-boots");
+                    "frozen-fortress-warrior-helm",
+                    "frozen-fortress-warrior-chest",
+                    "frozen-fortress-warrior-leggings",
+                    "frozen-fortress-warrior-boots");
             RunicCoreAPI.registerRunicItemShop(this);
         }, LOAD_DELAY * 20L);
     }
@@ -117,7 +117,7 @@ public class FortressShop implements RunicItemShop {
         ItemStack vendorItem = new ItemStack(Material.SKELETON_SKULL);
         ItemMeta meta = vendorItem.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.YELLOW + "Sebath's Cave Dungeon Shop");
+            meta.setDisplayName(ChatColor.YELLOW + "Frozen Fortress Dungeon Shop");
             meta.setLore(Collections.singletonList(ChatColor.GRAY + "Purchase items for your valor!"));
             vendorItem.setItemMeta(meta);
         }
@@ -135,7 +135,7 @@ public class FortressShop implements RunicItemShop {
 
     @Override
     public String getName() {
-        return ChatColor.YELLOW + "Sebath's Cave Dungeon Shop";
+        return ChatColor.YELLOW + "Frozen Fortress Dungeon Shop";
     }
 
     private RunicItemRunnable runShopBuy(ItemStack tierSetItem) {
@@ -154,7 +154,7 @@ public class FortressShop implements RunicItemShop {
             lore.add(
                     ChatColor.GOLD + "Price: " +
                             ChatColor.GREEN + ChatColor.BOLD +
-                            price + " Head(s) of Sebath"
+                            price + " Head(s) of Eldrid"
             );
             meta.setLore(lore);
             iconWithLore.setItemMeta(meta);
