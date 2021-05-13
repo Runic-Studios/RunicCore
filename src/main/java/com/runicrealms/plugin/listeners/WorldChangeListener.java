@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.dungeons;
+package com.runicrealms.plugin.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

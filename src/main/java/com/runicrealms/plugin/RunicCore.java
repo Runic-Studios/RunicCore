@@ -17,7 +17,6 @@ import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.donator.ThreeD;
 import com.runicrealms.plugin.donator.ThreeDManager;
-import com.runicrealms.plugin.dungeons.WorldChangeListener;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.item.BossTagger;
@@ -69,7 +68,6 @@ import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.cmd.ResetTreeCMD;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
-import com.runicrealms.plugin.tutorial.TutorialCMD;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
@@ -419,6 +417,5 @@ public class RunicCore extends JavaPlugin implements Listener {
         setSC.addCommand(Arrays.asList("hearthstone"), new HearthstoneCMD(setSC));
         setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
         setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));
-        setSC.addCommand(Arrays.asList("artifact"), new TutorialCMD(setSC));
     }
 }
