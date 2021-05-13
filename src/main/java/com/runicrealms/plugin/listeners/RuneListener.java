@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItemGeneric;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -35,7 +36,8 @@ public class RuneListener implements Listener {
                 if (pl.getInventory().getItem(0) == null
                         || (pl.getInventory().getItem(0) != null
                         && pl.getInventory().getItem(0).getType() != Material.POPPED_CHORUS_FRUIT)) {
-                    pl.getInventory().setItem(0, RunicItemsAPI.generateItemFromTemplate(RUNE_TEMPLATE_ID).generateItem());
+                    RunicItemGeneric runicItemGeneric = (RunicItemGeneric) RunicItemsAPI.generateItemFromTemplate(RUNE_TEMPLATE_ID);
+                    pl.getInventory().setItem(0, runicItemGeneric.generateItem());
                 }
             }
         }.runTaskLater(RunicCore.getInstance(), 2L);
