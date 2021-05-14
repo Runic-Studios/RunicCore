@@ -54,10 +54,11 @@ public class RunicVoteCMD implements CommandExecutor, Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onExperienceGain(RunicExpEvent e) {
         if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST) return;
+        if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.OTHER) return;
         if (votingBonuses.get(e.getPlayer().getUniqueId()) == null) return;
         // calculate voting exp modifier (if applicable)
         double votePercent = votingBonuses.get(e.getPlayer().getUniqueId()) / 100;
-        double voteBoost = votePercent*e.getAmount();
-        e.setAmount(e.getAmount() + (int) voteBoost);
+        double voteBoost = votePercent * e.getOriginalAmount();
+        e.setFinalAmount(e.getFinalAmount() + (int) voteBoost);
     }
 }

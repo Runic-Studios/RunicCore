@@ -58,6 +58,7 @@ public class CombatListener implements Listener {
 
         // ignore party members
         if (RunicCore.getPartyManager().getPlayerParty(damager) != null
+                && victim instanceof Player
                 && RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) victim)) return;
 
         // player cannot damage themselves

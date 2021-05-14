@@ -17,10 +17,13 @@ public class RunicExpEvent extends Event implements Cancellable {
     public enum RunicExpSource {
         DUNGEON,
         MOB,
+        OTHER, // custom
+        PARTY, // exp from party kill
         QUEST
     }
 
-    private int amount;
+    private final int originalAmount;
+    private int finalAmount;
     private final Player player;
     private final RunicExpSource runicExpSource;
     private final int mobLevel;
@@ -29,14 +32,16 @@ public class RunicExpEvent extends Event implements Cancellable {
 
     /**
      * Give a player experience through our custom calculators.
-     * @param amount of experience to receive (before bonuses)
+     * @param originalAmount original exp of event (cannot be modified)
+     * @param finalAmount the exp the player will receive (with bonuses and modifiers)
      * @param player to receive experience
      * @param runicExpSource source of experience
      * @param mobLevel used to cap experience against low/high-level mobs
      * @param location of mob, used to spawn exp holograms
      */
-    public RunicExpEvent(int amount, Player player, RunicExpSource runicExpSource, int mobLevel, @Nullable Location location) {
-        this.amount = amount;
+    public RunicExpEvent(int originalAmount, int finalAmount, Player player, RunicExpSource runicExpSource, int mobLevel, @Nullable Location location) {
+        this.originalAmount = originalAmount;
+        this.finalAmount = finalAmount;
         this.player = player;
         this.runicExpSource = runicExpSource;
         this.mobLevel = mobLevel;
@@ -44,12 +49,16 @@ public class RunicExpEvent extends Event implements Cancellable {
         this.isCancelled = false;
     }
 
-    public int getAmount() {
-        return amount;
+    public int getOriginalAmount() {
+        return originalAmount;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public int getFinalAmount() {
+        return finalAmount;
+    }
+
+    public void setFinalAmount(int finalAmount) {
+        this.finalAmount = finalAmount;
     }
 
     public Player getPlayer() {

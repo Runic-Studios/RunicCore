@@ -7,6 +7,7 @@ import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.HologramUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,21 +21,23 @@ public class RunicExpListener implements Listener {
     private static final double PARTY_BONUS = 15;
     private static final int RANGE = 100;
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST) // executes last
     public void onExperienceGain(RunicExpEvent e) {
 
         Player pl = e.getPlayer();
 
-        // quests don't get exp modifiers, so skip calculations
-        if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST) {
-            PlayerLevelUtil.giveExperience(e.getPlayer(), e.getAmount());
+        // quests and other don't get exp modifiers, so skip calculations
+        if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST
+                || e.getRunicExpSource() == RunicExpEvent.RunicExpSource.OTHER
+                || e.getRunicExpSource() == RunicExpEvent.RunicExpSource.PARTY) {
+            PlayerLevelUtil.giveExperience(e.getPlayer(), e.getFinalAmount());
             return;
         }
 
         // calculate global exp modifier (if applicable)
         double boostPercent = BoostCMD.getCombatExperienceBoost()/100;
-        int boost = (int) boostPercent*e.getAmount();
-        e.setAmount(e.getAmount() + boost);
+        int boost = (int) boostPercent * e.getOriginalAmount();
+        e.setFinalAmount(e.getFinalAmount() + boost);
 
         if (!isInParty(pl)) {
             if (e.getLocation() != null) { // world mobs
@@ -42,21 +45,21 @@ public class RunicExpListener implements Listener {
                 int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
                 ChatColor expColor = ChatColor.WHITE;
                 if (e.getMobLevel() > (plLv + LEVEL_CUTOFF) || e.getMobLevel() < (plLv - LEVEL_CUTOFF)) {
-                    e.setAmount(0);
+                    e.setFinalAmount(0);
                     expColor = ChatColor.RED;
                 }
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + e.getAmount() + " &7exp"), 0, 2.5, 0);
+                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + e.getFinalAmount() + " &7exp"), 0, 2.5, 0);
                 HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName()), 0, 2.25, 0);
             }
-            PlayerLevelUtil.giveExperience(e.getPlayer(), e.getAmount());
+            PlayerLevelUtil.giveExperience(e.getPlayer(), e.getFinalAmount());
 
         } else {
             double partyPercent = PARTY_BONUS / 100;
-            int extraAmt = (int) (e.getAmount() * partyPercent);
+            int extraAmt = (int) (e.getOriginalAmount() * partyPercent);
             if (extraAmt < 1)
                 extraAmt = 1;
-            e.setAmount(e.getAmount() + extraAmt);
-            distributePartyExp(RunicCore.getPartyManager().getPlayerParty(pl), pl, e.getAmount(), extraAmt, e.getMobLevel(), e.getLocation());
+            e.setFinalAmount(e.getFinalAmount() + extraAmt);
+            distributePartyExp(RunicCore.getPartyManager().getPlayerParty(pl), pl, e.getOriginalAmount(), extraAmt, e.getMobLevel(), e.getLocation());
         }
     }
 
@@ -69,13 +72,14 @@ public class RunicExpListener implements Listener {
      *
      * @param party of player receiving exp
      * @param pl who triggered event
-     * @param exp of event (before bonuses)
+     * @param originalExp of event (before bonuses)
      * @param extraAmt of party exp
      * @param mobLv of mob (if applicable)
      * @param loc of mob (if applicable)
      */
-    private void distributePartyExp(Party party, Player pl, int exp, int extraAmt, int mobLv, Location loc) {
+    private void distributePartyExp(Party party, Player pl, int originalExp, int extraAmt, int mobLv, Location loc) {
 
+        // determine how many players to split exp among
         int nearbyMembers = 0;
         for (Player member : party.getMembersWithLeader()) {
             if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
@@ -92,13 +96,14 @@ public class RunicExpListener implements Listener {
                     PlayerLevelUtil.giveExperience(member, 0);
                     HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
                 } else {
-                    PlayerLevelUtil.giveExperience(member, (exp / nearbyMembers));
+                    RunicExpEvent e = new RunicExpEvent(originalExp, ((originalExp + extraAmt) / nearbyMembers), member, RunicExpEvent.RunicExpSource.PARTY, mobLv, loc);
+                    Bukkit.getPluginManager().callEvent(e);
                 }
             }
         }
 
         if (loc != null) {
-            HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + exp + "&a(+" + extraAmt + ") &7exp"), 0, 2.6, 0);
+            HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.6, 0);
             HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName() + "&7's Party"), 0, 2.3, 0);
         }
     }

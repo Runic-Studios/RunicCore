@@ -34,7 +34,7 @@ public class ClassExpCMD implements SubCommand {
 
         // skip all other calculations for quest exp
         if (args.length == 4) {
-            RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.QUEST, 0, null);
+            RunicExpEvent e = new RunicExpEvent(exp, exp, pl, RunicExpEvent.RunicExpSource.QUEST, 0, null);
             Bukkit.getPluginManager().callEvent(e);
             return;
         }
@@ -44,12 +44,12 @@ public class ClassExpCMD implements SubCommand {
                 || RunicCore.getPartyManager().getPlayerParty(pl) != null
                 && RunicCore.getPartyManager().getPlayerParty(pl).getSize() < 2) {
             if (args.length != 7) {
-                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.DUNGEON, 0, null);
+                RunicExpEvent e = new RunicExpEvent(exp, exp, pl, RunicExpEvent.RunicExpSource.DUNGEON, 0, null);
                 Bukkit.getPluginManager().callEvent(e);
             } else {
                 int mobLv = Integer.parseInt(args[6]);
                 Location loc = new Location(pl.getWorld(), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
-                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.MOB, mobLv, loc);
+                RunicExpEvent e = new RunicExpEvent(exp, exp, pl, RunicExpEvent.RunicExpSource.MOB, mobLv, loc);
                 Bukkit.getPluginManager().callEvent(e);
             }
 
@@ -57,10 +57,10 @@ public class ClassExpCMD implements SubCommand {
         } else {
             if (args.length == 7) {
                 Location loc = new Location(pl.getWorld(), Double.parseDouble(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]));
-                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[6]), loc);
+                RunicExpEvent e = new RunicExpEvent(exp, exp, pl, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[6]), loc);
                 Bukkit.getPluginManager().callEvent(e);
             } else {
-                RunicExpEvent e = new RunicExpEvent(exp, pl, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[6]), null);
+                RunicExpEvent e = new RunicExpEvent(exp, exp, pl, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[6]), null);
                 Bukkit.getPluginManager().callEvent(e);
             }
         }
