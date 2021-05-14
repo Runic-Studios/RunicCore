@@ -68,9 +68,6 @@ commands:
   runicfirework:
     usage: /<commands>
     description: Spawns a firework
-  outlaw:
-    usage: /<commands>
-    description: Toggle player outlaw mode
   spawn:
     usage: /<commands>
     description: Select hearthstone
