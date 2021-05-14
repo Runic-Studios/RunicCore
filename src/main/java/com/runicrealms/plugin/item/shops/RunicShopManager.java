@@ -76,9 +76,9 @@ public class RunicShopManager implements Listener {
                     if (event.getRawSlot() < event.getInventory().getSize()) {
                         RunicShopItem item = inShop.get(player.getUniqueId()).getContents().get(event.getSlot() - 9);
                         if (player.getInventory().firstEmpty() != -1
-                                && hasItems(player, item.getMythicCurrency(), item.getPrice())) {
+                                && hasItems(player, item.getRunicItemCurrency(), item.getPrice())) {
                             if (item.removePayment()) {
-                                ItemRemover.takeItem(player, item.getMythicCurrency(), item.getPrice());
+                                ItemRemover.takeItem(player, item.getRunicItemCurrency(), item.getPrice());
                                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
                                 player.updateInventory();
                             }

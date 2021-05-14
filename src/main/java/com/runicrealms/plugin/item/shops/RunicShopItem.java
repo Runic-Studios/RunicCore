@@ -1,16 +1,13 @@
 package com.runicrealms.plugin.item.shops;
 
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
-import io.lumine.xikage.mythicmobs.items.MythicItem;
+import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class RunicShopItem {
 
     private final int price;
-    private final String mythicCurrencyName;
+    private final String currencyTemplateID;
     private final ItemStack item;
     private final RunicItemRunnable runicItemRunnable;
     private boolean removePayment = true;
@@ -18,12 +15,12 @@ public class RunicShopItem {
     /**
      * Creates a 'buy item' for the shop!
      * @param price in chosen currency of item
-     * @param mythicCurrencyName String name of mythic item used as price
+     * @param currencyTemplateID String name of template ID for RunicItem currency
      * @param item to be purchased
      */
-    public RunicShopItem(int price, String mythicCurrencyName, ItemStack item, RunicItemRunnable runicItemRunnable) {
+    public RunicShopItem(int price, String currencyTemplateID, ItemStack item, RunicItemRunnable runicItemRunnable) {
         this.price = price;
-        this.mythicCurrencyName = mythicCurrencyName;
+        this.currencyTemplateID = currencyTemplateID;
         this.item = item;
         this.runicItemRunnable = runicItemRunnable;
     }
@@ -33,13 +30,11 @@ public class RunicShopItem {
     }
 
     /**
-     * Method to match a string to a mythic item
-     * @return MythicItem matching string name
+     * Method to match a string to a runic item
+     * @return RunicItem w/ template ID matching string name
      */
-    public ItemStack getMythicCurrency() {
-        MythicItem mi = MythicMobs.inst().getItemManager().getItem(mythicCurrencyName).get();
-        AbstractItemStack abstractItemStack = mi.generateItemStack(price);
-        return BukkitAdapter.adapt(abstractItemStack);
+    public ItemStack getRunicItemCurrency() {
+        return RunicItemsAPI.generateItemFromTemplate(currencyTemplateID).generateItem();
     }
 
     public ItemStack getItem() {
