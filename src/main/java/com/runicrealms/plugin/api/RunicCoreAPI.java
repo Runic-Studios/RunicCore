@@ -13,19 +13,24 @@ import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.items.MythicItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class RunicCoreAPI {
 
@@ -310,5 +315,38 @@ public class RunicCoreAPI {
      */
     public static void updateMaxMana(Player player) {
         ManaListener.calculateMana(player);
+    }
+
+    /**
+     * Prevents hunger loss in capital cities
+     */
+    public static boolean isSafezone(Location loc) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(loc));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return false;
+        for (ProtectedRegion region : regions) {
+            return cityNames().parallelStream().anyMatch(region.getId()::contains);
+        }
+        return false;
+    }
+
+    private static List<String> cityNames() {
+        List<String> safeZones = new ArrayList<>();
+        safeZones.add("azana");
+        safeZones.add("koldore");
+        safeZones.add("whaletown");
+        safeZones.add("hilstead");
+        safeZones.add("wintervale");
+        safeZones.add("dawnshire");
+        safeZones.add("dead_mans_rest");
+        safeZones.add("isfodar");
+        safeZones.add("tireneas");
+        safeZones.add("zenyth");
+        safeZones.add("naheen");
+        safeZones.add("nazmora");
+        safeZones.add("frosts_end");
+        return safeZones;
     }
 }
