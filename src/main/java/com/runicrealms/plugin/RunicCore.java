@@ -118,6 +118,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static CryptsShop cryptsShop;
     private static FortressShop fortressShop;
 
+    //normal shops
+    private static GeneralShop generalShop;
+
     // getters for handlers
     public static RunicCore getInstance() { return instance; }
     public static CombatManager getCombatManager() { return combatManager; }
@@ -170,6 +173,11 @@ public class RunicCore extends JavaPlugin implements Listener {
         return fortressShop;
     }
 
+    //getters for normal shops
+    public static GeneralShop getGeneralShop() {
+        return generalShop;
+    }
+
     public void onEnable() {
         // Load config defaults
         this.loadConfig();
@@ -198,6 +206,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         libraryShop = new LibraryShop();
         cryptsShop = new CryptsShop();
         fortressShop = new FortressShop();
+
+        //normal shops
+        generalShop = new GeneralShop();
+
         // ACF commands
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PartyCommand());
