@@ -19,7 +19,7 @@ public class FortressShop implements RunicItemShop {
     private static final int ARMOR_PRICE = 5;
     private static final int ARTIFACT_PRICE = 3;
     private static final int LOAD_DELAY = 10;
-    private static final String MYTHIC_CURRENCY = "HeadOfEldrid";
+    private static final String RUNIC_ITEM_CURRENCY = "HeadOfEldrid";
     private Map<Integer, RunicShopItem> availableItems;
 
     public FortressShop() {
@@ -28,19 +28,19 @@ public class FortressShop implements RunicItemShop {
             int nextItemIndex = 0;
             try {
                 ItemStack bow = RunicItemsAPI.generateItemFromTemplate("winters-howl").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
                 ItemStack mace = RunicItemsAPI.generateItemFromTemplate("chillrend").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
                 ItemStack staff = RunicItemsAPI.generateItemFromTemplate("permafrost").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
                 ItemStack sword = RunicItemsAPI.generateItemFromTemplate("blade-of-the-betrayer").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
                 ItemStack axe = RunicItemsAPI.generateItemFromTemplate("frosts-edge").generateItem();
-                availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,7 +87,7 @@ public class FortressShop implements RunicItemShop {
         for (String s : templateIds) {
             try {
                 ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(s).generateItem();
-                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(itemStack, ARMOR_PRICE), runShopBuy(itemStack)));
                 nextItemIndex += 9;
             } catch (Exception e) {

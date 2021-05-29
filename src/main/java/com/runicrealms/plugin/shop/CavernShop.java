@@ -18,7 +18,7 @@ public class CavernShop implements RunicItemShop {
 
     private static final int ARMOR_PRICE = 2;
     private static final int LOAD_DELAY = 10;
-    private static final String MYTHIC_CURRENCY = "HeadOfHexagonis"; // todo: update to runicitems
+    private static final String RUNIC_ITEM_CURRENCY = "HeadOfHexagonis"; // todo: update to runicitems
     private Map<Integer, RunicShopItem> availableItems;
 
     public CavernShop() {
@@ -65,7 +65,7 @@ public class CavernShop implements RunicItemShop {
         for (String s : templateIds) {
             try {
                 ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(s).generateItem();
-                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(itemStack, ARMOR_PRICE), runShopBuy(itemStack)));
                 nextItemIndex += 9;
             } catch (Exception e) {

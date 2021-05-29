@@ -19,7 +19,7 @@ public class CaveShop implements RunicItemShop {
     private static final int ARMOR_PRICE = 1;
     private static final int ARTIFACT_PRICE = 2;
     private static final int LOAD_DELAY = 10;
-    private static final String MYTHIC_CURRENCY = "HeadOfSebath";
+    private static final String RUNIC_ITEM_CURRENCY = "HeadOfSebath";
     private Map<Integer, RunicShopItem> availableItems;
 
     public CaveShop() {
@@ -28,19 +28,19 @@ public class CaveShop implements RunicItemShop {
             int nextItemIndex = 0;
             try {
                 ItemStack bow = RunicItemsAPI.generateItemFromTemplate("sanguine-longbow").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(bow, ARTIFACT_PRICE), runShopBuy(bow)));
                 ItemStack mace = RunicItemsAPI.generateItemFromTemplate("crimson-maul").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(mace, ARTIFACT_PRICE), runShopBuy(mace)));
                 ItemStack staff = RunicItemsAPI.generateItemFromTemplate("bloodmoon").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(staff, ARTIFACT_PRICE), runShopBuy(staff)));
                 ItemStack sword = RunicItemsAPI.generateItemFromTemplate("scarlet-rapier").generateItem();
-                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex++, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(sword, ARTIFACT_PRICE), runShopBuy(sword)));
                 ItemStack axe = RunicItemsAPI.generateItemFromTemplate("corruption").generateItem();
-                availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex, new RunicShopItem(ARTIFACT_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(axe, ARTIFACT_PRICE), runShopBuy(axe)));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,7 +87,7 @@ public class CaveShop implements RunicItemShop {
         for (String s : templateIds) {
             try {
                 ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(s).generateItem();
-                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, MYTHIC_CURRENCY,
+                availableItems.put(nextItemIndex, new RunicShopItem(ARMOR_PRICE, RUNIC_ITEM_CURRENCY,
                         iconWithLore(itemStack, ARMOR_PRICE), runShopBuy(itemStack)));
                 nextItemIndex += 9;
             } catch (Exception e) {

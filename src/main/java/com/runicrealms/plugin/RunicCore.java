@@ -32,10 +32,7 @@ import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.mounts.MountListener;
-import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
-import com.runicrealms.plugin.item.scrapper.ScrapperListener;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
-import com.runicrealms.plugin.item.shops.ShopManager;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.npc.Build;
 import com.runicrealms.plugin.npc.NPCBuilderSC;
@@ -84,6 +81,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Arrays;
 
+//import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
+//import com.runicrealms.plugin.item.scrapper.ScrapperListener;
+
 public class RunicCore extends JavaPlugin implements Listener {
 
     // global variables
@@ -100,7 +100,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static TabListManager tabListManager;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
-    private static ShopManager shopManager;
     private static CacheManager cacheManager;
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
@@ -130,7 +129,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static TabListManager getTabListManager() { return tabListManager; }
     public static MobTagger getMobTagger() { return mobTagger; }
     public static BossTagger getBossTagger() { return bossTagger; }
-    public static ShopManager getShopManager() { return shopManager; }
     public static CacheManager getCacheManager() { return cacheManager; }
     public static ProtocolManager getProtocolManager() { return protocolManager; }
     public static DatabaseManager getDatabaseManager() { return databaseManager; }
@@ -187,7 +185,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         tabListManager = new TabListManager(this);
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
-        shopManager = new ShopManager();
         cacheManager = new CacheManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
@@ -258,7 +255,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         tabListManager = null;
         mobTagger = null;
         bossTagger = null;
-        shopManager = null;
         cacheManager = null;
         databaseManager = null;
         groupManager = null;
@@ -335,7 +331,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
-        pm.registerEvents(new ScrapperListener(), this);
+        //pm.registerEvents(new ScrapperListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
@@ -369,7 +365,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         getCommand("currency").setExecutor(currencySC);
         currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
         currencySC.addCommand(Arrays.asList("pouch"), new CurrencyPouch(currencySC));
-        currencySC.addCommand(Arrays.asList("scrapper"), new ItemScrapperCMD(currencySC));
+       // currencySC.addCommand(Arrays.asList("scrapper"), new ItemScrapperCMD(currencySC));
 
         // experience
         CheckExpCMD checkExpCMD = new CheckExpCMD();
