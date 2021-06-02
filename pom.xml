@@ -12,6 +12,12 @@
 
     <description>The core plugin for Runic Realms</description>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <fileOutput>${project.basedir}/../lib</fileOutput>
+    </properties>
+
+
     <build>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
