@@ -19,10 +19,7 @@ import com.runicrealms.plugin.donator.ThreeD;
 import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
-import com.runicrealms.plugin.item.BossTagger;
-import com.runicrealms.plugin.item.HelmetListener;
-import com.runicrealms.plugin.item.MobTagger;
-import com.runicrealms.plugin.item.SoulboundListener;
+import com.runicrealms.plugin.item.*;
 import com.runicrealms.plugin.item.commands.CurrencyGive;
 import com.runicrealms.plugin.item.commands.CurrencyPouch;
 import com.runicrealms.plugin.item.commands.HearthstoneCMD;
@@ -32,6 +29,7 @@ import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.mounts.MountListener;
+import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.npc.Build;
@@ -109,6 +107,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static SkillTreeManager skillTreeManager;
     private static StatManager statManager;
     private static ThreeDManager threeDManager;
+    private static RunicShopManager runicShopManager;
 
     // dungeon shops
     private static CaveShop caveShop;
@@ -145,6 +144,9 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
     public static ThreeDManager getThreeDManager() {
         return threeDManager;
+    }
+    public static RunicShopManager getRunicShopManager() {
+        return runicShopManager;
     }
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
@@ -191,6 +193,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         groupManager = new GroupManager();
         skillTreeManager = new SkillTreeManager();
         statManager = new StatManager();
+        threeDManager = new ThreeDManager();
+        runicShopManager = new RunicShopManager();
         // dungeon shops
         caveShop = new CaveShop();
         cavernShop = new CavernShop();
@@ -262,6 +266,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         skillTreeManager = null;
         statManager = null;
         threeDManager = null;
+        runicShopManager = null;
         // dungeon shops
         caveShop = null;
         cavernShop = null;
@@ -338,7 +343,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new EnvironmentDMGListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
-        pm.registerEvents(new RunicShopManager(), this);
+        pm.registerEvents(new RunicItemShopManager(), this);
         pm.registerEvents(new SpellVerifyListener(), this);
         pm.registerEvents(new SkillTreeGUIListener(), this);
         pm.registerEvents(new RuneGUIListener(), this);
@@ -348,6 +353,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CreatureSpawnListener(), this);
         pm.registerEvents(new StatListener(), this);
         pm.registerEvents(new RuneListener(), this);
+        pm.registerEvents(new TeleportScrollListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();

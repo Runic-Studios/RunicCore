@@ -31,7 +31,7 @@ public class HearthstoneListener implements Listener {
     private static final double MOVE_CONSTANT = 0.6;
     private static final int TEL_TIME = 5;
     private final HashMap<UUID, Long> hsCooldowns = new HashMap<>();
-    private final HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
+    private final static HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
 
     /**
      * Give new players the hearthstone
@@ -101,7 +101,7 @@ public class HearthstoneListener implements Listener {
             if ((System.currentTimeMillis()-hsCooldowns.get(uuid))/1000 >= cooldownTime) {
                 hsCooldowns.remove(uuid);
                 pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-                currentlyUsing.put(pl.getUniqueId(), activateHearthstone(pl));
+                currentlyUsing.put(pl.getUniqueId(), beginTeleportation(pl, getHearthstoneLocation(pl)));
 
             } else {
 
@@ -113,11 +113,11 @@ public class HearthstoneListener implements Listener {
             }
         } else {
             pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-            currentlyUsing.put(pl.getUniqueId(), activateHearthstone(pl));
+            currentlyUsing.put(pl.getUniqueId(), beginTeleportation(pl, getHearthstoneLocation(pl)));
         }
     }
 
-    private BukkitTask activateHearthstone(Player pl) {
+    public static BukkitTask beginTeleportation(Player pl, Location location) {
 
         double timer_initX = Math.round(pl.getLocation().getX() * MOVE_CONSTANT);
         double timer_initY = Math.round(pl.getLocation().getY() * MOVE_CONSTANT);
@@ -147,12 +147,12 @@ public class HearthstoneListener implements Listener {
 
                 if (count >= TEL_TIME) {
                     this.cancel();
-                    hsCooldowns.put(pl.getUniqueId(), System.currentTimeMillis());
+                    // todo: do we want a CD? hsCooldowns.put(pl.getUniqueId(), System.currentTimeMillis());
                     currentlyUsing.remove(pl.getUniqueId());
                     pl.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2));
-                    pl.teleport(getHearthstoneLocation(pl));
+                    pl.teleport(location);
                     pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-                    pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your hearthstone location.");
+                    pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your location.");
                     return;
                 }
 

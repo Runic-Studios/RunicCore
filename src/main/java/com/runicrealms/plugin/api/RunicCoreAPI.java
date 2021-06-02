@@ -2,8 +2,9 @@ package com.runicrealms.plugin.api;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
-import com.runicrealms.plugin.item.shops.RunicShopManager;
+import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.combat.CombatListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
@@ -33,6 +34,15 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class RunicCoreAPI {
+
+    /**
+     * Allows other plugins to borrow the hearthstone teleportation mechanic w/ specified location.
+     * @param player to teleport
+     * @param location to arrive at
+     */
+    public static void beginTeleportation(Player player, Location location) {
+        HearthstoneListener.beginTeleportation(player, location);
+    }
 
     /**
      * Quickly grab a string representing the class the player is using, in lowercase!
@@ -261,7 +271,7 @@ public class RunicCoreAPI {
      * @param shop
      */
     public static void registerRunicItemShop(RunicItemShop shop) {
-        RunicShopManager.registerShop(shop);
+        RunicItemShopManager.registerShop(shop);
     }
 
     public static int getPlayerDexterity(UUID uuid) {
