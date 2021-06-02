@@ -12,11 +12,6 @@
 
     <description>The core plugin for Runic Realms</description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <fileOutput>${user.home}/Desktop/Runic Server Assets/~ Local Server/plugins</fileOutput>
-    </properties>
-
     <build>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
@@ -55,7 +50,6 @@
                                     <include>org.mongodb:bson</include>
                                     <include>org.mongodb:mongo-java-driver</include>
                                     <include>org.mongodb:mongodb-driver-core</include>
-                                    <include></include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -152,7 +146,7 @@
             <artifactId>craftbukkit</artifactId>
             <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/craftbukkit-1.16.4.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/craftbukkit-1.16.4.jar</systemPath>
         </dependency>
         <!-- MongoDB -->
         <dependency>
@@ -166,7 +160,7 @@
             <artifactId>mythicmobs</artifactId>
             <version>4.11.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/MythicMobs-4.11.0.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/MythicMobs-4.11.0.jar</systemPath>
         </dependency>
         <!-- NametagEdit Api -->
         <dependency>
@@ -180,23 +174,23 @@
             <artifactId>item-nbt-api</artifactId>
             <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/NBTAPI-1.16.4.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/NBTAPI-1.16.4.jar</systemPath>
         </dependency>
         <!-- RunicChat -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicChat</artifactId>
-            <version>1.15.2</version>
+            <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicChat-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicChat-1.16.4.jar</systemPath>
         </dependency>
         <!-- RunicGuilds -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicGuilds</artifactId>
-            <version>1.15.2</version>
+            <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicGuilds-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicGuilds-1.16.4.jar</systemPath>
         </dependency>
         <!-- RunicItems -->
         <dependency>
@@ -204,31 +198,31 @@
             <artifactId>RunicItems</artifactId>
             <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicItems-1.16.4.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicItems-1.16.4.jar</systemPath>
         </dependency>
         <!-- RunicNpcs -->
         <dependency>
             <groupId>com.runicrealms.runicnpcs</groupId>
             <artifactId>RunicNpcs</artifactId>
-            <version>1.15.2</version>
+            <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicNpcs-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicNpcs-1.16.4.jar</systemPath>
         </dependency>
         <!-- RunicProfessions -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicProfessions</artifactId>
-            <version>1.15.2</version>
+            <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicProfessions-1.15.2.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicProfessions-1.16.4.jar</systemPath>
         </dependency>
         <!-- RunicRestart -->
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicRestart</artifactId>
-            <version>1.15.2</version>
+            <version>1.16.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/RunicRestart.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicRestart-1.16.4.jar</systemPath>
         </dependency>
         <!-- Paper API -->
         <dependency>
