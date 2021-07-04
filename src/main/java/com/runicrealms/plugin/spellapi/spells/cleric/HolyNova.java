@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -19,21 +20,21 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class HolyNova extends Spell {
+public class HolyNova extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 5;
+    private static final int DAMAGE_PER_LEVEL = 3;
     private static final int DURATION = 5;
     private static final int HEAL_AMT = 8;
     private static final float RADIUS = 5f;
-    private static final double GEM_BOOST = 50;
     private static final double KNOCKBACK_MULT = -1.25;
 
-    // constructor
     public HolyNova() {
         super("Holy Nova",
                 "For " + DURATION + "s, you pulse with holy " +
                         "power, conjuring rings of light " +
-                        "that deal " + DAMAGE_AMT + " spellʔ damage to enemies " +
+                        "that deal (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage to enemies " +
                         "and push them back! The rings restore✦ " +
                         HEAL_AMT + " health to allies!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
@@ -91,5 +92,10 @@ public class HolyNova extends Spell {
             if (en instanceof Player && verifyAlly(pl, en))
                 HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, false);
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }

@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -24,9 +25,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class HolyWater extends Spell {
+public class HolyWater extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 15;
+    private static final double DAMAGE_PER_LEVEL = 2.75;
     private static final int DURATION = 6;
     private static final int RADIUS = 5;
     private static final double PERCENT = 35;
@@ -40,8 +42,8 @@ public class HolyWater extends Spell {
                         "Allies within " + RADIUS + " blocks of the light " +
                         "receive an additional " + (int) PERCENT + "% health " +
                         "from all healing✦ spells for " + DURATION + "s! " +
-                        "Against enemies, the vial deals " + DAMAGE + " spellʔ " +
-                        "damage!",
+                        "Against enemies, the vial deals (" + DAMAGE + " + &f" +
+                        DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ damage!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 10, 20);
         affectedPlayers = new HashMap<>();
     }
@@ -110,6 +112,11 @@ public class HolyWater extends Spell {
         int extraAmt = (int) (e.getAmount() * percent);
         if (extraAmt < 1) extraAmt = 1;
         e.setAmount(e.getAmount() + extraAmt);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

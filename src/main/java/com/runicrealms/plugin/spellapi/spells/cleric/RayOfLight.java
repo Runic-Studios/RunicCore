@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -18,9 +19,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class RayOfLight extends Spell {
+public class RayOfLight extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMOUNT = 25;
+    private static final double DAMAGE_PER_LEVEL = 2.25;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final int RADIUS = 4;
@@ -31,7 +33,8 @@ public class RayOfLight extends Spell {
         super ("Ray of Light",
                 "You summon an orb of holy magic at " +
                         "your target location that persists for " + DURATION +
-                        "s and deals " + DAMAGE_AMOUNT + " spellʔ " +
+                        "s and deals (" + DAMAGE_AMOUNT + " + &f" +
+                        DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ " +
                         "damage to enemies within " + RADIUS + " blocks, " +
                         "stunning them for " + STUN_DURATION + "s! " +
                         "Enemies cannot be hit more than once.",
@@ -91,6 +94,11 @@ public class RayOfLight extends Spell {
                 loc.subtract(x, y, z);
             }
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

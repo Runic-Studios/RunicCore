@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -13,9 +14,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Smite extends Spell {
+public class Smite extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE = 45;
+    private static final int DAMAGE = 35;
+    private static final int DAMAGE_PER_LEVEL = 4;
     private static final int MAX_DIST = 10;
     private final double BEAM_SPEED = 0.8;
     private final double COLLISION_RADIUS = 1.5;
@@ -24,7 +26,8 @@ public class Smite extends Spell {
     public Smite() {
         super("Smite",
                 "You launch a ripple of magic, colliding with the first enemy hit, " +
-                        "dealing " + DAMAGE + " spellʔ damage and launching them back!",
+                        "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage and launching them back!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 8, 20);
     }
 
@@ -65,6 +68,11 @@ public class Smite extends Spell {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -14,9 +15,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Consecration extends Spell {
+public class Consecration extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 35;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 8;
     private static final int RADIUS = 7;
 
@@ -24,7 +26,8 @@ public class Consecration extends Spell {
         super("Consecration",
                 "You conjure a ring of holy magic on the ground " +
                         "for " + DURATION + "s, slowing enemies within " + RADIUS + " " +
-                        "blocks and dealing " + DAMAGE_AMT + " spellʔ damage each second!",
+                        "blocks and dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage each second!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 20);
     }
 
@@ -68,5 +71,10 @@ public class Consecration extends Spell {
             pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
             loc.subtract(x, 0, z);
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }

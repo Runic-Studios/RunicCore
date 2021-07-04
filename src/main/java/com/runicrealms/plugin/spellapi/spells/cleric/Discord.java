@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -12,10 +13,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class Discord extends Spell {
+public class Discord extends Spell implements MagicDamageSpell {
 
     private static final int DELAY = 2;
     private static final int DAMAGE_AMT = 8;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 3;
     private static final int RADIUS = 8;
 
@@ -23,7 +25,8 @@ public class Discord extends Spell {
         super("Discord",
                 "You prime yourself with a chaotic magic! After " + DELAY + "s, " +
                         "enemies within " + RADIUS + " blocks are stunned for " +
-                        DURATION + "s and suffer " + DAMAGE_AMT + " spellʔ damage!",
+                        DURATION + "s and suffer (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 20, 20);
     }
 
@@ -49,5 +52,10 @@ public class Discord extends Spell {
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.2F);
         VectorUtil.drawLine(caster, Particle.CRIT_MAGIC, Color.WHITE, caster.getEyeLocation(), victim.getEyeLocation(), 1);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
