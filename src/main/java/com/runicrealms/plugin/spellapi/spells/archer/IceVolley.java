@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -20,16 +21,18 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class IceVolley extends Spell {
+public class IceVolley extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 25;
+    private static final int DAMAGE_PER_LEVEL = 3;
     private static final int DURATION = 2;
     private final HashSet<Arrow> iceArrows;
 
     public IceVolley() {
         super("Ice Volley",
                 "You rapid-fire a volley of five arrows, " +
-                        "each dealing " + DAMAGE + " spellʔ damage " +
+                        "each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl)" + " spellʔ damage " +
                         "and slowing any enemies hit for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 10, 30);
         iceArrows = new HashSet<>();
@@ -94,5 +97,10 @@ public class IceVolley extends Spell {
             le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (DURATION * 20L), 2));
             DamageUtil.damageEntitySpell(DAMAGE, le, pl, this);
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }

@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cloak;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -25,9 +26,10 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Flare extends Spell {
+public class Flare extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 25;
+    private static final int DAMAGE_PER_LEVEL = 4;
     private static final int DURATION = 3;
     private static final int RADIUS = 5;
     private static final double FLARE_SPEED = 2;
@@ -35,7 +37,7 @@ public class Flare extends Spell {
 
     public Flare() {
         super("Flare",
-                "You launch a flare that deals " + DAMAGE_AMT + " " +
+                "You launch a flare that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) " +
                         "spellʔ damage to the first enemy hit, then dispells " +
                         "the beneficial effects of enemies within " + RADIUS + " " +
                         "blocks, removing speed and invisibility! The flare then " +
@@ -91,5 +93,10 @@ public class Flare extends Spell {
             le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) (DURATION * 20L), 2));
             le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (DURATION * 20L), 2));
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }

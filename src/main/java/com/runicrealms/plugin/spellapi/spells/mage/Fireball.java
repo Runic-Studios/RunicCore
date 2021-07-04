@@ -24,7 +24,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
     private final boolean applyBurn;
     private final boolean iceBolt;
     private static final int DAMAGE_AMOUNT = 25;
-    private static final double DAMAGE_PER_LEVEL = 4;
+    private static final int DAMAGE_PER_LEVEL = 4;
     private static final double FIREBALL_SPEED = 2;
 
     private SmallFireball fireball;
@@ -35,8 +35,8 @@ public class Fireball extends Spell implements MagicDamageSpell {
     public Fireball() {
         super ("Fireball",
                 "You launch a projectile fireball " +
-                        "that deals (" + DAMAGE_AMOUNT + " + &f" + (int) DAMAGE_PER_LEVEL
-                        + "&7 * lvl) spellʔ damage on impact!",
+                        "that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage on impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
         fireCone = false;
         applyBurn = false;

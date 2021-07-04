@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -24,9 +25,10 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class PowerShot extends Spell {
+public class PowerShot extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 50;
+    private static final int DAMAGE_PER_LEVEL = 4;
     private static final int DURATION = 4;
     private static final double PERCENT_INCREASE = .25;
     private final List<Arrow> powerShots;
@@ -35,7 +37,8 @@ public class PowerShot extends Spell {
     public PowerShot() {
         super("Power Shot",
                 "You launch an enchanted arrow which " +
-                        "deals " + DAMAGE + " spellʔ damage on-hit! " +
+                        "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl)" + " spellʔ damage on-hit! " +
                         "For " + DURATION + "s, the enemy is afflicted " +
                         "with &aHunter's Mark&7, increasing all damage you " +
                         "deal to them by " + (int) (PERCENT_INCREASE * 100) + "%!",
@@ -114,5 +117,10 @@ public class PowerShot extends Spell {
 
     public static HashMap<UUID, UUID> huntersMarkMap() {
         return markedEntities;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }

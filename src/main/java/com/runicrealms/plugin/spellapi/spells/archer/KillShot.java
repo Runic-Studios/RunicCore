@@ -31,8 +31,8 @@ public class KillShot extends Spell {
     public KillShot() {
         super("Kill Shot",
                 "You launch an enchanted arrow which " +
-                        "deals " + "(&f" + DAMAGE + " + " + PERCENT + "x " +
-                        "missing health&7) as weapon⚔ damage! " +
+                        "deals " + "(" + DAMAGE + " + &f" + PERCENT + "x&7 " +
+                        "missing health) as weapon⚔ damage! " +
                         "Capped at " + DAMAGE_CAP + " against monsters.",
                 ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
         killShots = new ArrayList<>();

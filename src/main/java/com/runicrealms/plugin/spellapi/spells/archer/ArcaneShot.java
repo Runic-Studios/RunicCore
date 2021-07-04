@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -17,16 +18,18 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ArcaneShot extends Spell {
+public class ArcaneShot extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 15;
+    private static final int DAMAGE_PER_LEVEL = 3;
     private static final int DURATION = 3;
     private Arrow arcaneArrow;
 
     public ArcaneShot() {
         super("Arcane Shot",
                 "You fire a magical arrow which " +
-                        "deals " + DAMAGE + " spellʔ damage to its " +
+                        "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage to its " +
                         "target and silences it for " + DURATION + " " +
                         "seconds, preventing it from " +
                         "healing or dealing damage!",
@@ -61,5 +64,10 @@ public class ArcaneShot extends Spell {
 
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, 0.5f, 2.0f);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
