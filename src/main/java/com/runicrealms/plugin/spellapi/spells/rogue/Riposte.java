@@ -28,7 +28,7 @@ public class Riposte extends Spell {
         super ("Riposte",
                 "For " + DURATION + "s, you parry and counter " +
                         "incoming attacks, avoiding the hit and dealing " +
-                        (int) (PERCENT_DMG * 100) + "% damage back to your attacker! " +
+                        (int) (PERCENT_DMG * 100) + "% spellʔ damage back to your attacker! " +
                         "Capped at " + DAMAGE_CAP + " against monsters.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 20, 20);
         ripostePlayers = new HashSet<>();

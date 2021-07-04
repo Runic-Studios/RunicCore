@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -21,11 +22,12 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SmokeBomb extends Spell {
+public class SmokeBomb extends Spell implements MagicDamageSpell {
 
     private final boolean frostBomb;
     private static final int FROSTBOMB_DURATION = 4;
     private static final int DAMAGE_AMT = 15;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 2;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
@@ -33,7 +35,8 @@ public class SmokeBomb extends Spell {
     public SmokeBomb() {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke " +
-                        "that deals " + DAMAGE_AMT + " spellʔ damage, slows and " +
+                        "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) spellʔ damage, slows and " +
                         "blinds enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
@@ -119,6 +122,11 @@ public class SmokeBomb extends Spell {
 
     public static int getFrostbombDuration() {
         return FROSTBOMB_DURATION;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 
