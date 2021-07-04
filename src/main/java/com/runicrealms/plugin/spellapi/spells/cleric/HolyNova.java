@@ -90,7 +90,7 @@ public class HolyNova extends Spell implements MagicDamageSpell {
 
             // heal party members
             if (en instanceof Player && verifyAlly(pl, en))
-                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, true, true, false);
+                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, false);
         }
     }
 

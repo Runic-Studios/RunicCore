@@ -53,7 +53,7 @@ public class Leech extends Spell {
         if (!leechers.contains(e.getPlayer().getUniqueId())) return;
         if (e.isCancelled()) return;
         Player pl = e.getPlayer();
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
+        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
     }
 }
 

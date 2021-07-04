@@ -38,10 +38,10 @@ public class RighteousBlade extends Spell {
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
-        HealUtil.healPlayer(HEAL_AMOUNT, pl, pl, true, false, false);
+        HealUtil.healPlayer(HEAL_AMOUNT, pl, pl, false, this);
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!verifyAlly(pl, en)) continue;
-            HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, pl, true, false, false);
+            HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, pl, false, this);
         }
     }
 }

@@ -27,7 +27,7 @@ public class IcyAffinity extends Spell {
         if (!(e.getSpell() instanceof IceBlock)) return;
         Player pl = e.getCaster();
         HealUtil.healPlayer((int) (pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT),
-                pl, pl, false, false, false);
+                pl, pl, false, this);
     }
 }
 

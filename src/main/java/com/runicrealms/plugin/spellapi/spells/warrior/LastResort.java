@@ -43,7 +43,7 @@ public class LastResort extends Spell {
         e.setCancelled(true);
         resorters.add(pl.getUniqueId());
         HealUtil.healPlayer((pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT),
-                pl, pl, true, false, false);
+                pl, pl, false, this);
         beginLastResort(pl);
         pl.sendMessage(ChatColor.GREEN + "Your Last Resort has spared you from death!");
         Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> {

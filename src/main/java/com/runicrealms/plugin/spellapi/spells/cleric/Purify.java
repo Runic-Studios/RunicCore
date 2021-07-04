@@ -42,7 +42,7 @@ public class Purify extends Spell {
         pl.swingMainHand();
 
         // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
+        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -113,7 +113,7 @@ public class Purify extends Spell {
                     ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                 } else {
-                    HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
+                    HealUtil.healPlayer(HEAL_AMT, ally, pl, false, this);
                     pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                     if (RunicCoreAPI.isSilenced(ally)) {
                         RunicCore.getSpellManager().getSilencedEntities().get(ally.getUniqueId()).cancel(); // fixes bugs
