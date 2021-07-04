@@ -60,7 +60,7 @@ public class Frostbolt extends Spell {
         if (!verifyEnemy(pl, victim)) return;
 
         // cancel the event, apply spell mechanics
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
 
         // slow
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -17,13 +18,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Fireball extends Spell {
+public class Fireball extends Spell implements MagicDamageSpell {
 
     private final boolean fireCone;
     private final boolean applyBurn;
     private final boolean iceBolt;
-    private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 25;
+    private static final double DAMAGE_PER_LEVEL = 4;
+    private static final double FIREBALL_SPEED = 2;
 
     private SmallFireball fireball;
     private SmallFireball fireballLeft;
@@ -33,8 +35,8 @@ public class Fireball extends Spell {
     public Fireball() {
         super ("Fireball",
                 "You launch a projectile fireball " +
-                        "that deals " + DAMAGE_AMOUNT + " spellʔ damage on " +
-                        "impact!",
+                        "that deals (" + DAMAGE_AMOUNT + " + &f" + (int) DAMAGE_PER_LEVEL
+                        + "&7 * lvl) spellʔ damage on impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
         fireCone = false;
         applyBurn = false;
@@ -86,7 +88,7 @@ public class Fireball extends Spell {
             LivingEntity victim = (LivingEntity) e.getEntity();
 
             if (verifyEnemy(player, victim)) {
-                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, 100);
+                DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, this);
                 victim.getWorld().spawnParticle(Particle.SNOWBALL, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
             }
@@ -107,7 +109,8 @@ public class Fireball extends Spell {
         LivingEntity victim = (LivingEntity) e.getEntity();
 
         if (verifyEnemy(player, victim)) {
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, 100);
+//            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT + (DAMAGE_PER_LEVEL * player.getLevel()), victim, player, 100);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, this);
             victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
 
@@ -115,19 +118,24 @@ public class Fireball extends Spell {
             if (hasPassive(player, "Scald")) {
                 for (Entity en : fireball.getNearbyEntities(Scald.getRadius(), Scald.getRadius(), Scald.getRadius())) {
                     if (!verifyEnemy(player, en)) continue;
-                    DamageUtil.damageEntitySpell(DAMAGE_AMOUNT * Scald.getDamagePercent(), (LivingEntity) en, player, 100);
+                    DamageUtil.damageEntitySpell(DAMAGE_AMOUNT * Scald.getDamagePercent(), (LivingEntity) en, player, this);
                 }
             }
 
             if (applyBurn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, 50);
+                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, this);
                     victim.getWorld().spawnParticle
                             (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
                 }, 20L);
             }
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

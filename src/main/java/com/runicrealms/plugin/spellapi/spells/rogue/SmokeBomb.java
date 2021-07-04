@@ -110,7 +110,7 @@ public class SmokeBomb extends Spell {
         for (Entity entity : pl.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (entity instanceof LivingEntity && verifyEnemy(pl, entity)) {
                 LivingEntity victim = (LivingEntity) entity;
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 2));
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
             }

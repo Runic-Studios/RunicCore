@@ -32,6 +32,7 @@ public class Consecration extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
 
         Location castLocation = pl.getLocation();
+        Spell spell = this;
 
         new BukkitRunnable() {
             int count = 1;
@@ -48,7 +49,7 @@ public class Consecration extends Spell {
                         LivingEntity victim = (LivingEntity) en;
                         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 2));
-                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
+                        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, spell);
                     }
                 }
             }

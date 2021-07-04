@@ -57,7 +57,7 @@ public class ArcaneShot extends Spell {
 
         // spell effect
         addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
-        DamageUtil.damageEntitySpell(DAMAGE, livingEntity, pl, 100);
+        DamageUtil.damageEntitySpell(DAMAGE, livingEntity, pl, this);
 
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 0.5f, 0.5f);
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, 0.5f, 2.0f);

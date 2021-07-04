@@ -59,7 +59,7 @@ public class Smite extends Spell {
             if (!verifyEnemy(caster, en)) continue;
             caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
             en.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, en.getLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, caster, 100);
+            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, caster, this);
             Vector force = caster.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
             en.setVelocity(force);
             return true;

@@ -34,6 +34,7 @@ public class FireAura extends Spell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
+        Spell spell = this;
         new BukkitRunnable() {
             int count = 1;
             @Override
@@ -51,7 +52,7 @@ public class FireAura extends Spell {
 
                     for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (verifyEnemy(player, en))
-                            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, 100);
+                            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, spell);
                     }
                 }
             }

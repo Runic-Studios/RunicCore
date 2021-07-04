@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.events;
 
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -15,12 +16,14 @@ public class SpellHealEvent extends Event implements Cancellable {
     private int amount;
     private final Player player;
     private final Entity entity;
+    private final Spell spell;
     private boolean isCancelled;
 
-    public SpellHealEvent(int amount, Entity recipient, Player caster) {
+    public SpellHealEvent(int amount, Entity recipient, Player caster, Spell... spell) {
         this.amount = amount;
         this.entity = recipient;
         this.player = caster;
+        this.spell = spell.length > 0 ? spell[0] : null;
         this.isCancelled = false;
     }
 
@@ -38,6 +41,10 @@ public class SpellHealEvent extends Event implements Cancellable {
 
     public Entity getEntity() {
         return this.entity;
+    }
+
+    public Spell getSpell() {
+        return this.spell;
     }
 
     @Override

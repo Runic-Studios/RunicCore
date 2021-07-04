@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
@@ -12,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DamageUtil {
 
-    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, double gemBoostPercent) {
+    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
 
         // prevent healing
         if (dmgAmt < 0) {
@@ -20,7 +21,9 @@ public class DamageUtil {
         }
 
         // call our custom event, apply modifiers if necessary
-        SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster);
+        SpellDamageEvent event = spell.length > 0
+                ? new SpellDamageEvent((int) dmgAmt, recipient, caster, spell)
+                : new SpellDamageEvent((int) dmgAmt, recipient, caster);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();

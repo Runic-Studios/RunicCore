@@ -82,7 +82,7 @@ public class HolyNova extends Spell {
 
             // Executes the damage aspect of spell
             if (verifyEnemy(pl, en)) {
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, GEM_BOOST);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
                 Vector force = pl.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
                 en.setVelocity(force);
             }

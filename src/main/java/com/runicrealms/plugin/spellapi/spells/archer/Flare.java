@@ -77,7 +77,7 @@ public class Flare extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
         if (!verifyEnemy(pl, le)) return;
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
     }
 
     private void flareEffect(Player player, Arrow arrow) {

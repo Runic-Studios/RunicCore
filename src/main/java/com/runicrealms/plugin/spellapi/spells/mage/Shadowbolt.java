@@ -57,7 +57,7 @@ public class Shadowbolt extends Spell {
         for (Entity en : shadowbolt.getNearbyEntities(1, 1, 1)) {
             if (!verifyEnemy(pl, en)) continue;
             LivingEntity victim = (LivingEntity) en;
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, 100);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
             // victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) (DURATION * 20), 2));
             addStatusEffect(victim, EffectEnum.SILENCE, DURATION);
             victim.getWorld().spawnParticle(Particle.SMOKE_LARGE, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

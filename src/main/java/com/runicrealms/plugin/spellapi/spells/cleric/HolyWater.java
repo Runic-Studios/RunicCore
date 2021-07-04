@@ -94,7 +94,7 @@ public class HolyWater extends Spell {
             if (verifyAlly(pl, en))
                 affectedPlayers.get(pl.getUniqueId()).add(en.getUniqueId());
             if (verifyEnemy(pl, en))
-                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, 100);
+                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, this);
         }
     }
 

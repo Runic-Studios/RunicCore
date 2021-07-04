@@ -79,7 +79,7 @@ public class Whirlwind extends Spell {
             if (!(en instanceof LivingEntity)) continue;
             LivingEntity le = (LivingEntity) en;
             if (!verifyEnemy(pl, en)) continue;
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
         }
     }
 

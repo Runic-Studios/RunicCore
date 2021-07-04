@@ -41,7 +41,7 @@ public class IceBlock extends Spell {
             for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                 if (!verifyEnemy(pl, en)) continue;
                 en.getWorld().spawnParticle(Particle.SNOWBALL, en.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, 100);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, this);
             }
         }, DURATION * 20L);
     }

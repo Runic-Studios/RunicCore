@@ -49,7 +49,7 @@ public class Sprint extends Spell {
             for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                 if (!verifyEnemy(pl, en)) continue;
                 en.getWorld().spawnParticle(Particle.FLAME, ((LivingEntity) en).getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, 100);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, this);
             }
         }
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION *20, SPEED_AMPLIFIER));

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.events;
 
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -19,6 +20,7 @@ public class WeaponDamageEvent extends Event implements Cancellable {
     private final Entity entity;
     private final boolean isAutoAttack;
     private final boolean isRanged;
+    private final Spell spell;
     private boolean isCancelled;
 
     /**
@@ -29,12 +31,13 @@ public class WeaponDamageEvent extends Event implements Cancellable {
      * @param isAutoAttack whether the attack is a physical spell or a basic attack
      * @param isRanged whether the attack is a ranged physical spell (archers)
      */
-    public WeaponDamageEvent(int amount, Player damager, Entity victim, boolean isAutoAttack, boolean isRanged) {
+    public WeaponDamageEvent(int amount, Player damager, Entity victim, boolean isAutoAttack, boolean isRanged, Spell... spell) {
         this.amount = amount;
         this.player = damager;
         this.entity = victim;
         this.isAutoAttack = isAutoAttack;
         this.isRanged = isRanged;
+        this.spell = spell.length > 0 ? spell[0] : null;
         this.isCancelled = false;
     }
 
@@ -52,6 +55,10 @@ public class WeaponDamageEvent extends Event implements Cancellable {
 
     public Entity getEntity() {
         return this.entity;
+    }
+
+    public Spell getSpell() {
+        return this.spell;
     }
 
     public boolean isAutoAttack() {

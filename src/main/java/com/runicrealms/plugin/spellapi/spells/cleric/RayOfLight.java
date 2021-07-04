@@ -42,6 +42,8 @@ public class RayOfLight extends Spell {
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
+        Spell spell = this;
+
         Location orbLocation = pl.getTargetBlock(null, MAX_DIST).getLocation();
         while (orbLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
             orbLocation = orbLocation.getBlock().getRelative(BlockFace.DOWN).getLocation(); // ensure location on ground
@@ -67,7 +69,7 @@ public class RayOfLight extends Spell {
                         LivingEntity le = (LivingEntity) en;
                         le.getWorld().playSound(le.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 0.5f);
                         VectorUtil.drawLine(pl, Particle.SPELL_INSTANT, Color.WHITE, finalOrbLocation, le.getEyeLocation(), 1.0);
-                        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, 100);
+                        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, spell);
                         addStatusEffect(en, EffectEnum.STUN, STUN_DURATION);
                     }
                 }

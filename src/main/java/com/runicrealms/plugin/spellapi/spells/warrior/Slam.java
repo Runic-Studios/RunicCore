@@ -70,6 +70,7 @@ public class Slam extends Spell {
     }
 
     private BukkitTask startSlamTask(Player pl) {
+        Spell spell = this;
         return new BukkitRunnable() {
             @Override
             public void run() {
@@ -90,7 +91,7 @@ public class Slam extends Spell {
                             en.setVelocity(force.normalize());
                             if (ignite) {
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, 100);
+                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, spell);
                                     en.getWorld().spawnParticle
                                             (Particle.LAVA, ((LivingEntity) en).getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                                     pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

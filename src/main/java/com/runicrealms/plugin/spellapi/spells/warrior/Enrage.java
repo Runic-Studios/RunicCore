@@ -88,7 +88,7 @@ public class Enrage extends Spell {
         le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
         le.getWorld().playSound(le.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.8f);
 
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
     }
 
     public static int getBuffDuration() {

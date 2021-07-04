@@ -85,6 +85,7 @@ public class ShadowBomb extends Spell {
     }
 
     private void damageOverTime(LivingEntity le, Player pl) {
+        Spell spell = this;
         new BukkitRunnable() {
             int count = 0;
             @Override
@@ -96,7 +97,7 @@ public class ShadowBomb extends Spell {
                     le.getWorld().playSound(le.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
                     le.getWorld().spawnParticle(Particle.REDSTONE, le.getLocation(),
                             50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GREEN, 1));
-                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, 100);
+                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, spell);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);

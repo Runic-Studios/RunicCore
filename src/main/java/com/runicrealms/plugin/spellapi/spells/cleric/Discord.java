@@ -39,7 +39,7 @@ public class Discord extends Spell {
             if (!(verifyEnemy(player, en))) continue;
             causeDiscord(player, (LivingEntity) en);
             addStatusEffect(en, EffectEnum.STUN, DURATION);
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, 100);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, this);
         }
     }
 

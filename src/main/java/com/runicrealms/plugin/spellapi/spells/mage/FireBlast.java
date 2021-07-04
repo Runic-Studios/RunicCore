@@ -40,7 +40,7 @@ public class FireBlast extends Spell {
         for (Entity en : pl.getWorld().getNearbyEntities(blastLoc, RADIUS, RADIUS, RADIUS)) {
             if (!verifyEnemy(pl, en)) continue;
             LivingEntity le = (LivingEntity) en;
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, 100);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, this);
             en.getWorld().spawnParticle(Particle.FLAME, le.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
             addStatusEffect(en, EffectEnum.SILENCE, STUN_DURATION);
             addStatusEffect(en, EffectEnum.STUN, STUN_DURATION);
