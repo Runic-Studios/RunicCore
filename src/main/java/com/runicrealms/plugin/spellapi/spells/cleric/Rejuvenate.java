@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -17,9 +18,10 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Rejuvenate extends Spell {
+public class Rejuvenate extends Spell implements HealingSpell {
 
     private static final int HEAL_AMT = 45;
+    private static final int HEALING_PER_LEVEL = 3;
     private static final int RANGE = 15;
     private static final int BEAM_SPEED = 3;
     private final double RADIUS = 1.5;
@@ -31,8 +33,9 @@ public class Rejuvenate extends Spell {
     public Rejuvenate() {
         super("Rejuvenate",
                 "You launch a beam of healing magic, " +
-                "restoring✦ " + HEAL_AMT + " health to yourself and " +
-                "all allies it passes through!",
+                        "restoring✦ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
+                        "x&7 lvl) health to yourself and " +
+                        "all allies it passes through!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
         this.hasBeenHit = new HashMap<>();
     }
@@ -44,7 +47,7 @@ public class Rejuvenate extends Spell {
         pl.swingMainHand();
 
         // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, true, false, false);
+        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
 
         // sound effect
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
@@ -115,7 +118,7 @@ public class Rejuvenate extends Spell {
                     ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                 } else {
-                    HealUtil.healPlayer(HEAL_AMT, ally, pl, true, false, false);
+                    HealUtil.healPlayer(HEAL_AMT, ally, pl, false, this);
                     pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
 
                     // stop the beam if it hits a player
@@ -123,5 +126,10 @@ public class Rejuvenate extends Spell {
                 }
             }
         }
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
     }
 }

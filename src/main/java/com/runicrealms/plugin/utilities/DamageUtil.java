@@ -13,6 +13,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class DamageUtil {
 
+    /**
+     *
+     * @param dmgAmt
+     * @param recipient
+     * @param caster
+     * @param spell
+     */
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
 
         // prevent healing

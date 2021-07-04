@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spellutil;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
@@ -12,17 +13,15 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 public class HealUtil  {
 
     /**
-     *
+     * Our universal method to apply healing to a player using custom calculation.
      * @param healAmt amount to be healed before gem or buff calculations
      * @param recipient player to be healed
      * @param caster player who casted heal
-     * @param gemBoosted whether or not to apply gem bonuses
-     * @param halveGemBoost whether to reduce gem bonuses
      * @param isReducedOnCaster whether caster receives reduced healing
+     * @param spell include a reference to spell for spell scaling
      */
     @SuppressWarnings("deprecation")
-    public static void healPlayer(double healAmt, Player recipient, Player caster,
-                                  boolean gemBoosted, boolean halveGemBoost, boolean isReducedOnCaster) {
+    public static void healPlayer(double healAmt, Player recipient, Player caster, boolean isReducedOnCaster, Spell... spell) {
 
         // spells are half effective on the caster
         if (isReducedOnCaster && recipient == caster) {
@@ -30,7 +29,9 @@ public class HealUtil  {
         }
 
         // call our custom heal event for interaction with buffs/debuffs
-        SpellHealEvent event = new SpellHealEvent((int) healAmt, recipient, caster);
+        SpellHealEvent event = spell.length > 0
+                ? new SpellHealEvent((int) healAmt, recipient, caster, spell)
+                : new SpellHealEvent((int) healAmt, recipient, caster);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         healAmt = event.getAmount();
@@ -49,16 +50,14 @@ public class HealUtil  {
             }
 
             HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0,1.5,0), difference);
-            recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
-            recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 
         } else {
 
             recipient.setHealth(newHP);
             HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0,1.5,0), healAmt);
-            recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
-            recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
         }
+        recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
+        recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
 
         // call a new health regen event to communicate with all the other events that depend on this.
         Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, healAmt, EntityRegainHealthEvent.RegainReason.CUSTOM));
