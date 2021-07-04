@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
@@ -17,11 +18,12 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Enrage extends Spell {
+public class Enrage extends Spell implements MagicDamageSpell {
 
-    private static final int CHANNEL_DURATION = 2;
     private static final int BUFF_DURATION = 8;
+    private static final int CHANNEL_DURATION = 2;
     private static final int DAMAGE_AMT = 5;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
     private static final HashSet<UUID> ragers = new HashSet<>();
 
     public Enrage() {
@@ -29,8 +31,8 @@ public class Enrage extends Spell {
                 "For " + CHANNEL_DURATION + "s, you channel a deep " +
                         "rage, slowing your speed. After, " +
                         "you gain an immense boost of speed " +
-                        "and your weapon⚔ attacks deal " + DAMAGE_AMT + " extra " +
-                        "spellʔ damage for " + BUFF_DURATION + "s!",
+                        "and your weapon⚔ attacks deal (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) extra spellʔ damage for " + BUFF_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 12, 25);
     }
     @Override
@@ -97,6 +99,11 @@ public class Enrage extends Spell {
 
     public static HashSet<UUID> getRagers() {
         return ragers;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -20,19 +21,19 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-// todo: make passive
-public class Reflect extends Spell {
+public class Reflect extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 10;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
     private static final int DURATION = 6;
     private final List<UUID> reflectedPlrs = new ArrayList<>();
 
     public Reflect() {
         super("Reflect",
-                "For " + DURATION + " seconds, you gain a reflective" +
-                        "\nenchantment! Enemies who strike" +
-                        "\nyou suffer " + DAMAGE + " spellʔ damage" +
-                        "\neach attack!",
+                "For " + DURATION + "s, you gain a reflective " +
+                        "enchantment! Enemies who strike " +
+                        "you suffer (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) spellʔ damage!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 16, 20);
     }
 
@@ -88,6 +89,11 @@ public class Reflect extends Spell {
                     (Particle.CRIT, victim.getEyeLocation(), 15, 0.5F, 0.5F, 0.5F, 0);
             DamageUtil.damageEntitySpell(DAMAGE, damager, victim, this);
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 
