@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -21,9 +22,10 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ShadowBomb extends Spell {
+public class ShadowBomb extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 20;
+    private static final double DAMAGE_PER_LEVEL = 2.5;
     private static final int DURATION = 6;
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;
@@ -32,8 +34,9 @@ public class ShadowBomb extends Spell {
     public ShadowBomb() {
         super("Shadow Bomb",
                 "You launch a magical vial of shadow, " +
-                        "dealing " + (DAMAGE_AMT*DURATION/PERIOD) + " spellʔ damage over " +
-                        DURATION + " seconds to enemies within " +
+                        "dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage per second for " +
+                        DURATION + "s to enemies within " +
                         RADIUS + " blocks of the cloud. ",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
     }
@@ -101,6 +104,11 @@ public class ShadowBomb extends Spell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

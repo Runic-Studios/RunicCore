@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -19,10 +20,11 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class Blizzard extends Spell {
+public class Blizzard extends Spell implements MagicDamageSpell {
 
     private final boolean increaseDuration;
     private static final int DAMAGE_AMOUNT = 15;
+    private static final double DAMAGE_PER_LEVEL = 2.25;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -32,8 +34,8 @@ public class Blizzard extends Spell {
         super("Blizzard",
                 "You summon a cloud of snow that " +
                         "rains down snowballs for " + DURATION + " seconds, " +
-                        "each dealing " + DAMAGE_AMOUNT + " spellʔ damage " +
-                        "to enemies and slowing them!",
+                        "each dealing (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage to enemies and slowing them!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
         this.increaseDuration = false;
         this.snowballMap = new HashMap<>();
@@ -118,6 +120,11 @@ public class Blizzard extends Spell {
 
     public static int DURATION_INCREASE() {
         return 3;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 public class Shadowbolt extends Spell {
 
     private static final int DAMAGE_AMT = 15;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final double DURATION = 1.5; // seconds
     private static final double SHADOWBOLT_SPEED = 2;
     private EnderPearl shadowbolt;
@@ -27,8 +28,9 @@ public class Shadowbolt extends Spell {
     public Shadowbolt() {
         super ("Shadowbolt",
                 "You launch a ball of shadow " +
-                        "that silences enemies on impact " +
-                        "for " + DURATION + " seconds!",
+                        "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage and silences enemies on impact " +
+                        "for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 12, 20);
     }
 

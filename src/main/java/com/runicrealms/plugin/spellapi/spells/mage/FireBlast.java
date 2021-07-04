@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -14,9 +15,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class FireBlast extends Spell {
+public class FireBlast extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMOUNT = 25;
+    private static final int DAMAGE_PER_LEVEL = 3;
     private static final int MAX_DIST = 10;
     private static final int RADIUS = 4;
     private static final int STUN_DURATION = 2;
@@ -24,8 +26,8 @@ public class FireBlast extends Spell {
     public FireBlast() {
         super ("Fire Blast",
                 "You erupt a powerful blast of fire at " +
-                        "your target location that deals " + DAMAGE_AMOUNT + " spellʔ " +
-                        "damage to enemies within " + RADIUS + " blocks and " +
+                        "your target location that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage to enemies within " + RADIUS + " blocks and " +
                         "stuns them for " + STUN_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 12, 15);
     }
@@ -45,6 +47,11 @@ public class FireBlast extends Spell {
             addStatusEffect(en, EffectEnum.SILENCE, STUN_DURATION);
             addStatusEffect(en, EffectEnum.STUN, STUN_DURATION);
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

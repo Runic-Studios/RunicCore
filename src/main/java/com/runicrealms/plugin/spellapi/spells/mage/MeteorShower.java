@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -22,13 +23,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class MeteorShower extends Spell {
+public class MeteorShower extends Spell implements MagicDamageSpell {
 
     private final boolean fireCone;
     private final boolean applyBurn;
     private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 35;
+    private static final double DAMAGE_PER_LEVEL = 2.25;
     private SmallFireball meteor;
     private SmallFireball meteorLeft;
     private SmallFireball meteorRight;
@@ -37,8 +39,8 @@ public class MeteorShower extends Spell {
     public MeteorShower() {
         super ("Meteor Shower",
                 "You launch four projectile meteors " +
-                        "that deal " + DAMAGE_AMOUNT + " spellʔ damage on " +
-                        "impact!",
+                        "that deal (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage on impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
         fireCone = false;
@@ -149,6 +151,11 @@ public class MeteorShower extends Spell {
                 }, 20L);
             }
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.EffectUtil;
@@ -12,16 +13,18 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class IceBlock extends Spell {
+public class IceBlock extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 25;
+    private static final double DAMAGE_PER_LEVEL = 2.25;
     private static final int DURATION = 5;
     private static final int RADIUS = 5;
 
     public IceBlock() {
         super("Ice Block",
                 "You entomb yourself in ice for " + DURATION +
-                        "s! After, the ice block explodes, dealing " + DAMAGE_AMT + " spellʔ damage " +
+                        "s! After, the ice block explodes, dealing (" + DAMAGE_AMT +
+                        " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ damage " +
                         "to enemies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, ClassEnum.MAGE, 18, 20);
     }
@@ -44,6 +47,11 @@ public class IceBlock extends Spell {
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, this);
             }
         }, DURATION * 20L);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

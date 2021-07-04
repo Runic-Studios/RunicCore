@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -20,16 +21,18 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Frostbolt extends Spell {
+public class Frostbolt extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 15;
+    private static final double DAMAGE_PER_LEVEL = 2.75;
     private static final double SPEED_MULT = 2.5;
     private Snowball snowball;
 
     public Frostbolt() {
         super("Frostbolt",
                 "You launch a projectile bolt of ice " +
-                        "that deals " + DAMAGE_AMT + " spellʔ damage on " +
+                        "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) spellʔ damage on " +
                         "impact and slows its target!",
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 20);
     }
@@ -69,6 +72,11 @@ public class Frostbolt extends Spell {
         victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
                 5, 0.5F, 0.5F, 0.5F, 0, Material.PACKED_ICE.createBlockData());
         pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 
