@@ -28,7 +28,7 @@ public class Judgment extends Spell {
 
     private static final int BUBBLE_DURATION = 8;
     private static final int BUBBLE_SIZE = 5;
-    private static final int SHIELD_AMT = 75;
+    private static final int SHIELD_AMT = 200;
     private static final int SHIELD_PERIOD = 2;
     private static final double UPDATES_PER_SECOND = 10;
     private final List<UUID> judgers;
@@ -67,10 +67,10 @@ public class Judgment extends Spell {
         BukkitTask shieldTask = new BukkitRunnable() {
             @Override
             public void run() {
-                HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, true, false, false);
+                HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, false);
                 for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
                     if (verifyAlly(pl, en)) {
-                        HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, true, false, false);
+                        HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, false);
                     }
                 }
             }

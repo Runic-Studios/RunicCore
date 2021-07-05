@@ -68,12 +68,10 @@ public class HealUtil  {
      * @param shieldAmt amount to be shielded before gem or buff calculations
      * @param recipient player to recieve shield
      * @param caster player who casted shield
-     * @param gemBoosted whether to apply gems to shield
-     * @param halveGemBoost whether to reduce gem bonus
      * @param isReducedOnCaster whether caster should receive reduced gem bonus
+     * @param spell include a reference to spell for spell scaling
      */
-    public static void shieldPlayer(double shieldAmt, Player recipient, Player caster,
-                                  boolean gemBoosted, boolean halveGemBoost, boolean isReducedOnCaster) {
+    public static void shieldPlayer(double shieldAmt, Player recipient, Player caster, boolean isReducedOnCaster, Spell... spell) {
 
         // spells are half effective on the caster
         if (isReducedOnCaster && recipient == caster) {

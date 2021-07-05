@@ -81,8 +81,8 @@ public class Rescue extends Spell {
 
     private void shieldCasterAndAlly(Player caster, Player ally) {
         double amount = caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT;
-        HealUtil.shieldPlayer(amount, caster, caster, true, false, false);
-        HealUtil.shieldPlayer(amount, ally, caster, true, false, false);
+        HealUtil.shieldPlayer(amount, caster, caster, false);
+        HealUtil.shieldPlayer(amount, ally, caster, false);
     }
 }
 
