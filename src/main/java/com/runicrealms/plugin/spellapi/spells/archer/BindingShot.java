@@ -4,6 +4,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -18,9 +19,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class BindingShot extends Spell {
+public class BindingShot extends Spell implements WeaponDamageSpell {
 
     private static final int DAMAGE = 35;
+    private static final double DAMAGE_PER_LEVEL = 3.25;
     private static final int DURATION = 4;
     private static final int RADIUS = 3;
     private Arrow bindingArrow;
@@ -28,7 +30,8 @@ public class BindingShot extends Spell {
     public BindingShot() {
         super("Binding Shot",
                 "You fire a cursed arrow which " +
-                        "deals " + DAMAGE + " weapon⚔ damage to its " +
+                        "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
+                        + "x&7 lvl) weapon⚔ damage to its " +
                         "target and creates a small rift at its " +
                         "location! For " + DURATION + "s, enemies " +
                         "within " + RADIUS + " blocks are pulled to " +
@@ -61,7 +64,7 @@ public class BindingShot extends Spell {
 
         // spell effect
         addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
-        DamageUtil.damageEntityWeapon(DAMAGE, livingEntity, pl, false, true, true);
+        DamageUtil.damageEntityWeapon(DAMAGE, livingEntity, pl, false, true, true, this);
 
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_WITCH_DEATH, 0.5f, 0.5f);
 
@@ -116,5 +119,10 @@ public class BindingShot extends Spell {
                     new Particle.DustOptions(Color.PURPLE, 1));
             loc.subtract(x, 0, z);
         }
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }

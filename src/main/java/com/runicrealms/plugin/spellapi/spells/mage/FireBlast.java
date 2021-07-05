@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 public class FireBlast extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMOUNT = 25;
-    private static final int DAMAGE_PER_LEVEL = 3;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int MAX_DIST = 10;
     private static final int RADIUS = 4;
     private static final int STUN_DURATION = 2;

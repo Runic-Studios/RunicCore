@@ -14,11 +14,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class DamageUtil {
 
     /**
-     *
-     * @param dmgAmt
-     * @param recipient
-     * @param caster
-     * @param spell
+     * Our universal method to apply magic damage to a player using custom calculation.
+     * @param dmgAmt amount to be dealt before gem or buff calculations
+     * @param recipient player to be healed
+     * @param caster player who casted heal
+     * @param spell include a reference to spell for spell scaling
      */
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
 
@@ -28,9 +28,10 @@ public class DamageUtil {
         }
 
         // call our custom event, apply modifiers if necessary
-        SpellDamageEvent event = spell.length > 0
-                ? new SpellDamageEvent((int) dmgAmt, recipient, caster, spell)
-                : new SpellDamageEvent((int) dmgAmt, recipient, caster);
+//        SpellDamageEvent event = spell.length > 0
+//                ? new SpellDamageEvent((int) dmgAmt, recipient, caster, spell)
+//                : new SpellDamageEvent((int) dmgAmt, recipient, caster);
+        SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
@@ -54,8 +55,18 @@ public class DamageUtil {
         HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
     }
 
+    /**
+     * Our universal method to apply weapon damage to a player using custom calculation.
+     * @param dmgAmt amount to be healed before gem or buff calculations
+     * @param recipient player to be healed
+     * @param caster player who casted heal
+     * @param isAutoAttack whether the attack will be treated as an auto attack (for on-hit effects)
+     * @param isRanged whether the attack is ranged
+     * @param bypassNoTick whether the attack can skip waiting for the weapon cooldown (spells generally)
+     * @param spell include a reference to spell for spell scaling
+     */
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
-                                          boolean isAutoAttack, boolean isRanged, boolean bypassNoTick) {
+                                          boolean isAutoAttack, boolean isRanged, boolean bypassNoTick, Spell... spell) {
 
         // no damage ticks delay
         if (!bypassNoTick && recipient.getNoDamageTicks() > 0) return;
@@ -66,7 +77,7 @@ public class DamageUtil {
         }
 
         // call an event, apply modifiers if necessary
-        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isAutoAttack, isRanged);
+        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isAutoAttack, isRanged, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();

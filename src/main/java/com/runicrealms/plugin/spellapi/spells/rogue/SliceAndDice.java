@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 public class SliceAndDice extends Spell {
 
     private static final int DAMAGE_AMT = 25;
-    private static final int DAMAGE_CAP = 200;
+    private static final int DAMAGE_CAP = 300;
     private static final double PERCENT = .25;
     private static final int RADIUS = 3;
     private static final double LAUNCH_PATH_MULT = 1.5;

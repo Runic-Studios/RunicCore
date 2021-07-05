@@ -5,6 +5,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -17,9 +18,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Harpoon extends Spell {
+public class Harpoon extends Spell implements WeaponDamageSpell {
 
     private static final int DAMAGE_AMT = 35;
+    private static final double DAMAGE_PER_LEVEL = 1.75;
     private static final int DURATION = 3;
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
@@ -27,7 +29,8 @@ public class Harpoon extends Spell {
     public Harpoon() {
         super ("Harpoon",
                 "You launch a projectile harpoon " +
-                        "which deals " + DAMAGE_AMT + " weapon⚔ damage, " +
+                        "which deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) weapon⚔ damage, " +
                         "pulls your enemy towards you, and slows them for " +
                         DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 12, 15);
@@ -83,7 +86,7 @@ public class Harpoon extends Spell {
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
         //final double hPower = 0.5D;
 
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, true);
+        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, true, this);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
 
         new BukkitRunnable() {
@@ -95,6 +98,11 @@ public class Harpoon extends Spell {
                 victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
             }
         }.runTaskLater(RunicCore.getInstance(), 4L);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

@@ -24,7 +24,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
     private final boolean applyBurn;
     private final boolean iceBolt;
     private static final int DAMAGE_AMOUNT = 25;
-    private static final int DAMAGE_PER_LEVEL = 4;
+    private static final double DAMAGE_PER_LEVEL = 2.75;
     private static final double FIREBALL_SPEED = 2;
 
     private SmallFireball fireball;

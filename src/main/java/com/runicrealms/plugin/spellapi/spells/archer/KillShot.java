@@ -24,7 +24,7 @@ import java.util.List;
 public class KillShot extends Spell {
 
     private static final int DAMAGE = 50;
-    private static final int DAMAGE_CAP = 200;
+    private static final int DAMAGE_CAP = 300;
     private static final double PERCENT = .25;
     private final List<Arrow> killShots;
 
