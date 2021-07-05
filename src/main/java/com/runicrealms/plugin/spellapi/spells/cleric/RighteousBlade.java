@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.ChatColor;
@@ -12,9 +13,10 @@ import org.bukkit.event.EventHandler;
 import java.util.Random;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class RighteousBlade extends Spell {
+public class RighteousBlade extends Spell implements HealingSpell {
 
     private static final int HEAL_AMOUNT = 50;
+    private static final double HEALING_PER_LEVEL = 2.5;
     private static final int RADIUS = 10;
     private static final double PERCENT = 10;
 
@@ -22,7 +24,8 @@ public class RighteousBlade extends Spell {
         super ("Righteous Blade",
                 "Your melee weapon⚔ attacks have a " + (int) PERCENT + "% chance " +
                         "to heal✦ yourself and allies within " + RADIUS + " blocks " +
-                        "for " + HEAL_AMOUNT + " health!",
+                        "for (" + HEAL_AMOUNT + " + &f" + HEALING_PER_LEVEL +
+                        "x&7 lvl) health!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
@@ -43,6 +46,11 @@ public class RighteousBlade extends Spell {
             if (!verifyAlly(pl, en)) continue;
             HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, pl, false, this);
         }
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
     }
 }
 

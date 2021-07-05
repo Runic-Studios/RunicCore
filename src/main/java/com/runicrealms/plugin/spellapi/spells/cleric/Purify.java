@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -18,9 +19,10 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Purify extends Spell {
+public class Purify extends Spell implements HealingSpell {
 
     private static final int HEAL_AMT = 45;
+    private static final int HEALING_PER_LEVEL = 3;
     private static final int RANGE = 15;
     private static final int BEAM_SPEED = 3;
     private final int SUCCESSIVE_COOLDOWN = 2; // in seconds
@@ -30,7 +32,8 @@ public class Purify extends Spell {
     public Purify() {
         super("Purify",
                 "You launch a beam of healing magic, " +
-                        "restoring✦ " + HEAL_AMT + " health to yourself and " +
+                        "restoring✦ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
+                        "x&7 lvl) health to yourself and " +
                         "all allies it passes through and removing silences!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
         this.hasBeenHit = new HashMap<>();
@@ -124,5 +127,10 @@ public class Purify extends Spell {
                 }
             }
         }
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
     }
 }

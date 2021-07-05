@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -20,12 +21,13 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class HolyNova extends Spell implements MagicDamageSpell {
+public class HolyNova extends Spell implements MagicDamageSpell, HealingSpell {
 
     private static final int DAMAGE_AMT = 5;
     private static final int DAMAGE_PER_LEVEL = 3;
     private static final int DURATION = 5;
     private static final int HEAL_AMT = 8;
+    private static final double HEALING_PER_LEVEL = 2.25;
     private static final float RADIUS = 5f;
     private static final double KNOCKBACK_MULT = -1.25;
 
@@ -36,7 +38,8 @@ public class HolyNova extends Spell implements MagicDamageSpell {
                         "that deal (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage to enemies " +
                         "and push them back! The rings restore✦ " +
-                        HEAL_AMT + " health to allies!",
+                        "(" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
+                        "x&7 lvl) health to allies!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
     }
 
@@ -90,12 +93,17 @@ public class HolyNova extends Spell implements MagicDamageSpell {
 
             // heal party members
             if (en instanceof Player && verifyAlly(pl, en))
-                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, false);
+                HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, false, this);
         }
     }
 
     @Override
     public double getDamagePerLevel() {
         return DAMAGE_PER_LEVEL;
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
     }
 }

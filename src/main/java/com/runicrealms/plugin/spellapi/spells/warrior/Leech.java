@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -13,17 +14,18 @@ import org.bukkit.event.EventHandler;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Leech extends Spell {
+public class Leech extends Spell implements HealingSpell {
 
     private static final int BUFF_DURATION = 6;
     private static final int HEAL_AMT = 20;
+    private static final double HEALING_PER_LEVEL = 1.25;
     private final HashSet<UUID> leechers = new HashSet<>();
 
     public Leech() {
         super("Leech",
                 "For " + BUFF_DURATION + " seconds, your weapon⚔ " +
-                        "attacks restore✦ " + HEAL_AMT + " of your " +
-                        "health!",
+                        "attacks restore✦ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
+                        "x&7 lvl) of your health!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 20, 35);
     }
 
@@ -54,6 +56,11 @@ public class Leech extends Spell {
         if (e.isCancelled()) return;
         Player pl = e.getPlayer();
         HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
     }
 }
 
