@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -17,7 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Shadowbolt extends Spell {
+public class Shadowbolt extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 15;
     private static final int DAMAGE_PER_LEVEL = 2;
@@ -76,6 +77,11 @@ public class Shadowbolt extends Spell {
 
     public static double getDuration() {
         return DURATION;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 
