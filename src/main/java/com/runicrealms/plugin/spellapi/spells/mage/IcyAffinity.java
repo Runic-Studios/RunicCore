@@ -11,7 +11,7 @@ import org.bukkit.event.EventHandler;
 
 public class IcyAffinity extends Spell {
 
-    private static final double PERCENT = .35;
+    private static final double PERCENT = .25;
 
     public IcyAffinity() {
         super ("Icy Affinity",

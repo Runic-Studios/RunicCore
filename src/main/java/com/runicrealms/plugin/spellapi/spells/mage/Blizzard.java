@@ -24,7 +24,7 @@ public class Blizzard extends Spell implements MagicDamageSpell {
 
     private final boolean increaseDuration;
     private static final int DAMAGE_AMOUNT = 15;
-    private static final double DAMAGE_PER_LEVEL = 2.25;
+    private static final double DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -36,7 +36,7 @@ public class Blizzard extends Spell implements MagicDamageSpell {
                         "rains down snowballs for " + DURATION + " seconds, " +
                         "each dealing (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage to enemies and slowing them!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 35);
+                ChatColor.WHITE, ClassEnum.MAGE, 10, 40);
         this.increaseDuration = false;
         this.snowballMap = new HashMap<>();
     }
