@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Frostbolt extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 15;
+    private static final int DAMAGE_AMT = 25;
     private static final double DAMAGE_PER_LEVEL = 2.75;
     private static final double SPEED_MULT = 2.5;
     private Snowball snowball;

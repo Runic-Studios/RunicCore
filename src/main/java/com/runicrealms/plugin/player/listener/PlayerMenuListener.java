@@ -104,7 +104,7 @@ public class PlayerMenuListener implements Listener {
 
                 }
             }
-        }, 0L, 10L);
+        }, 100L, 10L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -12,8 +12,6 @@ import java.util.UUID;
 public class StatListener implements Listener {
 
     private static final float DEFAULT_WALKSPEED = 0.2f;
-    // todo: update runic artifacts using runic items api and new spells (maybe not - prob in items)
-    // todo: add new magicspell, healingspell sub classes with just like 1-2 fields. then let them scale based on LEVEL
 
     @EventHandler
     public void onHealthRegen(HealthRegenEvent e) {
@@ -34,8 +32,8 @@ public class StatListener implements Listener {
         if (!(e.getVictim() instanceof Player)) return;
         UUID uuid = e.getVictim().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuid);
-        if (damageMitigationPercent > Stat.getDamageReductionCap())
-            damageMitigationPercent = Stat.getDamageReductionCap(); // cap it
+        if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
+            damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
         e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 
@@ -64,8 +62,8 @@ public class StatListener implements Listener {
          */
         UUID uuidVictim = e.getEntity().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
-        if (damageMitigationPercent > Stat.getDamageReductionCap())
-            damageMitigationPercent = Stat.getDamageReductionCap(); // cap it
+        if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
+            damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
         e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 
@@ -85,8 +83,8 @@ public class StatListener implements Listener {
          */
         UUID uuidVictim = e.getEntity().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
-        if (damageMitigationPercent > Stat.getDamageReductionCap())
-            damageMitigationPercent = Stat.getDamageReductionCap(); // cap it
+        if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
+            damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
         e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 }
