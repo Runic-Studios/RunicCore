@@ -22,7 +22,7 @@ import java.util.UUID;
 public class Purify extends Spell implements HealingSpell {
 
     private static final int HEAL_AMT = 45;
-    private static final int HEALING_PER_LEVEL = 3;
+    private static final double HEALING_PER_LEVEL = 2.5;
     private static final int RANGE = 15;
     private static final int BEAM_SPEED = 3;
     private final int SUCCESSIVE_COOLDOWN = 2; // in seconds

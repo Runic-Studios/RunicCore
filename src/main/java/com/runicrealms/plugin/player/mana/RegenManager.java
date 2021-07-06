@@ -26,11 +26,11 @@ public class RegenManager implements Listener {
     private final int BASE_MANA = 100;
     private final int MANA_REGEN_AMT = 5;
 
-    private final int ARCHER_MANA_LV = 1;
-    private final int CLERIC_MANA_LV = 2;
-    private final int MAGE_MANA_LV = 3;
-    private final int ROGUE_MANA_LV = 1;
-    private final int WARRIOR_MANA_LV = 1;
+    private final int ARCHER_MANA_LV = 2;
+    private final int CLERIC_MANA_LV = 3;
+    private final int MAGE_MANA_LV = 4;
+    private final int ROGUE_MANA_LV = 2;
+    private final int WARRIOR_MANA_LV = 2;
 
     // constructor
     public RegenManager() {
