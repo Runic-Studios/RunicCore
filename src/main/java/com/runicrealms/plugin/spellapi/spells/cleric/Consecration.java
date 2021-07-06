@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class Consecration extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 35;
-    private static final int DAMAGE_PER_LEVEL = 2;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
     private static final int DURATION = 8;
     private static final int RADIUS = 7;
 
