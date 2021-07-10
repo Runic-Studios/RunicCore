@@ -16,7 +16,7 @@ import org.bukkit.event.EventHandler;
 public class Resolve extends Spell {
 
     private static final double PERCENT_HP = 25;
-    private static final double PERCENT_DMG = 75;
+    private static final double PERCENT_DMG = 35;
 
     public Resolve() {
         super ("Resolve",

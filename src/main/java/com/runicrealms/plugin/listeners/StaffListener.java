@@ -2,7 +2,6 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
@@ -85,9 +84,10 @@ public class StaffListener implements Listener {
         for (double length = 0; length < distance; p1.add(vector)) {
             Location vectorLocation = p1.toLocation(pl.getWorld());
             for (Entity en : pl.getWorld().getNearbyEntities(p1.toLocation(pl.getWorld()), RADIUS, RADIUS, RADIUS)) {
-                EnemyVerifyEvent e = new EnemyVerifyEvent(pl, en);
-                Bukkit.getServer().getPluginManager().callEvent(e);
-                if (!e.isCancelled() && en.getLocation().distanceSquared(vectorLocation) <= BEAM_HITBOX_SIZE * BEAM_HITBOX_SIZE) {
+//                EnemyVerifyEvent e = new EnemyVerifyEvent(pl, en);
+//                Bukkit.getServer().getPluginManager().callEvent(e);
+                // if (!e.isCancelled() &&
+                if (en.getLocation().distanceSquared(vectorLocation) <= BEAM_HITBOX_SIZE * BEAM_HITBOX_SIZE) {
                     damageStaff(pl, (LivingEntity) en, itemStack);
                     return;
                 }

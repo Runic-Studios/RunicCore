@@ -18,19 +18,19 @@ import java.util.Random;
 @SuppressWarnings("FieldCanBeLocal")
 public class FireAura extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 15;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final int DAMAGE_AMT = 25;
+    private static final double DAMAGE_PER_LEVEL = 1.5;
     private static final int DURATION = 6;
     private static final int PERIOD = 1;
-    private static final int RADIUS = 3;
+    private static final int RADIUS = 5;
 
     public FireAura() {
         super ("Fire Aura",
                 "For " + DURATION + " seconds, you conjure a terrible " +
                         "firestorm, damaging enemies within " + RADIUS + " blocks " +
-                        "every " + PERIOD + "s for (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
+                        "every " + PERIOD + "s for (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) spellʔ damage!",
+                ChatColor.WHITE, ClassEnum.MAGE, 12, 25);
     }
 
     @Override

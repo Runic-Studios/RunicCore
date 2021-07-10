@@ -29,7 +29,7 @@ public class FireBlast extends Spell implements MagicDamageSpell {
                         "your target location that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage to enemies within " + RADIUS + " blocks and " +
                         "stuns them for " + STUN_DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.MAGE, 12, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 12, 30);
     }
 
     @Override

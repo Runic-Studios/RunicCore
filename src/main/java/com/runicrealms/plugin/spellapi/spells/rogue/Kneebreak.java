@@ -21,7 +21,7 @@ import java.util.Random;
 public class Kneebreak extends Spell {
 
     private static final int DURATION = 2;
-    private static final int PERCENT = 10;
+    private static final int PERCENT = 25;
     private static final int SLOW_MULT = 2;
 
     public Kneebreak() {

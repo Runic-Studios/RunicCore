@@ -19,7 +19,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Cleanse extends Spell {
 
-    private static final int DURATION = 3;
+    private static final int DURATION = 5;
     private static final double PERCENT = .25;
     private final HashSet<UUID> damageReductionPlayers;
 
@@ -30,7 +30,7 @@ public class Cleanse extends Spell {
                         "blindness, slows, silences, and stuns! After, " +
                         "you gain a " + (int) (PERCENT * 100) + "% damage " +
                         "reduction buff for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
+                ChatColor.WHITE, ClassEnum.ROGUE, 15, 15);
         damageReductionPlayers = new HashSet<>();
     }
 

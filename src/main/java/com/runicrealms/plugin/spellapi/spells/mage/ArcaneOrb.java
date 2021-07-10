@@ -22,8 +22,8 @@ import java.util.UUID;
 public class ArcaneOrb extends Spell {
 
     private static final int DURATION = 10;
-    private static final double PERCENT = 25;
-    private static final int RADIUS = 10;
+    private static final double PERCENT = 100;
+    private static final int RADIUS = 12;
     private final HashMap<UUID, Location> buffed;
 
     public ArcaneOrb() {
@@ -33,7 +33,7 @@ public class ArcaneOrb extends Spell {
                         "receive a " + (int) PERCENT + "% bonus to all spellʔ " +
                         "damage dealt by standing within " + RADIUS + " blocks " +
                         "of the orb!",
-                ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
+                ChatColor.WHITE, ClassEnum.MAGE, 40, 30);
         buffed = new HashMap<>();
     }
 

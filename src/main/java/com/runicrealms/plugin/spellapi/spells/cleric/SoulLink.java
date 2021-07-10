@@ -17,7 +17,7 @@ import java.util.HashSet;
 @SuppressWarnings("FieldCanBeLocal")
 public class SoulLink extends Spell {
 
-    private static final int RADIUS = 20;
+    private static final int RADIUS = 50;
     private final HashSet<Player> affectedAllies;
 
     public SoulLink() {
@@ -27,7 +27,7 @@ public class SoulLink extends Spell {
                         "of yourself and all affected allies, averaging " +
                         "the current health of all allies and setting the " +
                         "current health of each to the average!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
+                ChatColor.WHITE, ClassEnum.CLERIC, 60, 40);
         affectedAllies = new HashSet<>();
     }
 

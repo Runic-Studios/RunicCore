@@ -29,11 +29,12 @@ public class PowerShot extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 50;
     private static final int DAMAGE_PER_LEVEL = 4;
-    private static final int DURATION = 4;
+    private static final int DURATION = 6;
     private static final double PERCENT_INCREASE = .25;
     private final List<Arrow> powerShots;
     private static final HashMap<UUID, UUID> markedEntities = new HashMap<>();
 
+    // todo: has arrow bomb effect, radius = 3
     public PowerShot() {
         super("Power Shot",
                 "You launch an enchanted arrow which " +
@@ -42,7 +43,7 @@ public class PowerShot extends Spell implements MagicDamageSpell {
                         "For " + DURATION + "s, the enemy is afflicted " +
                         "with &aHunter's Mark&7, increasing all damage you " +
                         "deal to them by " + (int) (PERCENT_INCREASE * 100) + "%!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 12, 25);
         powerShots = new ArrayList<>();
     }
 

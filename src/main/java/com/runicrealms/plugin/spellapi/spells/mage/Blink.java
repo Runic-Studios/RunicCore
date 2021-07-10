@@ -16,18 +16,15 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Blink extends Spell {
 
-    // instance variables
     private static final int MAX_DIST = 8;
 
-    // constructor
     public Blink() {
         super("Blink",
                 "You teleport forward, up to " +
                         "a distance of " + MAX_DIST + " blocks!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 20);
+                ChatColor.WHITE, ClassEnum.MAGE, 12, 25);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
         Location loc = pl.getLocation();

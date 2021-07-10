@@ -15,7 +15,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class EscapeArtist extends Spell {
 
-    private static final int COOLDOWN = 30;
+    private static final int COOLDOWN = 24;
     private final HashSet<UUID> escapeArtists;
 
     public EscapeArtist() {

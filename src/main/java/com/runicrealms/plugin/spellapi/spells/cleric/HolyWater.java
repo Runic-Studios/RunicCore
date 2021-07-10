@@ -28,7 +28,7 @@ import java.util.UUID;
 public class HolyWater extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 15;
-    private static final double DAMAGE_PER_LEVEL = 2.75;
+    private static final double DAMAGE_PER_LEVEL = 1.75;
     private static final int DURATION = 6;
     private static final int RADIUS = 5;
     private static final double PERCENT = 35;

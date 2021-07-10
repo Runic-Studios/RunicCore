@@ -24,6 +24,7 @@ public class TwistOfFate extends Spell {
     private Firework firework;
     private final HashSet<UUID> invertedPlayers;
 
+    // todo: finish
     public TwistOfFate() {
         super ("Twist of Fate",
                 "You cast a wicked curse of inversion, " +
@@ -33,12 +34,13 @@ public class TwistOfFate extends Spell {
                         "for " + DURATION + "s, suffering damage " +
                         "instead! Against monsters, this ability will " +
                         "silence for the duration.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 1, 15); // 20
+                ChatColor.WHITE, ClassEnum.ROGUE, 1, 35); // cd: 40
         invertedPlayers = new HashSet<>();
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        // todo: wither death sound? ender dragon death sound?
         Location location = player.getLocation();
         player.getWorld().spigot().strikeLightningEffect(location, true);
         BukkitRunnable rain = new BukkitRunnable() {

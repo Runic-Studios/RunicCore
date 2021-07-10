@@ -26,11 +26,11 @@ public class RegenManager implements Listener {
     private final int BASE_MANA = 100;
     private final int MANA_REGEN_AMT = 5;
 
-    private final int ARCHER_MANA_LV = 2;
-    private final int CLERIC_MANA_LV = 3;
-    private final int MAGE_MANA_LV = 4;
-    private final int ROGUE_MANA_LV = 2;
-    private final int WARRIOR_MANA_LV = 2;
+    private final double ARCHER_MANA_LV = 1.75;
+    private final double CLERIC_MANA_LV = 2.25;
+    private final double MAGE_MANA_LV = 2.75;
+    private final double ROGUE_MANA_LV = 1.5;
+    private final double WARRIOR_MANA_LV = 1.5;
 
     // constructor
     public RegenManager() {
@@ -66,7 +66,7 @@ public class RegenManager implements Listener {
             if (currentPlayerManas.containsKey(online.getUniqueId()))
                 mana = currentPlayerManas.get(online.getUniqueId());
             else
-                mana = getBaseMana() + getManaPerLv(online);
+                mana = (int) (getBaseMana() + getManaPerLv(online));
 
             int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(online).getMaxMana();
             if (mana >= maxMana) continue;
@@ -86,35 +86,12 @@ public class RegenManager implements Listener {
     public HashMap<UUID, Integer> getCurrentManaList() {
         return currentPlayerManas;
     }
+
     public int getBaseMana() {
         return BASE_MANA;
     }
 
-    public int getManaRegenAmt() {
-        return MANA_REGEN_AMT;
-    }
-
-    public int getArcherManaLv() {
-        return ARCHER_MANA_LV;
-    }
-
-    public int getClericManaLv() {
-        return CLERIC_MANA_LV;
-    }
-
-    public int getMageManaLv() {
-        return MAGE_MANA_LV;
-    }
-
-    public int getRogueManaLv() {
-        return ROGUE_MANA_LV;
-    }
-
-    public int getWarriorManaLv() {
-        return WARRIOR_MANA_LV;
-    }
-
-    public int getManaPerLv(Player pl) {
+    public double getManaPerLv(Player pl) {
 
         if (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName() == null)
             return 0;
@@ -135,11 +112,9 @@ public class RegenManager implements Listener {
         return 0;
     }
 
-    public void addMana(Player pl, int amt, boolean gemBoosted) {
-
+    public void addMana(Player pl, int amt) {
         int mana = currentPlayerManas.get(pl.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
-
         if (mana < maxMana)
             currentPlayerManas.put(pl.getUniqueId(), Math.min(mana + amt, maxMana));
     }

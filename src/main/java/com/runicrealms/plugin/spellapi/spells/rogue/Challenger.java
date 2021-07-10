@@ -16,7 +16,7 @@ import org.bukkit.event.EventPriority;
 public class Challenger extends Spell {
 
     private static final int DAMAGE_CAP = 35;
-    private static final double HEALTH_MULT = .02;
+    private static final double HEALTH_MULT = .03;
 
     public Challenger() {
         super("Challenger",

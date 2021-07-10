@@ -1,10 +1,7 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
@@ -33,6 +30,7 @@ public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
+    private final HashMap<UUID, BukkitTask> invulnerableEntities;
     private final HashMap<UUID, BukkitTask> rootedEntities;
     private final HashMap<UUID, BukkitTask> silencedEntities;
     private final HashMap<UUID, BukkitTask> stunnedEntities;
@@ -41,6 +39,7 @@ public class SpellManager implements Listener {
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldown = new ConcurrentHashMap<>();
+        this.invulnerableEntities = new HashMap<>();
         this.rootedEntities = new HashMap<>();
         this.silencedEntities = new HashMap<>();
         this.stunnedEntities = new HashMap<>();
@@ -51,6 +50,10 @@ public class SpellManager implements Listener {
 
     public List<Spell> getSpells() {
         return this.spellList;
+    }
+
+    public HashMap<UUID, BukkitTask> getInvulnerableEntities() {
+        return invulnerableEntities;
     }
 
     public HashMap<UUID, BukkitTask> getRootedEntites() {
@@ -244,18 +247,28 @@ public class SpellManager implements Listener {
     }
 
     @EventHandler
+    public void onSpellCast(SpellCastEvent e) {
+        if (silencedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(e.getCaster().getUniqueId())
+                || stunnedEntities.containsKey(e.getCaster().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
     public void onMobDamage(MobDamageEvent e) {
-        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getDamager().getUniqueId())
-                || stunnedEntities.containsKey(e.getDamager().getUniqueId()))
+                || stunnedEntities.containsKey(e.getDamager().getUniqueId())
+                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
             e.setCancelled(true);
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
+                || invulnerableEntities.containsKey(e.getEntity().getUniqueId()))
             e.setCancelled(true);
     }
 
@@ -269,9 +282,10 @@ public class SpellManager implements Listener {
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
+                || invulnerableEntities.containsKey(e.getEntity().getUniqueId()))
             e.setCancelled(true);
     }
 

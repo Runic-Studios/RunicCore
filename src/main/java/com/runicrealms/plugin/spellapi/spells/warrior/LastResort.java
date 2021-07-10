@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class LastResort extends Spell {
 
-    private static final int COOLDOWN = 300;
+    private static final int COOLDOWN = 360;
     private static final double PERCENT = .25;
     private static final int RADIUS = 5;
     private final HashSet<UUID> resorters;

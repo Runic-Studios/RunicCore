@@ -13,7 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 @SuppressWarnings("FieldCanBeLocal")
 public class Rift extends Spell {
 
-    private static final int DURATION = 5;
+    private static final int DURATION = 4;
     private static final int RADIUS = 5;
 
     public Rift() {

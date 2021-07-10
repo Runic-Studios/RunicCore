@@ -20,7 +20,7 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class BearTrap extends Spell {
 
-    private static final double DURATION = 3;
+    private static final double DURATION = 4;
     private final HashMap<UUID, HashMap<UUID, Integer>> ensnareMap;
 
     public BearTrap() {

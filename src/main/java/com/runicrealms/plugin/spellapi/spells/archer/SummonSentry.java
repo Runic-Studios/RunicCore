@@ -22,20 +22,21 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class SummonSentry extends Spell {
 
-    private static final int DAMAGE_AMOUNT = 50;
+    private static final int DAMAGE_AMOUNT = 25;
     private static final int DURATION = 8;
-    private static final int PERCENT = 100;
     private static final int POTION_DURATION = 1;
     private static final int RADIUS = 10;
     private Arrow arrow;
 
+    // todo: fire an arrow to summon sentry. reduce damage, but increase arrow knockback
+    // todo: add scaling
     public SummonSentry() {
         super("Summon Sentry",
                 "You conjure an enchanted " +
                         "crossbow at your location! " +
                         "For " + DURATION + "s, the crossbow fires " +
                         "at all enemies within " + RADIUS + " blocks, " +
-                        "dealing " + PERCENT + "% weapon⚔ damage " +
+                        "dealing " + DAMAGE_AMOUNT + " weapon⚔ damage " +
                         "and blinding them for " + POTION_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 16, 75);
     }

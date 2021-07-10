@@ -32,6 +32,14 @@ public interface ISpell {
 
     void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration);
 
+    boolean isInvulnerable(Entity entity);
+
+    boolean isSilenced(Entity entity);
+
+    boolean isStunned(Entity entity);
+
+    boolean isRooted(Entity entity);
+
     int percentMissingHealth(Entity entity, double percent);
 }
 

@@ -24,6 +24,7 @@ public class Predator extends Spell {
     private static final double PERCENT = 10;
     private static final int BLIND_MULT = 2;
 
+    // todo: change to increased damage out of invis, gain +X% dmg for Ys (not if marked for early reveal)
     public Predator() {
         super ("Predator",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance " +

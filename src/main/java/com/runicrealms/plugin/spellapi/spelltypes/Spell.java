@@ -231,7 +231,41 @@ public abstract class Spell implements ISpell, Listener {
                 }
             }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
             RunicCore.getSpellManager().getRootedEntites().put(entity.getUniqueId(), task);
+            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration * 20), 3));
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
+            }
+        } else if (effectEnum == EffectEnum.INVULN) {
+            entity.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.DARK_GREEN + ChatColor.BOLD + "invulnerable!");
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
+            BukkitTask task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    RunicCore.getSpellManager().getInvulnerableEntities().remove(entity.getUniqueId());
+                }
+            }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
+            RunicCore.getSpellManager().getInvulnerableEntities().put(entity.getUniqueId(), task);
         }
+    }
+
+    @Override
+    public boolean isInvulnerable(Entity entity) {
+        return RunicCore.getSpellManager().getInvulnerableEntities().containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean isSilenced(Entity entity) {
+        return RunicCore.getSpellManager().getSilencedEntities().containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean isStunned(Entity entity) {
+        return RunicCore.getSpellManager().getStunnedEntities().containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean isRooted(Entity entity) {
+        return RunicCore.getSpellManager().getRootedEntites().containsKey(entity.getUniqueId());
     }
 
     /**

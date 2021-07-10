@@ -20,6 +20,7 @@ public class WingClip extends Spell {
     private static final double DURATION = 1.5;
     private final HashSet<UUID> wingClippers;
 
+    // todo: 3 block aoe
     public WingClip() {
         super ("Wing Clip",
                 "After casting your &aGrapple &7spell, " +

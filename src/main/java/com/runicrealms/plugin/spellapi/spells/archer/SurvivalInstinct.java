@@ -17,7 +17,7 @@ import java.util.UUID;
 public class SurvivalInstinct extends Spell {
 
     private static final int COOLDOWN = 60;
-    private static final int DURATION = 5;
+    private static final int DURATION = 6;
     private static final double PERCENT_THRESHOLD = .25;
     private final HashSet<UUID> cooldown;
     private final HashSet<UUID> shielders;

@@ -19,7 +19,7 @@ public class DivineShield extends Spell {
 
     private static final int DURATION = 2;
     private static final double PERCENT = .10;
-    private static final double PERCENT_REDUCTION = .75;
+    private static final double PERCENT_REDUCTION = .25;
     private final HashSet<UUID> shieldedPlayers;
 
     public DivineShield() {

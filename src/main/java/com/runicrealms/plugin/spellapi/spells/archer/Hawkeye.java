@@ -3,7 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -13,16 +15,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Hawkeye extends Spell {
+public class Hawkeye extends Spell implements MagicDamageSpell, WeaponDamageSpell {
 
-    private static final int AMOUNT = 10;
+    private static final int DAMAGE = 25;
     private static final int DISTANCE = 10;
+    private static final double DAMAGE_PER_LEVEL = 2;
 
     public Hawkeye() {
         super ("Hawkeye",
                 "Damaging an enemy from " + DISTANCE + " blocks " +
-                        "away or farther deals " + AMOUNT + " additional " +
-                        "damage!",
+                        "away or farther deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) additional damage!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
         this.setIsPassive(true);
     }
@@ -52,9 +55,14 @@ public class Hawkeye extends Spell {
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.25f, 2.0f);
             victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(),
                     5, 0.5F, 0.5F, 0.5F, 0);
-            return originalAmt+AMOUNT;
+            return originalAmt+ DAMAGE;
         }
         return originalAmt;
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return 0;
     }
 }
 

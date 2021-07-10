@@ -19,7 +19,7 @@ public class Smite extends Spell implements MagicDamageSpell {
     private static final int DAMAGE = 35;
     private static final int DAMAGE_PER_LEVEL = 4;
     private static final int MAX_DIST = 10;
-    private final double BEAM_SPEED = 0.8;
+    private final double BEAM_SPEED = 0.6;
     private final double COLLISION_RADIUS = 1.5;
     private static final double KNOCKBACK_MULT = -2.75;
 

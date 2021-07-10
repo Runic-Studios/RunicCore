@@ -22,8 +22,8 @@ public class Shadowbolt extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 15;
     private static final int DAMAGE_PER_LEVEL = 2;
-    private static final double DURATION = 1.5; // seconds
-    private static final double SHADOWBOLT_SPEED = 2;
+    private static final int DURATION = 3; // seconds
+    private static final double SHADOWBOLT_SPEED = 2.5;
     private EnderPearl shadowbolt;
 
     public Shadowbolt() {
@@ -32,7 +32,7 @@ public class Shadowbolt extends Spell implements MagicDamageSpell {
                         "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage and silences enemies on impact " +
                         "for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.MAGE, 12, 20);
+                ChatColor.WHITE, ClassEnum.MAGE, 8, 20);
     }
 
     @Override

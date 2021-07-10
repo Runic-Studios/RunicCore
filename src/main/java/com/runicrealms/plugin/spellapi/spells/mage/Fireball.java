@@ -24,7 +24,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
     private final boolean applyBurn;
     private final boolean iceBolt;
     private static final int DAMAGE_AMOUNT = 25;
-    private static final double DAMAGE_PER_LEVEL = 2.75;
+    private static final double DAMAGE_PER_LEVEL = 3.25;
     private static final double FIREBALL_SPEED = 2;
 
     private SmallFireball fireball;
@@ -37,7 +37,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
                 "You launch a projectile fireball " +
                         "that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage on impact!",
-                ChatColor.WHITE, ClassEnum.MAGE, 5, 15);
+                ChatColor.WHITE, ClassEnum.MAGE, 4, 15);
         fireCone = false;
         applyBurn = false;
         iceBolt = false;
@@ -118,6 +118,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
             if (hasPassive(player, "Scald")) {
                 for (Entity en : fireball.getNearbyEntities(Scald.getRadius(), Scald.getRadius(), Scald.getRadius())) {
                     if (!verifyEnemy(player, en)) continue;
+                    if (en.equals(victim)) continue;
                     DamageUtil.damageEntitySpell(DAMAGE_AMOUNT * Scald.getDamagePercent(), (LivingEntity) en, player, this);
                 }
             }

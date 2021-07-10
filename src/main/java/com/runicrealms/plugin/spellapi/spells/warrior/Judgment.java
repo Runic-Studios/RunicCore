@@ -26,10 +26,11 @@ import static java.lang.Math.sin;
 
 public class Judgment extends Spell {
 
-    private static final int BUBBLE_DURATION = 8;
+    private static final int BUBBLE_DURATION = 6;
     private static final int BUBBLE_SIZE = 5;
     private static final int SHIELD_AMT = 200;
     private static final int SHIELD_PERIOD = 2;
+    private static final double KNOCKBACK = 0.15;
     private static final double UPDATES_PER_SECOND = 10;
     private final List<UUID> judgers;
 
@@ -42,7 +43,7 @@ public class Judgment extends Spell {
                         "shielded■ for " + SHIELD_AMT + " health! " +
                         "During this time, you may not move. " +
                         "Sneak to cancel the spell early.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 30, 35);
+                ChatColor.WHITE, ClassEnum.WARRIOR, 60, 35);
         judgers = new ArrayList<>();
     }
 
@@ -111,7 +112,7 @@ public class Judgment extends Spell {
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
                     //if (entity instanceof ItemStack) continue;
                     if (verifyEnemy(pl, entity)) {
-                        Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.25).setY(0.3);
+                        Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-KNOCKBACK).setY(0.3);
                         entity.setVelocity(force);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
                     }
