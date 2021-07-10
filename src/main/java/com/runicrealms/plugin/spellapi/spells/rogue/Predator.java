@@ -7,58 +7,58 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.event.EventPriority;
 
-import java.util.Random;
+import java.util.HashSet;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Predator extends Spell {
 
-    private static final int DURATION = 2;
-    private static final double PERCENT = 10;
-    private static final int BLIND_MULT = 2;
+    private static final int DURATION = 3;
+    private static final double PERCENT = 0.75;
+    private static final HashSet<UUID> predators = new HashSet<>();
 
-    // todo: change to increased damage out of invis, gain +X% dmg for Ys (not if marked for early reveal)
     public Predator() {
         super ("Predator",
-                "Damaging an enemy has a " + (int) PERCENT + "% chance " +
-                        "to blind them for " + DURATION + "s!",
+                "Upon reappearing after becoming invisible, " +
+                        "you gain a " + (int) (PERCENT * 100) + "% damage " +
+                        "buff for " + DURATION + "s! ",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 
-    @EventHandler
-    public void onBlindingHit(SpellDamageEvent e) {
+    @EventHandler(priority = EventPriority.HIGHEST) // runs last
+    public void onPredatorHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applyBlind(e.getPlayer(), e.getEntity());
+        if (!predators.contains(e.getPlayer().getUniqueId())) return;
+        e.setAmount((int) predatorDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
-    @EventHandler
-    public void onBlindingHit(WeaponDamageEvent e) {
+    @EventHandler(priority = EventPriority.HIGHEST) // runs last
+    public void onPredatorHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applyBlind(e.getPlayer(), e.getEntity());
+        if (!predators.contains(e.getPlayer().getUniqueId())) return;
+        e.setAmount((int) predatorDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
     }
 
-    private void applyBlind(Player pl, Entity en) {
+    private double predatorDamage(Player pl, Entity en, double eventAmount) {
+        LivingEntity victim = (LivingEntity) en;
+        pl.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
+                new Particle.DustOptions(Color.BLACK, 1));
+        return eventAmount + (eventAmount * PERCENT);
+    }
 
-        Random rand = new Random();
-        int roll = rand.nextInt(100) + 1;
-        if (roll > PERCENT) return;
+    public static int getDuration() {
+        return DURATION;
+    }
 
-        // particles, sounds
-        if (verifyEnemy(pl, en)) {
-            LivingEntity victim = (LivingEntity) en;
-            victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.25f, 1.75f);
-            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                    new Particle.DustOptions(Color.BLACK, 1));
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, BLIND_MULT));
-        }
+    public static HashSet<UUID> getPredators() {
+        return predators;
     }
 }
 

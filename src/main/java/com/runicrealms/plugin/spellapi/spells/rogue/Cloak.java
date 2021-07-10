@@ -8,10 +8,7 @@ import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -68,6 +65,8 @@ public class Cloak extends Spell {
             public void run() {
                 if (count >= DURATION || markedForEarlyReveal.contains(pl.getUniqueId())) {
                     this.cancel();
+                    Predator.getPredators().add(pl.getUniqueId());
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Predator.getPredators().remove(pl.getUniqueId()), Predator.getDuration() * 20L);
                     cloakers.remove(pl.getUniqueId());
                     for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
                         ps.showPlayer(plugin, pl);
