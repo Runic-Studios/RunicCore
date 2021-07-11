@@ -6,11 +6,9 @@ import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +31,7 @@ public class TwistOfFate extends Spell {
     private static final int BUBBLE_DURATION = 6;
     private static final int BUBBLE_SIZE = 5;
     private static final double UPDATES_PER_SECOND = 10;
+    private final HashSet<BukkitTask> coneTasks;
     private final HashSet<UUID> fateCasters;
     private final HashMap<UUID, Player> invertedEntities;
 
@@ -43,8 +43,9 @@ public class TwistOfFate extends Spell {
                         "Enemies who enter the sphere are debuffed for the " +
                         "duration of this spell and cannont be healed✦, " +
                         "suffering spellʔ damage instead! Against monsters, " +
-                        "this ability will silence for the duration.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 1, 40); // todo: cd: 45
+                        "this ability will have no effect.",
+                ChatColor.WHITE, ClassEnum.ROGUE, 45, 40);
+        coneTasks = new HashSet<>();
         fateCasters = new HashSet<>();
         invertedEntities = new HashMap<>();
     }
@@ -63,7 +64,8 @@ public class TwistOfFate extends Spell {
 
         // Play sound effects
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
+        //pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 0.5F);
         pl.getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
         fateCasters.add(pl.getUniqueId());
 
@@ -91,6 +93,10 @@ public class TwistOfFate extends Spell {
                 long timePassed = System.currentTimeMillis() - startTime;
                 if (timePassed > BUBBLE_DURATION * 1000 || pl.isSneaking()) {
                     this.cancel();
+                    for (BukkitTask bukkitTask : coneTasks) {
+                        bukkitTask.cancel();
+                    }
+                    coneTasks.clear();
                     fateCasters.clear();
                     invertedEntities.clear();
                     return;
@@ -102,9 +108,10 @@ public class TwistOfFate extends Spell {
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
                     if (!verifyEnemy(pl, entity)) continue;
-                    // todo: particle
-                    // todo: silence if monster
+                    if (invertedEntities.containsKey(entity.getUniqueId())) continue;
                     invertedEntities.put(entity.getUniqueId(), pl);
+                    BukkitTask cone = Cone.coneEffect((LivingEntity) entity, Particle.SMOKE_NORMAL, BUBBLE_DURATION, 0, 20, Color.BLACK);
+                    coneTasks.add(cone);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20 / UPDATES_PER_SECOND));

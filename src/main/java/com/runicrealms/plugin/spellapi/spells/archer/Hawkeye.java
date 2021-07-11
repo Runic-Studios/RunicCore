@@ -19,10 +19,10 @@ public class Hawkeye extends Spell implements MagicDamageSpell, WeaponDamageSpel
 
     private static final int DAMAGE = 25;
     private static final int DISTANCE = 10;
-    private static final double DAMAGE_PER_LEVEL = 2;
+    private static final int DAMAGE_PER_LEVEL = 2;
 
     public Hawkeye() {
-        super ("Hawkeye",
+        super("Hawkeye",
                 "Damaging an enemy from " + DISTANCE + " blocks " +
                         "away or farther deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) additional damage!",
@@ -55,7 +55,7 @@ public class Hawkeye extends Spell implements MagicDamageSpell, WeaponDamageSpel
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.25f, 2.0f);
             victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(),
                     5, 0.5F, 0.5F, 0.5F, 0);
-            return originalAmt+ DAMAGE;
+            return originalAmt + DAMAGE;
         }
         return originalAmt;
     }
