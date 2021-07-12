@@ -42,7 +42,8 @@ public class TwistOfFate extends Spell {
                         "all enemies within " + BUBBLE_SIZE + " blocks! " +
                         "Enemies who enter the sphere are debuffed for the " +
                         "duration of this spell and cannont be healed✦, " +
-                        "suffering spellʔ damage instead! Against monsters, " +
+                        "suffering spellʔ damage instead! During this time, you may not move. " +
+                        "Sneak to cancel the spell early. Against monsters, " +
                         "this ability will have no effect.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 45, 40);
         coneTasks = new HashSet<>();
