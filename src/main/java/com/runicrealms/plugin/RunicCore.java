@@ -220,6 +220,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new GroupCommand());
         commandManager.registerCommand(new ResetTreeCMD());
+        commandManager.registerCommand(new VanishCommand());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
             if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
         });
