@@ -265,9 +265,9 @@ public class HearthstoneListener implements Listener {
                     yaw = 270;
                     break;
                 case "azana": // 1
-                    x = -825.5;
-                    y = 38;
-                    z = 167.5;
+                    x = -764.5;
+                    y = 40;
+                    z = 206.5;
                     yaw = 180;
                     break;
                 case "tutorial village": // tutorial 2
