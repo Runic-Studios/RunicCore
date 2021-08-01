@@ -36,7 +36,7 @@ public class ScoreboardHandler implements Listener {
         NametagUtil.updateNametag(pl);
     }
 
-    private void createScoreboard(Player pl){
+    private void createScoreboard(Player pl) {
 
         // create our scoreboard
         ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -51,7 +51,7 @@ public class ScoreboardHandler implements Listener {
         pl.setScoreboard(board);
     }
 
-    private void updateSideInfo(Player pl){
+    private void updateSideInfo(Player pl) {
 
         Scoreboard board = pl.getScoreboard();
         Objective sidebar = board.getObjective("sidebar");
@@ -75,7 +75,7 @@ public class ScoreboardHandler implements Listener {
         blankSpaceTwo.setScore(3);
 
         // set side board header
-        Score characterInfo = sidebar.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + "Character");
+        Score characterInfo = sidebar.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + pl.getName());
         characterInfo.setScore(7);
 
         updatePlayerInfo(pl);
@@ -97,7 +97,9 @@ public class ScoreboardHandler implements Listener {
         Objective sidebar = board.getObjective("sidebar");
 
         // ensure the scoreboard objective exists
-        if (sidebar == null) { return; }
+        if (sidebar == null) {
+            return;
+        }
 
         Score playerClass = sidebar.getScore(playerClass(pl));
         playerClass.setScore(6);
