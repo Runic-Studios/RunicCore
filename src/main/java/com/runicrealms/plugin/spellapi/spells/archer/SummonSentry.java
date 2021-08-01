@@ -4,6 +4,7 @@ import com.runicrealms.plugin.api.ArmorStandAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -20,24 +21,24 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SummonSentry extends Spell {
+public class SummonSentry extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE_AMOUNT = 25;
+    private static final int DAMAGE = 15;
     private static final int DURATION = 8;
     private static final int POTION_DURATION = 1;
     private static final int RADIUS = 10;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
     private Arrow arrow;
 
-    // todo: fire an arrow to summon sentry. reduce damage, but increase arrow knockback
-    // todo: add scaling
     public SummonSentry() {
         super("Summon Sentry",
                 "You conjure an enchanted " +
                         "crossbow at your location! " +
                         "For " + DURATION + "s, the crossbow fires " +
                         "at all enemies within " + RADIUS + " blocks, " +
-                        "dealing " + DAMAGE_AMOUNT + " weapon⚔ damage " +
-                        "and blinding them for " + POTION_DURATION + "s!",
+                        "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) weapon⚔ damage and slowing them for " +
+                        POTION_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 16, 75);
     }
 
@@ -59,6 +60,7 @@ public class SummonSentry extends Spell {
 
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION) {
@@ -78,10 +80,10 @@ public class SummonSentry extends Spell {
                         armorStand.teleport(newLocation);
                         final Vector direction =
                                 ((LivingEntity) en).getEyeLocation().toVector()
-                                .subtract(standLocation.clone().add(0, 1, 0).toVector());
+                                        .subtract(standLocation.clone().add(0, 1, 0).toVector());
                         arrow = pl.getWorld().spawnArrow
                                 (
-                                standLocation.clone().add(0, 1, 0), direction, (float) 2, (float) 0
+                                        standLocation.clone().add(0, 1, 0), direction, (float) 2, (float) 0
                                 );
                         // DON'T set the shooter here so the DamageListener class won't take over, use meta instead
                         arrow.setMetadata("player", new FixedMetadataValue(plugin, name));
@@ -91,7 +93,7 @@ public class SummonSentry extends Spell {
                         EntityTrail.entityTrail(arrow, Particle.SPELL_WITCH);
                         ((LivingEntity) en).addPotionEffect
                                 (
-                                        new PotionEffect(PotionEffectType.BLINDNESS, POTION_DURATION * 20, 1)
+                                        new PotionEffect(PotionEffectType.SLOW, POTION_DURATION * 20, 2)
                                 );
                     }
                 }
@@ -107,7 +109,12 @@ public class SummonSentry extends Spell {
         if (!e.getDamager().hasMetadata("player")) return;
         e.setCancelled(true);
         Player pl = Bukkit.getPlayer(e.getDamager().getMetadata("player").get(0).asString());
-        DamageUtil.damageEntityWeapon(DAMAGE_AMOUNT, (LivingEntity) e.getEntity(), pl, false, true, true);
+        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, true);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 
