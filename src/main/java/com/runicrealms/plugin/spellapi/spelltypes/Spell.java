@@ -53,11 +53,9 @@ public abstract class Spell implements ISpell, Listener {
 
         // verify class
         boolean canCast = false;
-        //if (this.getReqClass() != ClassEnum.RUNIC) {
-            if (this.getReqClass().toString().toLowerCase().equals
-                    (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
-                canCast = true;
-        //}
+        if (this.getReqClass().toString().toLowerCase().equals
+                (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
+            canCast = true;
 
         if (!canCast) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -88,8 +86,9 @@ public abstract class Spell implements ISpell, Listener {
 
     /**
      * Method to check for valid enemy before applying healing calculation. True if enemy can be healed.
+     *
      * @param caster player who used spell
-     * @param ally player who was hit by spell
+     * @param ally   player who was hit by spell
      * @return whether target is valid
      */
     @Override
@@ -115,6 +114,7 @@ public abstract class Spell implements ISpell, Listener {
 
     /**
      * Method to check for valid enemy before applying damage calculation. True if enemy can be damaged.
+     *
      * @param caster player who used spell
      * @param victim mob or player who was hit by spell
      * @return whether target is valid
@@ -152,7 +152,9 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public int getManaCost() { return this.manaCost; }
+    public int getManaCost() {
+        return this.manaCost;
+    }
 
 
     protected Vector rotateVectorAroundY(Vector vector, double degrees) {
@@ -192,9 +194,10 @@ public abstract class Spell implements ISpell, Listener {
 
     /**
      * Add a custom status effect to an entity.
-     * @param entity to be silenced
+     *
+     * @param entity     to be silenced
      * @param effectEnum which status effect to add
-     * @param duration (in seconds) of effect
+     * @param duration   (in seconds) of effect
      */
     @Override
     public void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration) {
@@ -270,7 +273,8 @@ public abstract class Spell implements ISpell, Listener {
 
     /**
      * Used for execute skills that rely on percent missing health.
-     * @param entity mob/player to check hp for
+     *
+     * @param entity  mob/player to check hp for
      * @param percent multiplier for missing health (.25 * missing health, etc.)
      * @return the percent times missing health
      */

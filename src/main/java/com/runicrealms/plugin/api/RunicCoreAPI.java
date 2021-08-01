@@ -23,10 +23,7 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.items.MythicItem;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +34,8 @@ public class RunicCoreAPI {
 
     /**
      * Allows other plugins to borrow the hearthstone teleportation mechanic w/ specified location.
-     * @param player to teleport
+     *
+     * @param player   to teleport
      * @param location to arrive at
      */
     public static void beginTeleportation(Player player, Location location) {
@@ -46,6 +44,7 @@ public class RunicCoreAPI {
 
     /**
      * Quickly grab a string representing the class the player is using, in lowercase!
+     *
      * @param player to grab class for
      * @return lowercase string representing their primary class
      */
@@ -55,6 +54,7 @@ public class RunicCoreAPI {
 
     /**
      * Determine whether the player is in casting mode to cancel certain interactions.
+     *
      * @param player to check
      * @return boolean value, whether player is in casting set
      */
@@ -65,6 +65,7 @@ public class RunicCoreAPI {
 
     /**
      * Checks whether an entity is rooted.
+     *
      * @param entity to check
      * @return true if rooted
      */
@@ -74,6 +75,7 @@ public class RunicCoreAPI {
 
     /**
      * Checks whether an entity is silenced.
+     *
      * @param entity to check
      * @return true if silenced
      */
@@ -83,6 +85,7 @@ public class RunicCoreAPI {
 
     /**
      * Checks whether an entity is stunned.
+     *
      * @param entity to check
      * @return true if stunned
      */
@@ -92,6 +95,7 @@ public class RunicCoreAPI {
 
     /**
      * Returns the base outlaw rating
+     *
      * @return the base rating (1500)
      */
     public static int getBaseOutlawRating() {
@@ -100,8 +104,9 @@ public class RunicCoreAPI {
 
     /**
      * Gets the MythicMobs item w/ internal name matching string
+     *
      * @param internalName internal name of item (NOT DISPLAY NAME)
-     * @param amount of itemstack
+     * @param amount       of itemstack
      * @return an ItemStack
      */
     public static ItemStack getMythicItem(String internalName, int amount) {
@@ -118,8 +123,9 @@ public class RunicCoreAPI {
 
     /**
      * Gets the MythicMobs item w/ internal name matching string, randomizes stack size
+     *
      * @param internalName internal name of item (NOT DISPLAY NAME)
-     * @param rand some Random object
+     * @param rand         some Random object
      * @param minStackSize minimum size of stack
      * @param maxStackSize max size of stack
      * @return an ItemStack
@@ -138,6 +144,7 @@ public class RunicCoreAPI {
 
     /**
      * Returns specified player cache in-memory for player
+     *
      * @param player to get cache for
      * @return a PlayerCache for player with wrapper data
      */
@@ -147,6 +154,7 @@ public class RunicCoreAPI {
 
     /**
      * Gets the spell in the associated 'slot' from player spell wrapper.
+     *
      * @param player to grab spell for
      * @param number of spell slot (1, 2, 3, 4)
      * @return a Spell object to be used elsewhere
@@ -158,23 +166,31 @@ public class RunicCoreAPI {
             switch (number) {
                 case 1:
                     spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
-                    if (playerSpellWrapper.getSpellHotbarOne().equals(""))
+                    if (playerSpellWrapper.getSpellHotbarOne().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
                     break;
                 case 2:
                     spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellLeftClick());
-                    if (playerSpellWrapper.getSpellLeftClick().equals(""))
+                    if (playerSpellWrapper.getSpellLeftClick().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
                     break;
                 case 3:
                     spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
-                    if (playerSpellWrapper.getSpellRightClick().equals(""))
+                    if (playerSpellWrapper.getSpellRightClick().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
                     break;
                 case 4:
                     spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
-                    if (playerSpellWrapper.getSpellSwapHands().equals(""))
+                    if (playerSpellWrapper.getSpellSwapHands().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
                     break;
             }
         } catch (NullPointerException e) {
@@ -185,6 +201,7 @@ public class RunicCoreAPI {
 
     /**
      * Returns Skill Tree for specified player
+     *
      * @param player to lookup
      * @return Skill Tree
      */
@@ -202,7 +219,8 @@ public class RunicCoreAPI {
 
     /**
      * Used in Spell class to check if player has a passive applied!
-     * @param player to check passive for
+     *
+     * @param player  to check passive for
      * @param passive name of passive spell
      * @return boolean value whether passive found
      */
@@ -212,6 +230,7 @@ public class RunicCoreAPI {
 
     /**
      * Returns simple boolean. If yes, player has party. If no, they don't.
+     *
      * @param player to check for party
      * @return true if party, false if none
      */
@@ -221,7 +240,8 @@ public class RunicCoreAPI {
 
     /**
      * Used to determine whether two players are in a party.
-     * @param first The first player
+     *
+     * @param first  The first player
      * @param second The second player
      * @return boolean, whether they are in the same party
      */
@@ -237,7 +257,8 @@ public class RunicCoreAPI {
 
     /**
      * Returns a SkillTreeGUI for the given player
-     * @param player to build skill tree for
+     *
+     * @param player   to build skill tree for
      * @param position the position of sub-class (1, 2, or 3)
      * @return SkillTreeGUI
      */
@@ -250,6 +271,7 @@ public class RunicCoreAPI {
 
     /**
      * Check if the current player is in combat
+     *
      * @param player to check
      * @return true if player in combat
      */
@@ -259,8 +281,9 @@ public class RunicCoreAPI {
 
     /**
      * This is used in other plugins to manually tag a player in combat
+     *
      * @param damager the attacker
-     * @param victim the defender
+     * @param victim  the defender
      */
     public static void tagCombat(Player damager, Entity victim) {
         CombatListener.tagCombat(damager, victim);
@@ -268,6 +291,7 @@ public class RunicCoreAPI {
 
     /**
      * This does.. um. Idek.
+     *
      * @param shop
      */
     public static void registerRunicItemShop(RunicItemShop shop) {
@@ -326,6 +350,7 @@ public class RunicCoreAPI {
 
     /**
      * Update the appropriate max mana for given player, based on gear, level, and stats.
+     *
      * @param player player to calculate mana for
      */
     public static void updateMaxMana(Player player) {
