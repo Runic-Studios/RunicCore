@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class DamageEventUtil {
 
     private static final double CONTACT_DAMAGE_MULTIPLIER = 0.1;
-    private static final double ENVIRONMENT_DAMAGE_MULTIPLIER = 0.5;
+    private static final double ENVIRONMENT_DAMAGE_MULTIPLIER = 0.25;
     private static final double ENVIRONMENT_KNOCKBACK_MULTIPLIER = -0.1;
 
     /**

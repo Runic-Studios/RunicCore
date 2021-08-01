@@ -14,5 +14,6 @@ public class GenericDamageListener implements Listener {
         if (!(e.getVictim() instanceof Player)) return;
         Player player = (Player) e.getVictim();
         DamageUtil.damagePlayer(e.getAmount(), player);
+        player.setNoDamageTicks(10);
     }
 }
