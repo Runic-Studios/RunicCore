@@ -17,8 +17,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 @SuppressWarnings("FieldCanBeLocal")
 public class Consecration extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 35;
-    private static final double DAMAGE_PER_LEVEL = 0.75;
+    private static final int DAMAGE_AMT = 5;
+    private static final double DAMAGE_PER_LEVEL = 0.25;
     private static final int DURATION = 8;
     private static final int RADIUS = 7;
 
@@ -39,6 +39,7 @@ public class Consecration extends Spell implements MagicDamageSpell {
 
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION) {

@@ -23,8 +23,8 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Parry extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE = 25;
-    private static final double DAMAGE_PER_LEVEL = 1.25;
+    private static final int DAMAGE = 4;
+    private static final int DAMAGE_PER_LEVEL = 1;
     private static final double LAUNCH_PATH_MULT = 2;
     private final List<Arrow> parryArrows;
     private final HashSet<UUID> hasBeenHit;

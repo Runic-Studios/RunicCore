@@ -27,8 +27,8 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class PowerShot extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE = 50;
-    private static final int DAMAGE_PER_LEVEL = 4;
+    private static final int DAMAGE = 15;
+    private static final double DAMAGE_PER_LEVEL = 2.5;
     private static final int DURATION = 6;
     private static final double PERCENT_INCREASE = .25;
     private static final int RADIUS = 3;

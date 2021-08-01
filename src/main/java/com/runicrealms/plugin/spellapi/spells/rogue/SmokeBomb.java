@@ -26,8 +26,8 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
 
     private final boolean frostBomb;
     private static final int FROSTBOMB_DURATION = 4;
-    private static final int DAMAGE_AMT = 15;
-    private static final int DAMAGE_PER_LEVEL = 2;
+    private static final int DAMAGE_AMT = 6;
+    private static final int DAMAGE_PER_LEVEL = 1;
     private static final int DURATION = 3;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
@@ -94,6 +94,7 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
         } else {
             new BukkitRunnable() {
                 int count = 1;
+
                 @Override
                 public void run() {
                     if (count > FROSTBOMB_DURATION)

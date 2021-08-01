@@ -22,8 +22,8 @@ public class Enrage extends Spell implements MagicDamageSpell {
 
     private static final int BUFF_DURATION = 8;
     private static final int CHANNEL_DURATION = 2;
-    private static final int DAMAGE_AMT = 5;
-    private static final double DAMAGE_PER_LEVEL = 0.75;
+    private static final int DAMAGE_AMT = 2;
+    private static final double DAMAGE_PER_LEVEL = 0.25;
     private static final HashSet<UUID> ragers = new HashSet<>();
 
     public Enrage() {

@@ -27,8 +27,8 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class HolyWater extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE = 15;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final int DAMAGE = 6;
+    private static final int DAMAGE_PER_LEVEL = 1;
     private static final int DURATION = 6;
     private static final int RADIUS = 5;
     private static final double PERCENT = 35;
@@ -66,7 +66,7 @@ public class HolyWater extends Spell implements MagicDamageSpell {
             public void run() {
                 if (affectedPlayers.get(pl.getUniqueId()) != null) affectedPlayers.remove(pl.getUniqueId());
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION * 20L);
     }
 
     @EventHandler

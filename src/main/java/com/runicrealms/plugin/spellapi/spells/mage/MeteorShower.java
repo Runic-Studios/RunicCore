@@ -30,14 +30,14 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
     private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 35;
-    private static final double DAMAGE_PER_LEVEL = 2.25;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
     private SmallFireball meteor;
     private SmallFireball meteorLeft;
     private SmallFireball meteorRight;
     private final HashMap<UUID, UUID> hasBeenHit;
 
     public MeteorShower() {
-        super ("Meteor Shower",
+        super("Meteor Shower",
                 "You launch four projectile meteors " +
                         "that deal (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage on impact!",
@@ -49,11 +49,12 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
 
     /**
      * Overriden method for tier set bonuses
-     * @param fireCone 2-set bonus to apply a cone of projectiles
+     *
+     * @param fireCone  2-set bonus to apply a cone of projectiles
      * @param applyBurn 4-set bonus to apply burn effect
      */
     public MeteorShower(boolean fireCone, boolean applyBurn) {
-        super ("Meteor Shower",
+        super("Meteor Shower",
                 "You launch four projectile meteors" +
                         "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
                         "\nimpact!",
@@ -67,6 +68,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
     public void executeSpell(Player player, SpellItemType type) {
         new BukkitRunnable() {
             int count = 0;
+
             @Override
             public void run() {
                 if (count >= AMOUNT) {
@@ -144,7 +146,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
 
             if (applyBurn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT/2), victim, player, this);
+                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, this);
                     victim.getWorld().spawnParticle
                             (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

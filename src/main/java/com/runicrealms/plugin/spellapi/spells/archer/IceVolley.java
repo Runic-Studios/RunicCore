@@ -23,8 +23,8 @@ import java.util.HashSet;
 @SuppressWarnings("FieldCanBeLocal")
 public class IceVolley extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE = 25;
-    private static final int DAMAGE_PER_LEVEL = 3;
+    private static final int DAMAGE = 10;
+    private static final double DAMAGE_PER_LEVEL = 0.5;
     private static final int DURATION = 2;
     private final HashSet<Arrow> iceArrows;
 
@@ -43,6 +43,7 @@ public class IceVolley extends Spell implements MagicDamageSpell {
 
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > 5)

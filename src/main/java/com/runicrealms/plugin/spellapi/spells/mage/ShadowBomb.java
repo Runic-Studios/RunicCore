@@ -24,8 +24,8 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class ShadowBomb extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 20;
-    private static final double DAMAGE_PER_LEVEL = 1.25;
+    private static final int DAMAGE_AMT = 4;
+    private static final double DAMAGE_PER_LEVEL = .25;
     private static final int DURATION = 6;
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;
@@ -91,6 +91,7 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
         Spell spell = this;
         new BukkitRunnable() {
             int count = 0;
+
             @Override
             public void run() {
                 if (count >= DURATION) {
@@ -103,7 +104,7 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
                     DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, spell);
                 }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
+        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD * 20L);
     }
 
     @Override

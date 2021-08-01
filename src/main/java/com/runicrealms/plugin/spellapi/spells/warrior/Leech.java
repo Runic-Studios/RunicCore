@@ -17,8 +17,8 @@ import java.util.UUID;
 public class Leech extends Spell implements HealingSpell {
 
     private static final int BUFF_DURATION = 6;
-    private static final int HEAL_AMT = 20;
-    private static final double HEALING_PER_LEVEL = 1.25;
+    private static final int HEAL_AMT = 10;
+    private static final int HEALING_PER_LEVEL = 1;
     private final HashSet<UUID> leechers = new HashSet<>();
 
     public Leech() {

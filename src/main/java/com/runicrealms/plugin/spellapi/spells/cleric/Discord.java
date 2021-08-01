@@ -16,8 +16,8 @@ import org.bukkit.entity.Player;
 public class Discord extends Spell implements MagicDamageSpell {
 
     private static final int DELAY = 2;
-    private static final int DAMAGE_AMT = 60;
-    private static final double DAMAGE_PER_LEVEL = 4;
+    private static final int DAMAGE_AMT = 20;
+    private static final double DAMAGE_PER_LEVEL = 2.5;
     private static final int DURATION = 3;
     private static final int RADIUS = 8;
 

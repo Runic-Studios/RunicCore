@@ -18,14 +18,14 @@ import java.util.Random;
 @SuppressWarnings("FieldCanBeLocal")
 public class FireAura extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 25;
-    private static final double DAMAGE_PER_LEVEL = 1.5;
+    private static final int DAMAGE_AMT = 4;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
     private static final int DURATION = 6;
     private static final int PERIOD = 1;
     private static final int RADIUS = 5;
 
     public FireAura() {
-        super ("Fire Aura",
+        super("Fire Aura",
                 "For " + DURATION + " seconds, you conjure a terrible " +
                         "firestorm, damaging enemies within " + RADIUS + " blocks " +
                         "every " + PERIOD + "s for (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
@@ -39,6 +39,7 @@ public class FireAura extends Spell implements MagicDamageSpell {
         Spell spell = this;
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
 
@@ -58,7 +59,7 @@ public class FireAura extends Spell implements MagicDamageSpell {
                     }
                 }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD*20L);
+        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD * 20L);
     }
 
     /*

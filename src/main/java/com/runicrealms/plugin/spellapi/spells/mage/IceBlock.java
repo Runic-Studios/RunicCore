@@ -16,8 +16,8 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("FieldCanBeLocal")
 public class IceBlock extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 25;
-    private static final double DAMAGE_PER_LEVEL = 2.75;
+    private static final int DAMAGE_AMT = 15;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 5;
     private static final int RADIUS = 5;
 

@@ -21,8 +21,8 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class BindingShot extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE = 35;
-    private static final double DAMAGE_PER_LEVEL = 3.25;
+    private static final int DAMAGE = 25;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 4;
     private static final int RADIUS = 3;
     private Arrow bindingArrow;
@@ -76,6 +76,7 @@ public class BindingShot extends Spell implements WeaponDamageSpell {
         Location finalCastLocation = castLocation;
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION)

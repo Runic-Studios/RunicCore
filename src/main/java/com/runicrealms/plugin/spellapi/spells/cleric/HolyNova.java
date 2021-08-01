@@ -24,10 +24,10 @@ import java.util.Objects;
 public class HolyNova extends Spell implements MagicDamageSpell, HealingSpell {
 
     private static final int DAMAGE_AMT = 5;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final double DAMAGE_PER_LEVEL = 0.5;
     private static final int DURATION = 5;
     private static final int HEAL_AMT = 8;
-    private static final double HEALING_PER_LEVEL = 1.5;
+    private static final double HEALING_PER_LEVEL = 0.75;
     private static final float RADIUS = 5f;
     private static final double KNOCKBACK_MULT = -1.25;
 
@@ -57,7 +57,7 @@ public class HolyNova extends Spell implements MagicDamageSpell, HealingSpell {
             public void run() {
                 nova.cancel();
             }
-        }.runTaskLater(RunicCore.getInstance(), DURATION*20);
+        }.runTaskLater(RunicCore.getInstance(), DURATION * 20);
     }
 
     private void spawnRing(Player pl) {

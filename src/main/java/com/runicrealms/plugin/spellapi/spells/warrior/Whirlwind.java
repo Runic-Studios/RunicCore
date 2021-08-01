@@ -20,8 +20,8 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class Whirlwind extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 35;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final int DAMAGE_AMT = 4;
+    private static final double DAMAGE_PER_LEVEL = .25;
     private static final int DURATION = 10;
     private static final float RADIUS = 2f;
 
@@ -53,7 +53,7 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
             public void run() {
                 whirlwind.cancel();
             }
-        }.runTaskLater(RunicCore.getInstance(), DURATION*20);
+        }.runTaskLater(RunicCore.getInstance(), DURATION * 20);
     }
 
     private void spawnCyclone(Player pl) {

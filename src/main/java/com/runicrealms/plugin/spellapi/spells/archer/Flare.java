@@ -28,8 +28,8 @@ import java.util.HashSet;
 @SuppressWarnings("FieldCanBeLocal")
 public class Flare extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 25;
-    private static final int DAMAGE_PER_LEVEL = 4;
+    private static final int DAMAGE_AMT = 15;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 3;
     private static final int RADIUS = 5;
     private static final double FLARE_SPEED = 2;

@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class ArcaneShot extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE = 15;
-    private static final int DAMAGE_PER_LEVEL = 3;
+    private static final int DAMAGE = 10;
+    private static final int DAMAGE_PER_LEVEL = 2;
     private static final int DURATION = 3;
     private Arrow arcaneArrow;
 

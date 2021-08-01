@@ -17,9 +17,9 @@ import org.bukkit.event.EventHandler;
 @SuppressWarnings("FieldCanBeLocal")
 public class Hawkeye extends Spell implements MagicDamageSpell, WeaponDamageSpell {
 
-    private static final int DAMAGE = 25;
+    private static final int DAMAGE = 4;
     private static final int DISTANCE = 10;
-    private static final int DAMAGE_PER_LEVEL = 2;
+    private static final double DAMAGE_PER_LEVEL = 0.5;
 
     public Hawkeye() {
         super("Hawkeye",

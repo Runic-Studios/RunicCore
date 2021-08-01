@@ -17,14 +17,14 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("FieldCanBeLocal")
 public class FireBlast extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMOUNT = 25;
+    private static final int DAMAGE_AMOUNT = 15;
     private static final int DAMAGE_PER_LEVEL = 2;
     private static final int MAX_DIST = 10;
     private static final int RADIUS = 4;
     private static final int STUN_DURATION = 2;
 
     public FireBlast() {
-        super ("Fire Blast",
+        super("Fire Blast",
                 "You erupt a powerful blast of fire at " +
                         "your target location that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage to enemies within " + RADIUS + " blocks and " +

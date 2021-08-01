@@ -23,11 +23,11 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class SummonSentry extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE = 15;
+    private static final int DAMAGE = 3;
     private static final int DURATION = 8;
-    private static final int POTION_DURATION = 1;
+    private static final int POTION_DURATION = 3;
     private static final int RADIUS = 10;
-    private static final double DAMAGE_PER_LEVEL = 0.75;
+    private static final double DAMAGE_PER_LEVEL = 0.15;
     private Arrow arrow;
 
     public SummonSentry() {
@@ -39,7 +39,7 @@ public class SummonSentry extends Spell implements WeaponDamageSpell {
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) weapon⚔ damage and slowing them for " +
                         POTION_DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 16, 75);
+                ChatColor.WHITE, ClassEnum.ARCHER, 30, 75);
     }
 
     @Override

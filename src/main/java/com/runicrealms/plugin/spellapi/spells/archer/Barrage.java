@@ -25,8 +25,8 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Barrage extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE = 7;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final int DAMAGE = 2;
+    private static final double DAMAGE_PER_LEVEL = 0.3;
     private final HashMap<Arrow, UUID> bArrows;
 
     public Barrage() {
@@ -46,6 +46,7 @@ public class Barrage extends Spell implements WeaponDamageSpell {
 
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
 
