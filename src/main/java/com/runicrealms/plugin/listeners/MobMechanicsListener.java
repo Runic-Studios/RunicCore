@@ -12,21 +12,30 @@ import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
+/**
+ * Handles all custom mechanics with respect to mobs
+ */
 public final class MobMechanicsListener implements Listener {
 
-    @EventHandler
+    private static final double PLAYER_DAMAGE_TO_MOB_MULTIPLIER = 0.75;
+
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarSpellDamage(SpellDamageEvent e) {
         if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
+        e.setAmount((int) (e.getAmount() * getPlayerDamageToMobMultiplier()));
         updateDisplayName(e.getVictim(), e.getAmount());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
         if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
+        if (!e.isAutoAttack()) // ignore basic attacks
+            e.setAmount((int) (e.getAmount() * getPlayerDamageToMobMultiplier()));
         updateDisplayName(e.getVictim(), e.getAmount());
     }
 
@@ -146,5 +155,14 @@ public final class MobMechanicsListener implements Listener {
         currentHealth = Math.max(livingEntity.getHealth(), 0);
         int healthPercentage = (int) ((currentHealth / maxHealth) * 100.0D);
         return healthPercentage / 10;
+    }
+
+    /**
+     * Returns the modifier for player damage to mobs (to reduce their damage output w/o affecting PvP combat)
+     *
+     * @return the percent multiplier
+     */
+    public static double getPlayerDamageToMobMultiplier() {
+        return PLAYER_DAMAGE_TO_MOB_MULTIPLIER;
     }
 }
