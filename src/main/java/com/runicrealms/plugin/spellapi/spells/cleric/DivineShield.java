@@ -23,7 +23,7 @@ public class DivineShield extends Spell {
     private final HashSet<UUID> shieldedPlayers;
 
     public DivineShield() {
-        super ("Divine Shield",
+        super("Divine Shield",
                 "Your healing✦ spells have a " + (int) (PERCENT * 100) + "% " +
                         "chance to grant a divine shield to your allies, " +
                         "granting them " + (int) (PERCENT_REDUCTION * 100) + "% damage " +
@@ -53,13 +53,13 @@ public class DivineShield extends Spell {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (!shieldedPlayers.contains(e.getEntity().getUniqueId())) return;
+        if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!shieldedPlayers.contains(e.getEntity().getUniqueId())) return;
+        if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 }

@@ -20,19 +20,16 @@ public final class MobMechanicsListener implements Listener {
 
     @EventHandler
     public void updateHealthBarSpellDamage(SpellDamageEvent e) {
-        if (e.getEntity() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getEntity()) != null) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        LivingEntity le = (LivingEntity) e.getEntity();
-        updateDisplayName(le, e.getAmount());
+        if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
+        updateDisplayName(e.getVictim(), e.getAmount());
     }
 
     @EventHandler
     public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
-        if (e.getEntity() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getEntity()) != null) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        LivingEntity le = (LivingEntity) e.getEntity();
-        updateDisplayName(le, e.getAmount());
+        if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
+        updateDisplayName(e.getVictim(), e.getAmount());
     }
+
     /*
      * Updates mob health on regen
      */
@@ -48,13 +45,14 @@ public final class MobMechanicsListener implements Listener {
     }
 
     @EventHandler
-    public void onBurn(EntityCombustEvent event){
+    public void onBurn(EntityCombustEvent event) {
         event.setCancelled(true);
     }
 
     /**
      * Updates the healthbar of a mob!
-     * @param le mob to update health for
+     *
+     * @param le     mob to update health for
      * @param damage from event
      */
     private void updateDisplayName(LivingEntity le, int damage) {
@@ -69,6 +67,7 @@ public final class MobMechanicsListener implements Listener {
 
     /**
      * Uses the MythicMobs skills system to update the MM health bars, since disguises breaks the default method.
+     *
      * @param livingEntity MythicMob to update healthbar for
      */
     private static void createMythicHealthDisplay(LivingEntity livingEntity) {
@@ -78,8 +77,9 @@ public final class MobMechanicsListener implements Listener {
 
     /**
      * Dispalys a health bar that looks like [|||] with colors corresponding to entity's remaining health.
+     *
      * @param livingEntity to display health bar for
-     * @param damage taken from most recent event
+     * @param damage       taken from most recent event
      * @return a string to set the name to
      */
     private static String createHealthDisplay(LivingEntity livingEntity, int damage) {
@@ -124,7 +124,7 @@ public final class MobMechanicsListener implements Listener {
             case 1:
                 firstHalf = ChatColor.RED + "" + "|" + ChatColor.DARK_GRAY + "||||";
                 break;
-            default :
+            default:
                 firstHalf = ChatColor.DARK_GRAY + "" + "|||||";
                 break;
 
@@ -136,6 +136,7 @@ public final class MobMechanicsListener implements Listener {
 
     /**
      * Calculates the number of health bars that should be colored based on entity's remaining health.
+     *
      * @param livingEntity entity that took damage
      * @return number of bars to color-in
      */

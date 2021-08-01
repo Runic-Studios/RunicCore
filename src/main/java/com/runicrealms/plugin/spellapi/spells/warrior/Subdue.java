@@ -23,7 +23,7 @@ public class Subdue extends Spell {
     private static final double PERCENT = 10;
 
     public Subdue() {
-        super ("Subdue",
+        super("Subdue",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance " +
                         "to silence them for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
@@ -33,13 +33,13 @@ public class Subdue extends Spell {
     @EventHandler
     public void onSilencingHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applySilence(e.getPlayer(), e.getEntity());
+        applySilence(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onSilencingHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applySilence(e.getPlayer(), e.getEntity());
+        applySilence(e.getPlayer(), e.getVictim());
     }
 
     private void applySilence(Player pl, Entity en) {

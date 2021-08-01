@@ -26,6 +26,10 @@ public class HologramUtil {
         createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤⚔");
     }
 
+    public static void createGenericDamageHologram(Player createFor, Location createAround, double hp) {
+        createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤");
+    }
+
     public static void createHealHologram(Player createFor, Location createAround, double hp) {
         createDamageHologram(createFor, createAround, ChatColor.GREEN + "+" + (int) hp + " ❤✦");
     }
@@ -50,12 +54,12 @@ public class HologramUtil {
 
         // variation of the tag
         //Random rand = new ThreadLocalRandom();
-        double xDif = -0.5 + (int)(Math.random() * ((0.5 - (-0.5)) + 1));//(randInt(0, 20) - 10) / 10D //1
+        double xDif = -0.5 + (int) (Math.random() * ((0.5 - (-0.5)) + 1));//(randInt(0, 20) - 10) / 10D //1
         if (xDif == 0) {
             xDif = 0.5;
         }
         double yDif = (randInt(0, 20) - 10) / 10D;//Math.random()
-        double zDif = -0.5 + (int)(Math.random() * ((0.5 - (-0.5)) + 1));
+        double zDif = -0.5 + (int) (Math.random() * ((0.5 - (-0.5)) + 1));
         if (zDif == 0) {
             zDif = 0.5;
         }

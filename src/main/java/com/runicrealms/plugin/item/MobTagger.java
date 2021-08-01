@@ -50,7 +50,7 @@ public class MobTagger implements Listener {
     private void removeTags() {
         for (UUID plID : taggedTimers.keySet()) {
             long startTime = taggedTimers.get(plID);
-            if (System.currentTimeMillis() - startTime >= TAG_TIME*1000) {
+            if (System.currentTimeMillis() - startTime >= TAG_TIME * 1000) {
                 taggedTimers.remove(plID);
                 taggedMobs.remove(plID);
             }
@@ -60,7 +60,7 @@ public class MobTagger implements Listener {
     private void removePriority() {
         for (ItemStack itemStack : prioTimers.keySet()) {
             long startTime = prioTimers.get(itemStack);
-            if (System.currentTimeMillis() - startTime >= PRIO_TIME*1000) {
+            if (System.currentTimeMillis() - startTime >= PRIO_TIME * 1000) {
                 prioTimers.remove(itemStack);
                 prioItems.remove(itemStack);
             }
@@ -118,12 +118,12 @@ public class MobTagger implements Listener {
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        tagMob(e.getPlayer(), e.getEntity());
+        tagMob(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        tagMob(e.getPlayer(), e.getEntity());
+        tagMob(e.getPlayer(), e.getVictim());
     }
 
     /**

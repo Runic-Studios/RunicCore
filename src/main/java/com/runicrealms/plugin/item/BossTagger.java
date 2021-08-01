@@ -26,8 +26,8 @@ public class BossTagger implements Listener {
 
     private static final int DAMAGE_PERCENT = 10;
 
-    private HashMap<UUID, HashMap<UUID, Integer>> bossFighters;
-    private HashMap<UUID, HashSet<UUID>> bossLooters;
+    private final HashMap<UUID, HashMap<UUID, Integer>> bossFighters;
+    private final HashMap<UUID, HashSet<UUID>> bossLooters;
 
     public BossTagger() {
         bossFighters = new HashMap<>();
@@ -50,12 +50,12 @@ public class BossTagger implements Listener {
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        trackBossDamage(e.getPlayer(), e.getEntity(), e.getAmount());
+        trackBossDamage(e.getPlayer(), e.getVictim(), e.getAmount());
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        trackBossDamage(e.getPlayer(), e.getEntity(), e.getAmount());
+        trackBossDamage(e.getPlayer(), e.getVictim(), e.getAmount());
     }
 
     @EventHandler

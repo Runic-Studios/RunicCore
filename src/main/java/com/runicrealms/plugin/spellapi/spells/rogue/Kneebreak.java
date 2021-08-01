@@ -25,7 +25,7 @@ public class Kneebreak extends Spell {
     private static final int SLOW_MULT = 2;
 
     public Kneebreak() {
-        super ("Kneebreak",
+        super("Kneebreak",
                 "Damaging an enemy has a " + PERCENT + "% chance " +
                         "to slow them for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
@@ -35,13 +35,13 @@ public class Kneebreak extends Spell {
     @EventHandler
     public void onKneebreakHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applySlow(e.getPlayer(), e.getEntity());
+        applySlow(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onKneebreakHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applySlow(e.getPlayer(), e.getEntity());
+        applySlow(e.getPlayer(), e.getVictim());
     }
 
     private void applySlow(Player pl, Entity en) {

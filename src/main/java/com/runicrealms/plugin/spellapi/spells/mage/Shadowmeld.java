@@ -20,7 +20,7 @@ public class Shadowmeld extends Spell {
     private static final HashSet<UUID> doomers = new HashSet<>();
 
     public Shadowmeld() {
-        super ("Shadowmeld",
+        super("Shadowmeld",
                 "After casting your &aBlink &7spell, " +
                         "you gain " + (int) (PERCENT_REDUCTION * 100) + "% " +
                         "damage reduction for " + DURATION + "s!",
@@ -31,19 +31,19 @@ public class Shadowmeld extends Spell {
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
         if (!doomers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1-PERCENT_REDUCTION)));
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (!doomers.contains(e.getEntity().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1-PERCENT_REDUCTION)));
+        if (!doomers.contains(e.getVictim().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!doomers.contains(e.getEntity().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1-PERCENT_REDUCTION)));
+        if (!doomers.contains(e.getVictim().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler

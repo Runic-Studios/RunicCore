@@ -14,7 +14,7 @@ import org.bukkit.event.EventHandler;
 public class Taunt extends Spell {
 
     public Taunt() {
-        super ("Taunt",
+        super("Taunt",
                 "Your basic weapon⚔ attacks passively " +
                         "generate threat against monsters, " +
                         "causing them to attack you!",
@@ -26,7 +26,7 @@ public class Taunt extends Spell {
     public void onDrainingHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!e.isAutoAttack()) return; // only listen for auto attacks
-        generateThreat(e.getPlayer(), e.getEntity());
+        generateThreat(e.getPlayer(), e.getVictim());
     }
 
     private void generateThreat(Player pl, Entity en) {

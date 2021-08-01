@@ -41,14 +41,14 @@ public class CombatListener implements Listener {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (e.getEntity() instanceof Player) return; // handled in RunicPvP
-        tagCombat(e.getPlayer(), e.getEntity());
+        if (e.getVictim() instanceof Player) return; // handled in RunicPvP
+        tagCombat(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (e.getEntity() instanceof Player) return; // handled in RunicPvP
-        tagCombat(e.getPlayer(), e.getEntity());
+        if (e.getVictim() instanceof Player) return; // handled in RunicPvP
+        tagCombat(e.getPlayer(), e.getVictim());
     }
 
     public static void tagCombat(Player damager, Entity victim) {

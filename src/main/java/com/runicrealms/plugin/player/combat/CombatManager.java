@@ -50,21 +50,21 @@ public class CombatManager implements Listener {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (e.getEntity() instanceof Player
-                && (shieldedPlayers.containsKey((e.getEntity().getUniqueId())))) {
-            e.setAmount(shieldDamage((Player) e.getEntity(),
+        if (e.getVictim() instanceof Player
+                && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
+            e.setAmount(shieldDamage((Player) e.getVictim(),
                     e.getAmount(),
-                    shieldedPlayers.get(e.getEntity().getUniqueId())));
+                    shieldedPlayers.get(e.getVictim().getUniqueId())));
         }
     }
 
     @EventHandler
     public void onWeapDamage(WeaponDamageEvent e) {
-        if (e.getEntity() instanceof Player
-                && (shieldedPlayers.containsKey((e.getEntity().getUniqueId())))) {
-            e.setAmount(shieldDamage((Player) e.getEntity(),
+        if (e.getVictim() instanceof Player
+                && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
+            e.setAmount(shieldDamage((Player) e.getVictim(),
                     e.getAmount(),
-                    shieldedPlayers.get(e.getEntity().getUniqueId())));
+                    shieldedPlayers.get(e.getVictim().getUniqueId())));
         }
     }
 
@@ -89,9 +89,9 @@ public class CombatManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-                    if(playersInCombat.containsKey(online.getUniqueId())) {
-                        if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION*1000)) {
+                for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
+                    if (playersInCombat.containsKey(online.getUniqueId())) {
+                        if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION * 1000)) {
                             playersInCombat.remove(online.getUniqueId());
                             pvpers.remove(online.getUniqueId());
                             online.sendMessage(ChatColor.GREEN + "You have left combat!");
@@ -105,9 +105,11 @@ public class CombatManager implements Listener {
     public HashMap<UUID, Long> getPlayersInCombat() {
         return this.playersInCombat;
     }
+
     public HashMap<UUID, Double> getShieldedPlayers() {
         return this.shieldedPlayers;
     }
+
     public Set<UUID> getPvPers() {
         return this.pvpers;
     }

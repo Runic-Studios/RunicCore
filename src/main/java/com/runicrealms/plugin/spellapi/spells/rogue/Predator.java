@@ -24,7 +24,7 @@ public class Predator extends Spell {
     private static final HashSet<UUID> predators = new HashSet<>();
 
     public Predator() {
-        super ("Predator",
+        super("Predator",
                 "Upon reappearing after becoming invisible, " +
                         "you gain a " + (int) (PERCENT * 100) + "% damage " +
                         "buff for " + DURATION + "s! ",
@@ -36,14 +36,14 @@ public class Predator extends Spell {
     public void onPredatorHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!predators.contains(e.getPlayer().getUniqueId())) return;
-        e.setAmount((int) predatorDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount((int) predatorDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs last
     public void onPredatorHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!predators.contains(e.getPlayer().getUniqueId())) return;
-        e.setAmount((int) predatorDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount((int) predatorDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     private double predatorDamage(Player pl, Entity en, double eventAmount) {

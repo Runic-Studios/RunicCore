@@ -24,7 +24,7 @@ public class BearTrap extends Spell {
     private final HashMap<UUID, HashMap<UUID, Integer>> ensnareMap;
 
     public BearTrap() {
-        super ("Bear Trap",
+        super("Bear Trap",
                 "Damaging an enemy afflicted by &aHunter's Mark " +
                         "&73 times roots them for " + (int) DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
@@ -35,13 +35,13 @@ public class BearTrap extends Spell {
     @EventHandler
     public void onRangedHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applyRoot(e.getPlayer(), (LivingEntity) e.getEntity());
+        applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }
 
     @EventHandler
     public void onRangedHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        applyRoot(e.getPlayer(), (LivingEntity) e.getEntity());
+        applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }
 
     private void applyRoot(Player damager, LivingEntity victim) {

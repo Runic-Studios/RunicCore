@@ -15,10 +15,11 @@ public class DamageUtil {
 
     /**
      * Our universal method to apply magic damage to a player using custom calculation.
-     * @param dmgAmt amount to be dealt before gem or buff calculations
+     *
+     * @param dmgAmt    amount to be dealt before gem or buff calculations
      * @param recipient player to be healed
-     * @param caster player who casted heal
-     * @param spell include a reference to spell for spell scaling
+     * @param caster    player who casted heal
+     * @param spell     include a reference to spell for spell scaling
      */
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
 
@@ -51,19 +52,20 @@ public class DamageUtil {
         }
 
         // apply the damage
-        damageEntity(dmgAmt, recipient, caster, false);
-        HologramUtil.createSpellDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
+        damageEntityByEntity(dmgAmt, recipient, caster, false);
+        HologramUtil.createSpellDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt);
     }
 
     /**
      * Our universal method to apply weapon damage to a player using custom calculation.
-     * @param dmgAmt amount to be healed before gem or buff calculations
-     * @param recipient player to be healed
-     * @param caster player who casted heal
+     *
+     * @param dmgAmt       amount to be healed before gem or buff calculations
+     * @param recipient    player to be healed
+     * @param caster       player who casted heal
      * @param isAutoAttack whether the attack will be treated as an auto attack (for on-hit effects)
-     * @param isRanged whether the attack is ranged
+     * @param isRanged     whether the attack is ranged
      * @param bypassNoTick whether the attack can skip waiting for the weapon cooldown (spells generally)
-     * @param spell include a reference to spell for spell scaling
+     * @param spell        include a reference to spell for spell scaling
      */
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
                                           boolean isAutoAttack, boolean isRanged, boolean bypassNoTick, Spell... spell) {
@@ -95,8 +97,8 @@ public class DamageUtil {
             }
         }
 
-        damageEntity(dmgAmt, recipient, caster, isRanged);
-        HologramUtil.createDamageHologram((caster), recipient.getLocation().add(0,1.5,0), dmgAmt);
+        damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
+        HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt);
     }
 
     public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
@@ -151,7 +153,7 @@ public class DamageUtil {
         }
     }
 
-    private static void damageEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
+    private static void damageEntityByEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -200,6 +202,35 @@ public class DamageUtil {
         } else {
             recipient.setHealth(0);
         }
+    }
+
+    /**
+     * This method damages a player using custom runic mechanics
+     *
+     * @param dmgAmt damage amount to deal
+     * @param victim to receive damage
+     */
+    public static void damagePlayer(double dmgAmt, Player victim) {
+
+        int newHP = (int) (victim.getHealth() - dmgAmt);
+
+        // call a custom damage event to communicate with other listeners/plugins
+        EntityDamageEvent e = new EntityDamageEvent(victim, EntityDamageEvent.DamageCause.CUSTOM, dmgAmt);
+        Bukkit.getPluginManager().callEvent(e);
+        victim.setLastDamageCause(e);
+
+        // apply knockback
+        victim.setVelocity(victim.getLocation().getDirection().multiply(DamageEventUtil.getEnvironmentKnockbackMultiplier()));
+
+        // apply custom mechanics if the player were to die
+        if (newHP >= 1) {
+            victim.setHealth(newHP);
+            victim.setNoDamageTicks(0);
+            victim.damage(0.0000000000001);
+        } else {
+            DamageListener.applyDeathMechanics(victim);
+        }
+        HologramUtil.createGenericDamageHologram(victim, victim.getEyeLocation(), dmgAmt);
     }
 }
 

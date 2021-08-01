@@ -3,7 +3,11 @@ package com.runicrealms.plugin.events;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+/**
+ * This custom event is called for damage sources OTHER than entities (lava, fall, etc.)
+ */
 public class GenericDamageEvent extends RunicDamageEvent {
+
     private final DamageCauses cause;
 
     public GenericDamageEvent(LivingEntity victim, int amount, DamageCauses cause) {
@@ -23,12 +27,14 @@ public class GenericDamageEvent extends RunicDamageEvent {
     /**
      * A wrapper enum for all causes of generic damage on runic
      */
-    //feel free to add more if we need more (I built a wrapper so things like entity damage cant be thrown in)
     public enum DamageCauses {
-        LAVA(EntityDamageEvent.DamageCause.LAVA),
+
         CONTACT(EntityDamageEvent.DamageCause.CONTACT),
-        MAGMA_BLOCK(EntityDamageEvent.DamageCause.HOT_FLOOR),
-        FALL_DAMAGE(EntityDamageEvent.DamageCause.FALL);
+        DROWNING(EntityDamageEvent.DamageCause.DROWNING),
+        FALL_DAMAGE(EntityDamageEvent.DamageCause.FALL),
+        FIRE(EntityDamageEvent.DamageCause.FIRE),
+        LAVA(EntityDamageEvent.DamageCause.LAVA),
+        MAGMA_BLOCK(EntityDamageEvent.DamageCause.HOT_FLOOR);
 
         private final EntityDamageEvent.DamageCause cause;
 

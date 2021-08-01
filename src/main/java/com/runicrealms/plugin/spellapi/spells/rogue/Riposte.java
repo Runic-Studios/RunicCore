@@ -25,7 +25,7 @@ public class Riposte extends Spell {
     private final HashSet<Entity> ripostePlayers;
 
     public Riposte() {
-        super ("Riposte",
+        super("Riposte",
                 "For " + DURATION + "s, you parry and counter " +
                         "incoming attacks, avoiding the hit and dealing " +
                         (int) (PERCENT_DMG * 100) + "% spellʔ damage back to your attacker! " +
@@ -44,8 +44,8 @@ public class Riposte extends Spell {
 
     @EventHandler
     public void onRiposteHit(SpellDamageEvent e) {
-        if (!ripostePlayers.contains(e.getEntity())) return;
-        Player hurtPl = (Player) e.getEntity();
+        if (!ripostePlayers.contains(e.getVictim())) return;
+        Player hurtPl = (Player) e.getVictim();
         double newDamage = e.getAmount() * PERCENT_DMG;
         e.setCancelled(true);
         DamageUtil.damageEntitySpell(newDamage, e.getPlayer(), hurtPl, this);
@@ -53,8 +53,8 @@ public class Riposte extends Spell {
 
     @EventHandler
     public void onRiposteHit(WeaponDamageEvent e) {
-        if (!ripostePlayers.contains(e.getEntity())) return;
-        Player hurtPl = (Player) e.getEntity();
+        if (!ripostePlayers.contains(e.getVictim())) return;
+        Player hurtPl = (Player) e.getVictim();
         double newDamage = e.getAmount() * PERCENT_DMG;
         e.setCancelled(true);
         DamageUtil.damageEntityWeapon(newDamage, e.getPlayer(), hurtPl, false, e.isRanged(), true);

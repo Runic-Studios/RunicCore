@@ -22,7 +22,7 @@ public class Dissonance extends Spell {
     private static final double PERCENT = 10;
 
     public Dissonance() {
-        super ("Dissonance",
+        super("Dissonance",
                 "Damaging an enemy player has a " + (int) PERCENT + "% chance " +
                         "to swap their held item to a random hotbar slot! " +
                         "Against monsters, the effect silences for " + DURATION + "s instead.",
@@ -33,13 +33,13 @@ public class Dissonance extends Spell {
     @EventHandler
     public void onBlindingHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        swapHotBar(e.getPlayer(), e.getEntity());
+        swapHotBar(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onBlindingHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        swapHotBar(e.getPlayer(), e.getEntity());
+        swapHotBar(e.getPlayer(), e.getVictim());
     }
 
     private void swapHotBar(Player pl, Entity en) {

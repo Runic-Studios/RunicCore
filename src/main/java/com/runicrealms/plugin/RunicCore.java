@@ -122,36 +122,86 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static GeneralShop generalShop;
 
     // getters for handlers
-    public static RunicCore getInstance() { return instance; }
-    public static CombatManager getCombatManager() { return combatManager; }
-    public static RegenManager getRegenManager() { return regenManager; }
-    public static LootChestManager getLootChestManager() { return lootChestManager; }
-    public static PartyManager getPartyManager() { return partyManager; }
-    public static ScoreboardHandler getScoreboardHandler() { return scoreboardHandler; }
-    public static SpellManager getSpellManager() { return spellManager; }
-    public static TabListManager getTabListManager() { return tabListManager; }
-    public static MobTagger getMobTagger() { return mobTagger; }
-    public static BossTagger getBossTagger() { return bossTagger; }
-    public static CacheManager getCacheManager() { return cacheManager; }
-    public static ProtocolManager getProtocolManager() { return protocolManager; }
-    public static DatabaseManager getDatabaseManager() { return databaseManager; }
-    public static PartyChannel getPartyChatChannel() { return partyChannel; }
-    public static GroupManager getGroupManager() { return groupManager; }
+    public static RunicCore getInstance() {
+        return instance;
+    }
+
+    public static CombatManager getCombatManager() {
+        return combatManager;
+    }
+
+    public static RegenManager getRegenManager() {
+        return regenManager;
+    }
+
+    public static LootChestManager getLootChestManager() {
+        return lootChestManager;
+    }
+
+    public static PartyManager getPartyManager() {
+        return partyManager;
+    }
+
+    public static ScoreboardHandler getScoreboardHandler() {
+        return scoreboardHandler;
+    }
+
+    public static SpellManager getSpellManager() {
+        return spellManager;
+    }
+
+    public static TabListManager getTabListManager() {
+        return tabListManager;
+    }
+
+    public static MobTagger getMobTagger() {
+        return mobTagger;
+    }
+
+    public static BossTagger getBossTagger() {
+        return bossTagger;
+    }
+
+    public static CacheManager getCacheManager() {
+        return cacheManager;
+    }
+
+    public static ProtocolManager getProtocolManager() {
+        return protocolManager;
+    }
+
+    public static DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public static PartyChannel getPartyChatChannel() {
+        return partyChannel;
+    }
+
+    public static GroupManager getGroupManager() {
+        return groupManager;
+    }
+
     public static SkillTreeManager getSkillTreeManager() {
         return skillTreeManager;
     }
+
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
+
     public static StatManager getStatManager() {
         return statManager;
     }
+
     public static ThreeDManager getThreeDManager() {
         return threeDManager;
     }
+
     public static RunicShopManager getRunicShopManager() {
         return runicShopManager;
     }
+
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
     }
@@ -160,18 +210,23 @@ public class RunicCore extends JavaPlugin implements Listener {
     public static CaveShop getCaveShop() {
         return caveShop;
     }
+
     public static CavernShop getCavernShop() {
         return cavernShop;
     }
+
     public static KeepShop getKeepShop() {
         return keepShop;
     }
+
     public static LibraryShop getLibraryShop() {
         return libraryShop;
     }
+
     public static CryptsShop getCryptsShop() {
         return cryptsShop;
     }
+
     public static FortressShop getRaidVendor() {
         return fortressShop;
     }
@@ -222,10 +277,12 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new ResetTreeCMD());
         commandManager.registerCommand(new VanishCommand());
         commandManager.getCommandConditions().addCondition("is-player", context -> {
-            if (!(context.getIssuer().getIssuer() instanceof Player)) throw new ConditionFailedException("This command cannot be run from console!");
+            if (!(context.getIssuer().getIssuer() instanceof Player))
+                throw new ConditionFailedException("This command cannot be run from console!");
         });
         commandManager.getCommandConditions().addCondition("is-op", context -> {
-            if (!context.getIssuer().getIssuer().isOp()) throw new ConditionFailedException("You must be an operator to run this command!");
+            if (!context.getIssuer().getIssuer().isOp())
+                throw new ConditionFailedException("You must be an operator to run this command!");
         });
 
         Bukkit.getPluginManager().registerEvents(this, this);
@@ -355,7 +412,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
-        pm.registerEvents(new EnvironmentDMGListener(), this);
+        pm.registerEvents(new HerbFallDamageListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
         pm.registerEvents(new RunicItemShopManager(), this);
         pm.registerEvents(new SpellVerifyListener(), this);
@@ -369,6 +426,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new RuneListener(), this);
         pm.registerEvents(new TeleportScrollListener(), this);
         pm.registerEvents(new SpellScalingListener(), this);
+        pm.registerEvents(new EnvironmentDamageListener(), this);
+        pm.registerEvents(new GenericDamageListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
@@ -386,7 +445,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         getCommand("currency").setExecutor(currencySC);
         currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
         currencySC.addCommand(Arrays.asList("pouch"), new CurrencyPouch(currencySC));
-       // currencySC.addCommand(Arrays.asList("scrapper"), new ItemScrapperCMD(currencySC));
+        // currencySC.addCommand(Arrays.asList("scrapper"), new ItemScrapperCMD(currencySC));
 
         // experience
         CheckExpCMD checkExpCMD = new CheckExpCMD();

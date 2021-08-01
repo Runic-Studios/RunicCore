@@ -24,7 +24,7 @@ public class Insanity extends Spell {
     private static final int NAUSEA_MULT = 2;
 
     public Insanity() {
-        super ("Insanity",
+        super("Insanity",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance " +
                         "to cause nausea for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
@@ -33,12 +33,12 @@ public class Insanity extends Spell {
 
     @EventHandler
     public void onNauseaHit(SpellDamageEvent e) {
-        applyNausea(e.getPlayer(), e.getEntity());
+        applyNausea(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onNauseaHit(WeaponDamageEvent e) {
-        applyNausea(e.getPlayer(), e.getEntity());
+        applyNausea(e.getPlayer(), e.getVictim());
     }
 
     private void applyNausea(Player pl, Entity en) {

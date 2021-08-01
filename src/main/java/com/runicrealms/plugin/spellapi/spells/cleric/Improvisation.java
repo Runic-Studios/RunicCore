@@ -25,7 +25,7 @@ public class Improvisation extends Spell {
     private final HashSet<UUID> buffedPlayers;
 
     public Improvisation() {
-        super ("Improvisation",
+        super("Improvisation",
                 "Your melee weapon⚔ attacks have a " + PERCENT + "% chance " +
                         "to grant yourself and nearby allies within " + RADIUS + " " +
                         "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% weapon⚔ damage buff " +
@@ -42,8 +42,8 @@ public class Improvisation extends Spell {
             attemptToBuffAllies(pl);
         if (buffedPlayers.contains(pl.getUniqueId())) {
             pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
-            e.getEntity().getWorld().spawnParticle
-                    (Particle.NOTE, e.getEntity().getLocation().add(0, 1.5, 0),
+            e.getVictim().getWorld().spawnParticle
+                    (Particle.NOTE, e.getVictim().getLocation().add(0, 1.5, 0),
                             5, 1.0F, 0, 0, 0);
             e.setAmount((int) (e.getAmount() + (e.getAmount() * PERCENT_DAMAGE)));
         }

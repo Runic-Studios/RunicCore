@@ -24,7 +24,7 @@ public class Icebrand extends Spell {
     private static final int SLOW_MULT = 2;
 
     public Icebrand() {
-        super ("Icebrand",
+        super("Icebrand",
                 "Your ranged attacks have a " + PERCENT + "% chance " +
                         "to slow enemies for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
@@ -35,7 +35,7 @@ public class Icebrand extends Spell {
     public void onKneebreakHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!e.isRanged()) return;
-        applySlow(e.getPlayer(), e.getEntity());
+        applySlow(e.getPlayer(), e.getVictim());
     }
 
     private void applySlow(Player pl, Entity en) {

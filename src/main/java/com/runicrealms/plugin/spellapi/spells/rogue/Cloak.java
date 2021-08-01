@@ -47,12 +47,12 @@ public class Cloak extends Spell {
 
         PacketPlayOutPlayerInfo packet =
                 new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
-                        ((CraftPlayer)pl).getHandle());
+                        ((CraftPlayer) pl).getHandle());
 
         // hide the player, prevent them from disappearing in tab
         for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
             ps.hidePlayer(plugin, pl);
-            ((CraftPlayer)ps).getHandle().playerConnection.sendPacket(packet);
+            ((CraftPlayer) ps).getHandle().playerConnection.sendPacket(packet);
         }
 
         cloakers.add(pl.getUniqueId());
@@ -61,6 +61,7 @@ public class Cloak extends Spell {
         // reappear after duration or upon dealing damage. can't be tracked async :(
         new BukkitRunnable() {
             int count = 0;
+
             @Override
             public void run() {
                 if (count >= DURATION || markedForEarlyReveal.contains(pl.getUniqueId())) {
@@ -98,21 +99,21 @@ public class Cloak extends Spell {
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
         if (!(cloakers.contains(e.getPlayer().getUniqueId())
-                || cloakers.contains(e.getEntity().getUniqueId()))) return;
+                || cloakers.contains(e.getVictim().getUniqueId()))) return;
         if (cloakers.contains(e.getPlayer().getUniqueId()))
             markedForEarlyReveal.add(e.getPlayer().getUniqueId());
         else
-            markedForEarlyReveal.add(e.getEntity().getUniqueId());
+            markedForEarlyReveal.add(e.getVictim().getUniqueId());
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (!(cloakers.contains(e.getPlayer().getUniqueId())
-                || cloakers.contains(e.getEntity().getUniqueId()))) return;
+                || cloakers.contains(e.getVictim().getUniqueId()))) return;
         if (cloakers.contains(e.getPlayer().getUniqueId()))
             markedForEarlyReveal.add(e.getPlayer().getUniqueId());
         else
-            markedForEarlyReveal.add(e.getEntity().getUniqueId());
+            markedForEarlyReveal.add(e.getVictim().getUniqueId());
     }
 
     public static HashSet<UUID> getMarkedForEarlyReveal() {

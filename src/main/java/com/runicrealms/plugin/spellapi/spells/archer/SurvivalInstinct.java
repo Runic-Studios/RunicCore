@@ -50,8 +50,8 @@ public class SurvivalInstinct extends Spell {
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        Player victim = (Player) e.getEntity();
+        if (!(e.getVictim() instanceof Player)) return;
+        Player victim = (Player) e.getVictim();
         if (!hasPassive(victim, this.getName())) return;
         if (shielders.contains(victim.getUniqueId())) {
             e.setCancelled(true);

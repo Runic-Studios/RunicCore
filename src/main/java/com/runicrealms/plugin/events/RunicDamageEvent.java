@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * Superclass of all custom damage event mechanics on runic
  */
 public abstract class RunicDamageEvent extends Event implements Cancellable {
+    
     private final LivingEntity victim;
     private int amount;
     private boolean isCancelled;

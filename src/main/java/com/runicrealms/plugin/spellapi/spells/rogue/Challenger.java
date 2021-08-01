@@ -30,10 +30,9 @@ public class Challenger extends Spell {
     @EventHandler(priority = EventPriority.HIGHEST) // fires AFTER other weapon events
     public void onDamage(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        LivingEntity le = (LivingEntity) e.getEntity();
+        LivingEntity le = e.getVictim();
         int bonus = (int) (le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * HEALTH_MULT);
-        if (!(e.getEntity() instanceof Player) && bonus > DAMAGE_CAP)
+        if (!(e.getVictim() instanceof Player) && bonus > DAMAGE_CAP)
             bonus = DAMAGE_CAP;
         e.setAmount(e.getAmount() + bonus);
         e.getPlayer().getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 15, 0.25f, 0.25f, 0.25f, 0);

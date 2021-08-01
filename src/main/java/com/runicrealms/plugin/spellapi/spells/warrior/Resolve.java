@@ -19,7 +19,7 @@ public class Resolve extends Spell {
     private static final double PERCENT_DMG = 35;
 
     public Resolve() {
-        super ("Resolve",
+        super("Resolve",
                 "While below " + (int) PERCENT_HP + "% health, you " +
                         "receive a " + (int) PERCENT_DMG + "% damage reduction " +
                         "buff!",
@@ -29,16 +29,16 @@ public class Resolve extends Spell {
 
     @EventHandler
     public void onResolvedHit(SpellDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        Player hurtPlayer = (Player) e.getEntity();
+        if (!(e.getVictim() instanceof Player)) return;
+        Player hurtPlayer = (Player) e.getVictim();
         if (!shouldReduceDamage(hurtPlayer)) return;
         e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
     }
 
     @EventHandler
     public void onResolvedHit(WeaponDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        Player hurtPlayer = (Player) e.getEntity();
+        if (!(e.getVictim() instanceof Player)) return;
+        Player hurtPlayer = (Player) e.getVictim();
         if (!shouldReduceDamage(hurtPlayer)) return;
         e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
     }
@@ -53,6 +53,7 @@ public class Resolve extends Spell {
 
     /**
      * Quick check to see if player is within Resolve health threshold.
+     *
      * @param hurtPlayer player to check hp for
      * @return true if damage should be reduced, false if not
      */

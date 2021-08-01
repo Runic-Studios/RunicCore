@@ -33,13 +33,13 @@ public class Hawkeye extends Spell implements MagicDamageSpell, WeaponDamageSpel
     @EventHandler
     public void onRangedHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        e.setAmount(hawkeyeHit(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount(hawkeyeHit(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler
     public void onRangedHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        e.setAmount(hawkeyeHit(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount(hawkeyeHit(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     private int hawkeyeHit(Player pl, Entity en, int originalAmt) {

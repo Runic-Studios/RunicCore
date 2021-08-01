@@ -60,7 +60,7 @@ public class StatListener implements Listener {
         /*
         Defense
          */
-        UUID uuidVictim = e.getEntity().getUniqueId();
+        UUID uuidVictim = e.getVictim().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
         if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
             damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
@@ -81,7 +81,7 @@ public class StatListener implements Listener {
         /*
         Defense
          */
-        UUID uuidVictim = e.getEntity().getUniqueId();
+        UUID uuidVictim = e.getVictim().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
         if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
             damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it

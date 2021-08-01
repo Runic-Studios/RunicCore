@@ -49,7 +49,7 @@ public class ManaShield extends Spell {
             public void run() {
                 shielded.remove(pl.getUniqueId());
             }
-        }.runTaskLater(RunicCore.getInstance(), DURATION*20L);
+        }.runTaskLater(RunicCore.getInstance(), DURATION * 20L);
     }
 
     @EventHandler
@@ -64,21 +64,21 @@ public class ManaShield extends Spell {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (!shielded.contains(e.getEntity().getUniqueId()))
+        if (!shielded.contains(e.getVictim().getUniqueId()))
             return;
-        if (!(e.getEntity() instanceof Player))
+        if (!(e.getVictim() instanceof Player))
             return;
-        Player victim = (Player) e.getEntity();
+        Player victim = (Player) e.getVictim();
         e.setAmount(shieldWithMana(victim, e.getAmount()));
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!shielded.contains(e.getEntity().getUniqueId()))
+        if (!shielded.contains(e.getVictim().getUniqueId()))
             return;
-        if (!(e.getEntity() instanceof Player))
+        if (!(e.getVictim() instanceof Player))
             return;
-        Player victim = (Player) e.getEntity();
+        Player victim = (Player) e.getVictim();
         e.setAmount(shieldWithMana(victim, e.getAmount()));
     }
 

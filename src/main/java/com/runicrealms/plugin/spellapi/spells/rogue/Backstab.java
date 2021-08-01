@@ -20,7 +20,7 @@ public class Backstab extends Spell {
     public Backstab() {
         super("Backstab",
                 "Damaging an enemy from behind " +
-                        "deals " + (int) (PERCENT * 100 + 100)  + "% damage!",
+                        "deals " + (int) (PERCENT * 100 + 100) + "% damage!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
@@ -28,13 +28,13 @@ public class Backstab extends Spell {
     @EventHandler
     public void onDamage(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        e.setAmount(doBackstab(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount(doBackstab(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler
     public void onDamage(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        e.setAmount(doBackstab(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount(doBackstab(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     private int doBackstab(Player pl, Entity en, int originalAmt) {

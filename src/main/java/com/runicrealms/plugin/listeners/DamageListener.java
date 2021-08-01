@@ -40,6 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * This class does a lot. Might be worth splitting up.
  * Currently, it manages all melee damage calculators (including gemstones).
  * It also applies all of our death mechanics, melee cooldown mechanics, what have you.
+ *
  * @author Skyfallin_
  */
 @SuppressWarnings("deprecation")
@@ -273,10 +274,16 @@ public class DamageListener implements Listener {
         applyDeathMechanics(null, victim);
     }
 
-    private static void applyDeathMechanics(Entity killer, Player victim) {
+    /**
+     * This method applies custom mechanics when a player would die
+     *
+     * @param victim who died
+     * @param killer optional mob/player responsible for death
+     */
+    public static void applyDeathMechanics(Player victim, Entity... killer) {
 
         // call runic death event
-        RunicDeathEvent event = new RunicDeathEvent(killer, victim);
+        RunicDeathEvent event = new RunicDeathEvent(victim, killer);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -330,11 +337,11 @@ public class DamageListener implements Listener {
         }
 
         // apply new death mechanics
-        applyDeathMechanics(damager, victim);
+        applyDeathMechanics(victim, damager);
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-          Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
+            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
             Score score = o.getScore(victim);
             score.setScore((int) victim.getHealth());
         }
@@ -372,6 +379,7 @@ public class DamageListener implements Listener {
     /**
      * This method controls the dropping of items. It rolls a dice for each item in the player's inventory, and
      * it skips soulbound items. It removes protections from protected items.
+     *
      * @param pl player whose items may drop
      */
     private static void tryDropItems(Player pl) {
@@ -440,9 +448,9 @@ public class DamageListener implements Listener {
                 return "crypts";
             } else if (region.getId().contains("fortress")) {
                 Location fortressEntrace = new Location(Bukkit.getWorld("dungeons"), 32.5, 73, 87.5, 0, 0);
-                if (region.getId().contains("d3_parkour")){
+                if (region.getId().contains("d3_parkour")) {
                     fortressEntrace = new Location(Bukkit.getWorld("dungeons"), 32.5, 67, 379.5, 0, 0);
-                } else if (region.getId().contains("d3_alkyr")){
+                } else if (region.getId().contains("d3_alkyr")) {
                     fortressEntrace = new Location(Bukkit.getWorld("dungeons"), -9.5, 67, 503.5, 0, 0);
                 } else if (region.getId().contains("eldrid")) {
                     fortressEntrace = new Location(Bukkit.getWorld("dungeons"), -9.5, 67, 623.5, 0, 0);

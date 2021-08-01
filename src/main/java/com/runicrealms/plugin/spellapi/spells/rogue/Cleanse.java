@@ -54,14 +54,14 @@ public class Cleanse extends Spell {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        if (!damageReductionPlayers.contains(e.getEntity().getUniqueId())) return;
+        if (!damageReductionPlayers.contains(e.getVictim().getUniqueId())) return;
         double newAmt = e.getAmount() * (1 - PERCENT);
         e.setAmount((int) newAmt);
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!damageReductionPlayers.contains(e.getEntity().getUniqueId())) return;
+        if (!damageReductionPlayers.contains(e.getVictim().getUniqueId())) return;
         double newAmt = e.getAmount() * (1 - PERCENT);
         e.setAmount((int) newAmt);
     }

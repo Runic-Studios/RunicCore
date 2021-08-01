@@ -115,12 +115,12 @@ public class PowerShot extends Spell implements MagicDamageSpell {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getEntity(), e.getAmount()));
+        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     private double huntersMarkDamage(Player caster, Entity victim, double eventDamage) {

@@ -54,6 +54,7 @@ public class Bolster extends Spell {
 
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION) {
@@ -101,13 +102,13 @@ public class Bolster extends Spell {
 
     @EventHandler
     public void onSpellDamage(SpellDamageEvent e) {
-        double reducedDamage = reduceDamage(e.getEntity(), e.getAmount());
+        double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
         e.setAmount((int) reducedDamage);
     }
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        double reducedDamage = reduceDamage(e.getEntity(), e.getAmount());
+        double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
         e.setAmount((int) reducedDamage);
     }
 

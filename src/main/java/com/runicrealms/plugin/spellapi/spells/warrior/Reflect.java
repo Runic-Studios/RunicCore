@@ -51,15 +51,15 @@ public class Reflect extends Spell implements MagicDamageSpell {
             public void run() {
                 reflectedPlrs.remove(pl.getUniqueId());
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION*20L);
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION * 20L);
     }
 
     @EventHandler
     public void onPlayerDamage(WeaponDamageEvent e) {
 
-        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getVictim() instanceof Player)) return;
         Player damager = e.getPlayer();
-        Player victim = (Player) e.getEntity();
+        Player victim = (Player) e.getVictim();
         UUID id = victim.getUniqueId();
 
         // skip party members

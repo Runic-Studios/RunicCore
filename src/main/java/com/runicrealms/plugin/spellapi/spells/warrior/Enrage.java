@@ -35,6 +35,7 @@ public class Enrage extends Spell implements MagicDamageSpell {
                         "x&7 lvl) extra spellʔ damage for " + BUFF_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 12, 25);
     }
+
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
 
@@ -78,10 +79,10 @@ public class Enrage extends Spell implements MagicDamageSpell {
 
         if (!e.isAutoAttack()) return;
         if (!ragers.contains(e.getPlayer().getUniqueId())) return;
-        if(e.isCancelled()) return;
+        if (e.isCancelled()) return;
 
         Player pl = e.getPlayer();
-        Entity en = e.getEntity();
+        Entity en = e.getVictim();
 
         if (!(en instanceof LivingEntity)) return;
 

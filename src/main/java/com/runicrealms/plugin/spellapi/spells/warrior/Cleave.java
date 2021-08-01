@@ -17,7 +17,7 @@ public class Cleave extends Spell {
     private static final int RADIUS = 4;
 
     public Cleave() {
-        super ("Cleave",
+        super("Cleave",
                 "While your &aEnrage &7spell is active, " +
                         "your basic weapon⚔ attacks cleave enemies within " + RADIUS + " " +
                         "blocks for " + (int) (PERCENT * 100) + "% damage!",
@@ -34,7 +34,7 @@ public class Cleave extends Spell {
         Player pl = e.getPlayer();
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!verifyEnemy(pl, en)) continue;
-            if (en.equals(e.getEntity())) continue;
+            if (en.equals(e.getVictim())) continue;
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.5f, 1.0f);
             DamageUtil.damageEntityWeapon(e.getAmount() * PERCENT, (LivingEntity) en, pl, false, false, true);
         }

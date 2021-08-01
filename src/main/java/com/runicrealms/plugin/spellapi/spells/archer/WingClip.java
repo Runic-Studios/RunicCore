@@ -21,7 +21,7 @@ public class WingClip extends Spell {
     private final HashSet<UUID> wingClippers;
 
     public WingClip() {
-        super ("Wing Clip",
+        super("Wing Clip",
                 "After casting your &aGrapple &7spell, " +
                         "your first ranged basic attack will " +
                         "root its enemy for " + DURATION + "s!",
@@ -44,7 +44,7 @@ public class WingClip extends Spell {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!(wingClippers.contains(e.getPlayer().getUniqueId()))) return;
         wingClippers.remove(e.getPlayer().getUniqueId());
-        Entity en = e.getEntity();
+        Entity en = e.getVictim();
         addStatusEffect(en, EffectEnum.ROOT, DURATION);
         en.getWorld().spawnParticle(Particle.REDSTONE, en.getLocation(), 15, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.fromRGB(210, 180, 140), 3));

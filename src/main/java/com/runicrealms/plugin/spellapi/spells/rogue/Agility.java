@@ -24,7 +24,7 @@ public class Agility extends Spell {
     private static final int SPEED_MULT = 1;
 
     public Agility() {
-        super ("Agility",
+        super("Agility",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance " +
                         "to grant you speed for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
@@ -34,13 +34,13 @@ public class Agility extends Spell {
     @EventHandler
     public void onSpeedyHit(SpellDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        getSpeed(e.getPlayer(), e.getEntity());
+        getSpeed(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onSpeedyHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        getSpeed(e.getPlayer(), e.getEntity());
+        getSpeed(e.getPlayer(), e.getVictim());
     }
 
     private void getSpeed(Player pl, Entity en) {
