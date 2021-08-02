@@ -87,7 +87,7 @@ public class SkillTreeGUI implements InventoryHolder {
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + skillTree.getSubClassEnum().getName() + " Tree Info");
-        String lore = "&7Remaining Skill Points: &a" + skillTree.getAvailablePoints();
+        String lore = "&7Remaining Skill Points: &a" + SkillTree.getAvailablePoints(player);
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
         return infoItem;
@@ -95,6 +95,7 @@ public class SkillTreeGUI implements InventoryHolder {
 
     /**
      * Creates the meta and lore for a perk GUI icon.
+     *
      * @param perk Perk to create lore for (can be base stat or spell)
      * @return ItemStack for use in inventory
      */
@@ -107,21 +108,21 @@ public class SkillTreeGUI implements InventoryHolder {
                 meta.setDisplayName
                         (
                                 ChatColor.GREEN + ((PerkBaseStat) perk).getStat().getName() +
-                                ((PerkBaseStat) perk).getStat().getIcon() +
-                                ChatColor.WHITE + " [" +
-                                ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
-                                ChatColor.WHITE + "/" +
-                                ChatColor.GREEN + +perk.getMaxAllocatedPoints() +
-                                ChatColor.WHITE + "]"
+                                        ((PerkBaseStat) perk).getStat().getIcon() +
+                                        ChatColor.WHITE + " [" +
+                                        ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
+                                        ChatColor.WHITE + "/" +
+                                        ChatColor.GREEN + +perk.getMaxAllocatedPoints() +
+                                        ChatColor.WHITE + "]"
                         );
             } else {
                 meta.setDisplayName(ChatColor.GREEN + ((PerkBaseStat) perk).getStat().getName());
             }
             meta.setLore(
-                                ChatUtils.formattedText
-                                (("\n&7Bonus per point: &a+" + ((PerkBaseStat) perk).getBonusAmount() +
-                                "\n\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getStat().getDescription()))
-                        );
+                    ChatUtils.formattedText
+                            (("\n&7Bonus per point: &a+" + ((PerkBaseStat) perk).getBonusAmount() +
+                                    "\n\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getStat().getDescription()))
+            );
         } else {
             Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
             if (spell == null) {
@@ -134,12 +135,12 @@ public class SkillTreeGUI implements InventoryHolder {
             if (displayPoints)
                 meta.setDisplayName
                         (
-                            ChatColor.GREEN + spell.getName() +
-                            ChatColor.WHITE + " [" +
-                            ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
-                            ChatColor.WHITE + "/" +
-                            ChatColor.GREEN + + perk.getMaxAllocatedPoints() +
-                            ChatColor.WHITE + "]"
+                                ChatColor.GREEN + spell.getName() +
+                                        ChatColor.WHITE + " [" +
+                                        ChatColor.GREEN + perk.getCurrentlyAllocatedPoints() +
+                                        ChatColor.WHITE + "/" +
+                                        ChatColor.GREEN + +perk.getMaxAllocatedPoints() +
+                                        ChatColor.WHITE + "]"
                         );
             else
                 meta.setDisplayName(ChatColor.GREEN + spell.getName());

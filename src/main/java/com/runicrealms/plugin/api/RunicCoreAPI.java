@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RunicCoreAPI {
 
@@ -100,6 +101,10 @@ public class RunicCoreAPI {
      */
     public static int getBaseOutlawRating() {
         return RunicCore.getBaseOutlawRating();
+    }
+
+    public static ConcurrentHashMap.KeySetView<Player, PlayerCache> getLoadedPlayers() {
+        return RunicCore.getCacheManager().getLoadedPlayers();
     }
 
     /**
@@ -213,6 +218,22 @@ public class RunicCoreAPI {
         return RunicCore.getSpellManager().getSpellByName(name);
     }
 
+    /**
+     * Gets the total skill points that are available to a given player that are NOT yet spent
+     *
+     * @param player to check
+     * @return number of skill points availble (AFTER subtracting spent points)
+     */
+    public static int getAvailableSkillPoints(Player player) {
+        return SkillTree.getAvailablePoints(player);
+    }
+
+    /**
+     * Gets the total allocated skill points of the given player
+     *
+     * @param player to check
+     * @return number of skill points spent
+     */
     public static int getSpentPoints(Player player) {
         return RunicCore.getSkillTreeManager().getSpentPoints().get(player.getUniqueId());
     }

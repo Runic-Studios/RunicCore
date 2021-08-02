@@ -39,9 +39,10 @@ public class SkillTree {
     /**
      * Cacluates the available skill points of the player.
      * First point is given at level 10, so first 9 levels are ignored.
+     *
      * @return available skill points to spend
      */
-    public int getAvailablePoints() {
+    public static int getAvailablePoints(Player player) {
         int spentPoints = RunicCoreAPI.getSpentPoints(player);
         return Math.max(0, player.getLevel() - 9 - spentPoints);
     }
@@ -49,11 +50,12 @@ public class SkillTree {
     /**
      * Attempts to purchase perk selected from inv click event.
      * Will fail for a variety of reasons, or succeeds, updates currently allocated points, and
+     *
      * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
-     * @param perk the perk attempting to be purchased
+     * @param perk     the perk attempting to be purchased
      */
     public void attemptToPurchasePerk(Perk previous, Perk perk) {
-        int getAvailablePoints = getAvailablePoints();
+        int getAvailablePoints = getAvailablePoints(player);
         if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You have already purchased this perk!");
@@ -96,6 +98,7 @@ public class SkillTree {
 
     /**
      * Loops through currently purchased perks to store passives in memory
+     *
      * @param playerSpellWrapper the wrapper object to store the passives in
      */
     public void applyPassives(PlayerSpellWrapper playerSpellWrapper) {
@@ -110,6 +113,7 @@ public class SkillTree {
 
     /**
      * Saves all perks which have at least 1 point allocated to DB!
+     *
      * @param character The character section of a DB object
      */
     public void save(PlayerMongoDataSection character) {
@@ -122,6 +126,7 @@ public class SkillTree {
     /**
      * Resets the skill trees for given player. ALL THREE skill trees will be wiped from memory / DB,
      * and spent points will be reset to 0 in DB and memory.
+     *
      * @param player to reset tree for
      */
     public static void resetTree(Player player) {
@@ -142,6 +147,7 @@ public class SkillTree {
     /**
      * Returns the appropriate default perk list for the given sub-class, to be populated
      * later by persistent data from the DB.
+     *
      * @param subClassEnum the sub-class of the player (try SubClassUtil)
      * @return A default list of perks (no purchased perks)
      */
@@ -199,6 +205,7 @@ public class SkillTree {
 
     /**
      * Returns specified perk by ID.
+     *
      * @param perkID ID of perk
      * @return the Perk object
      */

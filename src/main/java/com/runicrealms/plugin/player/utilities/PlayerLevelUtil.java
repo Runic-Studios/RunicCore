@@ -27,12 +27,13 @@ public class PlayerLevelUtil {
      * Here is our exp curve!
      * At level 50, the player is ~ halfway to max, w/ 997,500
      * At level 60, the player needs 1,647,000 total exp
+     *
      * @param currentLv the current level of the player
      * @return the experience they've earned at that level
      */
     public static int calculateTotalExp(int currentLv) {
-        int cubed = (int) Math.pow((currentLv+5), 3);
-        return ((30*cubed)/5)-750;
+        int cubed = (int) Math.pow((currentLv + 5), 3);
+        return ((30 * cubed) / 5) - 750;
     }
 
     /*
@@ -40,7 +41,7 @@ public class PlayerLevelUtil {
     i.e., passing 997,500 will return level 50.
      */
     public static int calculateExpectedLv(int experience) {
-        return (int) Math.cbrt(((experience+750) / 6)) - 5;
+        return (int) Math.cbrt(((experience + 750) / 6)) - 5;
     }
 
     /**
@@ -82,7 +83,7 @@ public class PlayerLevelUtil {
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLv);
-        int totalExpToLevel = calculateTotalExp(currentLv+1);
+        int totalExpToLevel = calculateTotalExp(currentLv + 1);
         double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
         if (currentLv == MAX_LEVEL) {
             pl.setExp(0);
@@ -137,15 +138,18 @@ public class PlayerLevelUtil {
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLv, 10, 40, 10);
 
         // save player hp, restore hp.food
+        pl.sendMessage("\n");
         ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
         int gainedHealth = calculateHealthAtLevel(classLv, className) - calculateHealthAtLevel(classLv - 1, className);
         ChatUtils.sendCenteredMessage(pl,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + gainedHealth + "❤ "
                         + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(pl) + "✸");
+        pl.sendMessage("\n");
     }
 
     /**
      * Calculates the base health of the player based on class and current level
+     *
      * @param currentLv their class level
      * @param className their class name
      * @return the HP they should have based on scaling
@@ -157,6 +161,7 @@ public class PlayerLevelUtil {
 
     /**
      * May return either the scaling coefficient or linear hp-per-level of class based on boolean flag value
+     *
      * @param className name of class
      * @return um can return either dis might be bad but to lazy to write two methods
      */
