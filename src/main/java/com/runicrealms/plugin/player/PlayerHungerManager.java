@@ -20,13 +20,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class PlayerHungerManager implements Listener {
 
     // tick time in seconds
-    private final int PLAYER_HUNGER_TIME = 60;
+    private final int PLAYER_HUNGER_TIME = 45;
 
     public PlayerHungerManager() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+                for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
                     if (RunicCoreAPI.isSafezone(player.getLocation())) { // prevent hunger loss in capital cities
                         if (player.getFoodLevel() < 20) {
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
@@ -47,9 +47,9 @@ public class PlayerHungerManager implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if(event.getEntity() instanceof Player) {
+        if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if(event.getFoodLevel() < player.getFoodLevel()) {
+            if (event.getFoodLevel() < player.getFoodLevel()) {
                 event.setCancelled(true);
             }
         }
