@@ -22,8 +22,8 @@ public class ArcherTreeUtil {
         perks.add(new PerkSpell(5, 1, 0, 1, "Parry"));
         perks.add(new PerkBaseStat(6, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(7, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(9, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(8, 1, 0, 1, "Kill Shot"));
-        perks.add(new PerkBaseStat(9, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(10, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkSpell(11, 1, 0, 1, "Bear Trap"));
         return perks;
@@ -39,8 +39,8 @@ public class ArcherTreeUtil {
         perks.add(new PerkSpell(17, 1, 0, 1, "Flare"));
         perks.add(new PerkBaseStat(18, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(19, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(21, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(20, 1, 0, 1, "Summon Sentry"));
-        perks.add(new PerkBaseStat(21, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(22, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkSpell(23, 1, 0, 1, "Escape Artist"));
         return perks;
@@ -56,8 +56,8 @@ public class ArcherTreeUtil {
         perks.add(new PerkSpell(29, 1, 0, 1, "Ice Volley"));
         perks.add(new PerkBaseStat(30, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(31, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(33, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(32, 1, 0, 1, "Binding Shot"));
-        perks.add(new PerkBaseStat(33, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(34, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkSpell(35, 1, 0, 1, "Survival Instinct"));
         return perks;

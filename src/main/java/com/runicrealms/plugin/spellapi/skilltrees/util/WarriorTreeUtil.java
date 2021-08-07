@@ -56,7 +56,7 @@ public class WarriorTreeUtil {
         perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke"));
         perks.add(new PerkBaseStat(174, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(175, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(177, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(177, 1, 0, 5, Stat.STRENGTH));
         perks.add(new PerkSpell(176, 1, 0, 1, "Rift"));
         perks.add(new PerkBaseStat(178, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkSpell(179, 1, 0, 1, "Subdue"));
