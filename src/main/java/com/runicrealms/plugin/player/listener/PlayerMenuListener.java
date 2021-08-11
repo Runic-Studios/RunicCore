@@ -2,18 +2,13 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.mysterybox.MysteryLoot;
-import com.runicrealms.plugin.mysterybox.animation.Animation;
-import com.runicrealms.plugin.mysterybox.animation.animations.Tornado;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
@@ -93,14 +88,14 @@ public class PlayerMenuListener implements Listener {
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
                     PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
-                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(questJournal));
-                    PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gemMenu));
-                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
+//                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(questJournal));
+                    PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenu));
+//                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
 
                     ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet1);
-                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet2);
+//                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet2);
                     ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet3);
-                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet4);
+//                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet4);
 
                 }
             }
@@ -117,8 +112,8 @@ public class PlayerMenuListener implements Listener {
 
             view.setItem(1, null);
             view.setItem(2, null);
-            view.setItem(3, null);
-            view.setItem(4, null);
+//            view.setItem(3, null);
+//            view.setItem(4, null);
 
             view.getTopInventory().clear();
         }
@@ -128,27 +123,29 @@ public class PlayerMenuListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         InventoryView view = event.getView();
 
-        // Don't allow players to remove anything from their
-        // own crafting matrix
-        // The view includes the player's entire inventory
-        // as well, so check to make sure that the clicker
-        // did not click on their own inventory
+        /*
+         Don't allow players to remove anything from their
+         own crafting matrix
+         The view includes the player's entire inventory
+         as well, so check to make sure that the clicker
+         did not click on their own inventory
+         */
         if (isPlayerCraftingInv(view) &&
                 event.getClickedInventory() != event.getWhoClicked().getInventory()) {
-            if (event.getSlot() < 5 && event.getSlot() > 0) {
-
-                event.setCancelled(true);
-                Player pl = (Player) event.getWhoClicked();
-                pl.updateInventory();
-
-                if (event.getSlot() == 2 && pl.getGameMode() != GameMode.CREATIVE) {
-                    pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                    pl.performCommand("quest");
-                } else if (event.getSlot() == 4) {
-                    Animation animation = new Tornado(MysteryLoot.getMysteryItems());
-                    animation.spawn(pl, pl.getLocation());
-                }
-            }
+//            if (event.getSlot() < 5 && event.getSlot() > 0) {
+//
+//                event.setCancelled(true);
+//                Player pl = (Player) event.getWhoClicked();
+//                pl.updateInventory();
+//
+//                if (event.getSlot() == 2 && pl.getGameMode() != GameMode.CREATIVE) {
+//                    pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
+//                    pl.performCommand("quest");
+//                } else if (event.getSlot() == 4) {
+//                    Animation animation = new Tornado(MysteryLoot.getMysteryItems());
+//                    animation.spawn(pl, pl.getLocation());
+//                }
+//            }
         }
     }
 
