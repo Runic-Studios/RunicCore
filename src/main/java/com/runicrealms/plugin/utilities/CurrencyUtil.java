@@ -2,45 +2,26 @@ package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.item.LoreGenerator;
-import org.bukkit.ChatColor;
+import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
 
 /**
- * This utility contains all of the units of currency.
+ * This utility contains all the units of currency.
  */
 public class CurrencyUtil {
+
+    private static final ItemStack GOLD_COIN = RunicItemsAPI.generateItemFromTemplate("Coin").generateItem();
 
     /*
      * A single gold coin, the smallest unit of currency
      */
     public static ItemStack goldCoin() {
-        ItemStack coin = new ItemStack(Material.GOLD_NUGGET);
-        ItemMeta meta = coin.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Currency of Alterra");
-        if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
-            meta.setLore(lore);
-            coin.setItemMeta(meta);
-        }
-        return coin;
+        return GOLD_COIN;
     }
 
     public static ItemStack goldCoin(int stackSize) {
-        ItemStack coin = new ItemStack(Material.GOLD_NUGGET, stackSize);
-        ItemMeta meta = coin.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Currency of Alterra");
-        if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
-            meta.setLore(lore);
-            coin.setItemMeta(meta);
-        }
-        return coin;
+        return RunicItemsAPI.generateItemFromTemplate("Coin", stackSize).generateItem();
     }
 
     /**

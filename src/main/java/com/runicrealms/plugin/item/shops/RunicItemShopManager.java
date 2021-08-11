@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.item.util.ItemRemover;
+import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicnpcs.api.NpcClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -115,7 +116,7 @@ public class RunicItemShopManager implements Listener {
         int amount = 0;
         for (ItemStack inventoryItem : player.getInventory().getContents()) {
             if (inventoryItem != null) {
-                if (inventoryItem.isSimilar(item)) {
+                if (RunicItemsAPI.isRunicItemSimilar(item, inventoryItem)) {
                     amount += inventoryItem.getAmount();
                     if (amount >= needed) {
                         return true;
