@@ -405,7 +405,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new GoldPouchListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
-        pm.registerEvents(new SoulboundListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         //pm.registerEvents(new ScrapperListener(), this);
         pm.registerEvents(new OffhandListener(), this);
