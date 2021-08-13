@@ -5,7 +5,7 @@ import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
@@ -318,7 +318,7 @@ public class DamageListener implements Listener {
         tryDropItems(victim);
         String isDungeon = checkForDungeon(victim);
         if (isDungeon.equals("")) { // no dungeon
-            victim.teleport(HearthstoneListener.getHearthstoneLocation(victim));
+            victim.teleport(HearthstoneLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
             victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
         }
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);

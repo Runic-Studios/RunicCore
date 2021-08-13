@@ -9,7 +9,8 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -240,7 +241,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
         //mongoDataSection.set("inventoryNew", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
-        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneListener.getHearthstoneLocation(player)); // tutorial
+        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
         mongoData.save();
     }
 }
