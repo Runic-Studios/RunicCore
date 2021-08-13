@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,7 +26,11 @@ public class SkillTreeGUIListener implements Listener {
         Preliminary checks
          */
         if (e.getClickedInventory() == null) return;
-        if (!(e.getClickedInventory().getHolder() instanceof SkillTreeGUI)) return;
+        if (!(e.getView().getTopInventory().getHolder() instanceof SkillTreeGUI)) return;
+        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            e.setCancelled(true);
+            return;
+        }
         SkillTreeGUI skillTreeGUI = (SkillTreeGUI) e.getClickedInventory().getHolder();
         if (!e.getWhoClicked().equals(skillTreeGUI.getPlayer())) {
             e.setCancelled(true);
@@ -33,7 +38,7 @@ public class SkillTreeGUIListener implements Listener {
             return;
         }
 
-        Player pl = (Player) e.getWhoClicked();
+        Player player = (Player) e.getWhoClicked();
         if (e.getCurrentItem() == null) return;
         if (skillTreeGUI.getInventory().getItem(e.getRawSlot()) == null) return;
 
@@ -41,11 +46,11 @@ public class SkillTreeGUIListener implements Listener {
         ItemMeta itemMeta = item.getItemMeta();
         Material material = item.getType();
 
-        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
         if (material == Material.LIGHT_GRAY_STAINED_GLASS_PANE)
-            pl.openInventory(new SubClassGUI(pl).getInventory());
+            player.openInventory(new SubClassGUI(player).getInventory());
         else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n-> n == e.getRawSlot())) {
             int perkPosition = ArrayUtils.indexOf(SkillTreeGUI.getPerkSlots(), e.getRawSlot());
             Perk previous;

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 public class RuneGUIListener implements Listener {
@@ -20,28 +21,32 @@ public class RuneGUIListener implements Listener {
         Preliminary checks
          */
         if (e.getClickedInventory() == null) return;
-        if (!(e.getClickedInventory().getHolder() instanceof RuneGUI)) return;
+        if (!(e.getView().getTopInventory().getHolder() instanceof RuneGUI)) return;
+        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            e.setCancelled(true);
+            return;
+        }
         RuneGUI runeGUI = (RuneGUI) e.getClickedInventory().getHolder();
         if (!e.getWhoClicked().equals(runeGUI.getPlayer())) {
             e.setCancelled(true);
             e.getWhoClicked().closeInventory();
             return;
         }
-        Player pl = (Player) e.getWhoClicked();
+        Player player = (Player) e.getWhoClicked();
         if (e.getCurrentItem() == null) return;
         if (runeGUI.getInventory().getItem(e.getRawSlot()) == null) return;
 
         ItemStack item = e.getCurrentItem();
         Material material = item.getType();
 
-        pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
         if (material == runeGUI.skillTreeButton().getType())
-            pl.openInventory(new SubClassGUI(pl).getInventory());
+            player.openInventory(new SubClassGUI(player).getInventory());
         else if (material == RuneGUI.spellEditorButton().getType())
-            pl.openInventory(new SpellEditorGUI(pl).getInventory());
+            player.openInventory(new SpellEditorGUI(player).getInventory());
         else
-            pl.closeInventory();
+            player.closeInventory();
     }
 }
