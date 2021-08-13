@@ -8,6 +8,7 @@ import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
 import com.runicrealms.plugin.player.commands.SetSC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,6 +39,8 @@ public class HearthstoneCMD implements SubCommand {
 
             if (args.length == 3) {
                 if (HearthstoneLocation.getLocationFromIdentifier(location) != null) {
+                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+                    pl.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + HearthstoneLocation.getFromIdentifier(location).getDisplay() + "!");
                     pl.getInventory().setItem(8, HearthstoneLocation.getFromIdentifier(location).getItemStack());
                 }
             }

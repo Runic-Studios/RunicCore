@@ -28,7 +28,7 @@ public class CombatManager implements Listener {
     private final HashMap<UUID, Double> shieldedPlayers;
     private final Set<UUID> pvpers = new HashSet<>();
     private final RunicCore plugin = RunicCore.getInstance();
-    private static final double COMBAT_DURATION = 10;
+    private static final double COMBAT_DURATION = 15;
 
     public CombatManager() {
         this.playersInCombat = new HashMap<>();

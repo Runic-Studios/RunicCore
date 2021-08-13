@@ -74,7 +74,7 @@ public enum HearthstoneLocation {
             if (hearthstoneLocation.getIdentifier().equals(identifier))
                 return hearthstoneLocation;
         }
-        return null;
+        return HearthstoneLocation.TUTORIAL_FORTRESS;
     }
 
     /**
@@ -88,7 +88,7 @@ public enum HearthstoneLocation {
             if (hearthstoneLocation.identifier.equals(identifier))
                 return hearthstoneLocation.getLocation();
         }
-        return null;
+        return HearthstoneLocation.TUTORIAL_FORTRESS.getLocation();
     }
 
     /**
