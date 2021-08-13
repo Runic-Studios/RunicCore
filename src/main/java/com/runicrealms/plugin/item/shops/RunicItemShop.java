@@ -28,7 +28,7 @@ public interface RunicItemShop {
      * List of NPCs that can open this GUI
      * Uses RunicNpcs, no citizens
      */
-    Collection<Integer> getNpcIds();
+    Collection<Integer> getRunicNpcIds();
 
     /*
      * Shop GUI name

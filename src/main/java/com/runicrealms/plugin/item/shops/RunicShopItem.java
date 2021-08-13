@@ -8,7 +8,7 @@ public class RunicShopItem {
 
     private final int price;
     private final String currencyTemplateID;
-    private final ItemStack item;
+    private final ItemStack shopIcon;
     private final RunicItemRunnable runicItemRunnable;
     private boolean removePayment = true;
 
@@ -16,13 +16,26 @@ public class RunicShopItem {
      * Creates a 'buy item' for the shop!
      * @param price in chosen currency of item
      * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param item to be purchased
+     * @param shopIcon to be purchased
      */
-    public RunicShopItem(int price, String currencyTemplateID, ItemStack item, RunicItemRunnable runicItemRunnable) {
+    public RunicShopItem(int price, String currencyTemplateID, ItemStack shopIcon, RunicItemRunnable runicItemRunnable) {
         this.price = price;
         this.currencyTemplateID = currencyTemplateID;
-        this.item = item;
+        this.shopIcon = shopIcon;
         this.runicItemRunnable = runicItemRunnable;
+    }
+
+    /**
+     * Creates a 'buy item' for the shop!
+     * @param price in chosen currency of item
+     * @param currencyTemplateID String name of template ID for RunicItem currency
+     * @param shopIcon to be purchased
+     */
+    public RunicShopItem(int price, String currencyTemplateID, ItemStack shopIcon) {
+        this.price = price;
+        this.currencyTemplateID = currencyTemplateID;
+        this.shopIcon = shopIcon;
+        this.runicItemRunnable = runDefaultBuy(shopIcon);
     }
 
     public int getPrice() {
@@ -37,8 +50,8 @@ public class RunicShopItem {
         return RunicItemsAPI.generateItemFromTemplate(currencyTemplateID).generateItem();
     }
 
-    public ItemStack getItem() {
-        return item;
+    public ItemStack getShopIcon() {
+        return shopIcon;
     }
 
     /*
@@ -46,6 +59,13 @@ public class RunicShopItem {
      */
     public void runBuy(Player player) {
         runicItemRunnable.run(player);
+    }
+
+    private RunicItemRunnable runDefaultBuy(ItemStack item) {
+        return player -> {
+            // attempt to give player item (does not drop on floor)
+            player.getInventory().addItem(item);
+        };
     }
 
     public boolean removePayment() {

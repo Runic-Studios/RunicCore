@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicnpcs.api.NpcClickEvent;
@@ -23,13 +24,18 @@ import java.util.UUID;
 
 public class RunicItemShopManager implements Listener {
 
+    private static final int LOAD_DELAY = 10;
     private static final Map<Integer, RunicItemShop> shops = new HashMap<>();
     private static final Map<UUID, Long> clickCooldowns = new HashMap<>();
     private static final Map<UUID, RunicItemShop> inShop = new HashMap<>();
     private static ItemStack blankSlot;
 
+    public RunicItemShopManager() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), RunicShopFactory::new, LOAD_DELAY * 20L);
+    }
+
     public static void registerShop(RunicItemShop shop) {
-        for (Integer npc : shop.getNpcIds()) {
+        for (Integer npc : shop.getRunicNpcIds()) {
             shops.put(npc, shop);
         }
         if (blankSlot == null) {
@@ -59,7 +65,7 @@ public class RunicItemShopManager implements Listener {
             }
             inventory.setItem(4, shop.getIcon());
             for (Map.Entry<Integer, RunicShopItem> trade : shop.getContents().entrySet()) {
-                inventory.setItem(trade.getKey() + 9, trade.getValue().getItem());
+                inventory.setItem(trade.getKey() + 9, trade.getValue().getShopIcon());
             }
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             event.getPlayer().openInventory(inventory);
@@ -111,6 +117,14 @@ public class RunicItemShopManager implements Listener {
         inShop.remove(event.getPlayer().getUniqueId());
     }
 
+    /**
+     * Checks whether the given player has items necessary to buy an item
+     *
+     * @param player to check
+     * @param item to check
+     * @param needed number of item needed
+     * @return true if player has required items
+     */
     private static boolean hasItems(Player player, ItemStack item, Integer needed) {
         if (needed == 0) return true;
         int amount = 0;

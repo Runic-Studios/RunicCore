@@ -107,7 +107,7 @@ public class CavernShop implements RunicItemShop {
      * @return ID of NPC in config
      */
     @Override
-    public Collection<Integer> getNpcIds() {
+    public Collection<Integer> getRunicNpcIds() {
         return Collections.singletonList(52);
     }
 
