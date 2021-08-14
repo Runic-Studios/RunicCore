@@ -16,10 +16,10 @@ public class RunicShopGeneric implements RunicItemShop {
     private final int size;
     private final String shopName;
     private final Collection<Integer> runicNpcIds;
-    private final Map<ItemStack, RunicShopItem> itemsForSale;
+    private final LinkedHashMap<ItemStack, RunicShopItem> itemsForSale;
     private Map<Integer, RunicShopItem> inventoryItems;
 
-    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, Map<ItemStack, RunicShopItem> itemsForSale) {
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale) {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;

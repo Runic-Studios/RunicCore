@@ -25,7 +25,7 @@ public enum HearthstoneLocation {
     DEAD_MANS_REST("dead_mans_rest", "Dead Man's Rest",
             new Location(Bukkit.getWorld("Alterra"), -24.5, 32, -475.5, 90, 0), HearthstoneItemUtil.HEARTHSTONE_DEAD_MANS_REST_ITEMSTACK),
     ISFODAR("isfodar", "Isfodar",
-            new Location(Bukkit.getWorld("Alterra"), 744.5, 94, -137.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_ISFODAR_ITEMSTACK),
+            new Location(Bukkit.getWorld("Alterra"), 754.5, 113, -93.5, 0, 0), HearthstoneItemUtil.HEARTHSTONE_ISFODAR_ITEMSTACK),
     TIRENEAS("tireneas", "Tireneas",
             new Location(Bukkit.getWorld("Alterra"), 887.5, 43, 547.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_TIRENEAS_ITEMSTACK),
     ZENYTH("zenyth", "Zenyth",
