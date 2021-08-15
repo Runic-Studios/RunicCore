@@ -239,6 +239,18 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Check if a player has required items (for quest or shops)
+     *
+     * @param player to check
+     * @param itemStack to check
+     * @param amount how many items do they need
+     * @return true if player has the items
+     */
+    public static boolean hasItems(Player player, ItemStack itemStack, int amount) {
+        return RunicItemShopManager.hasItems(player, itemStack, amount);
+    }
+
+    /**
      * Used in Spell class to check if player has a passive applied!
      *
      * @param player  to check passive for

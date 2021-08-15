@@ -71,6 +71,7 @@ import com.runicrealms.runicrestart.api.RunicRestartApi;
 import com.runicrealms.runicrestart.api.ServerShutdownEvent;
 import net.minecraft.server.v1_16_R3.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -276,13 +277,17 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new GroupCommand());
         commandManager.registerCommand(new ResetTreeCMD());
         commandManager.registerCommand(new VanishCommand());
-        commandManager.getCommandConditions().addCondition("is-player", context -> {
-            if (!(context.getIssuer().getIssuer() instanceof Player))
-                throw new ConditionFailedException("This command cannot be run from console!");
+        commandManager.getCommandConditions().addCondition("is-console", context -> {
+            if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender))
+                throw new ConditionFailedException("Only the console may run this command!");
         });
         commandManager.getCommandConditions().addCondition("is-op", context -> {
             if (!context.getIssuer().getIssuer().isOp())
                 throw new ConditionFailedException("You must be an operator to run this command!");
+        });
+        commandManager.getCommandConditions().addCondition("is-player", context -> {
+            if (!(context.getIssuer().getIssuer() instanceof Player))
+                throw new ConditionFailedException("This command cannot be run from console!");
         });
 
         Bukkit.getPluginManager().registerEvents(this, this);

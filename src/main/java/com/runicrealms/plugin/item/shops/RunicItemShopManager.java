@@ -125,7 +125,7 @@ public class RunicItemShopManager implements Listener {
      * @param needed number of item needed
      * @return true if player has required items
      */
-    private static boolean hasItems(Player player, ItemStack item, Integer needed) {
+    public static boolean hasItems(Player player, ItemStack item, Integer needed) {
         if (needed == 0) return true;
         int amount = 0;
         for (ItemStack inventoryItem : player.getInventory().getContents()) {

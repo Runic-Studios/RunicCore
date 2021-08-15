@@ -150,6 +150,23 @@ public class RunicShopGeneric implements RunicItemShop {
         return iconWithLore;
     }
 
+    public static ItemStack iconWithLore(ItemStack is, String priceItemDisplayName) {
+        ItemStack iconWithLore = is.clone();
+        ItemMeta meta = iconWithLore.getItemMeta();
+        if (meta != null && meta.getLore() != null) {
+            List<String> lore = meta.getLore();
+            lore.add("");
+            lore.add(
+                    ChatColor.GOLD + "Price: " +
+                            ChatColor.GREEN + ChatColor.BOLD +
+                            priceItemDisplayName
+            );
+            meta.setLore(lore);
+            iconWithLore.setItemMeta(meta);
+        }
+        return iconWithLore;
+    }
+
     public static ItemStack iconWithLore(ItemStack is, int price, String priceItemDisplayName) {
         ItemStack iconWithLore = is.clone();
         ItemMeta meta = iconWithLore.getItemMeta();

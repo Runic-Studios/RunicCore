@@ -1,8 +1,12 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +18,7 @@ public class RunicShopFactory {
         getAlchemistShop();
         getBaker();
         getGeneralStore();
+        getRunicMage();
     }
 
     private final ItemStack bottle = RunicItemsAPI.generateItemFromTemplate("Bottle").generateItem();
@@ -74,5 +79,28 @@ public class RunicShopFactory {
         shopItems.put(azanaShopRogueBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueBoots, 9)));
         shopItems.put(azanaShopWarriorHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorHelmet, 9)));
         return new RunicShopGeneric(45, ChatColor.YELLOW + "General Store", Collections.singletonList(102), shopItems, new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
+    }
+
+    private static ItemStack resetSkillTreesIcon() {
+        ItemStack infoItem = new ItemStack(Material.POPPED_CHORUS_FRUIT);
+        ItemMeta meta = infoItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Reset Skill Trees");
+        meta.setLore(ChatUtils.formattedText("&7Reset and refund your skill points!"));
+        infoItem.setItemMeta(meta);
+        return infoItem;
+    }
+
+    public RunicShopGeneric getRunicMage() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put(resetSkillTreesIcon(), new RunicShopItem(0, "Coin", RunicShopGeneric.iconWithLore(resetSkillTreesIcon(), "Based on Level"), runRunicMageBuy()));
+        return new RunicShopGeneric(9, ChatColor.LIGHT_PURPLE + "Runic Mage", Arrays.asList(131, 133, 134, 135, 136, 138, 139, 140, 141), shopItems);
+    }
+
+    private RunicItemRunnable runRunicMageBuy() {
+        return player -> {
+            // attempt to give player item (does not drop on floor)
+            Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
+        };
     }
 }
