@@ -19,6 +19,14 @@ public class RunicShopGeneric implements RunicItemShop {
     private final LinkedHashMap<ItemStack, RunicShopItem> itemsForSale;
     private Map<Integer, RunicShopItem> inventoryItems;
 
+    /**
+     * This...
+     *
+     * @param size
+     * @param shopName
+     * @param runicNpcIds
+     * @param itemsForSale
+     */
     public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale) {
         this.size = size;
         this.shopName = shopName;
@@ -30,6 +38,36 @@ public class RunicShopGeneric implements RunicItemShop {
             try {
                 for (Map.Entry<ItemStack, RunicShopItem> entry : itemsForSale.entrySet()) {
                     inventoryItems.put(nextItemIndex, entry.getValue());
+                    nextItemIndex++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
+            }
+            RunicCoreAPI.registerRunicItemShop(this);
+        }, LOAD_DELAY * 20L);
+    }
+
+    /**
+     * This...
+     *
+     * @param size
+     * @param shopName
+     * @param runicNpcIds
+     * @param itemsForSale
+     * @param itemSlots
+     */
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale, int[] itemSlots) {
+        this.size = size;
+        this.shopName = shopName;
+        this.runicNpcIds = runicNpcIds;
+        this.itemsForSale = itemsForSale;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            inventoryItems = new HashMap<>();
+            int nextItemIndex = 0;
+            try {
+                for (Map.Entry<ItemStack, RunicShopItem> entry : itemsForSale.entrySet()) {
+                    inventoryItems.put(itemSlots[nextItemIndex], entry.getValue());
                     nextItemIndex++;
                 }
             } catch (Exception e) {
