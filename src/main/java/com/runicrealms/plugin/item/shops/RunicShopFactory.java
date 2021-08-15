@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +12,7 @@ public class RunicShopFactory {
 
     public RunicShopFactory() {
         getAlchemistShop();
+        getBaker();
         getGeneralStore();
     }
 
@@ -26,14 +26,22 @@ public class RunicShopFactory {
 
     public RunicShopGeneric getAlchemistShop() {
         LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(bottle, new RunicShopItem(2, "Coin", RunicShopGeneric.iconWithLore(bottle, 2, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(minorHealingPotion, new RunicShopItem(8, "Coin", RunicShopGeneric.iconWithLore(minorHealingPotion, 8, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(minorManaPotion, new RunicShopItem(8, "Coin", RunicShopGeneric.iconWithLore(minorManaPotion, 8, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(majorHealingPotion, new RunicShopItem(16, "Coin", RunicShopGeneric.iconWithLore(majorHealingPotion, 16, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(majorManaPotion, new RunicShopItem(16, "Coin", RunicShopGeneric.iconWithLore(majorManaPotion, 16, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(greaterHealingPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterHealingPotion, 24, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(greaterManaPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterManaPotion, 24, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
+        shopItems.put(bottle, new RunicShopItem(2, "Coin", RunicShopGeneric.iconWithLore(bottle, 2)));
+        shopItems.put(minorHealingPotion, new RunicShopItem(8, "Coin", RunicShopGeneric.iconWithLore(minorHealingPotion, 8)));
+        shopItems.put(minorManaPotion, new RunicShopItem(8, "Coin", RunicShopGeneric.iconWithLore(minorManaPotion, 8)));
+        shopItems.put(majorHealingPotion, new RunicShopItem(16, "Coin", RunicShopGeneric.iconWithLore(majorHealingPotion, 16)));
+        shopItems.put(majorManaPotion, new RunicShopItem(16, "Coin", RunicShopGeneric.iconWithLore(majorManaPotion, 16)));
+        shopItems.put(greaterHealingPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterHealingPotion, 24)));
+        shopItems.put(greaterManaPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterManaPotion, 24)));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
+    }
+
+    private final ItemStack bread = RunicItemsAPI.generateItemFromTemplate("Bread").generateItem();
+
+    public RunicShopGeneric getBaker() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put(bread, new RunicShopItem(4, "Coin", RunicShopGeneric.iconWithLore(bread, 4)));
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Baker", Arrays.asList(115, 116, 118, 119, 120, 121, 124, 125, 126), shopItems);
     }
 
     private final ItemStack beetroot = RunicItemsAPI.generateItemFromTemplate("azanashop-beetroot").generateItem();
@@ -51,20 +59,20 @@ public class RunicShopFactory {
 
     public RunicShopGeneric getGeneralStore() {
         LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(beetroot, new RunicShopItem(2, "Coin", RunicShopGeneric.iconWithLore(beetroot, 2, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(carrot, new RunicShopItem(3, "Coin", RunicShopGeneric.iconWithLore(carrot, 3, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(minorHealingPotion, new RunicShopItem(10, "Coin", RunicShopGeneric.iconWithLore(minorHealingPotion, 8, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(minorManaPotion, new RunicShopItem(10, "Coin", RunicShopGeneric.iconWithLore(minorManaPotion, 8, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopArcherBow, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopArcherBow, 12, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopClericMace, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopClericMace, 12, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopMageStaff, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopMageStaff, 12, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopRogueSword, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueSword, 12, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopWarriorAxe, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorAxe, 12, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopArcherBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopArcherBoots, 9, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopClericHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopClericHelmet, 9, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopMageHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopMageHelmet, 9, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopRogueBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueBoots, 9, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        shopItems.put(azanaShopWarriorHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorHelmet, 9, CurrencyUtil.goldCoin().getItemMeta().getDisplayName())));
-        return new RunicShopGeneric(45, ChatColor.YELLOW + "Alchemist", Collections.singletonList(102), shopItems, new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
+        shopItems.put(beetroot, new RunicShopItem(2, "Coin", RunicShopGeneric.iconWithLore(beetroot, 2)));
+        shopItems.put(carrot, new RunicShopItem(3, "Coin", RunicShopGeneric.iconWithLore(carrot, 3)));
+        shopItems.put(minorHealingPotion, new RunicShopItem(10, "Coin", RunicShopGeneric.iconWithLore(minorHealingPotion, 8)));
+        shopItems.put(minorManaPotion, new RunicShopItem(10, "Coin", RunicShopGeneric.iconWithLore(minorManaPotion, 8)));
+        shopItems.put(azanaShopArcherBow, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopArcherBow, 12)));
+        shopItems.put(azanaShopClericMace, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopClericMace, 12)));
+        shopItems.put(azanaShopMageStaff, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopMageStaff, 12)));
+        shopItems.put(azanaShopRogueSword, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueSword, 12)));
+        shopItems.put(azanaShopWarriorAxe, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorAxe, 12)));
+        shopItems.put(azanaShopArcherBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopArcherBoots, 9)));
+        shopItems.put(azanaShopClericHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopClericHelmet, 9)));
+        shopItems.put(azanaShopMageHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopMageHelmet, 9)));
+        shopItems.put(azanaShopRogueBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueBoots, 9)));
+        shopItems.put(azanaShopWarriorHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorHelmet, 9)));
+        return new RunicShopGeneric(45, ChatColor.YELLOW + "General Store", Collections.singletonList(102), shopItems, new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
     }
 }
