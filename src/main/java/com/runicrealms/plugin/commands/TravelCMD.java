@@ -106,7 +106,13 @@ public class TravelCMD extends BaseCommand {
         TIRNEAS("tireneas", "Tireneas", new Location(Bukkit.getWorld("Alterra"), 899.5, 36, 581.5,  90, 0)),
         ZENYTH("zenyth", "Zenyth", new Location(Bukkit.getWorld("Alterra"), 1583.5, 34, -196.5,  270, 0)),
         NAHEEN("naheen", "Naheen", new Location(Bukkit.getWorld("Alterra"), 1861.5, 39, 154.5,  315, 0)),
-        NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5,  0, 0));
+        NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5,  0, 0)),
+        /*
+        Conquest Points
+         */
+        SUNS_REACH_CITADEL("suns_reach_citadel", "Sun's Reach Citadel", new Location(Bukkit.getWorld("Alterra"), 2439.5, 29, -1172.5,  250, 0)),
+        BLACKGUARD_STRONGHOLD("blackguard_stronghold", "Blackguard Stronghold", new Location(Bukkit.getWorld("Alterra"), 2136.5, 34, -2170.5,  180, 0)),
+        CRIMSON_CHAPEL("crimson_chapel", "Crimson Chapel", new Location(Bukkit.getWorld("Alterra"), 1453.5, 24, -1119.5,  270, 0));
 
         private final String identifier;
         private final String display;

@@ -20,6 +20,7 @@ public class RunicShopFactory {
         getAlchemistShop();
         getBagVendor();
         getBaker();
+        getCaptain();
         getGeneralStore();
         getRunicMage();
         getWagonMaster();
@@ -129,6 +130,35 @@ public class RunicShopFactory {
         wagonItem.setItemMeta(meta);
         return wagonItem;
 
+    }
+
+    public RunicShopGeneric getCaptain() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.BOAT,
+                                TravelCMD.TravelLocation.SUNS_REACH_CITADEL),
+                        new RunicShopItem(120, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL), 120),
+                                runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.BOAT,
+                                TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD),
+                        new RunicShopItem(120, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD), 120),
+                                runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.BOAT,
+                                TravelCMD.TravelLocation.CRIMSON_CHAPEL),
+                        new RunicShopItem(120, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL), 120),
+                                runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL))
+                );
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(328, 329, 330, 325, 327), shopItems); // todo: azana, zenyth, WAGON FOR FROSTS END
     }
 
     public RunicShopGeneric getWagonMaster() {
