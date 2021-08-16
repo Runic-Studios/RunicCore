@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.command.BoostCMD;
+import com.runicrealms.plugin.commands.BoostCMD;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;

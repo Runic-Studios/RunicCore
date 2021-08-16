@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.command;
+package com.runicrealms.plugin.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 @CommandAlias("vanish")
 @Conditions("is-op")
 @Private
-public class VanishCommand extends BaseCommand {
+public class VanishCMD extends BaseCommand {
 
     @Default
     @CatchUnknown

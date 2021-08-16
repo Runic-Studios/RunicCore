@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.command;
+package com.runicrealms.plugin.commands;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;

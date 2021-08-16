@@ -1,10 +1,9 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.commands.TravelCMD;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -12,13 +11,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+/**
+ * Factory class to create generic runic shops for the server
+ */
 public class RunicShopFactory {
 
     public RunicShopFactory() {
         getAlchemistShop();
+        getBagVendor();
         getBaker();
         getGeneralStore();
         getRunicMage();
+        getWagonMaster();
+        /*
+        DUNGEON SHOPS
+         */
+        getCavernShop();
     }
 
     private final ItemStack bottle = RunicItemsAPI.generateItemFromTemplate("Bottle").generateItem();
@@ -39,6 +47,14 @@ public class RunicShopFactory {
         shopItems.put(greaterHealingPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterHealingPotion, 24)));
         shopItems.put(greaterManaPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterManaPotion, 24)));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
+    }
+
+    private final ItemStack goldPouch = RunicItemsAPI.generateItemFromTemplate("gold-pouch").generateItem();
+
+    public RunicShopGeneric getBagVendor() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put(goldPouch, new RunicShopItem(128, "Coin", RunicShopGeneric.iconWithLore(goldPouch, 128)));
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Bag Vendor", Arrays.asList(179, 181, 182, 183, 185, 186, 187, 189, 190, 192, 194), shopItems);
     }
 
     private final ItemStack bread = RunicItemsAPI.generateItemFromTemplate("Bread").generateItem();
@@ -102,5 +118,53 @@ public class RunicShopFactory {
             // attempt to give player item (does not drop on floor)
             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
         };
+    }
+
+    private ItemStack wagonItem(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
+        ItemStack wagonItem = new ItemStack(travelType.getMaterial());
+        ItemMeta meta = wagonItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.GREEN + "Fast Travel: " + travelLocation.getDisplay());
+        meta.setLore(Arrays.asList("", ChatColor.GRAY + "Quickly travel to this destination!", ""));
+        wagonItem.setItemMeta(meta);
+        return wagonItem;
+
+    }
+
+    public RunicShopGeneric getWagonMaster() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.AZANA),
+                        new RunicShopItem(15, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA), 15),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA))
+                );
+        return new RunicShopGeneric(45, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 272, 315), shopItems); // todo: isfodar? zenyth? naheen?
+    }
+
+    private RunicItemRunnable runFastTravelBuy(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
+        return player -> TravelCMD.fastTravelTask(player, travelType, travelLocation);
+    }
+
+    /*
+    DUNGEON SHOPS
+     */
+
+    private static final int CAVERN_ARMOR_PRICE = 2;
+    private static final String CAVERN_ITEM_CURRENCY = "HeadOfHexagonis";
+    private final ItemStack crystalCavernArcherHelm = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-helm").generateItem();
+    private final ItemStack crystalCavernArcherChest = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-chest").generateItem();
+    private final ItemStack crystalCavernArcherLeggings = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-leggings").generateItem();
+    private final ItemStack getCrystalCavernArcherBoots = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-boots").generateItem();
+
+    public RunicShopGeneric getCavernShop() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put(crystalCavernArcherHelm, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(crystalCavernArcherHelm, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
+        shopItems.put(crystalCavernArcherChest, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(crystalCavernArcherChest, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
+        shopItems.put(crystalCavernArcherLeggings, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(crystalCavernArcherLeggings, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
+        shopItems.put(getCrystalCavernArcherBoots, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(getCrystalCavernArcherBoots, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
+        return new RunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52), shopItems, new int[]{0, 9, 18, 27});
     }
 }

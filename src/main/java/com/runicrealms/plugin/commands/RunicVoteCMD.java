@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.command;
+package com.runicrealms.plugin.commands;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicExpEvent;

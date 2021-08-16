@@ -7,12 +7,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
-import com.runicrealms.plugin.command.*;
-import com.runicrealms.plugin.command.subcommands.FastTravel;
-import com.runicrealms.plugin.command.subcommands.set.SetClassCMD;
-import com.runicrealms.plugin.command.supercommands.CurrencySC;
-import com.runicrealms.plugin.command.supercommands.RunicGiveSC;
-import com.runicrealms.plugin.command.supercommands.TravelSC;
+import com.runicrealms.plugin.commands.*;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.donator.ThreeD;
@@ -20,20 +15,15 @@ import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.item.*;
-import com.runicrealms.plugin.item.commands.CurrencyGive;
-import com.runicrealms.plugin.item.commands.CurrencyPouch;
-import com.runicrealms.plugin.item.commands.HearthstoneCMD;
-import com.runicrealms.plugin.item.commands.ItemCMD;
 import com.runicrealms.plugin.item.goldpouch.GoldPouchListener;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.mounts.MountListener;
+import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
-import com.runicrealms.plugin.npc.Build;
-import com.runicrealms.plugin.npc.NPCBuilderSC;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
@@ -44,7 +34,6 @@ import com.runicrealms.plugin.player.combat.CombatListener;
 import com.runicrealms.plugin.player.combat.CombatManager;
 import com.runicrealms.plugin.player.combat.ExpListener;
 import com.runicrealms.plugin.player.combat.PlayerLevelListener;
-import com.runicrealms.plugin.player.commands.*;
 import com.runicrealms.plugin.player.gear.OffhandListener;
 import com.runicrealms.plugin.player.listener.PlayerJoinListener;
 import com.runicrealms.plugin.player.listener.PlayerMenuListener;
@@ -71,6 +60,7 @@ import com.runicrealms.runicrestart.api.RunicRestartApi;
 import com.runicrealms.runicrestart.api.ServerShutdownEvent;
 import net.minecraft.server.v1_16_R3.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -79,17 +69,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.Arrays;
-
-//import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
-//import com.runicrealms.plugin.item.scrapper.ScrapperListener;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
-    // global variables
     private static final int BASE_OUTLAW_RATING = 1500;
 
-    // handlers
     private static RunicCore instance;
     private static CombatManager combatManager;
     private static LootChestManager lootChestManager;
@@ -113,14 +97,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     // dungeon shops
     private static CaveShop caveShop;
-    private static CavernShop cavernShop;
     private static KeepShop keepShop;
     private static LibraryShop libraryShop;
     private static CryptsShop cryptsShop;
     private static FortressShop fortressShop;
-
-    //normal shops
-    private static GeneralShop generalShop;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -212,10 +192,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return caveShop;
     }
 
-    public static CavernShop getCavernShop() {
-        return cavernShop;
-    }
-
     public static KeepShop getKeepShop() {
         return keepShop;
     }
@@ -230,11 +206,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static FortressShop getRaidVendor() {
         return fortressShop;
-    }
-
-    //getters for normal shops
-    public static GeneralShop getGeneralShop() {
-        return generalShop;
     }
 
     public void onEnable() {
@@ -262,23 +233,16 @@ public class RunicCore extends JavaPlugin implements Listener {
         runicShopManager = new RunicShopManager();
         // dungeon shops
         caveShop = new CaveShop();
-        cavernShop = new CavernShop();
         keepShop = new KeepShop();
         libraryShop = new LibraryShop();
         cryptsShop = new CryptsShop();
         fortressShop = new FortressShop();
 
-        //normal shops
-        generalShop = new GeneralShop();
-
         // ACF commands
         commandManager = new PaperCommandManager(this);
-        commandManager.registerCommand(new PartyCommand());
-        commandManager.registerCommand(new GroupCommand());
-        commandManager.registerCommand(new ResetTreeCMD());
-        commandManager.registerCommand(new VanishCommand());
-        commandManager.getCommandConditions().addCondition("is-console", context -> {
-            if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender))
+        registerACFCommands();
+        commandManager.getCommandConditions().addCondition("is-console-or-op", context -> {
+            if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender) && !context.getIssuer().getIssuer().isOp()) // ops can execute console commands
                 throw new ConditionFailedException("Only the console may run this command!");
         });
         commandManager.getCommandConditions().addCondition("is-op", context -> {
@@ -308,7 +272,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         this.saveResource("item_prefixes.yml", true);
 
         // register commands
-        this.registerCommands();
+        this.registerOldStyleCommands();
 
         // register placeholder tags
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -345,7 +309,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         runicShopManager = null;
         // dungeon shops
         caveShop = null;
-        cavernShop = null;
         keepShop = null;
         libraryShop = null;
         cryptsShop = null;
@@ -410,7 +373,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
-        //pm.registerEvents(new ScrapperListener(), this);
         pm.registerEvents(new OffhandListener(), this);
         pm.registerEvents(new CharacterManager(), this);
         pm.registerEvents(new CharacterGuiManager(), this);
@@ -438,44 +400,24 @@ public class RunicCore extends JavaPlugin implements Listener {
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
 
-    // TODO: replace ALL commands w ACF
-    private void registerCommands() {
+    private void registerACFCommands() {
+        if (commandManager == null) {
+            Bukkit.getLogger().info(ChatColor.DARK_RED + "ERROR: FAILED TO INITIALIZE ACF COMMANDS");
+            return;
+        }
+        commandManager.registerCommand(new CheckExpCMD());
+        commandManager.registerCommand(new ManaCMD());
+        commandManager.registerCommand(new RunicGiveCMD());
+        commandManager.registerCommand(new SetCMD());
+        commandManager.registerCommand(new TravelCMD());
+        commandManager.registerCommand(new VanishCMD());
+        commandManager.registerCommand(new ResetTreeCMD());
+        commandManager.registerCommand(new GroupCommand());
+        commandManager.registerCommand(new ItemScrapperCMD());
+        commandManager.registerCommand(new PartyCommand());
+    }
 
-        // bigger commands get their own methods
-        registerSetCommands();
-
-        // currency
-        CurrencySC currencySC = new CurrencySC();
-        getCommand("currency").setExecutor(currencySC);
-        currencySC.addCommand(Arrays.asList("give"), new CurrencyGive(currencySC));
-        currencySC.addCommand(Arrays.asList("pouch"), new CurrencyPouch(currencySC));
-        // currencySC.addCommand(Arrays.asList("scrapper"), new ItemScrapperCMD(currencySC));
-
-        // experience
-        CheckExpCMD checkExpCMD = new CheckExpCMD();
-        getCommand("experience").setExecutor(checkExpCMD);
-        getCommand("exp").setExecutor(checkExpCMD);
-
-        // mana commands
-        Mana mana = new Mana();
-        getCommand("mana").setExecutor(mana);
-
-        // runic give commands
-        RunicGiveSC giveItemSC = new RunicGiveSC();
-        getCommand("runicgive").setExecutor(giveItemSC);
-        giveItemSC.addCommand(Arrays.asList("experience", "exp"), new ClassExpCMD(giveItemSC));
-        giveItemSC.addCommand(Arrays.asList("profexperience", "profexp"), new ProfExpCMD(giveItemSC));
-        giveItemSC.addCommand(Arrays.asList("item"), new ItemCMD(giveItemSC));
-
-        // npc build
-        NPCBuilderSC builderSC = new NPCBuilderSC();
-        getCommand("npcbuilder").setExecutor(builderSC);
-        builderSC.addCommand(Arrays.asList("build"), new Build(builderSC));
-
-        // travel
-        TravelSC travelSC = new TravelSC();
-        getCommand("travel").setExecutor(travelSC);
-        travelSC.addCommand(Arrays.asList("fast"), new FastTravel(travelSC));
+    private void registerOldStyleCommands() {
 
         // boost
         getCommand("boost").setExecutor(new BoostCMD());
@@ -487,15 +429,5 @@ public class RunicCore extends JavaPlugin implements Listener {
         Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
         Bukkit.getPluginCommand("spawn").setExecutor(new SpawnCMD());
         Bukkit.getPluginCommand("runicvote").setExecutor(new RunicVoteCMD());
-    }
-
-    private void registerSetCommands() {
-
-        SetSC setSC = new SetSC();
-        getCommand("set").setExecutor(setSC);
-        setSC.addCommand(Arrays.asList("class"), new SetClassCMD(setSC));
-        setSC.addCommand(Arrays.asList("hearthstone"), new HearthstoneCMD(setSC));
-        setSC.addCommand(Arrays.asList("level"), new SetLevelCMD(setSC));
-        setSC.addCommand(Arrays.asList("proflevel"), new SetProfLevelCMD(setSC));
     }
 }

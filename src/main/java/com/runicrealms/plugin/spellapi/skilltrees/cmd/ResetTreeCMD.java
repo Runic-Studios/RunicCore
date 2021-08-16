@@ -33,7 +33,7 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
 
     @Default
     @CatchUnknown
-    @Conditions("is-console")
+    @Conditions("is-console-or-op")
     @Syntax("<player>")
     @CommandCompletion("@players")
     public void onCommand(CommandSender commandSender, String[] args) {

@@ -21,12 +21,12 @@ public class RunicShopGeneric implements RunicItemShop {
     private Map<Integer, RunicShopItem> inventoryItems;
 
     /**
-     * This...
+     * Creates an item shop
      *
-     * @param size
-     * @param shopName
-     * @param runicNpcIds
-     * @param itemsForSale
+     * @param size of the shop
+     * @param shopName to display
+     * @param runicNpcIds that will trigger the shop
+     * @param itemsForSale that can be purchased
      */
     public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale) {
         this.size = size;
@@ -50,13 +50,13 @@ public class RunicShopGeneric implements RunicItemShop {
     }
 
     /**
-     * This...
+     * Creates an item shop
      *
-     * @param size
-     * @param shopName
-     * @param runicNpcIds
-     * @param itemsForSale
-     * @param itemSlots
+     * @param size of the shop
+     * @param shopName to display
+     * @param runicNpcIds that will trigger the shop
+     * @param itemsForSale that can be purchased
+     * @param itemSlots shape of the items. by default, loads them in the GUI left --> right
      */
     public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale, int[] itemSlots) {
         this.size = size;
@@ -102,11 +102,11 @@ public class RunicShopGeneric implements RunicItemShop {
 
     @Override
     public ItemStack getIcon() {
-        ItemStack vendorItem = new ItemStack(Material.SKELETON_SKULL);
+        ItemStack vendorItem = new ItemStack(Material.GOLD_NUGGET);
         ItemMeta meta = vendorItem.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(this.getName());
-            meta.setLore(Collections.singletonList(ChatColor.GRAY + "Purchase items for your valor!"));
+            meta.setLore(Collections.singletonList(ChatColor.GRAY + "View items available for purchase!"));
             vendorItem.setItemMeta(meta);
         }
         return vendorItem;
