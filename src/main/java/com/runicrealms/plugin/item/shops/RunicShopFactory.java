@@ -141,7 +141,87 @@ public class RunicShopFactory {
                                 RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA), 15),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA))
                 );
-        return new RunicShopGeneric(45, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 272, 315), shopItems); // todo: isfodar? zenyth? naheen?
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.KOLDORE),
+                        new RunicShopItem(15, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE), 15),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.WHALETOWN),
+                        new RunicShopItem(20, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN), 20),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.HILSTEAD),
+                        new RunicShopItem(20, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD), 20),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.WINTERVALE),
+                        new RunicShopItem(30, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE), 30),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.DEAD_MANS_REST),
+                        new RunicShopItem(30, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST), 30),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.ISFODAR),
+                        new RunicShopItem(45, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR), 45),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.TIRNEAS),
+                        new RunicShopItem(45, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS), 45),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.ZENYTH),
+                        new RunicShopItem(60, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH), 60),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.NAHEEN),
+                        new RunicShopItem(60, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN), 60),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.NAZMORA),
+                        new RunicShopItem(60, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA), 60),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA))
+                );
+        return new RunicShopGeneric(18, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 333, 272, 334, 285, 315), shopItems);
     }
 
     private RunicItemRunnable runFastTravelBuy(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
