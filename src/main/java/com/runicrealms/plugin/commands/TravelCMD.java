@@ -107,6 +107,7 @@ public class TravelCMD extends BaseCommand {
         ZENYTH("zenyth", "Zenyth", new Location(Bukkit.getWorld("Alterra"), 1583.5, 34, -196.5,  270, 0)),
         NAHEEN("naheen", "Naheen", new Location(Bukkit.getWorld("Alterra"), 1861.5, 39, 154.5,  315, 0)),
         NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5,  0, 0)),
+        FROSTS_END("frosts_end", "Frost's End", new Location(Bukkit.getWorld("Alterra"), 1116.5, 33, 2576.5, 90, 0)),
         /*
         Conquest Points
          */

@@ -158,7 +158,7 @@ public class RunicShopFactory {
                                 RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL), 120),
                                 runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL))
                 );
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(328, 329, 330, 325, 327), shopItems); // todo: azana, zenyth, WAGON FOR FROSTS END
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(335, 328, 329, 330, 325, 336, 327), shopItems);
     }
 
     public RunicShopGeneric getWagonMaster() {
@@ -250,6 +250,14 @@ public class RunicShopFactory {
                         new RunicShopItem(60, "Coin",
                                 RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA), 60),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA))
+                );
+        shopItems.put
+                (
+                        wagonItem(TravelCMD.TravelType.WAGON,
+                                TravelCMD.TravelLocation.FROSTS_END),
+                        new RunicShopItem(60, "Coin",
+                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END), 60),
+                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END))
                 );
         return new RunicShopGeneric(18, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 333, 272, 334, 285, 315), shopItems);
     }
