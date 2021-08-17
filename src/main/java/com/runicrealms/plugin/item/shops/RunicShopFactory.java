@@ -259,7 +259,7 @@ public class RunicShopFactory {
                                 RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END), 60),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END))
                 );
-        return new RunicShopGeneric(18, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 333, 272, 334, 285, 315), shopItems);
+        return new RunicShopGeneric(18, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 333, 272, 334, 285, 315, 337), shopItems);
     }
 
     private RunicItemRunnable runFastTravelBuy(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
