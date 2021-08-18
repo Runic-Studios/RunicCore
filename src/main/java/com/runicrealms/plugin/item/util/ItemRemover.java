@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.util;
 
 import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,6 +30,31 @@ public class ItemRemover {
             }
         }
     }
+
+    /**
+     * Removes items from a player's inventory based on material, typically for profession stations
+     * Outdated and will be removed with profession rework
+     *
+     * @param player to remove items from
+     * @param material of item to match
+     * @param amount amount of item to remove
+     */
+    public static void takeItem(Player player, Material material, int amount) {
+        int to_take = amount;
+        for (ItemStack player_item : player.getInventory().getContents()) {
+            if (player_item != null) {
+                if (player_item.getType() == material) {
+                    int take_next = Math.min(to_take, player_item.getAmount());
+                    remove(player, player_item, take_next);
+                    to_take -= take_next;
+                    if (to_take <= 0) { //Reached amount. Can stop!
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     private static void remove(Player p, ItemStack toR, int amount) {
         ItemStack i = toR.clone();
