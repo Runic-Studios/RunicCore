@@ -31,7 +31,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Shade plugin (for use w/ MongoDB) -->
+            <!-- Shade plugin (for use w/ ACF & MongoDB) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.api;
 
+import co.aikar.commands.PaperCommandManager;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
@@ -92,6 +93,15 @@ public class RunicCoreAPI {
      */
     public static boolean isStunned(Entity entity) {
         return RunicCore.getSpellManager().getStunnedEntities().containsKey(entity.getUniqueId());
+    }
+
+    /**
+     * Grab the core command manager to register ACF command from other plugins
+     *
+     * @return a PaperCommandManager
+     */
+    public static PaperCommandManager getPaperCommandManager() {
+        return RunicCore.getCommandManager();
     }
 
     /**

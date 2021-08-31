@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.commands.TravelCMD;
+import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
@@ -22,8 +23,10 @@ public class RunicShopFactory {
         getBaker();
         getCaptain();
         getGeneralStore();
+        getMountVendor();
         getRunicMage();
         getWagonMaster();
+        initializeInnkeepers();
         /*
         DUNGEON SHOPS
          */
@@ -158,7 +161,7 @@ public class RunicShopFactory {
                                 RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL), 120),
                                 runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL))
                 );
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(335, 328, 329, 330, 325, 336, 327), shopItems);
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(376, 328, 329, 330, 325, 336, 327), shopItems);
     }
 
     public RunicShopGeneric getWagonMaster() {
@@ -264,6 +267,63 @@ public class RunicShopFactory {
 
     private RunicItemRunnable runFastTravelBuy(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
         return player -> TravelCMD.fastTravelTask(player, travelType, travelLocation);
+    }
+
+    private final ItemStack brownSteed = RunicItemsAPI.generateItemFromTemplate("brown-steed").generateItem();
+    private final ItemStack chestnutMare = RunicItemsAPI.generateItemFromTemplate("chestnut-mare").generateItem();
+    private final ItemStack grayStallion = RunicItemsAPI.generateItemFromTemplate("gray-stallion").generateItem();
+
+    public RunicShopGeneric getMountVendor() {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put(brownSteed, new RunicShopItem(2000, "Coin", RunicShopGeneric.iconWithLore(brownSteed, 2000)));
+        shopItems.put(chestnutMare, new RunicShopItem(2000, "Coin", RunicShopGeneric.iconWithLore(chestnutMare, 2000)));
+        shopItems.put(grayStallion, new RunicShopItem(2000, "Coin", RunicShopGeneric.iconWithLore(grayStallion, 2000)));
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Mount Vendor", Arrays.asList(510, 239, 243, 257, 535, 534, 274, 508, 280, 284, 317), shopItems);
+    }
+
+    /*
+    INNKEEPERS
+     */
+    private final ItemStack azanaHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-azana").generateItem();
+    private final ItemStack koldoreHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-koldore").generateItem();
+    private final ItemStack whaletownHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-whaletown").generateItem();
+    private final ItemStack hilsteadHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-hilstead").generateItem();
+    private final ItemStack wintervaleHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-wintervale").generateItem();
+    private final ItemStack dawnshireInnHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-dawnshire-inn").generateItem();
+    private final ItemStack deadMansRestHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-dead-mans-rest").generateItem();
+    private final ItemStack isfodarHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-isfodar").generateItem();
+    private final ItemStack tireneasHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-tireneas").generateItem();
+    private final ItemStack zenythHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-zenyth").generateItem();
+    private final ItemStack naheenHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-naheen").generateItem();
+    private final ItemStack nazmoraHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-nazmora").generateItem();
+
+    public void initializeInnkeepers() {
+        getInnkeeper("azana", azanaHearthstone, 393);
+        getInnkeeper("koldore", koldoreHearthstone, 395);
+        getInnkeeper("whaletown", whaletownHearthstone, 384);
+        getInnkeeper("hilstead", hilsteadHearthstone, 394);
+        getInnkeeper("wintervale", wintervaleHearthstone, 433);
+        getInnkeeper("dawnshire_inn", dawnshireInnHearthstone, 570);
+        getInnkeeper("dead_mans_rest", deadMansRestHearthstone, 397);
+        getInnkeeper("isfodar", isfodarHearthstone, 388);
+        getInnkeeper("tireneas", tireneasHearthstone, 399);
+        getInnkeeper("zenyth", zenythHearthstone, 390);
+        getInnkeeper("naheen", naheenHearthstone, 452);
+        getInnkeeper("nazmora", nazmoraHearthstone, 392);
+    }
+
+    public RunicShopGeneric getInnkeeper(String identifier, ItemStack hearthstone, int innkeeperId) {
+        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
+        shopItems.put(hearthstone, new RunicShopItem(0, "Coin", hearthstone, runHearthstoneChange(identifier)));
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Innkeeper", Collections.singletonList(innkeeperId), shopItems);
+    }
+
+    private RunicItemRunnable runHearthstoneChange(String location) {
+        return player -> {
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + HearthstoneLocation.getFromIdentifier(location).getDisplay() + "!");
+            player.getInventory().setItem(8, HearthstoneLocation.getFromIdentifier(location).getItemStack());
+        };
     }
 
     /*
