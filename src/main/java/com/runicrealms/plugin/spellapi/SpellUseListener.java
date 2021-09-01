@@ -42,6 +42,7 @@ public class SpellUseListener implements Listener {
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         WeaponEnum heldItemType = WeaponEnum.matchType(e.getPlayer().getInventory().getItemInMainHand());
         if (heldItemType == WeaponEnum.NONE) return;
+        if (heldItemType == WeaponEnum.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(e.getPlayer(), false)) return;
         Player pl = e.getPlayer();
         String className = RunicCoreAPI.getPlayerClass(pl); // lowercase

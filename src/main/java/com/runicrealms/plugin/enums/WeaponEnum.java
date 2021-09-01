@@ -4,7 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 public enum WeaponEnum {
 
-    BOW, MACE, STAFF, SWORD, AXE, PICKAXE, NONE;
+    BOW, MACE, STAFF, SWORD, AXE, GATHERING_TOOL, NONE;
 
     /**
      * Returns the type of held weapon. If none found, returns 'none'
@@ -18,25 +18,21 @@ public enum WeaponEnum {
                 return BOW;
             case WOODEN_SHOVEL:
             case STONE_SHOVEL:
-            case IRON_SHOVEL:
             case GOLDEN_SHOVEL:
             case DIAMOND_SHOVEL:
                 return MACE;
             case WOODEN_HOE:
             case STONE_HOE:
-            case IRON_HOE:
             case GOLDEN_HOE:
             case DIAMOND_HOE:
                 return STAFF;
             case WOODEN_SWORD:
             case STONE_SWORD:
-            case IRON_SWORD:
             case GOLDEN_SWORD:
             case DIAMOND_SWORD:
                 return SWORD;
             case WOODEN_AXE:
             case STONE_AXE:
-            case IRON_AXE:
             case GOLDEN_AXE:
             case DIAMOND_AXE:
                 return AXE;
@@ -45,7 +41,11 @@ public enum WeaponEnum {
             case IRON_PICKAXE:
             case GOLDEN_PICKAXE:
             case DIAMOND_PICKAXE:
-                return PICKAXE;
+            case IRON_SHOVEL:
+            case IRON_HOE:
+            case IRON_SWORD:
+            case IRON_AXE:
+                return GATHERING_TOOL;
             default:
                 return NONE;
         }
