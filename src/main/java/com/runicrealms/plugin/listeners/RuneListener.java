@@ -5,19 +5,24 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemGeneric;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class RuneListener implements Listener {
 
@@ -43,7 +48,6 @@ public class RuneListener implements Listener {
         }.runTaskLater(RunicCore.getInstance(), 2L);
     }
 
-    // opens the rune editor
     @EventHandler(priority = EventPriority.HIGHEST) // event runs LAST, not first
     public void onInventoryClick(InventoryClickEvent e) {
 
@@ -67,6 +71,33 @@ public class RuneListener implements Listener {
         if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
 
         e.setCancelled(true);
-        pl.openInventory(RunicCoreAPI.runeGUI(pl).getInventory());
+    }
+
+    @EventHandler
+    public void onRuneUse(PlayerInteractEvent e) {
+
+        Player player = e.getPlayer();
+        UUID uuid = player.getUniqueId();
+
+        if (player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+
+        int slot = player.getInventory().getHeldItemSlot();
+        if (slot != 0) return;
+        if (player.getInventory().getItem(0) == null) return;
+        ItemStack rune = player.getInventory().getItem(0);
+        if (rune == null) return;
+
+        // annoying 1.9 feature which makes the event run twice, once for each hand
+        if (e.getHand() != EquipmentSlot.HAND) return;
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        // prevent player's from teleporting in combat
+        if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(uuid)) {
+            player.sendMessage(ChatColor.RED + "You can't use that in combat!");
+            return;
+        }
+
+        player.openInventory(RunicCoreAPI.runeGUI(player).getInventory());
     }
 }
