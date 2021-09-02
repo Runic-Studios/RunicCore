@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.item.util.ItemUtils;
-import com.runicrealms.plugin.professions.gathering.GatheringUtil;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractItemStack;
@@ -44,10 +43,10 @@ public class ChestLootTableUtil {
         ItemStack salmon = mythicItem("Salmon", rand, 2, 3);
 
         // gatherting tools (tier 1)
-        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 1);
-        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 1);
-        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 1);
-        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 1);
+//        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 1);
+//        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 1);
+//        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 1);
+//        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 1);
 
         // potions
         ItemStack healthPotion = ItemUtils.generatePotion("healing", 25);
@@ -67,10 +66,10 @@ public class ChestLootTableUtil {
         commonLootTable.addEntry(bottle, 8.0);
         commonLootTable.addEntry(salmon, 8.0);
 
-        commonLootTable.addEntry(gatheringAxe, 4.0);
-        commonLootTable.addEntry(gathertingHoe, 4.0);
-        commonLootTable.addEntry(gatheringPick, 4.0);
-        commonLootTable.addEntry(gatheringRod, 6.0);
+//        commonLootTable.addEntry(gatheringAxe, 4.0);
+//        commonLootTable.addEntry(gathertingHoe, 4.0);
+//        commonLootTable.addEntry(gatheringPick, 4.0);
+//        commonLootTable.addEntry(gatheringRod, 6.0);
 
         commonLootTable.addEntry(healthPotion, 12.0);
         commonLootTable.addEntry(manaPotion, 12.0);
@@ -106,10 +105,10 @@ public class ChestLootTableUtil {
         ItemStack cod = mythicItem("Cod", rand, 2, 3);
 
         // gatherting tools (tier 2)
-        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 2);
-        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 2);
-        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 2);
-        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 2);
+//        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 2);
+//        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 2);
+//        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 2);
+//        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 2);
 
         // potions
         ItemStack healthPotion = ItemUtils.generatePotion("healing", 25);
@@ -131,10 +130,10 @@ public class ChestLootTableUtil {
         uncommonLootTable.addEntry(bottle, 8.0);
         uncommonLootTable.addEntry(cod, 8.0);
 
-        uncommonLootTable.addEntry(gatheringAxe, 3.0);
-        uncommonLootTable.addEntry(gathertingHoe, 3.0);
-        uncommonLootTable.addEntry(gatheringPick, 3.0);
-        uncommonLootTable.addEntry(gatheringRod, 5.0);
+//        uncommonLootTable.addEntry(gatheringAxe, 3.0);
+//        uncommonLootTable.addEntry(gathertingHoe, 3.0);
+//        uncommonLootTable.addEntry(gatheringPick, 3.0);
+//        uncommonLootTable.addEntry(gatheringRod, 5.0);
 
         uncommonLootTable.addEntry(healthPotion, 15.0);
         uncommonLootTable.addEntry(manaPotion, 15.0);
@@ -171,10 +170,10 @@ public class ChestLootTableUtil {
         ItemStack tropical = mythicItem("Tropical", rand, 2, 3);
 
         // gatherting tools (tier 3)
-        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 3);
-        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 3);
-        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 3);
-        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 3);
+//        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 3);
+//        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 3);
+//        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 3);
+//        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 3);
 
         // potions
         ItemStack healthPotion = ItemUtils.generatePotion("healing", 40);
@@ -196,10 +195,10 @@ public class ChestLootTableUtil {
         rareLootTable.addEntry(bottle, 8.0);
         rareLootTable.addEntry(tropical, 8.0);
 
-        rareLootTable.addEntry(gatheringAxe, 2.0);
-        rareLootTable.addEntry(gathertingHoe, 2.0);
-        rareLootTable.addEntry(gatheringPick, 2.0);
-        rareLootTable.addEntry(gatheringRod, 4.0);
+//        rareLootTable.addEntry(gatheringAxe, 2.0);
+//        rareLootTable.addEntry(gathertingHoe, 2.0);
+//        rareLootTable.addEntry(gatheringPick, 2.0);
+//        rareLootTable.addEntry(gatheringRod, 4.0);
 
         rareLootTable.addEntry(healthPotion, 15.0);
         rareLootTable.addEntry(manaPotion, 15.0);
@@ -238,10 +237,10 @@ public class ChestLootTableUtil {
         ItemStack pufferfish = mythicItem("Pufferfish", rand, 2, 3);
 
         // gatherting tools (tier 4)
-        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 4);
-        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 4);
-        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 4);
-        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 4);
+//        ItemStack gatheringAxe = GatheringUtil.getGatheringTool(Material.IRON_AXE, 4);
+//        ItemStack gathertingHoe = GatheringUtil.getGatheringTool(Material.IRON_HOE, 4);
+//        ItemStack gatheringPick = GatheringUtil.getGatheringTool(Material.IRON_PICKAXE, 4);
+//        ItemStack gatheringRod = GatheringUtil.getGatheringTool(Material.FISHING_ROD, 4);
 
         // potions
         ItemStack healthPotion = ItemUtils.generatePotion("healing", 60);
@@ -266,10 +265,10 @@ public class ChestLootTableUtil {
         epicLootTable.addEntry(bottle, 8.0);
         epicLootTable.addEntry(pufferfish, 8.0);
 
-        epicLootTable.addEntry(gatheringAxe, 2.0);
-        epicLootTable.addEntry(gathertingHoe, 2.0);
-        epicLootTable.addEntry(gatheringPick, 2.0);
-        epicLootTable.addEntry(gatheringRod, 4.0);
+//        epicLootTable.addEntry(gatheringAxe, 2.0);
+//        epicLootTable.addEntry(gathertingHoe, 2.0);
+//        epicLootTable.addEntry(gatheringPick, 2.0);
+//        epicLootTable.addEntry(gatheringRod, 4.0);
 
         epicLootTable.addEntry(healthPotion, 15.0);
         epicLootTable.addEntry(manaPotion, 15.0);

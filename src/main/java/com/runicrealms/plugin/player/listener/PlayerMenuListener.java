@@ -8,6 +8,7 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -18,6 +19,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -105,47 +108,38 @@ public class PlayerMenuListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onClose(InventoryCloseEvent event) {
         InventoryView view = event.getView();
-
         // Remove the ring item in the matrix to prevent
         // players from duping them
         if (isPlayerCraftingInv(view)) {
-
             view.setItem(1, null);
             view.setItem(2, null);
 //            view.setItem(3, null);
 //            view.setItem(4, null);
-
             view.getTopInventory().clear();
         }
     }
 
-    @EventHandler
-    public void onClick(InventoryClickEvent event) {
-        InventoryView view = event.getView();
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onClick(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        if (e.getClickedInventory() == null) return;
+        if (!e.getClickedInventory().getType().equals(InventoryType.CRAFTING)) return;
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
+        if (e.getSlot() == 1 || e.getSlot() == 2 || e.getSlot() == 3 || e.getSlot() == 4) {
+            e.setCancelled(true);
+        }
+    }
 
-        /*
-         Don't allow players to remove anything from their
-         own crafting matrix
-         The view includes the player's entire inventory
-         as well, so check to make sure that the clicker
-         did not click on their own inventory
-         */
-        if (isPlayerCraftingInv(view) &&
-                event.getClickedInventory() != event.getWhoClicked().getInventory()) {
-//            if (event.getSlot() < 5 && event.getSlot() > 0) {
-//
-//                event.setCancelled(true);
-//                Player pl = (Player) event.getWhoClicked();
-//                pl.updateInventory();
-//
-//                if (event.getSlot() == 2 && pl.getGameMode() != GameMode.CREATIVE) {
-//                    pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-//                    pl.performCommand("quest");
-//                } else if (event.getSlot() == 4) {
-//                    Animation animation = new Tornado(MysteryLoot.getMysteryItems());
-//                    animation.spawn(pl, pl.getLocation());
-//                }
-//            }
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryDrag(InventoryDragEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        if (!e.getInventory().getType().equals(InventoryType.CRAFTING)) return;
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (e.getInventory().equals(e.getView().getBottomInventory())) return;
+        if (e.getInventorySlots().contains(1) || e.getInventorySlots().contains(2)
+                || e.getInventorySlots().contains(3)|| e.getInventorySlots().contains(4)) {
+            e.setCancelled(true);
         }
     }
 
