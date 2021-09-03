@@ -18,7 +18,6 @@ import com.runicrealms.plugin.item.*;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
-import com.runicrealms.plugin.item.mounts.MountListener;
 import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
@@ -186,27 +185,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return BASE_OUTLAW_RATING;
     }
 
-    // getters for dungeon shops
-    public static CaveShop getCaveShop() {
-        return caveShop;
-    }
-
-    public static KeepShop getKeepShop() {
-        return keepShop;
-    }
-
-    public static LibraryShop getLibraryShop() {
-        return libraryShop;
-    }
-
-    public static CryptsShop getCryptsShop() {
-        return cryptsShop;
-    }
-
-    public static FortressShop getRaidVendor() {
-        return fortressShop;
-    }
-
     public void onEnable() {
         // Load config defaults
         this.loadConfig();
@@ -368,7 +346,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
-        pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
         pm.registerEvents(new OffhandListener(), this);

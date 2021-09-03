@@ -4,10 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
-import com.runicrealms.plugin.item.mounts.MountListener;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,9 +24,6 @@ public class CombatListener implements Listener {
 
         //if (damager == null) return;
         UUID playerID = pl.getUniqueId();
-
-        // remove their mount
-        dismount(pl);
 
         // add/refresh their combat timer every hit
         RunicCore.getCombatManager().addPlayer(playerID);
@@ -66,8 +59,6 @@ public class CombatListener implements Listener {
 
         UUID damagerID = damager.getUniqueId();
 
-        dismount(damager);
-
         // add/refresh their combat timer every hit
         RunicCore.getCombatManager().addPlayer(damagerID);
         if (victim instanceof Player) {
@@ -80,7 +71,6 @@ public class CombatListener implements Listener {
         // apply same mechanics to victim if the victim is a player
         if (!(victim instanceof Player)) return;
         UUID victimID = victim.getUniqueId();
-        dismount((Player) victim);
         RunicCore.getCombatManager().addPlayer(victimID);
         tagPartyCombat((Player) victim, victim);
     }
@@ -97,23 +87,11 @@ public class CombatListener implements Listener {
 
                 if (member == pl) continue;
 
-                dismount(member);
-
                 RunicCore.getCombatManager().addPlayer(member.getUniqueId());
                 if (e instanceof Player) {
                     RunicCore.getCombatManager().getPvPers().add(member.getUniqueId());
                 }
             }
-        }
-    }
-
-    private static void dismount(Player pl) {
-        if (MountListener.mounted.containsKey(pl.getUniqueId())) {
-            MountListener.mounted.get(pl.getUniqueId()).remove();
-            MountListener.mounted.remove(pl.getUniqueId());
-            pl.playSound(pl.getLocation(), Sound.ENTITY_HORSE_HURT, 0.5f, 1.0f);
-            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
-                    25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
         }
     }
 }
