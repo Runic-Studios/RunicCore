@@ -184,7 +184,7 @@ public class GroupManager implements Listener {
                         "&7Req Lv &f12+",
                         "&7Location &fWhaletown"
                 }, 12),
-        ODINS_KEEP("GoodUHCTipZAKO", "&eOdin’s Keep",
+        JORUNDRS_KEEP("GoodUHCTipZAKO", "&eJorundr’s Keep",
                 new String[] {
                         "&7Req Lv &f15+",
                         "&7Location &fHilstead"
