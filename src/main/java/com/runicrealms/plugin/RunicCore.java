@@ -15,7 +15,6 @@ import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.item.*;
-import com.runicrealms.plugin.item.goldpouch.GoldPouchListener;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
@@ -369,7 +368,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
-        pm.registerEvents(new GoldPouchListener(), this);
         pm.registerEvents(new MountListener(), this);
         pm.registerEvents(new LootChestListener(), this);
         pm.registerEvents(new HearthstoneListener(), this);
