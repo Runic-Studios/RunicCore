@@ -8,6 +8,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -37,52 +38,15 @@ public class BlockBreakListener implements Listener {
         }
     }
 
-    @EventHandler
+    /**
+     * Prevents players from breaking blocks but runs last to allow professions to do their thing
+     */
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void onBlockBreak(BlockBreakEvent e) {
-
+        if (e.isCancelled()) return;
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        Material type = e.getBlock().getType();
         if (e.getBlock().getType() == Material.AIR) return;
-
-        switch (type) {
-
-            // farming materials
-            case WHEAT:
-                return;
-
-            // mining materials
-            case DIAMOND_ORE:
-                return;
-            case EMERALD_ORE:
-                return;
-            case GOLD_ORE:
-                return;
-            case IRON_ORE:
-                return;
-            case LAPIS_ORE:
-                return;
-            case REDSTONE_ORE:
-                return;
-            case NETHER_QUARTZ_ORE:
-                return;
-
-            // woodcutting materials
-            case OAK_WOOD:
-                return;
-            case SPRUCE_WOOD:
-                return;
-            case BIRCH_WOOD:
-                return;
-            case JUNGLE_WOOD:
-                return;
-            case ACACIA_WOOD:
-                return;
-            case DARK_OAK_WOOD:
-                return;
-            default:
-                e.setCancelled(false);
-                break;
-        }
+        e.setCancelled(true);
     }
 
     /**
