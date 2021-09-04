@@ -65,7 +65,12 @@ public class RunicItemShopManager implements Listener {
             }
             inventory.setItem(4, shop.getIcon());
             for (Map.Entry<Integer, RunicShopItem> trade : shop.getContents().entrySet()) {
-                inventory.setItem(trade.getKey() + 9, trade.getValue().getShopIcon());
+                inventory.setItem(trade.getKey() + 9, RunicShopItem.iconWithLore
+                        (
+                                trade.getValue().getShopItem(),
+                                trade.getValue().getPrice(),
+                                trade.getValue().getPriceDisplayString()
+                        ));
             }
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             event.getPlayer().openInventory(inventory);

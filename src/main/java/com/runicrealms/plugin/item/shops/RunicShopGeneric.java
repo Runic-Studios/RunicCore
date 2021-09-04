@@ -2,7 +2,6 @@ package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.utilities.CurrencyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,7 +16,7 @@ public class RunicShopGeneric implements RunicItemShop {
     private final int size;
     private final String shopName;
     private final Collection<Integer> runicNpcIds;
-    private final LinkedHashMap<ItemStack, RunicShopItem> itemsForSale;
+    private final LinkedHashSet<RunicShopItem> itemsForSale;
     private Map<Integer, RunicShopItem> inventoryItems;
 
     /**
@@ -26,9 +25,9 @@ public class RunicShopGeneric implements RunicItemShop {
      * @param size of the shop
      * @param shopName to display
      * @param runicNpcIds that will trigger the shop
-     * @param itemsForSale that can be purchased
+     * @param itemsForSale a set of items that can be purchased
      */
-    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale) {
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashSet<RunicShopItem> itemsForSale) {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
@@ -37,8 +36,8 @@ public class RunicShopGeneric implements RunicItemShop {
             inventoryItems = new HashMap<>();
             int nextItemIndex = 0;
             try {
-                for (Map.Entry<ItemStack, RunicShopItem> entry : itemsForSale.entrySet()) {
-                    inventoryItems.put(nextItemIndex, entry.getValue());
+                for (RunicShopItem runicShopItem : itemsForSale) {
+                    inventoryItems.put(nextItemIndex, runicShopItem);
                     nextItemIndex++;
                 }
             } catch (Exception e) {
@@ -55,10 +54,10 @@ public class RunicShopGeneric implements RunicItemShop {
      * @param size of the shop
      * @param shopName to display
      * @param runicNpcIds that will trigger the shop
-     * @param itemsForSale that can be purchased
+     * @param itemsForSale a set of items that can be purchased
      * @param itemSlots shape of the items. by default, loads them in the GUI left --> right
      */
-    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashMap<ItemStack, RunicShopItem> itemsForSale, int[] itemSlots) {
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashSet<RunicShopItem> itemsForSale, int[] itemSlots) {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
@@ -67,8 +66,8 @@ public class RunicShopGeneric implements RunicItemShop {
             inventoryItems = new HashMap<>();
             int nextItemIndex = 0;
             try {
-                for (Map.Entry<ItemStack, RunicShopItem> entry : itemsForSale.entrySet()) {
-                    inventoryItems.put(itemSlots[nextItemIndex], entry.getValue());
+                for (RunicShopItem runicShopItem : itemsForSale) {
+                    inventoryItems.put(nextItemIndex, runicShopItem);
                     nextItemIndex++;
                 }
             } catch (Exception e) {
@@ -122,65 +121,7 @@ public class RunicShopGeneric implements RunicItemShop {
         return this.runicNpcIds;
     }
 
-    public Map<ItemStack, RunicShopItem> getItemsForSale() {
+    public Set<RunicShopItem> getItemsForSale() {
         return this.itemsForSale;
-    }
-
-    /**
-     * The generic item shop lore generator to be used if coins are the price
-     *
-     * @param is itemstack to be sold
-     * @param price of the item
-     * @return a display-able item with lore like price info
-     */
-    public static ItemStack iconWithLore(ItemStack is, int price) {
-        ItemStack iconWithLore = is.clone();
-        ItemMeta meta = iconWithLore.getItemMeta();
-        if (meta != null && meta.getLore() != null) {
-            List<String> lore = meta.getLore();
-            lore.add("");
-            lore.add(
-                    ChatColor.GOLD + "Price: " +
-                            ChatColor.GREEN + ChatColor.BOLD +
-                            price + " " + CurrencyUtil.goldCoin().getItemMeta().getDisplayName()
-            );
-            meta.setLore(lore);
-            iconWithLore.setItemMeta(meta);
-        }
-        return iconWithLore;
-    }
-
-    public static ItemStack iconWithLore(ItemStack is, String priceItemDisplayName) {
-        ItemStack iconWithLore = is.clone();
-        ItemMeta meta = iconWithLore.getItemMeta();
-        if (meta != null && meta.getLore() != null) {
-            List<String> lore = meta.getLore();
-            lore.add("");
-            lore.add(
-                    ChatColor.GOLD + "Price: " +
-                            ChatColor.GREEN + ChatColor.BOLD +
-                            priceItemDisplayName
-            );
-            meta.setLore(lore);
-            iconWithLore.setItemMeta(meta);
-        }
-        return iconWithLore;
-    }
-
-    public static ItemStack iconWithLore(ItemStack is, int price, String priceItemDisplayName) {
-        ItemStack iconWithLore = is.clone();
-        ItemMeta meta = iconWithLore.getItemMeta();
-        if (meta != null && meta.getLore() != null) {
-            List<String> lore = meta.getLore();
-            lore.add("");
-            lore.add(
-                    ChatColor.GOLD + "Price: " +
-                            ChatColor.GREEN + ChatColor.BOLD +
-                            price + " " + priceItemDisplayName
-            );
-            meta.setLore(lore);
-            iconWithLore.setItemMeta(meta);
-        }
-        return iconWithLore;
     }
 }

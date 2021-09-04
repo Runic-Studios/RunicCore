@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 /**
  * Factory class to create generic runic shops for the server
@@ -42,30 +42,30 @@ public class RunicShopFactory {
     private final ItemStack greaterManaPotion = RunicItemsAPI.generateItemFromTemplate("greater-potion-mana").generateItem();
 
     public RunicShopGeneric getAlchemistShop() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(bottle, new RunicShopItem(2, "Coin", RunicShopGeneric.iconWithLore(bottle, 2)));
-        shopItems.put(minorHealingPotion, new RunicShopItem(8, "Coin", RunicShopGeneric.iconWithLore(minorHealingPotion, 8)));
-        shopItems.put(minorManaPotion, new RunicShopItem(8, "Coin", RunicShopGeneric.iconWithLore(minorManaPotion, 8)));
-        shopItems.put(majorHealingPotion, new RunicShopItem(16, "Coin", RunicShopGeneric.iconWithLore(majorHealingPotion, 16)));
-        shopItems.put(majorManaPotion, new RunicShopItem(16, "Coin", RunicShopGeneric.iconWithLore(majorManaPotion, 16)));
-        shopItems.put(greaterHealingPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterHealingPotion, 24)));
-        shopItems.put(greaterManaPotion, new RunicShopItem(24, "Coin", RunicShopGeneric.iconWithLore(greaterManaPotion, 24)));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(2, "Coin", bottle));
+        shopItems.add(new RunicShopItem(8, "Coin", minorHealingPotion));
+        shopItems.add(new RunicShopItem(8, "Coin", minorManaPotion));
+        shopItems.add(new RunicShopItem(16, "Coin", majorHealingPotion));
+        shopItems.add(new RunicShopItem(16, "Coin", majorManaPotion));
+        shopItems.add(new RunicShopItem(24, "Coin", greaterHealingPotion));
+        shopItems.add(new RunicShopItem(24, "Coin", greaterManaPotion));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
     }
 
     private final ItemStack goldPouch = RunicItemsAPI.generateItemFromTemplate("gold-pouch").generateItem();
 
     public RunicShopGeneric getBagVendor() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(goldPouch, new RunicShopItem(128, "Coin", RunicShopGeneric.iconWithLore(goldPouch, 128)));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(128, "Coin", goldPouch));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Bag Vendor", Arrays.asList(179, 181, 182, 183, 185, 186, 187, 189, 190, 192, 194), shopItems);
     }
 
     private final ItemStack bread = RunicItemsAPI.generateItemFromTemplate("Bread").generateItem();
 
     public RunicShopGeneric getBaker() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(bread, new RunicShopItem(4, "Coin", RunicShopGeneric.iconWithLore(bread, 4)));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(4, "Coin", bread));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Baker", Arrays.asList(115, 116, 118, 119, 120, 121, 124, 125, 126), shopItems);
     }
 
@@ -83,21 +83,21 @@ public class RunicShopFactory {
     private final ItemStack azanaShopWarriorHelmet = RunicItemsAPI.generateItemFromTemplate("azanashop-warrior-helmet").generateItem();
 
     public RunicShopGeneric getGeneralStore() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(beetroot, new RunicShopItem(2, "Coin", RunicShopGeneric.iconWithLore(beetroot, 2)));
-        shopItems.put(carrot, new RunicShopItem(3, "Coin", RunicShopGeneric.iconWithLore(carrot, 3)));
-        shopItems.put(minorHealingPotion, new RunicShopItem(10, "Coin", RunicShopGeneric.iconWithLore(minorHealingPotion, 8)));
-        shopItems.put(minorManaPotion, new RunicShopItem(10, "Coin", RunicShopGeneric.iconWithLore(minorManaPotion, 8)));
-        shopItems.put(azanaShopArcherBow, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopArcherBow, 12)));
-        shopItems.put(azanaShopClericMace, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopClericMace, 12)));
-        shopItems.put(azanaShopMageStaff, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopMageStaff, 12)));
-        shopItems.put(azanaShopRogueSword, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueSword, 12)));
-        shopItems.put(azanaShopWarriorAxe, new RunicShopItem(12, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorAxe, 12)));
-        shopItems.put(azanaShopArcherBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopArcherBoots, 9)));
-        shopItems.put(azanaShopClericHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopClericHelmet, 9)));
-        shopItems.put(azanaShopMageHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopMageHelmet, 9)));
-        shopItems.put(azanaShopRogueBoots, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopRogueBoots, 9)));
-        shopItems.put(azanaShopWarriorHelmet, new RunicShopItem(9, "Coin", RunicShopGeneric.iconWithLore(azanaShopWarriorHelmet, 9)));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(2, "Coin", beetroot));
+        shopItems.add(new RunicShopItem(3, "Coin", carrot));
+        shopItems.add(new RunicShopItem(10, "Coin", minorHealingPotion));
+        shopItems.add(new RunicShopItem(10, "Coin", minorManaPotion));
+        shopItems.add(new RunicShopItem(12, "Coin", azanaShopArcherBow));
+        shopItems.add(new RunicShopItem(12, "Coin", azanaShopClericMace));
+        shopItems.add(new RunicShopItem(12, "Coin", azanaShopMageStaff));
+        shopItems.add(new RunicShopItem(12, "Coin", azanaShopRogueSword));
+        shopItems.add(new RunicShopItem(12, "Coin", azanaShopWarriorAxe));
+        shopItems.add(new RunicShopItem(9, "Coin", azanaShopArcherBoots));
+        shopItems.add(new RunicShopItem(9, "Coin", azanaShopClericHelmet));
+        shopItems.add(new RunicShopItem(9, "Coin", azanaShopMageHelmet));
+        shopItems.add(new RunicShopItem(9, "Coin", azanaShopRogueBoots));
+        shopItems.add(new RunicShopItem(9, "Coin", azanaShopWarriorHelmet));
         return new RunicShopGeneric(45, ChatColor.YELLOW + "General Store", Collections.singletonList(102), shopItems, new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
     }
 
@@ -112,8 +112,8 @@ public class RunicShopFactory {
     }
 
     public RunicShopGeneric getRunicMage() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(resetSkillTreesIcon(), new RunicShopItem(0, "Coin", RunicShopGeneric.iconWithLore(resetSkillTreesIcon(), "Based on Level"), runRunicMageBuy()));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(0, "Coin", resetSkillTreesIcon(), "Based on Level", runRunicMageBuy()));
         return new RunicShopGeneric(9, ChatColor.LIGHT_PURPLE + "Runic Mage", Arrays.asList(131, 133, 134, 135, 136, 138, 139, 140, 141), shopItems);
     }
 
@@ -136,130 +136,100 @@ public class RunicShopFactory {
     }
 
     public RunicShopGeneric getCaptain() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.BOAT,
-                                TravelCMD.TravelLocation.SUNS_REACH_CITADEL),
                         new RunicShopItem(120, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL), 120),
+                                wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL),
                                 runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.BOAT,
-                                TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD),
                         new RunicShopItem(120, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD), 120),
+                                wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD),
                                 runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.BOAT,
-                                TravelCMD.TravelLocation.CRIMSON_CHAPEL),
                         new RunicShopItem(120, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL), 120),
+                                wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL),
                                 runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL))
                 );
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(376, 328, 329, 330, 325, 336, 327), shopItems);
     }
 
     public RunicShopGeneric getWagonMaster() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.AZANA),
                         new RunicShopItem(15, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA), 15),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.KOLDORE),
                         new RunicShopItem(15, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE), 15),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.WHALETOWN),
                         new RunicShopItem(20, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN), 20),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.HILSTEAD),
                         new RunicShopItem(20, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD), 20),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.WINTERVALE),
                         new RunicShopItem(30, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE), 30),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.DEAD_MANS_REST),
                         new RunicShopItem(30, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST), 30),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.ISFODAR),
                         new RunicShopItem(45, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR), 45),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.TIRNEAS),
                         new RunicShopItem(45, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS), 45),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.ZENYTH),
                         new RunicShopItem(60, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH), 60),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.NAHEEN),
                         new RunicShopItem(60, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN), 60),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.NAZMORA),
                         new RunicShopItem(60, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA), 60),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA))
                 );
-        shopItems.put
+        shopItems.add
                 (
-                        wagonItem(TravelCMD.TravelType.WAGON,
-                                TravelCMD.TravelLocation.FROSTS_END),
                         new RunicShopItem(60, "Coin",
-                                RunicShopGeneric.iconWithLore(wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END), 60),
+                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END),
                                 runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END))
                 );
         return new RunicShopGeneric(18, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 333, 272, 334, 285, 315, 337), shopItems);
@@ -274,10 +244,10 @@ public class RunicShopFactory {
     private final ItemStack grayStallion = RunicItemsAPI.generateItemFromTemplate("gray-stallion").generateItem();
 
     public RunicShopGeneric getMountVendor() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(brownSteed, new RunicShopItem(2000, "Coin", RunicShopGeneric.iconWithLore(brownSteed, 2000)));
-        shopItems.put(chestnutMare, new RunicShopItem(2000, "Coin", RunicShopGeneric.iconWithLore(chestnutMare, 2000)));
-        shopItems.put(grayStallion, new RunicShopItem(2000, "Coin", RunicShopGeneric.iconWithLore(grayStallion, 2000)));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(2000, "Coin", brownSteed));
+        shopItems.add(new RunicShopItem(2000, "Coin", chestnutMare));
+        shopItems.add(new RunicShopItem(2000, "Coin", grayStallion));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Mount Vendor", Arrays.asList(510, 239, 243, 257, 535, 534, 274, 508, 280, 284, 317), shopItems);
     }
 
@@ -313,8 +283,8 @@ public class RunicShopFactory {
     }
 
     public RunicShopGeneric getInnkeeper(String identifier, ItemStack hearthstone, int innkeeperId) {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(hearthstone, new RunicShopItem(0, "Coin", hearthstone, runHearthstoneChange(identifier)));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(0, "Coin", hearthstone, runHearthstoneChange(identifier)));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Innkeeper", Collections.singletonList(innkeeperId), shopItems);
     }
 
@@ -338,11 +308,11 @@ public class RunicShopFactory {
     private final ItemStack getCrystalCavernArcherBoots = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-boots").generateItem();
 
     public RunicShopGeneric getCavernShop() {
-        LinkedHashMap<ItemStack, RunicShopItem> shopItems = new LinkedHashMap<>();
-        shopItems.put(crystalCavernArcherHelm, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(crystalCavernArcherHelm, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
-        shopItems.put(crystalCavernArcherChest, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(crystalCavernArcherChest, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
-        shopItems.put(crystalCavernArcherLeggings, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(crystalCavernArcherLeggings, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
-        shopItems.put(getCrystalCavernArcherBoots, new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, RunicShopGeneric.iconWithLore(getCrystalCavernArcherBoots, CAVERN_ARMOR_PRICE, "Head(s) of Hexagonis")));
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherHelm, "Head(s) of Hexagonis"));
+        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherChest, "Head(s) of Hexagonis"));
+        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherLeggings, "Head(s) of Hexagonis"));
+        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, getCrystalCavernArcherBoots, "Head(s) of Hexagonis"));
         return new RunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52), shopItems, new int[]{0, 9, 18, 27});
     }
 }
