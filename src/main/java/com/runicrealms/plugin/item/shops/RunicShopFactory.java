@@ -25,6 +25,7 @@ public class RunicShopFactory {
         getGeneralStore();
         getMountVendor();
         getRunicMage();
+        getTailor();
         getWagonMaster();
         initializeInnkeepers();
         /*
@@ -122,6 +123,14 @@ public class RunicShopFactory {
             // attempt to give player item (does not drop on floor)
             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "resettree " + player.getName());
         };
+    }
+
+    private final ItemStack thread = RunicItemsAPI.generateItemFromTemplate("Thread").generateItem();
+
+    public RunicShopGeneric getTailor() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(6, "Coin", thread));
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Tailor", Arrays.asList(233, 237, 247, 259, 283, 509, 314), shopItems);
     }
 
     private ItemStack wagonItem(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
