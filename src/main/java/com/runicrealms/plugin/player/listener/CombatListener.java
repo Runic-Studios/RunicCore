@@ -12,7 +12,7 @@ public class CombatListener implements Listener {
     @EventHandler
     public void onEnterCombat(EnterCombatEvent e) {
         if (e.isCancelled()) return;
-        e.tagPlayerAndPartyInCombat();
+        EnterCombatEvent.tagPlayerAndPartyInCombat(e.getPlayer());
     }
 
     /**

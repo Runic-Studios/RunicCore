@@ -55,7 +55,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
     /**
      * Both the player AND their party are tagged in combat
      */
-    public void tagPlayerAndPartyInCombat() {
+    public static void tagPlayerAndPartyInCombat(Player player) {
         RunicCore.getCombatManager().addPlayer(player.getUniqueId());
         tagPlayerPartyInCombat(player);
     }
