@@ -96,7 +96,7 @@ public class RunicItemShopManager implements Listener {
                             }
                             player.closeInventory();
                             item.runBuy(player);
-                            if (item.getPrice() > 0) player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou purchased this item!"));
+                            if (item.getPrice() > 0 && item.removePayment()) player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou purchased this item!"));
                         } else {
                             player.closeInventory();
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);

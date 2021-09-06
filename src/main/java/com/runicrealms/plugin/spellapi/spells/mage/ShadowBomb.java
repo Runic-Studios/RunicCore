@@ -25,7 +25,7 @@ import java.util.Objects;
 public class ShadowBomb extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMT = 4;
-    private static final double DAMAGE_PER_LEVEL = .25;
+    private static final double DAMAGE_PER_LEVEL = .5;
     private static final int DURATION = 6;
     private static final int PERIOD = 2;
     private static final int RADIUS = 5;

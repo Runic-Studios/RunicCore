@@ -99,7 +99,8 @@ public class RunicShopFactory {
         shopItems.add(new RunicShopItem(9, "Coin", azanaShopMageHelmet));
         shopItems.add(new RunicShopItem(9, "Coin", azanaShopRogueBoots));
         shopItems.add(new RunicShopItem(9, "Coin", azanaShopWarriorHelmet));
-        return new RunicShopGeneric(45, ChatColor.YELLOW + "General Store", Collections.singletonList(102), shopItems, new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
+        return new RunicShopGeneric(45, ChatColor.YELLOW + "General Store", Collections.singletonList(102), shopItems,
+                new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
     }
 
     private static ItemStack resetSkillTreesIcon() {

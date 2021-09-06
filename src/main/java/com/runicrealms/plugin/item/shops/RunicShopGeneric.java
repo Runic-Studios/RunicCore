@@ -67,7 +67,7 @@ public class RunicShopGeneric implements RunicItemShop {
             int nextItemIndex = 0;
             try {
                 for (RunicShopItem runicShopItem : itemsForSale) {
-                    inventoryItems.put(nextItemIndex, runicShopItem);
+                    inventoryItems.put(itemSlots[nextItemIndex], runicShopItem);
                     nextItemIndex++;
                 }
             } catch (Exception e) {
