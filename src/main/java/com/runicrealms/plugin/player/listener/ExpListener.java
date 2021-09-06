@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player.combat;
+package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.event.EventHandler;

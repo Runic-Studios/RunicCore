@@ -7,7 +7,7 @@ import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.combat.CombatListener;
+import com.runicrealms.plugin.player.listener.CombatListener;
 import com.runicrealms.plugin.player.mana.ManaListener;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -320,16 +320,6 @@ public class RunicCoreAPI {
      */
     public static boolean isInCombat(Player player) {
         return RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId());
-    }
-
-    /**
-     * This is used in other plugins to manually tag a player in combat
-     *
-     * @param damager the attacker
-     * @param victim  the defender
-     */
-    public static void tagCombat(Player damager, Entity victim) {
-        CombatListener.tagCombat(damager, victim);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player.combat;
+package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MobDamageEvent;
@@ -14,8 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -26,7 +24,6 @@ public class CombatManager implements Listener {
 
     private final HashMap<UUID, Long> playersInCombat;
     private final HashMap<UUID, Double> shieldedPlayers;
-    private final Set<UUID> pvpers = new HashSet<>();
     private final RunicCore plugin = RunicCore.getInstance();
     private static final double COMBAT_DURATION = 15;
 
@@ -93,7 +90,6 @@ public class CombatManager implements Listener {
                     if (playersInCombat.containsKey(online.getUniqueId())) {
                         if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION * 1000)) {
                             playersInCombat.remove(online.getUniqueId());
-                            pvpers.remove(online.getUniqueId());
                             online.sendMessage(ChatColor.GREEN + "You have left combat!");
                         }
                     }
@@ -110,10 +106,11 @@ public class CombatManager implements Listener {
         return this.shieldedPlayers;
     }
 
-    public Set<UUID> getPvPers() {
-        return this.pvpers;
-    }
-
+    /**
+     * Adds a player to the combat set, sends them a message
+     *
+     * @param uuid of the player to add
+     */
     public void addPlayer(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         assert player != null;
@@ -124,7 +121,9 @@ public class CombatManager implements Listener {
     }
 
     /**
-     * Used on death!
+     * Used on death! Removes player from combat
+     *
+     * @param uuid of the player to remove
      */
     public void removePlayer(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);

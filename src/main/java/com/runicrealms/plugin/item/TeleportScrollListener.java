@@ -13,11 +13,11 @@ public class TeleportScrollListener implements Listener {
 
     @EventHandler
     public void onTeleportScrollUse(RunicItemGenericTriggerEvent e) {
+        if (!e.getItem().getTriggers().get(e.getTrigger()).equals("teleport-scroll")) return;
         if (RunicCoreAPI.isInCombat(e.getPlayer())) {
             e.getPlayer().sendMessage(ChatColor.RED + "You can't use that in combat!");
             return;
         }
-        if (!e.getItem().getTriggers().get(e.getTrigger()).equals("teleport-scroll")) return;
         try {
             String world = e.getItem().getData().get("world");
             double x = Double.parseDouble(e.getItem().getData().get("x"));
