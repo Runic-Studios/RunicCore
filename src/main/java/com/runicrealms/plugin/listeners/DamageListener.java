@@ -1,24 +1,15 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.enums.WeaponEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,24 +17,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This class does a lot. Might be worth splitting up.
- * Currently, it manages all melee damage calculators (including gemstones).
- * It also applies all of our death mechanics, melee cooldown mechanics, what have you.
+ * Currently, this class manages all melee damage calculators
  *
  * @author Skyfallin_
  */
-@SuppressWarnings("deprecation")
 public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -270,60 +254,9 @@ public class DamageListener implements Listener {
         // cancel the event
         e.setCancelled(true);
 
-        // apply new death mechanics
-        applyDeathMechanics(null, victim);
-    }
-
-    /**
-     * This method applies custom mechanics when a player would die
-     *
-     * @param victim who died
-     * @param killer optional mob/player responsible for death
-     */
-    public static void applyDeathMechanics(Player victim, Entity... killer) {
-
-        // call runic death event
-        RunicDeathEvent event = new RunicDeathEvent(victim, killer);
+        // call custom death event
+        RunicDeathEvent event = new RunicDeathEvent(victim);
         Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return;
-        }
-
-        // broadcast the death message
-        broadcastDeathMessage(victim);
-
-        // update the scoreboard
-        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
-            Score score = o.getScore(victim);
-            score.setScore((int) victim.getHealth());
-        }
-
-        // if player is in combat, remove them
-        if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(victim.getUniqueId())) {
-            RunicCore.getCombatManager().removePlayer(victim.getUniqueId());
-        }
-
-        victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        victim.setFoodLevel(20);
-        // set their current mana to max
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(victim).getMaxMana();
-        RunicCore.getRegenManager().getCurrentManaList().put(victim.getUniqueId(), maxMana);
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                new Particle.DustOptions(Color.RED, 3));
-        // teleport them to their hearthstone location, or the front of the dungeon
-        tryDropItems(victim);
-        String isDungeon = checkForDungeon(victim);
-        if (isDungeon.equals("")) { // no dungeon
-            victim.teleport(HearthstoneLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
-            victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
-        }
-        victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
     }
 
     public static void applySlainMechanics(Entity damager, Player victim) {
@@ -336,8 +269,9 @@ public class DamageListener implements Listener {
             }
         }
 
-        // apply new death mechanics
-        applyDeathMechanics(victim, damager);
+        // call custom death event
+        RunicDeathEvent event = new RunicDeathEvent(victim, damager);
+        Bukkit.getPluginManager().callEvent(event);
 
         // update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
@@ -370,95 +304,13 @@ public class DamageListener implements Listener {
         }
     }
 
-    private static void broadcastDeathMessage(Player victim) {
-        String nameVic = victim.getName();
-        // display death message
-        Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
-    }
-
     /**
-     * This method controls the dropping of items. It rolls a dice for each item in the player's inventory, and
-     * it skips soulbound items. It removes protections from protected items.
+     * A generic death message for general purposes
      *
-     * @param pl player whose items may drop
+     * @param victim who died
      */
-    private static void tryDropItems(Player pl) {
-
-        // don't drop items in dungeon world.
-        if (pl.getWorld().getName().toLowerCase().equals("dungeons"))
-            return;
-
-        for (int i = 9; i < 36; i++) {
-            ItemStack is = pl.getInventory().getItem(i);
-            if (is == null)
-                continue;
-            if (AttributeUtil.getCustomString(is, "soulbound").equals("true"))
-                continue;
-            if (is.getItemMeta() != null
-                    && is.getItemMeta().getLore() != null
-                    && foundQuestItem(is.getItemMeta().getLore()))
-                continue;
-
-            pl.getInventory().remove(is);
-            pl.getWorld().dropItem(pl.getLocation(), is);
-        }
-    }
-
-    private static boolean foundQuestItem(List<String> lore) {
-        for (String s : lore) {
-            if (ChatColor.stripColor(s).contains("Quest Item"))
-                return true;
-        }
-        return false;
-    }
-
-    private static String checkForDungeon(Player pl) {
-
-        // grab all regions the player is standing in
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(pl.getLocation()));
-        Set<ProtectedRegion> regions = set.getRegions();
-
-        if (regions == null) return "";
-
-        // check the region for the keyword 'mine'
-        // ignore the rest of this event if the player cannot mine
-        for (ProtectedRegion region : regions) {
-            if (region.getId().contains("sebathscave")) {
-                Location caveEntrance = new Location(Bukkit.getWorld("dungeons"), -1874.5, 177, -522.5, 90, 0);
-                pl.teleport(caveEntrance);
-                return "sebathscave";
-            } else if (region.getId().contains("crystalcavern")) {
-                Location cavernEntrance = new Location(Bukkit.getWorld("dungeons"), 1208.5, 74, -66.5, 180, 0);
-                pl.teleport(cavernEntrance);
-                return "crystalcavern";
-            } else if (region.getId().contains("jorundrskeep")) {
-                Location keepEntrance = new Location(Bukkit.getWorld("dungeons"), -534.5, 120, -177.5, 180, 0);
-                pl.teleport(keepEntrance);
-                return "jorundrskeep";
-            } else if (region.getId().contains("library")) {
-                Location libraryEntrance = new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0);
-                pl.teleport(libraryEntrance);
-                return "library";
-            } else if (region.getId().contains("crypts")) {
-                Location cryptsEntrance = new Location(Bukkit.getWorld("dungeons"), 298.5, 87, 6.5, 0, 0);
-                pl.teleport(cryptsEntrance);
-                return "crypts";
-            } else if (region.getId().contains("fortress")) {
-                Location fortressEntrace = new Location(Bukkit.getWorld("dungeons"), 32.5, 73, 87.5, 0, 0);
-                if (region.getId().contains("d3_parkour")) {
-                    fortressEntrace = new Location(Bukkit.getWorld("dungeons"), 32.5, 67, 379.5, 0, 0);
-                } else if (region.getId().contains("d3_alkyr")) {
-                    fortressEntrace = new Location(Bukkit.getWorld("dungeons"), -9.5, 67, 503.5, 0, 0);
-                } else if (region.getId().contains("eldrid")) {
-                    fortressEntrace = new Location(Bukkit.getWorld("dungeons"), -9.5, 67, 623.5, 0, 0);
-                }
-                pl.teleport(fortressEntrace);
-                return "fortress";
-            }
-        }
-
-        return "";
+    public static void broadcastDeathMessage(Player victim) {
+        String nameVic = victim.getName();
+        Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
     }
 }

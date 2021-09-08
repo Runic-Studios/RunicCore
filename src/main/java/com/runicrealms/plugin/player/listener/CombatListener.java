@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.player.listener;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,6 +15,12 @@ public class CombatListener implements Listener {
     public void onEnterCombat(EnterCombatEvent e) {
         if (e.isCancelled()) return;
         EnterCombatEvent.tagPlayerAndPartyInCombat(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onLeaveCombat(LeaveCombatEvent e) {
+        RunicCore.getCombatManager().getPlayersInCombat().remove(e.getPlayer().getUniqueId());
+        e.getPlayer().sendMessage(ChatColor.GREEN + "You have left combat!");
     }
 
     /**

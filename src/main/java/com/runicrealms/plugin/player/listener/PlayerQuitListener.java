@@ -6,17 +6,18 @@ import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-/*
- * Saves player data async when they logout and removes them from the queue
+/**
+ * Saves player data async when they log out and removes them from the saving queue
  */
 public class PlayerQuitListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST to give other events the chance to run logout code
     public void onLoadedQuit(CharacterQuitEvent e) {
 
         // get player cache (if they've loaded in)

@@ -93,13 +93,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ThreeDManager threeDManager;
     private static RunicShopManager runicShopManager;
 
-    // dungeon shops
-    private static CaveShop caveShop;
-    private static KeepShop keepShop;
-    private static LibraryShop libraryShop;
-    private static CryptsShop cryptsShop;
-    private static FortressShop fortressShop;
-
     // getters for handlers
     public static RunicCore getInstance() {
         return instance;
@@ -208,12 +201,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         statManager = new StatManager();
         threeDManager = new ThreeDManager();
         runicShopManager = new RunicShopManager();
-        // dungeon shops
-        caveShop = new CaveShop();
-        keepShop = new KeepShop();
-        libraryShop = new LibraryShop();
-        cryptsShop = new CryptsShop();
-        fortressShop = new FortressShop();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
@@ -284,12 +271,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         statManager = null;
         threeDManager = null;
         runicShopManager = null;
-        // dungeon shops
-        caveShop = null;
-        keepShop = null;
-        libraryShop = null;
-        cryptsShop = null;
-        fortressShop = null;
     }
 
     @EventHandler
@@ -370,6 +351,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new GenericDamageListener(), this);
         pm.registerEvents(new SkillPointsListener(), this);
         pm.registerEvents(new MobCleanupListener(), this);
+        pm.registerEvents(new DeathListener(), this);
         pm.registerEvents(partyManager, this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();

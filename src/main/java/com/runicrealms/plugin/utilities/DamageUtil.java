@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
@@ -18,7 +19,7 @@ public class DamageUtil {
      *
      * @param dmgAmt    amount to be dealt before gem or buff calculations
      * @param recipient player to be healed
-     * @param caster    player who casted heal
+     * @param caster    player who cast the healing spell
      * @param spell     include a reference to spell for spell scaling
      */
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
@@ -28,10 +29,7 @@ public class DamageUtil {
             dmgAmt = 0;
         }
 
-        // call our custom event, apply modifiers if necessary
-//        SpellDamageEvent event = spell.length > 0
-//                ? new SpellDamageEvent((int) dmgAmt, recipient, caster, spell)
-//                : new SpellDamageEvent((int) dmgAmt, recipient, caster);
+        // call our custom event
         SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
@@ -61,7 +59,7 @@ public class DamageUtil {
      *
      * @param dmgAmt       amount to be healed before gem or buff calculations
      * @param recipient    player to be healed
-     * @param caster       player who casted heal
+     * @param caster       player who cast the healing spell
      * @param isAutoAttack whether the attack will be treated as an auto attack (for on-hit effects)
      * @param isRanged     whether the attack is ranged
      * @param bypassNoTick whether the attack can skip waiting for the weapon cooldown (spells generally)
@@ -228,7 +226,8 @@ public class DamageUtil {
             victim.setNoDamageTicks(0);
             victim.damage(0.0000000000001);
         } else {
-            DamageListener.applyDeathMechanics(victim);
+            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim);
+            Bukkit.getPluginManager().callEvent(runicDeathEvent);
         }
         HologramUtil.createGenericDamageHologram(victim, victim.getEyeLocation(), dmgAmt);
     }

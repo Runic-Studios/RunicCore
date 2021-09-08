@@ -1,9 +1,7 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,7 +54,7 @@ public class CombatManager implements Listener {
     }
 
     @EventHandler
-    public void onWeapDamage(WeaponDamageEvent e) {
+    public void onWeaponDamage(WeaponDamageEvent e) {
         if (e.getVictim() instanceof Player
                 && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
             e.setAmount(shieldDamage((Player) e.getVictim(),
@@ -81,7 +79,9 @@ public class CombatManager implements Listener {
         return Math.max(eventAmount, 0);
     }
 
-    // starts the repeating task to manage pve/pvp timers
+    /**
+     * starts the repeating task to manage pve/pvp timers
+     */
     private void startCombatTask() {
         new BukkitRunnable() {
             @Override
@@ -89,8 +89,8 @@ public class CombatManager implements Listener {
                 for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
                     if (playersInCombat.containsKey(online.getUniqueId())) {
                         if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION * 1000)) {
-                            playersInCombat.remove(online.getUniqueId());
-                            online.sendMessage(ChatColor.GREEN + "You have left combat!");
+                            LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(online);
+                            Bukkit.getPluginManager().callEvent(leaveCombatEvent);
                         }
                     }
                 }
@@ -118,17 +118,5 @@ public class CombatManager implements Listener {
             player.sendMessage(ChatColor.RED + "You have entered combat!");
         }
         playersInCombat.put(uuid, System.currentTimeMillis());
-    }
-
-    /**
-     * Used on death! Removes player from combat
-     *
-     * @param uuid of the player to remove
-     */
-    public void removePlayer(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        assert player != null;
-        player.sendMessage(ChatColor.GREEN + "You have left combat!");
-        playersInCombat.remove(uuid);
     }
 }
