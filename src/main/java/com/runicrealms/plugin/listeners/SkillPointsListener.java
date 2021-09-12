@@ -53,10 +53,10 @@ public class SkillPointsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLogin(CharacterLoadEvent e) {
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             if (playerHasUnspentSkillPoints(e.getPlayer()))
                 sendSkillPointsReminderMessage(e.getPlayer());
-        }, 60L);
+        }, 180L, 90L);
     }
 
     /**
