@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
+import com.runicrealms.plugin.enums.CityLocation;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.utilities.ChatUtils;
@@ -83,8 +83,8 @@ public class SetCMD extends BaseCommand {
             Player player = Bukkit.getPlayer(args[0]);
             String location = args[1];
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + HearthstoneLocation.getFromIdentifier(location).getDisplay() + "!");
-            player.getInventory().setItem(8, HearthstoneLocation.getFromIdentifier(location).getItemStack());
+            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + CityLocation.getFromIdentifier(location).getDisplay() + "!");
+            player.getInventory().setItem(8, CityLocation.getFromIdentifier(location).getItemStack());
         } catch (Exception e) {
             e.printStackTrace();
         }

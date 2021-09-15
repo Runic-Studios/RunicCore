@@ -1,12 +1,13 @@
-package com.runicrealms.plugin.item.hearthstone;
+package com.runicrealms.plugin.enums;
 
+import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
-public enum HearthstoneLocation {
+public enum CityLocation {
 
     TUTORIAL_FORTRESS("tutorial_fortress", "Tutorial Fortress",
             new Location(Bukkit.getWorld("Alterra"), -2317.5, 38, 1719.5, 0, 0), HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK),
@@ -40,7 +41,7 @@ public enum HearthstoneLocation {
     private final Location location;
     private final ItemStack itemStack;
 
-    HearthstoneLocation(String identifier, String display, Location location, ItemStack itemStack) {
+    CityLocation(String identifier, String display, Location location, ItemStack itemStack) {
         this.identifier = identifier;
         this.display = display;
         this.location = location;
@@ -69,12 +70,12 @@ public enum HearthstoneLocation {
      * @param identifier the location of the hearthstone
      * @return an enum
      */
-    public static HearthstoneLocation getFromIdentifier(String identifier) {
-        for (HearthstoneLocation hearthstoneLocation : HearthstoneLocation.values()) {
-            if (hearthstoneLocation.getIdentifier().equals(identifier))
-                return hearthstoneLocation;
+    public static CityLocation getFromIdentifier(String identifier) {
+        for (CityLocation cityLocation : CityLocation.values()) {
+            if (cityLocation.getIdentifier().equals(identifier))
+                return cityLocation;
         }
-        return HearthstoneLocation.TUTORIAL_FORTRESS;
+        return CityLocation.TUTORIAL_FORTRESS;
     }
 
     /**
@@ -84,11 +85,11 @@ public enum HearthstoneLocation {
      * @return a Location object
      */
     public static Location getLocationFromIdentifier(String identifier) {
-        for (HearthstoneLocation hearthstoneLocation : HearthstoneLocation.values()) {
-            if (hearthstoneLocation.identifier.equals(identifier))
-                return hearthstoneLocation.getLocation();
+        for (CityLocation cityLocation : CityLocation.values()) {
+            if (cityLocation.identifier.equals(identifier))
+                return cityLocation.getLocation();
         }
-        return HearthstoneLocation.TUTORIAL_FORTRESS.getLocation();
+        return CityLocation.TUTORIAL_FORTRESS.getLocation();
     }
 
     /**
