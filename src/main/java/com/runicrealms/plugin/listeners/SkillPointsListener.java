@@ -56,7 +56,7 @@ public class SkillPointsListener implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             if (playerHasUnspentSkillPoints(e.getPlayer()))
                 sendSkillPointsReminderMessage(e.getPlayer());
-        }, 180L, 90L);
+        }, 90L, 180L);
     }
 
     /**
