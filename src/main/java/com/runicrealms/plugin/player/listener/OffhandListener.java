@@ -27,10 +27,11 @@ public class OffhandListener implements Listener {
         if (player.getGameMode() != GameMode.SURVIVAL) return;
         ItemStack oldItem = e.getCurrentItem();
         ItemStack newItem = e.getCursor();
+        if (newItem == null) return;
         if (!(e.getSlot() == 40 || e.getClick() == ClickType.SWAP_OFFHAND)) return;
 
         ArmorType armorType = ArmorType.matchType(newItem);
-        if (armorType != ArmorType.OFFHAND) {
+        if (armorType != ArmorType.OFFHAND && newItem.getType() != Material.AIR) {
             player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "Only offhands can be equipped in this slot!");
             e.setCancelled(true);
