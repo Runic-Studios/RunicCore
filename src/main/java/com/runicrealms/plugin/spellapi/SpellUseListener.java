@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.enums.WeaponType;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -40,9 +40,9 @@ public class SpellUseListener implements Listener {
     public void onWeaponInteract(PlayerInteractEvent e) {
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        WeaponEnum heldItemType = WeaponEnum.matchType(e.getPlayer().getInventory().getItemInMainHand());
-        if (heldItemType == WeaponEnum.NONE) return;
-        if (heldItemType == WeaponEnum.GATHERING_TOOL) return;
+        WeaponType heldItemType = WeaponType.matchType(e.getPlayer().getInventory().getItemInMainHand());
+        if (heldItemType == WeaponType.NONE) return;
+        if (heldItemType == WeaponType.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(e.getPlayer(), false)) return;
         Player pl = e.getPlayer();
         String className = RunicCoreAPI.getPlayerClass(pl); // lowercase

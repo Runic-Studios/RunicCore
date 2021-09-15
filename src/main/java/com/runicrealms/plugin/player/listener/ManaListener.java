@@ -1,6 +1,6 @@
-package com.runicrealms.plugin.player.mana;
+package com.runicrealms.plugin.player.listener;
 
-import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;

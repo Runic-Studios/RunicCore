@@ -140,12 +140,6 @@
             <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- ArmorEquip API -->
-        <dependency>
-            <groupId>com.github.Arnuh</groupId>
-            <artifactId>ArmorEquipEvent</artifactId>
-            <version>1.7.1</version>
-        </dependency>
         <!-- CraftBukkit -->
         <dependency>
             <groupId>org.bukkit</groupId>

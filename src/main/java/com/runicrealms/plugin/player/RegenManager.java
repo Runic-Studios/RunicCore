@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.player.mana;
+package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.HealthRegenEvent;

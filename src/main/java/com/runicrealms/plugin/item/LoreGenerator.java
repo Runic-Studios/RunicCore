@@ -2,7 +2,7 @@ package com.runicrealms.plugin.item;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
+import com.runicrealms.plugin.enums.ItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.NumRounder;
@@ -66,7 +66,7 @@ public class LoreGenerator {
                                         String extra, boolean reForge, String effectLore) {
 
         // grab our material, ItemMeta, ItemLore
-        ItemTypeEnum itemType = ItemTypeEnum.matchType(item);
+        ItemType itemType = ItemType.matchType(item);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
         meta.setDisplayName(dispColor + dispName);

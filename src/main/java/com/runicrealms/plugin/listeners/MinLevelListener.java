@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.listeners;
 
-import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
+import com.runicrealms.plugin.enums.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -25,7 +25,7 @@ public class MinLevelListener implements Listener {
             return;
         Player pl = e.getPlayer();
         ItemStack equippedItem = e.getNewArmorPiece();
-        if (ItemTypeEnum.matchType(equippedItem) == ItemTypeEnum.OFFHAND)
+        if (ItemType.matchType(equippedItem) == ItemType.OFFHAND)
             return;
         int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
         int reqLv = (int) AttributeUtil.getCustomDouble(equippedItem, "required.level");
@@ -43,7 +43,7 @@ public class MinLevelListener implements Listener {
             return;
         if (e.getCursor() == null)
             return;
-        if (ItemTypeEnum.matchType(e.getCursor()) != ItemTypeEnum.OFFHAND)
+        if (ItemType.matchType(e.getCursor()) != ItemType.OFFHAND)
             return;
         Player pl = (Player) e.getWhoClicked();
         int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();

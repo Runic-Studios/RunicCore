@@ -14,7 +14,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
 
     private static final int PARTY_TAG_RANGE = 100;
     private final Player player;
-    private boolean isCancelled;
+    private boolean isCancelled = false;
 
     /**
      * Create an event for combat for our other plugins to listen to
@@ -23,7 +23,6 @@ public class EnterCombatEvent extends Event implements Cancellable {
      */
     public EnterCombatEvent(Player player) {
         this.player = player;
-        this.isCancelled = false;
     }
 
     public Player getPlayer() {
