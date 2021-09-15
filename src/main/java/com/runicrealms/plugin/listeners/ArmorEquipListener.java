@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.enums.ArmorType;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import org.bukkit.Bukkit;
@@ -24,6 +25,12 @@ import java.util.Set;
  * Handles off-hands now as well
  */
 public class ArmorEquipListener implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onArmorEquip(ArmorEquipEvent e) {
+        if (e.getMethod() != ArmorEquipEvent.EquipMethod.SHIFT_CLICK) return;
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> e.getPlayer().updateInventory());
+    }
 
     /**
      * Handles all methods of equipping armor from the inventory screen (shifting, etc.)
