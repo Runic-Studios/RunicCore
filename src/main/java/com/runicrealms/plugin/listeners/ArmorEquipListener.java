@@ -69,8 +69,6 @@ public class ArmorEquipListener implements Listener {
                         && (equipping == isAirOrNull(e.getWhoClicked().getInventory().getLeggings()))
                         || newArmorType.equals(ArmorType.BOOTS)
                         && (equipping == isAirOrNull(e.getWhoClicked().getInventory().getBoots()))) {
-//                        || newArmorType.equals(ArmorType.OFFHAND)
-//                        && (equipping == isAirOrNull(e.getWhoClicked().getInventory().getItemInOffHand()))) {
                     ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent((Player) e.getWhoClicked(), ArmorEquipEvent.EquipMethod.SHIFT_CLICK, newArmorType, equipping ? null : e.getCurrentItem(), equipping ? e.getCurrentItem() : null);
                     Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
                     if (armorEquipEvent.isCancelled()) {
@@ -152,8 +150,6 @@ public class ArmorEquipListener implements Listener {
                 && isAirOrNull(e.getPlayer().getInventory().getLeggings())
                 || newArmorType.equals(ArmorType.BOOTS)
                 && isAirOrNull(e.getPlayer().getInventory().getBoots())) {
-//                || newArmorType.equals(ArmorType.OFFHAND)
-//                && isAirOrNull(e.getPlayer().getInventory().getItemInOffHand())) {
             ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent
                     (
                             e.getPlayer(),

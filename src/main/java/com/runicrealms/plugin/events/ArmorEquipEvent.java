@@ -29,7 +29,6 @@ public final class ArmorEquipEvent extends PlayerEvent implements Cancellable {
         this.type = type;
         this.oldArmorPiece = oldArmorPiece;
         this.newArmorPiece = newArmorPiece;
-        Bukkit.broadcastMessage("armor equip event was triggered!");
     }
 
     public final ArmorType getType() {
