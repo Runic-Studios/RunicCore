@@ -10,6 +10,7 @@ import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -68,6 +69,7 @@ public class PlayerHungerManager implements Listener {
      */
     private void damagePlayersWithoutHunger() {
         for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+            if (player.getGameMode() == GameMode.CREATIVE) continue;
             if (player.getFoodLevel() > STARVATION_HUNGER_LEVEL) continue;
             int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
             GenericDamageEvent genericDamageEvent = new GenericDamageEvent
@@ -106,7 +108,8 @@ public class PlayerHungerManager implements Listener {
                         (
                                 ChatColor.YELLOW + "You are now " +
                                         ChatColor.YELLOW + ChatColor.ITALIC +
-                                        "invigorated, regenerating health over time."
+                                        "invigorated" + ChatColor.YELLOW +
+                                        ", regenerating health over time."
                         );
                 Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
                     invigoratedPlayers.remove(player.getUniqueId());

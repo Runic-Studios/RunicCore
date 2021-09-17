@@ -26,10 +26,14 @@ import java.util.Set;
  */
 public class ArmorEquipListener implements Listener {
 
+    /**
+     * Fixes a bug that causes inventory to be out-of-sync (probably due to all our dupe or inventory checks)
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onArmorEquip(ArmorEquipEvent e) {
-        if (e.getMethod() != ArmorEquipEvent.EquipMethod.SHIFT_CLICK) return;
-        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> e.getPlayer().updateInventory());
+    public void onArmorEquip(InventoryClickEvent e) {
+        if (!(e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT)) return;
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> ((Player) e.getWhoClicked()).updateInventory());
     }
 
     /**
