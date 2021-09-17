@@ -27,7 +27,7 @@ import java.util.UUID;
 public class PlayerHungerManager implements Listener {
 
     private static final int HUNGER_DAMAGE_TASK_TIME = 4;
-    private static final int HUNGER_TICK_TASK_DELAY = 30; // s
+    private static final int HUNGER_TICK_TASK_DELAY = 45; // s
     private static final int INVIGORATED_DURATION_SECONDS = 300;
     private static final int PLAYER_HUNGER_TIME = 30; // tick time in seconds
     private static final int STARVATION_HUNGER_LEVEL = 1;
