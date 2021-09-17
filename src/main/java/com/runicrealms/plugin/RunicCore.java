@@ -91,6 +91,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static StatManager statManager;
     private static ThreeDManager threeDManager;
     private static RunicShopManager runicShopManager;
+    private static PlayerHungerManager playerHungerManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -173,6 +174,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return runicShopManager;
     }
 
+    public static PlayerHungerManager getPlayerHungerManager() {
+        return playerHungerManager;
+    }
+
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
     }
@@ -200,6 +205,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         statManager = new StatManager();
         threeDManager = new ThreeDManager();
         runicShopManager = new RunicShopManager();
+        playerHungerManager = new PlayerHungerManager();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
@@ -270,6 +276,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         statManager = null;
         threeDManager = null;
         runicShopManager = null;
+        playerHungerManager = null;
     }
 
     @EventHandler
@@ -323,7 +330,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerMenuListener(), this);
         pm.registerEvents(new BlockBreakListener(), this);
         pm.registerEvents(new MinLevelListener(), this);
-        pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
         pm.registerEvents(new LootChestListener(), this);

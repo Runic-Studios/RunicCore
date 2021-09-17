@@ -1,56 +1,61 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * CLass to manage player health and mana. Stores max mana in the player data file,
- * and creates a HashMap to store all current player manas.
+ * and creates a HashMap to store all current player mana values.
  * @author Skyfallin_
  */
-@SuppressWarnings("FieldCanBeLocal")
 public class RegenManager implements Listener {
 
-    private final int HEALTH_REGEN_AMT = 5;
-    private final long REGEN_PERIOD = 4; // seconds
+    private static final int HEALTH_REGEN_AMT = 10;
+    private static final int SAFEZONE_MULTIPLIER = 10;
+    private static final int REGEN_PERIOD = 4; // seconds
 
-    private final HashMap<UUID, Integer> currentPlayerManas;
-    private final int BASE_MANA = 100;
-    private final int MANA_REGEN_AMT = 5;
+    private static final int BASE_MANA = 100;
+    private static final int MANA_REGEN_AMT = 5;
 
-    private final double ARCHER_MANA_LV = 1.75;
-    private final double CLERIC_MANA_LV = 2.25;
-    private final double MAGE_MANA_LV = 2.75;
-    private final double ROGUE_MANA_LV = 1.5;
-    private final double WARRIOR_MANA_LV = 1.5;
+    private static final double ARCHER_MANA_LV = 1.75;
+    private static final double CLERIC_MANA_LV = 2.25;
+    private static final double MAGE_MANA_LV = 2.75;
+    private static final double ROGUE_MANA_LV = 1.5;
+    private static final double WARRIOR_MANA_LV = 1.5;
 
-    // constructor
+    private final HashMap<UUID, Integer> currentPlayerManaValues = new HashMap<>();
+
     public RegenManager() {
-        currentPlayerManas = new HashMap<>();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                regenHealth();
-                regenMana();
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, REGEN_PERIOD * 20);
+        // regen health async because of costly location checks
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(RunicCore.getInstance(), this::regenHealth, 0, REGEN_PERIOD * 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(RunicCore.getInstance(), this::regenMana, 0, REGEN_PERIOD * 20L);
     }
 
+    /**
+     * Only regen health in safe zones, or small amount if player has invigorated buff
+     */
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            int regenAmt = HEALTH_REGEN_AMT;
-            if (RunicCore.getCombatManager().getPlayersInCombat().get(online.getUniqueId()) == null)
-                regenAmt *= 5; // players regen a lot out of combat
-            HealthRegenEvent event = new HealthRegenEvent(online, regenAmt);
-            Bukkit.getPluginManager().callEvent(event);
+            if (RunicCoreAPI.isSafezone(online.getLocation())) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                    HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT * SAFEZONE_MULTIPLIER);
+                    Bukkit.getPluginManager().callEvent(event);
+                });
+            } else {
+                if (!RunicCore.getPlayerHungerManager().getInvigoratedPlayers().contains(online.getUniqueId())) continue;
+                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                    HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT);
+                    Bukkit.getPluginManager().callEvent(event);
+                });
+            }
         }
     }
 
@@ -63,8 +68,8 @@ public class RegenManager implements Listener {
 
             int mana;
 
-            if (currentPlayerManas.containsKey(online.getUniqueId()))
-                mana = currentPlayerManas.get(online.getUniqueId());
+            if (currentPlayerManaValues.containsKey(online.getUniqueId()))
+                mana = currentPlayerManaValues.get(online.getUniqueId());
             else
                 mana = (int) (getBaseMana() + getManaPerLv(online));
 
@@ -78,13 +83,13 @@ public class RegenManager implements Listener {
             ManaRegenEvent event = new ManaRegenEvent(online, regenAmt);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                currentPlayerManas.put(online.getUniqueId(), Math.min(mana + event.getAmount(), maxMana));
+                currentPlayerManaValues.put(online.getUniqueId(), Math.min(mana + event.getAmount(), maxMana));
             }
         }
     }
 
     public HashMap<UUID, Integer> getCurrentManaList() {
-        return currentPlayerManas;
+        return currentPlayerManaValues;
     }
 
     public int getBaseMana() {
@@ -113,16 +118,16 @@ public class RegenManager implements Listener {
     }
 
     public void addMana(Player pl, int amt) {
-        int mana = currentPlayerManas.get(pl.getUniqueId());
+        int mana = currentPlayerManaValues.get(pl.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
         if (mana < maxMana)
-            currentPlayerManas.put(pl.getUniqueId(), Math.min(mana + amt, maxMana));
+            currentPlayerManaValues.put(pl.getUniqueId(), Math.min(mana + amt, maxMana));
     }
 
     public void subtractMana(Player pl, int amt) {
-        int mana = currentPlayerManas.get(pl.getUniqueId());
+        int mana = currentPlayerManaValues.get(pl.getUniqueId());
         if (mana <= 0)
             return;
-        currentPlayerManas.put(pl.getUniqueId(), Math.max((mana - amt), 0));
+        currentPlayerManaValues.put(pl.getUniqueId(), Math.max((mana - amt), 0));
     }
  }
