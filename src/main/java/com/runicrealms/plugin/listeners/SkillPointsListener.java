@@ -20,7 +20,7 @@ public class SkillPointsListener implements Listener {
     private static final int SKILL_TREE_UNLOCK_LEVEL = 10;
 
     public SkillPointsListener() {
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(RunicCore.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (Player loadedPlayer : RunicCoreAPI.getLoadedPlayers()) {
                 if (!playerHasUnspentSkillPoints(loadedPlayer)) continue;
                 sendSkillPointsReminderMessage(loadedPlayer);
@@ -56,7 +56,7 @@ public class SkillPointsListener implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             if (playerHasUnspentSkillPoints(e.getPlayer()))
                 sendSkillPointsReminderMessage(e.getPlayer());
-        }, 90L, 180L);
+        }, 90 * 20L, 180 * 20L);
     }
 
     /**

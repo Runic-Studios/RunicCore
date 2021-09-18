@@ -1,7 +1,5 @@
 package com.runicrealms.plugin.item.lootchests;
 
-import com.runicrealms.plugin.enums.DungeonLocation;
-
 public enum LootChestRarity {
 
     COMMON("common"),

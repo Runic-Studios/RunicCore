@@ -68,7 +68,7 @@ public class RuneListener implements Listener {
 
         // only listen for a player inventory
         if (e.getClickedInventory() == null) return;
-        if (!(e.getClickedInventory().getType().equals(InventoryType.PLAYER))) return;
+        if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
 
         e.setCancelled(true);
     }

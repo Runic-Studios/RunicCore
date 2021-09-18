@@ -51,16 +51,13 @@ public class HearthstoneListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-
         Player pl = (Player) e.getWhoClicked();
-        int itemslot = e.getSlot();
-
-        // if its the 8th slot in a player's inventory, run the stuff
-        if (itemslot != 8) return;
+        int itemSlot = e.getSlot();
+        // if it's the 8th slot in a player's inventory, run the stuff
+        if (itemSlot != 8) return;
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getClickedInventory() == null) return;
-        if (!e.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
-
+        if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
         e.setCancelled(true);
     }
 

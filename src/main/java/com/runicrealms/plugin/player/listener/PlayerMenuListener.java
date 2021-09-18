@@ -22,7 +22,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -43,11 +45,12 @@ public class PlayerMenuListener implements Listener {
 
             for (PlayerCache cache : RunicCore.getCacheManager().getPlayerCaches().values()) {
 
+                Player player = Bukkit.getPlayer(cache.getPlayerID());
+                if (player == null) continue;
                 UUID uuid = cache.getPlayerID();
-                Player pl = Bukkit.getPlayer(cache.getPlayerID());
-                if (pl == null) continue;
 
-                ItemStack plMenu = item(pl, Material.PLAYER_HEAD, "&eCharacter Info",
+                // item 1
+                ItemStack plMenu = item(player, Material.PLAYER_HEAD, "&eCharacter Info",
                         "\n&7Here are the combat bonuses" +
                                 "\n&7of your character! They" +
                                 "\n&7come from your stats," +
@@ -55,18 +58,14 @@ public class PlayerMenuListener implements Listener {
                                 "\n&7in &eCharacter Stats&7!\n\n" +
                                 combatPercentages(uuid));
 
-                //item 2
-                ItemStack questJournal = item(pl, Material.BOOK, "&6Quest Journal",
-                        "\n&fClick here &7to view\n&7the quest journal!");
+//                ItemStack lootChests = item(player, Material.CHEST, "&dMystery Boxes",
+//                        "\n&aFeature Coming Soon!"); // todo: remove, replace w/ gathering tools
 
-                ItemStack lootChests = item(pl, Material.CHEST, "&dMystery Boxes",
-                        "\n&aFeature Coming Soon!"); // todo: remove?
-
-                // item 3 must update dynamically
-                int healthBonus = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
+                // item 2 must update dynamically
+                int healthBonus = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
                         PlayerLevelUtil.calculateHealthAtLevel(cache.getClassLevel(), cache.getClassName());
 
-                ItemStack gemMenu = item(pl, Material.REDSTONE, "&eCharacter Stats",
+                ItemStack gemMenu = item(player, Material.REDSTONE, "&eCharacter Stats",
                         "\n&7Your character stats improve" +
                                 "\n&7your potency in battle!" +
                                 "\n&7Earn them from your" +
@@ -80,7 +79,7 @@ public class PlayerMenuListener implements Listener {
                                 "\n" + formattedStat("Vitality", RunicCoreAPI.getPlayerVitality(uuid)) +
                                 "\n" + formattedStat("Wisdom", RunicCoreAPI.getPlayerWisdom(uuid)));
 
-                InventoryView view = pl.getOpenInventory();
+                InventoryView view = player.getOpenInventory();
 
                 // If the open inventory is a player inventory
                 // Update to the ring item
@@ -91,18 +90,31 @@ public class PlayerMenuListener implements Listener {
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
                     PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
-//                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(questJournal));
-                    PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenu));
+                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenu));
+                    PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
 //                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
 
-                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet1);
-//                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet2);
-                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet3);
-//                    ((CraftPlayer) pl).getHandle().playerConnection.sendPacket(packet4);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet1);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet2);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet3);
+//                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet4);
 
                 }
             }
         }, 100L, 10L);
+    }
+
+    /**
+     *
+     * @param player
+     * @return
+     */
+    private ItemStack gatheringLevelItemStack(Player player) {
+        return item(player, Material.IRON_PICKAXE, "&eGathering Levels",
+                "\n&7Here are the gathering levels" +
+                        "\n&7of your character! They" +
+                        "\n&7are account-wide!\n\n" +
+                        gatheringSkills(player.getUniqueId()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -113,7 +125,7 @@ public class PlayerMenuListener implements Listener {
         if (isPlayerCraftingInv(view)) {
             view.setItem(1, null);
             view.setItem(2, null);
-//            view.setItem(3, null);
+            view.setItem(3, null);
 //            view.setItem(4, null);
             view.getTopInventory().clear();
         }
@@ -123,11 +135,12 @@ public class PlayerMenuListener implements Listener {
     public void onClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         if (e.getClickedInventory() == null) return;
-        if (!e.getClickedInventory().getType().equals(InventoryType.CRAFTING)) return;
+        if (e.getClickedInventory().getType() != InventoryType.CRAFTING) return;
         if (player.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
         if (e.getSlot() == 1 || e.getSlot() == 2 || e.getSlot() == 3 || e.getSlot() == 4) {
             e.setCancelled(true);
+            player.updateInventory();
         }
     }
 
@@ -138,7 +151,7 @@ public class PlayerMenuListener implements Listener {
         if (player.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getInventory().equals(e.getView().getBottomInventory())) return;
         if (e.getInventorySlots().contains(1) || e.getInventorySlots().contains(2)
-                || e.getInventorySlots().contains(3)|| e.getInventorySlots().contains(4)) {
+                || e.getInventorySlots().contains(3) || e.getInventorySlots().contains(4)) {
             e.setCancelled(true);
         }
     }
@@ -163,6 +176,7 @@ public class PlayerMenuListener implements Listener {
         double magicDmgPercent = (Stat.getMagicDmgMult() * 100) * intelligence;
         double maxManaPercent = (Stat.getMaxManaMult() * 100) * intelligence;
         double meleeDmgPercent = (Stat.getMeleeDmgMult() * 100) * strength;
+        double critPercent = 0;
         double defensePercent = (Stat.getDamageReductionMult() * 100) * vitality;
         if (defensePercent > Stat.getDamageReductionCap())
             defensePercent = Stat.getDamageReductionCap();
@@ -170,20 +184,27 @@ public class PlayerMenuListener implements Listener {
         double spellHealingPercent = (Stat.getSpellHealingMult() * 100) * wisdom;
         double manaRegenPercent = (Stat.getManaRegenMult() * 100) * wisdom;
         String dexterityString = statPrefix(dexterity) + df.format(rangedDmgPercent) + "% Ranged Dmg" +
-                "\n" + statPrefix(dexterity) + df.format(speedPercent) + "% Speed\n";
+                "\n" + statPrefix(dexterity) + df.format(speedPercent) + "% Movespeed\n";
         String intelligenceString = statPrefix(intelligence) + df.format(magicDmgPercent) + "% Magic Dmg" +
                 "\n" + statPrefix(intelligence) + df.format(maxManaPercent) + "% Max Mana\n";
-        String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg\n";
+        String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg" +
+                "\n" + df.format(critPercent) + "% Crit\n";
         String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" + (defensePercent >= Stat.getDamageReductionCap() ? " (Cap Reached)" : "") +
                 "\n" + statPrefix(vitality) + df.format(healthRegenPercent) + "% Health Regen\n";
         String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
                 "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
         return dexterityString + intelligenceString + strengthString + vitalityString + wisdomString;
+        // todo: crit, dodge, attack speed
+    }
+
+    private String gatheringSkills(UUID uuid) {
+        return "Cooking: 0\n" + "Farming: 0\n" + "Fishing: 0\n" + "Gathering: 0\n" + "Mining: 0\n" + "Woodcutting: 0\n";
     }
 
     /**
      * Returns a formatted string of the player's combat stats
-     * @param name name of the stat (dexterity)
+     *
+     * @param name  name of the stat (dexterity)
      * @param value value of the stat (RunicCoreAPI)
      * @return a formatted string for use in the player menu
      */
@@ -216,6 +237,10 @@ public class PlayerMenuListener implements Listener {
             lore.add(ColorUtil.format(line));
         }
         meta.setLore(lore);
+        ((Damageable) meta).setDamage(3);
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         return item;
     }

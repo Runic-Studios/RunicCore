@@ -5,7 +5,6 @@ import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
