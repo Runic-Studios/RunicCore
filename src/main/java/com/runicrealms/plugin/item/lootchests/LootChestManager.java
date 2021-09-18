@@ -5,7 +5,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Set;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class LootChestManager {
 
     private static final int TASK_INTERVAL = 15; // seconds
 
     private final HashSet<LootChest> lootChests; // maps chest to respawn time
     private final LinkedHashMap<LootChest, Long> queuedChests;
-    private final RunicCore plugin = RunicCore.getInstance();
 
     private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
             "chests.yml");
@@ -32,27 +29,22 @@ public class LootChestManager {
 
         lootChests = new HashSet<>();
         queuedChests = new LinkedHashMap<>();
-
-//        // store all chest locations in a set
-//        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-//                "chests.yml");
-//        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
-//        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
-
         if (locations == null) return;
 
         /*
-        Initial spawning of chests from flatfile storage
+        Initial spawning of chests from flat file storage
          */
         try {
             for (String id : locations.getKeys(false)) {
                 String tier = locations.getString(id + ".tier");
+                LootChestRarity lootChestRarity = LootChestRarity.getFromIdentifier(tier);
+                if (lootChestRarity == null) continue;
                 World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
                 double x = locations.getDouble(id + ".x");
                 double y = locations.getDouble(id + ".y");
                 double z = locations.getDouble(id + ".z");
                 Location loc = new Location(world, x, y, z);
-                LootChest lootChest = new LootChest(id, tier, loc);
+                LootChest lootChest = new LootChest(id, lootChestRarity, loc);
                 lootChests.add(lootChest);
                 lootChest.getLocation().getBlock().setType(Material.CHEST);
             }
@@ -61,19 +53,8 @@ public class LootChestManager {
             e.printStackTrace();
         }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                regenChests();
-            }
-        }.runTaskTimer(this.plugin, 100, TASK_INTERVAL*20L); // time * seconds / ticks
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                particleTask();
-            }
-        }.runTaskTimerAsynchronously(this.plugin, 20, 3*20L);
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenChests, 100L, TASK_INTERVAL * 20L); // time * seconds / ticks
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::particleTask, 20L, 3 * 20L);
     }
 
     /**
@@ -91,7 +72,7 @@ public class LootChestManager {
             Location loc = chest.getLocation();
             if (!Objects.requireNonNull(loc.getWorld()).isChunkLoaded(loc.getChunk())) continue; // chunk must be loaded
             if (loc.getBlock().getType() == Material.CHEST) continue; // chest already loaded
-            if ((System.currentTimeMillis()-queuedChests.get(chest)) < matchTime(chest)*1000) continue;
+            if ((System.currentTimeMillis() - queuedChests.get(chest)) < matchTime(chest) * 1000L) continue;
             loc.getBlock().setType(Material.CHEST);
             remove.add(chest);
             count++;
@@ -105,12 +86,12 @@ public class LootChestManager {
      * Returns an int, seconds, for how often a chest should spawn, based on tier.
      */
     private int matchTime(LootChest chest) {
-        switch (chest.getTier()) {
-            case "uncommon":
+        switch (chest.getLootChestRarity()) {
+            case UNCOMMON:
                 return 900; // 15 min
-            case "rare":
+            case RARE:
                 return 1200; // 20 min
-            case "epic":
+            case EPIC:
                 return 2700; // 45 min
             default:
                 return 600; // 10 min for common
@@ -120,18 +101,19 @@ public class LootChestManager {
     private void particleTask() {
 
         for (LootChest lootChest : lootChests) {
-            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk())) continue;
+            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk()))
+                continue;
             Location loc = lootChest.getLocation();
             if (loc.getBlock().getType() != Material.CHEST) continue;
             Color color;
-            switch (lootChest.getTier()) {
-                case "common":
+            switch (lootChest.getLootChestRarity()) {
+                case COMMON:
                     color = Color.WHITE;
                     break;
-                case "uncommon":
+                case UNCOMMON:
                     color = Color.LIME;
                     break;
-                case "rare":
+                case RARE:
                     color = Color.AQUA;
                     break;
                 default:
@@ -170,6 +152,7 @@ public class LootChestManager {
 
     /**
      * Checks whether there is a loot chest at target location.
+     *
      * @param location of loot chest
      * @return true if found, false if not
      */
@@ -180,6 +163,7 @@ public class LootChestManager {
     /**
      * Completely erases a loot chest at target location,
      * both removing it from memory and config.
+     *
      * @param location location of chest
      */
     public void removeLootChest(Location location) {
