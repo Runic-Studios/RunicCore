@@ -72,7 +72,8 @@ public class LootChestManager {
             Location loc = chest.getLocation();
             if (!Objects.requireNonNull(loc.getWorld()).isChunkLoaded(loc.getChunk())) continue; // chunk must be loaded
             if (loc.getBlock().getType() == Material.CHEST) continue; // chest already loaded
-            if ((System.currentTimeMillis() - queuedChests.get(chest)) < matchTime(chest) * 1000L) continue;
+            if ((System.currentTimeMillis() - queuedChests.get(chest)) < chest.getLootChestRarity().getRespawnTime() * 1000L)
+                continue;
             loc.getBlock().setType(Material.CHEST);
             remove.add(chest);
             count++;
@@ -83,68 +84,60 @@ public class LootChestManager {
     }
 
     /**
-     * Returns an int, seconds, for how often a chest should spawn, based on tier.
+     * Generates particles based on the loot chest color
      */
-    private int matchTime(LootChest chest) {
-        switch (chest.getLootChestRarity()) {
-            case UNCOMMON:
-                return 900; // 15 min
-            case RARE:
-                return 1200; // 20 min
-            case EPIC:
-                return 2700; // 45 min
-            default:
-                return 600; // 10 min for common
-        }
-    }
-
     private void particleTask() {
-
         for (LootChest lootChest : lootChests) {
             if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk()))
                 continue;
-            Location loc = lootChest.getLocation();
-            if (loc.getBlock().getType() != Material.CHEST) continue;
-            Color color;
-            switch (lootChest.getLootChestRarity()) {
-                case COMMON:
-                    color = Color.WHITE;
-                    break;
-                case UNCOMMON:
-                    color = Color.LIME;
-                    break;
-                case RARE:
-                    color = Color.AQUA;
-                    break;
-                default:
-                    color = Color.FUCHSIA;
-                    break;
-            }
-
-            Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
-                    10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(color, 3));
+            Location location = lootChest.getLocation();
+            if (location.getBlock().getType() != Material.CHEST) continue;
+            Objects.requireNonNull(location.getWorld()).spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
+                    10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
         }
     }
 
-    public LootChest getLootChest(Location loc) {
+    /**
+     * Grabs the LootChest object associated w/ the given location
+     *
+     * @param location of chest
+     * @return a LootChest object
+     */
+    public LootChest getLootChest(Location location) {
         for (LootChest lootChest : lootChests) {
-            if (lootChest.getLocation().equals(loc))
+            if (lootChest.getLocation().equals(location))
                 return lootChest;
         }
         return null;
     }
 
+    /**
+     * Grabs our in-memory set of loot chests
+     *
+     * @return a HashSet of loot chests
+     */
     public HashSet<LootChest> getLootChests() {
         return lootChests;
     }
 
+    /**
+     * Grabs our list of chests which are queued for respawn
+     *
+     * @return a linked hash map
+     */
     public LinkedHashMap<LootChest, Long> getQueuedChests() {
         return queuedChests;
     }
 
-    public LootChest getQueuedChest(Location loc) {
+    /**
+     * Grab the chest queued for respawn at the given location
+     *
+     * @param location to check
+     * @return a loot chest object
+     */
+    public LootChest getQueuedChest(Location location) {
         for (LootChest queuedChest : queuedChests.keySet()) {
-            if (queuedChest.getLocation().equals(loc))
+            if (queuedChest.getLocation().equals(location))
                 return queuedChest;
         }
         return null;

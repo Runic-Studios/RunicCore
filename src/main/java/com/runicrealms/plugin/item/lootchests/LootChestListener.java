@@ -12,7 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -65,18 +64,9 @@ public class LootChestListener implements Listener {
         LootChestRarity lootChestRarity = lootChest.getLootChestRarity();
 
         // verify player level
-        if (lootChestRarity == LootChestRarity.UNCOMMON && pl.getLevel() < 10) {
+        if (pl.getLevel() < lootChestRarity.getMinAccessLevel()) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             pl.sendMessage(ChatColor.RED + "You must be at least level 10 to open this.");
-            return;
-        }
-        if (lootChestRarity == LootChestRarity.RARE && pl.getLevel() < 25) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            pl.sendMessage(ChatColor.RED + "You must be at least level 25 to open this.");
-            return;
-        } else if (lootChestRarity == LootChestRarity.EPIC && pl.getLevel() < 40) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            pl.sendMessage(ChatColor.RED + "You must be at least level 40 to open this.");
             return;
         }
 
@@ -172,6 +162,9 @@ public class LootChestListener implements Listener {
      */
     private final ArrayList<UUID> chatters = new ArrayList<>();
 
+    /**
+     * Admin functionality for adding / removing loot chests
+     */
     @EventHandler
     public void onLocationAdd(PlayerInteractEvent e) {
 
@@ -225,6 +218,9 @@ public class LootChestListener implements Listener {
         }
     }
 
+    /**
+     * Admin chat handling for adding / removing loot chests
+     */
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player pl = e.getPlayer();

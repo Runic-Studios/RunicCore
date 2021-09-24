@@ -46,6 +46,26 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Checks whether the given location is within the given region
+     *
+     * @param location         to check
+     * @param regionIdentifier the string identifier of region "azana"
+     * @return true if the location is in the region
+     */
+    public static boolean containsRegion(Location location, String regionIdentifier) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return false;
+        for (ProtectedRegion region : regions) {
+            if (region.getId().contains(regionIdentifier))
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Quickly grab a string representing the class the player is using, in lowercase!
      *
      * @param player to grab class for
@@ -324,9 +344,9 @@ public class RunicCoreAPI {
     }
 
     /**
-     * This does.. um. Idek.
+     * Registers a RunicItemShop in our in-memory collection
      *
-     * @param shop
+     * @param shop to register
      */
     public static void registerRunicItemShop(RunicItemShop shop) {
         RunicItemShopManager.registerShop(shop);
@@ -427,7 +447,8 @@ public class RunicCoreAPI {
         Set<ProtectedRegion> regions = set.getRegions();
         if (regions == null) return false;
         for (ProtectedRegion region : regions) {
-            return Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> region.getId().contains(cityLocation.getIdentifier()));
+            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> region.getId().contains(cityLocation.getIdentifier())))
+                return true;
         }
         return false;
     }

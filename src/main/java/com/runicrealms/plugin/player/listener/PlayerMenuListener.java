@@ -198,7 +198,14 @@ public class PlayerMenuListener implements Listener {
     }
 
     private String gatheringSkills(UUID uuid) {
-        return "Cooking: 0\n" + "Farming: 0\n" + "Fishing: 0\n" + "Gathering: 0\n" + "Mining: 0\n" + "Woodcutting: 0\n";
+        return ColorUtil.format
+                (
+                        "&7Farming Lv. &f0\n" +
+                                "&7Fishing Lv. &f0\n" +
+                                "&7Gathering Lv. &f0\n" +
+                                "&7Mining Lv. &f0\n" +
+                                "&7Woodcutting Lv. &f0\n"
+                );
     }
 
     /**

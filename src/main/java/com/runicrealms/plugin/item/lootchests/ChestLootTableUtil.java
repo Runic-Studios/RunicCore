@@ -18,7 +18,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> commonLootTable = new WeightedRandomBag<>();
 
         // armor and weapons
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(0, 10, 1).generateItem();
+        LootChestRarity common = LootChestRarity.COMMON;
+        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(common.getMinLootLevel(), common.getMaxLootLevel(), 1).generateItem();
 
         ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 6 + 1)); // bound is not inclusive, so we add 1
         ItemStack bread = runicItem("Bread", 2, 4);
@@ -72,7 +73,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> uncommonLootTable = new WeightedRandomBag<>();
 
         // armor and weapons
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(11, 25, 1).generateItem();
+        LootChestRarity uncommon = LootChestRarity.UNCOMMON;
+        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(uncommon.getMinLootLevel(), uncommon.getMaxLootLevel(), 1).generateItem();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 8 + 1)); // bound is not inclusive, so we add 1
@@ -132,7 +134,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> rareLootTable = new WeightedRandomBag<>();
 
         // armor and weapons
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(26, 39, 1).generateItem();
+        LootChestRarity rare = LootChestRarity.RARE;
+        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(rare.getMinLootLevel(), rare.getMaxLootLevel(), 1).generateItem();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(5, 10 + 1)); // bound is not inclusive, so we add 1
@@ -193,7 +196,8 @@ public class ChestLootTableUtil {
         WeightedRandomBag<ItemStack> epicLootTable = new WeightedRandomBag<>();
 
         // armor and weapons
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(40, 60, 1).generateItem();
+        LootChestRarity epic = LootChestRarity.EPIC;
+        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(epic.getMinLootLevel(), epic.getMaxLootLevel(), 1).generateItem();
 
         // currency
         ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(5, 10 + 1)); // bound is not inclusive, so we add 1
