@@ -66,7 +66,7 @@ public class LootChestListener implements Listener {
         // verify player level
         if (pl.getLevel() < lootChestRarity.getMinAccessLevel()) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            pl.sendMessage(ChatColor.RED + "You must be at least level 10 to open this.");
+            pl.sendMessage(ChatColor.RED + "You must be at least level " + lootChestRarity.getMinAccessLevel() + " to open this.");
             return;
         }
 
