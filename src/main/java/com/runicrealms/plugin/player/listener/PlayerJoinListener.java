@@ -5,6 +5,7 @@ import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;
+import com.runicrealms.runicnpcs.api.RunicNpcsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -115,6 +116,13 @@ public class PlayerJoinListener implements Listener {
             pl.setHealth(playerHealth);
             pl.setFoodLevel(20);
         }
+    }
+
+    // Handles loading in Runic NPCs on player login
+    // Load on highest to allow for data loading in NPCs plugin
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onLoadHandleNPCs(CharacterLoadEvent event) {
+        RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer());
     }
 
     /**
