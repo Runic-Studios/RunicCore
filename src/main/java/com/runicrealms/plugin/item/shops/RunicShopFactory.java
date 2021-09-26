@@ -1,8 +1,11 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.commands.TravelCMD;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
+import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
@@ -134,15 +137,14 @@ public class RunicShopFactory {
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Tailor", Arrays.asList(233, 237, 247, 259, 283, 509, 314), shopItems);
     }
 
-    private ItemStack wagonItem(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
+    private ItemStack boatItem(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
         ItemStack wagonItem = new ItemStack(travelType.getMaterial());
         ItemMeta meta = wagonItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + "Fast Travel: " + travelLocation.getDisplay());
-        meta.setLore(Arrays.asList("", ChatColor.GRAY + "Quickly travel to this destination!", ""));
+        meta.setLore(Arrays.asList("", ChatColor.GRAY + "Quickly travel to this destination!"));
         wagonItem.setItemMeta(meta);
         return wagonItem;
-
     }
 
     public RunicShopGeneric getCaptain() {
@@ -150,22 +152,41 @@ public class RunicShopFactory {
         shopItems.add
                 (
                         new RunicShopItem(120, "Coin",
-                                wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL),
-                                runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL))
+                                boatItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.SUNS_REACH_CITADEL),
+                                runBoatBuy(TravelCMD.TravelLocation.SUNS_REACH_CITADEL))
                 );
         shopItems.add
                 (
                         new RunicShopItem(120, "Coin",
-                                wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD),
-                                runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD))
+                                boatItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD),
+                                runBoatBuy(TravelCMD.TravelLocation.BLACKGUARD_STRONGHOLD))
                 );
         shopItems.add
                 (
                         new RunicShopItem(120, "Coin",
-                                wagonItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL),
-                                runFastTravelBuy(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL))
+                                boatItem(TravelCMD.TravelType.BOAT, TravelCMD.TravelLocation.CRIMSON_CHAPEL),
+                                runBoatBuy(TravelCMD.TravelLocation.CRIMSON_CHAPEL))
                 );
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(376, 328, 329, 330, 325, 336, 327), shopItems);
+    }
+
+    private RunicItemRunnable runBoatBuy(TravelCMD.TravelLocation travelLocation) {
+        return player -> TravelCMD.fastTravelTask(player, TravelCMD.TravelType.BOAT, travelLocation);
+    }
+
+    private ItemStack wagonItem(TravelCMD.TravelLocation travelLocation, int reqLevel) {
+        ItemStack wagonItem = new ItemStack(TravelCMD.TravelType.WAGON.getMaterial());
+        ItemMeta meta = wagonItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.GREEN + "Fast Travel: " + travelLocation.getDisplay());
+        meta.setLore(Arrays.asList
+                (
+                        ChatColor.GRAY + "Lv. Min " + ChatColor.WHITE + reqLevel,
+                        "",
+                        ChatColor.GRAY + "Quickly travel to this destination!"
+                ));
+        wagonItem.setItemMeta(meta);
+        return wagonItem;
     }
 
     public RunicShopGeneric getWagonMaster() {
@@ -173,80 +194,100 @@ public class RunicShopFactory {
         shopItems.add
                 (
                         new RunicShopItem(15, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.AZANA))
+                                wagonItem(TravelCMD.TravelLocation.AZANA, 3),
+                                runWagonBuy(15, TravelCMD.TravelLocation.AZANA, 3))
                 );
         shopItems.add
                 (
                         new RunicShopItem(15, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.KOLDORE))
+                                wagonItem(TravelCMD.TravelLocation.KOLDORE, 8),
+                                runWagonBuy(15, TravelCMD.TravelLocation.KOLDORE, 8))
                 );
         shopItems.add
                 (
                         new RunicShopItem(20, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WHALETOWN))
+                                wagonItem(TravelCMD.TravelLocation.WHALETOWN, 12),
+                                runWagonBuy(20, TravelCMD.TravelLocation.WHALETOWN, 12))
                 );
         shopItems.add
                 (
                         new RunicShopItem(20, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.HILSTEAD))
+                                wagonItem(TravelCMD.TravelLocation.HILSTEAD, 15),
+                                runWagonBuy(20, TravelCMD.TravelLocation.HILSTEAD, 15))
                 );
         shopItems.add
                 (
                         new RunicShopItem(30, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.WINTERVALE))
+                                wagonItem(TravelCMD.TravelLocation.WINTERVALE, 20),
+                                runWagonBuy(30, TravelCMD.TravelLocation.WINTERVALE, 20))
                 );
         shopItems.add
                 (
                         new RunicShopItem(30, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.DEAD_MANS_REST))
+                                wagonItem(TravelCMD.TravelLocation.DEAD_MANS_REST, 25),
+                                runWagonBuy(30, TravelCMD.TravelLocation.DEAD_MANS_REST, 25))
                 );
         shopItems.add
                 (
                         new RunicShopItem(45, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ISFODAR))
+                                wagonItem(TravelCMD.TravelLocation.ISFODAR, 30),
+                                runWagonBuy(45, TravelCMD.TravelLocation.ISFODAR, 30))
                 );
         shopItems.add
                 (
                         new RunicShopItem(45, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.TIRNEAS))
+                                wagonItem(TravelCMD.TravelLocation.TIRNEAS, 33),
+                                runWagonBuy(45, TravelCMD.TravelLocation.TIRNEAS, 33))
                 );
         shopItems.add
                 (
                         new RunicShopItem(60, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.ZENYTH))
+                                wagonItem(TravelCMD.TravelLocation.ZENYTH, 35),
+                                runWagonBuy(60, TravelCMD.TravelLocation.ZENYTH, 35))
                 );
         shopItems.add
                 (
                         new RunicShopItem(60, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAHEEN))
+                                wagonItem(TravelCMD.TravelLocation.NAHEEN, 40),
+                                runWagonBuy(60, TravelCMD.TravelLocation.NAHEEN, 40))
                 );
         shopItems.add
                 (
                         new RunicShopItem(60, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.NAZMORA))
+                                wagonItem(TravelCMD.TravelLocation.NAZMORA, 45),
+                                runWagonBuy(60, TravelCMD.TravelLocation.NAZMORA, 45))
                 );
         shopItems.add
                 (
                         new RunicShopItem(60, "Coin",
-                                wagonItem(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END),
-                                runFastTravelBuy(TravelCMD.TravelType.WAGON, TravelCMD.TravelLocation.FROSTS_END))
+                                wagonItem(TravelCMD.TravelLocation.FROSTS_END, 55),
+                                runWagonBuy(60, TravelCMD.TravelLocation.FROSTS_END, 55))
                 );
+        shopItems.forEach(runicShopItem -> runicShopItem.setRemovePayment(false));
         return new RunicShopGeneric(18, ChatColor.YELLOW + "Wagonmaster", Arrays.asList(245, 246, 249, 256, 262, 267, 333, 272, 334, 285, 315, 337), shopItems);
     }
 
-    private RunicItemRunnable runFastTravelBuy(TravelCMD.TravelType travelType, TravelCMD.TravelLocation travelLocation) {
-        return player -> TravelCMD.fastTravelTask(player, travelType, travelLocation);
+    /**
+     * Allows a player to fast travel if they are not already there and have met the level requirement
+     *
+     * @param price          in gold of the fast travel
+     * @param travelLocation the travel location, which is slightly different from city location, and is centered around wagon masters
+     * @param reqLevel       the level needed to travel
+     * @return a runnable
+     */
+    private RunicItemRunnable runWagonBuy(int price, TravelCMD.TravelLocation travelLocation, int reqLevel) {
+        return player -> {
+            if (player.getLevel() < reqLevel) {
+                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                player.sendMessage(ChatColor.RED + "You must reach a higher level to use this fast travel!");
+            } else if (RunicCoreAPI.containsRegion(player.getLocation(), travelLocation.getIdentifier())) {
+                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                player.sendMessage(ChatColor.RED + "You are already here!");
+            } else {
+                ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), price);
+                TravelCMD.fastTravelTask(player, TravelCMD.TravelType.WAGON, travelLocation);
+            }
+        };
     }
 
     private final ItemStack brownSteed = RunicItemsAPI.generateItemFromTemplate("brown-steed").generateItem();
@@ -301,8 +342,8 @@ public class RunicShopFactory {
     private RunicItemRunnable runHearthstoneChange(String location) {
         return player -> {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + HearthstoneLocation.getFromIdentifier(location).getDisplay() + "!");
-            player.getInventory().setItem(8, HearthstoneLocation.getFromIdentifier(location).getItemStack());
+            player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + CityLocation.getFromIdentifier(location).getDisplay() + "!");
+            player.getInventory().setItem(8, CityLocation.getFromIdentifier(location).getItemStack());
         };
     }
 

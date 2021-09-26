@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;
@@ -16,7 +17,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
@@ -46,76 +46,72 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(CharacterLoadEvent e) {
-
-        Player pl = e.getPlayer();
-        pl.setInvulnerable(false);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-
-                // set their inventory
-                //pl.getInventory().setContents(e.getPlayerCache().getInventoryContents());
-                //pl.updateInventory();
-
-                HealthUtils.setPlayerMaxHealth(pl);
-                pl.setHealthScale(HealthUtils.getHeartAmount());
-
-                // update player's level (this will change storedHealth, but we alrdy got variable hehe)
-                pl.setLevel(e.getPlayerCache().getClassLevel());
-                int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(e.getPlayerCache().getClassLevel());
-                int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(e.getPlayerCache().getClassLevel()+1);
-                double proportion = (double) (e.getPlayerCache().getClassExp() - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
-                if (e.getPlayerCache().getClassLevel() >= PlayerLevelUtil.getMaxLevel()) pl.setExp(0);
-                if (proportion < 0) proportion = 0.0f;
-                if (proportion >= 1) proportion = 0.99f;
-                pl.setExp((float) proportion);
-
-                // set their location
-                pl.teleport(e.getPlayerCache().getLocation());
-            }
-        }.runTaskLater(RunicCore.getInstance(), 1L);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-
-                // set their hp to stored value from last logout
-                int storedHealth = e.getPlayerCache().getCurrentHealth();
-
-                // update their health
-                // new players or corrupted data
-                if (storedHealth == 0) {
-                    storedHealth = HealthUtils.getBaseHealth();
-                }
-                if (storedHealth <= pl.getMaxHealth()) {
-                    pl.setHealth(storedHealth);
-                } else {
-                    pl.setHealth(pl.getMaxHealth());
-                }
-            }
-        }.runTaskLater(RunicCore.getInstance(), 2L);
+        Player player = e.getPlayer();
+        PlayerCache playerCache = e.getPlayerCache();
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadPlayerHealthScaleLevelAndLocation(player, playerCache), 1L);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, playerCache), 2L);
     }
 
+    /**
+     * Sets up some basic player values, such as max health, level, location, etc.
+     *
+     * @param player      to set values for
+     * @param playerCache the stored object with values
+     */
+    private void loadPlayerHealthScaleLevelAndLocation(Player player, PlayerCache playerCache) {
+        player.setInvulnerable(false);
+        HealthUtils.setPlayerMaxHealth(player);
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        player.setLevel(playerCache.getClassLevel()); // update player's level (this will change storedHealth, but we already got variable)
+        int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(playerCache.getClassLevel());
+        int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(playerCache.getClassLevel() + 1);
+        double proportion = (double) (playerCache.getClassExp() - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
+        if (playerCache.getClassLevel() >= PlayerLevelUtil.getMaxLevel()) player.setExp(0);
+        if (proportion < 0) proportion = 0.0f;
+        if (proportion >= 1) proportion = 0.99f;
+        player.setExp((float) proportion);
+        player.teleport(playerCache.getLocation()); // set their location
+    }
+
+    /**
+     * Loads the current player values associated w/ combat, like current health, hunger, etc.
+     *
+     * @param player      to set values for
+     * @param playerCache the stored object with values
+     */
+    private void loadCurrentPlayerHealthAndHunger(Player player, PlayerCache playerCache) {
+        // set their hp to stored value from last logout
+        int storedHealth = playerCache.getCurrentHealth();
+        // update their health
+        // new players or corrupted data
+        if (storedHealth == 0) {
+            storedHealth = HealthUtils.getBaseHealth();
+        }
+        if (storedHealth <= player.getMaxHealth()) {
+            player.setHealth(storedHealth);
+        } else {
+            player.setHealth(player.getMaxHealth());
+        }
+        // set their last stored hunger
+        player.setFoodLevel(playerCache.getStoredHunger());
+    }
+
+    /**
+     * Setup for new players
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFirstLoad(CharacterLoadEvent event) {
-
         Player pl = event.getPlayer();
-
-        // setup for new players
-        if (!pl.hasPlayedBefore()) {
-
-            // broadcast new player welcome message
-            Bukkit.getServer().broadcastMessage(ChatColor.WHITE + pl.getName()
-                    + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
-
-            // heal player
-            HealthUtils.setPlayerMaxHealth(pl);
-            pl.setHealthScale(HealthUtils.getHeartAmount());
-            int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-            pl.setHealth(playerHealth);
-            pl.setFoodLevel(20);
-        }
+        if (pl.hasPlayedBefore()) return;
+        // broadcast new player welcome message
+        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + pl.getName()
+                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
+        // heal player
+        HealthUtils.setPlayerMaxHealth(pl);
+        pl.setHealthScale(HealthUtils.getHeartAmount());
+        int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        pl.setHealth(playerHealth);
+        pl.setFoodLevel(20);
     }
 
     // Handles loading in Runic NPCs on player login

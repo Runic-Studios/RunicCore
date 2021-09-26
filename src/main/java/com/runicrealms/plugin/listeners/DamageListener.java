@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.enums.WeaponType;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -79,7 +79,7 @@ public class DamageListener implements Listener {
             Player pl = (Player) damager;
 
             ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
-            WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+            WeaponType artifactType = WeaponType.matchType(artifact);
             int damage;
             int maxDamage;
             int reqLv;
@@ -110,9 +110,9 @@ public class DamageListener implements Listener {
             }
 
             // check for cooldown
-            if (artifactType.equals(WeaponEnum.NONE)
+            if (artifactType.equals(WeaponType.NONE)
                     //|| artifactType.equals(WeaponEnum.STAFF)
-                    || artifactType.equals(WeaponEnum.BOW)) {
+                    || artifactType.equals(WeaponType.BOW)) {
                 damage = 1;
                 maxDamage = 1;
             }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item.scrapper;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.ItemTypeEnum;
+import com.runicrealms.plugin.enums.ItemType;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.shops.RunicShop;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
@@ -88,8 +88,8 @@ public class ItemScrapper extends RunicShop {
             if (!itemStack.hasItemMeta()) continue;
             if (!Objects.requireNonNull(itemStack.getItemMeta()).hasLore()) continue;
             List<String> lore = itemStack.getItemMeta().getLore();
-            ItemTypeEnum itemTypeEnum = ItemTypeEnum.matchType(itemStack);
-            if (itemTypeEnum == ItemTypeEnum.GEMSTONE) continue;
+            ItemType itemType = ItemType.matchType(itemStack);
+            if (itemType == ItemType.GEMSTONE) continue;
 
             if (lore != null) {
                 if (lore.contains(ChatColor.DARK_GRAY + "Soulbound")) {

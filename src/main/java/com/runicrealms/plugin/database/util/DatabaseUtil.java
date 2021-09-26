@@ -2,7 +2,7 @@ package com.runicrealms.plugin.database.util;
 
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
+import com.runicrealms.plugin.enums.CityLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -186,7 +186,7 @@ public class DatabaseUtil {
         } catch (Exception e) {
             // return hearth location
             Bukkit.getLogger().info("Error: legacy player location detected, re-spawning in tutorial!");
-            return HearthstoneLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK);
+            return CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK);
         }
     }
 

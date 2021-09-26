@@ -5,7 +5,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Set;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class LootChestManager {
 
     private static final int TASK_INTERVAL = 15; // seconds
 
     private final HashSet<LootChest> lootChests; // maps chest to respawn time
     private final LinkedHashMap<LootChest, Long> queuedChests;
-    private final RunicCore plugin = RunicCore.getInstance();
 
     private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
             "chests.yml");
@@ -32,27 +29,22 @@ public class LootChestManager {
 
         lootChests = new HashSet<>();
         queuedChests = new LinkedHashMap<>();
-
-//        // store all chest locations in a set
-//        File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-//                "chests.yml");
-//        FileConfiguration chestLocations = YamlConfiguration.loadConfiguration(chests);
-//        ConfigurationSection locations = chestLocations.getConfigurationSection("Chests.Locations");
-
         if (locations == null) return;
 
         /*
-        Initial spawning of chests from flatfile storage
+        Initial spawning of chests from flat file storage
          */
         try {
             for (String id : locations.getKeys(false)) {
                 String tier = locations.getString(id + ".tier");
+                LootChestRarity lootChestRarity = LootChestRarity.getFromIdentifier(tier);
+                if (lootChestRarity == null) continue;
                 World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
                 double x = locations.getDouble(id + ".x");
                 double y = locations.getDouble(id + ".y");
                 double z = locations.getDouble(id + ".z");
                 Location loc = new Location(world, x, y, z);
-                LootChest lootChest = new LootChest(id, tier, loc);
+                LootChest lootChest = new LootChest(id, lootChestRarity, loc);
                 lootChests.add(lootChest);
                 lootChest.getLocation().getBlock().setType(Material.CHEST);
             }
@@ -61,19 +53,8 @@ public class LootChestManager {
             e.printStackTrace();
         }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                regenChests();
-            }
-        }.runTaskTimer(this.plugin, 100, TASK_INTERVAL*20L); // time * seconds / ticks
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                particleTask();
-            }
-        }.runTaskTimerAsynchronously(this.plugin, 20, 3*20L);
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenChests, 100L, TASK_INTERVAL * 20L); // time * seconds / ticks
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::particleTask, 20L, 3 * 20L);
     }
 
     /**
@@ -91,7 +72,8 @@ public class LootChestManager {
             Location loc = chest.getLocation();
             if (!Objects.requireNonNull(loc.getWorld()).isChunkLoaded(loc.getChunk())) continue; // chunk must be loaded
             if (loc.getBlock().getType() == Material.CHEST) continue; // chest already loaded
-            if ((System.currentTimeMillis()-queuedChests.get(chest)) < matchTime(chest)*1000) continue;
+            if ((System.currentTimeMillis() - queuedChests.get(chest)) < chest.getLootChestRarity().getRespawnTime() * 1000L)
+                continue;
             loc.getBlock().setType(Material.CHEST);
             remove.add(chest);
             count++;
@@ -102,67 +84,60 @@ public class LootChestManager {
     }
 
     /**
-     * Returns an int, seconds, for how often a chest should spawn, based on tier.
+     * Generates particles based on the loot chest color
      */
-    private int matchTime(LootChest chest) {
-        switch (chest.getTier()) {
-            case "uncommon":
-                return 900; // 15 min
-            case "rare":
-                return 1200; // 20 min
-            case "epic":
-                return 2700; // 45 min
-            default:
-                return 600; // 10 min for common
-        }
-    }
-
     private void particleTask() {
-
         for (LootChest lootChest : lootChests) {
-            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk())) continue;
-            Location loc = lootChest.getLocation();
-            if (loc.getBlock().getType() != Material.CHEST) continue;
-            Color color;
-            switch (lootChest.getTier()) {
-                case "common":
-                    color = Color.WHITE;
-                    break;
-                case "uncommon":
-                    color = Color.LIME;
-                    break;
-                case "rare":
-                    color = Color.AQUA;
-                    break;
-                default:
-                    color = Color.FUCHSIA;
-                    break;
-            }
-
-            Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.REDSTONE, loc.clone().add(0.5, 0.5, 0.5),
-                    10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(color, 3));
+            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk()))
+                continue;
+            Location location = lootChest.getLocation();
+            if (location.getBlock().getType() != Material.CHEST) continue;
+            Objects.requireNonNull(location.getWorld()).spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
+                    10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
         }
     }
 
-    public LootChest getLootChest(Location loc) {
+    /**
+     * Grabs the LootChest object associated w/ the given location
+     *
+     * @param location of chest
+     * @return a LootChest object
+     */
+    public LootChest getLootChest(Location location) {
         for (LootChest lootChest : lootChests) {
-            if (lootChest.getLocation().equals(loc))
+            if (lootChest.getLocation().equals(location))
                 return lootChest;
         }
         return null;
     }
 
+    /**
+     * Grabs our in-memory set of loot chests
+     *
+     * @return a HashSet of loot chests
+     */
     public HashSet<LootChest> getLootChests() {
         return lootChests;
     }
 
+    /**
+     * Grabs our list of chests which are queued for respawn
+     *
+     * @return a linked hash map
+     */
     public LinkedHashMap<LootChest, Long> getQueuedChests() {
         return queuedChests;
     }
 
-    public LootChest getQueuedChest(Location loc) {
+    /**
+     * Grab the chest queued for respawn at the given location
+     *
+     * @param location to check
+     * @return a loot chest object
+     */
+    public LootChest getQueuedChest(Location location) {
         for (LootChest queuedChest : queuedChests.keySet()) {
-            if (queuedChest.getLocation().equals(loc))
+            if (queuedChest.getLocation().equals(location))
                 return queuedChest;
         }
         return null;
@@ -170,6 +145,7 @@ public class LootChestManager {
 
     /**
      * Checks whether there is a loot chest at target location.
+     *
      * @param location of loot chest
      * @return true if found, false if not
      */
@@ -180,6 +156,7 @@ public class LootChestManager {
     /**
      * Completely erases a loot chest at target location,
      * both removing it from memory and config.
+     *
      * @param location location of chest
      */
     public void removeLootChest(Location location) {

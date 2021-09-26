@@ -32,16 +32,16 @@ public class CharacterGuiManager implements Listener {
     private static final short ROGUE_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.rogue.damage");
     private static final short WARRIOR_ITEM_DURAB = (short) FILE_CONFIGURATION.getInt("class-icons.warrior.damage");
 
-    private static Map<UUID, CharacterGuiInfo> characterCache = new HashMap<UUID, CharacterGuiInfo>();
-    private static Map<UUID, CharacterGui> classMenu = new HashMap<UUID, CharacterGui>();
-    private static Map<UUID, Integer> deletingCharacters = new HashMap<UUID, Integer>();
+    private static final Map<UUID, CharacterGuiInfo> characterCache = new HashMap<>();
+    private static final Map<UUID, CharacterGui> classMenu = new HashMap<>();
+    private static final Map<UUID, Integer> deletingCharacters = new HashMap<>();
 
     private static ItemStack creationIcon;
     private static ItemStack onlyKnightCreateIcon;
     private static ItemStack onlyChampionCreateIcon;
     private static ItemStack goBackIcon;
     private static ItemStack confirmDeletionIcon;
-    private static Map<ClassEnum, ItemStack> classIcons = new HashMap<ClassEnum, ItemStack>();
+    private static final Map<ClassEnum, ItemStack> classIcons = new HashMap<>();
 
     public static void initIcons() {
 
@@ -293,16 +293,13 @@ public class CharacterGuiManager implements Listener {
                             if (event.getCurrentItem().getType() == confirmDeletionIcon.getType()) {
                                 classMenu.remove(event.getWhoClicked().getUniqueId());
                                 event.getWhoClicked().closeInventory();
-                                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        PlayerMongoData mongoData = new PlayerMongoData(event.getWhoClicked().getUniqueId().toString());
-                                        mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId()));
-                                        mongoData.save();
-                                        characterCache.get(event.getWhoClicked().getUniqueId()).removeCharacter(deletingCharacters.get(event.getWhoClicked().getUniqueId()));
-                                        deletingCharacters.remove(event.getWhoClicked());
-                                        openSelectGui((Player) event.getWhoClicked());
-                                    }
+                                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+                                    PlayerMongoData mongoData = new PlayerMongoData(event.getWhoClicked().getUniqueId().toString());
+                                    mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId()));
+                                    mongoData.save();
+                                    characterCache.get(event.getWhoClicked().getUniqueId()).removeCharacter(deletingCharacters.get(event.getWhoClicked().getUniqueId()));
+                                    deletingCharacters.remove(event.getWhoClicked().getUniqueId());
+                                    openSelectGui((Player) event.getWhoClicked());
                                 });
                             } else {
                                 classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
@@ -340,18 +337,15 @@ public class CharacterGuiManager implements Listener {
         if (event.getStatus() == PlayerResourcePackStatusEvent.Status.DECLINED ||
                 event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED ||
                 event.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD) {
-            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    UUID playerUuid = event.getPlayer().getUniqueId();
-                    try {
-                        characterCache.put(playerUuid, new CharacterGuiInfo(new PlayerMongoData(playerUuid.toString())));
-                        openSelectGui(event.getPlayer());
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
-                        characterCache.remove(playerUuid);
-                        classMenu.remove(playerUuid);
-                    }
+            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+                UUID playerUuid = event.getPlayer().getUniqueId();
+                try {
+                    characterCache.put(playerUuid, new CharacterGuiInfo(new PlayerMongoData(playerUuid.toString())));
+                    openSelectGui(event.getPlayer());
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    characterCache.remove(playerUuid);
+                    classMenu.remove(playerUuid);
                 }
             });
         }
@@ -385,7 +379,7 @@ public class CharacterGuiManager implements Listener {
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        List<String> lore = new ArrayList<String>(3);
+        List<String> lore = new ArrayList<>(3);
         lore.add(ChatColor.GRAY + "Level: " + ChatColor.GREEN + "" + character.getLevel());
         lore.add(ChatColor.GRAY + "Exp: " + ChatColor.GREEN + "" + character.getExp());
         lore.add(ChatColor.RED + "[Right click] to delete");

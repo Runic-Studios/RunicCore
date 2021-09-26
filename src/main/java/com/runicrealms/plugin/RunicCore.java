@@ -32,18 +32,17 @@ import com.runicrealms.plugin.player.listener.CombatListener;
 import com.runicrealms.plugin.player.CombatManager;
 import com.runicrealms.plugin.player.listener.ExpListener;
 import com.runicrealms.plugin.player.listener.PlayerLevelListener;
-import com.runicrealms.plugin.player.gear.OffhandListener;
+import com.runicrealms.plugin.player.listener.OffhandListener;
 import com.runicrealms.plugin.player.listener.PlayerJoinListener;
 import com.runicrealms.plugin.player.listener.PlayerMenuListener;
 import com.runicrealms.plugin.player.listener.PlayerQuitListener;
 import com.runicrealms.plugin.player.listener.PlayerRegenListener;
-import com.runicrealms.plugin.player.mana.ManaListener;
-import com.runicrealms.plugin.player.mana.RegenManager;
+import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
-import com.runicrealms.plugin.shop.*;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellScalingListener;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -92,6 +91,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static StatManager statManager;
     private static ThreeDManager threeDManager;
     private static RunicShopManager runicShopManager;
+    private static PlayerHungerManager playerHungerManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -174,6 +174,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return runicShopManager;
     }
 
+    public static PlayerHungerManager getPlayerHungerManager() {
+        return playerHungerManager;
+    }
+
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
     }
@@ -201,6 +205,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         statManager = new StatManager();
         threeDManager = new ThreeDManager();
         runicShopManager = new RunicShopManager();
+        playerHungerManager = new PlayerHungerManager();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
@@ -271,6 +276,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         statManager = null;
         threeDManager = null;
         runicShopManager = null;
+        playerHungerManager = null;
     }
 
     @EventHandler
@@ -324,7 +330,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PlayerMenuListener(), this);
         pm.registerEvents(new BlockBreakListener(), this);
         pm.registerEvents(new MinLevelListener(), this);
-        pm.registerEvents(new PlayerHungerManager(), this);
         pm.registerEvents(new KeyClickListener(), this);
         pm.registerEvents(new WorldChangeListener(), this);
         pm.registerEvents(new LootChestListener(), this);
@@ -353,6 +358,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new MobCleanupListener(), this);
         pm.registerEvents(new DeathListener(), this);
         pm.registerEvents(partyManager, this);
+        pm.registerEvents(new ArmorEquipListener(), this);
+        pm.registerEvents(new EnderpearlListener(), this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

@@ -2,13 +2,14 @@ package com.runicrealms.plugin.api;
 
 import co.aikar.commands.PaperCommandManager;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.enums.DungeonLocation;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
+import com.runicrealms.plugin.enums.CityLocation;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.listener.CombatListener;
-import com.runicrealms.plugin.player.mana.ManaListener;
+import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
@@ -42,6 +43,26 @@ public class RunicCoreAPI {
      */
     public static void beginTeleportation(Player player, Location location) {
         HearthstoneListener.beginTeleportation(player, location);
+    }
+
+    /**
+     * Checks whether the given location is within the given region
+     *
+     * @param location         to check
+     * @param regionIdentifier the string identifier of region "azana"
+     * @return true if the location is in the region
+     */
+    public static boolean containsRegion(Location location, String regionIdentifier) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return false;
+        for (ProtectedRegion region : regions) {
+            if (region.getId().contains(regionIdentifier))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -251,9 +272,9 @@ public class RunicCoreAPI {
     /**
      * Check if a player has required items (for quest or shops)
      *
-     * @param player to check
+     * @param player    to check
      * @param itemStack to check
-     * @param amount how many items do they need
+     * @param amount    how many items do they need
      * @return true if player has the items
      */
     public static boolean hasItems(Player player, ItemStack itemStack, int amount) {
@@ -323,9 +344,9 @@ public class RunicCoreAPI {
     }
 
     /**
-     * This does.. um. Idek.
+     * Registers a RunicItemShop in our in-memory collection
      *
-     * @param shop
+     * @param shop to register
      */
     public static void registerRunicItemShop(RunicItemShop shop) {
         RunicItemShopManager.registerShop(shop);
@@ -390,36 +411,45 @@ public class RunicCoreAPI {
         ManaListener.calculateMana(player);
     }
 
+
     /**
-     * Prevents hunger loss in capital cities
+     * Attempts to grab a dungeon location from the current location by checking the current region name
+     * Returns null if no dungeon is found
+     *
+     * @param location of the player or entity
+     * @return a dungeon location if found
      */
-    public static boolean isSafezone(Location loc) {
+    public static DungeonLocation getDungeonFromLocation(Location location) {
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(loc));
+        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return null;
+        for (ProtectedRegion region : regions) {
+            for (DungeonLocation dungeonLocation : DungeonLocation.values()) {
+                if (region.getId().contains(dungeonLocation.getIdentifier()))
+                    return dungeonLocation;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether the given location is within a city
+     *
+     * @param location to check
+     * @return true if it's within a city
+     */
+    public static boolean isSafezone(Location location) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
         Set<ProtectedRegion> regions = set.getRegions();
         if (regions == null) return false;
         for (ProtectedRegion region : regions) {
-            return cityNames().parallelStream().anyMatch(region.getId()::contains);
+            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> region.getId().contains(cityLocation.getIdentifier())))
+                return true;
         }
         return false;
-    }
-
-    private static List<String> cityNames() {
-        List<String> safeZones = new ArrayList<>();
-        safeZones.add("azana");
-        safeZones.add("koldore");
-        safeZones.add("whaletown");
-        safeZones.add("hilstead");
-        safeZones.add("wintervale");
-        safeZones.add("dawnshire");
-        safeZones.add("dead_mans_rest");
-        safeZones.add("isfodar");
-        safeZones.add("tireneas");
-        safeZones.add("zenyth");
-        safeZones.add("naheen");
-        safeZones.add("nazmora");
-        safeZones.add("frosts_end");
-        return safeZones;
     }
 }

@@ -34,7 +34,8 @@ public class GenericDamageEvent extends RunicDamageEvent {
         FALL_DAMAGE(EntityDamageEvent.DamageCause.FALL),
         FIRE(EntityDamageEvent.DamageCause.FIRE),
         LAVA(EntityDamageEvent.DamageCause.LAVA),
-        MAGMA_BLOCK(EntityDamageEvent.DamageCause.HOT_FLOOR);
+        MAGMA_BLOCK(EntityDamageEvent.DamageCause.HOT_FLOOR),
+        STARVATION(EntityDamageEvent.DamageCause.STARVATION);
 
         private final EntityDamageEvent.DamageCause cause;
 

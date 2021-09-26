@@ -4,11 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
-public enum ItemTypeEnum {
+public enum ItemType {
 
     CLOTH, LEATHER, GILDED, MAIL, PLATE, GEMSTONE, MAINHAND, OFFHAND, CONSUMABLE, ARCHER, CLERIC, MAGE, ROGUE, WARRIOR, AIR;
 
-    public static ItemTypeEnum matchType(final ItemStack itemStack){
+    public static ItemType matchType(final ItemStack itemStack){
         if(itemStack == null) { return null; }
         if (itemStack.getType() == Material.SHEARS) {
             switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
@@ -17,7 +17,7 @@ public enum ItemTypeEnum {
                 case 20:
                     return GILDED; // (gold)
                 case 15:
-                    return MAIL; // (chainmail)
+                    return MAIL; // (chain mail)
                 case 10:
                     return LEATHER; // (leather)
                 case 5:

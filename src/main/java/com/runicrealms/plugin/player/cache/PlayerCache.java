@@ -29,6 +29,7 @@ public class PlayerCache {
 
     private int currentHealth;
     private int maxMana;
+    private final int storedHunger;
 
     private boolean isOutlaw;
     private int rating;
@@ -53,6 +54,7 @@ public class PlayerCache {
         this.profExp = 0;
         this.currentHealth = HealthUtils.getBaseHealth();
         this.maxMana = RunicCore.getRegenManager().getBaseMana();
+        this.storedHunger = 20;
         this.isOutlaw = false;
         this.rating = RunicCore.getBaseOutlawRating();
         this.inventoryContents = new ItemStack[41]; // empty inventory, todo: this may be bugged
@@ -62,22 +64,24 @@ public class PlayerCache {
 
     /**
      * For players who already have a profile.
-     * @param playerID uuid of player
-     * @param guild uuid of player's guild
-     * @param className name of player's class
-     * @param profName name of player's profession
-     * @param classLevel player's class level
-     * @param classExp player's total class exp
-     * @param profLevel player's profession level
-     * @param profExp player's total prof exp
+     *
+     * @param playerID      uuid of player
+     * @param guild         uuid of player's guild
+     * @param className     name of player's class
+     * @param profName      name of player's profession
+     * @param classLevel    player's class level
+     * @param classExp      player's total class exp
+     * @param profLevel     player's profession level
+     * @param profExp       player's total prof exp
      * @param currentHealth player's health at time of object call
-     * @param maxMana player's max mana
-     * @param isOutlaw player's outlaw status
-     * @param rating player's outlaw rating
+     * @param maxMana       player's max mana
+     * @param storedHunger  the player hunger level when they last logged off
+     * @param isOutlaw      player's outlaw status
+     * @param rating        player's outlaw rating
      */
     public PlayerCache(int characterSlot, UUID playerID, String guild, String className, String profName,
                        int classLevel, int classExp, int profLevel, int profExp,
-                       int currentHealth, int maxMana,
+                       int currentHealth, int maxMana, int storedHunger,
                        boolean isOutlaw, int rating,
                        ItemStack[] inventoryContents, Location location, PlayerMongoData mongoData) {
         this.mongoData = mongoData;
@@ -92,6 +96,7 @@ public class PlayerCache {
         this.profExp = profExp;
         this.currentHealth = currentHealth;
         this.maxMana = maxMana;
+        this.storedHunger = storedHunger;
         this.isOutlaw = isOutlaw;
         this.rating = rating;
         this.inventoryContents = inventoryContents;
@@ -180,6 +185,10 @@ public class PlayerCache {
 
     public void setMaxMana(int maxMana) {
         this.maxMana = maxMana;
+    }
+
+    public int getStoredHunger() {
+        return storedHunger;
     }
 
     public boolean getIsOutlaw() {

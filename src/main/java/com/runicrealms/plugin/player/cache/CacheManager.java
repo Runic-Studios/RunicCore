@@ -10,7 +10,7 @@ import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneLocation;
+import com.runicrealms.plugin.enums.CityLocation;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -64,9 +64,12 @@ public class CacheManager implements Listener {
         }
     }
 
-    /*
+    /**
      * Also used on server disable and logout. Updates information about player and adds them to data queue for saving.
      * IMPORTANT: Inventory and Location and saved here
+     *
+     * @param playerCache the object which is storing their information
+     * @param willQueue   whether to save immediately or queue file for saving
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
         Player pl = Bukkit.getPlayer(playerCache.getPlayerID());
@@ -85,8 +88,12 @@ public class CacheManager implements Listener {
         }
     }
 
-    /*
-     * Writes data async
+    /**
+     * Generally saves files async unless specified otherwise
+     *
+     * @param limitSize       manually "squeeze" the amount of files that may be saved at a time to guarantee performance
+     * @param saveAsync       whether to save the data async (true in most cases, unless shutdown)
+     * @param cacheSaveReason the method it's using to save (running task, logout, shutdown, etc.)
      */
     public void saveQueuedFiles(boolean limitSize, boolean saveAsync, CacheSaveReason cacheSaveReason) {
         int limit;
@@ -105,6 +112,14 @@ public class CacheManager implements Listener {
         }
     }
 
+    /**
+     * This is our main method for updating a player's database document in Atlas
+     *
+     * @param playerCache     the object which is storing their information
+     * @param player          player to save data for
+     * @param saveAsync       whether to save the data async (true in most cases, unless shutdown)
+     * @param cacheSaveReason the method it's using to save (running task, logout, shutdown, etc.)
+     */
     public void setFieldsSaveFile(PlayerCache playerCache, Player player, boolean saveAsync,
                                   CacheSaveReason cacheSaveReason) {
         try {
@@ -129,6 +144,7 @@ public class CacheManager implements Listener {
             // stats (health is updated above)
             character.set("currentHP", playerCache.getCurrentHealth());
             character.set("maxMana", playerCache.getMaxMana());
+            character.set("storedHunger", player.getFoodLevel());
             // outlaw
             character.set("outlaw.enabled", playerCache.getIsOutlaw());
             character.set("outlaw.rating", playerCache.getRating());
@@ -169,6 +185,13 @@ public class CacheManager implements Listener {
         return playerCaches.get(pl) != null;
     }
 
+    /**
+     * Restores player info from MongoDB when they load their character
+     *
+     * @param player to load character for
+     * @param slot   of the character to load
+     * @return a cache of info with all relevant information
+     */
     public PlayerCache buildPlayerCache(Player player, Integer slot) {
 
         PlayerMongoData mongoData = new PlayerMongoData(player.getPlayer().getUniqueId().toString());
@@ -186,15 +209,10 @@ public class CacheManager implements Listener {
 
         int currentHealth = character.get("currentHP", Integer.class);
         int maxMana = character.get("maxMana", Integer.class);
+        int storedHunger = character.get("storedHunger", Integer.class) != null ? character.get("storedHunger", Integer.class) : 20;
 
         boolean isOutlaw = character.get("outlaw.enabled", Boolean.class);
         int rating = character.get("outlaw.rating", Integer.class);
-
-        /*ItemStack[] inventoryContents;
-        if (character.has("inventoryNew"))
-            inventoryContents = DatabaseUtil.loadInventoryNew(character.get("inventoryNew", String.class));
-        else
-            inventoryContents = DatabaseUtil.loadInventory(character.get("inventory", String.class));*/
 
         Location location = DatabaseUtil.loadLocation(player, character);
 
@@ -203,18 +221,20 @@ public class CacheManager implements Listener {
                 guildName, className, profName,
                 classLevel, classExp,
                 profLevel, profExp,
-                currentHealth, maxMana,
+                currentHealth, maxMana, storedHunger,
                 isOutlaw, rating,
                 /*inventoryContents*/null, location, mongoData);
     }
 
-    /*
-     * Call on-join
+    /**
+     * Builds a new database document for the given player if it doesn't already exist when they join server/lobby
+     *
+     * @param player who joined
      */
-    public void tryCreateNewPlayer(Player pl) {
-        UUID uuid = pl.getUniqueId();
+    public void tryCreateNewPlayer(Player player) {
+        UUID uuid = player.getUniqueId();
         /*
-        If the data file doesn't exist, we're gonna build it
+        If the data file doesn't exist, we're going to build it
          */
         if (RunicCore.getDatabaseManager().getPlayerData().find
                 (Filters.eq("player_uuid", uuid.toString())).first() == null) {
@@ -224,8 +244,12 @@ public class CacheManager implements Listener {
         }
     }
 
-    /*
-     * Call from RunicCharacters
+    /**
+     * Attempts to populate the document for given character and slot with basic values
+     *
+     * @param player    who created a new character
+     * @param className the name of the class
+     * @param slot      the slot of the character
      */
     public void tryCreateNewCharacter(Player player, String className, Integer slot) {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
@@ -238,10 +262,10 @@ public class CacheManager implements Listener {
         mongoDataSection.set("prof.exp", 0);
         mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
         mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
+        mongoDataSection.set("storedHunger", 20);
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        //mongoDataSection.set("inventoryNew", DatabaseUtil.serializeInventory(new ItemStack[41])); // empty inventory
-        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), HearthstoneLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
+        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial fortress
         mongoData.save();
     }
 }

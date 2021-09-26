@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.enums.WeaponEnum;
+import com.runicrealms.plugin.enums.WeaponType;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -44,14 +44,14 @@ public class BowListener implements Listener {
         // retrieve the weapon type
         ItemStack artifact = e.getItem();
         if (e.getPlayer().getInventory().getItemInOffHand().equals(artifact)) return; // don't let them fire from offhand
-        WeaponEnum artifactType = WeaponEnum.matchType(artifact);
+        WeaponType artifactType = WeaponType.matchType(artifact);
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
         // only listen for items that can be artifact weapons
         if (artifactType == null) return;
 
         // only listen for bows
-        if (!(artifactType.equals(WeaponEnum.BOW))) return;
+        if (!(artifactType.equals(WeaponType.BOW))) return;
 
         Player pl = e.getPlayer();
 

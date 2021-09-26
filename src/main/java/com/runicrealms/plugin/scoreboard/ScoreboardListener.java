@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.scoreboard;
 
-import com.codingforcookies.armorequip.ArmorEquipEvent;
+import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.entity.Player;
