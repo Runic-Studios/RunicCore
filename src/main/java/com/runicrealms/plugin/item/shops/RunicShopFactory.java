@@ -69,7 +69,7 @@ public class RunicShopFactory {
 
     public RunicShopGeneric getBaker() {
         LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(4, "Coin", bread));
+        shopItems.add(new RunicShopItem(6, "Coin", bread));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Baker", Arrays.asList(115, 116, 118, 119, 120, 121, 124, 125, 126), shopItems);
     }
 

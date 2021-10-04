@@ -19,7 +19,7 @@ import java.util.UUID;
 public class RegenManager implements Listener {
 
     private static final int HEALTH_REGEN_AMT = 10;
-    private static final int SAFEZONE_MULTIPLIER = 10;
+    private static final int OOC_MULTIPLIER = 5; // out-of-combat
     private static final int REGEN_PERIOD = 4; // seconds
 
     private static final int BASE_MANA = 100;
@@ -44,13 +44,13 @@ public class RegenManager implements Listener {
      */
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            if (RunicCoreAPI.isSafezone(online.getLocation())) {
+            if (online.getFoodLevel() < PlayerHungerManager.getInvigoratedHungerThreshold()) continue;
+            if (RunicCoreAPI.isSafezone(online.getLocation()) || !RunicCoreAPI.isInCombat(online)) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT * SAFEZONE_MULTIPLIER);
+                    HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT * OOC_MULTIPLIER);
                     Bukkit.getPluginManager().callEvent(event);
                 });
             } else {
-                if (!RunicCore.getPlayerHungerManager().getInvigoratedPlayers().contains(online.getUniqueId())) continue;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                     HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT);
                     Bukkit.getPluginManager().callEvent(event);
