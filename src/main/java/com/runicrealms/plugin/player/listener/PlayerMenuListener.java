@@ -4,6 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.professions.GatherPlayer;
+import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
@@ -105,9 +107,10 @@ public class PlayerMenuListener implements Listener {
     }
 
     /**
+     * The info item for the player's gathering levels
      *
-     * @param player
-     * @return
+     * @param player to display menu for
+     * @return an Itemstack to display
      */
     private ItemStack gatheringLevelItemStack(Player player) {
         return item(player, Material.IRON_PICKAXE, "&eGathering Levels",
@@ -194,18 +197,39 @@ public class PlayerMenuListener implements Listener {
         String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
                 "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
         return dexterityString + intelligenceString + strengthString + vitalityString + wisdomString;
-        // todo: crit, dodge, attack speed
+        // todo crit, dodge, attack speed
     }
 
+    /**
+     * Builds the visual menu for the player's gathering skills
+     *
+     * @param uuid of player to build menu for
+     * @return a String to display in item menu
+     */
     private String gatheringSkills(UUID uuid) {
-        return ColorUtil.format
-                (
-                        "&7Farming Lv. &f0\n" +
-                                "&7Fishing Lv. &f0\n" +
-                                "&7Gathering Lv. &f0\n" +
-                                "&7Mining Lv. &f0\n" +
-                                "&7Woodcutting Lv. &f0\n"
-                );
+        GatherPlayer gatherPlayer = RunicProfessionsAPI.getGatherPlayer(uuid);
+        if (gatherPlayer == null) {
+            return ColorUtil.format
+                    (
+                            "&eCooking &7Lv. &f0\n" +
+                                    "&eFarming &7Lv. &f0\n" +
+                                    "&eFishing &7Lv. &f0\n" +
+                                    "&eHarvesting &7Lv. &f0\n" +
+                                    "&eMining &7Lv. &f0\n" +
+                                    "&eWoodcutting &7Lv. &f0\n"
+                    );
+        } else {
+            // todo green if > 0, gold if == MAX_GATHERING
+            return ColorUtil.format
+                    (
+                            "&eCooking &7Lv. &f" + gatherPlayer.getCookingLevel() + "\n" +
+                                    "&eFarming &7Lv. &f" + gatherPlayer.getFarmingLevel() + "\n" +
+                                    "&eFishing &7Lv. &f" + gatherPlayer.getFishingLevel() + "\n" +
+                                    "&eHarvesting &7Lv. &f" + gatherPlayer.getHarvestingLevel() + "\n" +
+                                    "&eMining &7Lv. &f" + gatherPlayer.getMiningLevel() + "\n" +
+                                    "&eWoodcutting &7Lv. &f" + gatherPlayer.getWoodcuttingLevel() + "\n"
+                    );
+        }
     }
 
     /**

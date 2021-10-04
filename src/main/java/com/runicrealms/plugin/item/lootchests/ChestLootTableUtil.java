@@ -53,7 +53,7 @@ public class ChestLootTableUtil {
         commonLootTable.addEntry(thread, 8.0);
         commonLootTable.addEntry(animalHide, 8.0);
         commonLootTable.addEntry(uncutRuby, 8.0);
-        commonLootTable.addEntry(bottle, 8.0);
+        commonLootTable.addEntry(bottle, 16.0);
         commonLootTable.addEntry(salmon, 8.0);
 
         commonLootTable.addEntry(gatheringAxe, 4.0);
@@ -114,7 +114,7 @@ public class ChestLootTableUtil {
         uncommonLootTable.addEntry(animalHide, 8.0);
         uncommonLootTable.addEntry(uncutRuby, 8.0);
         uncommonLootTable.addEntry(uncutSapphire, 8.0);
-        uncommonLootTable.addEntry(bottle, 8.0);
+        uncommonLootTable.addEntry(bottle, 16.0);
         uncommonLootTable.addEntry(cod, 8.0);
 
         uncommonLootTable.addEntry(gatheringAxe, 3.0);
@@ -176,7 +176,7 @@ public class ChestLootTableUtil {
         rareLootTable.addEntry(uncutRuby, 8.0);
         rareLootTable.addEntry(uncutSapphire, 8.0);
         rareLootTable.addEntry(uncutOpal, 8.0);
-        rareLootTable.addEntry(bottle, 8.0);
+        rareLootTable.addEntry(bottle, 16.0);
         rareLootTable.addEntry(tropical, 8.0);
 
         rareLootTable.addEntry(gatheringAxe, 2.0);
@@ -243,7 +243,7 @@ public class ChestLootTableUtil {
         epicLootTable.addEntry(uncutEmerald, 8.0);
         epicLootTable.addEntry(uncutDiamond, 8.0);
 
-        epicLootTable.addEntry(bottle, 8.0);
+        epicLootTable.addEntry(bottle, 16.0);
         epicLootTable.addEntry(pufferfish, 8.0);
 
         epicLootTable.addEntry(gatheringAxe, 2.0);

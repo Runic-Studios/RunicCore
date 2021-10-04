@@ -82,7 +82,7 @@ public class RunicGiveCMD extends BaseCommand {
 
         // skip all other calculations for quest exp
         int exp = Integer.parseInt(args[1]);
-        ProfExpUtil.giveExperience(pl, exp, true);
+        ProfExpUtil.giveCraftingExperience(pl, exp, true);
 
     }
 }
