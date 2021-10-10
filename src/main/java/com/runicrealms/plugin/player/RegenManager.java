@@ -18,8 +18,9 @@ import java.util.UUID;
  */
 public class RegenManager implements Listener {
 
-    private static final int HEALTH_REGEN_AMT = 10;
-    private static final int OOC_MULTIPLIER = 5; // out-of-combat
+    private static final int HEALTH_REGEN_BASE_VALUE = 5;
+    private static final double HEALTH_REGEN_LEVEL_MULTIPLIER = 0.15;
+    private static final int OOC_MULTIPLIER = 4; // out-of-combat
     private static final int REGEN_PERIOD = 4; // seconds
 
     private static final int BASE_MANA = 100;
@@ -45,14 +46,15 @@ public class RegenManager implements Listener {
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
             if (online.getFoodLevel() < PlayerHungerManager.getInvigoratedHungerThreshold()) continue;
+            int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
             if (RunicCoreAPI.isSafezone(online.getLocation()) || !RunicCoreAPI.isInCombat(online)) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT * OOC_MULTIPLIER);
+                    HealthRegenEvent event = new HealthRegenEvent(online, regenAmount * OOC_MULTIPLIER);
                     Bukkit.getPluginManager().callEvent(event);
                 });
             } else {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    HealthRegenEvent event = new HealthRegenEvent(online, HEALTH_REGEN_AMT);
+                    HealthRegenEvent event = new HealthRegenEvent(online, regenAmount);
                     Bukkit.getPluginManager().callEvent(event);
                 });
             }
