@@ -4,8 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.professions.GatherPlayer;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
+import com.runicrealms.plugin.professions.gathering.GatherPlayer;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
@@ -56,7 +56,7 @@ public class PlayerMenuListener implements Listener {
                         "\n&7Here are the combat bonuses" +
                                 "\n&7of your character! They" +
                                 "\n&7come from your stats," +
-                                "\n&7which you can check below" +
+                                "\n&7which you can check" +
                                 "\n&7in &eCharacter Stats&7!\n\n" +
                                 combatPercentages(uuid));
 
@@ -222,12 +222,12 @@ public class PlayerMenuListener implements Listener {
             // todo green if > 0, gold if == MAX_GATHERING
             return ColorUtil.format
                     (
-                            "&eCooking &7Lv. &f" + gatherPlayer.getCookingLevel() + "\n" +
-                                    "&eFarming &7Lv. &f" + gatherPlayer.getFarmingLevel() + "\n" +
-                                    "&eFishing &7Lv. &f" + gatherPlayer.getFishingLevel() + "\n" +
-                                    "&eHarvesting &7Lv. &f" + gatherPlayer.getHarvestingLevel() + "\n" +
-                                    "&eMining &7Lv. &f" + gatherPlayer.getMiningLevel() + "\n" +
-                                    "&eWoodcutting &7Lv. &f" + gatherPlayer.getWoodcuttingLevel() + "\n"
+                            "&eCooking &7Lv. &f" + gatherPlayer.getCookingLevel() + " &8(" + gatherPlayer.getCookingExp() + "exp)\n" +
+                                    "&eFarming &7Lv. &f" + gatherPlayer.getFarmingLevel() + " &8(" + gatherPlayer.getFarmingExp() + "exp)\n" +
+                                    "&eFishing &7Lv. &f" + gatherPlayer.getFishingLevel() + " &8(" + gatherPlayer.getFishingExp() + "exp)\n" +
+                                    "&eHarvesting &7Lv. &f" + gatherPlayer.getHarvestingLevel() + " &8(" + gatherPlayer.getHarvestingExp() + "exp)\n" +
+                                    "&eMining &7Lv. &f" + gatherPlayer.getMiningLevel() + " &8(" + gatherPlayer.getMiningExp() + "exp)\n" +
+                                    "&eWoodcutting &7Lv. &f" + gatherPlayer.getWoodcuttingLevel() + " &8(" + gatherPlayer.getWoodcuttingExp() + "exp)\n"
                     );
         }
     }
