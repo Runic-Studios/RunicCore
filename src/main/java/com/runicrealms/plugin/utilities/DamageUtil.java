@@ -62,14 +62,11 @@ public class DamageUtil {
      * @param caster       player who cast the healing spell
      * @param isAutoAttack whether the attack will be treated as an auto attack (for on-hit effects)
      * @param isRanged     whether the attack is ranged
-     * @param bypassNoTick whether the attack can skip waiting for the weapon cooldown (spells generally)
+     * @param bypassNoTick deprecated and should be removed
      * @param spell        include a reference to spell for spell scaling
      */
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
                                           boolean isAutoAttack, boolean isRanged, boolean bypassNoTick, Spell... spell) {
-
-        // no damage ticks delay
-        if (!bypassNoTick && recipient.getNoDamageTicks() > 0) return;
 
         // prevent healing
         if (dmgAmt < 0) {

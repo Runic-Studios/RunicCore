@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Handles the mage auto-attack
+ *
  * @author Skyfallin
  */
 public class StaffListener implements Listener {
@@ -54,11 +55,11 @@ public class StaffListener implements Listener {
         // only listen for left clicks
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) return;
 
-        // only apply cooldown if its not already active
+        // only apply cooldown if it's not already active
         if (cooldown != 0) return;
 
-         // cancel the event, run custom mechanics
-         e.setCancelled(true);
+        // cancel the event, run custom mechanics
+        e.setCancelled(true);
 
         // check for mage
         String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
@@ -71,35 +72,56 @@ public class StaffListener implements Listener {
         pl.setCooldown(artifact.getType(), STAFF_COOLDOWN);
     }
 
+    /**
+     * Function to begin staff attack
+     *
+     * @param player    who initiated attack
+     * @param itemStack to be passed down to damage function
+     */
     private void staffAttack(Player player, ItemStack itemStack) {
-        createStaffParticle(player, player.getEyeLocation(), player.getTargetBlock(null, MAX_DIST).getLocation(), itemStack);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+        createStaffParticle(player, player.getEyeLocation(), player.getTargetBlock(null, MAX_DIST).getLocation(), itemStack);
     }
 
-    private void createStaffParticle(Player pl, Location point1, Location point2, ItemStack itemStack) {
+    /**
+     * Summon a vector which acts as our staff attack
+     *
+     * @param player    who conjured attack
+     * @param point1    eye location of player
+     * @param point2    player's target block
+     * @param itemStack to be passed to the damage function
+     */
+    private void createStaffParticle(Player player, Location point1, Location point2, ItemStack itemStack) {
         double space = 0.5;
         double distance = point1.distance(point2);
         Vector p1 = point1.toVector();
         Vector p2 = point2.toVector();
         Vector vector = p2.clone().subtract(p1).normalize().multiply(space);
         for (double length = 0; length < distance; p1.add(vector)) {
-            Location vectorLocation = p1.toLocation(pl.getWorld());
-            for (Entity en : pl.getWorld().getNearbyEntities(p1.toLocation(pl.getWorld()), RADIUS, RADIUS, RADIUS)) {
-                EnemyVerifyEvent e = new EnemyVerifyEvent(pl, en);
+            Location vectorLocation = p1.toLocation(player.getWorld());
+            for (Entity en : player.getWorld().getNearbyEntities(p1.toLocation(player.getWorld()), RADIUS, RADIUS, RADIUS)) {
+                EnemyVerifyEvent e = new EnemyVerifyEvent(player, en);
                 Bukkit.getServer().getPluginManager().callEvent(e);
                 if (e.isCancelled()) continue;
                 if (en.getLocation().distanceSquared(vectorLocation) <= BEAM_HITBOX_SIZE * BEAM_HITBOX_SIZE) {
-                    damageStaff(pl, (LivingEntity) en, itemStack);
+                    damageStaff(player, (LivingEntity) en, itemStack);
                     return;
                 }
             }
-            pl.getWorld().spawnParticle(Particle.CRIT_MAGIC,
-                    new Location(pl.getWorld(), p1.getX(), p1.getY(), p1.getZ()), 25, 0, 0, 0, 0);
+            player.getWorld().spawnParticle(Particle.CRIT_MAGIC,
+                    new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()), 25, 0, 0, 0, 0);
             length += space;
         }
     }
 
-    private void damageStaff(Player pl, LivingEntity victim, ItemStack artifact) {
+    /**
+     * Create a WeaponDamageEvent for our staff attack
+     *
+     * @param player   who summoned staff attack
+     * @param victim   to be damaged
+     * @param artifact held item to read damage values from
+     */
+    private void damageStaff(Player player, LivingEntity victim, ItemStack artifact) {
 
         int minDamage;
         int maxDamage;
@@ -116,20 +138,20 @@ public class StaffListener implements Listener {
             reqLv = 1;
         }
 
-        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
-            pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-            pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
             return;
         }
 
         // apply attack effects, random damage amount
         if (maxDamage != 0) {
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            DamageUtil.damageEntityWeapon(randomNum, victim, pl, true, true, false);
+            DamageUtil.damageEntityWeapon(randomNum, victim, player, true, true, true);
         } else {
-            DamageUtil.damageEntityWeapon(maxDamage, victim, pl, true, true, false);
+            DamageUtil.damageEntityWeapon(maxDamage, victim, player, true, true, true);
         }
 
-        pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
     }
 }
