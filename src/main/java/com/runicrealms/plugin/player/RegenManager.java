@@ -45,7 +45,6 @@ public class RegenManager implements Listener {
      */
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            if (online.getFoodLevel() < PlayerHungerManager.getInvigoratedHungerThreshold()) continue;
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
             if (RunicCoreAPI.isSafezone(online.getLocation()) || !RunicCoreAPI.isInCombat(online)) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
@@ -19,8 +20,9 @@ public class PlayerHungerManager implements Listener {
 
     private static final int HUNGER_TICK_TASK_DELAY = 60; // seconds
     private static final int PLAYER_HUNGER_TIME = 60; // tick time in seconds
-    private static final int INVIGORATED_HUNGER_THRESHOLD = 17; // hunger level to receive regen
+    private static final int INVIGORATED_HUNGER_THRESHOLD = 6; // hunger level to receive regen
     private static final int STARVATION_HUNGER_LEVEL = 1;
+    private static final double HALF_HUNGER_REGEN_MULTIPLIER = 0.5;
 
     public PlayerHungerManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
@@ -53,18 +55,20 @@ public class PlayerHungerManager implements Listener {
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player player = (Player) event.getEntity();
-        if (event.getFoodLevel() <= player.getFoodLevel()) {
+        if (event.getFoodLevel() <= player.getFoodLevel())
             event.setCancelled(true);
-        } else {
-            if (event.getFoodLevel() >= INVIGORATED_HUNGER_THRESHOLD && player.getFoodLevel() < INVIGORATED_HUNGER_THRESHOLD) { // no duplicate messages
-                player.sendMessage
-                        (
-                                ChatColor.YELLOW + "You are now " +
-                                        ChatColor.YELLOW + ChatColor.ITALIC +
-                                        "invigorated" + ChatColor.YELLOW +
-                                        ", regenerating health over time."
-                        );
-            }
+    }
+
+    /**
+     * Reduces regen for players below half hunger
+     */
+    @EventHandler
+    public void onHealthRegen(HealthRegenEvent e) {
+        int foodLevel = e.getPlayer().getFoodLevel();
+        if (foodLevel <= INVIGORATED_HUNGER_THRESHOLD) {
+            e.setCancelled(true);
+        } else if (foodLevel <= 10) {
+            e.setAmount((int) (e.getAmount() * HALF_HUNGER_REGEN_MULTIPLIER));
         }
     }
 
@@ -84,5 +88,9 @@ public class PlayerHungerManager implements Listener {
 
     public static int getInvigoratedHungerThreshold() {
         return INVIGORATED_HUNGER_THRESHOLD;
+    }
+
+    public static double getHalfHungerRegenMultiplier() {
+        return HALF_HUNGER_REGEN_MULTIPLIER;
     }
 }

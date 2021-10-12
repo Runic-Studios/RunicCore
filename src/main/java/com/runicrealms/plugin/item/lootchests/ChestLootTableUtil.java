@@ -29,7 +29,7 @@ public class ChestLootTableUtil {
         ItemStack oakWood = runicItem("OakWood", 3, 5);
         ItemStack thread = runicItem("Thread", 3, 5);
         ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("UncutRuby", 2, 3);
+        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
         ItemStack bottle = runicItem("Bottle", 2, 3);
         ItemStack salmon = runicItem("Salmon", 2, 3);
 
@@ -87,8 +87,8 @@ public class ChestLootTableUtil {
         ItemStack oakWood = runicItem("OakWood", 3, 5);
         ItemStack thread = runicItem("Thread", 3, 5);
         ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("UncutRuby", 2, 3);
-        ItemStack uncutSapphire = runicItem("UncutSapphire", 2, 3);
+        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
+        ItemStack uncutSapphire = runicItem("uncut-sapphire", 2, 3);
         ItemStack bottle = runicItem("Bottle", 3, 5);
         ItemStack cod = runicItem("Cod", 2, 3);
 
@@ -148,9 +148,9 @@ public class ChestLootTableUtil {
         ItemStack oakWood = runicItem("OakWood", 3, 5);
         ItemStack thread = runicItem("Thread", 3, 5);
         ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("UncutRuby", 2, 3);
-        ItemStack uncutSapphire = runicItem("UncutSapphire", 2, 3);
-        ItemStack uncutOpal = runicItem("UncutOpal", 2, 3);
+        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
+        ItemStack uncutSapphire = runicItem("uncut-sapphire", 2, 3);
+        ItemStack uncutOpal = runicItem("uncut-opal", 2, 3);
         ItemStack bottle = runicItem("Bottle", 3, 5);
         ItemStack tropical = runicItem("Tropical", 2, 3);
 
@@ -210,11 +210,11 @@ public class ChestLootTableUtil {
         ItemStack oakWood = runicItem("OakWood", 3, 5);
         ItemStack thread = runicItem("Thread", 3, 5);
         ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("UncutRuby", 2, 3);
-        ItemStack uncutSapphire = runicItem("UncutSapphire", 2, 3);
-        ItemStack uncutOpal = runicItem("UncutOpal", 2, 3);
-        ItemStack uncutEmerald = runicItem("UncutEmerald", 2, 3);
-        ItemStack uncutDiamond = runicItem("UncutDiamond", 2, 3);
+        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
+        ItemStack uncutSapphire = runicItem("uncut-sapphire", 2, 3);
+        ItemStack uncutOpal = runicItem("uncut-opal", 2, 3);
+        ItemStack uncutEmerald = runicItem("uncut-emerald", 2, 3);
+        ItemStack uncutDiamond = runicItem("uncut-diamond", 2, 3);
         ItemStack bottle = runicItem("Bottle", 3, 5);
         ItemStack pufferfish = runicItem("Pufferfish", 2, 3);
 
