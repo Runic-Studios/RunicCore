@@ -227,7 +227,8 @@ public class PlayerMenuListener implements Listener {
                                     "&eFishing &7Lv. &f" + gatherPlayer.getFishingLevel() + " &8(" + gatherPlayer.getFishingExp() + "exp)\n" +
                                     "&eHarvesting &7Lv. &f" + gatherPlayer.getHarvestingLevel() + " &8(" + gatherPlayer.getHarvestingExp() + "exp)\n" +
                                     "&eMining &7Lv. &f" + gatherPlayer.getMiningLevel() + " &8(" + gatherPlayer.getMiningExp() + "exp)\n" +
-                                    "&eWoodcutting &7Lv. &f" + gatherPlayer.getWoodcuttingLevel() + " &8(" + gatherPlayer.getWoodcuttingExp() + "exp)\n"
+                                    "&eWoodcutting &7Lv. &f" + gatherPlayer.getWoodcuttingLevel() + " &8(" + gatherPlayer.getWoodcuttingExp() + "exp)\n" +
+                                    "&7Total Skill Level: " + (gatherPlayer.getCookingLevel() + gatherPlayer.getFarmingLevel() + gatherPlayer.getFishingLevel() + gatherPlayer.getHarvestingLevel() + gatherPlayer.getMiningLevel() + gatherPlayer.getWoodcuttingLevel())
                     );
         }
     }
