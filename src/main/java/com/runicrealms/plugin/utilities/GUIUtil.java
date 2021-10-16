@@ -23,6 +23,16 @@ public class GUIUtil {
         return backButton;
     }
 
+    public static ItemStack closeButton() {
+        ItemStack closeButton = new ItemStack(Material.BARRIER);
+        ItemMeta meta = closeButton.getItemMeta();
+        if (meta == null) return closeButton;
+        meta.setDisplayName(ChatColor.RED + "Close");
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Close the menu"));
+        closeButton.setItemMeta(meta);
+        return closeButton;
+    }
+
     // creates the visual menu w/ String
     public static ItemStack dispItem(Material material, ChatColor color, String displayName, String description) {
 
@@ -85,7 +95,15 @@ public class GUIUtil {
         return item;
     }
 
-    public static ItemStack dispItem(Material material, String name, String[] lore) {
+    /**
+     * This...
+     * @param material
+     * @param name
+     * @param lore
+     * @param durability
+     * @return
+     */
+    public static ItemStack dispItem(Material material, String name, String[] lore, Integer... durability) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
@@ -94,6 +112,10 @@ public class GUIUtil {
             list.add(ChatColor.translateAlternateColorCodes('&', line));
         }
         meta.setLore(list);
+        if (durability.length > 0) {
+            ((Damageable) meta).setDamage(durability[0]);
+            meta.setUnbreakable(true);
+        }
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         return item;

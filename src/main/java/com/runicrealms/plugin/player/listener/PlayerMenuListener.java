@@ -5,7 +5,6 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
-import com.runicrealms.plugin.professions.gathering.GatherPlayer;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
@@ -31,8 +30,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Controls the player menu in the inventory crafting slots
@@ -40,6 +38,7 @@ import java.util.UUID;
 public class PlayerMenuListener implements Listener {
 
     private static final int PLAYER_CRAFT_INV_SIZE = 5;
+    private static final Set<Integer> PLAYER_CRAFTING_SLOTS = new HashSet<>(Arrays.asList(1, 2, 3, 4));
 
     public PlayerMenuListener() {
 
@@ -59,9 +58,6 @@ public class PlayerMenuListener implements Listener {
                                 "\n&7which you can check" +
                                 "\n&7in &eCharacter Stats&7!\n\n" +
                                 combatPercentages(uuid));
-
-//                ItemStack lootChests = item(player, Material.CHEST, "&dMystery Boxes",
-//                        "\n&aFeature Coming Soon!"); // todo: remove, replace w/ gathering tools
 
                 // item 2 must update dynamically
                 int healthBonus = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
@@ -94,12 +90,10 @@ public class PlayerMenuListener implements Listener {
                     PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
                     PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenu));
                     PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
-//                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(lootChests));
 
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet1);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet2);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet3);
-//                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet4);
 
                 }
             }
@@ -114,10 +108,9 @@ public class PlayerMenuListener implements Listener {
      */
     private ItemStack gatheringLevelItemStack(Player player) {
         return item(player, Material.IRON_PICKAXE, "&eGathering Levels",
-                "\n&7Here are the gathering levels" +
-                        "\n&7of your character! They" +
-                        "\n&7are account-wide!\n\n" +
-                        gatheringSkills(player.getUniqueId()));
+                "\n&6&lCLICK" +
+                        "\n&7To view your gathering levels!" +
+                        "\n&7They are account-wide!\n\n");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -129,7 +122,6 @@ public class PlayerMenuListener implements Listener {
             view.setItem(1, null);
             view.setItem(2, null);
             view.setItem(3, null);
-//            view.setItem(4, null);
             view.getTopInventory().clear();
         }
     }
@@ -141,9 +133,11 @@ public class PlayerMenuListener implements Listener {
         if (e.getClickedInventory().getType() != InventoryType.CRAFTING) return;
         if (player.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
-        if (e.getSlot() == 1 || e.getSlot() == 2 || e.getSlot() == 3 || e.getSlot() == 4) {
+        if (PLAYER_CRAFTING_SLOTS.contains(e.getSlot())) {
             e.setCancelled(true);
             player.updateInventory();
+            if (e.getSlot() == 3)
+                RunicProfessionsAPI.openGatheringGUI(player);
         }
     }
 
@@ -198,39 +192,6 @@ public class PlayerMenuListener implements Listener {
                 "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
         return dexterityString + intelligenceString + strengthString + vitalityString + wisdomString;
         // todo crit, dodge, attack speed
-    }
-
-    /**
-     * Builds the visual menu for the player's gathering skills
-     *
-     * @param uuid of player to build menu for
-     * @return a String to display in item menu
-     */
-    private String gatheringSkills(UUID uuid) {
-        GatherPlayer gatherPlayer = RunicProfessionsAPI.getGatherPlayer(uuid);
-        if (gatherPlayer == null) {
-            return ColorUtil.format
-                    (
-                            "&eCooking &7Lv. &f0\n" +
-                                    "&eFarming &7Lv. &f0\n" +
-                                    "&eFishing &7Lv. &f0\n" +
-                                    "&eHarvesting &7Lv. &f0\n" +
-                                    "&eMining &7Lv. &f0\n" +
-                                    "&eWoodcutting &7Lv. &f0\n"
-                    );
-        } else {
-            // todo green if > 0, gold if == MAX_GATHERING
-            return ColorUtil.format
-                    (
-                            "&eCooking &7Lv. &f" + gatherPlayer.getCookingLevel() + " &8(" + gatherPlayer.getCookingExp() + "exp)\n" +
-                                    "&eFarming &7Lv. &f" + gatherPlayer.getFarmingLevel() + " &8(" + gatherPlayer.getFarmingExp() + "exp)\n" +
-                                    "&eFishing &7Lv. &f" + gatherPlayer.getFishingLevel() + " &8(" + gatherPlayer.getFishingExp() + "exp)\n" +
-                                    "&eHarvesting &7Lv. &f" + gatherPlayer.getHarvestingLevel() + " &8(" + gatherPlayer.getHarvestingExp() + "exp)\n" +
-                                    "&eMining &7Lv. &f" + gatherPlayer.getMiningLevel() + " &8(" + gatherPlayer.getMiningExp() + "exp)\n" +
-                                    "&eWoodcutting &7Lv. &f" + gatherPlayer.getWoodcuttingLevel() + " &8(" + gatherPlayer.getWoodcuttingExp() + "exp)\n" +
-                                    "&7Total Skill Level: " + (gatherPlayer.getCookingLevel() + gatherPlayer.getFarmingLevel() + gatherPlayer.getFishingLevel() + gatherPlayer.getHarvestingLevel() + gatherPlayer.getMiningLevel() + gatherPlayer.getWoodcuttingLevel())
-                    );
-        }
     }
 
     /**
