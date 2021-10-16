@@ -107,9 +107,9 @@ public class PlayerMenuListener implements Listener {
      * @return an Itemstack to display
      */
     private ItemStack gatheringLevelItemStack(Player player) {
-        return item(player, Material.IRON_PICKAXE, "&eGathering Levels",
+        return item(player, Material.IRON_PICKAXE, "&eGathering Skills",
                 "\n&6&lCLICK" +
-                        "\n&7To view your gathering levels!" +
+                        "\n&7To view your gathering skills!" +
                         "\n&7They are account-wide!\n\n");
     }
 
