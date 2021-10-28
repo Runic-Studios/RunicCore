@@ -141,6 +141,7 @@ public class HologramUtil {
             removeDamageHologram(createFor, holograms.keySet().toArray(new ArmorStand[1])[0]);
     }
 
+    // todo: make duration variable
     @SuppressWarnings("unchecked")
     public static void createStaticHologram(Player createFor, Location createAround, String display, double x, double y, double z) {
 
@@ -163,7 +164,7 @@ public class HologramUtil {
 
             @Override
             public void run() {
-                if (ticks >= 30 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
+                if (ticks >= 40 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
                     cancel();
                     removeDamageHologram(createFor, stand);
                     return;

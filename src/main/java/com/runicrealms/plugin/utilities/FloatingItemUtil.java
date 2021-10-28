@@ -18,7 +18,10 @@ import java.lang.reflect.Field;
 public class FloatingItemUtil {
 
     /**
-     * This method displays the floating item for all online players.
+     *
+     * @param loc
+     * @param material
+     * @param duration
      */
     public static void spawnFloatingItem(Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
@@ -31,6 +34,15 @@ public class FloatingItemUtil {
         setAge(duration, item);
     }
 
+    /**
+     *
+     * @param loc
+     * @param material
+     * @param duration
+     * @param vec
+     * @param durab
+     * @return
+     */
     public static Entity spawnFloatingItem(Location loc, Material material, int duration, Vector vec, int durab) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -44,6 +56,13 @@ public class FloatingItemUtil {
         return droppedItem;
     }
 
+    /**
+     *
+     * @param loc
+     * @param material
+     * @param duration
+     * @return
+     */
     public static Item createFloatingItem(Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
         Vector vec = loc.toVector().multiply(0);
@@ -57,7 +76,11 @@ public class FloatingItemUtil {
     }
 
     /**
-     * These methods display the floating item for a specific player.
+     *
+     * @param pl
+     * @param loc
+     * @param material
+     * @param duration
      */
     public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
@@ -77,6 +100,14 @@ public class FloatingItemUtil {
         setAge(duration, item);
     }
 
+    /**
+     *
+     * @param pl
+     * @param loc
+     * @param material
+     * @param duration
+     * @param vec
+     */
     public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration, Vector vec) {
         Item item = loc.getWorld().dropItem(loc, new ItemStack(material, 1));
         item.setVelocity(vec);
@@ -93,30 +124,40 @@ public class FloatingItemUtil {
         setAge(duration, item);
     }
 
-    public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration, int durab) {
+    /**
+     * @param pl
+     * @param loc
+     * @param material
+     * @param duration
+     * @param durability
+     */
+    public static void spawnFloatingItem(Player pl, Location loc, Material material, int duration, int durability) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        ((Damageable) meta).setDamage(durab);
+        ((Damageable) meta).setDamage(durability);
         item.setItemMeta(meta);
         Item droppedItem = loc.getWorld().dropItem(loc, item);
         Vector vec = loc.toVector().multiply(0);
         droppedItem.setVelocity(vec);
         droppedItem.setPickupDelay(Integer.MAX_VALUE);
 
-        // send packets to make item invisible for all other players
-        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            if (p == pl) continue;
+        // send packets to make item invisible for other players
+        for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+            if (online == pl) continue;
             PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(droppedItem.getEntityId());
-            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+            ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
         }
 
         // tell the item when to despawn, based on duration (in seconds)
         setAge(duration, droppedItem);
     }
 
+    /**
+     * @param duration
+     * @param item
+     */
     private static void setAge(int duration, Item item) {
-        try
-        {
+        try {
             Field itemField = item.getClass().getDeclaredField("item");
             Field ageField;
             Object entityItem;
@@ -127,9 +168,7 @@ public class FloatingItemUtil {
             ageField = entityItem.getClass().getDeclaredField("age");
             ageField.setAccessible(true);
             ageField.set(entityItem, 6000 - (20 * duration));
-        }
-        catch (NoSuchFieldException | IllegalAccessException e)
-        {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
