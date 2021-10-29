@@ -110,7 +110,7 @@ public class RunicShopItem {
     private RunicItemRunnable runDefaultBuy() {
         return player -> {
             // attempt to give player item (does not drop on floor)
-            player.getInventory().addItem(shopItem);
+            RunicItemsAPI.addItem(player.getInventory(), shopItem, true);
         };
     }
 
