@@ -2,6 +2,7 @@ package com.runicrealms.plugin.classes;
 
 public enum ClassEnum {
 
+    ANY("any"),
     ARCHER("Archer"),
     CLERIC("Cleric"),
     MAGE("Mage"),

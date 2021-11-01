@@ -52,10 +52,8 @@ public abstract class Spell implements ISpell, Listener {
         if (RunicCore.getSpellManager().isOnCooldown(pl, this.getName())) return; // ensure spell is not on cooldown
 
         // verify class
-        boolean canCast = false;
-        if (this.getReqClass().toString().toLowerCase().equals
-                (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().toLowerCase()))
-            canCast = true;
+        boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
+                (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName());
 
         if (!canCast) {
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

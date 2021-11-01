@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.*;
+import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
@@ -220,6 +221,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new IceVolley());
         this.spellList.add(new BindingShot());
         this.spellList.add(new SurvivalInstinct());
+        this.spellList.add(new Potion());
     }
 
     // starts the repeating task to manage player cooldowns

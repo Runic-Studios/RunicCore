@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -98,6 +99,12 @@ public class SpellUseListener implements Listener {
         castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onSpellCast(SpellCastEvent e) {
+        if (!e.isCancelled() && e.willExecute())
+            e.getSpellCasted().execute(e.getCaster(), SpellItemType.ARTIFACT);
+    }
+
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
         if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
@@ -148,17 +155,15 @@ public class SpellUseListener implements Listener {
 
     /**
      * Determines which spell to case based on the selected number.
-     * @param pl caster of spell
+     * @param player caster of spell
      * @param number which spell number to cast (1, 2, 3, 4)
      */
-    private void castSelectedSpell(Player pl, int number) {
-        Spell spellToCast = RunicCoreAPI.getPlayerSpell(pl, number);
+    private void castSelectedSpell(Player player, int number) {
+        Spell spellToCast = RunicCoreAPI.getPlayerSpell(player, number);
         if (spellToCast == null) return;
-        if (RunicCore.getSpellManager().isOnCooldown(pl, spellToCast.getName())) return;
-        SpellCastEvent event = new SpellCastEvent(pl, spellToCast);
+        if (RunicCore.getSpellManager().isOnCooldown(player, spellToCast.getName())) return;
+        SpellCastEvent event = new SpellCastEvent(player, spellToCast);
         Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled() && event.willExecute())
-            event.getSpellCasted().execute(pl, SpellItemType.ARTIFACT);
     }
 
     public static HashMap<UUID, BukkitTask> getCasters() {
