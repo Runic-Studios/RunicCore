@@ -54,7 +54,7 @@ public class RunicShopFactory {
         shopItems.add(new RunicShopItem(16, "Coin", majorManaPotion));
         shopItems.add(new RunicShopItem(24, "Coin", greaterHealingPotion));
         shopItems.add(new RunicShopItem(24, "Coin", greaterManaPotion));
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(599, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
     }
 
     private final ItemStack goldPouch = RunicItemsAPI.generateItemFromTemplate("gold-pouch").generateItem();
