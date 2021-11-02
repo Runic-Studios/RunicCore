@@ -61,7 +61,6 @@ public class GuildMongoDataSection implements MongoDataSection {
     @Override
     public void save() {
         this.parent.save();
-        this.refresh();
     }
 
     @Override
