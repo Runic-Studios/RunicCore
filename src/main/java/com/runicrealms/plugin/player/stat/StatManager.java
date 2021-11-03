@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
@@ -23,7 +24,8 @@ public class StatManager implements Listener {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    @EventHandler
+    // Fire as HIGH so that runic items loads cached stats first for base stats tree grab
+    @EventHandler(priority = EventPriority.HIGH)
     public void onLoad(CharacterLoadEvent e) {
         StatContainer statContainer = new StatContainer(e.getPlayer());
         playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
