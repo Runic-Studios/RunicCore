@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.HashSet;
 
 /**
- *
+ * A wrapper to store the assignment of spells to each spell slot
  */
 public class PlayerSpellWrapper {
 
@@ -22,19 +22,20 @@ public class PlayerSpellWrapper {
     public static final String PATH_2 = "leftClick";
     public static final String PATH_3 = "rightClick";
     public static final String PATH_4 = "swapHands";
-    private static final String DEFAULT_ARCHER = "Barrage";
-    private static final String DEFAULT_CLERIC = "Rejuvenate";
-    private static final String DEFAULT_MAGE = "Fireball";
-    private static final String DEFAULT_ROGUE = "Sprint";
-    private static final String DEFAULT_WARRIOR = "Slam";
+    public static final String DEFAULT_ARCHER = "Barrage";
+    public static final String DEFAULT_CLERIC = "Holy Water";
+    public static final String DEFAULT_MAGE = "Fireball";
+    public static final String DEFAULT_ROGUE = "Sprint";
+    public static final String DEFAULT_WARRIOR = "Slam";
 
     /**
      * Constructs a spell wrapper for the given player with specified spells, which can be left blank.
-     * @param player to generate wrapper for
-     * @param spellHotbarOne spell assigned to hotbar 1
-     * @param spellLeftClick spell assigned to left-click
+     *
+     * @param player          to generate wrapper for
+     * @param spellHotbarOne  spell assigned to hotbar 1
+     * @param spellLeftClick  spell assigned to left-click
      * @param spellRightClick spell assigned to right-click
-     * @param spellSwapHands spell assigned to swap hands
+     * @param spellSwapHands  spell assigned to swap hands
      */
     public PlayerSpellWrapper(Player player, String spellHotbarOne, String spellLeftClick,
                               String spellRightClick, String spellSwapHands) {
@@ -49,6 +50,7 @@ public class PlayerSpellWrapper {
 
     /**
      * Constructs a player spell wrapper from DB
+     *
      * @param player player to generate wrapper for
      * @param spells spells section of DB for character
      */

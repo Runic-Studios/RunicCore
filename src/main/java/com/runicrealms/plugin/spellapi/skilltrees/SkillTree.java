@@ -21,6 +21,7 @@ public class SkillTree {
     private final SubClassEnum subClassEnum;
     private final Player player;
     private final List<Perk> perks;
+    public static final int FIRST_POINT_LEVEL = 10;
     public static final String PATH_LOCATION = "skillTree";
     public static final String POINTS_LOCATION = "spentPoints";
     public static final String SPELLS_LOCATION = "spells";
@@ -32,19 +33,19 @@ public class SkillTree {
         // get sub-class, load default
         perks = getSkillTreeBySubClass(subClassEnum);
         RunicCore.getSkillTreeManager().getSkillTree(position).add(this);
-        // get allocatin data from db, populate
+        // get allocated data from db, populate
         updateValuesFromDB();
     }
 
     /**
-     * Cacluates the available skill points of the player.
+     * Calculates the available skill points of the player.
      * First point is given at level 10, so first 9 levels are ignored.
      *
      * @return available skill points to spend
      */
     public static int getAvailablePoints(Player player) {
         int spentPoints = RunicCoreAPI.getSpentPoints(player);
-        return Math.max(0, player.getLevel() - 9 - spentPoints);
+        return Math.max(0, player.getLevel() - (FIRST_POINT_LEVEL - 1) - spentPoints);
     }
 
     /**

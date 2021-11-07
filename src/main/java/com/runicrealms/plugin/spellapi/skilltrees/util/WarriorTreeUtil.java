@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
+import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class WarriorTreeUtil {
 
-    public static Perk DEFAULT_WARRIOR_SPELL_PERK = new PerkSpell(997, 0, 1, 1, "Slam");
+    public static Perk DEFAULT_WARRIOR_SPELL_PERK = new PerkSpell(997, 0, 1, 1, PlayerSpellWrapper.DEFAULT_WARRIOR);
 
     public static List<Perk> berserkerPerkList() {
         List<Perk> perks = new ArrayList<>();

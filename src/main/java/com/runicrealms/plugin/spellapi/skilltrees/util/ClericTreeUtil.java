@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
+import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class ClericTreeUtil {
 
-    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, "Rejuvenate");
+    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, PlayerSpellWrapper.DEFAULT_CLERIC);
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();
@@ -48,7 +49,7 @@ public class ClericTreeUtil {
 
     public static List<Perk> priestList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(60, 1, 0, 1, "Holy Water"));
+        perks.add(new PerkSpell(60, 1, 0, 1, "Rejuvenate"));
         perks.add(new PerkBaseStat(61, 1, 0, 5, Stat.WISDOM));
         perks.add(new PerkSpell(62, 1, 0, 1, "Manawell"));
         perks.add(new PerkBaseStat(63, 1, 0, 3, Stat.INTELLIGENCE));

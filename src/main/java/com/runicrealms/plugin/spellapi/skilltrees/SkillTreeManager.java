@@ -12,6 +12,7 @@ import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
-/*
+/**
  * Caches three skill trees per-player, one for each sub-class.
  */
 public class SkillTreeManager implements Listener {
@@ -60,7 +61,7 @@ public class SkillTreeManager implements Listener {
      * Setup in-memory map of all three sub-class skill trees and "spent points," tracking how many
      * skill points a player has already allocated from the total available at-level.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // loads last
     public void onLoad(CharacterLoadEvent e) {
         Player player = e.getPlayer();
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
@@ -73,8 +74,8 @@ public class SkillTreeManager implements Listener {
             points = character.get(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, Integer.class);
         if (points < 0) // insurance
             points = 0;
-        if (points > PlayerLevelUtil.getMaxLevel() - 9)
-            points = PlayerLevelUtil.getMaxLevel() - 9;
+        if (points > PlayerLevelUtil.getMaxLevel() - (SkillTree.FIRST_POINT_LEVEL - 1))
+            points = PlayerLevelUtil.getMaxLevel() - (SkillTree.FIRST_POINT_LEVEL - 1);
         spentPoints.put(player.getUniqueId(), points);
         if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION))
             new PlayerSpellWrapper(player,
@@ -101,6 +102,7 @@ public class SkillTreeManager implements Listener {
 
     /**
      * Saves the total spent points to DB
+     *
      * @param character mongo data section from save event
      */
     private void saveSpentPoints(Player player, PlayerMongoDataSection character) {
@@ -109,8 +111,9 @@ public class SkillTreeManager implements Listener {
 
     /**
      * Saves the alt-specific spell setup for given player
+     *
      * @param playerSpellWrapper wrapper of in-memory spells
-     * @param character character section of mongo
+     * @param character          character section of mongo
      */
     private void saveSpells(PlayerSpellWrapper playerSpellWrapper, PlayerMongoDataSection character) {
         PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION);
@@ -122,6 +125,7 @@ public class SkillTreeManager implements Listener {
 
     /**
      * Grabs the associated in-memory skill tree cache
+     *
      * @param position of the sub-class (1, 2, or 3)
      * @return a HashSet of cached skill trees
      */
@@ -156,6 +160,7 @@ public class SkillTreeManager implements Listener {
 
     /**
      * Gets the spell wrapper for given player
+     *
      * @param player to return wrapper for
      * @return spell wrapper
      */
@@ -169,6 +174,7 @@ public class SkillTreeManager implements Listener {
 
     /**
      * Checks cached skill trees for given player.
+     *
      * @param player to search for in cache
      * @return player's cached SkillTree
      */
