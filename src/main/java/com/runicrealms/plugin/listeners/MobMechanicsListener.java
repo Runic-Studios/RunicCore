@@ -26,6 +26,7 @@ public final class MobMechanicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarSpellDamage(SpellDamageEvent e) {
+        if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
         e.setAmount((int) (e.getAmount() * getPlayerDamageToMobMultiplier()));
         updateDisplayName(e.getVictim(), e.getAmount());
@@ -33,6 +34,7 @@ public final class MobMechanicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
+        if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
         if (!e.isAutoAttack()) // ignore basic attacks
             e.setAmount((int) (e.getAmount() * getPlayerDamageToMobMultiplier()));
