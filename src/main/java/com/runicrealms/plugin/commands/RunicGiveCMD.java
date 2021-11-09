@@ -108,7 +108,7 @@ public class RunicGiveCMD extends BaseCommand {
         }
         Player player = Bukkit.getPlayer(args[0]);
         if (player == null) return;
-        GatheringSkill gatheringSkill = GatheringSkill.COOKING.getFromIdentifier(args[1]);
+        GatheringSkill gatheringSkill = GatheringSkill.getFromIdentifier(args[1]);
         if (gatheringSkill == null) return;
         // skip all other calculations for quest exp
         int exp = Integer.parseInt(args[2]);

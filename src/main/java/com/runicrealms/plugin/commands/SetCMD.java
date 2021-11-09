@@ -1,15 +1,14 @@
 package com.runicrealms.plugin.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.Conditions;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.enums.CityLocation;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
+import com.runicrealms.plugin.professions.gathering.GatherPlayer;
+import com.runicrealms.plugin.professions.gathering.GatheringSkill;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
-import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -26,6 +25,12 @@ import static com.runicrealms.plugin.classes.SelectClass.setupCache;
 public class SetCMD extends BaseCommand {
 
     public SetCMD() {
+        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("online", context -> {
+            Set<String> onlinePlayers = new HashSet<>();
+            for (Player online : RunicCore.getCacheManager().getLoadedPlayers())
+                onlinePlayers.add(online.getName());
+            return onlinePlayers;
+        });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("classes", context -> {
             Set<String> classes = new HashSet<>();
             classes.add("archer");
@@ -38,7 +43,8 @@ public class SetCMD extends BaseCommand {
     }
 
     @Subcommand("class")
-    @CommandCompletion("@players @classes")
+    @Syntax("<player> <class>")
+    @CommandCompletion("@online @classes")
     @Conditions("is-console-or-op")
     public void onCommandClass(CommandSender commandSender, String[] args) {
         if (args.length < 1) {
@@ -90,85 +96,78 @@ public class SetCMD extends BaseCommand {
         }
     }
 
+    // set level [player] [level]
+
     @Subcommand("level")
+    @Syntax("<player> <level>")
+    @CommandCompletion("@online @nothing")
     @Conditions("is-console-or-op")
     public void onCommandLevel(CommandSender commandSender, String[] args) {
-        if (args.length < 1) {
-            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set level {player} {level} or set level {level}");
+        if (args.length != 2) {
+            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set level [player] [level]");
             return;
         }
         Player player;
         int level;
-        if (args.length == 1 && commandSender instanceof Player) {
-            player = (Player) commandSender;
-            level = Integer.parseInt(args[0]);
-        } else {
-            player = Bukkit.getPlayer(args[0]);
-            level = Integer.parseInt(args[1]);
-        }
-        try {
-            int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
-            int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
-            player.setLevel(0);
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(0);
-            PlayerLevelUtil.giveExperience(player, expAtLevel);
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
+        player = Bukkit.getPlayer(args[0]);
+        level = Integer.parseInt(args[1]);
+        if (player == null) return;
+        int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
+        int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
+        player.setLevel(0);
+        RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(0);
+        PlayerLevelUtil.giveExperience(player, expAtLevel);
+        RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
         /*
         IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the class level!
         */
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(expAtLevel);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+        RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(expAtLevel);
     }
 
+    // set proflevel [player] [level]
+
     @Subcommand("proflevel")
+    @Syntax("<player> <level>")
+    @CommandCompletion("@online @nothing")
     @Conditions("is-console-or-op")
     public void onCommandProfLevel(CommandSender commandSender, String[] args) {
-        if (args.length < 1) {
-            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set proflevel {player} {level} or set proflevel {level}");
+        if (args.length != 2) {
+            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set proflevel {player} {level}");
             return;
         }
-        if (args.length == 1 && commandSender instanceof Player) {
-            Player player = (Player) commandSender;
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setProfLevel(Integer.parseInt(args[0]));
-            // ----------------------
-            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
-            int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[0]));
-            // ----------------------
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setProfExp(expAtLevel);
+        Player player = Bukkit.getPlayer(args[0]);
+        if (player == null) return;
+        RunicCore.getCacheManager().getPlayerCaches().get(player).setProfLevel(Integer.parseInt(args[1]));
+        // ----------------------
+        // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
+        int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
+        // ----------------------
+        RunicCore.getCacheManager().getPlayerCaches().get(player).setProfExp(expAtLevel);
+    }
 
-            String profName = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfName();
-            if (Integer.parseInt(args[0]) == 30) {
+    // set gatheringlevel [player] [skill] [level]
 
-                player.sendMessage("\n");
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                ChatUtils.sendCenteredMessage(player, ChatColor.GREEN + "" + ChatColor.BOLD + "PROFESSION UPGRADE!");
-                ChatUtils.sendCenteredMessage(player, ChatColor.WHITE + "" + ChatColor.BOLD + "You are now a Refined " + profName + "!");
-                ChatUtils.sendCenteredMessage(player, ChatColor.GRAY + "        Your crafted goods have become more powerful!");
-                player.sendMessage("\n");
-
-            } else if (Integer.parseInt(args[0]) == 50) {
-
-                player.sendMessage("\n");
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                ChatUtils.sendCenteredMessage(player, ChatColor.GREEN + "" + ChatColor.BOLD + "PROFESSION UPGRADE!");
-                ChatUtils.sendCenteredMessage(player, ChatColor.WHITE + "" + ChatColor.BOLD + "You are now an Artisan " + profName + "!");
-                ChatUtils.sendCenteredMessage(player, ChatColor.GRAY + "        Your crafted goods have become more powerful!");
-                player.sendMessage("\n");
-
-            }
-
-        } else if (args.length == 2) {
-            Player player = Bukkit.getPlayer(args[0]);
-            if (player == null) return;
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setProfLevel(Integer.parseInt(args[1]));
-            // ----------------------
-            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
-            int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
-            // ----------------------
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setProfExp(expAtLevel);
+    @Subcommand("gatheringlevel")
+    @Syntax("<player> <skill> <level>")
+    @CommandCompletion("@online @gatheringSkills @nothing")
+    @Conditions("is-console-or-op")
+    public void onCommandGatheringLevel(CommandSender commandSender, String[] args) {
+        if (args.length != 3) {
+            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set gatheringlevel [player] [skill] [level]");
+            return;
         }
+        Player player = Bukkit.getPlayer(args[0]);
+        if (player == null) return;
+        GatherPlayer gatherPlayer = RunicProfessionsAPI.getGatherPlayer(player.getUniqueId());
+        GatheringSkill gatheringSkill = GatheringSkill.getFromIdentifier(args[1]);
+        if (gatheringSkill == null) return;
+        int level = Integer.parseInt(args[2]);
+        gatherPlayer.setGatheringLevel(gatheringSkill, level);
+        // ----------------------
+        // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
+        int expAtLevel = ProfExpUtil.calculateTotalExperience(level);
+        // ----------------------
+        gatherPlayer.setGatheringExp(gatheringSkill, expAtLevel);
     }
 
 }
