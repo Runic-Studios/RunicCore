@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class StaffListener implements Listener {
 
-    private static final int STAFF_COOLDOWN = 15; // ticks (1s)
+    private static final int STAFF_COOLDOWN = 10; // ticks (0.5s)
     private static final int RADIUS = 5;
     private static final int MAX_DIST = 8;
     private static final double BEAM_HITBOX_SIZE = 1.5;

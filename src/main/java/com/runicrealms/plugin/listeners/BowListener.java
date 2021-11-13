@@ -107,7 +107,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 15);
+        pl.setCooldown(artifact.getType(), 10);
     }
 
     @EventHandler

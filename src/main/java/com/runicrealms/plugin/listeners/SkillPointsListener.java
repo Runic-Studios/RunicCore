@@ -35,18 +35,18 @@ public class SkillPointsListener implements Listener {
         if (e.getNewLevel() == 10 && e.getOldLevel() != 0) { // ignores login level-up
             player.sendMessage
                     (
-                            ChatColor.RED + "[!] " + ChatColor.GRAY + "You have unlocked " +
-                                    ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.GRAY +
+                            ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have unlocked " +
+                                    ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.LIGHT_PURPLE +
                                     "! Open your inventory, then click your " + ChatColor.LIGHT_PURPLE +
-                                    "Ancient Rune " + ChatColor.GRAY + "to unlock new perks with your skill points!"
+                                    "Ancient Rune " + ChatColor.LIGHT_PURPLE + "to unlock new perks with your skill points!"
                     );
         } else if (e.getOldLevel() != 0 || (e.getOldLevel() == 0 && e.getNewLevel() == 1)) { // ignores login level-up
             int levelsRemainingUntilSkillTrees = SKILL_TREE_UNLOCK_LEVEL - e.getNewLevel();
             player.sendMessage
                     (
-                            ChatColor.RED + "[!] " + ChatColor.GRAY + "You have " + ChatColor.WHITE +
-                                    levelsRemainingUntilSkillTrees + ChatColor.GRAY + " level(s) remaining until you unlock " +
-                                    ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.GRAY + "!"
+                            ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE +
+                                    levelsRemainingUntilSkillTrees + ChatColor.LIGHT_PURPLE + " level(s) remaining until you unlock " +
+                                    ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.LIGHT_PURPLE + "!"
                     );
         }
     }
@@ -75,9 +75,9 @@ public class SkillPointsListener implements Listener {
     private void sendSkillPointsReminderMessage(Player player) {
         player.sendMessage
                 (
-                        ChatColor.RED + "[!] " + ChatColor.GRAY + "You have " + ChatColor.WHITE + RunicCoreAPI.getAvailableSkillPoints(player) +
-                                ChatColor.GRAY + " skill points to spend! Visit your " + ChatColor.GREEN + ChatColor.BOLD +
-                                "SKILL TREE" + ChatColor.GRAY + " to purchase new perks!"
+                        ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE + RunicCoreAPI.getAvailableSkillPoints(player) +
+                                ChatColor.LIGHT_PURPLE + " skill points to spend! Visit your " + ChatColor.GREEN + ChatColor.BOLD +
+                                "SKILL TREE" + ChatColor.LIGHT_PURPLE + " to purchase new perks!"
                 );
     }
 }
