@@ -32,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BowListener implements Listener {
 
     private static final int ARROW_VELOCITY_MULT = 3;
+    private static final int BOW_GLOBAL_COOLDOWN = 15; // ticks
 
     @EventHandler
     public void onDraw(PlayerInteractEvent e) {
@@ -107,7 +108,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         // set the cooldown
-        pl.setCooldown(artifact.getType(), 10);
+        pl.setCooldown(artifact.getType(), BOW_GLOBAL_COOLDOWN);
     }
 
     @EventHandler
