@@ -36,6 +36,10 @@ public class RunicShopFactory {
          */
         getCaveShop();
         getCavernShop();
+        getKeepShop();
+        getLibraryShop();
+        getCryptsShop();
+        getFortressShop();
     }
 
     private final ItemStack bottle = RunicItemsAPI.generateItemFromTemplate("Bottle").generateItem();
@@ -371,5 +375,49 @@ public class RunicShopFactory {
                         null,
                         "crystal-cavern");
         return caveShop.buildRunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52));
+    }
+
+    public RunicShopGeneric getKeepShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        "HeadOfJorundr",
+                        new String[]{"runeforged-piercer", "runeforged-crusher", "runeforged-scepter", "lost-runeblade", "jorundrs-wrath"},
+                        "jorundr-keep");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Jorundr's Keep Shop", Collections.singletonList(33));
+    }
+
+    public RunicShopGeneric getLibraryShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        "HeadOfTheLibrarian",
+                        new String[]{"skeletal-shortbow", "bonecleaver", "ancient-arcane-rod", "wolfspine", "deathbringer"},
+                        "sunken-library");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sunken Library Shop", Collections.singletonList(34));
+    }
+
+    public RunicShopGeneric getCryptsShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        "HeadOfThePharaoh",
+                        new String[]{"triumph", "gilded-impaler", "prophets-cane", "nightshade", "sandfury"},
+                        "crypts");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Crypts of Dera Shop", Collections.singletonList(35));
+    }
+
+    public RunicShopGeneric getFortressShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        "HeadOfEldrid",
+                        new String[]{"winters-howl", "chillrend", "permafrost", "blade-of-the-betrayer", "frosts-edge"},
+                        "frozen-fortress");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Frozen Fortress Shop", Collections.singletonList(31));
     }
 }
