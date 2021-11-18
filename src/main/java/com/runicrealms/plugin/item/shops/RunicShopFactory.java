@@ -34,6 +34,7 @@ public class RunicShopFactory {
         /*
         DUNGEON SHOPS
          */
+        getCaveShop();
         getCavernShop();
     }
 
@@ -350,20 +351,25 @@ public class RunicShopFactory {
     /*
     DUNGEON SHOPS
      */
-
-    private static final int CAVERN_ARMOR_PRICE = 2;
-    private static final String CAVERN_ITEM_CURRENCY = "HeadOfHexagonis";
-    private final ItemStack crystalCavernArcherHelm = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-helm").generateItem();
-    private final ItemStack crystalCavernArcherChest = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-chest").generateItem();
-    private final ItemStack crystalCavernArcherLeggings = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-leggings").generateItem();
-    private final ItemStack getCrystalCavernArcherBoots = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-boots").generateItem();
+    public RunicShopGeneric getCaveShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        1,
+                        2,
+                        "HeadOfSebath",
+                        new String[]{"sanguine-longbow", "crimson-maul", "bloodmoon", "scarlet-rapier", "corruption"},
+                        "sebaths-cave");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sebath's Cave Shop", Collections.singletonList(32));
+    }
 
     public RunicShopGeneric getCavernShop() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherHelm, "Head(s) of Hexagonis"));
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherChest, "Head(s) of Hexagonis"));
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherLeggings, "Head(s) of Hexagonis"));
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, getCrystalCavernArcherBoots, "Head(s) of Hexagonis"));
-        return new RunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52), shopItems, new int[]{0, 9, 18, 27});
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        2,
+                        0,
+                        "HeadOfHexagonis",
+                        null,
+                        "crystal-cavern");
+        return caveShop.buildRunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52));
     }
 }
