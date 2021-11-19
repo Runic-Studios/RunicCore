@@ -380,6 +380,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new GroupCommand());
         commandManager.registerCommand(new ItemScrapperCMD());
         commandManager.registerCommand(new PartyCommand());
+        commandManager.registerCommand(new RunicTeleportCMD());
     }
 
     private void registerOldStyleCommands() {

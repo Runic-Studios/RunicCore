@@ -58,8 +58,10 @@ public class DeathListener implements Listener {
             victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
             victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
         } else {
-            victim.teleport(dungeonLocation.getLocation());
-            victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                victim.teleport(dungeonLocation.getLocation());
+                victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
+            });
         }
 
         // particles, sounds

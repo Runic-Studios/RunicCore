@@ -6,17 +6,17 @@ import org.bukkit.Location;
 public enum DungeonLocation {
 
     SEBATHS_CAVE("sebathscave", "Sebath's Cave",
-            new Location(Bukkit.getWorld("Alterra"), -1874.5, 177, -522.5, 90, 0)),
+            new Location(Bukkit.getWorld("dungeons"), -1874.5, 177, -522.5, 90, 0)),
     CRYSTAL_CAVERN("crystalcavern", "Crystal Cavern",
-            new Location(Bukkit.getWorld("Alterra"), 1208.5, 74, -66.5, 180, 0)),
+            new Location(Bukkit.getWorld("dungeons"), 1208.5, 74, -66.5, 180, 0)),
     JORUNDRS_KEEP("jorundrskeep", "Jorundr's Keep",
-            new Location(Bukkit.getWorld("Alterra"), -534.5, 120, -177.5, 180, 0)),
+            new Location(Bukkit.getWorld("dungeons"), -534.5, 120, -177.5, 180, 0)),
     SUNKEN_LIBRARY("library", "Sunken Library",
-            new Location(Bukkit.getWorld("Alterra"), -23.5, 31, 11.5, 270, 0)),
+            new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0)),
     CRYPTS_OF_DERA("crypts", "Crypts of Dera",
-            new Location(Bukkit.getWorld("Alterra"), 298.5, 87, 6.5, 0, 0)),
+            new Location(Bukkit.getWorld("dungeons"), 298.5, 87, 6.5, 0, 0)),
     FROZEN_FORTRESS("fortress", "Frozen Fortress",
-            new Location(Bukkit.getWorld("Alterra"), 32.5, 73, 87.5, 0, 0));
+            new Location(Bukkit.getWorld("dungeons"), 32.5, 73, 87.5, 0, 0));
 
     private final String identifier;
     private final String display;
