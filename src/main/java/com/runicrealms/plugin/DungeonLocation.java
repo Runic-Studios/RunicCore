@@ -4,6 +4,7 @@ import com.runicrealms.plugin.utilities.ConfigUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
 public enum DungeonLocation {
@@ -48,12 +49,14 @@ public enum DungeonLocation {
     private final String display;
     private final Location location;
     private final Location chestLocation; // used for boss drops
+    private final BlockFace blockFace;
 
     DungeonLocation(String identifier, String display, Location location) {
         this.identifier = identifier;
         this.display = display;
         this.location = location;
         this.chestLocation = getDungeonChestLocation();
+        this.blockFace = getDungeonChestBlockFace();
     }
 
     public String getIdentifier() {
@@ -70,6 +73,10 @@ public enum DungeonLocation {
 
     public Location getChestLocation() {
         return chestLocation;
+    }
+
+    public BlockFace getChestBlockFace() {
+        return blockFace;
     }
 
     /**
@@ -107,9 +114,18 @@ public enum DungeonLocation {
             double x = dungeonSection.getDouble("chest.x");
             double y = dungeonSection.getDouble("chest.y");
             double z = dungeonSection.getDouble("chest.z");
-            float yaw = (float) dungeonSection.getDouble("chest.yaw");
-            float pitch = (float) dungeonSection.getDouble("chest.pitch");
-            return new Location(Bukkit.getWorld((world != null ? world : "dungeons")), x, y, z, yaw, pitch);
+            return new Location(Bukkit.getWorld((world != null ? world : "dungeons")), x, y, z);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
+        }
+        return null;
+    }
+
+    private BlockFace getDungeonChestBlockFace() {
+        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
+        try {
+            return BlockFace.valueOf(dungeonSection.getString("chest.blockFace").toUpperCase());
         } catch (NullPointerException e) {
             e.printStackTrace();
             Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");

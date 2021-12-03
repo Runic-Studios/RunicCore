@@ -8,11 +8,18 @@ import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -27,11 +34,12 @@ public class BossTagger implements Listener {
 
     private final HashMap<UUID, HashMap<UUID, Integer>> bossFighters; // a single boss is mapped to many players (damage threshold tracked here)
     private final HashMap<UUID, HashSet<UUID>> bossLooters;
+    private final HashSet<Block> activeBossLootChests;
 
     public BossTagger() {
-        // todo: running task to clear boss looters
         bossFighters = new HashMap<>();
         bossLooters = new HashMap<>();
+        activeBossLootChests = new HashSet<>();
     }
 
     /**
@@ -46,6 +54,21 @@ public class BossTagger implements Listener {
         HashSet<UUID> looters = new HashSet<>();
         bossFighters.put(e.getEntity().getUniqueId(), fighters);
         bossLooters.put(e.getEntity().getUniqueId(), looters);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onChestInteract(PlayerInteractEvent e) {
+        if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!(e.getHand() == EquipmentSlot.HAND)) return;
+        if (!e.hasBlock()) return;
+        if (e.getClickedBlock() == null) return;
+        if (e.getClickedBlock().getType() != Material.CHEST) return;
+        Bukkit.broadcastMessage("test");
+        Player player = e.getPlayer();
+        Block block = e.getClickedBlock();
+        if (activeBossLootChests.contains(block)) {
+            Bukkit.broadcastMessage("dungeon chest found");
+        }
     }
 
     @EventHandler
@@ -122,6 +145,10 @@ public class BossTagger implements Listener {
      */
     public HashSet<UUID> getBossLooters(UUID bossId) {
         return bossLooters.get(bossId);
+    }
+
+    public HashSet<Block> getActiveBossLootChests() {
+        return activeBossLootChests;
     }
 
     /**
