@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.ItemType;
+import com.runicrealms.plugin.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;

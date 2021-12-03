@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.enums;
+package com.runicrealms.plugin;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -8,8 +8,10 @@ public enum ItemType {
 
     CLOTH, LEATHER, GILDED, MAIL, PLATE, GEMSTONE, MAINHAND, OFFHAND, CONSUMABLE, ARCHER, CLERIC, MAGE, ROGUE, WARRIOR, AIR;
 
-    public static ItemType matchType(final ItemStack itemStack){
-        if(itemStack == null) { return null; }
+    public static ItemType matchType(final ItemStack itemStack) {
+        if (itemStack == null) {
+            return null;
+        }
         if (itemStack.getType() == Material.SHEARS) {
             switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
                 case 25:
@@ -61,6 +63,7 @@ public enum ItemType {
                 case IRON_SWORD:
                     return MAINHAND;
                 case BOOK:
+                case FEATHER:
                 case FIRE_CHARGE:
                 case RABBIT_FOOT:
                 case SHIELD:

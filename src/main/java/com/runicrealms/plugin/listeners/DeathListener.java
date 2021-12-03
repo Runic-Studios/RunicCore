@@ -2,10 +2,10 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.enums.DungeonLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;

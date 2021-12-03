@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.attributes.AttributeUtil;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
@@ -17,7 +16,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -181,13 +179,6 @@ public abstract class Spell implements ISpell, Listener {
 
     public void executeSpell(Player player, SpellItemType type) {
 
-    }
-
-    // determines which spell to cast
-    @Override
-    public boolean isFound(ItemStack item, String spellSlot) {
-        String spell = AttributeUtil.getSpell(item, spellSlot);
-        return spell.equals(getName());
     }
 
     /**

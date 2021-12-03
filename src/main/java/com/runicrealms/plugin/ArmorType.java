@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.enums;
+package com.runicrealms.plugin;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -14,6 +14,7 @@ public enum ArmorType {
 
     /**
      * Returns the type of armor. If none found, returns 'none'
+     *
      * @param itemStack item in hand
      * @return type of runic weapon held
      */

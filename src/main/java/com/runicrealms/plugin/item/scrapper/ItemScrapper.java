@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item.scrapper;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.ItemType;
+import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.shops.RunicShop;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
@@ -57,7 +57,7 @@ public class ItemScrapper extends RunicShop {
                 event.setWillClose(true);
                 event.setWillDestroy(true);
 
-            // close editor
+                // close editor
             } else if (event.getSlot() == 8) {
                 pl.playSound(pl.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
                 event.setWillClose(true);
@@ -73,7 +73,7 @@ public class ItemScrapper extends RunicShop {
      * This method reads the items in the first seven slots of the menu,
      * removes them, and then decides how much gold to dish out.
      *
-     * @param player to give gold to
+     * @param player           to give gold to
      * @param goldScrapperMenu
      */
     private void scrapItems(Player player, ItemGUI goldScrapperMenu) {

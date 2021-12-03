@@ -3,7 +3,7 @@ package com.runicrealms.plugin.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.professions.gathering.GatherPlayer;

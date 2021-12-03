@@ -14,7 +14,7 @@ import com.runicrealms.plugin.donator.ThreeD;
 import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
-import com.runicrealms.plugin.item.*;
+import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
@@ -26,19 +26,11 @@ import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
 import com.runicrealms.plugin.party.PartyManager;
-import com.runicrealms.plugin.player.PlayerHungerManager;
-import com.runicrealms.plugin.player.cache.CacheManager;
-import com.runicrealms.plugin.player.listener.CombatListener;
 import com.runicrealms.plugin.player.CombatManager;
-import com.runicrealms.plugin.player.listener.ExpListener;
-import com.runicrealms.plugin.player.listener.PlayerLevelListener;
-import com.runicrealms.plugin.player.listener.OffhandListener;
-import com.runicrealms.plugin.player.listener.PlayerJoinListener;
-import com.runicrealms.plugin.player.listener.PlayerMenuListener;
-import com.runicrealms.plugin.player.listener.PlayerQuitListener;
-import com.runicrealms.plugin.player.listener.PlayerRegenListener;
-import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.player.PlayerHungerManager;
 import com.runicrealms.plugin.player.RegenManager;
+import com.runicrealms.plugin.player.cache.CacheManager;
+import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
@@ -318,7 +310,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new PartyDamageListener(), this);
         pm.registerEvents(new ExpListener(), this);
         pm.registerEvents(new SpellUseListener(), this);
-        pm.registerEvents(new WeaponCDListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
         pm.registerEvents(new ManaListener(), this);
@@ -381,6 +372,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new ItemScrapperCMD());
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new RunicTeleportCMD());
+        commandManager.registerCommand(new RunicBossCMD());
     }
 
     private void registerOldStyleCommands() {

@@ -1,9 +1,11 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.enums.ItemType;
+import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItemArmor;
+import com.runicrealms.runicitems.item.RunicItemOffhand;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -23,17 +25,16 @@ public class MinLevelListener implements Listener {
             return;
         if (e.getNewArmorPiece().getType().equals(Material.AIR))
             return;
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
         ItemStack equippedItem = e.getNewArmorPiece();
         if (ItemType.matchType(equippedItem) == ItemType.OFFHAND)
             return;
-        int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
-        int reqLv = (int) AttributeUtil.getCustomDouble(equippedItem, "required.level");
-
-        if (plLv < reqLv) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+        int playerLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
+        int requiredLevel = ((RunicItemArmor) RunicItemsAPI.getRunicItemFromItemStack(equippedItem)).getLevel();
+        if (playerLevel < requiredLevel) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             e.setCancelled(true);
-            pl.sendMessage(ChatColor.RED + "Your level is too low to equip this!");
+            player.sendMessage(ChatColor.RED + "Your level is too low to equip this!");
         }
     }
 
@@ -45,13 +46,13 @@ public class MinLevelListener implements Listener {
             return;
         if (ItemType.matchType(e.getCursor()) != ItemType.OFFHAND)
             return;
-        Player pl = (Player) e.getWhoClicked();
-        int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
-        int reqLv = (int) AttributeUtil.getCustomDouble(e.getCursor(), "required.level");
-        if (plLv < reqLv) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+        Player player = (Player) e.getWhoClicked();
+        int playerLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
+        int requiredLevel = ((RunicItemOffhand) RunicItemsAPI.getRunicItemFromItemStack(e.getCursor())).getLevel();
+        if (playerLevel < requiredLevel) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             e.setCancelled(true);
-            pl.sendMessage(ChatColor.RED + "Your level is too low to equip this!");
+            player.sendMessage(ChatColor.RED + "Your level is too low to equip this!");
         }
     }
 }

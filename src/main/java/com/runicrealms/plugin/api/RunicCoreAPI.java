@@ -2,10 +2,10 @@ package com.runicrealms.plugin.api;
 
 import co.aikar.commands.PaperCommandManager;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.DungeonLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;

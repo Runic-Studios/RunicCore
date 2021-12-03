@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.enums.WeaponType;
+import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -44,7 +44,8 @@ public class BowListener implements Listener {
 
         // retrieve the weapon type
         ItemStack artifact = e.getItem();
-        if (e.getPlayer().getInventory().getItemInOffHand().equals(artifact)) return; // don't let them fire from offhand
+        if (e.getPlayer().getInventory().getItemInOffHand().equals(artifact))
+            return; // don't let them fire from offhand
         WeaponType artifactType = WeaponType.matchType(artifact);
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
@@ -180,7 +181,8 @@ public class BowListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onMobTargetMob(EntityTargetEvent e) {
         if (e.getTarget() == null) return; // has target
-        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent()) return; // target is a mythic mob
+        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent())
+            return; // target is a mythic mob
 //        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
 //        if (am.getFaction() != null && am.getFaction().equalsIgnoreCase("guard")) return; // targeter is not a guard
         e.setCancelled(true);
@@ -201,18 +203,19 @@ public class BowListener implements Listener {
         // only listen for arrows NOT shot by a player
         if (!(arrow.getShooter() instanceof Player)) {
             // mobs
-                e.setCancelled(true);
-                double dmgAmt = e.getDamage();
-                if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
-                    if (MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId())) return; // don't let mobs shoot each other
-                    ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
-                    dmgAmt = mm.getDamage();
-                }
-                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), false);
-                Bukkit.getPluginManager().callEvent(event);
-                if (!event.isCancelled())
-                    DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
-                            (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
+            e.setCancelled(true);
+            double dmgAmt = e.getDamage();
+            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
+                if (MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId()))
+                    return; // don't let mobs shoot each other
+                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
+                dmgAmt = mm.getDamage();
+            }
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), false);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
+                        (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
         } else {
 
             // bugfix for armor stands

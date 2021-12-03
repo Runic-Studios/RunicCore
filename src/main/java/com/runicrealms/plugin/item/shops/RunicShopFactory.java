@@ -2,7 +2,7 @@ package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.commands.TravelCMD;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.CurrencyUtil;

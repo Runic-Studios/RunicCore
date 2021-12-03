@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.donator;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.attributes.AttributeUtil;
-import com.runicrealms.plugin.item.LoreGenerator;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,7 +12,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class ThreeDManager implements Listener {
 
@@ -46,8 +43,9 @@ public class ThreeDManager implements Listener {
 
     /**
      * Update the player's artifacts from 2D --> 3D
+     *
      * @param donor with disguised artifact
-     * @param item the item to disguise
+     * @param item  the item to disguise
      * @return true if the artifact had a skin and was updated
      */
     public boolean updateArtifactSkin(Player donor, ItemStack item) { // todo: just add untradeable
@@ -68,12 +66,12 @@ public class ThreeDManager implements Listener {
 
         ItemRemover.takeItem(donor, item, 1);
 
-        if (!AttributeUtil.getCustomString(item, "soulbound").equalsIgnoreCase("true"))
-            item = AttributeUtil.addCustomStat(item, "untradeable", "true");
+//        if (!AttributeUtil.getCustomString(item, "soulbound").equalsIgnoreCase("true"))
+//            item = AttributeUtil.addCustomStat(item, "untradeable", "true");
 
         // regenerate item lore, give item
-        LoreGenerator.generateItemLore(item, ChatColor.YELLOW,
-                Objects.requireNonNull(item.getItemMeta()).getDisplayName(), "", true, ""); // todo: get this tag from attributes
+//        LoreGenerator.generateItemLore(item, ChatColor.YELLOW,
+//                Objects.requireNonNull(item.getItemMeta()).getDisplayName(), "", true, ""); // todo: get this tag from attributes
         HashMap<Integer, ItemStack> leftOver = donor.getInventory().addItem(item);
         for (ItemStack is : leftOver.values()) {
             donor.getWorld().dropItem(donor.getLocation(), is);

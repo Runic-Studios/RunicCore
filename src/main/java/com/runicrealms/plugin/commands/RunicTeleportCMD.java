@@ -4,8 +4,8 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.enums.CityLocation;
-import com.runicrealms.plugin.enums.DungeonLocation;
+import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,7 +55,7 @@ public class RunicTeleportCMD extends BaseCommand {
         assert location != null;
         player.teleport(location);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0,1,0),
+        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0, 1, 0),
                 10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.PURPLE, 3));
     }
 }

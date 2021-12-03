@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.enums;
+package com.runicrealms.plugin;
 
 import org.bukkit.inventory.ItemStack;
 
