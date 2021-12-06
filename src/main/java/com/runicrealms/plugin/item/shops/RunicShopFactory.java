@@ -1,13 +1,17 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.commands.TravelCMD;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -360,7 +364,7 @@ public class RunicShopFactory {
                 (
                         1,
                         2,
-                        "HeadOfSebath",
+                        DungeonLocation.SEBATHS_CAVE.getCurrencyTemplateId(),
                         new String[]{"sanguine-longbow", "crimson-maul", "bloodmoon", "scarlet-rapier", "corruption"},
                         "sebaths-cave");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sebath's Cave Shop", Collections.singletonList(32));
@@ -371,7 +375,7 @@ public class RunicShopFactory {
                 (
                         2,
                         0,
-                        "HeadOfHexagonis",
+                        DungeonLocation.CRYSTAL_CAVERN.getCurrencyTemplateId(),
                         null,
                         "crystal-cavern");
         return caveShop.buildRunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52));
@@ -382,7 +386,7 @@ public class RunicShopFactory {
                 (
                         5,
                         3,
-                        "HeadOfJorundr",
+                        DungeonLocation.JORUNDRS_KEEP.getCurrencyTemplateId(),
                         new String[]{"runeforged-piercer", "runeforged-crusher", "runeforged-scepter", "lost-runeblade", "jorundrs-wrath"},
                         "jorundr-keep");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Jorundr's Keep Shop", Collections.singletonList(33));
@@ -393,7 +397,7 @@ public class RunicShopFactory {
                 (
                         5,
                         3,
-                        "HeadOfTheLibrarian",
+                        DungeonLocation.SUNKEN_LIBRARY.getCurrencyTemplateId(),
                         new String[]{"skeletal-shortbow", "bonecleaver", "ancient-arcane-rod", "wolfspine", "deathbringer"},
                         "sunken-library");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sunken Library Shop", Collections.singletonList(34));
@@ -404,7 +408,7 @@ public class RunicShopFactory {
                 (
                         5,
                         3,
-                        "HeadOfThePharaoh",
+                        DungeonLocation.CRYPTS_OF_DERA.getCurrencyTemplateId(),
                         new String[]{"triumph", "gilded-impaler", "prophets-cane", "nightshade", "sandfury"},
                         "crypts");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Crypts of Dera Shop", Collections.singletonList(35));
@@ -415,7 +419,7 @@ public class RunicShopFactory {
                 (
                         5,
                         3,
-                        "HeadOfEldrid",
+                        DungeonLocation.FROZEN_FORTRESS.getCurrencyTemplateId(),
                         new String[]{"winters-howl", "chillrend", "permafrost", "blade-of-the-betrayer", "frosts-edge"},
                         "frozen-fortress");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Frozen Fortress Shop", Collections.singletonList(31));

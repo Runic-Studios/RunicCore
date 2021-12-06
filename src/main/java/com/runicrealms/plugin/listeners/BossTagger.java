@@ -3,16 +3,17 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.item.lootchests.BossChest;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,12 +35,12 @@ public class BossTagger implements Listener {
 
     private final HashMap<UUID, HashMap<UUID, Integer>> bossFighters; // a single boss is mapped to many players (damage threshold tracked here)
     private final HashMap<UUID, HashSet<UUID>> bossLooters;
-    private final HashSet<Block> activeBossLootChests;
+    private final HashMap<UUID, BossChest> activeBossLootChests;
 
     public BossTagger() {
         bossFighters = new HashMap<>();
         bossLooters = new HashMap<>();
-        activeBossLootChests = new HashSet<>();
+        activeBossLootChests = new HashMap<>();
     }
 
     /**
@@ -63,11 +64,18 @@ public class BossTagger implements Listener {
         if (!e.hasBlock()) return;
         if (e.getClickedBlock() == null) return;
         if (e.getClickedBlock().getType() != Material.CHEST) return;
-        Bukkit.broadcastMessage("test");
-        Player player = e.getPlayer();
         Block block = e.getClickedBlock();
-        if (activeBossLootChests.contains(block)) {
+        Chest chest = (Chest) block.getState();
+        BossChest bossChest = BossChest.getFromBlock(RunicCore.getBossTagger().getActiveBossLootChests(), chest);
+        if (bossChest == null) return;
+        UUID bossId = bossChest.getBossUuid();
+        Player player = e.getPlayer();
+        if (RunicCore.getBossTagger().getBossLooters(bossId).contains(player.getUniqueId())) {
             Bukkit.broadcastMessage("dungeon chest found");
+        } else {
+            e.setCancelled(true);
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Only the slayers of the boss may open the spoils!");
         }
     }
 
@@ -86,7 +94,6 @@ public class BossTagger implements Listener {
         if (!isBoss(e.getEntity().getUniqueId())) return;
         if (!bossFighters.containsKey(e.getMob().getUniqueId())) return;
         bossFighters.get(e.getEntity().getUniqueId()).clear(); // clear damage tracking map
-        // todo: send some information here?
     }
 
     /**
@@ -102,7 +109,7 @@ public class BossTagger implements Listener {
         if (bossLooters.get(entity.getUniqueId()).contains(player.getUniqueId())) return;
         UUID playerId = player.getUniqueId();
         UUID bossId = entity.getUniqueId();
-        int maxHP = (int) ((ActiveMob) entity).getEntity().getMaxHealth();
+        int maxHP = (int) ((LivingEntity) entity).getMaxHealth();
         double threshold = maxHP * DAMAGE_PERCENT;
         if (!bossFighters.get(bossId).containsKey(playerId))
             bossFighters.get(bossId).put(playerId, 0);
@@ -147,7 +154,12 @@ public class BossTagger implements Listener {
         return bossLooters.get(bossId);
     }
 
-    public HashSet<Block> getActiveBossLootChests() {
+    /**
+     * Maps a boss unique id to a block which represents its chest
+     *
+     * @return a key, value map of boss uuid to chest
+     */
+    public HashMap<UUID, BossChest> getActiveBossLootChests() {
         return activeBossLootChests;
     }
 

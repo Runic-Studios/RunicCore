@@ -12,48 +12,56 @@ public enum DungeonLocation {
     SEBATHS_CAVE
             ("sebathscave",
                     "Sebath's Cave",
+                    "HeadOfSebath",
                     new Location(Bukkit.getWorld("dungeons"), -1874.5, 177, -522.5, 90, 0)
             ),
     CRYSTAL_CAVERN
             (
                     "crystalcavern",
                     "Crystal Cavern",
+                    "HeadOfHexagonis",
                     new Location(Bukkit.getWorld("dungeons"), 1208.5, 74, -66.5, 180, 0)
             ),
     JORUNDRS_KEEP
             (
                     "jorundrskeep",
                     "Jorundr's Keep",
+                    "HeadOfJorundr",
                     new Location(Bukkit.getWorld("dungeons"), -534.5, 120, -177.5, 180, 0)
             ),
     SUNKEN_LIBRARY
             (
                     "library",
                     "Sunken Library",
+                    "HeadOfTheLibrarian",
                     new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0)
             ),
     CRYPTS_OF_DERA
             (
                     "crypts",
                     "Crypts of Dera",
+                    "HeadOfThePharaoh",
                     new Location(Bukkit.getWorld("dungeons"), 298.5, 87, 6.5, 0, 0)
             ),
     FROZEN_FORTRESS
             (
                     "fortress",
                     "Frozen Fortress",
+                    "HeadOfEldrid",
                     new Location(Bukkit.getWorld("dungeons"), 32.5, 73, 87.5, 0, 0)
             );
 
     private final String identifier;
     private final String display;
+    private final String currencyTemplateId;
     private final Location location;
     private final Location chestLocation; // used for boss drops
     private final BlockFace blockFace;
 
-    DungeonLocation(String identifier, String display, Location location) {
+    DungeonLocation(String identifier, String display, String currencyTemplateId, Location location) {
         this.identifier = identifier;
         this.display = display;
+        this.currencyTemplateId = currencyTemplateId;
         this.location = location;
         this.chestLocation = getDungeonChestLocation();
         this.blockFace = getDungeonChestBlockFace();
@@ -65,6 +73,10 @@ public enum DungeonLocation {
 
     public String getDisplay() {
         return display;
+    }
+
+    public String getCurrencyTemplateId() {
+        return currencyTemplateId;
     }
 
     public Location getLocation() {
