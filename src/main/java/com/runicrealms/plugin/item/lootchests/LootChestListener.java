@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -46,6 +47,9 @@ public class LootChestListener implements Listener {
         if (!e.hasBlock()) return;
         if (e.getClickedBlock() == null) return;
         if (e.getClickedBlock().getType() != Material.CHEST) return;
+        Chest chest = (Chest) e.getClickedBlock().getState();
+        BossChest bossChest = BossChest.getFromBlock(RunicCore.getBossTagger().getActiveBossLootChests(), chest);
+        if (bossChest == null) return; // handled in BossTagger
         e.setCancelled(true);
 
         Player player = e.getPlayer();

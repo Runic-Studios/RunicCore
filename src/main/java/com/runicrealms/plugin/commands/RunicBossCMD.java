@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandAlias("runicboss")
 public class RunicBossCMD extends BaseCommand {
 
-    private static final int CHEST_DURATION = 10; // seconds (30)
+    private static final int CHEST_DURATION = 30; // seconds
 
     public RunicBossCMD() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("dungeons", context -> {
@@ -52,15 +52,15 @@ public class RunicBossCMD extends BaseCommand {
             return;
         }
         spawnChest(uuid, dungeonLocation);
-        // todo: fill with drops (same inventory click logic as loot chests) (weighted bag)
-        // todo: only players who contributed to boss can open
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(),
                 () -> despawnChest(uuid, dungeonLocation.getChestLocation()), CHEST_DURATION * 20L);
     }
 
     /**
-     * @param uuid
-     * @param dungeonLocation
+     * Spawns a chest upon boss kill
+     *
+     * @param uuid            of the boss
+     * @param dungeonLocation the associated dungeon
      */
     private void spawnChest(UUID uuid, DungeonLocation dungeonLocation) {
         Location chestLocation = dungeonLocation.getChestLocation();
@@ -80,7 +80,9 @@ public class RunicBossCMD extends BaseCommand {
     }
 
     /**
-     * @param dungeonLocation
+     * Spawns a hologram above the boss chest
+     *
+     * @param dungeonLocation the associated dungeon
      */
     private void spawnHologram(DungeonLocation dungeonLocation) {
         Location location = dungeonLocation.getChestLocation().clone().add(0, 2, 0);
@@ -99,15 +101,20 @@ public class RunicBossCMD extends BaseCommand {
     }
 
     /**
-     * @param uuid
-     * @param chestLocation
+     * Empties the chest inventory and removes the chest
+     *
+     * @param uuid          of the boss that was slayed
+     * @param chestLocation location of the chest
      */
     private void despawnChest(UUID uuid, Location chestLocation) {
         assert chestLocation.getWorld() != null;
+        Chest chest = (Chest) chestLocation.getBlock().getState();
+        chest.getBlockInventory().clear();
         chestLocation.getBlock().setType(Material.AIR);
         chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
         chestLocation.getWorld().spawnParticle(Particle.REDSTONE, chestLocation,
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
-        RunicCore.getBossTagger().getActiveBossLootChests().remove(uuid);
+        RunicCore.getBossTagger().getActiveBossLootChests().remove(uuid); // remove boss chest from memory
+        RunicCore.getBossTagger().getBossLooters(uuid).clear(); // clear looters list
     }
 }

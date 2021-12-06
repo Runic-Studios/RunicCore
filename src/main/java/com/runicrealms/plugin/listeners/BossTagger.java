@@ -9,7 +9,9 @@ import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
@@ -21,13 +23,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BossTagger implements Listener {
 
@@ -71,7 +70,7 @@ public class BossTagger implements Listener {
         UUID bossId = bossChest.getBossUuid();
         Player player = e.getPlayer();
         if (RunicCore.getBossTagger().getBossLooters(bossId).contains(player.getUniqueId())) {
-            Bukkit.broadcastMessage("dungeon chest found");
+            bossChest.attemptToOpen(player);
         } else {
             e.setCancelled(true);
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -119,30 +118,6 @@ public class BossTagger implements Listener {
         if (currentDamageToBossFromPlayer >= threshold)
             bossLooters.get(entity.getUniqueId()).add(playerId);
     }
-
-    // todo: belongs in API for RunicItems
-
-    /**
-     * This method drops an item in the world with priority.
-     *
-     * @param bossId    the uuid of boss entity
-     * @param location  location to drop the loot
-     * @param itemStack to be dropped
-     */
-    public void dropTaggedBossLoot(UUID bossId, Location location, ItemStack itemStack) {
-        ConcurrentHashMap<ItemStack, HashSet<UUID>> priorityItems = RunicCore.getMobTagger().getPriorityItems();
-        HashSet<UUID> temp = new HashSet<>();
-        priorityItems.put(itemStack, temp);
-        ConcurrentHashMap<ItemStack, Long> priorityTimers = RunicCore.getMobTagger().getPriorityTimers();
-        for (UUID id : bossLooters.get(bossId)) {
-            priorityItems.get(itemStack).add(id);
-        }
-        priorityTimers.put(itemStack, System.currentTimeMillis());
-        Objects.requireNonNull(location.getWorld()).dropItem(location, itemStack);
-        bossLooters.get(bossId).clear(); // clear looters list
-    }
-
-    // todo: so here's what we need to do. we need to make this an api method. then test item pickup event, make sure this works
 
     /**
      * Get a set of players who should receive priority boss loot (and tokens)
