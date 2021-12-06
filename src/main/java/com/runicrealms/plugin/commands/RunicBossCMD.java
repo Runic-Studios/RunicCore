@@ -5,6 +5,9 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
@@ -14,6 +17,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @CommandAlias("runicboss")
 public class RunicBossCMD extends BaseCommand {
@@ -66,6 +70,23 @@ public class RunicBossCMD extends BaseCommand {
         chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         chestLocation.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, chestLocation, 25, 0.5f, 0.5f, 0.5f, 0);
         RunicCore.getBossTagger().getActiveBossLootChests().add(chestLocation.getBlock());
+        spawnHologram(dungeonLocation);
+    }
+
+    private void spawnHologram(DungeonLocation dungeonLocation) {
+        Location location = dungeonLocation.getChestLocation().clone().add(0, 2, 0);
+        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location);
+        hologram.appendTextLine(ChatColor.GOLD + "" + ChatColor.BOLD + dungeonLocation.getDisplay() + " Spoils");
+        hologram.appendTextLine(ChatColor.WHITE + "" + CHEST_DURATION + ChatColor.GRAY + " second(s) remaining");
+        AtomicInteger count = new AtomicInteger(CHEST_DURATION);
+        int hologramTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(RunicCore.getInstance(), () -> {
+            count.getAndDecrement();
+            ((TextLine) hologram.getLine(1)).setText(ChatColor.WHITE + "" + count + ChatColor.GRAY + " second(s) remaining");
+        }, 20L, 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            Bukkit.getScheduler().cancelTask(hologramTask);
+            hologram.delete();
+        }, CHEST_DURATION * 20L);
     }
 
     private void despawnChest(Location chestLocation) {
