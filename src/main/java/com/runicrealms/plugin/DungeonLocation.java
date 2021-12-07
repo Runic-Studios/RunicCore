@@ -20,7 +20,7 @@ public enum DungeonLocation {
                     "crystalcavern",
                     "Crystal Cavern",
                     "HeadOfHexagonis",
-                    new Location(Bukkit.getWorld("dungeons"), 1208.5, 74, -66.5, 180, 0)
+                    new Location(Bukkit.getWorld("Alterra"), -1690.5, 41, -866.5, 90, 0)
             ),
     JORUNDRS_KEEP
             (

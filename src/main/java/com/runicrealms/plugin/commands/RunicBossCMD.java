@@ -109,8 +109,7 @@ public class RunicBossCMD extends BaseCommand {
     private void despawnChest(UUID uuid, Location chestLocation) {
         assert chestLocation.getWorld() != null;
         BlockState blockState = chestLocation.getBlock().getState();
-        Chest chest = (Chest) blockState;
-        chest.getBlockInventory().clear();
+        ((Chest) blockState).getBlockInventory().clear();
         chestLocation.getBlock().setType(Material.AIR);
         chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
         chestLocation.getWorld().spawnParticle(Particle.REDSTONE, chestLocation,
