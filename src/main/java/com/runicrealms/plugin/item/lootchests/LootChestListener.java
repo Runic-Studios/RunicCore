@@ -49,7 +49,7 @@ public class LootChestListener implements Listener {
         if (e.getClickedBlock().getType() != Material.CHEST) return;
         Chest chest = (Chest) e.getClickedBlock().getState();
         BossChest bossChest = BossChest.getFromBlock(RunicCore.getBossTagger().getActiveBossLootChests(), chest);
-        if (bossChest == null) return; // handled in BossTagger
+        if (bossChest != null) return; // handled in BossTagger
         e.setCancelled(true);
 
         Player player = e.getPlayer();
