@@ -34,25 +34,25 @@ public class Smite extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        Location fixed = pl.getLocation().clone();
-        fixed.setPitch(0);
-        Vector direction = fixed.getDirection().normalize().multiply(BEAM_SPEED);
-        Location startLocation = pl.getEyeLocation();
-//        while (startLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
-//            startLocation = startLocation.getBlock().getRelative(BlockFace.DOWN).getLocation();
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
+        Location location = player.getLocation();
+        Vector direction = location.getDirection().normalize().multiply(BEAM_SPEED);
+        Location startLocation = player.getEyeLocation();
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 startLocation.add(direction);
-                if (startLocation.distanceSquared(fixed) >= (MAX_DIST * MAX_DIST))
+                if (startLocation.distanceSquared(location) >= (MAX_DIST * MAX_DIST)) {
+                    player.getWorld().playSound(startLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
+                    player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, startLocation, 15, 0.5f, 0.5f, 0.5f, 0);
                     this.cancel();
-                pl.getWorld().spawnParticle(Particle.CLOUD, startLocation, 15, 0, 0, 0, 0);
-                if (checkForEnemy(pl, startLocation))
+                }
+                player.getWorld().spawnParticle(Particle.CLOUD, startLocation, 15, 0, 0, 0, 0);
+                if (checkForEnemy(player, startLocation))
                     this.cancel();
             }
         }.runTaskTimer(plugin, 0, 1L);
