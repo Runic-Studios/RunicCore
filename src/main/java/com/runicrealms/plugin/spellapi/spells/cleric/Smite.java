@@ -47,9 +47,9 @@ public class Smite extends Spell implements MagicDamageSpell {
             public void run() {
                 startLocation.add(direction);
                 if (startLocation.distanceSquared(location) >= (MAX_DIST * MAX_DIST)) {
+                    this.cancel();
                     player.getWorld().playSound(startLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
                     player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, startLocation, 15, 0.5f, 0.5f, 0.5f, 0);
-                    this.cancel();
                 }
                 player.getWorld().spawnParticle(Particle.CLOUD, startLocation, 15, 0, 0, 0, 0);
                 if (checkForEnemy(player, startLocation))
