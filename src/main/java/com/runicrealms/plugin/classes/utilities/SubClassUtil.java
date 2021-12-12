@@ -8,6 +8,7 @@ public class SubClassUtil {
 
     /**
      * Determines the appropriate sub-class based on player class and specified position
+     *
      * @param position (which sub-class? 1, 2, or 3)
      */
     public static SubClassEnum determineSubClass(Player player, int position) {
@@ -25,7 +26,7 @@ public class SubClassUtil {
                 if (position == 1)
                     subClassEnum = SubClassEnum.BARD;
                 else if (position == 2)
-                    subClassEnum = SubClassEnum.EXEMPLAR;
+                    subClassEnum = SubClassEnum.PALADIN;
                 else
                     subClassEnum = SubClassEnum.PRIEST;
                 break;

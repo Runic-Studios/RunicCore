@@ -11,7 +11,7 @@ public enum SubClassEnum {
     WARDEN("Warden", ClassEnum.ARCHER, wardenItem(), ""),
     // cleric
     BARD("Bard", ClassEnum.CLERIC, bardItem(), ""),
-    EXEMPLAR("Exemplar", ClassEnum.CLERIC, exemplarItem(), ""),
+    PALADIN("Paladin", ClassEnum.CLERIC, paladinItem(), ""),
     PRIEST("Priest", ClassEnum.CLERIC, priestItem(), ""),
     // mage
     CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), ""),
@@ -59,6 +59,7 @@ public enum SubClassEnum {
 
     /**
      * Returns the enum value of a sub-class string
+     *
      * @param name of sub-class
      * @return enum of sub-class
      */
@@ -92,7 +93,7 @@ public enum SubClassEnum {
                 "RleHR1cmUvZWM1NmY4Zjk2ZDE0MWUyYWI0MmE1ODkzMjZjNmFiZjYzNTc4NmZhMmM4NzA5ZWZkNDZmZGYyOWY3YTJjOTI3NCJ9fX0=");
     }
 
-    private static ItemStack exemplarItem() {
+    private static ItemStack paladinItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
                 "leHR1cmUvZWY2M2FhOWEzZjk4MzIzNTNmZDc4ZmU2OTc5NjM5YzcwOWMxMDU2YzdhODExNjNkMjllZjk0ZDA5OTI1YzMifX19");
     }

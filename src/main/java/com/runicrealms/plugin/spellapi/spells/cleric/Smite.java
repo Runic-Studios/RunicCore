@@ -5,8 +5,10 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
-import org.bukkit.block.BlockFace;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -37,21 +39,20 @@ public class Smite extends Spell implements MagicDamageSpell {
         Location fixed = pl.getLocation().clone();
         fixed.setPitch(0);
         Vector direction = fixed.getDirection().normalize().multiply(BEAM_SPEED);
-        Location startLocation = pl.getLocation();
-        while (startLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
-            startLocation = startLocation.getBlock().getRelative(BlockFace.DOWN).getLocation();
+        Location startLocation = pl.getEyeLocation();
+//        while (startLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
+//            startLocation = startLocation.getBlock().getRelative(BlockFace.DOWN).getLocation();
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
-        Location finalBeamLocation = startLocation;
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
-                finalBeamLocation.add(direction);
-                if (finalBeamLocation.distanceSquared(fixed) >= (MAX_DIST * MAX_DIST))
+                startLocation.add(direction);
+                if (startLocation.distanceSquared(fixed) >= (MAX_DIST * MAX_DIST))
                     this.cancel();
-                pl.getWorld().spawnParticle(Particle.CLOUD, finalBeamLocation, 15, 0, 0, 0, 0);
-                if (checkForEnemy(pl, finalBeamLocation))
+                pl.getWorld().spawnParticle(Particle.CLOUD, startLocation, 15, 0, 0, 0, 0);
+                if (checkForEnemy(pl, startLocation))
                     this.cancel();
             }
         }.runTaskTimer(plugin, 0, 1L);

@@ -61,7 +61,7 @@ public class SkillTreeManager implements Listener {
      * Setup in-memory map of all three sub-class skill trees and "spent points," tracking how many
      * skill points a player has already allocated from the total available at-level.
      */
-    @EventHandler(priority = EventPriority.HIGHEST) // loads last
+    @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager
     public void onLoad(CharacterLoadEvent e) {
         Player player = e.getPlayer();
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());

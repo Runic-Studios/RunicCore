@@ -24,8 +24,8 @@ public class StatManager implements Listener {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    // Fire as HIGH so that runic items loads cached stats first for base stats tree grab
-    @EventHandler(priority = EventPriority.HIGH)
+    // Fire as HIGHEST so that runic items loads cached stats first for base stats tree grab, and SkillTreeManager loads skill trees
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onLoad(CharacterLoadEvent e) {
         StatContainer statContainer = new StatContainer(e.getPlayer());
         playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
@@ -34,8 +34,6 @@ public class StatManager implements Listener {
         grabBaseStatsFromTree(e.getPlayer(), 3);
     }
 
-    // todo: then we update gear scanner
-
     @EventHandler
     public void onQuit(CharacterQuitEvent e) {
         playerStatMap.remove(e.getPlayer().getUniqueId());
@@ -43,7 +41,8 @@ public class StatManager implements Listener {
 
     /**
      * Loads the base stats across all sub-class trees into memory.
-     * @param player player to load stats for
+     *
+     * @param player       player to load stats for
      * @param treePosition which sub-tree are we loading? (1,2,3)
      */
     private void grabBaseStatsFromTree(Player player, int treePosition) {
