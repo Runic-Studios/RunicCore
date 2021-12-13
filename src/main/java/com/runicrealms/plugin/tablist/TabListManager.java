@@ -60,7 +60,9 @@ public class TabListManager implements Listener {
     public void setupTab(Player pl) {
 
         // make sure we're starting with a clean slate
-        if (tabbed.getTabList(pl) != null) { tabbed.destroyTabList(pl); }
+        if (tabbed.getTabList(pl) != null) {
+            tabbed.destroyTabList(pl);
+        }
 
         // build new tablist
         TableTabList tab = tabbed.newTableTabList(pl);
@@ -68,9 +70,9 @@ public class TabListManager implements Listener {
         // header, footer
         tab.setHeaderFooter
                 (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Runic Realms\n"
-                                + ChatColor.WHITE + ChatColor.BOLD + "Patch 1.8 - The Dungeons Patch!",
-                ChatColor.DARK_GREEN + "Our website: " + ChatColor.GREEN + "www.runicrealms.com" +
-                        "\n" + ChatColor.DARK_AQUA + "Our Discord: " + ChatColor.GREEN + "discord.gg/5FjVVd4");
+                                + ChatColor.GREEN + ChatColor.BOLD + "Patch 1.9 - The Second Age!",
+                        ChatColor.DARK_GREEN + "Our website: " + ChatColor.GREEN + "www.runicrealms.com" +
+                                "\n" + ChatColor.DARK_AQUA + "Our Discord: " + ChatColor.GREEN + "discord.gg/5FjVVd4");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem
@@ -137,8 +139,7 @@ public class TabListManager implements Listener {
      * Gets the players ping by using NMS to access the internal 'ping' field in
      * EntityPlayer
      *
-     * @param player
-     *            the player whose ping to get
+     * @param player the player whose ping to get
      * @return the player's ping
      */
     private static int getPing(Player player) {

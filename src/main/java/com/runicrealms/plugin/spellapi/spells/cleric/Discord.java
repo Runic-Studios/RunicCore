@@ -1,20 +1,27 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 public class Discord extends Spell implements MagicDamageSpell {
 
+    private static final int BUBBLE_DURATION = 6;
+    private static final int BUBBLE_SIZE = 5;
+    private static final double UPDATES_PER_SECOND = 10;
     private static final int DELAY = 2;
     private static final int DAMAGE_AMT = 20;
     private static final double DAMAGE_PER_LEVEL = 2.5;
@@ -31,10 +38,49 @@ public class Discord extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
-        Cone.coneEffect(pl, Particle.NOTE, DELAY, 0, 20, Color.WHITE);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(pl), DELAY * 20L);
+    public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
+        // todo: particle orb that gets smaller each tick, explosion whether it hits somebody or not
+        particleTask(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(player), DELAY * 20L);
+    }
+
+    private void particleTask(Player player) {
+        final long startTime = System.currentTimeMillis();
+        new BukkitRunnable() {
+            double phi = 0;
+
+            @Override
+            public void run() {
+
+                // create visual bubble
+                phi += Math.PI / 10;
+                Location loc = player.getLocation();
+                for (double theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 40) {
+                    double x = BUBBLE_SIZE * cos(theta) * sin(phi);
+                    double y = BUBBLE_SIZE * cos(phi) + 1.5;
+                    double z = BUBBLE_SIZE * sin(theta) * sin(phi);
+                    loc.add(x, y, z);
+                    player.getWorld().spawnParticle(Particle.NOTE, loc, 1, 0, 0, 0, 0);
+                    loc.subtract(x, y, z);
+                }
+
+                // Spell duration, allow cancel by sneaking
+                long timePassed = System.currentTimeMillis() - startTime;
+                if (timePassed > BUBBLE_DURATION * 1000 || player.isSneaking()) {
+                    this.cancel();
+//                    for (BukkitTask bukkitTask : coneTasks) {
+//                        bukkitTask.cancel();
+//                    }
+//                    coneTasks.clear();
+//                    fateCasters.clear();
+                    return;
+                }
+
+                // More effect noises
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CAT_HISS, 0.01F, 0.5F);
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20 / UPDATES_PER_SECOND));
     }
 
     private void discord(Player player) {
