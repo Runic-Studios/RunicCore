@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.WeaponType;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -101,7 +101,7 @@ public class SpellUseListener implements Listener {
         castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSpellCast(SpellCastEvent e) {
         if (!e.isCancelled() && e.willExecute())
             e.getSpellCasted().execute(e.getCaster(), SpellItemType.ARTIFACT);

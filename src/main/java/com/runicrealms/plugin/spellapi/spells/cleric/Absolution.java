@@ -13,13 +13,13 @@ import org.bukkit.event.EventPriority;
 public class Absolution extends Spell {
 
     public Absolution() {
-        super ("Absolution",
+        super("Absolution",
                 "Your &aRejuvenate &7spell is now &aPurify &7and removes silences!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // fires LAST
+    @EventHandler(priority = EventPriority.HIGH) // fires LAST, but before use listener 
     public void onSpellCast(SpellCastEvent e) {
         if (!hasPassive(e.getCaster(), this.getName())) return;
         if (!(e.getSpell() instanceof Rejuvenate)) return;

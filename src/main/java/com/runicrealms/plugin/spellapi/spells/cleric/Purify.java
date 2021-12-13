@@ -56,22 +56,23 @@ public class Purify extends Spell implements HealingSpell {
     }
 
     // particle effect
-    private void startTask(Player pl, Vector[] vectors) {
+    private void startTask(Player player, Vector[] vectors) {
         for (Vector vector : vectors) {
             new BukkitRunnable() {
-                final Location location = pl.getEyeLocation();
-                final Location startLoc = pl.getLocation();
+                final Location location = player.getEyeLocation();
+                final Location startLoc = player.getLocation();
 
                 @Override
                 public void run() {
                     location.add(vector);
                     // 10 block range before spell dies out naturally
-                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE)
+                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
                         this.cancel();
-
-                    pl.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 10, 0, 0, 0, 0);
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0, 0, 0, 0, new Particle.DustOptions(Color.YELLOW, 1));
-                    allyCheck(pl, location);
+                        player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 15, 0.5f, 0.5f, 0.5f, 0);
+                    }
+                    player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 10, 0, 0, 0, 0);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0.1f, 0.1f, 0.1f, 0, new Particle.DustOptions(Color.YELLOW, 1));
+                    allyCheck(player, location);
                 }
             }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
         }
