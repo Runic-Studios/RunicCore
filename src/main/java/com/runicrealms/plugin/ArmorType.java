@@ -46,6 +46,7 @@ public enum ArmorType {
             case IRON_BOOTS:
                 return BOOTS;
             case BOOK:
+            case FEATHER:
             case FIRE_CHARGE:
             case RABBIT_FOOT:
             case SHIELD:

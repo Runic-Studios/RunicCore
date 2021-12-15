@@ -25,11 +25,11 @@ public class BloodyShot extends Spell {
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
         if (!e.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
-        double roll = ThreadLocalRandom.current().nextDouble();
-        if (roll > CHANCE) return;
         if (e.getVictim() == null) return;
         if (!(e.getVictim() instanceof LivingEntity)) return;
-        DamageUtil.damageEntityWeapon(DAMAGE_AMOUNT, (LivingEntity) e.getVictim(), e.getPlayer(), false, false, true);
+        double roll = ThreadLocalRandom.current().nextDouble();
+        if (roll > CHANCE) return;
+        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, (LivingEntity) e.getVictim(), e.getPlayer());
     }
 }
 

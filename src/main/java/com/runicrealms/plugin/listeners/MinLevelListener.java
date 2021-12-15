@@ -4,6 +4,7 @@ import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;
 import com.runicrealms.runicitems.item.RunicItemOffhand;
 import org.bukkit.ChatColor;
@@ -19,18 +20,17 @@ public class MinLevelListener implements Listener {
 
     @EventHandler
     public void onArmorEquip(ArmorEquipEvent e) {
-        if (e.getType() == null)
-            return;
-        if (e.getNewArmorPiece() == null)
-            return;
-        if (e.getNewArmorPiece().getType().equals(Material.AIR))
-            return;
+        if (e.getType() == null) return;
+        if (e.getNewArmorPiece() == null) return;
+        if (e.getNewArmorPiece().getType().equals(Material.AIR)) return;
         Player player = e.getPlayer();
         ItemStack equippedItem = e.getNewArmorPiece();
-        if (ItemType.matchType(equippedItem) == ItemType.OFFHAND)
-            return;
+        if (ItemType.matchType(equippedItem) == ItemType.OFFHAND) return;
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(equippedItem);
+        if (runicItem == null) return;
+        if (!(runicItem instanceof RunicItemArmor)) return;
         int playerLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
-        int requiredLevel = ((RunicItemArmor) RunicItemsAPI.getRunicItemFromItemStack(equippedItem)).getLevel();
+        int requiredLevel = ((RunicItemArmor) runicItem).getLevel();
         if (playerLevel < requiredLevel) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
             e.setCancelled(true);
