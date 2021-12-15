@@ -55,7 +55,7 @@ public class BossChest {
     }
 
     /**
-     * ?
+     * Runs through the drops section of file and populated chest
      */
     private void populateChestWithBossDrops() {
         ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(dungeonLocation.getIdentifier());
@@ -84,9 +84,11 @@ public class BossChest {
     }
 
     /**
-     * @param activeBossLootChests
-     * @param chest
-     * @return
+     * Get the associated boss chest from the given chest block (if it exists)
+     *
+     * @param activeBossLootChests the map of all boss chests which are spawned
+     * @param chest                the block to match (must be a chest)
+     * @return a BossChest object
      */
     public static BossChest getFromBlock(HashMap<UUID, BossChest> activeBossLootChests, Chest chest) {
         for (BossChest bossChest : activeBossLootChests.values()) {

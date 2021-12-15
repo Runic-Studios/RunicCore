@@ -12,43 +12,37 @@ public enum DungeonLocation {
     SEBATHS_CAVE
             ("sebathscave",
                     "Sebath's Cave",
-                    "HeadOfSebath",
-                    new Location(Bukkit.getWorld("dungeons"), -1874.5, 177, -522.5, 90, 0)
+                    "HeadOfSebath"
             ),
     CRYSTAL_CAVERN
             (
                     "crystalcavern",
                     "Crystal Cavern",
-                    "HeadOfHexagonis",
-                    new Location(Bukkit.getWorld("Alterra"), -1690.5, 41, -866.5, 90, 0)
+                    "HeadOfHexagonis"
             ),
     JORUNDRS_KEEP
             (
                     "jorundrskeep",
                     "Jorundr's Keep",
-                    "HeadOfJorundr",
-                    new Location(Bukkit.getWorld("dungeons"), -534.5, 120, -177.5, 180, 0)
+                    "HeadOfJorundr"
             ),
     SUNKEN_LIBRARY
             (
                     "library",
                     "Sunken Library",
-                    "HeadOfTheLibrarian",
-                    new Location(Bukkit.getWorld("dungeons"), -23.5, 31, 11.5, 270, 0)
+                    "HeadOfTheLibrarian"
             ),
     CRYPTS_OF_DERA
             (
                     "crypts",
                     "Crypts of Dera",
-                    "HeadOfThePharaoh",
-                    new Location(Bukkit.getWorld("dungeons"), 298.5, 87, 6.5, 0, 0)
+                    "HeadOfThePharaoh"
             ),
     FROZEN_FORTRESS
             (
                     "fortress",
                     "Frozen Fortress",
-                    "HeadOfEldrid",
-                    new Location(Bukkit.getWorld("dungeons"), 32.5, 73, 87.5, 0, 0)
+                    "HeadOfEldrid"
             );
 
     private final String identifier;
@@ -58,13 +52,13 @@ public enum DungeonLocation {
     private final Location chestLocation; // used for boss drops
     private final BlockFace blockFace;
 
-    DungeonLocation(String identifier, String display, String currencyTemplateId, Location location) {
+    DungeonLocation(String identifier, String display, String currencyTemplateId) {
         this.identifier = identifier;
         this.display = display;
         this.currencyTemplateId = currencyTemplateId;
-        this.location = location;
-        this.chestLocation = getDungeonChestLocation();
-        this.blockFace = getDungeonChestBlockFace();
+        this.location = loadLocationFromFile("");
+        this.chestLocation = loadLocationFromFile("chest.");
+        this.blockFace = loadChestBlockFaceFromFile();
     }
 
     public String getIdentifier() {
@@ -119,14 +113,20 @@ public enum DungeonLocation {
         return null;
     }
 
-    private Location getDungeonChestLocation() {
+    private Location loadLocationFromFile(String prefix) {
         ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
         try {
-            String world = dungeonSection.getString("chest.world");
-            double x = dungeonSection.getDouble("chest.x");
-            double y = dungeonSection.getDouble("chest.y");
-            double z = dungeonSection.getDouble("chest.z");
-            return new Location(Bukkit.getWorld((world != null ? world : "dungeons")), x, y, z);
+            String world = dungeonSection.getString(prefix + "world");
+            double x = dungeonSection.getDouble(prefix + "x");
+            double y = dungeonSection.getDouble(prefix + "y");
+            double z = dungeonSection.getDouble(prefix + "z");
+            return new Location(Bukkit.getWorld((world != null ? world : "dungeons")),
+                    x,
+                    y,
+                    z,
+                    (float) dungeonSection.getDouble("yaw"),
+                    (float) dungeonSection.getDouble("pitch")
+            );
         } catch (NullPointerException e) {
             e.printStackTrace();
             Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
@@ -134,7 +134,7 @@ public enum DungeonLocation {
         return null;
     }
 
-    private BlockFace getDungeonChestBlockFace() {
+    private BlockFace loadChestBlockFaceFromFile() {
         ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
         try {
             return BlockFace.valueOf(dungeonSection.getString("chest.blockFace").toUpperCase());
