@@ -53,7 +53,7 @@ public class Sprint extends Spell implements MagicDamageSpell {
 
     @EventHandler
     public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!e.isAutoAttack()) return;
+        if (!e.isBasicAttack()) return;
         if (!sprinters.contains(e.getPlayer().getUniqueId())) return;
         Player player = e.getPlayer();
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_BREAK, 0.5f, 0.5f);

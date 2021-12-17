@@ -38,7 +38,7 @@ public class Improvisation extends Spell {
     @EventHandler
     public void onWeaponHit(WeaponDamageEvent e) {
         Player pl = e.getPlayer();
-        if (hasPassive(pl, this.getName()) && e.isAutoAttack())
+        if (hasPassive(pl, this.getName()) && e.isBasicAttack())
             attemptToBuffAllies(pl);
         if (buffedPlayers.contains(pl.getUniqueId())) {
             pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);

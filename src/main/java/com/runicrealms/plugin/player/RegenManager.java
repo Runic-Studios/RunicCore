@@ -14,6 +14,7 @@ import java.util.UUID;
 /**
  * CLass to manage player health and mana. Stores max mana in the player data file,
  * and creates a HashMap to store all current player mana values.
+ *
  * @author Skyfallin_
  */
 public class RegenManager implements Listener {
@@ -36,8 +37,8 @@ public class RegenManager implements Listener {
 
     public RegenManager() {
         // regen health async because of costly location checks
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(RunicCore.getInstance(), this::regenHealth, 0, REGEN_PERIOD * 20L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(RunicCore.getInstance(), this::regenMana, 0, REGEN_PERIOD * 20L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::regenHealth, 0, REGEN_PERIOD * 20L);
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenMana, 0, REGEN_PERIOD * 20L);
     }
 
     /**
@@ -97,13 +98,13 @@ public class RegenManager implements Listener {
         return BASE_MANA;
     }
 
-    public double getManaPerLv(Player pl) {
+    public double getManaPerLv(Player player) {
 
-        if (RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName() == null)
+        if (RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName() == null)
             return 0;
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName();
 
-        switch(className.toLowerCase()) {
+        switch (className.toLowerCase()) {
             case "archer":
                 return ARCHER_MANA_LV;
             case "cleric":
@@ -118,17 +119,16 @@ public class RegenManager implements Listener {
         return 0;
     }
 
-    public void addMana(Player pl, int amt) {
-        int mana = currentPlayerManaValues.get(pl.getUniqueId());
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
+    public void addMana(Player player, int amount) {
+        int mana = currentPlayerManaValues.get(player.getUniqueId());
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
         if (mana < maxMana)
-            currentPlayerManaValues.put(pl.getUniqueId(), Math.min(mana + amt, maxMana));
+            currentPlayerManaValues.put(player.getUniqueId(), Math.min(mana + amount, maxMana));
     }
 
-    public void subtractMana(Player pl, int amt) {
-        int mana = currentPlayerManaValues.get(pl.getUniqueId());
-        if (mana <= 0)
-            return;
-        currentPlayerManaValues.put(pl.getUniqueId(), Math.max((mana - amt), 0));
+    public void subtractMana(Player player, int amount) {
+        int mana = currentPlayerManaValues.get(player.getUniqueId());
+        if (mana <= 0) return;
+        currentPlayerManaValues.put(player.getUniqueId(), Math.max((mana - amount), 0));
     }
- }
+}

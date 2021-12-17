@@ -36,7 +36,7 @@ public final class MobMechanicsListener implements Listener {
     public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
         if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
-        if (!e.isAutoAttack()) // ignore basic attacks
+        if (!e.isBasicAttack()) // ignore basic attacks
             e.setAmount((int) (e.getAmount() * getPlayerDamageToMobMultiplier()));
         updateDisplayName(e.getVictim(), e.getAmount());
     }

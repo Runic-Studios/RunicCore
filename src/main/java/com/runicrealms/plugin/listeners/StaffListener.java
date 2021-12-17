@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Handles the mage auto-attack
+ * Handles the mage basic attack
  *
  * @author Skyfallin
  */
