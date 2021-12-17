@@ -14,6 +14,7 @@ public class DatabaseManager {
     private MongoDatabase playersDB;
     private MongoCollection<Document> player_data;
     private MongoCollection<Document> guild_data;
+    private MongoCollection<Document> shop_data;
 
     public DatabaseManager() {
 
@@ -32,6 +33,7 @@ public class DatabaseManager {
             playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
             player_data = playersDB.getCollection("player_data");
             guild_data = playersDB.getCollection("guild_data");
+            shop_data = playersDB.getCollection("shop_data");
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Database connection failed!");
         }
@@ -47,6 +49,10 @@ public class DatabaseManager {
 
     public MongoCollection<Document> getGuildData() {
         return guild_data;
+    }
+
+    public MongoCollection<Document> getShopData() {
+        return shop_data;
     }
 
 }
