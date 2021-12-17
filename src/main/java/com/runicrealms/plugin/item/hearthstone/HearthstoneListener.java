@@ -2,7 +2,7 @@ package com.runicrealms.plugin.item.hearthstone;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -106,6 +106,7 @@ public class HearthstoneListener implements Listener {
 
         return new BukkitRunnable() {
             int count = 0;
+
             @Override
             public void run() {
 
@@ -136,12 +137,12 @@ public class HearthstoneListener implements Listener {
                     return;
                 }
 
-                pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0,1,0),
+                pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0, 1, 0),
                         10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 3));
 
                 pl.sendMessage(ChatColor.AQUA + "Teleporting... "
-                        + ChatColor.WHITE + ChatColor.BOLD + (TEL_TIME -count) + "s");
-                count = count+1;
+                        + ChatColor.WHITE + ChatColor.BOLD + (TEL_TIME - count) + "s");
+                count = count + 1;
 
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20);

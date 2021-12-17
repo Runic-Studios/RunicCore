@@ -1,13 +1,17 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.commands.TravelCMD;
-import com.runicrealms.plugin.enums.CityLocation;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -34,7 +38,12 @@ public class RunicShopFactory {
         /*
         DUNGEON SHOPS
          */
+        getCaveShop();
         getCavernShop();
+        getKeepShop();
+        getLibraryShop();
+        getCryptsShop();
+        getFortressShop();
     }
 
     private final ItemStack bottle = RunicItemsAPI.generateItemFromTemplate("Bottle").generateItem();
@@ -350,20 +359,69 @@ public class RunicShopFactory {
     /*
     DUNGEON SHOPS
      */
-
-    private static final int CAVERN_ARMOR_PRICE = 2;
-    private static final String CAVERN_ITEM_CURRENCY = "HeadOfHexagonis";
-    private final ItemStack crystalCavernArcherHelm = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-helm").generateItem();
-    private final ItemStack crystalCavernArcherChest = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-chest").generateItem();
-    private final ItemStack crystalCavernArcherLeggings = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-leggings").generateItem();
-    private final ItemStack getCrystalCavernArcherBoots = RunicItemsAPI.generateItemFromTemplate("crystal-cavern-archer-boots").generateItem();
+    public RunicShopGeneric getCaveShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        1,
+                        2,
+                        DungeonLocation.SEBATHS_CAVE.getCurrencyTemplateId(),
+                        new String[]{"sanguine-longbow", "crimson-maul", "bloodmoon", "scarlet-rapier", "corruption"},
+                        "sebaths-cave");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sebath's Cave Shop", Collections.singletonList(32));
+    }
 
     public RunicShopGeneric getCavernShop() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherHelm, "Head(s) of Hexagonis"));
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherChest, "Head(s) of Hexagonis"));
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, crystalCavernArcherLeggings, "Head(s) of Hexagonis"));
-        shopItems.add(new RunicShopItem(CAVERN_ARMOR_PRICE, CAVERN_ITEM_CURRENCY, getCrystalCavernArcherBoots, "Head(s) of Hexagonis"));
-        return new RunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52), shopItems, new int[]{0, 9, 18, 27});
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        2,
+                        0,
+                        DungeonLocation.CRYSTAL_CAVERN.getCurrencyTemplateId(),
+                        null,
+                        "crystal-cavern");
+        return caveShop.buildRunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52));
+    }
+
+    public RunicShopGeneric getKeepShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        DungeonLocation.JORUNDRS_KEEP.getCurrencyTemplateId(),
+                        new String[]{"runeforged-piercer", "runeforged-crusher", "runeforged-scepter", "lost-runeblade", "jorundrs-wrath"},
+                        "jorundr-keep");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Jorundr's Keep Shop", Collections.singletonList(33));
+    }
+
+    public RunicShopGeneric getLibraryShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        DungeonLocation.SUNKEN_LIBRARY.getCurrencyTemplateId(),
+                        new String[]{"skeletal-shortbow", "bonecleaver", "ancient-arcane-rod", "wolfspine", "deathbringer"},
+                        "sunken-library");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sunken Library Shop", Collections.singletonList(34));
+    }
+
+    public RunicShopGeneric getCryptsShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        DungeonLocation.CRYPTS_OF_DERA.getCurrencyTemplateId(),
+                        new String[]{"triumph", "gilded-impaler", "prophets-cane", "nightshade", "sandfury"},
+                        "crypts");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Crypts of Dera Shop", Collections.singletonList(35));
+    }
+
+    public RunicShopGeneric getFortressShop() {
+        RunicDungeonShop caveShop = new RunicDungeonShop
+                (
+                        5,
+                        3,
+                        DungeonLocation.FROZEN_FORTRESS.getCurrencyTemplateId(),
+                        new String[]{"winters-howl", "chillrend", "permafrost", "blade-of-the-betrayer", "frosts-edge"},
+                        "frozen-fortress");
+        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Frozen Fortress Shop", Collections.singletonList(31));
     }
 }

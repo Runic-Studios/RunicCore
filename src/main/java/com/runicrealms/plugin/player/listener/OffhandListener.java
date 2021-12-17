@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.player.listener;
 
-import com.runicrealms.plugin.enums.ArmorType;
+import com.runicrealms.plugin.ArmorType;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

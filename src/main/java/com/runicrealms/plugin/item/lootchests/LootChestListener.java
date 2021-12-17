@@ -3,8 +3,12 @@ package com.runicrealms.plugin.item.lootchests;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
 import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -32,9 +36,8 @@ import java.util.UUID;
  */
 public class LootChestListener implements Listener {
 
-    private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
-            "chests.yml");
-    private final FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
+    private static final File CHESTS = new File(RunicCore.getInstance().getDataFolder(), "chests.yml");
+    private static final FileConfiguration CHESTS_CONFIG = YamlConfiguration.loadConfiguration(CHESTS);
 
     @EventHandler(priority = EventPriority.NORMAL) // first
     public void onChestInteract(PlayerInteractEvent e) {
@@ -44,9 +47,12 @@ public class LootChestListener implements Listener {
         if (!e.hasBlock()) return;
         if (e.getClickedBlock() == null) return;
         if (e.getClickedBlock().getType() != Material.CHEST) return;
+        Chest chest = (Chest) e.getClickedBlock().getState();
+        BossChest bossChest = BossChest.getFromBlock(RunicCore.getBossTagger().getActiveBossLootChests(), chest);
+        if (bossChest != null) return; // handled in BossTagger
         e.setCancelled(true);
 
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
         Block block = e.getClickedBlock();
         Location blockLoc = block.getLocation();
         if (block.getType() == Material.AIR) return;
@@ -64,25 +70,25 @@ public class LootChestListener implements Listener {
         LootChestRarity lootChestRarity = lootChest.getLootChestRarity();
 
         // verify player level
-        if (pl.getLevel() < lootChestRarity.getMinAccessLevel()) {
-            pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            pl.sendMessage(ChatColor.RED + "You must be at least level " + lootChestRarity.getMinAccessLevel() + " to open this.");
+        if (player.getLevel() < lootChestRarity.getMinAccessLevel()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            player.sendMessage(ChatColor.RED + "You must be at least level " + lootChestRarity.getMinAccessLevel() + " to open this.");
             return;
         }
 
         // destroy chest, open inv if all conditions are met
         RunicCore.getLootChestManager().getQueuedChests().put(lootChest, System.currentTimeMillis()); // update respawn timer
-        pl.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
+        player.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
         block.setType(Material.AIR);
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
-        openChestGUI(pl, lootChestRarity);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
+        openChestGUI(player, lootChestRarity);
     }
 
     /**
      * Command to generate the chest loot for player
      *
-     * @param player   player who opened chest
+     * @param player          player who opened chest
      * @param lootChestRarity rarity of loot chest
      */
     private void openChestGUI(Player player, LootChestRarity lootChestRarity) {
@@ -193,26 +199,26 @@ public class LootChestListener implements Listener {
 
         // save data file
         try {
-            chestConfig.save(chests);
+            CHESTS_CONFIG.save(CHESTS);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        if (!chestConfig.isSet("Chests.NEXT_ID")) {
-            chestConfig.set("Chests.NEXT_ID", 0);
+        if (!CHESTS_CONFIG.isSet("Chests.NEXT_ID")) {
+            CHESTS_CONFIG.set("Chests.NEXT_ID", 0);
         }
-        int nextID = chestConfig.getInt("Chests.NEXT_ID");
-        chestConfig.set("Chests.Locations." + nextID + ".world", b.getWorld().getName());
-        chestConfig.set("Chests.Locations." + nextID + ".x", b.getLocation().getBlockX());
-        chestConfig.set("Chests.Locations." + nextID + ".y", b.getLocation().getBlockY());
-        chestConfig.set("Chests.Locations." + nextID + ".z", b.getLocation().getBlockZ());
+        int nextID = CHESTS_CONFIG.getInt("Chests.NEXT_ID");
+        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".world", b.getWorld().getName());
+        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".x", b.getLocation().getBlockX());
+        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".y", b.getLocation().getBlockY());
+        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".z", b.getLocation().getBlockZ());
         pl.sendMessage(ChatColor.GREEN + "Loot chest saved! Now please specify the tier of this chest:\n"
                 + "common, uncommon, rare, or epic?");
         chatters.add(pl.getUniqueId());
 
         // save data file
         try {
-            chestConfig.save(chests);
+            CHESTS_CONFIG.save(CHESTS);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -240,19 +246,19 @@ public class LootChestListener implements Listener {
             return;
         }
 
-        if (!chestConfig.isSet("Chests.NEXT_ID")) {
-            chestConfig.set("Chests.NEXT_ID", 0);
+        if (!CHESTS_CONFIG.isSet("Chests.NEXT_ID")) {
+            CHESTS_CONFIG.set("Chests.NEXT_ID", 0);
         }
-        int nextID = chestConfig.getInt("Chests.NEXT_ID");
+        int nextID = CHESTS_CONFIG.getInt("Chests.NEXT_ID");
 
-        chestConfig.set("Chests.Locations." + nextID + ".tier", chestTier);
-        chestConfig.set("Chests.NEXT_ID", nextID + 1);
+        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".tier", chestTier);
+        CHESTS_CONFIG.set("Chests.NEXT_ID", nextID + 1);
         pl.sendMessage(ChatColor.GREEN + "Chest tier set to: " + ChatColor.YELLOW + chestTier);
         chatters.remove(pl.getUniqueId());
 
         // save data file
         try {
-            chestConfig.save(chests);
+            CHESTS_CONFIG.save(CHESTS);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

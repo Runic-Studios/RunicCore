@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
+import com.runicrealms.plugin.spellapi.spells.artifact.*;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
@@ -222,9 +223,17 @@ public class SpellManager implements Listener {
         this.spellList.add(new BindingShot());
         this.spellList.add(new SurvivalInstinct());
         this.spellList.add(new Potion());
+        /*
+        Artifacts
+         */
+        this.spellList.add(new DrainLife());
+        this.spellList.add(new AdrenalineRush());
+        this.spellList.add(new LifeInfusion());
+        this.spellList.add(new BloodyShot());
+        this.spellList.add(new Bloodlust());
     }
 
-    // starts the repeating task to manage player cooldowns
+    // Starts the repeating task to manage player cooldowns
     private void startCooldownTask() {
         new BukkitRunnable() {
             @Override

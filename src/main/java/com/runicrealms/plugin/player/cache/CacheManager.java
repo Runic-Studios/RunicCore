@@ -10,7 +10,7 @@ import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;

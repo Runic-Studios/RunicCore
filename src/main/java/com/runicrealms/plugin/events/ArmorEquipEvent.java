@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.events;
 
-import com.runicrealms.plugin.enums.ArmorType;
-import org.bukkit.Bukkit;
+import com.runicrealms.plugin.ArmorType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;

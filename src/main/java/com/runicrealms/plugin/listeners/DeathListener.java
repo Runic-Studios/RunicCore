@@ -2,10 +2,10 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.enums.DungeonLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
@@ -58,8 +58,10 @@ public class DeathListener implements Listener {
             victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
             victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
         } else {
-            victim.teleport(dungeonLocation.getLocation());
-            victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                victim.teleport(dungeonLocation.getLocation());
+                victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
+            });
         }
 
         // particles, sounds

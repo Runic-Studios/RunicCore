@@ -77,7 +77,7 @@ public class Enrage extends Spell implements MagicDamageSpell {
     @EventHandler
     public void onSuccessfulHit(WeaponDamageEvent e) {
 
-        if (!e.isAutoAttack()) return;
+        if (!e.isBasicAttack()) return;
         if (!ragers.contains(e.getPlayer().getUniqueId())) return;
         if (e.isCancelled()) return;
 

@@ -2,6 +2,8 @@ package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItem;
+import com.runicrealms.runicitems.item.RunicItemArmor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -123,14 +125,20 @@ public class RunicShopItem {
     }
 
     /**
-     * The generic item shop lore generator to be used if coins are the price
+     * The generic item shop lore generator that appends the price
      *
-     * @param is itemstack to be sold
+     * @param itemStack itemstack to be sold
      * @param price of the item
      * @return a display-able item with lore like price info
      */
-    public static ItemStack iconWithLore(ItemStack is, int price, String priceItemDisplayName) {
-        ItemStack iconWithLore = is.clone();
+    public static ItemStack iconWithLore(ItemStack itemStack, int price, String priceItemDisplayName) {
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
+        if (runicItem instanceof RunicItemArmor) {
+            RunicItemArmor runicItemArmor = (RunicItemArmor) runicItem;
+            runicItemArmor.setLoreSectionGenerator(true);
+            itemStack = runicItemArmor.generateItem();
+        }
+        ItemStack iconWithLore = itemStack.clone();
         ItemMeta meta = iconWithLore.getItemMeta();
         if (meta != null && meta.getLore() != null) {
             List<String> lore = meta.getLore();

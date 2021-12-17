@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.enums;
+package com.runicrealms.plugin;
 
 import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;

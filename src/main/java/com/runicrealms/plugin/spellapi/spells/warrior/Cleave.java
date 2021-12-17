@@ -31,7 +31,7 @@ public class Cleave extends Spell {
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
         if (!Enrage.getRagers().contains(e.getPlayer().getUniqueId())) return;
-        if (!e.isAutoAttack()) return; // only listen for basic attacks
+        if (!e.isBasicAttack()) return; // only listen for basic attacks
         // aoe
         int targetsHit = 0;
         Player pl = e.getPlayer();

@@ -57,24 +57,23 @@ public class DamageUtil {
     /**
      * Our universal method to apply weapon damage to a player using custom calculation.
      *
-     * @param dmgAmt       amount to be healed before gem or buff calculations
-     * @param recipient    player to be healed
-     * @param caster       player who cast the healing spell
-     * @param isAutoAttack whether the attack will be treated as an auto attack (for on-hit effects)
-     * @param isRanged     whether the attack is ranged
-     * @param bypassNoTick deprecated and should be removed
-     * @param spell        include a reference to spell for spell scaling
+     * @param dmgAmt        amount to be healed before gem or buff calculations
+     * @param recipient     player to be healed
+     * @param caster        player who cast the healing spell
+     * @param isBasicAttack whether the attack will be treated as an basic attack (for on-hit effects)
+     * @param isRanged      whether the attack is ranged
+     * @param bypassNoTick  deprecated and should be removed
+     * @param spell         include a reference to spell for spell scaling
      */
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
-                                          boolean isAutoAttack, boolean isRanged, boolean bypassNoTick, Spell... spell) {
+                                          boolean isBasicAttack, boolean isRanged, boolean bypassNoTick, Spell... spell) {
 
         // prevent healing
-        if (dmgAmt < 0) {
+        if (dmgAmt < 0)
             dmgAmt = 0;
-        }
 
         // call an event, apply modifiers if necessary
-        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isAutoAttack, isRanged, spell);
+        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, isRanged, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();

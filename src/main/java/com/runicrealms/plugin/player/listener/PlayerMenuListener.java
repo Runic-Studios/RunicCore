@@ -136,7 +136,9 @@ public class PlayerMenuListener implements Listener {
         if (PLAYER_CRAFTING_SLOTS.contains(e.getSlot())) {
             e.setCancelled(true);
             player.updateInventory();
-            if (e.getSlot() == 3)
+            if (e.getCursor() != null
+                    && e.getCursor().getType() == Material.AIR // prevents clicking with items on cursur
+                    && e.getSlot() == 3)
                 RunicProfessionsAPI.openGatheringGUI(player);
         }
     }

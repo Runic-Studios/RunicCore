@@ -21,7 +21,7 @@ public class RighteousBlade extends Spell implements HealingSpell {
     private static final double PERCENT = 10;
 
     public RighteousBlade() {
-        super ("Righteous Blade",
+        super("Righteous Blade",
                 "Your melee weapon⚔ attacks have a " + (int) PERCENT + "% chance " +
                         "to heal✦ yourself and allies within " + RADIUS + " blocks " +
                         "for (" + HEAL_AMOUNT + " + &f" + HEALING_PER_LEVEL +
@@ -33,7 +33,7 @@ public class RighteousBlade extends Spell implements HealingSpell {
     @EventHandler
     public void onHealingHit(WeaponDamageEvent e) {
         if (!hasPassive(e.getPlayer(), this.getName())) return;
-        if (!e.isAutoAttack()) return;
+        if (!e.isBasicAttack()) return;
         healAllies(e.getPlayer());
     }
 

@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.enums.WeaponType;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -44,7 +44,8 @@ public class BowListener implements Listener {
 
         // retrieve the weapon type
         ItemStack artifact = e.getItem();
-        if (e.getPlayer().getInventory().getItemInOffHand().equals(artifact)) return; // don't let them fire from offhand
+        if (e.getPlayer().getInventory().getItemInOffHand().equals(artifact))
+            return; // don't let them fire from offhand
         WeaponType artifactType = WeaponType.matchType(artifact);
         double cooldown = e.getPlayer().getCooldown(artifact.getType());
 
@@ -152,26 +153,6 @@ public class BowListener implements Listener {
                 }
             }
         }
-
-//        ItemStack artifact = damager.getInventory().getItemInMainHand();
-
-        // retrieve the weapon damage, cooldown
-//        int minDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.minDamage");
-//        int maxDamage = (int) AttributeUtil.getCustomDouble(artifact, "custom.maxDamage");
-
-        // remove the arrow with nms magic
-//        new BukkitRunnable() {
-//            public void run() {
-//                ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
-//            }
-//        }.runTaskLater(RunicCore.getInstance(), 3);
-
-//        int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-
-        // spawn the damage indicator if the arrow is an autoattack
-//        if (arrow.getCustomName() == null) return;
-
-//        DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, false);
     }
 
     /**
@@ -179,10 +160,9 @@ public class BowListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void onMobTargetMob(EntityTargetEvent e) {
-        if (e.getTarget() == null) return; // has target
-        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent()) return; // target is a mythic mob
-//        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
-//        if (am.getFaction() != null && am.getFaction().equalsIgnoreCase("guard")) return; // targeter is not a guard
+        if (e.getTarget() == null) return; // has a target
+        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent())
+            return; // target is a mythic mob
         e.setCancelled(true);
     }
 
@@ -201,18 +181,19 @@ public class BowListener implements Listener {
         // only listen for arrows NOT shot by a player
         if (!(arrow.getShooter() instanceof Player)) {
             // mobs
-                e.setCancelled(true);
-                double dmgAmt = e.getDamage();
-                if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
-                    if (MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId())) return; // don't let mobs shoot each other
-                    ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
-                    dmgAmt = mm.getDamage();
-                }
-                MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), false);
-                Bukkit.getPluginManager().callEvent(event);
-                if (!event.isCancelled())
-                    DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
-                            (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
+            e.setCancelled(true);
+            double dmgAmt = e.getDamage();
+            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
+                if (MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId()))
+                    return; // don't let mobs shoot each other
+                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
+                dmgAmt = mm.getDamage();
+            }
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), false);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
+                        (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
         } else {
 
             // bugfix for armor stands
@@ -258,16 +239,9 @@ public class BowListener implements Listener {
                 maxDamage = 1;
             }
 
-            // remove the arrow with nms magic
-//            new BukkitRunnable() {
-//                public void run() {
-//                    ((CraftPlayer) damager).getHandle().getDataWatcher().set(new DataWatcherObject(10, DataWatcherRegistry.b), (Object) 0);
-//                }
-//            }.runTaskLater(RunicCore.getInstance(), 3);
-
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
 
-            // spawn the damage indicator if the arrow is an autoattack
+            // spawn the damage indicator if the arrow is an basic attack
             if (arrow.getCustomName() == null) return;
 
             e.setCancelled(true);
@@ -276,11 +250,10 @@ public class BowListener implements Listener {
         }
     }
 
-    // removes arrows stuck in bodies
+    // removes any arrows stuck in bodies
     @EventHandler
     public void onArrow(ProjectileHitEvent e) {
-        if (e.getEntity() instanceof Arrow) {
+        if (e.getEntity() instanceof Arrow)
             e.getEntity().remove();
-        }
     }
 }

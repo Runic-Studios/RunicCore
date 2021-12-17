@@ -2,7 +2,7 @@ package com.runicrealms.plugin.database.util;
 
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
-import com.runicrealms.plugin.enums.CityLocation;
+import com.runicrealms.plugin.CityLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -54,6 +54,7 @@ public class DatabaseUtil {
 
     /**
      * Loads inventory from JSON object into memory
+     *
      * @String encoded inventory data
      */
     public static ItemStack[] loadInventoryNew(String encoded) {
@@ -130,7 +131,6 @@ public class DatabaseUtil {
     }
 
     /**
-     *
      * @param inventory
      * @return
      */
@@ -192,8 +192,9 @@ public class DatabaseUtil {
 
     /**
      * This method saves the player's location as a document
+     *
      * @param mongoDataSection the character section of player data
-     * @param location the location of the player cache (or hearthstone location)
+     * @param location         the location of the player cache (or hearthstone location)
      */
     public static void saveLocation(PlayerMongoDataSection mongoDataSection, Location location) {
         try {

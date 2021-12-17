@@ -15,7 +15,7 @@ import org.bukkit.event.HandlerList;
 public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
 
     private final Player player;
-    private final boolean isAutoAttack;
+    private final boolean isBasicAttack;
     private final boolean isRanged;
     private final Spell spell;
     private boolean isCancelled;
@@ -23,17 +23,17 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
     /**
      * Constructor of weapon damage event w/ all the info we need!
      *
-     * @param amount       of damage to inflict
-     * @param damager      player who is causing damage
-     * @param victim       who is receiving damage
-     * @param isAutoAttack whether the attack is a physical spell or a basic attack
-     * @param isRanged     whether the attack is a ranged physical spell (archers)
-     * @param spell        optional parameter to specify a spell source (for damage scaling)
+     * @param amount        of damage to inflict
+     * @param damager       player who is causing damage
+     * @param victim        who is receiving damage
+     * @param isBasicAttack whether the attack is a physical spell or a basic attack
+     * @param isRanged      whether the attack is a ranged physical spell (archers)
+     * @param spell         optional parameter to specify a spell source (for damage scaling)
      */
-    public WeaponDamageEvent(int amount, Player damager, LivingEntity victim, boolean isAutoAttack, boolean isRanged, Spell... spell) {
+    public WeaponDamageEvent(int amount, Player damager, LivingEntity victim, boolean isBasicAttack, boolean isRanged, Spell... spell) {
         super(victim, amount);
         this.player = damager;
-        this.isAutoAttack = isAutoAttack;
+        this.isBasicAttack = isBasicAttack;
         this.isRanged = isRanged;
         this.spell = spell.length > 0 ? spell[0] : null;
         this.isCancelled = false;
@@ -47,8 +47,8 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
         return this.spell;
     }
 
-    public boolean isAutoAttack() {
-        return this.isAutoAttack;
+    public boolean isBasicAttack() {
+        return this.isBasicAttack;
     }
 
     public boolean isRanged() {

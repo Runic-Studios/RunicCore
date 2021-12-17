@@ -162,8 +162,8 @@ public class SkillTree {
                 return ArcherTreeUtil.wardenPerkList();
             case BARD:
                 return ClericTreeUtil.bardPerkList();
-            case EXEMPLAR:
-                return ClericTreeUtil.exemplarList();
+            case PALADIN:
+                return ClericTreeUtil.paladinList();
             case PRIEST:
                 return ClericTreeUtil.priestList();
             case CRYOMANCER:

@@ -12,6 +12,8 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Discord extends Spell implements MagicDamageSpell {
 
@@ -23,21 +25,25 @@ public class Discord extends Spell implements MagicDamageSpell {
 
     public Discord() {
         super("Discord",
-                "You prime yourself with a chaotic magic! After " + DELAY + "s, " +
-                        "enemies within " + RADIUS + " blocks are stunned for " +
+                "You prime yourself with chaotic magic, slowing yourself for " + DELAY + "s. " +
+                        "After, enemies within " + RADIUS + " blocks are stunned for " +
                         DURATION + "s and suffer (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 20, 20);
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
-        Cone.coneEffect(pl, Particle.NOTE, DELAY, 0, 20, Color.WHITE);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(pl), DELAY * 20L);
+    public void executeSpell(Player player, SpellItemType type) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DELAY * 20, 2));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CAT_HISS, 0.01f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
+        Cone.coneEffect(player, Particle.NOTE, DELAY, 0, 20, Color.GREEN);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(player), DELAY * 20L);
     }
 
     private void discord(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 2.0f);
+        player.getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getEyeLocation(), 50, 1.0F, 0.5F, 1.0F, 0);
         for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!(verifyEnemy(player, en))) continue;
             causeDiscord(player, (LivingEntity) en);
@@ -47,7 +53,6 @@ public class Discord extends Spell implements MagicDamageSpell {
     }
 
     private void causeDiscord(Player caster, LivingEntity victim) {
-        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 2.0f);
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.2F);

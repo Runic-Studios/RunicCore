@@ -30,7 +30,7 @@ public class ClericTreeUtil {
         return perks;
     }
 
-    public static List<Perk> exemplarList() {
+    public static List<Perk> paladinList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(48, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.WISDOM));

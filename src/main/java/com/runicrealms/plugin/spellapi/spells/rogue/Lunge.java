@@ -42,7 +42,7 @@ public class Lunge extends Spell {
         // particles, sounds
         pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.8f);
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
-                25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
+                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
         pl.teleport(location.add(0, 0.5, 1));
         pl.setVelocity(launchPath.multiply(LAUNCH_PATH_MULT));
