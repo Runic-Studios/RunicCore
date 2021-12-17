@@ -31,7 +31,6 @@ public class Electrocute extends Spell {
         if (!e.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
         int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
         RunicCore.getRegenManager().addMana(e.getPlayer(), MANA_REGEN_AMOUNT);
-        // sounds, particles
         e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_DRINK, 0.5f, 1.0f);
         e.getPlayer().getWorld().playSound(e.getVictim().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 2.0f, 1.0f);
         e.getVictim().getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getVictim().getLocation(), 25, 0.5F, 0.5F, 0.5F, 0);

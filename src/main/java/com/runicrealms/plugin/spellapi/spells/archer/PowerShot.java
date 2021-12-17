@@ -49,17 +49,17 @@ public class PowerShot extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1f);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
-        Vector vec = pl.getEyeLocation().getDirection().normalize().multiply(2);
-        startTask(pl, vec);
+    public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1f);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
+        Vector vec = player.getEyeLocation().getDirection().normalize().multiply(2);
+        startTask(player, vec);
     }
 
-    private void startTask(Player pl, Vector vector) {
-        Arrow powerShot = pl.launchProjectile(Arrow.class);
+    private void startTask(Player player, Vector vector) {
+        Arrow powerShot = player.launchProjectile(Arrow.class);
         powerShot.setVelocity(vector);
-        powerShot.setShooter(pl);
+        powerShot.setShooter(player);
         powerShots.add(powerShot);
         new BukkitRunnable() {
             @Override
@@ -69,14 +69,14 @@ public class PowerShot extends Spell implements MagicDamageSpell {
                         10, 0, 0, 0, 0);
                 if (powerShot.isDead() || powerShot.isOnGround()) {
                     this.cancel();
-                    pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
+                    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 0.5f, 2f);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2f);
                     powerShot.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, arrowLoc, 10, 0, 0, 0, 0);
                     powerShot.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 25, 0.5f, 0.5f, 0.5f, 0);
-                    for (Entity entity : pl.getWorld().getNearbyEntities(arrowLoc, RADIUS, RADIUS, RADIUS)) {
+                    for (Entity entity : player.getWorld().getNearbyEntities(arrowLoc, RADIUS, RADIUS, RADIUS)) {
                         if (!(entity instanceof LivingEntity)) continue;
-                        if (!verifyEnemy(pl, entity)) continue;
-                        applyHuntersMark(pl, (LivingEntity) entity);
+                        if (!verifyEnemy(player, entity)) continue;
+                        applyHuntersMark(player, (LivingEntity) entity);
                     }
                 }
             }
@@ -86,31 +86,18 @@ public class PowerShot extends Spell implements MagicDamageSpell {
 
     @EventHandler
     public void onSearingArrowHit(EntityDamageByEntityEvent e) {
-
         if (!(e.getDamager() instanceof Arrow)) return;
         Arrow arrow = (Arrow) e.getDamager();
         if (!(arrow.getShooter() instanceof Player)) return;
         if (!powerShots.contains(arrow)) return;
-
         e.setCancelled(true);
-//        if (!(e.getEntity() instanceof LivingEntity)) return;
-//        Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
-//        assert pl != null;
-//        LivingEntity le = (LivingEntity) e.getEntity();
-//
-//        if (verifyEnemy(pl, le)) {
-//            DamageUtil.damageEntitySpell(DAMAGE, le, pl, this);
-//            markedEntities.put(pl.getUniqueId(), le.getUniqueId());
-//            Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
-//            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> markedEntities.remove(pl.getUniqueId()), DURATION * 20L);
-//        }
     }
 
     private void applyHuntersMark(Player pl, LivingEntity le) {
         DamageUtil.damageEntitySpell(DAMAGE, le, pl, this);
         markedEntities.put(pl.getUniqueId(), le.getUniqueId());
         Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> markedEntities.remove(pl.getUniqueId()), DURATION * 20L);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> markedEntities.remove(pl.getUniqueId()), DURATION * 20L);
     }
 
     @EventHandler

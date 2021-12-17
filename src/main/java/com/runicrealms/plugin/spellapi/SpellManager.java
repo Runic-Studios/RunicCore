@@ -231,6 +231,8 @@ public class SpellManager implements Listener {
         this.spellList.add(new LifeInfusion());
         this.spellList.add(new BloodyShot());
         this.spellList.add(new Bloodlust());
+        this.spellList.add(new Electrocute());
+        this.spellList.add(new LightningArrow());
     }
 
     // Starts the repeating task to manage player cooldowns
