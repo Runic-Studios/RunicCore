@@ -101,7 +101,6 @@ public class SpellManager implements Listener {
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
 
-    @SuppressWarnings({"IntegerDivisionInFloatingPointContext"})
     private int getUserCooldown(Player player, Spell spell) {
         double cooldownRemaining = 0;
 
@@ -233,6 +232,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Bloodlust());
         this.spellList.add(new Electrocute());
         this.spellList.add(new LightningArrow());
+        this.spellList.add(new Maelstrom());
     }
 
     // Starts the repeating task to manage player cooldowns

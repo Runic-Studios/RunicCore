@@ -7,6 +7,10 @@ import org.bukkit.entity.Player;
 
 public interface ISpell {
 
+    void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration);
+
+    void execute(Player player, SpellItemType type); // casts the spell
+
     String getName(); // returns the spell name
 
     ChatColor getColor();
@@ -15,28 +19,26 @@ public interface ISpell {
 
     ClassEnum getReqClass();
 
-    void execute(Player player, SpellItemType type); // casts the spell
-
     double getCooldown();
 
     int getManaCost();
 
     boolean hasPassive(Player player, String passive);
 
-    boolean verifyAlly(Player caster, Entity recipient); // checks for valid healing, shielding targets
-
-    boolean verifyEnemy(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
-
-    void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration);
-
     boolean isInvulnerable(Entity entity);
+
+    boolean isOnCooldown(Player player);
+
+    boolean isRooted(Entity entity);
 
     boolean isSilenced(Entity entity);
 
     boolean isStunned(Entity entity);
 
-    boolean isRooted(Entity entity);
-
     int percentMissingHealth(Entity entity, double percent);
+
+    boolean verifyAlly(Player caster, Entity recipient); // checks for valid healing, shielding targets
+
+    boolean verifyEnemy(Player caster, Entity victim); // check tons of things, like if target entity is NPC, party member, and outlaw checks
 }
 

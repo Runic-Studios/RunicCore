@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
@@ -14,9 +15,8 @@ import org.bukkit.event.EventPriority;
 
 import java.util.Objects;
 
-public class LifeInfusion extends Spell {
+public class LifeInfusion extends Spell implements ArtifactSpell {
 
-    private static final String ARTIFACT_ID = "crimson-maul";
     private static final int HEAL_AMOUNT = 20;
 
     public LifeInfusion() {
@@ -26,7 +26,7 @@ public class LifeInfusion extends Spell {
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
+        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
         if (e.getVictim() == null) return;
         if (!(e.getVictim() instanceof LivingEntity)) return;
         spawnSphere(e.getVictim().getLocation());
@@ -55,6 +55,16 @@ public class LifeInfusion extends Spell {
                 location.subtract(x, y, z);
             }
         }
+    }
+
+    @Override
+    public String getArtifactId() {
+        return "crimson-maul";
+    }
+
+    @Override
+    public double getChance() {
+        return 1.0;
     }
 }
 

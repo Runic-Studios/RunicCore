@@ -35,6 +35,7 @@ import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
+import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
 import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellScalingListener;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -351,6 +352,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(partyManager, this);
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
+        pm.registerEvents(new ArtifactSpellListener(), this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

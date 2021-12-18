@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.artifact;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
@@ -14,9 +15,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-public class Electrocute extends Spell {
+public class Electrocute extends Spell implements ArtifactSpell {
 
-    private static final String ARTIFACT_ID = "lost-runeblade";
     private static final int MANA_REGEN_AMOUNT = 15;
     private static final int RADIUS = 3;
     private static final double DAMAGE_PERCENT = 0.75;
@@ -28,7 +28,7 @@ public class Electrocute extends Spell {
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
+        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
         int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
         RunicCore.getRegenManager().addMana(e.getPlayer(), MANA_REGEN_AMOUNT);
         e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GENERIC_DRINK, 0.5f, 1.0f);
@@ -38,6 +38,16 @@ public class Electrocute extends Spell {
             if (!verifyEnemy(e.getPlayer(), en)) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) en, e.getPlayer());
         }
+    }
+
+    @Override
+    public String getArtifactId() {
+        return "lost-runeblade";
+    }
+
+    @Override
+    public double getChance() {
+        return 1.0;
     }
 }
 

@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.artifact;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
@@ -23,22 +24,21 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LightningArrow extends Spell {
+public class LightningArrow extends Spell implements ArtifactSpell {
 
-    private static final String ARTIFACT_ID = "runeforged-piercer";
     private static final int RADIUS = 3;
     private static final double DAMAGE_PERCENT = 0.5;
     private final Set<Arrow> lightningArrows;
 
     public LightningArrow() {
-        super("Lightning Arrow", "", ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
+        super("Lightning Arrow", "", ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
         this.setIsPassive(true);
         lightningArrows = new HashSet<>();
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
+        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
         int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
         fireLightningArrow(e.getPlayer(), damage);
     }
@@ -83,6 +83,16 @@ public class LightningArrow extends Spell {
         if (!(arrow.getShooter() instanceof Player)) return;
         if (!lightningArrows.contains(arrow)) return;
         e.setCancelled(true);
+    }
+
+    @Override
+    public String getArtifactId() {
+        return "runeforged-piercer";
+    }
+
+    @Override
+    public double getChance() {
+        return 1.0;
     }
 }
 
