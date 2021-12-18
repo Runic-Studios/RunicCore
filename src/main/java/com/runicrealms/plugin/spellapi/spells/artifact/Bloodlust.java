@@ -16,8 +16,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Bloodlust extends Spell implements ArtifactSpell {
 
+    private static final double CHANCE = 0.35;
     private static final double DURATION = 4;
     private static final double HEAL_AMOUNT = 20;
+    private static final String ARTIFACT_ID = "corruption";
 
     public Bloodlust() {
         super("Bloodlust", "", ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
@@ -48,12 +50,12 @@ public class Bloodlust extends Spell implements ArtifactSpell {
 
     @Override
     public String getArtifactId() {
-        return "corruption";
+        return ARTIFACT_ID;
     }
 
     @Override
     public double getChance() {
-        return 0.35;
+        return CHANCE;
     }
 }
 

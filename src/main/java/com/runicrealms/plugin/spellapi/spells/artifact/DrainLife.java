@@ -14,6 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DrainLife extends Spell implements ArtifactSpell {
 
     private static final int HEAL_AMOUNT = 10;
+    private static final double CHANCE = 0.25;
+    private static final String ARTIFACT_ID = "bloodmoon";
 
     public DrainLife() {
         super("Drain Life", "", ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
@@ -30,12 +32,12 @@ public class DrainLife extends Spell implements ArtifactSpell {
 
     @Override
     public String getArtifactId() {
-        return "bloodmoon";
+        return ARTIFACT_ID;
     }
 
     @Override
     public double getChance() {
-        return 0.25;
+        return CHANCE;
     }
 }
 

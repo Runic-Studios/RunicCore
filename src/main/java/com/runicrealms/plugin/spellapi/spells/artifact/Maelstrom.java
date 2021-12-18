@@ -6,6 +6,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.runicitems.item.event.RunicArtifactOnHitEvent;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -21,7 +22,9 @@ public class Maelstrom extends Spell implements ArtifactSpell {
 
     private static final int DURATION = 4;
     private static final int RADIUS = 3;
+    private static final double CHANCE = 0.35;
     private static final double DAMAGE_PERCENT = 0.75;
+    private static final String ARTIFACT_ID = "runeforged-scepter";
 
     public Maelstrom() {
         super("Maelstrom", "", ChatColor.WHITE, ClassEnum.MAGE, 30, 0);
@@ -31,12 +34,14 @@ public class Maelstrom extends Spell implements ArtifactSpell {
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
         if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        if (!(e instanceof RunicArtifactOnHitEvent)) return;
+        RunicArtifactOnHitEvent onHitEvent = (RunicArtifactOnHitEvent) e;
         if (isOnCooldown(e.getPlayer())) return;
         double roll = ThreadLocalRandom.current().nextDouble();
         if (roll > getChance()) return;
         int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
-        maelstromTask(e.getPlayer(), e.getVictim(), damage);
-        e.setSpell(this);
+        maelstromTask(e.getPlayer(), onHitEvent.getVictim(), damage);
+        e.setArtifactSpellToCast(this);
     }
 
     private void maelstromTask(Player player, Entity victim, int damage) {
@@ -79,12 +84,12 @@ public class Maelstrom extends Spell implements ArtifactSpell {
 
     @Override
     public String getArtifactId() {
-        return "runeforged-scepter";
+        return ARTIFACT_ID;
     }
 
     @Override
     public double getChance() {
-        return 0.35;
+        return CHANCE;
     }
 }
 

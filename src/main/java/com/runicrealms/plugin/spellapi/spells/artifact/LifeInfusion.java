@@ -4,6 +4,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
+import com.runicrealms.runicitems.item.event.RunicArtifactOnKillEvent;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -18,6 +19,8 @@ import java.util.Objects;
 public class LifeInfusion extends Spell implements ArtifactSpell {
 
     private static final int HEAL_AMOUNT = 20;
+    private static final double CHANCE = 1.0;
+    private static final String ARTIFACT_ID = "crimson-maul";
 
     public LifeInfusion() {
         super("Life Infusion", "", ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
@@ -27,9 +30,11 @@ public class LifeInfusion extends Spell implements ArtifactSpell {
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
         if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        if (e.getVictim() == null) return;
-        if (!(e.getVictim() instanceof LivingEntity)) return;
-        spawnSphere(e.getVictim().getLocation());
+        if (!(e instanceof RunicArtifactOnKillEvent)) return;
+        RunicArtifactOnKillEvent onKillEvent = (RunicArtifactOnKillEvent) e;
+        if (onKillEvent.getVictim() == null) return;
+        if (!(onKillEvent.getVictim() instanceof LivingEntity)) return;
+        spawnSphere(onKillEvent.getVictim().getLocation());
         HealUtil.healPlayer(HEAL_AMOUNT, e.getPlayer(), e.getPlayer(), false);
     }
 
@@ -59,12 +64,12 @@ public class LifeInfusion extends Spell implements ArtifactSpell {
 
     @Override
     public String getArtifactId() {
-        return "crimson-maul";
+        return ARTIFACT_ID;
     }
 
     @Override
     public double getChance() {
-        return 1.0;
+        return CHANCE;
     }
 }
 

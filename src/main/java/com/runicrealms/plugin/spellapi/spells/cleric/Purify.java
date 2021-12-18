@@ -131,6 +131,11 @@ public class Purify extends Spell implements HealingSpell {
     }
 
     @Override
+    public int getHeal() {
+        return HEAL_AMT;
+    }
+
+    @Override
     public double getHealingPerLevel() {
         return HEALING_PER_LEVEL;
     }

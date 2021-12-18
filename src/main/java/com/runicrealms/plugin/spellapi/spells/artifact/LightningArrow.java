@@ -28,6 +28,8 @@ public class LightningArrow extends Spell implements ArtifactSpell {
 
     private static final int RADIUS = 3;
     private static final double DAMAGE_PERCENT = 0.5;
+    private static final double CHANCE = 1.0;
+    private static final String ARTIFACT_ID = "runeforged-piercer";
     private final Set<Arrow> lightningArrows;
 
     public LightningArrow() {
@@ -87,12 +89,12 @@ public class LightningArrow extends Spell implements ArtifactSpell {
 
     @Override
     public String getArtifactId() {
-        return "runeforged-piercer";
+        return ARTIFACT_ID;
     }
 
     @Override
     public double getChance() {
-        return 1.0;
+        return CHANCE;
     }
 }
 

@@ -8,10 +8,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public class ArtifactSpellListener implements Listener {
-    
+
     @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onArtifactSpellUse(RunicItemArtifactTriggerEvent e) {
-        if (e.getSpell() == null) return;
-        Bukkit.getPluginManager().callEvent(new SpellCastEvent(e.getPlayer(), e.getSpell()));
+        if (e.getArtifactSpellToCast() == null) return;
+        Bukkit.getPluginManager().callEvent(new SpellCastEvent(e.getPlayer(), e.getArtifactSpellToCast()));
     }
 }

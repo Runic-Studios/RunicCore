@@ -89,6 +89,11 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
     }
 
     @Override
+    public int getHeal() {
+        return HEAL_AMT;
+    }
+
+    @Override
     public double getHealingPerLevel() {
         return HEALING_PER_LEVEL;
     }

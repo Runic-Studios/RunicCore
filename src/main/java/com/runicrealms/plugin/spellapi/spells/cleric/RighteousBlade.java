@@ -49,6 +49,11 @@ public class RighteousBlade extends Spell implements HealingSpell {
     }
 
     @Override
+    public int getHeal() {
+        return HEAL_AMOUNT;
+    }
+
+    @Override
     public double getHealingPerLevel() {
         return HEALING_PER_LEVEL;
     }
