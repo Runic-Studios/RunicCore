@@ -234,6 +234,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new LightningArrow());
         this.spellList.add(new Maelstrom());
         this.spellList.add(new Thundershock());
+        this.spellList.add(new ThunderousRift());
     }
 
     // Starts the repeating task to manage player cooldowns
