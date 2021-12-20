@@ -15,9 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 /**
  * Factory class to create generic runic shops for the server
@@ -39,6 +37,7 @@ public class RunicShopFactory {
         DUNGEON SHOPS
          */
         getCaveShop();
+        getCaveGatekeepers();
         getCavernShop();
         getKeepShop();
         getLibraryShop();
@@ -368,6 +367,15 @@ public class RunicShopFactory {
                         new String[]{"sanguine-longbow", "crimson-maul", "bloodmoon", "scarlet-rapier", "corruption"},
                         "sebaths-cave");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sebath's Cave Shop", Collections.singletonList(32));
+    }
+
+    public Set<RunicShopGeneric> getCaveGatekeepers() {
+        Set<RunicShopGeneric> caveGatekeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(515, "SilverKey", 1, DungeonLocation.SEBATHS_CAVE, 1);
+        Gatekeeper second = new Gatekeeper(516, "GoldKey", 1, DungeonLocation.SEBATHS_CAVE, 2);
+        caveGatekeepers.add(first);
+        caveGatekeepers.add(second);
+        return caveGatekeepers;
     }
 
     public RunicShopGeneric getCavernShop() {

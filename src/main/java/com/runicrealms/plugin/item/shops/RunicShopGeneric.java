@@ -16,46 +16,45 @@ public class RunicShopGeneric implements RunicItemShop {
     private final int size;
     private final String shopName;
     private final Collection<Integer> runicNpcIds;
-    private final LinkedHashSet<RunicShopItem> itemsForSale;
+    private LinkedHashSet<RunicShopItem> itemsForSale;
     private Map<Integer, RunicShopItem> inventoryItems;
 
     /**
      * Creates an item shop
      *
-     * @param size of the shop
-     * @param shopName to display
+     * @param size        of the shop
+     * @param shopName    to display
      * @param runicNpcIds that will trigger the shop
+     */
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds) {
+        this.size = size;
+        this.shopName = shopName;
+        this.runicNpcIds = runicNpcIds;
+    }
+
+    /**
+     * Creates an item shop
+     *
+     * @param size         of the shop
+     * @param shopName     to display
+     * @param runicNpcIds  that will trigger the shop
      * @param itemsForSale a set of items that can be purchased
      */
     public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashSet<RunicShopItem> itemsForSale) {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
-        this.itemsForSale = itemsForSale;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            inventoryItems = new HashMap<>();
-            int nextItemIndex = 0;
-            try {
-                for (RunicShopItem runicShopItem : itemsForSale) {
-                    inventoryItems.put(nextItemIndex, runicShopItem);
-                    nextItemIndex++;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
-            }
-            RunicCoreAPI.registerRunicItemShop(this);
-        }, LOAD_DELAY * 20L);
+        setItemsForSale(itemsForSale);
     }
 
     /**
      * Creates an item shop
      *
-     * @param size of the shop
-     * @param shopName to display
-     * @param runicNpcIds that will trigger the shop
+     * @param size         of the shop
+     * @param shopName     to display
+     * @param runicNpcIds  that will trigger the shop
      * @param itemsForSale a set of items that can be purchased
-     * @param itemSlots shape of the items. by default, loads them in the GUI left --> right
+     * @param itemSlots    shape of the items. by default, loads them in the GUI left --> right
      */
     public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashSet<RunicShopItem> itemsForSale, int[] itemSlots) {
         this.size = size;
@@ -121,7 +120,32 @@ public class RunicShopGeneric implements RunicItemShop {
         return this.runicNpcIds;
     }
 
-    public Set<RunicShopItem> getItemsForSale() {
+    @Override
+    public LinkedHashSet<RunicShopItem> getItemsForSale() {
         return this.itemsForSale;
+    }
+
+    @Override
+    public void setItemsForSale(LinkedHashSet<RunicShopItem> itemsForSale) {
+        this.itemsForSale = itemsForSale;
+        registerRunicShop();
+    }
+
+    @Override
+    public void registerRunicShop() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            inventoryItems = new HashMap<>();
+            int nextItemIndex = 0;
+            try {
+                for (RunicShopItem runicShopItem : itemsForSale) {
+                    inventoryItems.put(nextItemIndex, runicShopItem);
+                    nextItemIndex++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
+            }
+            RunicCoreAPI.registerRunicItemShop(this);
+        }, LOAD_DELAY * 20L);
     }
 }

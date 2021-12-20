@@ -7,6 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum DungeonLocation {
 
     SEBATHS_CAVE
@@ -50,6 +53,7 @@ public enum DungeonLocation {
     private final String currencyTemplateId;
     private final Location location;
     private final Location chestLocation; // used for boss drops
+    private final Map<Integer, Location> checkpoints;
     private final BlockFace blockFace;
 
     DungeonLocation(String identifier, String display, String currencyTemplateId) {
@@ -58,6 +62,7 @@ public enum DungeonLocation {
         this.currencyTemplateId = currencyTemplateId;
         this.location = loadLocationFromFile("");
         this.chestLocation = loadLocationFromFile("chest.");
+        this.checkpoints = loadCheckpointsFromFile();
         this.blockFace = loadChestBlockFaceFromFile();
     }
 
@@ -83,6 +88,10 @@ public enum DungeonLocation {
 
     public BlockFace getChestBlockFace() {
         return blockFace;
+    }
+
+    public Map<Integer, Location> getCheckpoints() {
+        return checkpoints;
     }
 
     /**
@@ -143,5 +152,35 @@ public enum DungeonLocation {
             Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
         }
         return null;
+    }
+
+    private Map<Integer, Location> loadCheckpointsFromFile() {
+        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(this.identifier);
+        ConfigurationSection checkpointsSection = dungeonSection.getConfigurationSection("checkpoints");
+        Map<Integer, Location> checkpoints = new HashMap<>();
+        if (checkpointsSection == null) {
+            Bukkit.getLogger().info(ChatColor.RED + "Checkpoints for " + this.display + " failed to load.");
+            return checkpoints;
+        }
+        try {
+            for (String entry : checkpointsSection.getKeys(false)) {
+                String world = checkpointsSection.getString(entry + ".world");
+                double x = checkpointsSection.getDouble(entry + ".x");
+                double y = checkpointsSection.getDouble(entry + ".y");
+                double z = checkpointsSection.getDouble(entry + ".z");
+                Location location = new Location(Bukkit.getWorld((world != null ? world : "dungeons")),
+                        x,
+                        y,
+                        z,
+                        (float) dungeonSection.getDouble("yaw"),
+                        (float) dungeonSection.getDouble("pitch")
+                );
+                checkpoints.put(Integer.valueOf(entry), location);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Bukkit.getLogger().info(ChatColor.DARK_RED + "Error loading dungeon yaml file!");
+        }
+        return checkpoints;
     }
 }
