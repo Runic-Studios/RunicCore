@@ -9,6 +9,7 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -44,39 +45,10 @@ public class PlayerMenuListener implements Listener {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
-            for (PlayerCache cache : RunicCore.getCacheManager().getPlayerCaches().values()) {
+            for (PlayerCache playerCache : RunicCore.getCacheManager().getPlayerCaches().values()) {
 
-                Player player = Bukkit.getPlayer(cache.getPlayerID());
+                Player player = Bukkit.getPlayer(playerCache.getPlayerID());
                 if (player == null) continue;
-                UUID uuid = cache.getPlayerID();
-
-                // item 1
-                ItemStack plMenu = item(player, Material.PLAYER_HEAD, "&eCharacter Info",
-                        "\n&7Here are the combat bonuses" +
-                                "\n&7of your character! They" +
-                                "\n&7come from your stats," +
-                                "\n&7which you can check" +
-                                "\n&7in &eCharacter Stats&7!\n\n" +
-                                combatPercentages(uuid));
-
-                // item 2 must update dynamically
-                int healthBonus = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
-                        PlayerLevelUtil.calculateHealthAtLevel(cache.getClassLevel(), cache.getClassName());
-
-                ItemStack gemMenu = item(player, Material.REDSTONE, "&eCharacter Stats",
-                        "\n&7Your character stats improve" +
-                                "\n&7your potency in battle!" +
-                                "\n&7Earn them from your" +
-                                "\n&dSkill Tree &7or from items!" +
-                                "\n&7Check your bonuses above" +
-                                "\n&7in &eCharacter Info&7!" +
-                                "\n\n&c❤ (Health): " + statPrefix(healthBonus) + healthBonus +
-                                "\n" + formattedStat("Dexterity", RunicCoreAPI.getPlayerDexterity(uuid)) +
-                                "\n" + formattedStat("Intelligence", RunicCoreAPI.getPlayerIntelligence(uuid)) +
-                                "\n" + formattedStat("Strength", RunicCoreAPI.getPlayerStrength(uuid)) +
-                                "\n" + formattedStat("Vitality", RunicCoreAPI.getPlayerVitality(uuid)) +
-                                "\n" + formattedStat("Wisdom", RunicCoreAPI.getPlayerWisdom(uuid)));
-
                 InventoryView view = player.getOpenInventory();
 
                 // If the open inventory is a player inventory
@@ -87,14 +59,15 @@ public class PlayerMenuListener implements Listener {
 
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
-                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(plMenu));
-                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenu));
+                    // todo: rework items 1 and 2 to be a menu to reduce calculations
+                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(combatStatsIcon(player)));
+                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenuIcon(player, playerCache)));
                     PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
-
+                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(groupFinderIcon(player)));
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet1);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet2);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet3);
-
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet4);
                 }
             }
         }, 100L, 10L);
@@ -122,6 +95,7 @@ public class PlayerMenuListener implements Listener {
             view.setItem(1, null);
             view.setItem(2, null);
             view.setItem(3, null);
+            view.setItem(4, null);
             view.getTopInventory().clear();
         }
     }
@@ -153,6 +127,57 @@ public class PlayerMenuListener implements Listener {
                 || e.getInventorySlots().contains(3) || e.getInventorySlots().contains(4)) {
             e.setCancelled(true);
         }
+    }
+
+    /**
+     * @param player
+     * @return
+     */
+    private ItemStack combatStatsIcon(Player player) {
+        return item(player, Material.PLAYER_HEAD, "&eCharacter Info",
+                "\n&7Here are the combat bonuses" +
+                        "\n&7of your character! They" +
+                        "\n&7come from your stats," +
+                        "\n&7which you can check" +
+                        "\n&7in &eCharacter Stats&7!\n\n" +
+                        combatPercentages(player.getUniqueId()));
+    }
+
+    /**
+     * Creates the menu icon for the
+     *
+     * @param player      who the menu belongs to
+     * @param playerCache
+     * @return
+     */
+    private ItemStack gemMenuIcon(Player player, PlayerCache playerCache) {
+        UUID uuid = player.getUniqueId();
+        // item 2 must update dynamically
+        int healthBonus = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
+                PlayerLevelUtil.calculateHealthAtLevel(playerCache.getClassLevel(), playerCache.getClassName());
+        return item(player, Material.REDSTONE, "&eCharacter Stats",
+                "\n&7Your character stats improve" +
+                        "\n&7your potency in battle!" +
+                        "\n&7Earn them from your" +
+                        "\n&dSkill Tree &7or from items!" +
+                        "\n&7Check your bonuses above" +
+                        "\n&7in &eCharacter Info&7!" +
+                        "\n\n&c❤ (Health): " + statPrefix(healthBonus) + healthBonus +
+                        "\n" + formattedStat("Dexterity", RunicCoreAPI.getPlayerDexterity(uuid)) +
+                        "\n" + formattedStat("Intelligence", RunicCoreAPI.getPlayerIntelligence(uuid)) +
+                        "\n" + formattedStat("Strength", RunicCoreAPI.getPlayerStrength(uuid)) +
+                        "\n" + formattedStat("Vitality", RunicCoreAPI.getPlayerVitality(uuid)) +
+                        "\n" + formattedStat("Wisdom", RunicCoreAPI.getPlayerWisdom(uuid)));
+    }
+
+    private ItemStack groupFinderIcon(Player player) {
+        return item
+                (
+                        player,
+                        Material.ENDER_EYE,
+                        ChatColor.RED + "Group Finder",
+                        ChatColor.GRAY + "Click to open the group finder!"
+                );
     }
 
     private static boolean isPlayerCraftingInv(InventoryView view) {

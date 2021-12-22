@@ -6,6 +6,7 @@ import com.runicrealms.runicitems.item.RunicItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -25,17 +26,18 @@ public class Gatekeeper extends RunicShopGeneric {
                         price,
                         currencyTemplateId,
                         runicItem.generateItem(),
-                        runicItem.getDisplayableItem().getDisplayName(),
+                        ChatColor.RESET + runicItem.getDisplayableItem().getDisplayName(),
                         runGatekeeperBuy()
                 ))));
     }
 
     private RunicItemRunnable runGatekeeperBuy() {
         return player -> {
-            // todo: particles, sounds
             Location location = dungeonLocation.getCheckpoints().get(checkpoint);
             player.teleport(location);
-            Bukkit.dispatchCommand(player, "party teleport " + player.getName());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "party teleport " + player.getName());
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         };
     }
 
