@@ -107,14 +107,15 @@ public class PlayerMenuListener implements Listener {
         if (e.getClickedInventory().getType() != InventoryType.CRAFTING) return;
         if (player.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
-        if (PLAYER_CRAFTING_SLOTS.contains(e.getSlot())) {
-            e.setCancelled(true);
-            player.updateInventory();
-            if (e.getCursor() != null
-                    && e.getCursor().getType() == Material.AIR // prevents clicking with items on cursur
-                    && e.getSlot() == 3)
-                RunicProfessionsAPI.openGatheringGUI(player);
-        }
+        if (!PLAYER_CRAFTING_SLOTS.contains(e.getSlot())) return;
+        e.setCancelled(true);
+        player.updateInventory();
+        if (e.getCursor() == null) return;
+        if (e.getCursor().getType() != Material.AIR) return; // prevents clicking with items on cursor
+        if (e.getSlot() == 3)
+            RunicProfessionsAPI.openGatheringGUI(player);
+        else if (e.getSlot() == 4)
+            Bukkit.dispatchCommand(player, "group");
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

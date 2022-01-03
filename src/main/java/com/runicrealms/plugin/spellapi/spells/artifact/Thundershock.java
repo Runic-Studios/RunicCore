@@ -19,7 +19,6 @@ public class Thundershock extends Spell implements ArtifactSpell {
 
     private static final int RADIUS = 4;
     private static final double CHANCE = 1.0;
-    private static final double DAMAGE_PERCENT = 1.0;
     private static final String ARTIFACT_ID = "runeforged-crusher";
 
     public Thundershock() {
@@ -38,7 +37,7 @@ public class Thundershock extends Spell implements ArtifactSpell {
             if (!verifyEnemy(e.getPlayer(), entity)) continue;
             e.getPlayer().getWorld().playSound(entity.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 2.0f, 1.0f);
             entity.getWorld().spawnParticle(Particle.CRIT_MAGIC, entity.getLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
-            DamageUtil.damageEntitySpell((healingAmount * DAMAGE_PERCENT), (LivingEntity) entity, e.getPlayer());
+            DamageUtil.damageEntitySpell(healingAmount, (LivingEntity) entity, e.getPlayer());
         }
     }
 
