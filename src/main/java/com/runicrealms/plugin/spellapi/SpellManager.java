@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpellManager implements Listener {
 
     private final List<Spell> spellList;
-    private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldown;
+    private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
     private final HashMap<UUID, BukkitTask> invulnerableEntities;
     private final HashMap<UUID, BukkitTask> rootedEntities;
     private final HashMap<UUID, BukkitTask> silencedEntities;
@@ -40,7 +40,7 @@ public class SpellManager implements Listener {
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
-        this.cooldown = new ConcurrentHashMap<>();
+        this.cooldownMap = new ConcurrentHashMap<>();
         this.invulnerableEntities = new HashMap<>();
         this.rootedEntities = new HashMap<>();
         this.silencedEntities = new HashMap<>();
@@ -79,14 +79,14 @@ public class SpellManager implements Listener {
      */
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
 
-        if (this.cooldown.containsKey(player.getUniqueId())) {
-            ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        if (this.cooldownMap.containsKey(player.getUniqueId())) {
+            ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
-            this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
+            this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
         } else {
             ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = new ConcurrentHashMap<>();
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
-            this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
+            this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
 
         plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
@@ -95,9 +95,9 @@ public class SpellManager implements Listener {
     }
 
     public boolean isOnCooldown(Player player, String spellName) {
-        if (!this.cooldown.containsKey(player.getUniqueId()))
+        if (!this.cooldownMap.containsKey(player.getUniqueId()))
             return false;
-        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
 
@@ -105,7 +105,7 @@ public class SpellManager implements Listener {
         double cooldownRemaining = 0;
 
         if (isOnCooldown(player, spell.getName())) {
-            ConcurrentHashMap<Spell, Long> cd = this.cooldown.get(player.getUniqueId());
+            ConcurrentHashMap<Spell, Long> cd = this.cooldownMap.get(player.getUniqueId());
             if (cd.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spell.getName()))) {
                 cooldownRemaining = (cd.get(spell) + ((spell.getCooldown() + 1) * 1000)) - System.currentTimeMillis();
             }
@@ -114,10 +114,10 @@ public class SpellManager implements Listener {
     }
 
     private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
-        if (!this.cooldown.containsKey(player.getUniqueId())) return;
-        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldown.get(player.getUniqueId());
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         playerSpellsOnCooldown.remove(spell);
-        this.cooldown.put(player.getUniqueId(), playerSpellsOnCooldown);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
 
     public Spell getSpellByName(String name) {
@@ -242,15 +242,19 @@ public class SpellManager implements Listener {
 //        this.spellList.add(new FirePulse());
     }
 
-    // Starts the repeating task to manage player cooldowns
+    /**
+     * Starts the repeating task to manage player cooldowns
+     * Uses the action bar to display cooldowns
+     */
     private void startCooldownTask() {
         new BukkitRunnable() {
             @Override
             public void run() {
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (cooldown.containsKey(player.getUniqueId())) {
-                        ConcurrentHashMap<Spell, Long> spells = cooldown.get(player.getUniqueId());
+                    if (cooldownMap.containsKey(player.getUniqueId())) {
+                        ConcurrentHashMap<Spell, Long> spells = cooldownMap.get(player.getUniqueId());
+                        if (spells.size() == 0) continue; // no active cooldowns
                         List<String> cdString = new ArrayList<>();
 
                         for (Spell spell : spells.keySet()) {
