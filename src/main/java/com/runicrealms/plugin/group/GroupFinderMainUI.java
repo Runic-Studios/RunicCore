@@ -15,13 +15,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class GroupFinderMainUI implements InventoryHolder, Listener {
+
     private final Inventory inventory;
 
     public GroupFinderMainUI() {
         this.inventory = Bukkit.createInventory(this, 27, ColorUtil.format("&r&aGroup Finder"));
-        this.inventory.setItem(11, this.miniboss());
-        this.inventory.setItem(13, this.grinding());
-        this.inventory.setItem(15, this.dungeons());
+        this.inventory.setItem(11, miniBoss());
+        this.inventory.setItem(13, grinding());
+        this.inventory.setItem(15, dungeons());
     }
 
     @Override
@@ -31,39 +32,28 @@ public class GroupFinderMainUI implements InventoryHolder, Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getView().getTopInventory().getHolder() instanceof GroupFinderMainUI)) {
-            return;
-        }
 
+        if (!(event.getView().getTopInventory().getHolder() instanceof GroupFinderMainUI)) return;
         ItemStack item = event.getCurrentItem();
-
-        if (item == null) {
-            return;
-        }
-
+        if (item == null) return;
         event.setCancelled(true);
         HumanEntity player = event.getWhoClicked();
 
         Material material = item.getType();
 
-        if (material == Material.WITHER_SKELETON_SKULL) {
-            player.closeInventory();
+        if (material == miniBoss().getType()) {
             player.openInventory(RunicCore.getGroupManager().getMiniBossUI().getInventory());
-        } else if (material == Material.IRON_SWORD) {
-            player.closeInventory();
+        } else if (material == grinding().getType()) {
             player.openInventory(RunicCore.getGroupManager().getGrindingUI().getInventory());
-        } else if (material == Material.IRON_BARS) {
-            player.closeInventory();
+        } else if (material == dungeons().getType()) {
             player.openInventory(RunicCore.getGroupManager().getDungeonUI().getInventory());
         }
     }
 
-    private ItemStack miniboss() {
+    private ItemStack miniBoss() {
         ItemStack item = new ItemStack(Material.WITHER_SKELETON_SKULL, 1);
         ItemMeta meta = item.getItemMeta();
-
         meta.setDisplayName(ColorUtil.format("&r&6Mini-Bosses"));
-
         item.setItemMeta(meta);
         return item;
     }
@@ -71,21 +61,16 @@ public class GroupFinderMainUI implements InventoryHolder, Listener {
     private ItemStack grinding() {
         ItemStack item = new ItemStack(Material.IRON_SWORD, 1);
         ItemMeta meta = item.getItemMeta();
-
         meta.setDisplayName(ColorUtil.format("&r&6Grinding"));
-
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
         item.setItemMeta(meta);
         return item;
     }
 
     private ItemStack dungeons() {
-        ItemStack item = new ItemStack(Material.IRON_BARS, 1);
+        ItemStack item = new ItemStack(Material.ENDER_EYE, 1);
         ItemMeta meta = item.getItemMeta();
-
         meta.setDisplayName(ColorUtil.format("&r&6Dungeons"));
-
         item.setItemMeta(meta);
         return item;
     }

@@ -19,11 +19,8 @@ public class GroupCommand extends BaseCommand {
             player.sendMessage(ColorUtil.format("&r&cYou are already in a party or queue!"));
             return;
         }
-
-        player.closeInventory();
         player.openInventory(RunicCore.getGroupManager().getUI().getInventory());
     }
-
 
     @Subcommand("leave")
     @CommandCompletion("@nothing")

@@ -3,12 +3,17 @@ package com.runicrealms.plugin.group;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 import java.util.*;
 
@@ -175,32 +180,32 @@ public class GroupManager implements Listener {
     public enum Dungeons implements QueueReason {
 
         SEBATHS_CAVE("Gritzgore", "&eSebath’s Cave",
-                new String[] {
+                new String[]{
                         "&7Req Lv &f5+",
                         "&7Location &fSilkwood Forest"
                 }, 5),
         CRYSTAL_CAVERN("a_storz", "&eCrystal Cavern",
-                new String[] {
+                new String[]{
                         "&7Req Lv &f12+",
                         "&7Location &fWhaletown"
                 }, 12),
         JORUNDRS_KEEP("GoodUHCTipZAKO", "&eJorundr’s Keep",
-                new String[] {
+                new String[]{
                         "&7Req Lv &f15+",
                         "&7Location &fHilstead"
                 }, 15),
         SUNKEN_LIBRARY("Haku", "&eSunken Library",
-                new String[] {
+                new String[]{
                         "&7Req Lv &f25+",
                         "&7Location &fDead Man's Rest"
                 }, 25),
         CRYPTS_OF_DERA("Anubis", "&eCrypts of Dera",
-                new String[] {
+                new String[]{
                         "&7Req Lv &f35+",
                         "&7Location &fZenyth Desert"
                 }, 35),
         THE_FROZEN_FORTRESS("adaydremer", "&eThe Frozen Fortress",
-                new String[] {
+                new String[]{
                         "&7Req Lv &f60",
                         "&7Location &fFrost's End"
                 }, 60);
@@ -212,9 +217,10 @@ public class GroupManager implements Listener {
 
         /**
          * Used to create the UI for dungeons in the group finder.
+         *
          * @param skullPlayerName name of the boss NPC player skin so its head can be used
-         * @param itemName display name of the item
-         * @param minLevel min level of dungeon
+         * @param itemName        display name of the item
+         * @param minLevel        min level of dungeon
          */
         Dungeons(String skullPlayerName, String itemName, String[] itemDescription, int minLevel) {
             this.skullPlayerName = skullPlayerName;
@@ -250,6 +256,21 @@ public class GroupManager implements Listener {
     }
 
     @EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        InventoryHolder inventoryHolder = e.getView().getTopInventory().getHolder();
+        if (inventoryHolder instanceof GroupFinderMainUI
+                || inventoryHolder instanceof GroupFinderMiniBossUI
+                || inventoryHolder instanceof GroupFinderGrindingUI
+                || inventoryHolder instanceof GroupFinderDungeonUI) {
+            if (!(e.getWhoClicked() instanceof Player)) return;
+            if (e.getCurrentItem() == null) return;
+            if (e.getCurrentItem().getType() == Material.AIR) return;
+            if (e.getCurrentItem().getType() == GUIUtil.borderItem().getType()) return;
+            ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+        }
+    }
+
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         this.removeFromQueue(event.getPlayer());
     }
@@ -271,7 +292,7 @@ public class GroupManager implements Listener {
         for (QueueReason reason : reasons) {
             int max;
             if (reason instanceof Dungeons) {
-                String name = ((Dungeons)reason).name().replace('_', '-').toLowerCase();
+                String name = ((Dungeons) reason).name().replace('_', '-').toLowerCase();
                 max = config.getInt("queue-recommended.dungeons." + name);
                 returnValue.put(reason, max);
                 continue;

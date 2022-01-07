@@ -3,6 +3,7 @@ package com.runicrealms.plugin.group;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,15 +25,8 @@ public class GroupFinderMiniBossUI implements InventoryHolder, Listener {
     public GroupFinderMiniBossUI() {
         this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&r&aGroup Finder"));
         this.reasons = new HashMap<>();
-
-        this.inventory.setItem(0, this.back());
-
-        ItemStack background = this.background();
-        int[] slots = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48,
-                49, 50, 51, 52, 53};
-        for (int slot : slots) {
-            this.inventory.setItem(slot, background);
-        }
+        this.inventory.setItem(0, GUIUtil.backButton());
+        GUIUtil.fillInventoryBorders(this.getInventory());
 
         ItemStack item = new ItemStack(Material.WITHER_SKELETON_SKULL, 1);
         ItemMeta meta = item.getItemMeta();
@@ -45,7 +39,7 @@ public class GroupFinderMiniBossUI implements InventoryHolder, Listener {
                 ItemMeta iconMeta = icon.getItemMeta();
                 iconMeta.setDisplayName(reason.getItemName());
                 icon.setItemMeta(iconMeta);
-                int slot = this.inventory.firstEmpty();
+                int slot = this.getInventory().firstEmpty();
                 this.inventory.setItem(slot, icon);
                 this.reasons.put(slot, reason);
             }
@@ -59,34 +53,22 @@ public class GroupFinderMiniBossUI implements InventoryHolder, Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getView().getTopInventory().getHolder() instanceof GroupFinderMiniBossUI)) {
-            return;
-        }
 
+        if (!(event.getView().getTopInventory().getHolder() instanceof GroupFinderMiniBossUI)) return;
         ItemStack item = event.getCurrentItem();
-
-        if (item == null) {
-            return;
-        }
-
+        if (item == null) return;
         event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
 
-        if (item.getType() == Material.ARROW) {
-            //back
-            player.closeInventory();
+        // back
+        if (item.getType() == GUIUtil.backButton().getType()) {
             player.openInventory(RunicCore.getGroupManager().getUI().getInventory());
             return;
         }
 
         int slot = event.getRawSlot();
-
-        if (!(this.reasons.containsKey(slot))) {
-            return;
-        }
-
+        if (!(this.reasons.containsKey(slot))) return;
         GroupManager.QueueReason reason = this.reasons.get(slot);
-
         PlayerCache cache = RunicCore.getCacheManager().getPlayerCaches().get(player);
 
         if (cache.getClassLevel() >= reason.getMinLevel()) {
@@ -96,25 +78,5 @@ public class GroupFinderMiniBossUI implements InventoryHolder, Listener {
         } else {
             player.sendMessage(ColorUtil.format("&r&cYou are not high enough level to be added into the queue!"));
         }
-    }
-
-    private ItemStack background() {
-        ItemStack item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
-        ItemMeta meta = item.getItemMeta();
-
-        meta.setDisplayName(ColorUtil.format("&r"));
-
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    private ItemStack back() {
-        ItemStack item = new ItemStack(Material.ARROW, 1);
-        ItemMeta meta = item.getItemMeta();
-
-        meta.setDisplayName(ColorUtil.format("&r&fBack"));
-
-        item.setItemMeta(meta);
-        return item;
     }
 }

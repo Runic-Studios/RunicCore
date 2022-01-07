@@ -2,6 +2,7 @@ package com.runicrealms.plugin.utilities;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -21,6 +22,15 @@ public class GUIUtil {
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "Return to the previous menu"));
         backButton.setItemMeta(meta);
         return backButton;
+    }
+
+    public static ItemStack borderItem() {
+        ItemStack borderItem = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta meta = borderItem.getItemMeta();
+        if (meta == null) return borderItem;
+        meta.setDisplayName(ChatColor.GRAY + "");
+        borderItem.setItemMeta(meta);
+        return borderItem;
     }
 
     public static ItemStack closeButton() {
@@ -97,6 +107,7 @@ public class GUIUtil {
 
     /**
      * This...
+     *
      * @param material
      * @param name
      * @param lore
@@ -137,5 +148,14 @@ public class GUIUtil {
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
         item.setItemMeta(meta);
         return item;
+    }
+
+    public static void fillInventoryBorders(Inventory inventory) {
+        ItemStack background = borderItem();
+        int[] slots = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48,
+                49, 50, 51, 52, 53};
+        for (int slot : slots) {
+            inventory.setItem(slot, background);
+        }
     }
 }
