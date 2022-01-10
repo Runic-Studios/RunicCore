@@ -8,10 +8,7 @@ import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
@@ -86,18 +83,18 @@ public class PlayerMenuListener implements Listener {
                         "\n&7They are account-wide!\n\n");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    /**
+     * Remove the items from the crafting matrix
+     */
+    @EventHandler(priority = EventPriority.LOWEST) // first
     public void onClose(InventoryCloseEvent event) {
         InventoryView view = event.getView();
-        // Remove the ring item in the matrix to prevent
-        // players from duping them
-        if (isPlayerCraftingInv(view)) {
-            view.setItem(1, null);
-            view.setItem(2, null);
-            view.setItem(3, null);
-            view.setItem(4, null);
-            view.getTopInventory().clear();
-        }
+        if (!isPlayerCraftingInv(view)) return;
+        view.setItem(1, null);
+        view.setItem(2, null);
+        view.setItem(3, null);
+        view.setItem(4, null);
+        view.getTopInventory().clear();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -112,10 +109,13 @@ public class PlayerMenuListener implements Listener {
         player.updateInventory();
         if (e.getCursor() == null) return;
         if (e.getCursor().getType() != Material.AIR) return; // prevents clicking with items on cursor
-        if (e.getSlot() == 3)
+        if (e.getSlot() == 3) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             RunicProfessionsAPI.openGatheringGUI(player);
-        else if (e.getSlot() == 4)
+        } else if (e.getSlot() == 4) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             Bukkit.dispatchCommand(player, "group");
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

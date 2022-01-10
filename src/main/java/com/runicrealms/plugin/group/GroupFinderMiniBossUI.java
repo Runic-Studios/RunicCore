@@ -5,7 +5,6 @@ import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,36 +12,25 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GroupFinderMiniBossUI implements InventoryHolder, Listener {
+
     private final Inventory inventory;
-    private final Map<Integer, GroupManager.QueueReason> reasons;
+    private final Map<Integer, GroupFinderItem> groupFinderItems; // keeps track of the inventory slot matching the item
 
     public GroupFinderMiniBossUI() {
         this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&r&aGroup Finder"));
-        this.reasons = new HashMap<>();
+        this.groupFinderItems = new HashMap<>();
         this.inventory.setItem(0, GUIUtil.backButton());
         GUIUtil.fillInventoryBorders(this.getInventory());
-
-        ItemStack item = new ItemStack(Material.WITHER_SKELETON_SKULL, 1);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ColorUtil.format("&r"));
-        item.setItemMeta(meta);
-
-        for (GroupManager.QueueReason reason : GroupManager.REASONS) {
-            if (reason instanceof GroupManager.MiniBosses) {
-                ItemStack icon = item.clone();
-                ItemMeta iconMeta = icon.getItemMeta();
-                iconMeta.setDisplayName(reason.getItemName());
-                icon.setItemMeta(iconMeta);
-                int slot = this.getInventory().firstEmpty();
-                this.inventory.setItem(slot, icon);
-                this.reasons.put(slot, reason);
-            }
+        for (GroupFinderItem groupFinderItem : GroupFinderItem.values()) {
+            if (groupFinderItem.getQueueReason() != QueueReason.MINI_BOSSES) continue;
+            int slot = this.getInventory().firstEmpty();
+            this.inventory.setItem(slot, groupFinderItem.getMenuItem());
+            this.groupFinderItems.put(slot, groupFinderItem);
         }
     }
 
@@ -67,12 +55,12 @@ public class GroupFinderMiniBossUI implements InventoryHolder, Listener {
         }
 
         int slot = event.getRawSlot();
-        if (!(this.reasons.containsKey(slot))) return;
-        GroupManager.QueueReason reason = this.reasons.get(slot);
+        if (!(this.groupFinderItems.containsKey(slot))) return;
+        GroupFinderItem groupFinderItem = this.groupFinderItems.get(slot);
         PlayerCache cache = RunicCore.getCacheManager().getPlayerCaches().get(player);
 
-        if (cache.getClassLevel() >= reason.getMinLevel()) {
-            RunicCore.getGroupManager().addToQueue(reason, player);
+        if (cache.getClassLevel() >= groupFinderItem.getMinLevel()) {
+            RunicCore.getGroupManager().addToQueue(groupFinderItem, player);
             player.closeInventory();
             player.sendMessage(ColorUtil.format("&r&aYou have been added into the queue!"));
         } else {

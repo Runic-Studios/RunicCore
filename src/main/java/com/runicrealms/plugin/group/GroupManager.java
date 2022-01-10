@@ -21,14 +21,13 @@ public class GroupManager implements Listener {
 
     private static final String PREFIX = "&2[Group Finder] &6»";
 
-    private final Map<QueueReason, List<Player>> queues;
+    private final Map<IGroupFinderItem, List<Player>> queues;
     private final GroupFinderMainUI ui;
     private final GroupFinderMiniBossUI miniBossUI;
     private final GroupFinderGrindingUI grindingUI;
     private final GroupFinderDungeonUI dungeonUI;
 
-    public static final List<QueueReason> REASONS = new ArrayList<>(getReasons());
-    public static final Map<QueueReason, Integer> MAX_MEMBERS = new HashMap<>(getValues());
+    public static final Map<IGroupFinderItem, Integer> MAX_MEMBERS = new HashMap<>(getValues());
 
     public GroupManager() {
         this.queues = new HashMap<>();
@@ -37,11 +36,9 @@ public class GroupManager implements Listener {
         this.grindingUI = new GroupFinderGrindingUI();
         this.dungeonUI = new GroupFinderDungeonUI();
 
-        Set<QueueReason> reasons = new HashSet<>(Arrays.asList(GrindSpots.values()));
-        reasons.addAll(Arrays.asList(MiniBosses.values()));
-        reasons.addAll(Arrays.asList(Dungeons.values()));
-        for (QueueReason reason : reasons) {
-            this.queues.put(reason, new ArrayList<>());
+        Set<IGroupFinderItem> reasons = new HashSet<>(Arrays.asList(GroupFinderItem.values()));
+        for (IGroupFinderItem iGroupFinderItem : reasons) {
+            this.queues.put(iGroupFinderItem, new ArrayList<>());
         }
 
         this.registerEvents(this, this.ui, this.miniBossUI, this.grindingUI, this.dungeonUI);
@@ -63,7 +60,7 @@ public class GroupManager implements Listener {
         return this.dungeonUI;
     }
 
-    public void addToQueue(QueueReason reason, Player player) {
+    public void addToQueue(IGroupFinderItem reason, Player player) {
         List<Player> list = this.queues.get(reason);
         int max = MAX_MEMBERS.get(reason);
         list.add(player);
@@ -116,145 +113,6 @@ public class GroupManager implements Listener {
         return false;
     }
 
-    public enum GrindSpots implements QueueReason {
-
-        ROOKIE_BANDITS("&eRookie Bandits &7- lvl 5-10, Lawson’s Farm", 5),
-        FOREST_SPIDERS("&eForest Spiders &7- lvl 11-17, Silverwood Forest", 11),
-        BARBARIANS("&eBarbarians &7- lvl 18-25, Ruins of Togrund", 18),
-        AZANIAN_SOLDIERS("&eAzanian Soldiers &7- lvl 25-30, Haunted Cliffs", 25),
-        DESERT_HUSK("&eDesert Husks &7- lvl 31-48, Zenyth Desert", 31),
-        HOBGOBLIN("&eHobgoblin &7- lvl 49-59, Orc Outpost", 49),
-        INFERNAL_ARMY("&eInfernal Army &7- lvl 60+, Valmyra", 60);
-
-        private final String itemName;
-        private final int minLevel;
-
-        GrindSpots(String itemName, int minLevel) {
-            this.itemName = ColorUtil.format(itemName);
-            this.minLevel = minLevel;
-        }
-
-        @Override
-        public String getItemName() {
-            return this.itemName;
-        }
-
-        @Override
-        public int getMinLevel() {
-            return this.minLevel;
-        }
-    }
-
-    public enum MiniBosses implements QueueReason {
-
-        BLACK_RIDER("&eBlack Rider &7- Lv. 5+, Silverwood Camp", 5),
-        CAVE_MOTHER("&eCave Mother &7- Lv. 5+, Silver Wood Caves", 5),
-        IRON_SOLDIER("&eIron Soldier &7- Lv. 8+, Koldorian Mines", 8),
-        TOGRUND_THE_BLIGHTED("&eTogrund the Blighted &7- Lv. 14+, Hilstead", 14),
-        PHARINDAR("&ePharindar &7- Lv. 20+, Wintervale Outskirts", 20),
-        ADMIRAL_VEX("&eAdmiral Vex &7- lvl 20+, Dead Man’s Rest", 20),
-        GOLEM_LORD("&eGolem Lord &7- lvl 25+, Tireneas", 25),
-        MASTER_FELDRUID("&eMater Feldruid &7- lvl 35+, Tirineas", 35),
-        SUN_PRIEST("&eSun Priest &7- lvl 40+, Zenyth", 40),
-        PYROMANCER("&ePyromancer &7- Lv. 55+, Valmyra Citadel", 55);
-
-        private final String itemName;
-        private final int minLevel;
-
-        MiniBosses(String itemName, int minLevel) {
-            this.itemName = ColorUtil.format(itemName);
-            this.minLevel = minLevel;
-        }
-
-        @Override
-        public String getItemName() {
-            return this.itemName;
-        }
-
-        @Override
-        public int getMinLevel() {
-            return this.minLevel;
-        }
-    }
-
-    public enum Dungeons implements QueueReason {
-
-        SEBATHS_CAVE("Gritzgore", "&eSebath’s Cave",
-                new String[]{
-                        "&7Req Lv &f5+",
-                        "&7Location &fSilkwood Forest"
-                }, 5),
-        CRYSTAL_CAVERN("a_storz", "&eCrystal Cavern",
-                new String[]{
-                        "&7Req Lv &f12+",
-                        "&7Location &fWhaletown"
-                }, 12),
-        JORUNDRS_KEEP("GoodUHCTipZAKO", "&eJorundr’s Keep",
-                new String[]{
-                        "&7Req Lv &f15+",
-                        "&7Location &fHilstead"
-                }, 15),
-        SUNKEN_LIBRARY("Haku", "&eSunken Library",
-                new String[]{
-                        "&7Req Lv &f25+",
-                        "&7Location &fDead Man's Rest"
-                }, 25),
-        CRYPTS_OF_DERA("Anubis", "&eCrypts of Dera",
-                new String[]{
-                        "&7Req Lv &f35+",
-                        "&7Location &fZenyth Desert"
-                }, 35),
-        THE_FROZEN_FORTRESS("adaydremer", "&eThe Frozen Fortress",
-                new String[]{
-                        "&7Req Lv &f60",
-                        "&7Location &fFrost's End"
-                }, 60);
-
-        private final String skullPlayerName;
-        private final String itemName;
-        private final String[] itemDescription;
-        private final int minLevel;
-
-        /**
-         * Used to create the UI for dungeons in the group finder.
-         *
-         * @param skullPlayerName name of the boss NPC player skin so its head can be used
-         * @param itemName        display name of the item
-         * @param minLevel        min level of dungeon
-         */
-        Dungeons(String skullPlayerName, String itemName, String[] itemDescription, int minLevel) {
-            this.skullPlayerName = skullPlayerName;
-            this.itemName = ColorUtil.format(itemName);
-            this.itemDescription = itemDescription;
-            this.minLevel = minLevel;
-        }
-
-        public String getSkullPlayerName() {
-            return this.skullPlayerName;
-        }
-
-        // todo: add this to interface
-        public String[] getItemDescription() {
-            return this.itemDescription;
-        }
-
-        @Override
-        public String getItemName() {
-            return this.itemName;
-        }
-
-        @Override
-        public int getMinLevel() {
-            return this.minLevel;
-        }
-    }
-
-    public interface QueueReason {
-        String getItemName();
-
-        int getMinLevel();
-    }
-
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         InventoryHolder inventoryHolder = e.getView().getTopInventory().getHolder();
@@ -281,38 +139,32 @@ public class GroupManager implements Listener {
         }
     }
 
-    private static Map<QueueReason, Integer> getValues() {
-        List<QueueReason> reasons = new ArrayList<>(Arrays.asList(GrindSpots.values()));
-        reasons.addAll(Arrays.asList(MiniBosses.values()));
-        reasons.addAll(Arrays.asList(Dungeons.values()));
+    /**
+     * Initialize max members for given group finder option
+     *
+     * @return a map of max members for finder option
+     */
+    private static Map<IGroupFinderItem, Integer> getValues() {
+        List<IGroupFinderItem> groupFinderItems = new ArrayList<>(Arrays.asList(GroupFinderItem.values()));
 
         FileConfiguration config = RunicCore.getInstance().getConfig();
-        Map<QueueReason, Integer> returnValue = new HashMap<>();
+        Map<IGroupFinderItem, Integer> returnValue = new HashMap<>();
 
-        for (QueueReason reason : reasons) {
+        for (IGroupFinderItem iGroupFinderItem : groupFinderItems) {
             int max;
-            if (reason instanceof Dungeons) {
-                String name = ((Dungeons) reason).name().replace('_', '-').toLowerCase();
+            if (iGroupFinderItem.getQueueReason() == QueueReason.DUNGEONS) {
+                String name = iGroupFinderItem.toString().replace('_', '-').toLowerCase();
                 max = config.getInt("queue-recommended.dungeons." + name);
-                returnValue.put(reason, max);
+                returnValue.put(iGroupFinderItem, max);
                 continue;
-            }
-
-            if (reason instanceof GrindSpots) {
+            } else if (iGroupFinderItem.getQueueReason() == QueueReason.GRINDING) {
                 max = config.getInt("queue-recommended.grinding");
             } else {
                 max = config.getInt("queue-recommended.mini-bosses");
             }
-            returnValue.put(reason, max);
+            returnValue.put(iGroupFinderItem, max);
         }
 
         return returnValue;
-    }
-
-    private static List<QueueReason> getReasons() {
-        List<QueueReason> reasons = new ArrayList<>(Arrays.asList(GrindSpots.values()));
-        reasons.addAll(Arrays.asList(MiniBosses.values()));
-        reasons.addAll(Arrays.asList(Dungeons.values()));
-        return reasons;
     }
 }

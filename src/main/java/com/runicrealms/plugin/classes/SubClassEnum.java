@@ -5,26 +5,36 @@ import org.bukkit.inventory.ItemStack;
 
 public enum SubClassEnum {
 
-    // archer
+    /*
+     archer
+     */
     MARKSMAN("Marksman", ClassEnum.ARCHER, marksmanItem(), "Shoot bows"),
     SCOUT("Scout", ClassEnum.ARCHER, scoutItem(), ""),
     WARDEN("Warden", ClassEnum.ARCHER, wardenItem(), ""),
-    // cleric
+    /*
+     cleric
+     */
     BARD("Bard", ClassEnum.CLERIC, bardItem(), ""),
     PALADIN("Paladin", ClassEnum.CLERIC, paladinItem(), ""),
     PRIEST("Priest", ClassEnum.CLERIC, priestItem(), ""),
-    // mage
+    /*
+     mage
+     */
     CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), ""),
     PYROMANCER("Pyromancer", ClassEnum.MAGE, pyromancerItem(), ""),
     WARLOCK("Warlock", ClassEnum.MAGE, warlockItem(), ""),
-    // rogue
+    /*
+     rogue
+     */
     ASSASSIN("Assassin", ClassEnum.ROGUE, assassinItem(),
             "Assassin kills stuff fast!"),
     DUELIST("Duelist", ClassEnum.ROGUE, duelistItem(),
             "Duelist focuses on a single enemy!"),
     SWINDLER("Swindler", ClassEnum.ROGUE, swindlerItem(),
             "Swindler uses parlor tricks!"),
-    // warior
+    /*
+    warrior
+     */
     BERSERKER("Berserker", ClassEnum.WARRIOR, berserkerItem(), ""),
     GUARDIAN("Guardian", ClassEnum.WARRIOR, guardianItem(), ""),
     INQUISITOR("Inquisitor", ClassEnum.WARRIOR, inquisitorItem(), "");

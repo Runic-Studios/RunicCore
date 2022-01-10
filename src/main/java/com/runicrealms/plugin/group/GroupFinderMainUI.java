@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.group;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -13,18 +15,26 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class GroupFinderMainUI implements InventoryHolder, Listener {
 
+    private static final int INVENTORY_SIZE = 54;
     private final Inventory inventory;
 
     public GroupFinderMainUI() {
-        this.inventory = Bukkit.createInventory(this, 27, ColorUtil.format("&r&aGroup Finder"));
-        this.inventory.setItem(11, miniBoss());
-        this.inventory.setItem(13, grinding());
-        this.inventory.setItem(15, dungeons());
+        this.inventory = Bukkit.createInventory(this, INVENTORY_SIZE, ColorUtil.format("&r&aGroup Finder"));
+        GUIUtil.fillInventoryBorders(this.inventory);
+        this.inventory.setItem(0, GUIUtil.closeButton());
+        this.inventory.setItem(4, infoItem());
+        this.inventory.setItem(20, miniBoss());
+        this.inventory.setItem(22, grinding());
+        this.inventory.setItem(24, dungeons());
     }
 
+    @NotNull
     @Override
     public Inventory getInventory() {
         return this.inventory;
@@ -41,7 +51,9 @@ public class GroupFinderMainUI implements InventoryHolder, Listener {
 
         Material material = item.getType();
 
-        if (material == miniBoss().getType()) {
+        if (material == GUIUtil.closeButton().getType()) {
+            player.closeInventory();
+        } else if (material == miniBoss().getType()) {
             player.openInventory(RunicCore.getGroupManager().getMiniBossUI().getInventory());
         } else if (material == grinding().getType()) {
             player.openInventory(RunicCore.getGroupManager().getGrindingUI().getInventory());
@@ -50,9 +62,21 @@ public class GroupFinderMainUI implements InventoryHolder, Listener {
         }
     }
 
+    private ItemStack infoItem() {
+        ItemStack item = new ItemStack(Material.PAPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColorUtil.format("&cGroup Finder"));
+        List<String> idk = ChatUtils.formattedText("&7The group finder can help you find a group of players to tackle challenging monsters!");
+        meta.setLore(idk);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     private ItemStack miniBoss() {
         ItemStack item = new ItemStack(Material.WITHER_SKELETON_SKULL, 1);
         ItemMeta meta = item.getItemMeta();
+        assert meta != null;
         meta.setDisplayName(ColorUtil.format("&r&6Mini-Bosses"));
         item.setItemMeta(meta);
         return item;
@@ -61,6 +85,7 @@ public class GroupFinderMainUI implements InventoryHolder, Listener {
     private ItemStack grinding() {
         ItemStack item = new ItemStack(Material.IRON_SWORD, 1);
         ItemMeta meta = item.getItemMeta();
+        assert meta != null;
         meta.setDisplayName(ColorUtil.format("&r&6Grinding"));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
@@ -70,6 +95,7 @@ public class GroupFinderMainUI implements InventoryHolder, Listener {
     private ItemStack dungeons() {
         ItemStack item = new ItemStack(Material.ENDER_EYE, 1);
         ItemMeta meta = item.getItemMeta();
+        assert meta != null;
         meta.setDisplayName(ColorUtil.format("&r&6Dungeons"));
         item.setItemMeta(meta);
         return item;
