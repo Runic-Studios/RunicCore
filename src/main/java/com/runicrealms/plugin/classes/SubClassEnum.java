@@ -8,36 +8,33 @@ public enum SubClassEnum {
     /*
      archer
      */
-    MARKSMAN("Marksman", ClassEnum.ARCHER, marksmanItem(), "Shoot bows"),
-    SCOUT("Scout", ClassEnum.ARCHER, scoutItem(), ""),
-    WARDEN("Warden", ClassEnum.ARCHER, wardenItem(), ""),
+    MARKSMAN("Marksman", ClassEnum.ARCHER, marksmanItem(), "Marksman is a master of single-target damage!"),
+    SCOUT("Scout", ClassEnum.ARCHER, scoutItem(), "Scout weakens enemies with utility!"),
+    WARDEN("Warden", ClassEnum.ARCHER, wardenItem(), "Warden controls the battlefield with crowd control!"),
     /*
      cleric
      */
-    BARD("Bard", ClassEnum.CLERIC, bardItem(), ""),
-    PALADIN("Paladin", ClassEnum.CLERIC, paladinItem(), ""),
-    PRIEST("Priest", ClassEnum.CLERIC, priestItem(), ""),
+    BARD("Bard", ClassEnum.CLERIC, bardItem(), "Bard controls the flow of battle with ally buffs and enemy debuffs!"),
+    PALADIN("Paladin", ClassEnum.CLERIC, paladinItem(), "Paladin is a hybrid fighter and healer!"),
+    PRIEST("Priest", ClassEnum.CLERIC, priestItem(), "Priest heals allies and keeps them strong!"),
     /*
      mage
      */
-    CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), ""),
-    PYROMANCER("Pyromancer", ClassEnum.MAGE, pyromancerItem(), ""),
-    WARLOCK("Warlock", ClassEnum.MAGE, warlockItem(), ""),
+    CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with crows control!"),
+    PYROMANCER("Pyromancer", ClassEnum.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect damage!"),
+    WARLOCK("Warlock", ClassEnum.MAGE, warlockItem(), "Warlock has utility and buffs to out-maneuver opponents!"),
     /*
      rogue
      */
-    ASSASSIN("Assassin", ClassEnum.ROGUE, assassinItem(),
-            "Assassin kills stuff fast!"),
-    DUELIST("Duelist", ClassEnum.ROGUE, duelistItem(),
-            "Duelist focuses on a single enemy!"),
-    SWINDLER("Swindler", ClassEnum.ROGUE, swindlerItem(),
-            "Swindler uses parlor tricks!"),
+    ASSASSIN("Assassin", ClassEnum.ROGUE, assassinItem(), "Assassin emerges from the shadows to quickly burst an opponent!"),
+    DUELIST("Duelist", ClassEnum.ROGUE, duelistItem(), "Duelist is an excellent fighter against a single opponent!"),
+    SWINDLER("Swindler", ClassEnum.ROGUE, swindlerItem(), "Swindler uses deception to manipulate enemies!"),
     /*
     warrior
      */
-    BERSERKER("Berserker", ClassEnum.WARRIOR, berserkerItem(), ""),
-    GUARDIAN("Guardian", ClassEnum.WARRIOR, guardianItem(), ""),
-    INQUISITOR("Inquisitor", ClassEnum.WARRIOR, inquisitorItem(), "");
+    BERSERKER("Berserker", ClassEnum.WARRIOR, berserkerItem(), "Berserker fights ferociously with abilities that cleave enemies!"),
+    GUARDIAN("Guardian", ClassEnum.WARRIOR, guardianItem(), "Guardian excels as a tank, defending allies!"),
+    INQUISITOR("Inquisitor", ClassEnum.WARRIOR, inquisitorItem(), "Inquisitor uses crowd control to disable enemies!");
 
     private final String name;
     private final ClassEnum baseClass;
