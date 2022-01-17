@@ -2,7 +2,9 @@ package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.*;
+import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.runicitems.Stat;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,20 +13,21 @@ import java.util.UUID;
 
 public class StatListener implements Listener {
 
-    private static final float DEFAULT_WALKSPEED = 0.2f;
+    private static final float DEFAULT_SPEED = 0.2f;
 
     @EventHandler
     public void onHealthRegen(HealthRegenEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         double healthRegenBonusPercent = Stat.getHealthRegenMult() * RunicCoreAPI.getPlayerVitality(uuid);
-        e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * healthRegenBonusPercent)));
+        e.setAmount((int) (e.getAmount() + Math.ceil(e.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * healthRegenBonusPercent)));
     }
 
     @EventHandler
     public void onManaRegen(ManaRegenEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        double manaRegenBonusPercent = Stat.getManaRegenMult() * RunicCoreAPI.getPlayerWisdom(uuid);
-        e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * manaRegenBonusPercent)));
+        double manaRegenBonusPercent = Stat.getManaRegenMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
+        int bonusMana = (int) (RegenManager.getManaRegenAmt() * manaRegenBonusPercent);
+        e.setAmount(e.getAmount() + bonusMana);
     }
 
     @EventHandler
@@ -33,7 +36,7 @@ public class StatListener implements Listener {
         UUID uuid = e.getVictim().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuid);
         if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
-            damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
+            damageMitigationPercent = Stat.getDamageReductionCap() / 100; // cap it
         e.setAmount((int) (e.getAmount() - Math.ceil(e.getAmount() * damageMitigationPercent)));
     }
 
@@ -41,7 +44,10 @@ public class StatListener implements Listener {
     public void onStatChangeEvent(StatChangeEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         double walkBonusPercent = Stat.getMovementSpeedMult() * RunicCoreAPI.getPlayerDexterity(uuid);
-        e.getPlayer().setWalkSpeed((float) (DEFAULT_WALKSPEED + (DEFAULT_WALKSPEED * walkBonusPercent)));
+        float newSpeed = (float) (DEFAULT_SPEED + (DEFAULT_SPEED * walkBonusPercent));
+        if (newSpeed > (Stat.getMovementSpeedCap() / 100))
+            newSpeed = (float) (Stat.getMovementSpeedCap() / 100);
+        e.getPlayer().setWalkSpeed(newSpeed);
         RunicCoreAPI.updateMaxMana(e.getPlayer());
     }
 
@@ -60,6 +66,7 @@ public class StatListener implements Listener {
         /*
         Defense
          */
+        // todo: add dodge
         UUID uuidVictim = e.getVictim().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
         if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
@@ -81,6 +88,7 @@ public class StatListener implements Listener {
         /*
         Defense
          */
+        // todo: add dodge
         UUID uuidVictim = e.getVictim().getUniqueId();
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
         if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))

@@ -94,8 +94,12 @@ public class RegenManager implements Listener {
         return currentPlayerManaValues;
     }
 
-    public int getBaseMana() {
+    public static int getBaseMana() {
         return BASE_MANA;
+    }
+
+    public static int getManaRegenAmt() {
+        return MANA_REGEN_AMT;
     }
 
     public double getManaPerLv(Player player) {

@@ -9,10 +9,11 @@ public abstract class Perk {
 
     /**
      * A perk is a super class for PerkStat or PerkSpell, which builds skill trees
-     * @param perkID a unique integer for database storage
-     * @param cost how many skill points spent per allocation, generally 1
+     *
+     * @param perkID                   a unique integer for database storage
+     * @param cost                     how many skill points spent per allocation, generally 1
      * @param currentlyAllocatedPoints how many points the player has currently spent on the perk
-     * @param maxAllocatedPoints how many points can be spent on the perk
+     * @param maxAllocatedPoints       how many points can be spent on the perk
      */
     public Perk(int perkID, int cost, int currentlyAllocatedPoints, int maxAllocatedPoints) {
         this.perkID = perkID;

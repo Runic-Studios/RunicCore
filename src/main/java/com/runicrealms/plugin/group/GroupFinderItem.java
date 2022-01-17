@@ -38,8 +38,6 @@ public enum GroupFinderItem implements IGroupFinderItem {
     /*
     Mini-bosses
      */
-    BLACK_RIDER(5, QueueReason.MINI_BOSSES, "TexHuK_", "Black Rider", "Silkwood Forest"),
-    CAVE_MOTHER(5, QueueReason.MINI_BOSSES, "Zombie_Slayer50", "Cave Mother", "Silkwood Forest"),
     IRON_SOLDIER(8, QueueReason.MINI_BOSSES, "DoubleDark", "Iron Soldier", "Blackrail Burrow"),
     TOGRUND_THE_BLIGHTED(14, QueueReason.MINI_BOSSES, "adrix013", "Togrund the Blighted", "Ruins of Togrund"),
     PHARINDAR(20, QueueReason.MINI_BOSSES, "Elem", "Pharindar", "Wintervale Outskirts"),

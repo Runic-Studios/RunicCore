@@ -2,14 +2,13 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.player.StatsGUI;
 import com.runicrealms.plugin.player.cache.PlayerCache;
-import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -56,9 +55,8 @@ public class PlayerMenuListener implements Listener {
 
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
-                    // todo: rework items 1 and 2 to be a menu to reduce calculations
                     PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(combatStatsIcon(player)));
-                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenuIcon(player, playerCache)));
+                    PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenuIcon(player)));
                     PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
                     PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(groupFinderIcon(player)));
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet1);
@@ -109,7 +107,10 @@ public class PlayerMenuListener implements Listener {
         player.updateInventory();
         if (e.getCursor() == null) return;
         if (e.getCursor().getType() != Material.AIR) return; // prevents clicking with items on cursor
-        if (e.getSlot() == 3) {
+        if (e.getSlot() == 2) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+            player.openInventory(new StatsGUI(player).getInventory());
+        } else if (e.getSlot() == 3) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             RunicProfessionsAPI.openGatheringGUI(player);
         } else if (e.getSlot() == 4) {
@@ -147,28 +148,11 @@ public class PlayerMenuListener implements Listener {
     /**
      * Creates the menu icon for the
      *
-     * @param player      who the menu belongs to
-     * @param playerCache
-     * @return
+     * @param player who the menu belongs to
+     * @return a visual menu item
      */
-    private ItemStack gemMenuIcon(Player player, PlayerCache playerCache) {
-        UUID uuid = player.getUniqueId();
-        // item 2 must update dynamically
-        int healthBonus = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() -
-                PlayerLevelUtil.calculateHealthAtLevel(playerCache.getClassLevel(), playerCache.getClassName());
-        return item(player, Material.REDSTONE, "&eCharacter Stats",
-                "\n&7Your character stats improve" +
-                        "\n&7your potency in battle!" +
-                        "\n&7Earn them from your" +
-                        "\n&dSkill Tree &7or from items!" +
-                        "\n&7Check your bonuses above" +
-                        "\n&7in &eCharacter Info&7!" +
-                        "\n\n&c❤ (Health): " + statPrefix(healthBonus) + healthBonus +
-                        "\n" + formattedStat("Dexterity", RunicCoreAPI.getPlayerDexterity(uuid)) +
-                        "\n" + formattedStat("Intelligence", RunicCoreAPI.getPlayerIntelligence(uuid)) +
-                        "\n" + formattedStat("Strength", RunicCoreAPI.getPlayerStrength(uuid)) +
-                        "\n" + formattedStat("Vitality", RunicCoreAPI.getPlayerVitality(uuid)) +
-                        "\n" + formattedStat("Wisdom", RunicCoreAPI.getPlayerWisdom(uuid)));
+    private ItemStack gemMenuIcon(Player player) {
+        return item(player, Material.REDSTONE, "&eCharacter Stats", "\n&6&lCLICK" + "\n&7To view your character stats!");
     }
 
     private ItemStack groupFinderIcon(Player player) {

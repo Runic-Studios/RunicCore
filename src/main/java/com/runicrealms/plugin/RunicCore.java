@@ -353,6 +353,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
         pm.registerEvents(new ArtifactSpellListener(), this);
+        pm.registerEvents(new StatsGUIListener(), this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
