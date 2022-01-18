@@ -51,7 +51,7 @@ public class DamageUtil {
 
         // apply the damage
         damageEntityByEntity(dmgAmt, recipient, caster, false);
-        HologramUtil.createSpellDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt);
+        HologramUtil.createSpellDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
     }
 
     /**
@@ -62,11 +62,10 @@ public class DamageUtil {
      * @param caster        player who cast the healing spell
      * @param isBasicAttack whether the attack will be treated as an basic attack (for on-hit effects)
      * @param isRanged      whether the attack is ranged
-     * @param bypassNoTick  deprecated and should be removed
      * @param spell         include a reference to spell for spell scaling
      */
     public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
-                                          boolean isBasicAttack, boolean isRanged, boolean bypassNoTick, Spell... spell) {
+                                          boolean isBasicAttack, boolean isRanged, Spell... spell) {
 
         // prevent healing
         if (dmgAmt < 0)
@@ -92,7 +91,7 @@ public class DamageUtil {
         }
 
         damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
-        HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt);
+        HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
     }
 
     public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {

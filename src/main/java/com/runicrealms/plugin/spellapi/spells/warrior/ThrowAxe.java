@@ -93,7 +93,7 @@ public class ThrowAxe extends Spell implements WeaponDamageSpell {
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) entity, pl, false, false, true, spell);
+                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) entity, pl, false, false, spell);
                         projectile.remove();
                     }
                 }

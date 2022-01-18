@@ -107,7 +107,7 @@ public class Barrage extends Spell implements WeaponDamageSpell {
             if (verifyEnemy(pl, le)) {
                 e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 2.0f);
                 e.getEntity().getWorld().spawnParticle(Particle.CRIT, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
-                DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true, true, this);
+                DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true, this);
             }
         }
     }

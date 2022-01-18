@@ -88,6 +88,6 @@ public class KillShot extends Spell {
         int amount = DAMAGE + percentMissingHealth(le, PERCENT);
         if (!(le instanceof Player) && amount > DAMAGE_CAP)
             amount = DAMAGE_CAP;
-        DamageUtil.damageEntityWeapon(amount, le, pl, false, true, true);
+        DamageUtil.damageEntityWeapon(amount, le, pl, false, true);
     }
 }

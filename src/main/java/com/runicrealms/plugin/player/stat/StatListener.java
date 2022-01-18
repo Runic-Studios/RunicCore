@@ -2,14 +2,13 @@ package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.*;
-import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.runicitems.Stat;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class StatListener implements Listener {
 
@@ -19,14 +18,15 @@ public class StatListener implements Listener {
     public void onHealthRegen(HealthRegenEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         double healthRegenBonusPercent = Stat.getHealthRegenMult() * RunicCoreAPI.getPlayerVitality(uuid);
-        e.setAmount((int) (e.getAmount() + Math.ceil(e.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * healthRegenBonusPercent)));
+        int bonusHealth = (int) (e.getAmount() * healthRegenBonusPercent);
+        e.setAmount(e.getAmount() + bonusHealth);
     }
 
     @EventHandler
     public void onManaRegen(ManaRegenEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         double manaRegenBonusPercent = Stat.getManaRegenMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
-        int bonusMana = (int) (RegenManager.getManaRegenAmt() * manaRegenBonusPercent);
+        int bonusMana = (int) (e.getAmount() * manaRegenBonusPercent);
         e.setAmount(e.getAmount() + bonusMana);
     }
 
@@ -56,6 +56,11 @@ public class StatListener implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         double healAmountBonusPercent = Stat.getSpellHealingMult() * RunicCoreAPI.getPlayerWisdom(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * healAmountBonusPercent)));
+        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
+        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerStrength(uuid))) {
+            e.setCritical(true);
+            e.setAmount((int) (e.getAmount() * Stat.getCriticalDamageMultiplier()));
+        }
     }
 
     @EventHandler
@@ -63,8 +68,13 @@ public class StatListener implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         double magicDamageBonusPercent = Stat.getMagicDmgMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * magicDamageBonusPercent)));
+        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
+        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerStrength(uuid))) {
+            e.setCritical(true);
+            e.setAmount((int) (e.getAmount() * Stat.getCriticalDamageMultiplier()));
+        }
         /*
-        Defense
+        Defense calculated last
          */
         // todo: add dodge
         UUID uuidVictim = e.getVictim().getUniqueId();
@@ -76,17 +86,21 @@ public class StatListener implements Listener {
 
     @EventHandler
     public void onRangedDamage(WeaponDamageEvent e) {
+        UUID uuid = e.getPlayer().getUniqueId();
         if (e.isRanged()) {
-            UUID uuid = e.getPlayer().getUniqueId();
             double rangedDamageBonusPercent = Stat.getRangedDmgMult() * RunicCoreAPI.getPlayerDexterity(uuid);
             e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * rangedDamageBonusPercent)));
         } else {
-            UUID uuid = e.getPlayer().getUniqueId();
             double meleeDamageBonusPercent = Stat.getMeleeDmgMult() * RunicCoreAPI.getPlayerStrength(uuid);
             e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * meleeDamageBonusPercent)));
         }
+        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
+        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerStrength(uuid))) {
+            e.setCritical(true);
+            e.setAmount((int) (e.getAmount() * Stat.getCriticalDamageMultiplier()));
+        }
         /*
-        Defense
+        Defense calculated last
          */
         // todo: add dodge
         UUID uuidVictim = e.getVictim().getUniqueId();

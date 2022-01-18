@@ -22,16 +22,18 @@ public class HologramUtil {
     private static final HashMap<Player, HashMap<ArmorStand, BukkitTask>> HOLOGRAMS = new HashMap<>();
 
     // builds the damage hologram
-    public static void createDamageHologram(Player createFor, Location createAround, double hp) {
-        createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤⚔");
+    public static void createDamageHologram(Player createFor, Location createAround, double hp, boolean... isCritical) {
+        ChatColor chatColor = (isCritical.length > 0 && isCritical[0]) ? ChatColor.GOLD : ChatColor.RED;
+        createDamageHologram(createFor, createAround, chatColor + "-" + (int) hp + " ❤⚔");
     }
 
     public static void createGenericDamageHologram(Player createFor, Location createAround, double hp) {
         createDamageHologram(createFor, createAround, ChatColor.RED + "-" + (int) hp + " ❤");
     }
 
-    public static void createHealHologram(Player createFor, Location createAround, double hp) {
-        createDamageHologram(createFor, createAround, ChatColor.GREEN + "+" + (int) hp + " ❤✦");
+    public static void createHealHologram(Player createFor, Location createAround, double hp, boolean... isCritical) {
+        ChatColor chatColor = (isCritical.length > 0 && isCritical[0]) ? ChatColor.GOLD : ChatColor.GREEN;
+        createDamageHologram(createFor, createAround, chatColor + "+" + (int) hp + " ❤✦");
     }
 
     public static void createShieldHologram(Player createFor, Location createAround, double hp) {
@@ -42,8 +44,9 @@ public class HologramUtil {
         createDamageHologram(createFor, createAround, ChatColor.WHITE + "-" + (int) hp + " ■");
     }
 
-    public static void createSpellDamageHologram(Player createFor, Location createAround, double hp) {
-        createDamageHologram(createFor, createAround, ChatColor.DARK_AQUA + "-" + (int) hp + " ❤ʔ");
+    public static void createSpellDamageHologram(Player createFor, Location createAround, double hp, boolean... isCritical) {
+        ChatColor chatColor = (isCritical.length > 0 && isCritical[0]) ? ChatColor.GOLD : ChatColor.AQUA;
+        createDamageHologram(createFor, createAround, chatColor + "-" + (int) hp + " ❤ʔ");
     }
 
     /**

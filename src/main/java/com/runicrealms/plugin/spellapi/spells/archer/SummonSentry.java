@@ -109,7 +109,7 @@ public class SummonSentry extends Spell implements WeaponDamageSpell {
         if (!e.getDamager().hasMetadata("player")) return;
         e.setCancelled(true);
         Player pl = Bukkit.getPlayer(e.getDamager().getMetadata("player").get(0).asString());
-        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, true, this);
+        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, this);
     }
 
     @Override

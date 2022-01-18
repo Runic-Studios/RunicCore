@@ -10,22 +10,23 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-public class HealUtil  {
+public class HealUtil {
 
     /**
      * Our universal method to apply healing to a player using custom calculation.
-     * @param healAmt amount to be healed before gem or buff calculations
-     * @param recipient player to be healed
-     * @param caster player who casted heal
+     *
+     * @param healAmt           amount to be healed before gem or buff calculations
+     * @param recipient         player to be healed
+     * @param caster            player who casted heal
      * @param isReducedOnCaster whether caster receives reduced healing
-     * @param spell include a reference to spell for spell scaling
+     * @param spell             include a reference to spell for spell scaling
      */
     @SuppressWarnings("deprecation")
     public static void healPlayer(double healAmt, Player recipient, Player caster, boolean isReducedOnCaster, Spell... spell) {
 
         // spells are half effective on the caster
         if (isReducedOnCaster && recipient == caster) {
-            healAmt = (healAmt/2);
+            healAmt = (healAmt / 2);
         }
 
         // call our custom heal event for interaction with buffs/debuffs
@@ -49,12 +50,12 @@ public class HealUtil  {
                 }
             }
 
-            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0,1.5,0), difference);
+            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0, 1.5, 0), difference, event.isCritical());
 
         } else {
 
             recipient.setHealth(newHP);
-            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0,1.5,0), healAmt);
+            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0, 1.5, 0), healAmt, event.isCritical());
         }
         recipient.playSound(recipient.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
         recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 5, 0, 0.5F, 0.5F, 0.5F);
@@ -64,12 +65,11 @@ public class HealUtil  {
     }
 
     /**
-     *
-     * @param shieldAmt amount to be shielded before gem or buff calculations
-     * @param recipient player to recieve shield
-     * @param caster player who casted shield
+     * @param shieldAmt         amount to be shielded before gem or buff calculations
+     * @param recipient         player to recieve shield
+     * @param caster            player who casted shield
      * @param isReducedOnCaster whether caster should receive reduced gem bonus
-     * @param spell include a reference to spell for spell scaling
+     * @param spell             include a reference to spell for spell scaling
      */
     public static void shieldPlayer(double shieldAmt, Player recipient, Player caster, boolean isReducedOnCaster, Spell... spell) {
 

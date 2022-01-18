@@ -18,6 +18,7 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
     private final boolean isBasicAttack;
     private final boolean isRanged;
     private final Spell spell;
+    private boolean isCritical;
     private boolean isCancelled;
 
     /**
@@ -36,6 +37,7 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
         this.isBasicAttack = isBasicAttack;
         this.isRanged = isRanged;
         this.spell = spell.length > 0 ? spell[0] : null;
+        this.isCritical = false;
         this.isCancelled = false;
     }
 
@@ -55,9 +57,17 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
         return this.isRanged;
     }
 
+    public boolean isCritical() {
+        return this.isCritical;
+    }
+
     @Override
     public boolean isCancelled() {
         return this.isCancelled;
+    }
+
+    public void setCritical(boolean isCritical) {
+        this.isCritical = isCritical;
     }
 
     @Override

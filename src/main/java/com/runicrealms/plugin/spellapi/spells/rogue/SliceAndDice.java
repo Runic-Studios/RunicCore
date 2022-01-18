@@ -27,7 +27,7 @@ public class SliceAndDice extends Spell {
                 "You launch yourself backwards " +
                         "in the air then blink forward, " +
                         "slashing enemies within " + RADIUS + " blocks " +
-                        "for (&f" + DAMAGE_AMT + " + " + PERCENT +"x " +
+                        "for (&f" + DAMAGE_AMT + " + " + PERCENT + "x " +
                         "their missing health&7) as weapon⚔ damage! " +
                         "Capped at " + DAMAGE_CAP + " against monsters.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 15, 30);
@@ -65,7 +65,7 @@ public class SliceAndDice extends Spell {
                         int amount = DAMAGE_AMT + percentMissingHealth(en, PERCENT);
                         if (!(en instanceof Player) && amount > DAMAGE_CAP)
                             amount = DAMAGE_CAP;
-                        DamageUtil.damageEntityWeapon(amount, (LivingEntity) en, pl, false, false, true);
+                        DamageUtil.damageEntityWeapon(amount, (LivingEntity) en, pl, false, false);
                     }
                 }
             }

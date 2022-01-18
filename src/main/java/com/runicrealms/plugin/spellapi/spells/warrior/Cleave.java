@@ -41,7 +41,7 @@ public class Cleave extends Spell {
             if (targetsHit > MAX_TARGETS) return;
             targetsHit++;
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.5f, 1.0f);
-            DamageUtil.damageEntityWeapon(e.getAmount() * PERCENT, (LivingEntity) en, pl, false, false, true);
+            DamageUtil.damageEntityWeapon(e.getAmount() * PERCENT, (LivingEntity) en, pl, false, false);
         }
     }
 }

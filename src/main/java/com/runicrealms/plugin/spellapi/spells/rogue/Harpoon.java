@@ -29,7 +29,7 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
     private Trident trident;
 
     public Harpoon() {
-        super ("Harpoon",
+        super("Harpoon",
                 "You launch a projectile harpoon " +
                         "which deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) weapon⚔ damage, pulls your enemy towards you, " +
@@ -88,7 +88,7 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
         //final double hPower = 0.5D;
 
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, true, this);
+        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, this);
         addStatusEffect(victim, EffectEnum.SILENCE, SILENCE_DURATION);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
 

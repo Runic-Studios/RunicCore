@@ -17,6 +17,7 @@ public class SpellHealEvent extends Event implements Cancellable {
     private final Player player;
     private final Entity entity;
     private final Spell spell;
+    private boolean isCritical;
     private boolean isCancelled;
 
     public SpellHealEvent(int amount, Entity recipient, Player caster, Spell... spell) {
@@ -24,6 +25,7 @@ public class SpellHealEvent extends Event implements Cancellable {
         this.entity = recipient;
         this.player = caster;
         this.spell = spell.length > 0 ? spell[0] : null;
+        this.isCritical = false;
         this.isCancelled = false;
     }
 
@@ -47,9 +49,17 @@ public class SpellHealEvent extends Event implements Cancellable {
         return this.spell;
     }
 
+    public boolean isCritical() {
+        return this.isCritical;
+    }
+
     @Override
     public boolean isCancelled() {
         return this.isCancelled;
+    }
+
+    public void setCritical(boolean isCritical) {
+        this.isCritical = isCritical;
     }
 
     @Override

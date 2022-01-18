@@ -9,7 +9,9 @@ import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -133,7 +135,7 @@ public class DamageListener implements Listener {
                 // successful damage
                 if (((Player) damager).getCooldown(artifact.getType()) != 0)
                     return;
-                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, true, false, true);
+                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, true, false);
                 ((Player) damager).setCooldown(artifact.getType(), 10);
                 // ---------------------------
 

@@ -67,7 +67,7 @@ public class Rebuke extends Spell implements WeaponDamageSpell {
             if (!verifyEnemy(caster, en)) continue;
             caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 1.0f, 1.0f);
             knockUpParticleTask(en);
-            DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) en, caster, false, false, true, this);
+            DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) en, caster, false, false, this);
             en.setVelocity(new Vector(0, 1, 0).normalize().multiply(KNOCKUP_MULT));
             ((LivingEntity) en).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (DURATION * 20L), 2));
             return true;

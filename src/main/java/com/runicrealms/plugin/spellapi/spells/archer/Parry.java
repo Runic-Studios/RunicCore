@@ -119,7 +119,7 @@ public class Parry extends Spell implements WeaponDamageSpell {
 
         if (verifyEnemy(pl, le) && !hasBeenHit.contains(le.getUniqueId())) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(le.getUniqueId()), 20L);
-            DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true, true, this);
+            DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true, this);
         }
     }
 

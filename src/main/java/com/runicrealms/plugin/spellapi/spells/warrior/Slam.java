@@ -88,7 +88,7 @@ public class Slam extends Spell implements WeaponDamageSpell {
 
                     for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (verifyEnemy(pl, en)) {
-                            DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, false, true, spell);
+                            DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, false, spell);
                             Vector force = (pl.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             en.setVelocity(force.normalize());

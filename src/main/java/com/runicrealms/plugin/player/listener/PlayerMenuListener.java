@@ -1,12 +1,10 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.StatsGUI;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.utilities.ColorUtil;
-import com.runicrealms.runicitems.Stat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -26,8 +24,10 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Controls the player menu in the inventory crafting slots
@@ -132,24 +132,20 @@ public class PlayerMenuListener implements Listener {
     }
 
     /**
-     * @param player
-     * @return
+     * Creates the menu icon for the
+     *
+     * @param player who the menu belongs to
+     * @return a visual menu item for settings
      */
     private ItemStack combatStatsIcon(Player player) {
-        return item(player, Material.PLAYER_HEAD, "&eCharacter Info",
-                "\n&7Here are the combat bonuses" +
-                        "\n&7of your character! They" +
-                        "\n&7come from your stats," +
-                        "\n&7which you can check" +
-                        "\n&7in &eCharacter Stats&7!\n\n" +
-                        combatPercentages(player.getUniqueId()));
+        return item(player, Material.PLAYER_HEAD, "&e" + player.getName(), "\n&7Character insights &ccoming soon&7!");
     }
 
     /**
      * Creates the menu icon for the
      *
      * @param player who the menu belongs to
-     * @return a visual menu item
+     * @return a visual menu item for gems
      */
     private ItemStack gemMenuIcon(Player player) {
         return item(player, Material.REDSTONE, "&eCharacter Stats", "\n&6&lCLICK" + "\n&7To view your character stats!");
@@ -167,62 +163,6 @@ public class PlayerMenuListener implements Listener {
 
     private static boolean isPlayerCraftingInv(InventoryView view) {
         return view.getTopInventory().getSize() == PLAYER_CRAFT_INV_SIZE;
-    }
-
-    private String statPrefix(int stat) {
-        return stat > 0 ? "&a+" : "&7+";
-    }
-
-    private String combatPercentages(UUID uuid) {
-        int dexterity = RunicCoreAPI.getPlayerDexterity(uuid);
-        int intelligence = RunicCoreAPI.getPlayerIntelligence(uuid);
-        int strength = RunicCoreAPI.getPlayerStrength(uuid);
-        int vitality = RunicCoreAPI.getPlayerVitality(uuid);
-        int wisdom = RunicCoreAPI.getPlayerWisdom(uuid);
-        DecimalFormat df = new DecimalFormat("0.##");
-        double rangedDmgPercent = (Stat.getRangedDmgMult() * 100) * dexterity;
-        double speedPercent = (Stat.getMovementSpeedMult() * 100) * dexterity;
-        double magicDmgPercent = (Stat.getMagicDmgMult() * 100) * intelligence;
-        double maxManaPercent = (Stat.getMaxManaMult() * 100) * intelligence;
-        double meleeDmgPercent = (Stat.getMeleeDmgMult() * 100) * strength;
-        double critPercent = 0;
-        double defensePercent = (Stat.getDamageReductionMult() * 100) * vitality;
-        if (defensePercent > Stat.getDamageReductionCap())
-            defensePercent = Stat.getDamageReductionCap();
-        double healthRegenPercent = (Stat.getHealthRegenMult() * 100) * vitality;
-        double spellHealingPercent = (Stat.getSpellHealingMult() * 100) * wisdom;
-        double manaRegenPercent = (Stat.getManaRegenMult() * 100) * wisdom;
-        String dexterityString = statPrefix(dexterity) + df.format(rangedDmgPercent) + "% Ranged Dmg" +
-                "\n" + statPrefix(dexterity) + df.format(speedPercent) + "% Movespeed\n";
-        String intelligenceString = statPrefix(intelligence) + df.format(magicDmgPercent) + "% Magic Dmg" +
-                "\n" + statPrefix(intelligence) + df.format(maxManaPercent) + "% Max Mana\n";
-        String strengthString = statPrefix(strength) + df.format(meleeDmgPercent) + "% Melee Dmg" +
-                "\n" + df.format(critPercent) + "% Crit\n";
-        String vitalityString = statPrefix(vitality) + df.format(defensePercent) + "% Defense" + (defensePercent >= Stat.getDamageReductionCap() ? " (Cap Reached)" : "") +
-                "\n" + statPrefix(vitality) + df.format(healthRegenPercent) + "% Health Regen\n";
-        String wisdomString = statPrefix(wisdom) + df.format(spellHealingPercent) + "% Spell Healing" +
-                "\n" + statPrefix(wisdom) + df.format(manaRegenPercent) + "% Mana Regen\n";
-        return dexterityString + intelligenceString + strengthString + vitalityString + wisdomString;
-        // todo crit, dodge, attack speed
-    }
-
-    /**
-     * Returns a formatted string of the player's combat stats
-     *
-     * @param name  name of the stat (dexterity)
-     * @param value value of the stat (RunicCoreAPI)
-     * @return a formatted string for use in the player menu
-     */
-    private String formattedStat(String name, int value) {
-        Stat stat = Stat.getFromName(name);
-        if (stat == null) {
-            Bukkit.getLogger().info("Base stat enum not found!");
-            return "";
-        }
-        return stat.getChatColor() +
-                stat.getIcon() +
-                " (" + stat.getPrefix() +
-                "): " + statPrefix(value) + value;
     }
 
     private ItemStack item(Player pl, Material material, String name, String description) {

@@ -64,7 +64,7 @@ public class BindingShot extends Spell implements WeaponDamageSpell {
 
         // spell effect
         addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
-        DamageUtil.damageEntityWeapon(DAMAGE, livingEntity, pl, false, true, true, this);
+        DamageUtil.damageEntityWeapon(DAMAGE, livingEntity, pl, false, true, this);
 
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_WITCH_DEATH, 0.5f, 0.5f);
 

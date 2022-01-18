@@ -147,9 +147,9 @@ public class StaffListener implements Listener {
         // apply attack effects, random damage amount
         if (maxDamage != 0) {
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            DamageUtil.damageEntityWeapon(randomNum, victim, player, true, true, true);
+            DamageUtil.damageEntityWeapon(randomNum, victim, player, true, true);
         } else {
-            DamageUtil.damageEntityWeapon(maxDamage, victim, player, true, true, true);
+            DamageUtil.damageEntityWeapon(maxDamage, victim, player, true, true);
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
