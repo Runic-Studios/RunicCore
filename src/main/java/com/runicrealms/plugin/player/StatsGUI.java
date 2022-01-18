@@ -121,6 +121,8 @@ public class StatsGUI implements InventoryHolder {
     private ItemStack dexterityMenuItem() {
         double dodgeChancePercent = (Stat.getDodgeChance() * 100) * dexterity;
         double moveSpeedPercent = (Stat.getMovementSpeedMult() * 100) * dexterity;
+        if (moveSpeedPercent > Stat.getMovementSpeedCap())
+            moveSpeedPercent = Stat.getMovementSpeedCap();
         double rangedDamagePercent = (Stat.getRangedDmgMult() * 100) * dexterity;
         String dodgeChanceString = dodgeChancePercent > 0 ? DECIMAL_FORMAT.format(dodgeChancePercent) : "0";
         String moveSpeedString = moveSpeedPercent > 0 ? DECIMAL_FORMAT.format(moveSpeedPercent) : "0";
@@ -179,6 +181,8 @@ public class StatsGUI implements InventoryHolder {
 
     private ItemStack vitalityMenuItem() {
         double defensePercent = (Stat.getDamageReductionMult() * 100) * vitality;
+        if (defensePercent > (Stat.getDamageReductionCap()))
+            defensePercent = Stat.getDamageReductionCap(); // cap it
         double healthRegenPercent = (Stat.getHealthRegenMult() * 100) * vitality;
         String defenseString = defensePercent > 0 ? DECIMAL_FORMAT.format(defensePercent) : "0";
         String healthRegenString = healthRegenPercent > 0 ? DECIMAL_FORMAT.format(healthRegenPercent) : "0";
