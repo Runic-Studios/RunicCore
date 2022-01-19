@@ -87,25 +87,6 @@ public class LootChestListener implements Listener {
     public void onLootChestInventoryClick(InventoryClickEvent e) {
         if (e.getClickedInventory() == null) return;
         if (!(e.getView().getTopInventory().getHolder() instanceof LootChestInventory)) return;
-//        // prevent clicking items in player inventory
-//        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
-//            e.setCancelled(true);
-//            return;
-//        }
-
-//        InventoryHolder inventoryHolder = e.getClickedInventory().getHolder();
-//        if (inventoryHolder == null) {
-//            Bukkit.getLogger().info(ChatColor.DARK_RED + "A loot chest failed to load!");
-//            return;
-//        }
-//
-//        // insurance
-//        if (!e.getWhoClicked().equals(inventoryHolder.getInventory().)) {
-//            e.setCancelled(true);
-//            e.getWhoClicked().closeInventory();
-//            return;
-//        }
-
         if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(e.getCurrentItem());
         if (RunicItemsAPI.containsBlockedTag(runicItem))

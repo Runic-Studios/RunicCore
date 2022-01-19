@@ -55,12 +55,12 @@ public class LootChestInventory implements InventoryHolder {
     }
 
     /**
-     * @return
+     * Determine the inventory title based on rarity
+     *
+     * @return a string to be used for the inventory title
      */
     private String chestTitle() {
         switch (this.lootChestRarity) {
-            case COMMON:
-                return "&f&l" + player.getName() + "'s &7&lCommon Chest";
             case UNCOMMON:
                 return "&f&l" + player.getName() + "'s &a&lUncommon Chest";
             case RARE:
@@ -92,9 +92,6 @@ public class LootChestInventory implements InventoryHolder {
 
             // fill inventory
             switch (lootChestRarity) {
-                case COMMON:
-                    chestItem = ChestLootTableUtil.commonLootTable().getRandom();
-                    break;
                 case UNCOMMON:
                     chestItem = ChestLootTableUtil.uncommonLootTable().getRandom();
                     break;

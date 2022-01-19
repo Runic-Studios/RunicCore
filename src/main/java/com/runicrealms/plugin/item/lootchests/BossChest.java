@@ -22,6 +22,8 @@ public class BossChest {
     private final DungeonLocation dungeonLocation;
     private final HashSet<UUID> playersWhoHaveReceivedTokens;
 
+    private static final String BOSS_CHEST_NAME = ChatColor.GOLD + "" + ChatColor.BOLD + "Boss Spoils";
+
     public BossChest(UUID bossUuid, Chest chest, DungeonLocation dungeonLocation) {
         this.bossUuid = bossUuid;
         this.dungeonLocation = dungeonLocation;
@@ -112,5 +114,9 @@ public class BossChest {
 
     public HashSet<UUID> getPlayersWhoHaveReceivedTokens() {
         return playersWhoHaveReceivedTokens;
+    }
+
+    public static String getBossChestName() {
+        return BOSS_CHEST_NAME;
     }
 }

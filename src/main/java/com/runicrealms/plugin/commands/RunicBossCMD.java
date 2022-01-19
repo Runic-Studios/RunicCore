@@ -71,6 +71,7 @@ public class RunicBossCMD extends BaseCommand {
         blockData.setFacing(dungeonLocation.getChestBlockFace());
         BlockState state = block.getState();
         state.setBlockData(blockData);
+        ((Chest) state).setCustomName(BossChest.getBossChestName());
         state.update();
         chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         chestLocation.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, chestLocation, 25, 0.5f, 0.5f, 0.5f, 0);

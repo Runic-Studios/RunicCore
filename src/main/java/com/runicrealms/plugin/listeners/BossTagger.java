@@ -4,6 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.item.lootchests.BossChest;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItem;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
@@ -21,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -54,6 +57,17 @@ public class BossTagger implements Listener {
         HashSet<UUID> looters = new HashSet<>();
         bossFighters.put(e.getEntity().getUniqueId(), fighters);
         bossLooters.put(e.getEntity().getUniqueId(), looters);
+    }
+
+    @EventHandler
+    public void onBossChestInventoryClick(InventoryClickEvent e) {
+        if (e.getClickedInventory() == null) return;
+        if (!e.getView().getTitle().equals(BossChest.getBossChestName())) return;
+        if (e.getClickedInventory() != e.getView().getBottomInventory()) return; // ignore top inventory
+        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(e.getCurrentItem());
+        if (RunicItemsAPI.containsBlockedTag(runicItem))
+            e.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
