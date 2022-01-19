@@ -4,24 +4,47 @@ import org.bukkit.Color;
 
 public enum LootChestRarity {
 
-    COMMON("common", Color.WHITE, 3, 1, 9, 600), // 10 min
-    UNCOMMON("uncommon", Color.LIME, 10, 10, 24, 900), // 15 min
-    RARE("rare", Color.AQUA, 25, 25, 39, 1200), // 20 min
-    EPIC("epic", Color.FUCHSIA, 40, 40, 60, 2700); // 45 min
+    COMMON("common", Color.WHITE, 3, 1, 9, 2, 4, 600), // 10 min
+    UNCOMMON("uncommon", Color.LIME, 10, 10, 24, 2, 4, 900), // 15 min
+    RARE("rare", Color.AQUA, 25, 25, 39, 3, 5, 1200), // 20 min
+    EPIC("epic", Color.FUCHSIA, 40, 40, 60, 3, 6, 2700); // 45 min
 
     private final String identifier;
     private final Color color;
     private final int minAccessLevel;
     private final int minLootLevel;
     private final int maxLootLevel;
+    private final int minimumItems;
+    private final int maximumItems;
     private final int respawnTime;
 
-    LootChestRarity(String identifier, Color color, int minAccessLevel, int minLootLevel, int maxLootLevel, int respawnTime) {
+    /**
+     * Enumerates a set of loot chest rarities which determine the content of the box
+     *
+     * @param identifier     the string name of the rarity e.g., common
+     * @param color          the color associated with the rarity
+     * @param minAccessLevel the minimum level to open the box
+     * @param minLootLevel   the minimum level of the item loot
+     * @param maxLootLevel   the max level of the item loot
+     * @param minimumItems   the min number of items in the box
+     * @param maximumItems   the max number of items in the box
+     * @param respawnTime    how long before boxes of this rarity respawn (shared timer)
+     */
+    LootChestRarity(String identifier,
+                    Color color,
+                    int minAccessLevel,
+                    int minLootLevel,
+                    int maxLootLevel,
+                    int minimumItems,
+                    int maximumItems,
+                    int respawnTime) {
         this.identifier = identifier;
         this.color = color;
         this.minAccessLevel = minAccessLevel;
         this.minLootLevel = minLootLevel;
         this.maxLootLevel = maxLootLevel;
+        this.minimumItems = minimumItems;
+        this.maximumItems = maximumItems;
         this.respawnTime = respawnTime;
     }
 
@@ -43,6 +66,14 @@ public enum LootChestRarity {
 
     public int getMaxLootLevel() {
         return maxLootLevel;
+    }
+
+    public int getMinimumItems() {
+        return minimumItems;
+    }
+
+    public int getMaximumItems() {
+        return maximumItems;
     }
 
     public int getRespawnTime() {

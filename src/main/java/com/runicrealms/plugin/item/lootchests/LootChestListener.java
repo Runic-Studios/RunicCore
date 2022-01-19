@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
-import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,16 +16,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -82,87 +80,40 @@ public class LootChestListener implements Listener {
         block.setType(Material.AIR);
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
-        openChestGUI(player, lootChestRarity);
+        player.openInventory(new LootChestInventory(player, lootChestRarity).getInventory());
+    }
+
+    @EventHandler
+    public void onLootChestInventoryClick(InventoryClickEvent e) {
+        if (e.getClickedInventory() == null) return;
+        if (!(e.getView().getTopInventory().getHolder() instanceof LootChestInventory)) return;
+//        // prevent clicking items in player inventory
+//        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
+//            e.setCancelled(true);
+//            return;
+//        }
+
+//        InventoryHolder inventoryHolder = e.getClickedInventory().getHolder();
+//        if (inventoryHolder == null) {
+//            Bukkit.getLogger().info(ChatColor.DARK_RED + "A loot chest failed to load!");
+//            return;
+//        }
+//
+//        // insurance
+//        if (!e.getWhoClicked().equals(inventoryHolder.getInventory().)) {
+//            e.setCancelled(true);
+//            e.getWhoClicked().closeInventory();
+//            return;
+//        }
+
+        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(e.getCurrentItem());
+        if (RunicItemsAPI.containsBlockedTag(runicItem))
+            e.setCancelled(true);
     }
 
     /**
-     * Command to generate the chest loot for player
-     *
-     * @param player          player who opened chest
-     * @param lootChestRarity rarity of loot chest
-     */
-    private void openChestGUI(Player player, LootChestRarity lootChestRarity) {
-
-        Random rand = new Random();
-        ItemGUI chest;
-        ItemStack chestItem = new ItemStack(Material.AIR);
-        String chestName = "";
-        int minItems = 0;
-        int maxItems = 0;
-
-        // check which stationType is being called
-        switch (lootChestRarity) {
-            case COMMON:
-                chestName = "&f&l" + player.getName() + "'s &7&lCommon Chest";
-                minItems = 2;
-                maxItems = 4;
-                break;
-            case UNCOMMON:
-                chestName = "&f&l" + player.getName() + "'s &a&lUncommon Chest";
-                minItems = 2;
-                maxItems = 4;
-                break;
-            case RARE:
-                chestName = "&f&l" + player.getName() + "'s &b&lRare Chest";
-                minItems = 3;
-                maxItems = 5;
-                break;
-            case EPIC:
-                chestName = "&f&l" + player.getName() + "'s &d&lEpic Chest";
-                minItems = 3;
-                maxItems = 5;
-                break;
-        }
-
-        // create chest inventory
-        chest = new ItemGUI(chestName, 27, (OptionClickEvent event) -> {
-        }, RunicCore.getInstance());
-        int numOfItems = rand.nextInt(maxItems - minItems) + minItems;
-
-        List<Integer> used = new ArrayList<>();
-        for (int i = 0; i < numOfItems; i++) {
-
-            // prevent items overriding the same slot
-            int slot = rand.nextInt(26);
-            while (used.contains(slot)) {
-                slot = rand.nextInt(26);
-            }
-            if (!used.contains(slot)) {
-                used.add(slot);
-            }
-
-            // fill inventory
-            switch (lootChestRarity) {
-                case COMMON:
-                    chestItem = ChestLootTableUtil.commonLootTable().getRandom();
-                    break;
-                case UNCOMMON:
-                    chestItem = ChestLootTableUtil.uncommonLootTable().getRandom();
-                    break;
-                case RARE:
-                    chestItem = ChestLootTableUtil.rareLootTable().getRandom();
-                    break;
-                case EPIC:
-                    chestItem = ChestLootTableUtil.epicLootTable().getRandom();
-                    break;
-            }
-            chest.setOption(slot, chestItem);
-        }
-        chest.open(player);
-    }
-
-    /**
-     * This event adds a new workstation to the file, so long as the player is opped and holding a green wool.
+     * This event adds a new workstation to the file, so long as the player is op and holding a green wool.
      * The event then listens for the player's chat response, and adds the block to the file accordingly.
      * NEW: If the player is holding red wool, they can remove a chest.
      */
