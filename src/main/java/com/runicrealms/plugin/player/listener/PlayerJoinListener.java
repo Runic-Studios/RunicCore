@@ -50,6 +50,7 @@ public class PlayerJoinListener implements Listener {
         PlayerCache playerCache = e.getPlayerCache();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadPlayerHealthScaleLevelAndLocation(player, playerCache), 1L);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, playerCache), 2L);
+        RunicNpcsAPI.updateNpcsForPlayer(e.getPlayer());
     }
 
     /**
