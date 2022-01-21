@@ -50,7 +50,6 @@ public class PlayerJoinListener implements Listener {
         PlayerCache playerCache = e.getPlayerCache();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadPlayerHealthScaleLevelAndLocation(player, playerCache), 1L);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, playerCache), 2L);
-        RunicNpcsAPI.updateNpcsForPlayer(e.getPlayer());
     }
 
     /**
@@ -116,10 +115,10 @@ public class PlayerJoinListener implements Listener {
     }
 
     // Handles loading in Runic NPCs on player login
-    // Load on highest to allow for data loading in NPCs plugin
+    // Loads with delay to allow for data loading in NPCs plugin
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLoadHandleNPCs(CharacterLoadEvent event) {
-        RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer()), 5L);
     }
 
     /**
