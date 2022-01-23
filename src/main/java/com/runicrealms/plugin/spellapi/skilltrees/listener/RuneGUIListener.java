@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -45,7 +47,11 @@ public class RuneGUIListener implements Listener {
         if (material == runeGUI.skillTreeButton().getType())
             player.openInventory(new SubClassGUI(player).getInventory());
         else if (material == RuneGUI.spellEditorButton().getType())
-            player.openInventory(new SpellEditorGUI(player).getInventory());
+            // prevent using the spell editor in combat
+            if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId()))
+                player.sendMessage(ChatColor.RED + "You can't use that in combat!");
+            else
+                player.openInventory(new SpellEditorGUI(player).getInventory());
         else
             player.closeInventory();
     }

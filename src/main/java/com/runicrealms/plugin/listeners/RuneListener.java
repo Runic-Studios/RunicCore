@@ -5,7 +5,6 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemGeneric;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -91,12 +90,6 @@ public class RuneListener implements Listener {
         // annoying 1.9 feature which makes the event run twice, once for each hand
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        // prevent player's from teleporting in combat
-        if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(uuid)) {
-            player.sendMessage(ChatColor.RED + "You can't use that in combat!");
-            return;
-        }
 
         player.openInventory(RunicCoreAPI.runeGUI(player).getInventory());
     }

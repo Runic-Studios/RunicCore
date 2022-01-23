@@ -30,14 +30,8 @@ public enum LootChestRarity {
      * @param maximumItems   the max number of items in the box
      * @param respawnTime    how long before boxes of this rarity respawn (shared timer)
      */
-    LootChestRarity(String identifier,
-                    Color color,
-                    int minAccessLevel,
-                    int minLootLevel,
-                    int maxLootLevel,
-                    int minimumItems,
-                    int maximumItems,
-                    int respawnTime) {
+    LootChestRarity(String identifier, Color color, int minAccessLevel, int minLootLevel, int maxLootLevel,
+                    int minimumItems, int maximumItems, int respawnTime) {
         this.identifier = identifier;
         this.color = color;
         this.minAccessLevel = minAccessLevel;
