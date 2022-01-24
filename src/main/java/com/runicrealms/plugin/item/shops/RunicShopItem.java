@@ -135,7 +135,7 @@ public class RunicShopItem {
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
         if (runicItem instanceof RunicItemArmor) {
             RunicItemArmor runicItemArmor = (RunicItemArmor) runicItem;
-            runicItemArmor.setLoreSectionGenerator(true);
+            runicItemArmor.setIsMenuDisplay(true);
             itemStack = runicItemArmor.generateItem();
         }
         ItemStack iconWithLore = itemStack.clone();
