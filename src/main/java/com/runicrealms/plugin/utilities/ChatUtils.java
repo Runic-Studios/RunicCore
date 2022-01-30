@@ -16,25 +16,29 @@ public class ChatUtils {
         return Arrays.asList(ChatPaginator.wordWrap(ColorUtil.format(text), LINE_LENGTH));
     }
 
-    public static void sendCenteredMessage(Player player, String message){
-        if(message == null || message.equals("")) player.sendMessage("");
+    public static List<String> formattedText(String text, int lineLength) {
+        return Arrays.asList(ChatPaginator.wordWrap(ColorUtil.format(text), lineLength));
+    }
+
+    public static void sendCenteredMessage(Player player, String message) {
+        if (message == null || message.equals("")) player.sendMessage("");
         message = ChatColor.translateAlternateColorCodes('&', message);
 
         int messagePxSize = 0;
         boolean previousCode = false;
         boolean isBold = false;
 
-        for(char c : message.toCharArray()){
-            if(c == '§'){
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
                 previousCode = true;
                 continue;
-            }else if(previousCode == true){
+            } else if (previousCode == true) {
                 previousCode = false;
-                if(c == 'l' || c == 'L'){
+                if (c == 'l' || c == 'L') {
                     isBold = true;
                     continue;
-                }else isBold = false;
-            }else{
+                } else isBold = false;
+            } else {
                 DefaultFontEnum dFI = DefaultFontEnum.getDefaultFontInfo(c);
                 messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
                 messagePxSize++;
@@ -46,7 +50,7 @@ public class ChatUtils {
         int spaceLength = DefaultFontEnum.SPACE.getLength() + 1;
         int compensated = 0;
         StringBuilder sb = new StringBuilder();
-        while(compensated < toCompensate){
+        while (compensated < toCompensate) {
             sb.append(" ");
             compensated += spaceLength;
         }
@@ -60,17 +64,17 @@ public class ChatUtils {
         boolean previousCode = false;
         boolean isBold = false;
 
-        for(char c : message.toCharArray()){
-            if(c == '§'){
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
                 previousCode = true;
                 continue;
-            }else if(previousCode == true){
+            } else if (previousCode == true) {
                 previousCode = false;
-                if(c == 'l' || c == 'L'){
+                if (c == 'l' || c == 'L') {
                     isBold = true;
                     continue;
-                }else isBold = false;
-            }else{
+                } else isBold = false;
+            } else {
                 DefaultFontEnum dFI = DefaultFontEnum.getDefaultFontInfo(c);
                 messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
                 messagePxSize++;
@@ -82,7 +86,7 @@ public class ChatUtils {
         int spaceLength = DefaultFontEnum.SPACE.getLength() + 1;
         int compensated = 0;
         StringBuilder sb = new StringBuilder();
-        while(compensated < toCompensate){
+        while (compensated < toCompensate) {
             sb.append(" ");
             compensated += spaceLength;
         }

@@ -45,7 +45,7 @@ public class HologramUtil {
     }
 
     public static void createSpellDamageHologram(Player createFor, Location createAround, double hp, boolean... isCritical) {
-        ChatColor chatColor = (isCritical.length > 0 && isCritical[0]) ? ChatColor.GOLD : ChatColor.AQUA;
+        ChatColor chatColor = (isCritical.length > 0 && isCritical[0]) ? ChatColor.GOLD : ChatColor.DARK_AQUA;
         createDamageHologram(createFor, createAround, chatColor + "-" + (int) hp + " ❤ʔ");
     }
 
