@@ -69,19 +69,6 @@ public class PlayerMenuListener implements Listener {
     }
 
     /**
-     * The info item for the player's gathering levels
-     *
-     * @param player to display menu for
-     * @return an Itemstack to display
-     */
-    private ItemStack gatheringLevelItemStack(Player player) {
-        return item(player, Material.IRON_PICKAXE, "&eGathering Skills",
-                "\n&6&lCLICK" +
-                        "\n&7To view your gathering skills!" +
-                        "\n&7They are account-wide!\n\n");
-    }
-
-    /**
      * Remove the items from the crafting matrix
      */
     @EventHandler(priority = EventPriority.LOWEST) // first
@@ -138,7 +125,13 @@ public class PlayerMenuListener implements Listener {
      * @return a visual menu item for settings
      */
     private ItemStack combatStatsIcon(Player player) {
-        return item(player, Material.PLAYER_HEAD, "&e" + player.getName(), "\n&7Character insights &ccoming soon&7!");
+        return item
+                (
+                        player,
+                        Material.PLAYER_HEAD,
+                        "&e" + player.getName(),
+                        "\n&7Character insights &ccoming soon&7!"
+                );
     }
 
     /**
@@ -148,16 +141,44 @@ public class PlayerMenuListener implements Listener {
      * @return a visual menu item for gems
      */
     private ItemStack gemMenuIcon(Player player) {
-        return item(player, Material.REDSTONE, "&eCharacter Stats", "\n&6&lCLICK" + "\n&7To view your character stats!");
+        return item
+                (
+                        player,
+                        Material.REDSTONE,
+                        "&eCharacter Stats",
+                        "\n&6&lCLICK" + "\n&7To view your character stats!"
+                );
     }
 
+    /**
+     * The info item for the player's gathering levels
+     *
+     * @param player to display menu for
+     * @return an Itemstack to display
+     */
+    private ItemStack gatheringLevelItemStack(Player player) {
+        return item
+                (
+                        player,
+                        Material.IRON_PICKAXE,
+                        "&eGathering Skills",
+                        "\n&6&lCLICK" + "\n&7To view your gathering skills!" + "\n&7They are account-wide!"
+                );
+    }
+
+    /**
+     * The info item for the player to find a group
+     *
+     * @param player to display menu for
+     * @return an Itemstack to display
+     */
     private ItemStack groupFinderIcon(Player player) {
         return item
                 (
                         player,
                         Material.ENDER_EYE,
                         ChatColor.RED + "Group Finder",
-                        ChatColor.GRAY + "Click to open the group finder!"
+                        "\n&6&lCLICK" + "\n&7To open the Group Finder!"
                 );
     }
 
