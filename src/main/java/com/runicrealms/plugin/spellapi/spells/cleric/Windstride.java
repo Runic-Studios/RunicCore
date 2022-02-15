@@ -45,6 +45,6 @@ public class Windstride extends Spell {
         // add player effects
         pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, BUFF_DURATION * 20, SPEED_AMPLIFIER));
         pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
-                25, 0, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
+                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
     }
 }
