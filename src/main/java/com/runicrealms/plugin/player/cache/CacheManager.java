@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.mongodb.client.model.Filters;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
@@ -9,9 +10,8 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

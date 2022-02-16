@@ -150,7 +150,7 @@ public class ItemGUI implements Listener {
     }
 
     public interface OptionClickEventHandler {
-        public void onOptionClick(OptionClickEvent event);
+        void onOptionClick(OptionClickEvent event);
     }
 
     /**

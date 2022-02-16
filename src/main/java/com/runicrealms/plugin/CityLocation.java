@@ -1,6 +1,6 @@
 package com.runicrealms.plugin;
 
-import com.runicrealms.plugin.item.hearthstone.HearthstoneItemUtil;
+import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import org.bukkit.Bukkit;

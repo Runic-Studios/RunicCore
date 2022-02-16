@@ -38,7 +38,7 @@ public interface RunicItemShop {
 
     LinkedHashSet<RunicShopItem> getItemsForSale();
 
-    void registerRunicShop();
+    void registerRunicItemShop();
 
     void setItemsForSale(LinkedHashSet<RunicShopItem> itemsForSale);
 }

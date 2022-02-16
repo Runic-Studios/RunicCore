@@ -1,8 +1,8 @@
-package com.runicrealms.plugin.item.hearthstone;
+package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -28,7 +28,7 @@ import java.util.UUID;
 public class HearthstoneListener implements Listener {
 
     private static final double MOVE_CONSTANT = 0.6;
-    private static final int TEL_TIME = 5;
+    private static final int TELEPORT_TIME = 5;
     private final static HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
 
     /**
@@ -36,14 +36,14 @@ public class HearthstoneListener implements Listener {
      */
     @EventHandler
     public void onJoin(CharacterLoadEvent e) {
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (pl.getInventory().getItem(8) == null
-                        || (pl.getInventory().getItem(8) != null
-                        && pl.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
-                    pl.getInventory().setItem(8, CityLocation.TUTORIAL_FORTRESS.getItemStack());
+                if (player.getInventory().getItem(8) == null
+                        || (player.getInventory().getItem(8) != null
+                        && player.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
+                    player.getInventory().setItem(8, CityLocation.TUTORIAL_FORTRESS.getItemStack());
                 }
             }
         }.runTaskLater(RunicCore.getInstance(), 2L);
@@ -51,11 +51,11 @@ public class HearthstoneListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        Player pl = (Player) e.getWhoClicked();
+        Player player = (Player) e.getWhoClicked();
         int itemSlot = e.getSlot();
         // if it's the 8th slot in a player's inventory, run the stuff
         if (itemSlot != 8) return;
-        if (pl.getGameMode() != GameMode.SURVIVAL) return;
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
         if (e.getClickedInventory() == null) return;
         if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
         e.setCancelled(true);
@@ -98,11 +98,11 @@ public class HearthstoneListener implements Listener {
         currentlyUsing.put(player.getUniqueId(), beginTeleportation(player, CityLocation.getLocationFromIdentifier(location)));
     }
 
-    public static BukkitTask beginTeleportation(Player pl, Location location) {
+    public static BukkitTask beginTeleportation(Player player, Location location) {
 
-        double timer_initX = Math.round(pl.getLocation().getX() * MOVE_CONSTANT);
-        double timer_initY = Math.round(pl.getLocation().getY() * MOVE_CONSTANT);
-        double timer_initZ = Math.round(pl.getLocation().getZ() * MOVE_CONSTANT);
+        double timer_initX = Math.round(player.getLocation().getX() * MOVE_CONSTANT);
+        double timer_initY = Math.round(player.getLocation().getY() * MOVE_CONSTANT);
+        double timer_initZ = Math.round(player.getLocation().getZ() * MOVE_CONSTANT);
 
         return new BukkitRunnable() {
             int count = 0;
@@ -110,38 +110,38 @@ public class HearthstoneListener implements Listener {
             @Override
             public void run() {
 
-                final Location currLocation = pl.getLocation();
+                final Location currLocation = player.getLocation();
                 if ((Math.round(currLocation.getX() * MOVE_CONSTANT) != timer_initX
                         || Math.round(currLocation.getY() * MOVE_CONSTANT) != timer_initY
                         || Math.round(currLocation.getZ() * MOVE_CONSTANT) != timer_initZ)) {
                     this.cancel();
-                    currentlyUsing.remove(pl.getUniqueId());
-                    pl.sendMessage(ChatColor.RED + "Teleportation cancelled due to movement!");
+                    currentlyUsing.remove(player.getUniqueId());
+                    player.sendMessage(ChatColor.RED + "Teleportation cancelled due to movement!");
                     return;
                 }
 
-                if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(pl.getUniqueId())) {
+                if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId())) {
                     this.cancel();
-                    currentlyUsing.remove(pl.getUniqueId());
-                    pl.sendMessage(ChatColor.RED + "Teleportation cancelled due to combat!");
+                    currentlyUsing.remove(player.getUniqueId());
+                    player.sendMessage(ChatColor.RED + "Teleportation cancelled due to combat!");
                     return;
                 }
 
-                if (count >= TEL_TIME) {
+                if (count >= TELEPORT_TIME) {
                     this.cancel();
-                    currentlyUsing.remove(pl.getUniqueId());
-                    pl.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2));
-                    pl.teleport(location);
-                    pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-                    pl.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your location.");
+                    currentlyUsing.remove(player.getUniqueId());
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 2));
+                    player.teleport(location);
+                    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+                    player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You arrive at your location.");
                     return;
                 }
 
-                pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0, 1, 0),
+                player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0, 1, 0),
                         10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.AQUA, 3));
 
-                pl.sendMessage(ChatColor.AQUA + "Teleporting... "
-                        + ChatColor.WHITE + ChatColor.BOLD + (TEL_TIME - count) + "s");
+                player.sendMessage(ChatColor.AQUA + "Teleporting... "
+                        + ChatColor.WHITE + ChatColor.BOLD + (TELEPORT_TIME - count) + "s");
                 count = count + 1;
 
             }

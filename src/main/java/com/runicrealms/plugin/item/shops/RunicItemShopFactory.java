@@ -20,9 +20,9 @@ import java.util.*;
 /**
  * Factory class to create generic runic shops for the server
  */
-public class RunicShopFactory {
+public class RunicItemShopFactory {
 
-    public RunicShopFactory() {
+    public RunicItemShopFactory() {
         getAlchemistShop();
         getBagVendor();
         getBaker();

@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.api;
 
 import co.aikar.commands.PaperCommandManager;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.DungeonLocation;
-import com.runicrealms.plugin.item.GearScanner;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.DungeonLocation;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
+import com.runicrealms.plugin.listeners.HearthstoneListener;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
@@ -30,7 +30,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RunicCoreAPI {
@@ -349,7 +352,7 @@ public class RunicCoreAPI {
      * @param shop to register
      */
     public static void registerRunicItemShop(RunicItemShop shop) {
-        RunicItemShopManager.registerShop(shop);
+        RunicItemShopManager.registerRunicItemShop(shop);
     }
 
     public static int getPlayerDexterity(UUID uuid) {

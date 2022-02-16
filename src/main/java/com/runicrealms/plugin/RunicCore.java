@@ -15,10 +15,8 @@ import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.group.GroupCommand;
 import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.item.TeleportScrollListener;
-import com.runicrealms.plugin.item.hearthstone.HearthstoneListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
-import com.runicrealms.plugin.item.scrapper.ItemScrapperCMD;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
@@ -372,7 +370,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new VanishCMD());
         commandManager.registerCommand(new ResetTreeCMD());
         commandManager.registerCommand(new GroupCommand());
-        commandManager.registerCommand(new ItemScrapperCMD());
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new RunicTeleportCMD());
         commandManager.registerCommand(new RunicBossCMD());

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.item.hearthstone;
+package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemGeneric;

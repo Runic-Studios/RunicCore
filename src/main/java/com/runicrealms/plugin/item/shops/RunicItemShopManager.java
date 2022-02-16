@@ -31,10 +31,10 @@ public class RunicItemShopManager implements Listener {
     private static ItemStack blankSlot;
 
     public RunicItemShopManager() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), RunicShopFactory::new, LOAD_DELAY * 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), RunicItemShopFactory::new, LOAD_DELAY * 20L);
     }
 
-    public static void registerShop(RunicItemShop shop) {
+    public static void registerRunicItemShop(RunicItemShop shop) {
         for (Integer npc : shop.getRunicNpcIds()) {
             shops.put(npc, shop);
         }
@@ -96,7 +96,8 @@ public class RunicItemShopManager implements Listener {
                             }
                             player.closeInventory();
                             item.runBuy(player);
-                            if (item.getPrice() > 0 && item.removePayment()) player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou purchased this item!"));
+                            if (item.getPrice() > 0 && item.removePayment())
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou purchased this item!"));
                         } else {
                             player.closeInventory();
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
@@ -126,7 +127,7 @@ public class RunicItemShopManager implements Listener {
      * Checks whether the given player has items necessary to buy an item
      *
      * @param player to check
-     * @param item to check
+     * @param item   to check
      * @param needed number of item needed
      * @return true if player has required items
      */

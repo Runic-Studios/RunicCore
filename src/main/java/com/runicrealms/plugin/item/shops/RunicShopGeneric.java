@@ -128,11 +128,11 @@ public class RunicShopGeneric implements RunicItemShop {
     @Override
     public void setItemsForSale(LinkedHashSet<RunicShopItem> itemsForSale) {
         this.itemsForSale = itemsForSale;
-        registerRunicShop();
+        registerRunicItemShop();
     }
 
     @Override
-    public void registerRunicShop() {
+    public void registerRunicItemShop() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
             inventoryItems = new HashMap<>();
             int nextItemIndex = 0;
