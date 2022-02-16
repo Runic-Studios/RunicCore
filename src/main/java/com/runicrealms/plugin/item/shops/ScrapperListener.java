@@ -44,6 +44,9 @@ public class ScrapperListener implements Listener {
         if (e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
 
         if (slot == 16 || slot == 17 || !ItemScrapper.SCRAPPER_SLOTS.contains(slot)) {
+            if (slot != 16 && slot != 17) {
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+            }
             e.setCancelled(true);
             e.setResult(Event.Result.DENY);
         }

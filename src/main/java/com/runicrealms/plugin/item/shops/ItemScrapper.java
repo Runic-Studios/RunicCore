@@ -144,7 +144,7 @@ public class ItemScrapper extends RunicShop {
             case DIAMOND_CHESTPLATE:
             case DIAMOND_LEGGINGS:
             case DIAMOND_BOOTS:
-                return RunicItemsAPI.generateItemFromTemplate("cloth");
+                return RunicItemsAPI.generateItemFromTemplate("Thread");
             case LEATHER_HELMET:
             case LEATHER_CHESTPLATE:
             case LEATHER_LEGGINGS:
