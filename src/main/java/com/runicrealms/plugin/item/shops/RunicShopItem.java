@@ -22,9 +22,10 @@ public class RunicShopItem {
 
     /**
      * Creates a 'buy item' for the shop!
-     * @param price in chosen currency of item
+     *
+     * @param price              in chosen currency of item
      * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem to be purchased
+     * @param shopItem           to be purchased
      */
     public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem) {
         this.price = price;
@@ -37,9 +38,9 @@ public class RunicShopItem {
     /**
      * Creates a 'buy item' for the shop!
      *
-     * @param price in chosen currency of item
+     * @param price              in chosen currency of item
      * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem to be purchased
+     * @param shopItem           to be purchased
      * @param priceDisplayString a string that represents the kind of price (coin, hunter points, etc.)
      */
     public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem, String priceDisplayString) {
@@ -52,10 +53,11 @@ public class RunicShopItem {
 
     /**
      * Creates a 'buy item' for the shop!
-     * @param price in chosen currency of item
+     *
+     * @param price              in chosen currency of item
      * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem to be purchased
-     * @param runicItemRunnable a custom runnable to be executed upon item purchase
+     * @param shopItem           to be purchased
+     * @param runicItemRunnable  a custom runnable to be executed upon item purchase
      */
     public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
         this.price = price;
@@ -68,11 +70,11 @@ public class RunicShopItem {
     /**
      * Creates a 'buy item' for the shop!
      *
-     * @param price in chosen currency of item
+     * @param price              in chosen currency of item
      * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem to be purchased
+     * @param shopItem           to be purchased
      * @param priceDisplayString a string that represents the kind of price (coin, hunter points, etc.)
-     * @param runicItemRunnable a custom runnable to be executed upon item purchase
+     * @param runicItemRunnable  a custom runnable to be executed upon item purchase
      */
     public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem, String priceDisplayString, RunicItemRunnable runicItemRunnable) {
         this.price = price;
@@ -88,6 +90,7 @@ public class RunicShopItem {
 
     /**
      * Method to match a string to a runic item
+     *
      * @return RunicItem w/ template ID matching string name
      */
     public ItemStack getRunicItemCurrency() {
@@ -128,7 +131,7 @@ public class RunicShopItem {
      * The generic item shop lore generator that appends the price
      *
      * @param itemStack itemstack to be sold
-     * @param price of the item
+     * @param price     of the item
      * @return a display-able item with lore like price info
      */
     public static ItemStack iconWithLore(ItemStack itemStack, int price, String priceItemDisplayName) {
@@ -140,7 +143,7 @@ public class RunicShopItem {
         }
         ItemStack iconWithLore = itemStack.clone();
         ItemMeta meta = iconWithLore.getItemMeta();
-        if (meta != null && meta.getLore() != null) {
+        if (price > 0 && meta != null && meta.getLore() != null) {
             List<String> lore = meta.getLore();
             lore.add("");
             lore.add(

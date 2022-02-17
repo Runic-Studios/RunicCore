@@ -5,6 +5,7 @@ import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.commands.TravelCMD;
 import com.runicrealms.plugin.item.util.ItemRemover;
+import com.runicrealms.plugin.professions.Profession;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -33,6 +35,14 @@ public class RunicItemShopFactory {
         getTailor();
         getWagonMaster();
         initializeInnkeepers();
+        /*
+        PROFESSION TUTORS
+         */
+        getAlchemistTutor();
+        getBlacksmithTutor();
+        getEnchanterTutor();
+        getHunterTutor();
+        getJewelerTutor();
         /*
         DUNGEON SHOPS
          */
@@ -63,6 +73,62 @@ public class RunicItemShopFactory {
         shopItems.add(new RunicShopItem(24, "Coin", greaterHealingPotion));
         shopItems.add(new RunicShopItem(24, "Coin", greaterManaPotion));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(599, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
+    }
+
+    private static ItemStack professionTutorIcon(Profession profession, Material material) {
+        ItemStack infoItem = new ItemStack(material);
+        ItemMeta meta = infoItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "LEARN PROFESSION - " + profession.getName());
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Learn this profession!");
+        lore.add("");
+        lore.addAll(ChatUtils.formattedText("&e" + profession.getDescription()));
+        lore.add("");
+        lore.addAll(ChatUtils.formattedText("&cWarning: This will RESET your current profession!"));
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        infoItem.setItemMeta(meta);
+        return infoItem;
+    }
+
+    public RunicShopGeneric getAlchemistTutor() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
+            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.ALCHEMIST, Material.GLASS_BOTTLE), runProfessionTutorBuy(Profession.ALCHEMIST)));
+        }};
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist Tutor", Collections.singletonList(225), shopItems);
+    }
+
+    public RunicShopGeneric getBlacksmithTutor() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
+            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.BLACKSMITH, Material.IRON_CHESTPLATE), runProfessionTutorBuy(Profession.BLACKSMITH)));
+        }};
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Blacksmith Tutor", Collections.singletonList(226), shopItems);
+    }
+
+    public RunicShopGeneric getEnchanterTutor() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
+            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.ENCHANTER, Material.PURPLE_DYE), runProfessionTutorBuy(Profession.ENCHANTER)));
+        }};
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Enchanter Tutor", Collections.singletonList(228), shopItems);
+    }
+
+    public RunicShopGeneric getHunterTutor() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
+            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.HUNTER, Material.LEATHER), runProfessionTutorBuy(Profession.HUNTER)));
+        }};
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Hunter Tutor", Collections.singletonList(222), shopItems);
+    }
+
+    public RunicShopGeneric getJewelerTutor() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
+            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.JEWELER, Material.REDSTONE), runProfessionTutorBuy(Profession.JEWELER)));
+        }};
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Jeweler Tutor", Collections.singletonList(230), shopItems);
+    }
+
+    private RunicItemRunnable runProfessionTutorBuy(Profession profession) {
+        return player -> Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "setprof " + player.getName() + " " + profession.getName() + " true");
     }
 
     private final ItemStack goldPouch = RunicItemsAPI.generateItemFromTemplate("gold-pouch").generateItem();
