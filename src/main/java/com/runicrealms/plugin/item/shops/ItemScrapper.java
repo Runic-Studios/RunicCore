@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
+import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.plugin.utilities.Tuple;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -9,85 +9,53 @@ import com.runicrealms.runicitems.item.RunicItemArmor;
 import com.runicrealms.runicitems.item.RunicItemOffhand;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
 import com.runicrealms.runicitems.item.stats.RunicItemRarity;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 /**
  * Item Menu to scrap items
  */
-public class ItemScrapper extends RunicShop {
+public class ItemScrapper implements RunicShop {
 
     private static final int SHOP_SIZE = 27;
-    private static final String SHOP_NAME = "&eItem Scrapper";
+    private static final String SHOP_NAME = ChatColor.YELLOW + "Item Scrapper";
     public static final Collection<Integer> SCRAPPER_NPC_IDS = Arrays.asList(144, 143, 145, 147, 148, 149, 153, 154, 155);
     public static final Collection<Integer> SCRAPPER_SLOTS = Arrays.asList(10, 11, 12, 13, 14);
+    private final InventoryHolder inventoryHolder;
     private final HashMap<UUID, List<ItemStack>> storedItems; // list of items NOT to return
 
     public ItemScrapper(Player player) {
-        super(SHOP_SIZE, new ItemStack(Material.STONE), SHOP_NAME, SCRAPPER_NPC_IDS);
-        setupShop(player);
+        this.inventoryHolder = new ItemScrapperHolder(player, SHOP_SIZE, SHOP_NAME);
         storedItems = new HashMap<>();
         List<ItemStack> items = new ArrayList<>();
         storedItems.put(player.getUniqueId(), items);
-    }
-
-    @Override
-    public void setupShop(Player player) {
-
-        super.setupShop(player);
-        ItemGUI scrapperMenu = getItemGUI();
-        scrapperMenu.setOption(4, new ItemStack(Material.STONE));
-        for (int i = 0; i < SHOP_SIZE; i++) {
-            if (SCRAPPER_SLOTS.contains(i)) continue; // skip scrapper slots
-            scrapperMenu.setOption(i, GUIUtil.borderItem());
-        }
-        scrapperMenu.setOption(16, new ItemStack(Material.SLIME_BALL),
-                "&aScrap Items", "&7Scrap items and receive &6gold&7!", 0, false);
-        scrapperMenu.setOption(17, new ItemStack(Material.BARRIER),
-                "&cClose", "&7Close the menu", 0, false);
-
-        // set the handler
-        scrapperMenu.setHandler(event -> {
-
-            // convert the items to gold
-            if (event.getSlot() == 16) {
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                scrapItems(player, scrapperMenu);
-                event.setWillClose(true);
-                event.setWillDestroy(true);
-
-                // close editor
-            } else if (event.getSlot() == 17) {
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1);
-                event.setWillClose(true);
-                event.setWillDestroy(true);
-            }
-        });
-
-        // update our internal menu
-        this.setItemGUI(scrapperMenu);
     }
 
     /**
      * This method reads the items in the first seven slots of the menu,
      * removes them, and then decides how much gold to dish out.
      *
-     * @param player       to give gold to
-     * @param scrapperMenu the UI menu
+     * @param player to give gold to
      */
-    private void scrapItems(Player player, ItemGUI scrapperMenu) {
+    public void scrapItems(Player player) {
 
+        Inventory inventory = this.getInventoryHolder().getInventory();
         boolean placedValidItem = false;
 
         // loop through items
         for (Integer slot : SCRAPPER_SLOTS) {
-            if (scrapperMenu.getItem(slot) == null) continue;
-            ItemStack itemStack = scrapperMenu.getItem(slot);
+            if (inventory.getItem(slot) == null) continue;
+            ItemStack itemStack = inventory.getItem(slot);
             Tuple<RunicItem, Integer> scrapItems = determineScrappedItems(itemStack);
             if (scrapItems == null) continue;
             storedItems.get(player.getUniqueId()).add(itemStack);
@@ -103,6 +71,8 @@ public class ItemScrapper extends RunicShop {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.GRAY + "Place an armor piece or weapon inside the menu to scrap it!");
         }
+
+        player.closeInventory();
     }
 
     /**
@@ -206,5 +176,79 @@ public class ItemScrapper extends RunicShop {
 
     public HashMap<UUID, List<ItemStack>> getStoredItems() {
         return storedItems;
+    }
+
+    @Override
+    public int getShopSize() {
+        return SHOP_SIZE;
+    }
+
+    @Override
+    public ItemStack getIcon() {
+        return new ItemStack(Material.STONE);
+    }
+
+    @Override
+    public String getName() {
+        return SHOP_NAME;
+    }
+
+    @Override
+    public Collection<Integer> getRunicNpcIds() {
+        return SCRAPPER_NPC_IDS;
+    }
+
+    @Override
+    public InventoryHolder getInventoryHolder() {
+        return inventoryHolder;
+    }
+
+    /**
+     *
+     */
+    static class ItemScrapperHolder implements InventoryHolder {
+
+        private final Inventory inventory;
+        private final Player player;
+
+        public ItemScrapperHolder(Player player, int size, String title) {
+            this.inventory = Bukkit.createInventory(this, size, title);
+            this.player = player;
+            setupInventory();
+        }
+
+        @NotNull
+        @Override
+        public Inventory getInventory() {
+            return this.inventory;
+        }
+
+        public Player getPlayer() {
+            return this.player;
+        }
+
+        /**
+         * Opens the inventory associated w/ this GUI, ordering perks
+         */
+        private void setupInventory() {
+            this.inventory.clear();
+            this.inventory.setItem(0, GUIUtil.backButton());
+            for (int i = 0; i < SHOP_SIZE; i++) {
+                if (SCRAPPER_SLOTS.contains(i)) continue; // skip scrapper slots
+                this.inventory.setItem(i, GUIUtil.borderItem());
+            }
+            this.inventory.setItem(16, checkMark());
+            this.inventory.setItem(17, GUIUtil.closeButton());
+        }
+    }
+
+    public static ItemStack checkMark() {
+        ItemStack item = new ItemStack(Material.SLIME_BALL, 1);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColorUtil.format("&aScrap Items"));
+        meta.setLore(Collections.singletonList(ColorUtil.format("&7Scrap items and receive &ecrafting reagents&7!")));
+        item.setItemMeta(meta);
+        return item;
     }
 }

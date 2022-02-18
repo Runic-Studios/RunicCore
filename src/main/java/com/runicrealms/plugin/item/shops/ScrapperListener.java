@@ -1,23 +1,20 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.GUIMenu.ItemGUI;
-import com.runicrealms.plugin.item.GUIMenu.OptionClickEvent;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicnpcs.api.NpcClickEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.UUID;
 
 public class ScrapperListener implements Listener {
 
@@ -27,48 +24,35 @@ public class ScrapperListener implements Listener {
     @EventHandler
     public void onShopClick(InventoryClickEvent e) {
 
-        if (!(e.getWhoClicked() instanceof Player)) return;
-        Player player = (Player) e.getWhoClicked();
-        UUID uuid = player.getUniqueId();
-        if (RunicCore.getRunicShopManager().getPlayersInShops().get(uuid) == null) return;
-        if (!(RunicCore.getRunicShopManager().getPlayersInShops().get(uuid) instanceof ItemScrapper)) return;
-        ItemScrapper shop = (ItemScrapper) RunicCore.getRunicShopManager().getPlayersInShops().get(uuid);
-        String title = ChatColor.translateAlternateColorCodes('&', shop.getName());
-        if (!title.equals(e.getView().getTitle())) return; // verify custom GUI
-
-        int slot = e.getRawSlot();
-
-        // shop gui
-        if (e.getClickedInventory() == null) return;
-        if (!e.getView().getTitle().equals(title)) return;
-        if (e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
-
-        if (slot == 16 || slot == 17 || !ItemScrapper.SCRAPPER_SLOTS.contains(slot)) {
-            if (slot != 16 && slot != 17) {
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-            }
-            e.setCancelled(true);
-            e.setResult(Event.Result.DENY);
-        }
-
-        /*
-        Call custom ItemGUI logic
+                /*
+        Preliminary checks
          */
-        if (shop.getItemGUI() == null) return;
-        ItemGUI itemGUI = shop.getItemGUI();
-        if (slot >= 0 && slot < itemGUI.getSize() && itemGUI.getOptionNames()[slot] != null) {
+        if (e.getClickedInventory() == null) return;
+        if (!(e.getView().getTopInventory().getHolder() instanceof ItemScrapper.ItemScrapperHolder)) return;
+        if (e.getClickedInventory().getType() == InventoryType.PLAYER) return;
+        ItemScrapper.ItemScrapperHolder itemScrapperHolder = (ItemScrapper.ItemScrapperHolder) e.getClickedInventory().getHolder();
+        if (!e.getWhoClicked().equals(itemScrapperHolder.getPlayer())) {
+            e.setCancelled(true);
+            e.getWhoClicked().closeInventory();
+            return;
+        }
+        Player player = (Player) e.getWhoClicked();
+        if (e.getCurrentItem() == null) return;
+        if (itemScrapperHolder.getInventory().getItem(e.getRawSlot()) == null) return;
+        ItemScrapper itemScrapper = (ItemScrapper) RunicCore.getRunicShopManager().getPlayersInShops().get(player.getUniqueId());
 
-            OptionClickEvent ope = new OptionClickEvent(e, (Player) e.getWhoClicked(), slot, itemGUI.getOptionNames()[slot]);
-            itemGUI.getHandler().onOptionClick(ope);
+        ItemStack item = e.getCurrentItem();
+        Material material = item.getType();
 
-            if (ope.willClose()) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), player::closeInventory, 1);
-            }
-            if (ope.willDestroy()) {
-                itemGUI.destroy();
-            }
+        if (!ItemScrapper.SCRAPPER_SLOTS.contains(e.getRawSlot())) { // e.getClickedInventory().equals(e.getView().getTopInventory()) &&
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+            e.setCancelled(true);
         }
 
+        if (material == GUIUtil.closeButton().getType())
+            player.closeInventory();
+        else if (material == ItemScrapper.checkMark().getType())
+            itemScrapper.scrapItems(player);
     }
 
     /**
@@ -88,6 +72,7 @@ public class ScrapperListener implements Listener {
                 if (((ItemScrapper) shop).getStoredItems().get(player.getUniqueId()).contains(itemStack)) continue;
                 RunicItemsAPI.addItem(player.getInventory(), itemStack, player.getLocation());
             }
+            RunicCore.getRunicShopManager().getPlayersInShops().remove(player.getUniqueId());
         }
     }
 
@@ -97,6 +82,6 @@ public class ScrapperListener implements Listener {
         e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         ItemScrapper itemScrapper = new ItemScrapper(e.getPlayer());
         RunicCore.getRunicShopManager().getPlayersInShops().put(e.getPlayer().getUniqueId(), itemScrapper);
-        itemScrapper.getItemGUI().open(e.getPlayer());
+        e.getPlayer().openInventory(itemScrapper.getInventoryHolder().getInventory());
     }
 }
