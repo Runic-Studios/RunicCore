@@ -25,8 +25,8 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Barrage extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE = 2;
-    private static final double DAMAGE_PER_LEVEL = 0.3;
+    private static final int DAMAGE = 4;
+    private static final double DAMAGE_PER_LEVEL = 0.4;
     private final HashMap<Arrow, UUID> bArrows;
 
     public Barrage() {
@@ -34,7 +34,7 @@ public class Barrage extends Spell implements WeaponDamageSpell {
                 "You rapid-fire a volley of five arrows, " +
                         "each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) weapon⚔ damage to enemies hit!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 6, 20);
+                ChatColor.WHITE, ClassEnum.ARCHER, 6, 10);
         this.bArrows = new HashMap<>();
     }
 
