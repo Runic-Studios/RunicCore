@@ -42,12 +42,12 @@ public class RegenManager implements Listener {
     }
 
     /**
-     * Only regen health in safe zones, or small amount if player has invigorated buff
+     * Task to regen health with appropriate modifiers
      */
     private void regenHealth() {
         for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
-            if (RunicCoreAPI.isSafezone(online.getLocation()) || !RunicCoreAPI.isInCombat(online)) {
+            if (!RunicCoreAPI.isInCombat(online)) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                     HealthRegenEvent event = new HealthRegenEvent(online, regenAmount * OOC_MULTIPLIER);
                     Bukkit.getPluginManager().callEvent(event);
