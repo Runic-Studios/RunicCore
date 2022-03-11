@@ -172,8 +172,8 @@ public enum DungeonLocation {
                         x,
                         y,
                         z,
-                        (float) dungeonSection.getDouble("yaw"),
-                        (float) dungeonSection.getDouble("pitch")
+                        (float) checkpointsSection.getDouble(entry + ".yaw"),
+                        (float) checkpointsSection.getDouble(entry + ".pitch")
                 );
                 checkpoints.put(Integer.valueOf(entry), location);
             }

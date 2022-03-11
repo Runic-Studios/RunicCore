@@ -293,14 +293,14 @@ public class DamageListener implements Listener {
         if (damager instanceof Player) {
 
             String nameDam = damager.getName();
-            double ratingP1 = RunicCore.getCacheManager().getPlayerCaches().get((Player) damager).getRating();
-            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
+//            double ratingP1 = RunicCore.getCacheManager().getPlayerCaches().get((Player) damager).getRating();
+//            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
 
             // if both players are outlaws, amend the death message to display their rating
             if (RunicCore.getCacheManager().getPlayerCaches().get(damager).getIsOutlaw()
                     && RunicCore.getCacheManager().getPlayerCaches().get(victim).getIsOutlaw()) {
-                nameDam = ChatColor.RED + "[" + (int) ratingP1 + "] " + ChatColor.WHITE + nameDam;
-                nameVic = ChatColor.RED + "[" + (int) ratingP2 + "] " + ChatColor.WHITE + nameVic;
+                nameDam = ChatColor.WHITE + nameDam; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
+                nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
                 Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
             }
         }

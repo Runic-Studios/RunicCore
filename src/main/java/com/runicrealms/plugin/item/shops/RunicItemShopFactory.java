@@ -47,12 +47,20 @@ public class RunicItemShopFactory {
         DUNGEON SHOPS
          */
         getCaveShop();
-        getCaveGatekeepers();
         getCavernShop();
         getKeepShop();
         getLibraryShop();
         getCryptsShop();
         getFortressShop();
+        /*
+        GATEKEEPERS
+         */
+        getCaveGatekeepers();
+        getCavernGatekeepers();
+        getJorundrsKeepGatekeepers();
+        getLibraryGatekeepers();
+        getCryptsGatekeepers();
+        getFortressGatekeepers();
     }
 
     private final ItemStack bottle = RunicItemsAPI.generateItemFromTemplate("Bottle").generateItem();
@@ -436,12 +444,61 @@ public class RunicItemShopFactory {
     }
 
     public Set<RunicShopGeneric> getCaveGatekeepers() {
-        Set<RunicShopGeneric> caveGatekeepers = new HashSet<>();
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(515, "SilverKey", 1, DungeonLocation.SEBATHS_CAVE, 1);
         Gatekeeper second = new Gatekeeper(516, "GoldKey", 1, DungeonLocation.SEBATHS_CAVE, 2);
-        caveGatekeepers.add(first);
-        caveGatekeepers.add(second);
-        return caveGatekeepers;
+        gateKeepers.add(first);
+        gateKeepers.add(second);
+        return gateKeepers;
+    }
+
+    public Set<RunicShopGeneric> getCavernGatekeepers() {
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(517, "SilverKey", 1, DungeonLocation.CRYSTAL_CAVERN, 1);
+        gateKeepers.add(first);
+        return gateKeepers;
+    }
+
+    public Set<RunicShopGeneric> getJorundrsKeepGatekeepers() {
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(623, "GeneralsKey", 1, DungeonLocation.JORUNDRS_KEEP, 1);
+        gateKeepers.add(first);
+        return gateKeepers;
+    }
+
+    public Set<RunicShopGeneric> getLibraryGatekeepers() {
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(519, "SilverKey", 1, DungeonLocation.SUNKEN_LIBRARY, 1);
+        Gatekeeper second = new Gatekeeper(520, "EtherealKey", 1, DungeonLocation.SUNKEN_LIBRARY, 2);
+        Gatekeeper third = new Gatekeeper(521, "GoldKey", 1, DungeonLocation.SUNKEN_LIBRARY, 3);
+        gateKeepers.add(first);
+        gateKeepers.add(second);
+        gateKeepers.add(third);
+        return gateKeepers;
+    }
+
+    public Set<RunicShopGeneric> getCryptsGatekeepers() {
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(522, "SilverKey", 1, DungeonLocation.CRYPTS_OF_DERA, 1);
+        Gatekeeper second = new Gatekeeper(523, "EtherealKey", 1, DungeonLocation.CRYPTS_OF_DERA, 2);
+        Gatekeeper third = new Gatekeeper(524, "GoldKey", 1, DungeonLocation.CRYPTS_OF_DERA, 3);
+        gateKeepers.add(first);
+        gateKeepers.add(second);
+        gateKeepers.add(third);
+        return gateKeepers;
+    }
+
+    public Set<RunicShopGeneric> getFortressGatekeepers() {
+        Set<RunicShopGeneric> gateKeepers = new HashSet<>();
+        Gatekeeper first = new Gatekeeper(537, "FrozenHeart", 1, DungeonLocation.FROZEN_FORTRESS, 0);
+        Gatekeeper second = new Gatekeeper(525, "SilverKey", 1, DungeonLocation.FROZEN_FORTRESS, 1);
+        Gatekeeper third = new Gatekeeper(526, "XalakyteKey", 1, DungeonLocation.FROZEN_FORTRESS, 2);
+        Gatekeeper fourth = new Gatekeeper(527, "BorealisKey", 1, DungeonLocation.FROZEN_FORTRESS, 3);
+        gateKeepers.add(first);
+        gateKeepers.add(second);
+        gateKeepers.add(third);
+        gateKeepers.add(fourth);
+        return gateKeepers;
     }
 
     public RunicShopGeneric getCavernShop() {
