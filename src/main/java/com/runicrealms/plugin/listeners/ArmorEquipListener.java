@@ -139,9 +139,7 @@ public class ArmorEquipListener implements Listener {
             if (e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking()) {
                 // some blocks have actions when you right-click them which stop the client from equipping the armor in hand
                 Material mat = e.getClickedBlock().getType();
-                for (Material blockedMaterial : blockedMaterials()) {
-                    if (mat == blockedMaterial) return;
-                }
+                if (blockedMaterials.contains(mat)) return;
             }
         }
         ArmorType newArmorType = ArmorType.matchType(e.getItem());
@@ -207,71 +205,70 @@ public class ArmorEquipListener implements Listener {
         return item == null || item.getType().equals(Material.AIR);
     }
 
-    @SuppressWarnings("deprecation")
-    private Set<Material> blockedMaterials() {
-        Set<Material> blockedMaterials = new HashSet<>();
-        blockedMaterials.add(Material.FURNACE);
-        blockedMaterials.add(Material.CHEST);
-        blockedMaterials.add(Material.TRAPPED_CHEST);
-        blockedMaterials.add(Material.BEACON);
-        blockedMaterials.add(Material.DISPENSER);
-        blockedMaterials.add(Material.DROPPER);
-        blockedMaterials.add(Material.HOPPER);
-        blockedMaterials.add(Material.LEGACY_WORKBENCH);
-        blockedMaterials.add(Material.LEGACY_ENCHANTMENT_TABLE);
-        blockedMaterials.add(Material.ENDER_CHEST);
-        blockedMaterials.add(Material.ANVIL);
-        blockedMaterials.add(Material.LEGACY_BED_BLOCK);
-        blockedMaterials.add(Material.LEGACY_FENCE_GATE);
-        blockedMaterials.add(Material.SPRUCE_FENCE_GATE);
-        blockedMaterials.add(Material.BIRCH_FENCE_GATE);
-        blockedMaterials.add(Material.ACACIA_FENCE_GATE);
-        blockedMaterials.add(Material.JUNGLE_FENCE_GATE);
-        blockedMaterials.add(Material.DARK_OAK_FENCE_GATE);
-        blockedMaterials.add(Material.LEGACY_IRON_DOOR_BLOCK);
-        blockedMaterials.add(Material.LEGACY_WOODEN_DOOR);
-        blockedMaterials.add(Material.SPRUCE_DOOR);
-        blockedMaterials.add(Material.BIRCH_DOOR);
-        blockedMaterials.add(Material.JUNGLE_DOOR);
-        blockedMaterials.add(Material.ACACIA_DOOR);
-        blockedMaterials.add(Material.DARK_OAK_DOOR);
-        blockedMaterials.add(Material.LEGACY_WOOD_BUTTON);
-        blockedMaterials.add(Material.STONE_BUTTON);
-        blockedMaterials.add(Material.LEGACY_TRAP_DOOR);
-        blockedMaterials.add(Material.IRON_TRAPDOOR);
-        blockedMaterials.add(Material.LEGACY_DIODE_BLOCK_OFF);
-        blockedMaterials.add(Material.LEGACY_DIODE_BLOCK_ON);
-        blockedMaterials.add(Material.LEGACY_REDSTONE_COMPARATOR_OFF);
-        blockedMaterials.add(Material.LEGACY_REDSTONE_COMPARATOR_ON);
-        blockedMaterials.add(Material.LEGACY_FENCE);
-        blockedMaterials.add(Material.SPRUCE_FENCE);
-        blockedMaterials.add(Material.BIRCH_FENCE);
-        blockedMaterials.add(Material.JUNGLE_FENCE);
-        blockedMaterials.add(Material.DARK_OAK_FENCE);
-        blockedMaterials.add(Material.ACACIA_FENCE);
-        blockedMaterials.add(Material.LEGACY_NETHER_FENCE);
-        blockedMaterials.add(Material.BREWING_STAND);
-        blockedMaterials.add(Material.CAULDRON);
-        blockedMaterials.add(Material.LEGACY_SIGN_POST);
-        blockedMaterials.add(Material.LEGACY_WALL_SIGN);
-        blockedMaterials.add(Material.LEGACY_SIGN);
-        blockedMaterials.add(Material.LEVER);
-        blockedMaterials.add(Material.BLACK_SHULKER_BOX);
-        blockedMaterials.add(Material.BLUE_SHULKER_BOX);
-        blockedMaterials.add(Material.BROWN_SHULKER_BOX);
-        blockedMaterials.add(Material.CYAN_SHULKER_BOX);
-        blockedMaterials.add(Material.GRAY_SHULKER_BOX);
-        blockedMaterials.add(Material.GREEN_SHULKER_BOX);
-        blockedMaterials.add(Material.LIGHT_BLUE_SHULKER_BOX);
-        blockedMaterials.add(Material.LIME_SHULKER_BOX);
-        blockedMaterials.add(Material.MAGENTA_SHULKER_BOX);
-        blockedMaterials.add(Material.ORANGE_SHULKER_BOX);
-        blockedMaterials.add(Material.PINK_SHULKER_BOX);
-        blockedMaterials.add(Material.PURPLE_SHULKER_BOX);
-        blockedMaterials.add(Material.RED_SHULKER_BOX);
-        blockedMaterials.add(Material.LEGACY_SILVER_SHULKER_BOX);
-        blockedMaterials.add(Material.WHITE_SHULKER_BOX);
-        blockedMaterials.add(Material.YELLOW_SHULKER_BOX);
-        return blockedMaterials;
-    }
+    private static final HashSet<Material> blockedMaterials = new HashSet<Material>() {{
+        add(Material.FURNACE);
+        add(Material.CHEST);
+        add(Material.TRAPPED_CHEST);
+        add(Material.BEACON);
+        add(Material.DISPENSER);
+        add(Material.DROPPER);
+        add(Material.HOPPER);
+        add(Material.LEGACY_WORKBENCH);
+        add(Material.LEGACY_ENCHANTMENT_TABLE);
+        add(Material.ENDER_CHEST);
+        add(Material.ANVIL);
+        add(Material.LEGACY_BED_BLOCK);
+        add(Material.LEGACY_FENCE_GATE);
+        add(Material.SPRUCE_FENCE_GATE);
+        add(Material.BIRCH_FENCE_GATE);
+        add(Material.ACACIA_FENCE_GATE);
+        add(Material.JUNGLE_FENCE_GATE);
+        add(Material.DARK_OAK_FENCE_GATE);
+        add(Material.LEGACY_IRON_DOOR_BLOCK);
+        add(Material.LEGACY_WOODEN_DOOR);
+        add(Material.SPRUCE_DOOR);
+        add(Material.BIRCH_DOOR);
+        add(Material.JUNGLE_DOOR);
+        add(Material.ACACIA_DOOR);
+        add(Material.DARK_OAK_DOOR);
+        add(Material.LEGACY_WOOD_BUTTON);
+        add(Material.STONE_BUTTON);
+        add(Material.LEGACY_TRAP_DOOR);
+        add(Material.IRON_TRAPDOOR);
+        add(Material.LEGACY_DIODE_BLOCK_OFF);
+        add(Material.LEGACY_DIODE_BLOCK_ON);
+        add(Material.LEGACY_REDSTONE_COMPARATOR_OFF);
+        add(Material.LEGACY_REDSTONE_COMPARATOR_ON);
+        add(Material.LEGACY_FENCE);
+        add(Material.SPRUCE_FENCE);
+        add(Material.BIRCH_FENCE);
+        add(Material.JUNGLE_FENCE);
+        add(Material.DARK_OAK_FENCE);
+        add(Material.ACACIA_FENCE);
+        add(Material.LEGACY_NETHER_FENCE);
+        add(Material.BREWING_STAND);
+        add(Material.CAULDRON);
+        add(Material.LEGACY_SIGN_POST);
+        add(Material.LEGACY_WALL_SIGN);
+        add(Material.LEGACY_SIGN);
+        add(Material.LEVER);
+        add(Material.BLACK_SHULKER_BOX);
+        add(Material.BLUE_SHULKER_BOX);
+        add(Material.BROWN_SHULKER_BOX);
+        add(Material.CYAN_SHULKER_BOX);
+        add(Material.GRAY_SHULKER_BOX);
+        add(Material.GREEN_SHULKER_BOX);
+        add(Material.LIGHT_BLUE_SHULKER_BOX);
+        add(Material.LIME_SHULKER_BOX);
+        add(Material.MAGENTA_SHULKER_BOX);
+        add(Material.ORANGE_SHULKER_BOX);
+        add(Material.PINK_SHULKER_BOX);
+        add(Material.PURPLE_SHULKER_BOX);
+        add(Material.RED_SHULKER_BOX);
+        add(Material.LEGACY_SILVER_SHULKER_BOX);
+        add(Material.WHITE_SHULKER_BOX);
+        add(Material.YELLOW_SHULKER_BOX);
+    }};
+
+
 }
