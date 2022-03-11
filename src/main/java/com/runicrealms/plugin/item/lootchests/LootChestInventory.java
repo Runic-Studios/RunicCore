@@ -17,17 +17,17 @@ public class LootChestInventory implements InventoryHolder {
     private final int minItems;
     private final int maxItems;
     private final Inventory inventory;
-    private final LootChestRarity lootChestRarity;
+    private final LootChestTier lootChestTier;
     private final Player player;
 
     private static final Random random = new Random();
     private static final int CHEST_SIZE = 27;
 
-    public LootChestInventory(Player player, LootChestRarity lootChestRarity) {
+    public LootChestInventory(Player player, LootChestTier lootChestTier) {
         this.player = player;
-        this.lootChestRarity = lootChestRarity;
-        this.minItems = lootChestRarity.getMinimumItems();
-        this.maxItems = lootChestRarity.getMaximumItems();
+        this.lootChestTier = lootChestTier;
+        this.minItems = lootChestTier.getMinimumItems();
+        this.maxItems = lootChestTier.getMaximumItems();
         this.inventory = Bukkit.createInventory(this, CHEST_SIZE, ColorUtil.format(chestTitle()));
         openMenu();
     }
@@ -46,8 +46,8 @@ public class LootChestInventory implements InventoryHolder {
         return inventory;
     }
 
-    public LootChestRarity getLootChestRarity() {
-        return lootChestRarity;
+    public LootChestTier getLootChestRarity() {
+        return lootChestTier;
     }
 
     public Player getPlayer() {
@@ -60,15 +60,15 @@ public class LootChestInventory implements InventoryHolder {
      * @return a string to be used for the inventory title
      */
     private String chestTitle() {
-        switch (this.lootChestRarity) {
-            case UNCOMMON:
-                return "&f&l" + player.getName() + "'s &a&lUncommon Chest";
-            case RARE:
-                return "&f&l" + player.getName() + "'s &b&lRare Chest";
-            case EPIC:
-                return "&f&l" + player.getName() + "'s &d&lEpic Chest";
+        switch (this.lootChestTier) {
+            case TIER_II:
+                return "&f&l" + player.getName() + "'s &a&lTier II Chest";
+            case TIER_III:
+                return "&f&l" + player.getName() + "'s &b&lTier III Chest";
+            case TIER_IV:
+                return "&f&l" + player.getName() + "'s &d&lTier IV Chest";
             default:
-                return "&f&l" + player.getName() + "'s &7&lCommon Chest";
+                return "&f&l" + player.getName() + "'s &7&lTier I Chest";
         }
     }
 
@@ -91,18 +91,18 @@ public class LootChestInventory implements InventoryHolder {
             }
 
             // fill inventory
-            switch (lootChestRarity) {
-                case UNCOMMON:
-                    chestItem = ChestLootTableUtil.uncommonLootTable().getRandom();
+            switch (lootChestTier) {
+                case TIER_II:
+                    chestItem = ChestLootTableUtil.lootTableTierII().getRandom();
                     break;
-                case RARE:
-                    chestItem = ChestLootTableUtil.rareLootTable().getRandom();
+                case TIER_III:
+                    chestItem = ChestLootTableUtil.lootTableTierIII().getRandom();
                     break;
-                case EPIC:
-                    chestItem = ChestLootTableUtil.epicLootTable().getRandom();
+                case TIER_IV:
+                    chestItem = ChestLootTableUtil.lootTableTierIV().getRandom();
                     break;
                 default:
-                    chestItem = ChestLootTableUtil.commonLootTable().getRandom();
+                    chestItem = ChestLootTableUtil.lootTableTierI().getRandom();
                     break;
             }
             this.inventory.setItem(slot, chestItem);

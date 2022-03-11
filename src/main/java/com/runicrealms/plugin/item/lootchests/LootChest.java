@@ -5,19 +5,19 @@ import org.bukkit.Location;
 public class LootChest {
 
     private final String id;
-    private final LootChestRarity lootChestRarity;
+    private final LootChestTier lootChestTier;
     private final Location location;
 
     /**
      * Create a loot chest for in-memory storage
      *
      * @param id of the loot chest in yaml file
-     * @param lootChestRarity rarity of loot chest
+     * @param lootChestTier rarity of loot chest
      * @param location of the chest
      */
-    public LootChest(String id, LootChestRarity lootChestRarity, Location location) {
+    public LootChest(String id, LootChestTier lootChestTier, Location location) {
         this.id = id;
-        this.lootChestRarity = lootChestRarity;
+        this.lootChestTier = lootChestTier;
         this.location = location;
     }
 
@@ -25,8 +25,8 @@ public class LootChest {
         return id;
     }
 
-    public LootChestRarity getLootChestRarity() {
-        return lootChestRarity;
+    public LootChestTier getLootChestRarity() {
+        return lootChestTier;
     }
 
     public Location getLocation() {

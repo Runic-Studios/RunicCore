@@ -65,12 +65,12 @@ public class LootChestListener implements Listener {
         it checks 'tier' and switch statement to spawn correct loot
         if we've found a location and a chest, open the associated ItemGUI
          */
-        LootChestRarity lootChestRarity = lootChest.getLootChestRarity();
+        LootChestTier lootChestTier = lootChest.getLootChestRarity();
 
         // verify player level
-        if (player.getLevel() < lootChestRarity.getMinAccessLevel()) {
+        if (player.getLevel() < lootChestTier.getMinAccessLevel()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-            player.sendMessage(ChatColor.RED + "You must be at least level " + lootChestRarity.getMinAccessLevel() + " to open this.");
+            player.sendMessage(ChatColor.RED + "You must be at least level " + lootChestTier.getMinAccessLevel() + " to open this.");
             return;
         }
 
@@ -80,7 +80,7 @@ public class LootChestListener implements Listener {
         block.setType(Material.AIR);
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
-        player.openInventory(new LootChestInventory(player, lootChestRarity).getInventory());
+        player.openInventory(new LootChestInventory(player, lootChestTier).getInventory());
     }
 
     @EventHandler

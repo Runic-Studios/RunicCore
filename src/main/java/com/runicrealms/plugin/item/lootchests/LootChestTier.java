@@ -2,12 +2,12 @@ package com.runicrealms.plugin.item.lootchests;
 
 import org.bukkit.Color;
 
-public enum LootChestRarity {
+public enum LootChestTier {
 
-    COMMON("common", Color.WHITE, 3, 1, 9, 2, 4, 600), // 10 min
-    UNCOMMON("uncommon", Color.LIME, 10, 10, 24, 2, 4, 900), // 15 min
-    RARE("rare", Color.AQUA, 25, 25, 39, 3, 5, 1200), // 20 min
-    EPIC("epic", Color.FUCHSIA, 40, 40, 60, 3, 6, 2700); // 45 min
+    TIER_I("common", Color.WHITE, 3, 1, 9, 2, 4, 600), // 10 min
+    TIER_II("uncommon", Color.LIME, 10, 10, 24, 2, 4, 900), // 15 min
+    TIER_III("rare", Color.AQUA, 25, 25, 39, 3, 5, 1200), // 20 min
+    TIER_IV("epic", Color.FUCHSIA, 40, 40, 60, 3, 6, 2700); // 45 min
 
     private final String identifier;
     private final Color color;
@@ -30,8 +30,8 @@ public enum LootChestRarity {
      * @param maximumItems   the max number of items in the box
      * @param respawnTime    how long before boxes of this rarity respawn (shared timer)
      */
-    LootChestRarity(String identifier, Color color, int minAccessLevel, int minLootLevel, int maxLootLevel,
-                    int minimumItems, int maximumItems, int respawnTime) {
+    LootChestTier(String identifier, Color color, int minAccessLevel, int minLootLevel, int maxLootLevel,
+                  int minimumItems, int maximumItems, int respawnTime) {
         this.identifier = identifier;
         this.color = color;
         this.minAccessLevel = minAccessLevel;
@@ -80,10 +80,10 @@ public enum LootChestRarity {
      * @param identifier the name of the rarity
      * @return an enum
      */
-    public static LootChestRarity getFromIdentifier(String identifier) {
-        for (LootChestRarity lootChestRarity : LootChestRarity.values()) {
-            if (lootChestRarity.getIdentifier().equals(identifier))
-                return lootChestRarity;
+    public static LootChestTier getFromIdentifier(String identifier) {
+        for (LootChestTier lootChestTier : LootChestTier.values()) {
+            if (lootChestTier.getIdentifier().equals(identifier))
+                return lootChestTier;
         }
         return null;
     }
