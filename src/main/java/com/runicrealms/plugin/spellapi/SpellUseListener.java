@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -45,50 +46,51 @@ public class SpellUseListener implements Listener {
         if (heldItemType == WeaponType.NONE) return;
         if (heldItemType == WeaponType.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(e.getPlayer(), false)) return;
-        Player pl = e.getPlayer();
-        String className = RunicCoreAPI.getPlayerClass(pl); // lowercase
+        Player player = e.getPlayer();
+        String className = RunicCoreAPI.getPlayerClass(player); // lowercase
         boolean isArcher = className.equals("archer");
         if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
-            activateSpellMode(pl, ClickType.LEFT, 2, isArcher);
+            activateSpellMode(player, ClickType.LEFT, 2, isArcher);
         else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
-            activateSpellMode(pl, ClickType.RIGHT, 3, isArcher);
+            activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
     }
 
     /**
      * Handles spell logic for left and right-click spells, checking to 'flip' system for archer.
      *
-     * @param pl               player to cast
+     * @param player           player to cast
      * @param clickType        left or right
-     * @param whichSpellToCast should be spell '2' for left, '3' for right
+     * @param whichSpellToCast should be the spell '2' for left, '3' for right
      * @param isArcher         whether to flip UI for archer
      */
-    private void activateSpellMode(Player pl, ClickType clickType, int whichSpellToCast, boolean isArcher) {
-        if (!casters.containsKey(pl.getUniqueId())) {
+    private void activateSpellMode(Player player, ClickType clickType, int whichSpellToCast, boolean isArcher) {
+        if (!casters.containsKey(player.getUniqueId())) {
             if (clickType != ClickType.LEFT && isArcher) return;
             if (clickType != ClickType.RIGHT && !isArcher) return;
-            casters.put(pl.getUniqueId(), castTimeoutTask(pl));
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.25f, 1.0f);
+            casters.put(player.getUniqueId(), castTimeoutTask(player));
             String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
-            pl.sendTitle
+            player.sendTitle
                     (
                             "", ChatColor.LIGHT_PURPLE + prefix +
                                     " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
                     );
         } else {
-            castSpell(pl, whichSpellToCast, RunicCoreAPI.getPlayerClass(pl).equals("archer"));
+            castSpell(player, whichSpellToCast, RunicCoreAPI.getPlayerClass(player).equals("archer"));
         }
     }
 
     /**
      * Fixes a bug where timeout task wouldn't cancel on spell cast
      *
-     * @param pl player to begin timeout task for
+     * @param player player to begin timeout task for
      * @return a task to be cancelled if they cast
      */
-    private BukkitTask castTimeoutTask(Player pl) {
+    private BukkitTask castTimeoutTask(Player player) {
         return new BukkitRunnable() {
             @Override
             public void run() {
-                casters.remove(pl.getUniqueId());
+                casters.remove(player.getUniqueId());
             }
         }.runTaskLater(RunicCore.getInstance(), SPELL_TIMEOUT * 20L);
     }
@@ -116,20 +118,20 @@ public class SpellUseListener implements Listener {
     /**
      * Removes the player from casters set and executes spell logic
      *
-     * @param pl     who casted the spell
+     * @param player who casted the spell
      * @param number which spell to execute (1, 2, 3, 4)
      */
-    private void castSpell(Player pl, int number, boolean isArcher) {
-        casters.get(pl.getUniqueId()).cancel(); // cancel timeout task
-        casters.remove(pl.getUniqueId());
+    private void castSpell(Player player, int number, boolean isArcher) {
+        casters.get(player.getUniqueId()).cancel(); // cancel timeout task
+        casters.remove(player.getUniqueId());
         String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
-        pl.sendTitle
+        player.sendTitle
                 (
                         "",
                         ChatColor.LIGHT_PURPLE + prefix + " - "
                                 + determineSelectedSlot(number), 0, 15, 0
                 );
-        castSelectedSpell(pl, number);
+        castSelectedSpell(player, number);
     }
 
     /**
