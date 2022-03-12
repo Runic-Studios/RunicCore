@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,6 +16,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -57,6 +59,21 @@ public class BlockBreakListener implements Listener {
                             || event.getClickedBlock().getType() == Material.TRAPPED_CHEST) event.setCancelled(true);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onMobTrample(EntityInteractEvent event) {
+        if (event.getEntity() instanceof Player) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerTrample(PlayerInteractEvent event) {
+        if (event.getAction() == Action.PHYSICAL
+                && event.getClickedBlock() != null
+                && (event.getClickedBlock().getType() == Material.FARMLAND || event.getClickedBlock().getType() == Material.LEGACY_SOIL)) {
+            event.setCancelled(true);
         }
     }
 
