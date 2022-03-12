@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
+import io.papermc.paper.event.player.PlayerFlowerPotManipulateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -18,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -75,6 +77,18 @@ public class BlockBreakListener implements Listener {
                 && (event.getClickedBlock().getType() == Material.FARMLAND || event.getClickedBlock().getType() == Material.LEGACY_SOIL)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onFlowerPotManipulateEvent(PlayerFlowerPotManipulateEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        event.setCancelled(true);
     }
 
     @EventHandler
