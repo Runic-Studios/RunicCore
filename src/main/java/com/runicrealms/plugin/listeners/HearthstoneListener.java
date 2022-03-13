@@ -43,7 +43,7 @@ public class HearthstoneListener implements Listener {
                 if (player.getInventory().getItem(8) == null
                         || (player.getInventory().getItem(8) != null
                         && player.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
-                    player.getInventory().setItem(8, CityLocation.TUTORIAL_FORTRESS.getItemStack());
+                    player.getInventory().setItem(8, CityLocation.TUTORIAL.getItemStack());
                 }
             }
         }.runTaskLater(RunicCore.getInstance(), 2L);

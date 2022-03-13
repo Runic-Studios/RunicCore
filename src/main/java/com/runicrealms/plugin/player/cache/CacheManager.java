@@ -265,7 +265,7 @@ public class CacheManager implements Listener {
         mongoDataSection.set("storedHunger", 20);
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial fortress
+        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
         mongoData.save();
     }
 }

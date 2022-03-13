@@ -2,10 +2,9 @@ package com.runicrealms.plugin.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,7 +43,7 @@ public class RunicTeleportCMD extends BaseCommand {
         if (player == null) return;
         String locationString = args[1];
         Location location;
-        if (CityLocation.getFromIdentifier(locationString) != CityLocation.TUTORIAL_FORTRESS) { // the default is not null for this one
+        if (CityLocation.getFromIdentifier(locationString) != CityLocation.TUTORIAL) { // the default is not null for this one
             location = CityLocation.getLocationFromIdentifier(locationString);
         } else if (DungeonLocation.getFromIdentifier(locationString) != null) {
             location = DungeonLocation.getLocationFromIdentifier(locationString);

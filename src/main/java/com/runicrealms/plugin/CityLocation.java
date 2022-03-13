@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 public enum CityLocation {
 
-    TUTORIAL_FORTRESS("tutorial_fortress", "Tutorial Fortress",
+    TUTORIAL("tutorial", "Tutorial",
             new Location(Bukkit.getWorld("Alterra"), -2317.5, 38, 1719.5, 0, 0), HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK),
     AZANA("azana", "Azana",
             new Location(Bukkit.getWorld("Alterra"), -764.5, 40, 206.5, 180, 0), HearthstoneItemUtil.HEARTHSTONE_AZANA_ITEMSTACK),
@@ -75,7 +75,7 @@ public enum CityLocation {
             if (cityLocation.getIdentifier().equals(identifier))
                 return cityLocation;
         }
-        return CityLocation.TUTORIAL_FORTRESS;
+        return CityLocation.TUTORIAL;
     }
 
     /**
@@ -89,7 +89,7 @@ public enum CityLocation {
             if (cityLocation.identifier.equals(identifier))
                 return cityLocation.getLocation();
         }
-        return CityLocation.TUTORIAL_FORTRESS.getLocation();
+        return CityLocation.TUTORIAL.getLocation();
     }
 
     /**
