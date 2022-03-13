@@ -1,12 +1,9 @@
 package com.runicrealms.plugin.listeners;
 
-import io.papermc.paper.event.player.PlayerFlowerPotManipulateEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
@@ -15,15 +12,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -32,83 +22,6 @@ import org.bukkit.inventory.EquipmentSlot;
  * are handled separately.
  */
 public class BlockBreakListener implements Listener {
-
-    @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null) {
-            if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (event.getClickedBlock().getType() == Material.FLOWER_POT
-                            || event.getClickedBlock().getType().toString().startsWith("POTTED_")) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
-                if (event.getClickedBlock().getType() == Material.RESPAWN_ANCHOR) { event.setCancelled(true); return; }
-                if (event.getAction() == Action.PHYSICAL || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (event.getClickedBlock().getType() == Material.REDSTONE_ORE) { event.setCancelled(true); return; }
-                }
-                if (event.getClickedBlock().getType() == Material.PUMPKIN && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SHEARS) { event.setCancelled(true); return; }
-                if (event.getClickedBlock().getType() == Material.BELL) { event.setCancelled(true); return; }
-                if (event.getClickedBlock().getType() == Material.JUKEBOX) { event.setCancelled(true); return; }
-                if (event.getClickedBlock().getType() == Material.NOTE_BLOCK) { event.setCancelled(true); return; }
-                if (event.getClickedBlock().getType() == Material.LODESTONE) { event.setCancelled(true); return; }
-                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (event.getClickedBlock().getType() == Material.TRAPPED_CHEST
-                            || event.getClickedBlock().getType() == Material.DISPENSER
-                            || event.getClickedBlock().getType() == Material.DROPPER
-                            || event.getClickedBlock().getType().toString().toLowerCase().contains("shulker")
-                            || event.getClickedBlock().getType() == Material.TRAPPED_CHEST) event.setCancelled(true);
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onMobTrample(EntityInteractEvent event) {
-        if (event.getEntity() instanceof Player) return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onPlayerTrample(PlayerInteractEvent event) {
-        if (event.getAction() == Action.PHYSICAL
-                && event.getClickedBlock() != null
-                && (event.getClickedBlock().getType() == Material.FARMLAND || event.getClickedBlock().getType() == Material.LEGACY_SOIL)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onFlowerPotManipulateEvent(PlayerFlowerPotManipulateEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onEnterBed(PlayerBedEnterEvent event) {
-        event.setCancelled(true);
-    }
-
-
-
-    @EventHandler
-    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        event.setCancelled(true);
-    }
-
 
     /**
      * Prevents players from breaking blocks but runs last to allow professions to do their thing
@@ -119,16 +32,6 @@ public class BlockBreakListener implements Listener {
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (e.getBlock().getType() == Material.AIR) return;
         e.setCancelled(true);
-    }
-
-    /**
-     * Prevent players from ever placing blocks
-     */
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent e) {
-        if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            e.setCancelled(true);
-        }
     }
 
     /**
