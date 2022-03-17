@@ -41,7 +41,7 @@ public class TwistOfFate extends Spell {
                         "wicked sphere of inversion, affecting " +
                         "all enemies within " + BUBBLE_SIZE + " blocks! " +
                         "Enemies who enter the sphere are debuffed for the " +
-                        "duration of this spell and cannont be healed✦, " +
+                        "duration of this spell and cannot be healed✦, " +
                         "suffering spellʔ damage instead! During this time, you may not move. " +
                         "Sneak to cancel the spell early. Against monsters, " +
                         "this ability will have no effect.",
