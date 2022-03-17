@@ -29,7 +29,7 @@ public class ItemScrapper implements RunicShop {
 
     private static final int SHOP_SIZE = 27;
     private static final String SHOP_NAME = ChatColor.YELLOW + "Item Scrapper";
-    public static final Collection<Integer> SCRAPPER_NPC_IDS = Arrays.asList(144, 143, 145, 147, 148, 149, 153, 154, 155);
+    public static final Collection<Integer> SCRAPPER_NPC_IDS = Arrays.asList(144, 143, 145, 147, 148, 149, 151, 152, 153, 154, 155);
     public static final Collection<Integer> SCRAPPER_SLOTS = Arrays.asList(10, 11, 12, 13, 14);
     private final InventoryHolder inventoryHolder;
     private final HashMap<UUID, List<ItemStack>> storedItems; // list of items NOT to return
