@@ -7,10 +7,13 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 public class CreatureSpawnListener implements Listener {
 
     @EventHandler
-    public void onCreatureSpawn(CreatureSpawnEvent e) {
-        if (e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.DEFAULT
-                || e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            e.setCancelled(true);
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.DEFAULT
+                || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+            event.setCancelled(true);
+        }
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.JOCKEY) {
+            event.setCancelled(true);
         }
     }
 }
