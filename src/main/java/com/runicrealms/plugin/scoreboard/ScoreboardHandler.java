@@ -18,8 +18,6 @@ public class ScoreboardHandler implements Listener {
     private static final String HEALTH_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.RED;
     private static final String MANA_TEAM_STRING = "MANA";
     private static final String MANA_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.AQUA;
-    private static final String SHIELD_TEAM_STRING = "SHIELD";
-    private static final String SHIELD_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.WHITE;
 
     public ScoreboardHandler() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
@@ -89,7 +87,6 @@ public class ScoreboardHandler implements Listener {
         Team playerMana = scoreboard.registerNewTeam(player.getName() + MANA_TEAM_STRING);
         playerMana.addEntry(MANA_ENTRY_STRING);
         obj.getScore(MANA_ENTRY_STRING).setScore(1);
-        scoreboard.registerNewTeam(player.getName() + SHIELD_TEAM_STRING);
     }
 
     /**
@@ -106,15 +103,6 @@ public class ScoreboardHandler implements Listener {
             Team playerMana = scoreboard.getTeam(player.getName() + MANA_TEAM_STRING);
             assert playerMana != null;
             playerMana.setPrefix(manaAsString(player));
-            if (!shieldAsString(player).equals("")) {
-                Team playerShield = scoreboard.getTeam(player.getName() + SHIELD_TEAM_STRING);
-                assert playerShield != null;
-                playerShield.addEntry(SHIELD_ENTRY_STRING);
-                Objective obj = scoreboard.getObjective(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
-                assert obj != null;
-                obj.getScore(SHIELD_ENTRY_STRING).setScore(0);
-                playerShield.setPrefix(shieldAsString(player));
-            }
         } catch (NullPointerException e) {
             // wrapped in try-catch in-case scoreboard can't set up in time
         }
@@ -130,16 +118,6 @@ public class ScoreboardHandler implements Listener {
         int mana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
         int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
-    }
-
-    private String shieldAsString(final Player player) {
-        double shield;
-        try {
-            shield = RunicCore.getCombatManager().getShieldedPlayers().get(player.getUniqueId());
-        } catch (NullPointerException e) {
-            return "";
-        }
-        return ChatColor.WHITE + "■ " + (int) shield + " (Shield)";
     }
 
     private String playerClass(final Player player) {
