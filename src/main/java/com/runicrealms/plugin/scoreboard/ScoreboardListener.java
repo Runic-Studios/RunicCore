@@ -1,13 +1,11 @@
 package com.runicrealms.plugin.scoreboard;
 
-import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -15,39 +13,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class ScoreboardListener implements Listener {
 
-    @EventHandler
-    public void onDamage(EntityDamageEvent e) {
-        // only listen for players
-        if (!(e.getEntity() instanceof Player)) return;
-        if (e.getEntity().hasMetadata("NPC")) return;
-        Player pl = (Player) e.getEntity();
-        // null check
-        pl.getScoreboard();
-    }
-
-    @EventHandler
-    public void onRegen(EntityRegainHealthEvent e) {
-        //only listen for players
-        if (!(e.getEntity() instanceof Player)) return;
-        if (e.getEntity().hasMetadata("NPC")) return;
-        Player pl = (Player) e.getEntity();
-        // null check
-        pl.getScoreboard();
-    }
-
     /**
      * Updates health on armor equip
      */
     @EventHandler
     public void onArmorEquip(ArmorEquipEvent e) {
-        Player pl = e.getPlayer();
-        // null check
-        pl.getScoreboard();
-
+        Player player = e.getPlayer();
         new BukkitRunnable() {
             @Override
             public void run() {
-                HealthUtils.setPlayerMaxHealth(pl);
+                HealthUtils.setPlayerMaxHealth(player);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
@@ -58,7 +33,7 @@ public class ScoreboardListener implements Listener {
     @EventHandler
     public void onOffhandEquip(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) return;
-        Player pl = (Player) e.getWhoClicked();
+        Player player = (Player) e.getWhoClicked();
         if (e.getCurrentItem() == null) return;
         if (e.getClickedInventory() == null) return;
         if (e.getSlot() != 40) return;
@@ -66,7 +41,7 @@ public class ScoreboardListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    HealthUtils.setPlayerMaxHealth(pl);
+                    HealthUtils.setPlayerMaxHealth(player);
                 }
             }.runTaskLater(RunicCore.getInstance(), 1L);
         }
@@ -77,11 +52,11 @@ public class ScoreboardListener implements Listener {
      */
     @EventHandler
     public void onOffhandSwap(PlayerSwapHandItemsEvent e) {
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
         new BukkitRunnable() {
             @Override
             public void run() {
-                HealthUtils.setPlayerMaxHealth(pl);
+                HealthUtils.setPlayerMaxHealth(player);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }

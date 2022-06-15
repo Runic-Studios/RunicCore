@@ -25,6 +25,8 @@ import java.util.UUID;
 @CommandAlias("resettree")
 public class ResetTreeCMD extends BaseCommand implements Listener {
 
+    // todo: free from level 30, then use a linear function to calculate cost.
+    private static final int FREE_THRESHOLD = 20;
     private final Set<UUID> chatters = new HashSet<>();
 
     public ResetTreeCMD() {
@@ -47,8 +49,8 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
                 toReset.sendMessage
                         (
                                 ChatColor.LIGHT_PURPLE + "You are about to reset your skill points! Based on your level, the cost will be " +
-                                getCostStringFromLevel(toReset) + ChatColor.LIGHT_PURPLE + ". To confirm, type " +
-                                ChatColor.GREEN + ChatColor.BOLD + "YES" + ChatColor.LIGHT_PURPLE + " or " + ChatColor.RED + ChatColor.BOLD + "NO"
+                                        getCostStringFromLevel(toReset) + ChatColor.LIGHT_PURPLE + ". To confirm, type " +
+                                        ChatColor.GREEN + ChatColor.BOLD + "YES" + ChatColor.LIGHT_PURPLE + " or " + ChatColor.RED + ChatColor.BOLD + "NO"
                         );
                 chatters.add(toReset.getUniqueId());
             } else {
@@ -79,6 +81,10 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         chatters.remove(player.getUniqueId());
     }
 
+    /**
+     * @param player
+     * @return
+     */
     public static int getCostFromLevel(Player player) {
         if (player.getLevel() == PlayerLevelUtil.getMaxLevel()) {
             return 1000;
