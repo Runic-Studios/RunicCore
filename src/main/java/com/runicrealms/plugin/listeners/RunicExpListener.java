@@ -59,7 +59,8 @@ public class RunicExpListener implements Listener {
             if (extraAmt < 1)
                 extraAmt = 1;
             e.setFinalAmount(e.getFinalAmount() + extraAmt);
-            distributePartyExp(RunicCore.getPartyManager().getPlayerParty(pl), pl, e.getOriginalAmount(), extraAmt, e.getMobLevel(), e.getLocation());
+            //Use final amount in this case so we have Outlaw bonus's included in party bonus.
+            distributePartyExp(RunicCore.getPartyManager().getPlayerParty(pl), pl, e.getFinalAmount(), extraAmt, e.getMobLevel(), e.getLocation());
         }
     }
 
