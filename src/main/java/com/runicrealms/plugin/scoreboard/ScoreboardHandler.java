@@ -10,118 +10,129 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 
-import java.util.Set;
-
-@SuppressWarnings("deprecation")
 public class ScoreboardHandler implements Listener {
 
+    private static final String HEALTH_TEAM_STRING = "health";
+    private static final String HEALTH_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.RED;
+    private static final String MANA_TEAM_STRING = "MANA";
+    private static final String MANA_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.AQUA;
+    private static final String SHIELD_TEAM_STRING = "SHIELD";
+    private static final String SHIELD_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.WHITE;
+
     public ScoreboardHandler() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player pl : RunicCore.getCacheManager().getLoadedPlayers()) {
-                    updateSideInfo(pl);
-                }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+            for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+                updatePlayerCombatInfo(player, player.getScoreboard());
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 100L, 5L);
+        }, 100L, 5L);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST) // first
     public void onPlayerJoin(CharacterLoadEvent e) {
-        Player pl = e.getPlayer();
-        createScoreboard(pl);
-        NametagUtil.updateNametag(pl);
+        Player player = e.getPlayer();
+        setupScoreboard(player);
+        NametagUtil.updateNametag(player);
     }
 
-    private void createScoreboard(Player pl) {
-
-        // create our scoreboard
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getNewScoreboard();
-
-        // setup side scoreboard
-        Objective sidebar = board.registerNewObjective("sidebar", "dummy");
-        sidebar.setDisplayName(ChatColor.LIGHT_PURPLE + "     §lRunic Realms     ");
-        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-        // set the board!
-        pl.setScoreboard(board);
-    }
-
-    private void updateSideInfo(Player pl) {
-
-        Scoreboard board = pl.getScoreboard();
-        Objective sidebar = board.getObjective("sidebar");
-
-        // ensure the scoreboard objective exists
-        if (sidebar == null)
-            return;
-
-        Set<String> entries;
-        entries = pl.getScoreboard().getEntries();
-
-        // reset entries to prevent duplication & flickering
-        for (String entry : entries) {
-            board.resetScores(entry);
-        }
-
-        // add pretty formatting to side board
-        Score blankSpaceSeven = sidebar.getScore("§1");
+    /**
+     * Set the scoreboard for the given player if they do not yet have one
+     *
+     * @param player to receive scoreboard
+     */
+    public void setupScoreboard(final Player player) {
+        assert Bukkit.getScoreboardManager() != null;
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective obj = scoreboard.registerNewObjective("ServerName", "", ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        // setup basic fields
+        Score blankSpaceSeven = obj.getScore("§1");
         blankSpaceSeven.setScore(8);
-        Score blankSpaceTwo = sidebar.getScore("§2");
-        blankSpaceTwo.setScore(3);
-
-        // set side board header
-        Score characterInfo = sidebar.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + pl.getName());
+        Score characterInfo = obj.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + player.getName());
         characterInfo.setScore(7);
-
-        updatePlayerInfo(pl);
-
-        // setup side health display
-        Score health = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(healthAsString(pl));
-        health.setScore(2);
-        Score mana = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(manaAsString(pl));
-        mana.setScore(1);
-        if (!shieldAsString(pl).equals("")) {
-            Score shield = pl.getScoreboard().getObjective(DisplaySlot.SIDEBAR).getScore(shieldAsString(pl));
-            shield.setScore(0);
-        }
+        setupPlayerInfo(player, obj);
+        Score blankSpaceTwo = obj.getScore("§2");
+        blankSpaceTwo.setScore(3);
+        // setup combat fields using teams to avoid flickering
+        setupPlayerCombatInfo(player, scoreboard, obj);
+        updatePlayerCombatInfo(player, scoreboard);
+        player.setScoreboard(scoreboard);
     }
 
-    private void updatePlayerInfo(Player pl) {
-
-        Scoreboard board = pl.getScoreboard();
-        Objective sidebar = board.getObjective("sidebar");
-
-        // ensure the scoreboard objective exists
-        if (sidebar == null) {
-            return;
-        }
-
-        Score playerClass = sidebar.getScore(playerClass(pl));
+    /**
+     * Initial setup for basic scoreboard fields
+     *
+     * @param player
+     * @param objective
+     */
+    private void setupPlayerInfo(final Player player, final Objective objective) {
+        Score playerClass = objective.getScore(playerClass(player));
         playerClass.setScore(6);
-        Score playerProfession = sidebar.getScore(playerProf(pl));
+        Score playerProfession = objective.getScore(playerProf(player));
         playerProfession.setScore(5);
-        Score playerGuild = sidebar.getScore(playerGuild(pl));
+        Score playerGuild = objective.getScore(playerGuild(player));
         playerGuild.setScore(4);
     }
 
-    private String healthAsString(Player pl) {
-        int currentHealth = (int) pl.getHealth();
-        int maxHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+    /**
+     * Initial setup for player combat info using scoreboard teams to prevent flickering
+     *
+     * @param player
+     * @param scoreboard
+     * @param obj
+     */
+    private void setupPlayerCombatInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
+        Team playerHealth = scoreboard.registerNewTeam(player.getName() + HEALTH_TEAM_STRING);
+        playerHealth.addEntry(HEALTH_ENTRY_STRING);
+        obj.getScore(HEALTH_ENTRY_STRING).setScore(2);
+        Team playerMana = scoreboard.registerNewTeam(player.getName() + MANA_TEAM_STRING);
+        playerMana.addEntry(MANA_ENTRY_STRING);
+        obj.getScore(MANA_ENTRY_STRING).setScore(1);
+        scoreboard.registerNewTeam(player.getName() + SHIELD_TEAM_STRING);
+    }
+
+    /**
+     * Method used to keep scoreboard accurate on an async timer
+     *
+     * @param player
+     * @param scoreboard
+     */
+    private void updatePlayerCombatInfo(final Player player, final Scoreboard scoreboard) {
+        try {
+            Team playerHealth = scoreboard.getTeam(player.getName() + HEALTH_TEAM_STRING);
+            assert playerHealth != null;
+            playerHealth.setPrefix(healthAsString(player));
+            Team playerMana = scoreboard.getTeam(player.getName() + MANA_TEAM_STRING);
+            assert playerMana != null;
+            playerMana.setPrefix(manaAsString(player));
+            if (!shieldAsString(player).equals("")) {
+                Team playerShield = scoreboard.getTeam(player.getName() + SHIELD_TEAM_STRING);
+                assert playerShield != null;
+                playerShield.addEntry(SHIELD_ENTRY_STRING);
+                Objective obj = scoreboard.getObjective(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
+                assert obj != null;
+                obj.getScore(SHIELD_ENTRY_STRING).setScore(0);
+                playerShield.setPrefix(shieldAsString(player));
+            }
+        } catch (NullPointerException e) {
+            // wrapped in try-catch in-case scoreboard can't set up in time
+        }
+    }
+
+    private String healthAsString(final Player player) {
+        int currentHealth = (int) player.getHealth();
+        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §e/ " + ChatColor.RED + maxHealth + " (Health)";
     }
 
-    private String manaAsString(Player pl) {
-        int mana = RunicCore.getRegenManager().getCurrentManaList().get(pl.getUniqueId());
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(pl).getMaxMana();
+    private String manaAsString(final Player player) {
+        int mana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
+        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
-    private String shieldAsString(Player player) {
+    private String shieldAsString(final Player player) {
         double shield;
         try {
             shield = RunicCore.getCombatManager().getShieldedPlayers().get(player.getUniqueId());
@@ -131,9 +142,9 @@ public class ScoreboardHandler implements Listener {
         return ChatColor.WHITE + "■ " + (int) shield + " (Shield)";
     }
 
-    private String playerClass(Player pl) {
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
-        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
+    private String playerClass(final Player player) {
+        String className = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName();
+        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
         String display;
         if (className == null) {
             display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
@@ -146,9 +157,9 @@ public class ScoreboardHandler implements Listener {
         return display;
     }
 
-    private String playerProf(Player pl) {
-        String profName = RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfName();
-        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfLevel();
+    private String playerProf(final Player player) {
+        String profName = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfName();
+        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfLevel();
         String display;
         if (profName == null) {
             display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
@@ -161,11 +172,11 @@ public class ScoreboardHandler implements Listener {
         return display;
     }
 
-    private String playerGuild(Player pl) {
+    private String playerGuild(final Player player) {
         try {
             String display;
-            String guild = RunicCore.getCacheManager().getPlayerCaches().get(pl).getGuild();
-            if (!guild.toLowerCase().equals("none")) {
+            String guild = RunicCore.getCacheManager().getPlayerCaches().get(player).getGuild();
+            if (!guild.equalsIgnoreCase("none")) {
                 display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
             } else {
                 display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
