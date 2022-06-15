@@ -12,8 +12,6 @@ import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.donator.ThreeD;
 import com.runicrealms.plugin.donator.ThreeDManager;
-import com.runicrealms.plugin.group.GroupCommand;
-import com.runicrealms.plugin.group.GroupManager;
 import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
@@ -76,7 +74,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
-    private static GroupManager groupManager;
     private static PaperCommandManager commandManager;
     private static SkillTreeManager skillTreeManager;
     private static StatManager statManager;
@@ -141,10 +138,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return partyChannel;
     }
 
-    public static GroupManager getGroupManager() {
-        return groupManager;
-    }
-
     public static SkillTreeManager getSkillTreeManager() {
         return skillTreeManager;
     }
@@ -191,7 +184,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         cacheManager = new CacheManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
-        groupManager = new GroupManager();
         skillTreeManager = new SkillTreeManager();
         statManager = new StatManager();
         threeDManager = new ThreeDManager();
@@ -261,7 +253,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         bossTagger = null;
         cacheManager = null;
         databaseManager = null;
-        groupManager = null;
         partyChannel = null;
         skillTreeManager = null;
         statManager = null;
@@ -371,7 +362,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new TravelCMD());
         commandManager.registerCommand(new VanishCMD());
         commandManager.registerCommand(new ResetTreeCMD());
-        commandManager.registerCommand(new GroupCommand());
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new RunicTeleportCMD());
         commandManager.registerCommand(new RunicBossCMD());

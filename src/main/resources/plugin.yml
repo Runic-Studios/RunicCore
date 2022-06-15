@@ -4,9 +4,9 @@ api-version: 1.15
 main: com.runicrealms.plugin.RunicCore
 description: Core plugin for the "Runic Realms" server
 author: Skyfallin, Excel, Destiny
-loadbefore: [Quests]
-softdepend: [PlaceholderAPI]
-depend: [MythicMobs, NBTAPI, RunicChat]
+loadbefore: [ Quests ]
+softdepend: [ PlaceholderAPI ]
+depend: [ MythicMobs, NBTAPI, RunicChat ]
 commands:
   3d:
     usage: /<commands>
@@ -14,9 +14,6 @@ commands:
   currency:
     usage: /<commands>
     description: Give a player currency!
-  group:
-    usage: /<commands>
-    description: Base for all party commands
   party:
     usage: /<commands>
     description: Base for all party commands
