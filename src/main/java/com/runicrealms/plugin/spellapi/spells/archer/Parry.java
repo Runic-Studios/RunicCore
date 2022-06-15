@@ -66,6 +66,7 @@ public class Parry extends Spell implements WeaponDamageSpell {
         new BukkitRunnable() {
             @Override
             public void run() {
+                //TODO Do another check, this one can be spoofed and allow players to never take fall damage EVER!
                 if (pl.isOnGround())
                     this.cancel();
                 else

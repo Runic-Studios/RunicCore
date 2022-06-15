@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
+import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -96,8 +97,18 @@ public abstract class Spell implements ISpell, Listener {
 
         // ignore NPCs
         if (playerAlly.hasMetadata("NPC")) return false;
+        // probably unnecessary, but insurance
         if (playerAlly instanceof ArmorStand) return false;
 
+        PlayerCache casterData = RunicCoreAPI.getPlayerCache(caster);
+        PlayerCache allyData = RunicCoreAPI.getPlayerCache((Player) ally);
+
+        // If either player is an outlaw
+        if (casterData.getIsOutlaw() || allyData.getIsOutlaw())
+            // Does the caster have a party?
+            return RunicCore.getPartyManager().getPlayerParty(caster) != null
+                    // Does that party contain the outlaw ally?
+                    && RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
         // skip the target player if the caster has a party and the target is NOT in it
         return RunicCore.getPartyManager().getPlayerParty(caster) == null
                 || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);

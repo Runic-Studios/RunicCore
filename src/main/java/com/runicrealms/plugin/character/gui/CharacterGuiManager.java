@@ -5,6 +5,8 @@ import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
+import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -100,7 +102,7 @@ public class CharacterGuiManager implements Listener {
         archerItem.setItemMeta(archerMeta);
         classIcons.put(ClassEnum.ARCHER, archerItem);
 
-        ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")),1, CLERIC_ITEM_DURAB);
+        ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")), 1, CLERIC_ITEM_DURAB);
         ItemMeta clericMeta = clericItem.getItemMeta();
         clericMeta.setUnbreakable(true);
         clericMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -156,7 +158,7 @@ public class CharacterGuiManager implements Listener {
                 ChatColor.GRAY + "Equipped with a pool of crowd",
                 ChatColor.GRAY + "control, stealth, and damage",
                 ChatColor.GRAY + "to engage any foe!"
-                ));
+        ));
         rogueItem.setItemMeta(rogueMeta);
         classIcons.put(ClassEnum.ROGUE, rogueItem);
 
@@ -199,8 +201,8 @@ public class CharacterGuiManager implements Listener {
         return null;
     }
 
-    private static void openSelectGui(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 18, ChatColor.GREEN + "Select Your Character");
+    private void openSelectGui(Player player) {
+        Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Select Your Character");
         for (int i = 1; i <= 10; i++) {
             if (characterCache.get(player.getUniqueId()).getCharacterInfo().get(i) != null) {
                 inventory.setItem(i <= 5 ? i + 1 : i + 5, getCharacterIcon(characterCache.get(player.getUniqueId()).getCharacterInfo().get(i)));
@@ -218,6 +220,12 @@ public class CharacterGuiManager implements Listener {
                 }
             }
         }
+        //set bottom row
+        for (int i = 18; i < 27; i++) {
+            inventory.setItem(i, GUIUtil.borderItem());
+        }
+        //set exit button
+        inventory.setItem(22, exitGame());
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
             classMenu.remove(player.getUniqueId());
             player.closeInventory();
@@ -257,61 +265,62 @@ public class CharacterGuiManager implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player) {
-            if (classMenu.containsKey(event.getWhoClicked().getUniqueId())) {
-                event.setCancelled(true);
-                if (event.getCurrentItem() != null) {
-                    if (event.getCurrentItem().getType() != Material.AIR) {
-                        if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.SELECT) {
-                            if (checkIsCharacterIcon(event.getCurrentItem())) {
-                                if (event.isRightClick()) {
-                                    openRemoveGui((Player) event.getWhoClicked(), event.getSlot() < 9 ? event.getSlot() - 1 : event.getSlot() - 5);
-                                } else {
-                                    classMenu.remove(event.getWhoClicked().getUniqueId());
-                                    event.getWhoClicked().closeInventory();
-                                    Integer slot = event.getSlot() < 9 ? event.getSlot() - 1 : event.getSlot() - 5;
-                                    CharacterManager.getSelectedCharacters().put(event.getWhoClicked().getUniqueId(), slot);
-                                    CharacterLoadEvent characterLoadEvent = new CharacterLoadEvent(
-                                            RunicCore.getCacheManager().buildPlayerCache((Player) event.getWhoClicked(), slot),
-                                            (Player) event.getWhoClicked());
-                                    RunicCore.getCacheManager().getPlayerCaches().put(characterLoadEvent.getPlayer(), characterLoadEvent.getPlayerCache());
-                                    Bukkit.getPluginManager().callEvent(characterLoadEvent);
-                                }
-                            } else if (event.getCurrentItem().getType() == creationIcon.getType()) {
-                                openAddGui((Player) event.getWhoClicked());
-                            }
-                        } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.ADD) {
-                            if (event.getCurrentItem().getType() == goBackIcon.getType()) {
-                                openSelectGui((Player) event.getWhoClicked());
-                            } else {
-                                String className = getClassNameFromIcon(event.getCurrentItem());
-                                RunicCore.getCacheManager().tryCreateNewCharacter((Player) event.getWhoClicked(), className, characterCache.get(event.getWhoClicked().getUniqueId()).getFirstUnusedSlot());
-                                characterCache.get(event.getWhoClicked().getUniqueId()).addCharacter(new CharacterInfo(ClassEnum.getFromName(className), 0, 0));
-                                openSelectGui((Player) event.getWhoClicked());
-                            }
-                        } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.REMOVE) {
-                            if (event.getCurrentItem().getType() == confirmDeletionIcon.getType()) {
-                                classMenu.remove(event.getWhoClicked().getUniqueId());
-                                event.getWhoClicked().closeInventory();
-                                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-                                    PlayerMongoData mongoData = new PlayerMongoData(event.getWhoClicked().getUniqueId().toString());
-                                    mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId()));
-                                    mongoData.save();
-                                    characterCache.get(event.getWhoClicked().getUniqueId()).removeCharacter(deletingCharacters.get(event.getWhoClicked().getUniqueId()));
-                                    deletingCharacters.remove(event.getWhoClicked().getUniqueId());
-                                    openSelectGui((Player) event.getWhoClicked());
-                                });
-                            } else {
-                                classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
-                                deletingCharacters.remove(event.getWhoClicked().getUniqueId());
-                                openSelectGui((Player) event.getWhoClicked());
-                            }
-                        }
-                    }
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!classMenu.containsKey(event.getWhoClicked().getUniqueId())) return;
+        event.setCancelled(true);
+        if (event.getCurrentItem() == null) return;
+        if (event.getCurrentItem().getType() == Material.AIR) return;
+        if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.SELECT) {
+            if (event.getCurrentItem().getType() == Material.REDSTONE_BLOCK) {
+                ((Player) event.getWhoClicked()).kickPlayer(ChatColor.GREEN + "Come back soon!");
+                return;
+            }
+            if (checkIsCharacterIcon(event.getCurrentItem())) {
+                if (event.isRightClick()) {
+                    openRemoveGui((Player) event.getWhoClicked(), event.getSlot() < 9 ? event.getSlot() - 1 : event.getSlot() - 5);
+                } else {
+                    classMenu.remove(event.getWhoClicked().getUniqueId());
+                    event.getWhoClicked().closeInventory();
+                    Integer slot = event.getSlot() < 9 ? event.getSlot() - 1 : event.getSlot() - 5;
+                    CharacterManager.getSelectedCharacters().put(event.getWhoClicked().getUniqueId(), slot);
+                    CharacterLoadEvent characterLoadEvent = new CharacterLoadEvent(
+                            RunicCore.getCacheManager().buildPlayerCache((Player) event.getWhoClicked(), slot),
+                            (Player) event.getWhoClicked());
+                    RunicCore.getCacheManager().getPlayerCaches().put(characterLoadEvent.getPlayer(), characterLoadEvent.getPlayerCache());
+                    Bukkit.getPluginManager().callEvent(characterLoadEvent);
                 }
+            } else if (event.getCurrentItem().getType() == creationIcon.getType()) {
+                openAddGui((Player) event.getWhoClicked());
+            }
+        } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.ADD) {
+            if (event.getCurrentItem().getType() == goBackIcon.getType()) {
+                openSelectGui((Player) event.getWhoClicked());
+            } else {
+                String className = getClassNameFromIcon(event.getCurrentItem());
+                RunicCore.getCacheManager().tryCreateNewCharacter((Player) event.getWhoClicked(), className, characterCache.get(event.getWhoClicked().getUniqueId()).getFirstUnusedSlot());
+                characterCache.get(event.getWhoClicked().getUniqueId()).addCharacter(new CharacterInfo(ClassEnum.getFromName(className), 0, 0));
+                openSelectGui((Player) event.getWhoClicked());
+            }
+        } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.REMOVE) {
+            if (event.getCurrentItem().getType() == confirmDeletionIcon.getType()) {
+                classMenu.remove(event.getWhoClicked().getUniqueId());
+                event.getWhoClicked().closeInventory();
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+                    PlayerMongoData mongoData = new PlayerMongoData(event.getWhoClicked().getUniqueId().toString());
+                    mongoData.remove("character." + deletingCharacters.get(event.getWhoClicked().getUniqueId()));
+                    mongoData.save();
+                    characterCache.get(event.getWhoClicked().getUniqueId()).removeCharacter(deletingCharacters.get(event.getWhoClicked().getUniqueId()));
+                    deletingCharacters.remove(event.getWhoClicked().getUniqueId());
+                    openSelectGui((Player) event.getWhoClicked());
+                });
+            } else {
+                classMenu.put(event.getWhoClicked().getUniqueId(), CharacterGui.SELECT);
+                deletingCharacters.remove(event.getWhoClicked().getUniqueId());
+                openSelectGui((Player) event.getWhoClicked());
             }
         }
     }
+
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
@@ -392,4 +401,13 @@ public class CharacterGuiManager implements Listener {
         return characterCache;
     }
 
+    //Item to click to exit the game
+    private ItemStack exitGame() {
+        ItemStack item = new ItemStack(Material.REDSTONE_BLOCK, 1);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColorUtil.format("&r&cLeave the Realm"));
+        item.setItemMeta(meta);
+        return item;
+    }
 }
