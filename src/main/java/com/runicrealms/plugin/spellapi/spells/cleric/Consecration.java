@@ -46,11 +46,10 @@ public class Consecration extends Spell implements MagicDamageSpell {
                     this.cancel();
                 } else {
                     createCircle(player, castLocation);
-                    player.getWorld().playSound(castLocation, Sound.ENTITY_CAT_HISS, 0.5f, 0.1f);
+                    player.getWorld().playSound(castLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(verifyEnemy(player, en))) continue;
                         LivingEntity victim = (LivingEntity) en;
-                        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 2));
                         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, spell);
                     }
