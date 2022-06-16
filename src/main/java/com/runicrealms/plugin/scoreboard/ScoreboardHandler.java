@@ -14,17 +14,32 @@ import org.bukkit.scoreboard.*;
 
 public class ScoreboardHandler implements Listener {
 
-    private static final String HEALTH_TEAM_STRING = "health";
+    // basic info
+    private static final String CLASS_TEAM_STRING = "c";
+    private static final String CLASS_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.DARK_GREEN;
+    private static final String PROF_TEAM_STRING = "p";
+    private static final String PROF_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.GREEN;
+    private static final String GUILD_TEAM_STRING = "g";
+    private static final String GUILD_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.GOLD;
+    // combat team info
+    private static final String HEALTH_TEAM_STRING = "h";
     private static final String HEALTH_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.RED;
-    private static final String MANA_TEAM_STRING = "MANA";
+    private static final String MANA_TEAM_STRING = "m";
     private static final String MANA_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.AQUA;
 
     public ScoreboardHandler() {
+        // periodically update class, prof, guild info
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+            for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+                updatePlayerInfo(player, player.getScoreboard());
+            }
+        }, 100L, 20L);
+        // periodically update combat info (much faster)
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
                 updatePlayerCombatInfo(player, player.getScoreboard());
             }
-        }, 100L, 5L);
+        }, 100L, 4L);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
@@ -39,7 +54,7 @@ public class ScoreboardHandler implements Listener {
      *
      * @param player to receive scoreboard
      */
-    public void setupScoreboard(final Player player) {
+    private void setupScoreboard(final Player player) {
         assert Bukkit.getScoreboardManager() != null;
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective obj = scoreboard.registerNewObjective("ServerName", "", ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
@@ -49,7 +64,8 @@ public class ScoreboardHandler implements Listener {
         blankSpaceSeven.setScore(8);
         Score characterInfo = obj.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + player.getName());
         characterInfo.setScore(7);
-        setupPlayerInfo(player, obj);
+        setupPlayerInfo(player, scoreboard, obj);
+        updatePlayerInfo(player, scoreboard);
         Score blankSpaceTwo = obj.getScore("§2");
         blankSpaceTwo.setScore(3);
         // setup combat fields using teams to avoid flickering
@@ -60,47 +76,79 @@ public class ScoreboardHandler implements Listener {
 
     /**
      * Initial setup for basic scoreboard fields
+     * Some string manipulation because scoreboard teams can't go beyond 16 chars
      *
-     * @param player
-     * @param objective
+     * @param player     who owns the scoreboard
+     * @param scoreboard the scoreboard of the player
+     * @param obj        the main scoreboard objective defined in 'setupScoreboard'
      */
-    private void setupPlayerInfo(final Player player, final Objective objective) {
-        Score playerClass = objective.getScore(playerClass(player));
-        playerClass.setScore(6);
-        Score playerProfession = objective.getScore(playerProf(player));
-        playerProfession.setScore(5);
-        Score playerGuild = objective.getScore(playerGuild(player));
-        playerGuild.setScore(4);
+    private void setupPlayerInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
+        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+        Team playerClass = scoreboard.registerNewTeam(playerNameSubString + CLASS_TEAM_STRING);
+        playerClass.addEntry(CLASS_ENTRY_STRING);
+        obj.getScore(CLASS_ENTRY_STRING).setScore(6);
+        playerClass.setPrefix(playerClass(player)); // setup class prefix ONCE
+        Team playerProf = scoreboard.registerNewTeam(playerNameSubString + PROF_TEAM_STRING);
+        playerProf.addEntry(PROF_ENTRY_STRING);
+        obj.getScore(PROF_ENTRY_STRING).setScore(5);
+        Team playerGuild = scoreboard.registerNewTeam(playerNameSubString + GUILD_TEAM_STRING);
+        playerGuild.addEntry(GUILD_ENTRY_STRING);
+        obj.getScore(GUILD_ENTRY_STRING).setScore(4);
+    }
+
+    /**
+     * Method used to keep scoreboard accurate during level-up, profession change, etc.
+     * Some string manipulation because scoreboard teams can't go beyond 16 chars
+     *
+     * @param player     who owns the scoreboard
+     * @param scoreboard the scoreboard of the player
+     */
+    public void updatePlayerInfo(final Player player, final Scoreboard scoreboard) {
+        try {
+            String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+            Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
+            assert playerProf != null;
+            playerProf.setPrefix(playerProf(player));
+            Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
+            assert playerGuild != null;
+            playerGuild.setPrefix(playerGuild(player));
+        } catch (NullPointerException e) {
+            // wrapped in try-catch in-case scoreboard can't set up in time
+        }
     }
 
     /**
      * Initial setup for player combat info using scoreboard teams to prevent flickering
+     * Some string manipulation because scoreboard teams can't go beyond 16 chars
      *
-     * @param player
-     * @param scoreboard
-     * @param obj
+     * @param player     who owns the scoreboard
+     * @param scoreboard the scoreboard of the player
+     * @param obj        the main scoreboard objective defined in 'setupScoreboard'
      */
     private void setupPlayerCombatInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
-        Team playerHealth = scoreboard.registerNewTeam(player.getName() + HEALTH_TEAM_STRING);
+        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+        Team playerHealth = scoreboard.registerNewTeam(playerNameSubString + HEALTH_TEAM_STRING);
         playerHealth.addEntry(HEALTH_ENTRY_STRING);
         obj.getScore(HEALTH_ENTRY_STRING).setScore(2);
-        Team playerMana = scoreboard.registerNewTeam(player.getName() + MANA_TEAM_STRING);
+        Team playerMana = scoreboard.registerNewTeam(playerNameSubString + MANA_TEAM_STRING);
         playerMana.addEntry(MANA_ENTRY_STRING);
         obj.getScore(MANA_ENTRY_STRING).setScore(1);
     }
 
     /**
      * Method used to keep scoreboard accurate on an async timer
+     * Some string manipulation because scoreboard teams can't go beyond 16 chars
      *
-     * @param player
-     * @param scoreboard
+     * @param player     who owns the scoreboard
+     * @param scoreboard the scoreboard of the player
      */
     private void updatePlayerCombatInfo(final Player player, final Scoreboard scoreboard) {
         try {
-            Team playerHealth = scoreboard.getTeam(player.getName() + HEALTH_TEAM_STRING);
+            String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+            Team playerHealth = scoreboard.getTeam(playerNameSubString + HEALTH_TEAM_STRING);
             assert playerHealth != null;
             playerHealth.setPrefix(healthAsString(player));
-            Team playerMana = scoreboard.getTeam(player.getName() + MANA_TEAM_STRING);
+            Team playerMana = scoreboard.getTeam(playerNameSubString + MANA_TEAM_STRING);
             assert playerMana != null;
             playerMana.setPrefix(manaAsString(player));
         } catch (NullPointerException e) {
@@ -135,12 +183,14 @@ public class ScoreboardHandler implements Listener {
         return display;
     }
 
+    private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
+
     private String playerProf(final Player player) {
         String profName = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfName();
         int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfLevel();
         String display;
         if (profName == null) {
-            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
+            display = NO_PROF_STRING;
         } else {
             display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + profName;
             if (currentLevel != 0) {
@@ -150,6 +200,8 @@ public class ScoreboardHandler implements Listener {
         return display;
     }
 
+    private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
+
     private String playerGuild(final Player player) {
         try {
             String display;
@@ -157,11 +209,11 @@ public class ScoreboardHandler implements Listener {
             if (!guild.equalsIgnoreCase("none")) {
                 display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
             } else {
-                display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
+                display = NO_GUILD_STRING;
             }
             return display;
         } catch (Exception e) {
-            return ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
+            return NO_GUILD_STRING;
         }
     }
 }
