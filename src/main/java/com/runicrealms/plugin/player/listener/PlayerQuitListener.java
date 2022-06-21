@@ -38,9 +38,9 @@ public class PlayerQuitListener implements Listener {
     }
 
     @EventHandler
-    public void onQuit (PlayerQuitEvent e) {
-        Player pl = e.getPlayer();
+    public void onQuit(PlayerQuitEvent e) {
+        Player player = e.getPlayer();
         e.setQuitMessage("");
-        pl.setWalkSpeed(0.2f);
+        player.setWalkSpeed(0.2f);
     }
 }

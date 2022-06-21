@@ -167,6 +167,8 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
 
     public void onEnable() {
+
+        RedisTest redisTest = new RedisTest();
         // Load config defaults
         this.loadConfig();
 

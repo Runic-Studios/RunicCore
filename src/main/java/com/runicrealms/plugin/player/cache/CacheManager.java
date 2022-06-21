@@ -125,6 +125,7 @@ public class CacheManager implements Listener {
         try {
             int slot = playerCache.getCharacterSlot();
             PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
+            mongoData.set("last_login", DatabaseUtil.SIMPLE_DATE_STRING);
             PlayerMongoDataSection character = mongoData.getCharacter(slot);
             CacheSaveEvent e = new CacheSaveEvent(player, mongoData, character, cacheSaveReason);
             Bukkit.getPluginManager().callEvent(e);
@@ -239,7 +240,7 @@ public class CacheManager implements Listener {
         if (RunicCore.getDatabaseManager().getPlayerData().find
                 (Filters.eq("player_uuid", uuid.toString())).first() == null) {
             Document newDataFile = new Document("player_uuid", uuid.toString())
-                    .append("guild", "None");
+                    .append("guild", "None").append("last_login", DatabaseUtil.SIMPLE_DATE_STRING);
             RunicCore.getDatabaseManager().getPlayerData().insertOne(newDataFile);
         }
     }

@@ -18,6 +18,8 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class DatabaseUtil {
 
@@ -208,5 +210,13 @@ public class DatabaseUtil {
             Bukkit.getLogger().info(ChatColor.RED + "Save location method encountered an exception!");
             e.printStackTrace();
         }
+    }
+
+    public static final String SIMPLE_DATE_STRING;
+
+    static {
+        LocalDate localDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        SIMPLE_DATE_STRING = localDate.format(formatter);
     }
 }

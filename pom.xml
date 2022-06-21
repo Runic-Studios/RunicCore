@@ -48,6 +48,10 @@
                                     <pattern>co.aikar.commands</pattern>
                                     <shadedPattern>com.runicrealms.libs.acf</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>com.runicrealms.shaded.org.apache.commons</shadedPattern>
+                                </relocation>
                             </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <artifactSet>
@@ -56,6 +60,9 @@
                                     <include>org.mongodb:bson</include>
                                     <include>org.mongodb:mongo-java-driver</include>
                                     <include>org.mongodb:mongodb-driver-core</include>
+
+                                    <include>redis.clients:jedis</include>
+                                    <include>org.apache.commons</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -164,7 +171,26 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>3.12.2</version>
+            <version>4.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <version>4.6.1</version>
+        </dependency>
+        <!-- Jedis / Redis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>4.2.3</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Apache Commons (for Jedis) -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.11.1</version>
         </dependency>
         <!-- MythicMobs -->
         <dependency>
