@@ -194,6 +194,7 @@ public class CacheManager implements Listener {
      * @param slot   of the character to load
      * @return a cache of info with all relevant information
      */
+    // TODO: only call this IF the data exists but not in redis
     public PlayerCache buildPlayerCache(Player player, Integer slot) {
 
         PlayerMongoData mongoData = new PlayerMongoData(player.getPlayer().getUniqueId().toString());
@@ -238,6 +239,11 @@ public class CacheManager implements Listener {
         /*
         If the data file doesn't exist, we're going to build it
          */
+        // TODO: 1. check redis
+        //  if (redis.findUser != null) return;
+        // if (player_data_30_days != null) return;
+        // if (playersDB.getcollection("players).find(filter).limit(1) != null) return;
+        // THEN build
         if (RunicCore.getDatabaseManager().getPlayerData().find
                 (Filters.eq("player_uuid", uuid.toString())).first() == null) {
             Document newDataFile = new Document("player_uuid", uuid.toString())

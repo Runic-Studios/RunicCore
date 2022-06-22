@@ -29,6 +29,8 @@ import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
+import com.runicrealms.plugin.redis.RedisManager;
+import com.runicrealms.plugin.redis.RedisSaveListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
@@ -80,6 +82,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ThreeDManager threeDManager;
     private static RunicShopManager runicShopManager;
     private static PlayerHungerManager playerHungerManager;
+    private static RedisManager redisManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -162,13 +165,16 @@ public class RunicCore extends JavaPlugin implements Listener {
         return playerHungerManager;
     }
 
+    public static RedisManager getRedisManager() {
+        return redisManager;
+    }
+
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
     }
 
     public void onEnable() {
 
-        RedisTest redisTest = new RedisTest();
         // Load config defaults
         this.loadConfig();
 
@@ -191,6 +197,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         threeDManager = new ThreeDManager();
         runicShopManager = new RunicShopManager();
         playerHungerManager = new PlayerHungerManager();
+        redisManager = new RedisManager();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
@@ -261,6 +268,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         threeDManager = null;
         runicShopManager = null;
         playerHungerManager = null;
+        redisManager = null;
     }
 
     @EventHandler
@@ -347,6 +355,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new EnderpearlListener(), this);
         pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
+        pm.registerEvents(new RedisSaveListener(), this);
         CharacterGuiManager.initIcons();
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
