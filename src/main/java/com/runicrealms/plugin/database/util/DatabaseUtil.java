@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.database.util;
 
+import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
+import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -213,10 +215,17 @@ public class DatabaseUtil {
     }
 
     public static final String SIMPLE_DATE_STRING;
+    public static final Bson LAST_LOGIN_DATE_FILTER;
 
     static {
         LocalDate localDate = LocalDate.now();
+        LocalDate oneMonthAgo = LocalDate.now().minusDays(30);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+//        DATE_ONE_MONTH_AGO = localDate.format(formatter);
         SIMPLE_DATE_STRING = localDate.format(formatter);
+        LAST_LOGIN_DATE_FILTER = Filters.gte("last_login", oneMonthAgo);
+
     }
+
+//    private static final String DATE_ONE_MONTH_AGO;
 }

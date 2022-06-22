@@ -21,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -125,7 +126,7 @@ public class CacheManager implements Listener {
         try {
             int slot = playerCache.getCharacterSlot();
             PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-            mongoData.set("last_login", DatabaseUtil.SIMPLE_DATE_STRING);
+            mongoData.set("last_login", LocalDate.now());
             PlayerMongoDataSection character = mongoData.getCharacter(slot);
             CacheSaveEvent e = new CacheSaveEvent(player, mongoData, character, cacheSaveReason);
             Bukkit.getPluginManager().callEvent(e);
@@ -240,7 +241,7 @@ public class CacheManager implements Listener {
         if (RunicCore.getDatabaseManager().getPlayerData().find
                 (Filters.eq("player_uuid", uuid.toString())).first() == null) {
             Document newDataFile = new Document("player_uuid", uuid.toString())
-                    .append("guild", "None").append("last_login", DatabaseUtil.SIMPLE_DATE_STRING);
+                    .append("guild", "None").append("last_login", LocalDate.now());
             RunicCore.getDatabaseManager().getPlayerData().insertOne(newDataFile);
         }
     }
