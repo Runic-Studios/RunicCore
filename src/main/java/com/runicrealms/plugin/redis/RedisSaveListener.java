@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.redis;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import org.bukkit.entity.Player;
@@ -8,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,12 +19,12 @@ public class RedisSaveListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onCacheSave(CharacterQuitEvent e) {
 
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            // do all writing in here
-            writePlayerDataToJedis(jedis, e.getPlayer());
-        }
+//        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+//
+//        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+//            // do all writing in here
+//            writePlayerDataToJedis(jedis, e.getPlayer());
+//        }
     }
 
     // todo: method to build player cache object from jedis
