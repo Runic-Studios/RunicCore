@@ -43,6 +43,7 @@ public class PlayerJoinListener implements Listener {
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
             RunicCore.getCacheManager().tryCreateNewPlayer(player);
             PlayerData playerData = new PlayerData(player, new PlayerMongoData(player.getUniqueId().toString()));
+            Bukkit.broadcastMessage("building player data object");
             RunicCore.getCacheManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
             ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
         }, 1L);

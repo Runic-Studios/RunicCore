@@ -253,10 +253,10 @@ public class CacheManager implements Listener {
         if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().containsKey(uuid.toString())) return;
         // Step 3: check entire mongo collection
         if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
-                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() == null)
+                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
             return;
         // Step 4: if no data is found, we create some data, add it to mongo, then store a reference in memory
-        RunicCore.getDatabaseManager().addDocument(uuid);
+        RunicCore.getDatabaseManager().addNewDocument(uuid);
     }
 
     private boolean checkRedisForPlayerData(Player player) {

@@ -4,10 +4,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoDatabase;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class PlayerMongoData implements MongoData {
 
@@ -20,9 +22,19 @@ public class PlayerMongoData implements MongoData {
         this.uuid = uuid;
         this.setUpdates = new HashSet<>();
         this.unsetUpdates = new HashSet<>();
-        this.document = RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid);
-        if (this.document == null) {
-            this.document = RunicCore.getDatabaseManager().addDocument(uuid);
+        try {
+            if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid) != null) {
+                this.document = RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid);
+                Bukkit.broadcastMessage("loading mongo document from last 30 days");
+            } else if (RunicCore.getDatabaseManager().isInCollection(UUID.fromString(uuid))) {
+                this.document = RunicCore.getDatabaseManager().retrieveDocumentFromCollection(UUID.fromString(uuid));
+                Bukkit.broadcastMessage("loading mongo document from collection");
+            } else {
+                this.document = RunicCore.getDatabaseManager().addNewDocument(uuid);
+                Bukkit.broadcastMessage("building new mongo document");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

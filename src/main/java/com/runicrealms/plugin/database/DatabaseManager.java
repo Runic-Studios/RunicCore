@@ -3,6 +3,7 @@ package com.runicrealms.plugin.database;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import org.bson.Document;
@@ -47,6 +48,9 @@ public class DatabaseManager {
                 playerDataLastMonth.put(String.valueOf(document.get("player_uuid")), document);
             }
             Bukkit.getLogger().info(playerDataLastMonth.size() + " is the size of the map!");
+            for (String uuid : playerDataLastMonth.keySet()) {
+                Bukkit.getLogger().info(uuid + " is uuid of document in map");
+            }
             guild_data = playersDB.getCollection("guild_data");
             shop_data = playersDB.getCollection("shop_data");
         } catch (Exception e) {
@@ -55,12 +59,27 @@ public class DatabaseManager {
     }
 
     /**
+     * WARNING: should only be called AFTER checking if the document is in the collection using 'isInCollection'
+     *
+     * @param uuid of the player to lookup
+     * @return the document (if found, older than 30 days) or null
+     */
+    public Document retrieveDocumentFromCollection(UUID uuid) {
+        Document document = playersDB.getCollection("player_data").find
+                (Filters.eq("player_uuid", uuid.toString())).limit(1).first();
+        if (document != null) {
+            this.playerDataLastMonth.put(String.valueOf(uuid), document);
+        }
+        return document;
+    }
+
+    /**
      * Adds a new mongo document (new players) and puts it into the lookup map in memory
      *
      * @param uuid of the player to add, string
      * @return the newly-added document
      */
-    public Document addDocument(String uuid) {
+    public Document addNewDocument(String uuid) {
         Document newDataFile = new Document("player_uuid", uuid).append("guild", "None").append("last_login", LocalDate.now());
         playersDB.getCollection("player_data").insertOne(newDataFile);
         playerDataLastMonth.put(uuid, newDataFile);
@@ -73,11 +92,20 @@ public class DatabaseManager {
      * @param uuid of the player to add
      * @return the newly-added document
      */
-    public Document addDocument(UUID uuid) {
+    public Document addNewDocument(UUID uuid) {
         Document newDataFile = new Document("player_uuid", uuid.toString()).append("guild", "None").append("last_login", LocalDate.now());
         playersDB.getCollection("player_data").insertOne(newDataFile);
         playerDataLastMonth.put(uuid.toString(), newDataFile);
         return newDataFile;
+    }
+
+    /**
+     * @param uuid
+     * @return
+     */
+    public boolean isInCollection(UUID uuid) {
+        return playersDB.getCollection("player_data").find
+                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null;
     }
 
     public MongoDatabase getPlayersDB() {

@@ -18,6 +18,7 @@ import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
+import com.runicrealms.plugin.model.ModelListener;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
@@ -356,6 +357,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
         pm.registerEvents(new RedisSaveListener(), this);
+        pm.registerEvents(new ModelListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

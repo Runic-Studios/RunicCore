@@ -95,7 +95,7 @@ public class CharacterGuiManager implements Listener {
     }
 
     /**
-     *
+     * Handles swapping between gui inventories in the character select screen
      */
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
