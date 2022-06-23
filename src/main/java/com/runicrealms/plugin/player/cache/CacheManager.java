@@ -10,6 +10,7 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
+import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bukkit.Bukkit;
@@ -23,10 +24,13 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+// todo: rename to sessionManager, save data from PlayerData and CharacterData
 public class CacheManager implements Listener {
 
     private static final int CACHE_PERIOD = 30;
@@ -34,14 +38,16 @@ public class CacheManager implements Listener {
     private final BukkitTask cacheSavingTask;
     private final ConcurrentHashMap<Player, PlayerCache> playerCaches;
     private final ConcurrentLinkedQueue<PlayerCache> queuedCaches;
+    private final Map<UUID, PlayerData> playerDataMap;
 
     /*
-    Saves files ASYNC
+    Saves files ASYNC // TODO: sync, only on shutdown
      */
     public CacheManager() {
 
         playerCaches = new ConcurrentHashMap<>();
         queuedCaches = new ConcurrentLinkedQueue<>();
+        this.playerDataMap = new HashMap<>();
 
         cacheSavingTask = new BukkitRunnable() { // Asynchronously
             @Override
@@ -181,6 +187,10 @@ public class CacheManager implements Listener {
         return queuedCaches;
     }
 
+    public Map<UUID, PlayerData> getPlayerDataMap() {
+        return playerDataMap;
+    }
+
     /*
      * Check if a player has loaded a character
      */
@@ -198,7 +208,7 @@ public class CacheManager implements Listener {
     // TODO: only call this IF the data exists but not in redis
     public PlayerCache buildPlayerCache(Player player, Integer slot) {
 
-        PlayerMongoData mongoData = new PlayerMongoData(player.getPlayer().getUniqueId().toString());
+        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         PlayerMongoDataSection character = mongoData.getCharacter(slot);
 
         String guildName = mongoData.get("guild", String.class); // account-wide
@@ -268,6 +278,7 @@ public class CacheManager implements Listener {
      * @param className the name of the class
      * @param slot      the slot of the character
      */
+    // TODO: move into database manager
     public void tryCreateNewCharacter(Player player, String className, Integer slot) {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         MongoDataSection mongoDataSection = mongoData.getSection("character." + slot);

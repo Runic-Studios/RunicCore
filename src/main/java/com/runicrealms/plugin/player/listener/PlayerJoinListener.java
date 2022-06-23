@@ -2,6 +2,8 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.database.PlayerMongoData;
+import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -24,13 +26,10 @@ public class PlayerJoinListener implements Listener {
     /**
      * Reset the player's displayed values when they join the server, before selecting a character
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST) // first
     public void onJoin(PlayerJoinEvent e) {
         e.setJoinMessage("");
         Player player = e.getPlayer();
-        // build database file async (if it doesn't exist)
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(),
-                () -> RunicCore.getCacheManager().tryCreateNewPlayer(player), 1L);
         player.getInventory().clear();
         player.setInvulnerable(true);
         player.setMaxHealth(20);
@@ -40,8 +39,13 @@ public class PlayerJoinListener implements Listener {
         player.setExp(0);
         player.setFoodLevel(20);
         player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
-        // prompt resource pack
-        ResourcePackManager.openPackForPlayer(player);
+        // build database file sync (if it doesn't exist)
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+            RunicCore.getCacheManager().tryCreateNewPlayer(player);
+            PlayerData playerData = new PlayerData(player, new PlayerMongoData(player.getUniqueId().toString()));
+            RunicCore.getCacheManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
+            ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
+        }, 1L);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -101,21 +105,21 @@ public class PlayerJoinListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFirstLoad(CharacterLoadEvent event) {
-        Player pl = event.getPlayer();
-        if (pl.hasPlayedBefore()) return;
+        Player player = event.getPlayer();
+        if (player.hasPlayedBefore()) return;
         // broadcast new player welcome message
-        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + pl.getName()
+        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
                 + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
         // heal player
-        HealthUtils.setPlayerMaxHealth(pl);
-        pl.setHealthScale(HealthUtils.getHeartAmount());
-        int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        pl.setHealth(playerHealth);
-        pl.setFoodLevel(20);
+        HealthUtils.setPlayerMaxHealth(player);
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        int playerHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        player.setHealth(playerHealth);
+        player.setFoodLevel(20);
     }
 
     // Handles loading in Runic NPCs on player login
-    // Loads with delay to allow for data loading in NPCs plugin
+    // Loads with delay, allowing for data loading in NPCs plugin
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLoadHandleNPCs(CharacterLoadEvent event) {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer()), 5L);
