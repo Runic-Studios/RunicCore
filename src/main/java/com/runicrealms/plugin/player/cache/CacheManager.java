@@ -20,6 +20,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -236,20 +238,35 @@ public class CacheManager implements Listener {
      */
     public void tryCreateNewPlayer(Player player) {
         UUID uuid = player.getUniqueId();
-        /*
-        If the data file doesn't exist, we're going to build it
-         */
-        // TODO: 1. check redis
-        //  if (redis.findUser != null) return;
-        // if (player_data_30_days != null) return;
-        // if (playersDB.getcollection("players).find(filter).limit(1) != null) return;
-        // THEN build
+        // Step 1: check if player data is cached in redis
+        if (checkRedisForPlayerData(player)) return;
+        // Step 2: check mongo documents loaded in memory (last 30 days)
+        if (RunicCore.getDatabaseManager().getPlayerData().find
+                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
+            return;
+        // Step 3: check entire mongo collection
+        if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
+                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() == null)
+            return;
+        // Step 4: if no data is found, we create some data and store it in redis
         if (RunicCore.getDatabaseManager().getPlayerData().find
                 (Filters.eq("player_uuid", uuid.toString())).first() == null) {
             Document newDataFile = new Document("player_uuid", uuid.toString())
                     .append("guild", "None").append("last_login", LocalDate.now());
             RunicCore.getDatabaseManager().getPlayerData().insertOne(newDataFile);
         }
+    }
+
+    private boolean checkRedisForPlayerData(Player player) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            if (jedis.exists(String.valueOf(player.getUniqueId()))) {
+                Bukkit.broadcastMessage("redis data found");
+                return true;
+            }
+        }
+        Bukkit.broadcastMessage("redis data not found");
+        return false;
     }
 
     /**
