@@ -12,7 +12,6 @@ import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -75,10 +74,10 @@ public class CacheManager implements Listener {
      * @param willQueue   whether to save immediately or queue file for saving
      */
     public void savePlayerCache(PlayerCache playerCache, boolean willQueue) { // could be a /class command
-        Player pl = Bukkit.getPlayer(playerCache.getPlayerID());
-        playerCache.setCurrentHealth((int) pl.getHealth()); // update current player hp
-        playerCache.setInventoryContents(pl.getInventory().getContents()); // update inventory
-        playerCache.setLocation(pl.getLocation()); // update location
+        Player player = Bukkit.getPlayer(playerCache.getPlayerID());
+        playerCache.setCurrentHealth((int) player.getHealth()); // update current player hp
+        playerCache.setInventoryContents(player.getInventory().getContents()); // update inventory
+        playerCache.setLocation(player.getLocation()); // update location
         if (willQueue) {
             queuedCaches.removeIf(n -> (n.getPlayerID() == playerCache.getPlayerID())); // prevent duplicates
             queuedCaches.add(playerCache); // queue the file for saving
@@ -241,20 +240,13 @@ public class CacheManager implements Listener {
         // Step 1: check if player data is cached in redis
         if (checkRedisForPlayerData(player)) return;
         // Step 2: check mongo documents loaded in memory (last 30 days)
-        if (RunicCore.getDatabaseManager().getPlayerData().find
-                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
-            return;
+        if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().containsKey(uuid.toString())) return;
         // Step 3: check entire mongo collection
         if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first() == null)
             return;
-        // Step 4: if no data is found, we create some data and store it in redis
-        if (RunicCore.getDatabaseManager().getPlayerData().find
-                (Filters.eq("player_uuid", uuid.toString())).first() == null) {
-            Document newDataFile = new Document("player_uuid", uuid.toString())
-                    .append("guild", "None").append("last_login", LocalDate.now());
-            RunicCore.getDatabaseManager().getPlayerData().insertOne(newDataFile);
-        }
+        // Step 4: if no data is found, we create some data, add it to mongo, then store a reference in memory
+        RunicCore.getDatabaseManager().addDocument(uuid);
     }
 
     private boolean checkRedisForPlayerData(Player player) {

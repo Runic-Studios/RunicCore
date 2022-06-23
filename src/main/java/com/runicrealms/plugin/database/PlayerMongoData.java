@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.database;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.model.Filters;
+import com.mongodb.client.MongoDatabase;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
 
@@ -20,10 +20,9 @@ public class PlayerMongoData implements MongoData {
         this.uuid = uuid;
         this.setUpdates = new HashSet<>();
         this.unsetUpdates = new HashSet<>();
-        this.document = RunicCore.getDatabaseManager().getPlayerData().find(Filters.eq("player_uuid", this.uuid)).first();
+        this.document = RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid);
         if (this.document == null) {
-            this.document = new Document("player_uuid", this.uuid);
-            RunicCore.getDatabaseManager().getPlayerData().insertOne(this.document);
+            this.document = RunicCore.getDatabaseManager().addDocument(uuid);
         }
     }
 
@@ -44,13 +43,16 @@ public class PlayerMongoData implements MongoData {
     public <T> T get(String key, Class<T> type) {
         if (key.contains(".")) {
             Object element = this.document.getEmbedded(Arrays.asList(key.split("\\.")), Object.class);
-            if (type == Integer.class && element instanceof String) return type.cast(Integer.parseInt((String) element));
+            if (type == Integer.class && element instanceof String)
+                return type.cast(Integer.parseInt((String) element));
             if (type == Short.class && element instanceof String) return type.cast(Short.parseShort((String) element));
             if (type == Long.class && element instanceof String) return type.cast(Long.parseLong((String) element));
             if (type == Byte.class && element instanceof String) return type.cast(Byte.parseByte((String) element));
-            if (type == Double.class && element instanceof String) return type.cast(Double.parseDouble((String) element));
+            if (type == Double.class && element instanceof String)
+                return type.cast(Double.parseDouble((String) element));
             if (type == Float.class && element instanceof String) return type.cast(Float.parseFloat((String) element));
-            if (type == Boolean.class && element instanceof String) return type.cast(Boolean.parseBoolean((String) element));
+            if (type == Boolean.class && element instanceof String)
+                return type.cast(Boolean.parseBoolean((String) element));
             return (T) element;
         }
         Object element = this.document.get(key);
@@ -60,24 +62,25 @@ public class PlayerMongoData implements MongoData {
         if (type == Byte.class && element instanceof String) return type.cast(Byte.parseByte((String) element));
         if (type == Double.class && element instanceof String) return type.cast(Double.parseDouble((String) element));
         if (type == Float.class && element instanceof String) return type.cast(Float.parseFloat((String) element));
-        if (type == Boolean.class && element instanceof String) return type.cast(Boolean.parseBoolean((String) element));
+        if (type == Boolean.class && element instanceof String)
+            return type.cast(Boolean.parseBoolean((String) element));
         return (T) element;
     }
 
     @Override
     public void refresh() {
-        this.document = RunicCore.getDatabaseManager().getPlayerData().find
-                (Filters.eq("player_uuid", this.uuid)).first();
+        this.document = RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid);
     }
 
     @Override
     public void save() {
+        MongoDatabase mongoDatabase = RunicCore.getDatabaseManager().getPlayersDB();
         if (this.setUpdates.size() > 0) {
             BasicDBObject updates = new BasicDBObject();
             for (MongoSetUpdate update : this.setUpdates) {
                 updates.append(update.getKey(), update.getValue());
             }
-            RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("player_uuid", this.uuid), new Document("$set", updates));
+            mongoDatabase.getCollection("player_data").updateOne(new Document("player_uuid", this.uuid), new Document("$set", updates));
             this.setUpdates.clear();
         }
         if (this.unsetUpdates.size() > 0) {
@@ -85,7 +88,7 @@ public class PlayerMongoData implements MongoData {
             for (MongoUnsetUpdate update : this.unsetUpdates) {
                 updates.append(update.getKey(), "");
             }
-            RunicCore.getDatabaseManager().getPlayerData().updateOne(new Document("player_uuid", this.uuid), new Document("$unset", updates));
+            mongoDatabase.getCollection("player_data").updateOne(new Document("player_uuid", this.uuid), new Document("$unset", updates));
             this.unsetUpdates.clear();
         }
         this.refresh();

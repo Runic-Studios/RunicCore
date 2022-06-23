@@ -4,9 +4,9 @@ import com.runicrealms.plugin.classes.ClassEnum;
 
 public class CharacterInfo {
 
-    private ClassEnum classType;
-    private int exp;
-    private int level;
+    private final ClassEnum classType;
+    private final int exp;
+    private final int level;
 
     public CharacterInfo(ClassEnum classType, int exp, int level) {
         this.classType = classType;

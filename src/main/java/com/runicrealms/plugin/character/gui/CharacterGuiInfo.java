@@ -6,6 +6,7 @@ import com.runicrealms.plugin.database.MongoData;
 import java.util.HashMap;
 import java.util.Map;
 
+// todo: ?
 public class CharacterGuiInfo {
 
     private Map<Integer, CharacterInfo> characters = new HashMap<Integer, CharacterInfo>();
@@ -40,7 +41,7 @@ public class CharacterGuiInfo {
 
     private void findFirstUnusedSlot() {
         for (int i = 1; i <= 10; i++) {
-            if (this.characters.get(i) == null){
+            if (this.characters.get(i) == null) {
                 this.firstUnusedSlot = i;
                 break;
             }

@@ -27,21 +27,21 @@ public class PlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
         e.setJoinMessage("");
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
         // build database file async (if it doesn't exist)
         Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(),
-                () -> RunicCore.getCacheManager().tryCreateNewPlayer(pl), 1L);
-        pl.getInventory().clear();
-        pl.setInvulnerable(true);
-        pl.setMaxHealth(20);
-        pl.setHealth(pl.getMaxHealth());
-        pl.setHealthScale(20);
-        pl.setLevel(0);
-        pl.setExp(0);
-        pl.setFoodLevel(20);
-        pl.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
+                () -> RunicCore.getCacheManager().tryCreateNewPlayer(player), 1L);
+        player.getInventory().clear();
+        player.setInvulnerable(true);
+        player.setMaxHealth(20);
+        player.setHealth(player.getMaxHealth());
+        player.setHealthScale(20);
+        player.setLevel(0);
+        player.setExp(0);
+        player.setFoodLevel(20);
+        player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
         // prompt resource pack
-        ResourcePackManager.openPackForPlayer(pl);
+        ResourcePackManager.openPackForPlayer(player);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
