@@ -4,10 +4,14 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
+import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -100,8 +104,38 @@ public class DatabaseManager {
     }
 
     /**
-     * @param uuid
-     * @return
+     * Attempts to populate the document for a new character slot with default values
+     *
+     * @param player    who created a new character
+     * @param className the name of the class
+     * @param slot      the slot of the character
+     */
+    public void addNewCharacter(Player player, String className, Integer slot) {
+        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
+        MongoDataSection mongoDataSection = mongoData.getSection("character." + slot);
+        mongoDataSection.set("class.name", className);
+        mongoDataSection.set("class.level", 0);
+        mongoDataSection.set("class.exp", 0);
+        mongoDataSection.set("prof.name", "None");
+        mongoDataSection.set("prof.level", 0);
+        mongoDataSection.set("prof.exp", 0);
+        mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
+        mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
+        mongoDataSection.set("storedHunger", 20);
+        mongoDataSection.set("outlaw.enabled", false);
+        mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
+        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
+        mongoData.save();
+        // todo: ADD TO REDIS
+    }
+
+    /**
+     * Checks the entire player_data collection for the given document.
+     * (For use if player has not been loaded into data structure for last 30 days).
+     * I believe there is a way to optimize this by just returning the cursor using limit()
+     *
+     * @param uuid of the player to lookup
+     * @return true if the player is in the collection
      */
     public boolean isInCollection(UUID uuid) {
         return playersDB.getCollection("player_data").find

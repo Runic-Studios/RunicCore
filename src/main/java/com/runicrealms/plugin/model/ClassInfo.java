@@ -1,14 +1,14 @@
-package com.runicrealms.plugin.character.gui;
+package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 
-public class CharacterInfo {
+public class ClassInfo {
 
     private final ClassEnum classType;
     private final int exp;
     private final int level;
 
-    public CharacterInfo(ClassEnum classType, int exp, int level) {
+    public ClassInfo(ClassEnum classType, int exp, int level) {
         this.classType = classType;
         this.exp = exp;
         this.level = level;

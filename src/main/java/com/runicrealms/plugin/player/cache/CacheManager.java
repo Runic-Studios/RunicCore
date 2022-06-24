@@ -1,19 +1,16 @@
 package com.runicrealms.plugin.player.cache;
 
 import com.mongodb.client.model.Filters;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterLoadEvent;
-import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.PlayerData;
-import com.runicrealms.plugin.player.utilities.HealthUtils;
-import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -279,21 +276,26 @@ public class CacheManager implements Listener {
      * @param slot      the slot of the character
      */
     // TODO: move into database manager
-    public void tryCreateNewCharacter(Player player, String className, Integer slot) {
-        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection mongoDataSection = mongoData.getSection("character." + slot);
-        mongoDataSection.set("class.name", className);
-        mongoDataSection.set("class.level", 0);
-        mongoDataSection.set("class.exp", 0);
-        mongoDataSection.set("prof.name", "None");
-        mongoDataSection.set("prof.level", 0);
-        mongoDataSection.set("prof.exp", 0);
-        mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
-        mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
-        mongoDataSection.set("storedHunger", 20);
-        mongoDataSection.set("outlaw.enabled", false);
-        mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        DatabaseUtil.saveLocation(mongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
-        mongoData.save();
+    public void loadCharacterData(Player player, String className, Integer slot) {
+        // Step 1: check if character data is cached in redis
+        if (checkRedisForCharacterData(player, slot)) return;
+        // Step 2: check mongo documents loaded in memory (last 30 days)
+
+        // Step 3: check entire mongo collection
+
+        // Step 4: if no data is found, we create some data, add it to mongo, then store a reference in redis
+        RunicCore.getDatabaseManager().addNewCharacter(player, className, slot);
+    }
+
+    private boolean checkRedisForCharacterData(Player player, Integer slot) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            if (jedis.exists(player.getUniqueId() + ":character:" + slot)) {
+                Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found");
+                return true;
+            }
+        }
+        Bukkit.broadcastMessage(ChatColor.RED + "redis character data not found");
+        return false;
     }
 }

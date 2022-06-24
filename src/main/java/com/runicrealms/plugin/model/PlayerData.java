@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.character.gui.CharacterInfo;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.MongoData;
 import org.bukkit.Bukkit;
@@ -22,7 +21,7 @@ public class PlayerData {
     private static final String DATA_SECTION_KEY = "character";
     private final UUID playerUuid;
     private final String guild;
-    private final Map<Integer, CharacterInfo> playerCharacters;
+    private final Map<Integer, ClassInfo> playerCharacters;
 
     /**
      * Build basic info about the player for the character select screen from mongo
@@ -38,7 +37,7 @@ public class PlayerData {
             if (mongoData.has(DATA_SECTION_KEY)) {
                 Bukkit.broadcastMessage("characters found");
                 for (String key : mongoData.getSection(DATA_SECTION_KEY).getKeys()) {
-                    playerCharacters.put(Integer.parseInt(key), new CharacterInfo(
+                    playerCharacters.put(Integer.parseInt(key), new ClassInfo(
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.exp", Integer.class),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.level", Integer.class)));
@@ -58,7 +57,7 @@ public class PlayerData {
         return guild;
     }
 
-    public Map<Integer, CharacterInfo> getPlayerCharacters() {
+    public Map<Integer, ClassInfo> getPlayerCharacters() {
         return playerCharacters;
     }
 }

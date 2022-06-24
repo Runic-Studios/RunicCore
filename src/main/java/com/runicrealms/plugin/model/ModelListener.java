@@ -11,13 +11,14 @@ import org.bukkit.event.Listener;
  */
 public class ModelListener implements Listener {
 
+    // todo: create 'characterselectevent' and 'characterloadedevent' to prevent race conditions
     @EventHandler
     public void onCharacterSelect(CharacterLoadEvent e) {
         // load guild data here
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
                 () -> {
                     RunicCore.getCacheManager().getPlayerDataMap().remove(e.getPlayer().getUniqueId());
-                }, 1L);
+                }, 5L);
     }
 
 }
