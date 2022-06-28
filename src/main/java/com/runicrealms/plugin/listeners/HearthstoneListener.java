@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -35,7 +35,7 @@ public class HearthstoneListener implements Listener {
      * Give new players the hearthstone
      */
     @EventHandler
-    public void onJoin(CharacterLoadEvent e) {
+    public void onJoin(CharacterSelectEvent e) {
         Player player = e.getPlayer();
         new BukkitRunnable() {
             @Override

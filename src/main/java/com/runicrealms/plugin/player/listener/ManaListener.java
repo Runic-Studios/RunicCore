@@ -2,7 +2,7 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.cache.PlayerCache;
@@ -22,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class ManaListener implements Listener {
 
     @EventHandler
-    public void onJoin(CharacterLoadEvent e) {
+    public void onJoin(CharacterSelectEvent e) {
 
         PlayerCache playerCache = e.getPlayerCache(); // grab right from event to prevent null issues
 

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,7 +43,7 @@ public class ScoreboardHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onPlayerJoin(CharacterLoadEvent e) {
+    public void onPlayerJoin(CharacterSelectEvent e) {
         Player player = e.getPlayer();
         setupScoreboard(player);
         NametagUtil.updateNametag(player);

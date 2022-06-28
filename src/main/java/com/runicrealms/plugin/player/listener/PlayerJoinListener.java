@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
@@ -53,16 +53,19 @@ public class PlayerJoinListener implements Listener {
      * Loads values on login from the CharacterData object once they select a character from select screen
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onJoin(CharacterLoadEvent e) {
+    public void onJoin(CharacterSelectEvent e) {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> loadDataFromCharacterObj(e.getPlayer(), e.getCharacterData()), 1L);
+                () -> {
+                    loadDataFromCharacterObj(e.getPlayer(), e.getCharacterData());
+                    Bukkit.broadcastMessage("loading data from character obj");
+                }, 1L);
     }
 
     /**
      * Setup for new players
      */
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onFirstLoad(CharacterLoadEvent event) {
+    public void onFirstLoad(CharacterSelectEvent event) {
         if (event.getPlayer().hasPlayedBefore()) return;
         Player player = event.getPlayer();
         // broadcast new player welcome message
@@ -81,7 +84,7 @@ public class PlayerJoinListener implements Listener {
      * Loads with delay, allowing for data loading in NPCs plugin
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onLoadHandleNPCs(CharacterLoadEvent event) {
+    public void onLoadHandleNPCs(CharacterSelectEvent event) {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer()), 5L);
     }
 

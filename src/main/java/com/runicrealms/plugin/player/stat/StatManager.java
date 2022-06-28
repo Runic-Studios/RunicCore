@@ -2,8 +2,8 @@ package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.runicitems.Stat;
@@ -26,7 +26,7 @@ public class StatManager implements Listener {
 
     // Fire as HIGHEST so that runic items loads cached stats first for base stats tree grab, and SkillTreeManager loads skill trees
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLoad(CharacterLoadEvent e) {
+    public void onLoad(CharacterSelectEvent e) {
         StatContainer statContainer = new StatContainer(e.getPlayer());
         playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
         grabBaseStatsFromTree(e.getPlayer(), 1);

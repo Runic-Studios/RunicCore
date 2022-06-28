@@ -3,7 +3,7 @@ package com.runicrealms.plugin.character.gui;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.model.CharacterData;
@@ -77,14 +77,14 @@ public class CharacterGuiManager implements Listener {
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
                 CharacterManager.getSelectedCharacters().put(player.getUniqueId(), slot);
-                CharacterLoadEvent characterLoadEvent = new CharacterLoadEvent
+                CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent
                         (
                                 RunicCore.getCacheManager().buildPlayerCache(player, slot),
                                 player,
                                 new CharacterData(player, slot, new PlayerMongoData(player.getUniqueId().toString()))
                         );
-                RunicCore.getCacheManager().getPlayerCaches().put(characterLoadEvent.getPlayer(), characterLoadEvent.getPlayerCache());
-                Bukkit.getPluginManager().callEvent(characterLoadEvent);
+                RunicCore.getCacheManager().getPlayerCaches().put(characterSelectEvent.getPlayer(), characterSelectEvent.getPlayerCache());
+                Bukkit.getPluginManager().callEvent(characterSelectEvent);
             }
         } else if (currentItem.getType() == CharacterSelectUtil.CHARACTER_CREATE_ITEM.getType()) {
             openAddCharacterInventory(player);

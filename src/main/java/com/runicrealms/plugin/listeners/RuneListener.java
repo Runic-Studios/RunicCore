@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemGeneric;
 import org.bukkit.GameMode;
@@ -31,7 +31,7 @@ public class RuneListener implements Listener {
      * Give new players the rune
      */
     @EventHandler
-    public void onCharacterLoad(CharacterLoadEvent e) {
+    public void onCharacterLoad(CharacterSelectEvent e) {
         Player pl = e.getPlayer();
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
         new BukkitRunnable() {

@@ -2,7 +2,7 @@ package com.runicrealms.plugin.player.cache;
 
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveEvent;
@@ -56,7 +56,7 @@ public class CacheManager implements Listener {
     }
 
     @EventHandler
-    public void onLoad(CharacterLoadEvent e) {
+    public void onLoad(CharacterSelectEvent e) {
         playerCaches.put(e.getPlayer(), e.getPlayerCache());
     }
 

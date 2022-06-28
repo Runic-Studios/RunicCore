@@ -2,8 +2,8 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
@@ -62,7 +62,7 @@ public class SkillTreeManager implements Listener {
      * skill points a player has already allocated from the total available at-level.
      */
     @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager
-    public void onLoad(CharacterLoadEvent e) {
+    public void onLoad(CharacterSelectEvent e) {
         Player player = e.getPlayer();
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
