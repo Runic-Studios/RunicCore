@@ -45,7 +45,9 @@ public class Consecration extends Spell implements MagicDamageSpell {
                 if (count > DURATION) {
                     this.cancel();
                 } else {
-                    createCircle(player, castLocation);
+                    createParticleRing(player, castLocation, RADIUS);
+                    createParticleRing(player, castLocation, RADIUS - 2);
+                    createParticleRing(player, castLocation, RADIUS - 4);
                     player.getWorld().playSound(castLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(verifyEnemy(player, en))) continue;
@@ -59,16 +61,23 @@ public class Consecration extends Spell implements MagicDamageSpell {
         }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
 
-    private void createCircle(Player pl, Location loc) {
+    /**
+     * Creates a ring of particles around the given location, spawned in the player's world, with the given radius
+     *
+     * @param player who summoned the particles
+     * @param loc    around which to build the ring
+     * @param radius of the circle
+     */
+    private void createParticleRing(Player player, Location loc, int radius) {
         int particles = 50;
         for (int i = 0; i < particles; i++) {
             double angle, x, z;
             angle = 2 * Math.PI * i / particles;
-            x = Math.cos(angle) * (float) RADIUS;
-            z = Math.sin(angle) * (float) RADIUS;
+            x = Math.cos(angle) * (float) radius;
+            z = Math.sin(angle) * (float) radius;
             loc.add(x, 0, z);
-            pl.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 5, 0, 0, 0, 0);
-            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
+            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
+            player.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
             loc.subtract(x, 0, z);
         }
     }

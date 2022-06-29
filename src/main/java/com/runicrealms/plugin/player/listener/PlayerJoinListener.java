@@ -120,7 +120,6 @@ public class PlayerJoinListener implements Listener {
         player.setExp((float) proportion);
         player.teleport(characterData.getBaseCharacterInfo().getLocation()); // set their location
         loadCurrentPlayerHealthAndHunger(player, characterData);
-//        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, playerCache), 2L);
     }
 
     /**
