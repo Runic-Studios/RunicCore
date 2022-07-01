@@ -178,6 +178,42 @@ public class DatabaseUtil {
         return null;
     }
 
+    /**
+     * @param location
+     * @return
+     */
+    public static String serializeLocation(Location location) {
+        World world = location.getWorld();
+        assert world != null;
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+        float yaw = location.getYaw();
+        float pitch = location.getPitch();
+        return world.getName() + ":" + x + ":" + y + ":" + z + ":" + yaw + ":" + pitch;
+    }
+
+    /**
+     * @param serializedLocation
+     * @return
+     */
+    public static Location loadLocation(String serializedLocation) {
+        try {
+            String[] values = serializedLocation.split(":");
+            World world = Bukkit.getWorld(values[0]);
+            double x = Double.parseDouble(values[1]);
+            double y = Double.parseDouble(values[2]);
+            double z = Double.parseDouble(values[3]);
+            float yaw = Float.parseFloat(values[4]);
+            float pitch = Float.parseFloat(values[5]);
+            return new Location(world, x, y, z, yaw, pitch);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getLogger().info("Error: legacy player location detected, re-spawning in tutorial!");
+            return CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK); // return hearth location
+        }
+    }
+
     public static Location loadLocation(Player player, PlayerMongoDataSection mongoDataSection) {
         try {
             World world = Bukkit.getWorld(mongoDataSection.get(("loc.world"), String.class));
