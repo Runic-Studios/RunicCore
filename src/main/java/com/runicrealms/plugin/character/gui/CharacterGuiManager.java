@@ -77,11 +77,16 @@ public class CharacterGuiManager implements Listener {
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
                 CharacterManager.getSelectedCharacters().put(player.getUniqueId(), slot);
+                CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player, slot);
+                // todo: if data is null, do something
+                if (characterData == null) {
+                    Bukkit.broadcastMessage("something went wrong");
+                }
                 CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent
                         (
                                 RunicCore.getCacheManager().buildPlayerCache(player, slot),
                                 player,
-                                new CharacterData(player, slot, new PlayerMongoData(player.getUniqueId().toString()))
+                                characterData
                         );
                 RunicCore.getCacheManager().getPlayerCaches().put(characterSelectEvent.getPlayer(), characterSelectEvent.getPlayerCache());
                 Bukkit.getPluginManager().callEvent(characterSelectEvent);
@@ -100,7 +105,6 @@ public class CharacterGuiManager implements Listener {
     private void handleAddCharacter(ItemStack currentItem, Player player) {
         if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
             String className = getClassNameFromIcon(currentItem);
-//            RunicCore.getCacheManager().loadCharacterData(player, className, characterCache.get(player.getUniqueId()).getFirstUnusedSlot());
             RunicCore.getDatabaseManager().addNewCharacter(player, className, characterCache.get(player.getUniqueId()).getFirstUnusedSlot());
             characterCache.get(player.getUniqueId()).addCharacter(new ClassInfo(ClassEnum.getFromName(className), 0, 0));
         }

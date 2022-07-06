@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.player.cache;
 
-import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -10,15 +9,12 @@ import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.PlayerData;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -27,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-// todo: rename to sessionManager, save data from PlayerData and CharacterData
 public class CacheManager implements Listener {
 
     private static final int CACHE_PERIOD = 30;
@@ -38,7 +33,7 @@ public class CacheManager implements Listener {
     private final Map<UUID, PlayerData> playerDataMap;
 
     /*
-    Saves files ASYNC // TODO: sync, only on shutdown
+    Saves files ASYNC // TODO: sync, only on shutdown (this whole class should be removed and relevant methods placed into database manager)
      */
     public CacheManager() {
 
@@ -235,67 +230,5 @@ public class CacheManager implements Listener {
                 currentHealth, maxMana, storedHunger,
                 isOutlaw, rating,
                 /*inventoryContents*/null, location, mongoData);
-    }
-
-    /**
-     * Builds a new database document for the given player if it doesn't already exist when they join server/lobby
-     *
-     * @param player who joined
-     */
-    public void tryCreateNewPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
-        // Step 1: check if player data is cached in redis
-        if (checkRedisForPlayerData(player)) return;
-        // Step 2: check mongo documents loaded in memory (last 30 days)
-        if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().containsKey(uuid.toString())) return;
-        // Step 3: check entire mongo collection
-        if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
-                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
-            return;
-        // Step 4: if no data is found, we create some data, add it to mongo, then store a reference in memory
-        RunicCore.getDatabaseManager().addNewDocument(uuid);
-    }
-
-    private boolean checkRedisForPlayerData(Player player) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            if (jedis.exists(String.valueOf(player.getUniqueId()))) {
-                Bukkit.broadcastMessage("redis data found");
-                return true;
-            }
-        }
-        Bukkit.broadcastMessage("redis data not found");
-        return false;
-    }
-
-    /**
-     * Attempts to populate the document for given character and slot with basic values
-     *
-     * @param player    who created a new character
-     * @param className the name of the class
-     * @param slot      the slot of the character
-     */
-    // TODO: move into database manager
-    public void loadCharacterData(Player player, String className, Integer slot) {
-        // Step 1: check if character data is cached in redis
-        if (checkRedisForCharacterData(player, slot)) return;
-        // Step 2: check mongo documents loaded in memory (last 30 days)
-
-        // Step 3: check entire mongo collection
-
-        // Step 4: if no data is found, we create some data, add it to mongo, then store a reference in redis
-        RunicCore.getDatabaseManager().addNewCharacter(player, className, slot);
-    }
-
-    private boolean checkRedisForCharacterData(Player player, Integer slot) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            if (jedis.exists(player.getUniqueId() + ":character:" + slot)) {
-                Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found");
-                return true;
-            }
-        }
-        Bukkit.broadcastMessage(ChatColor.RED + "redis character data not found");
-        return false;
     }
 }

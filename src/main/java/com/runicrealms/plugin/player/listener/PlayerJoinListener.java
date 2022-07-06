@@ -41,7 +41,7 @@ public class PlayerJoinListener implements Listener {
         player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
         // build database file sync (if it doesn't exist)
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-            RunicCore.getCacheManager().tryCreateNewPlayer(player);
+            RunicCore.getDatabaseManager().tryCreateNewPlayer(player);
             PlayerData playerData = new PlayerData(player, new PlayerMongoData(player.getUniqueId().toString()));
             Bukkit.broadcastMessage("building player data object");
             RunicCore.getCacheManager().getPlayerDataMap().put(player.getUniqueId(), playerData);

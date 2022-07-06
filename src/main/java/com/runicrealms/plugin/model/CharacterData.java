@@ -5,9 +5,11 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
+import com.runicrealms.plugin.redis.RedisManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 /**
  * Intermediary object used to read data from mongo or redis and then store data back in redis.
@@ -57,12 +59,16 @@ public class CharacterData {
         this.classInfo = tempClassInfo;
         this.professionInfo = new ProfessionInfo(profName, profExp, profLevel);
         this.outlawInfo = new OutlawInfo(isOutlaw, rating);
-        writeCharacterDataToJedis(RunicCore.getRedisManager().getJedisPool().getResource());
+        writeCharacterDataToJedis(RunicCore.getRedisManager().getJedisPool());
     }
 
-    // todo: build from redis
-//    public CharacterData(Player player, Jedis jedis) {
-//        this.baseCharacterInfo = new BaseCharacterInfo();
+//    /**
+//     * @param player
+//     * @param jedis
+//     */
+//    public CharacterData(Player player, int slot, Jedis jedis) {
+//        List<String> keys = jedis.get(player.getUniqueId() + ":character:" + slot);
+//        this.baseCharacterInfo = new BaseCharacterInfo(slot, keys.get("idk"));
 //        this.classInfo = new ClassInfo();
 //        this.professionInfo = new ProfessionInfo();
 //        this.outlawInfo = new OutlawInfo();
@@ -70,21 +76,22 @@ public class CharacterData {
 
     // todo: write object to mongo
 
-    // todo: write object to redis
-
     /**
      * Stores data in jedis/redis for caching
      *
-     * @param jedis the JedisPool resource from the RedisManager
+     * @param jedisPool the JedisPool from the RedisManager
      */
-    public void writeCharacterDataToJedis(Jedis jedis) {
-        String uuid = String.valueOf(baseCharacterInfo.getPlayerUuid());
-        String key = uuid + ":character:" + baseCharacterInfo.getSlot();
-        jedis.hmset(key, baseCharacterInfo.toMap());
-        jedis.hmset(key, classInfo.toMap());
-        jedis.hmset(key, professionInfo.toMap());
-        jedis.hmset(key, outlawInfo.toMap());
-        jedis.expire(key, EXPIRE_TIME);
+    public void writeCharacterDataToJedis(JedisPool jedisPool) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            String uuid = String.valueOf(baseCharacterInfo.getPlayerUuid());
+            String key = uuid + ":character:" + baseCharacterInfo.getSlot();
+            jedis.hmset(key, baseCharacterInfo.toMap());
+            jedis.hmset(key, classInfo.toMap());
+            jedis.hmset(key, professionInfo.toMap());
+            jedis.hmset(key, outlawInfo.toMap());
+            jedis.expire(key, EXPIRE_TIME);
+        }
     }
 
     public BaseCharacterInfo getBaseCharacterInfo() {
