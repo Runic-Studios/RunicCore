@@ -179,8 +179,10 @@ public class DatabaseUtil {
     }
 
     /**
-     * @param location
-     * @return
+     * Serializes a character's location data so that it may be stored as a readable string in redis
+     *
+     * @param location the location of a currently selected character
+     * @return a string for storage in redis
      */
     public static String serializeLocation(Location location) {
         World world = location.getWorld();
@@ -194,8 +196,10 @@ public class DatabaseUtil {
     }
 
     /**
-     * @param serializedLocation
-     * @return
+     * Deserializes a character's location data from a redis string
+     *
+     * @param serializedLocation the serialized string
+     * @return a Location object
      */
     public static Location loadLocation(String serializedLocation) {
         try {

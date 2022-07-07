@@ -38,9 +38,4 @@ public class OutlawInfo implements JedisSerializable {
             put("outlawRating", String.valueOf(outlawRating));
         }};
     }
-
-    @Override
-    public <T> T fromMap(String key, Class<T> type) {
-        return null;
-    }
 }

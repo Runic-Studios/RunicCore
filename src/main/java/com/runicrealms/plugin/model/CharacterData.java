@@ -34,6 +34,7 @@ public class CharacterData {
      */
     public CharacterData(Player player, int slot, PlayerMongoData playerMongoData) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+        // todo: move these builders into each class
         int currentHealth = character.get("currentHP", Integer.class);
         int maxMana = character.get("maxMana", Integer.class);
         int storedHunger = character.get("storedHunger", Integer.class) != null ? character.get("storedHunger", Integer.class) : 20;
@@ -62,16 +63,34 @@ public class CharacterData {
         writeCharacterDataToJedis(RunicCore.getRedisManager().getJedisPool());
     }
 
-//    /**
-//     * @param player
-//     * @param jedis
-//     */
+    /**
+     * @param player
+     * @param slot
+     * @param jedis
+     */
 //    public CharacterData(Player player, int slot, Jedis jedis) {
-//        List<String> keys = jedis.get(player.getUniqueId() + ":character:" + slot);
-//        this.baseCharacterInfo = new BaseCharacterInfo(slot, keys.get("idk"));
-//        this.classInfo = new ClassInfo();
-//        this.professionInfo = new ProfessionInfo();
-//        this.outlawInfo = new OutlawInfo();
+//        List<String> fields = new ArrayList<>();
+//        Map<String, String> fieldsMap = new HashMap<>();
+//        fields.addAll(BaseCharacterInfo.getFields());
+////        fields.addAll();
+////        fields.addAll();
+////        fields.addAll();
+//        int index = 0;
+//        List<String> values = jedis.hmget(player.getUniqueId() + ":character:" + slot, fields.toArray(new String[0]));
+//        for (int i = 0; i < fields.toArray(new String[0]).length; i++) {
+//            fieldsMap.put(fields.get(i), values.get(i));
+//        }
+//        for (String key : fieldsMap.keySet()) {
+//            Bukkit.broadcastMessage("key is: " + key + ", and value is: " + fieldsMap.get(key));
+//        }
+////        for (String s : jedis.hmget(player.getUniqueId() + ":character:" + slot, fields.toArray(new String[0]))) {
+////            fieldsMap.put(fields.get(index), s);
+////            Bukkit.broadcastMessage(s);
+////        }
+////        this.baseCharacterInfo = new BaseCharacterInfo(fieldsMap);
+////        this.classInfo = new ClassInfo(fieldsMap);
+////        this.professionInfo = new ProfessionInfo(fieldsMap);
+////        this.outlawInfo = new OutlawInfo(fieldsMap);
 //    }
 
     // todo: write object to mongo

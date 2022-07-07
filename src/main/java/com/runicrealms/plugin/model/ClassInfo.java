@@ -49,9 +49,4 @@ public class ClassInfo implements JedisSerializable {
             put("level", String.valueOf(level));
         }};
     }
-
-    @Override
-    public <T> T fromMap(String key, Class<T> type) {
-        return null;
-    }
 }

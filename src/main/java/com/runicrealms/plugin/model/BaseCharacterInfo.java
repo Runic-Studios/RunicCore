@@ -3,11 +3,18 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import org.bukkit.Location;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class BaseCharacterInfo implements JedisSerializable {
+    static List<String> fields = new ArrayList<String>() {{
+        add("slot");
+        add("currentHp");
+        add("maxMana");
+        add("storedHunger");
+        add("playerUuid");
+        add("location");
+    }};
+
     private final int slot;
     private final int currentHp;
     private final int maxMana;
@@ -34,6 +41,18 @@ public class BaseCharacterInfo implements JedisSerializable {
         this.location = location;
     }
 
+    /**
+     * @param fields
+     */
+    public BaseCharacterInfo(Map<String, String> fields) {
+        this.slot = Integer.parseInt(fields.get("slot"));
+        this.currentHp = Integer.parseInt(fields.get("currentHp"));
+        this.maxMana = Integer.parseInt(fields.get("maxMana"));
+        this.storedHunger = Integer.parseInt(fields.get("storedHunger"));
+        this.playerUuid = UUID.fromString(fields.get("playerUuid"));
+        this.location = DatabaseUtil.loadLocation(fields.get("location"));
+    }
+
     public int getSlot() {
         return slot;
     }
@@ -58,6 +77,10 @@ public class BaseCharacterInfo implements JedisSerializable {
         return location;
     }
 
+    public static List<String> getFields() {
+        return fields;
+    }
+
     /**
      * Returns a map that can be used to set values in redis
      *
@@ -73,10 +96,5 @@ public class BaseCharacterInfo implements JedisSerializable {
             put("playerUuid", String.valueOf(playerUuid));
             put("location", DatabaseUtil.serializeLocation(location));
         }};
-    }
-
-    @Override
-    public <T> T fromMap(String key, Class<T> type) {
-        return null;
     }
 }

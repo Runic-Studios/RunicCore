@@ -46,9 +46,4 @@ public class ProfessionInfo implements JedisSerializable {
             put("profLevel", String.valueOf(profLevel));
         }};
     }
-
-    @Override
-    public <T> T fromMap(String key, Class<T> type) {
-        return null;
-    }
 }

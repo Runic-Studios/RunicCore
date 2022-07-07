@@ -1,11 +1,17 @@
 package com.runicrealms.plugin.redis;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.model.BaseCharacterInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Singleton class to manager connection to redis and jedis pool
@@ -57,10 +63,22 @@ public class RedisManager {
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
             if (jedis.exists(player.getUniqueId() + ":character:" + slot)) {
-                Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found");
-                for (String s : jedis.hmget(player.getUniqueId() + ":character:" + slot, "location")) {
-                    Bukkit.broadcastMessage(s);
+//                CharacterData characterData = new CharacterData(player, slot, jedis);
+
+
+                List<String> fields = new ArrayList<>();
+                Map<String, String> fieldsMap = new HashMap<>();
+                fields.addAll(BaseCharacterInfo.getFields());
+                List<String> values = jedis.hmget(player.getUniqueId() + ":character:" + slot, fields.toArray(new String[0]));
+                for (int i = 0; i < fields.toArray(new String[0]).length; i++) {
+                    fieldsMap.put(fields.get(i), values.get(i));
                 }
+                for (String key : fieldsMap.keySet()) {
+                    Bukkit.broadcastMessage("key is: " + key + ", and value is: " + fieldsMap.get(key));
+                }
+
+
+                Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building data from redis");
 //                return new CharacterData(player, slot, jedis);
                 return true;
             }
