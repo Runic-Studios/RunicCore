@@ -11,6 +11,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
 
+import java.util.UUID;
+
 /**
  * Class for informing the player of how many levels until they unlock skill points, or whether they have points unspent
  */
@@ -21,9 +23,11 @@ public class SkillPointsListener implements Listener {
 
     public SkillPointsListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (Player loadedPlayer : RunicCoreAPI.getLoadedPlayers()) {
-                if (!playerHasUnspentSkillPoints(loadedPlayer)) continue;
-                sendSkillPointsReminderMessage(loadedPlayer);
+            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null) continue;
+                if (!playerHasUnspentSkillPoints(player)) continue;
+                sendSkillPointsReminderMessage(player);
             }
         }, 0, ANNOUNCEMENT_TIME * 20L);
     }

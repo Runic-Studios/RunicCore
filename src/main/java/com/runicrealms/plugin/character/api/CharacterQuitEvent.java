@@ -1,32 +1,32 @@
 package com.runicrealms.plugin.character.api;
 
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * A custom event which is called when a player disconnects after selecting a character
+ *
+ * @author Skyfallin
+ */
 public class CharacterQuitEvent extends Event {
 
-    private final PlayerCache cache;
     private final Player player;
+    private final int slot;
 
     private static final HandlerList handlers = new HandlerList();
 
-    public CharacterQuitEvent(PlayerCache cache, Player player) {
-        this.cache = cache;
+    public CharacterQuitEvent(final Player player, final int slot) {
         this.player = player;
-    }
-
-    public PlayerCache getPlayerCache() {
-        return this.cache;
+        this.slot = slot;
     }
 
     public Player getPlayer() {
         return this.player;
     }
 
-    public Integer getSlot() {
-        return this.cache.getCharacterSlot();
+    public int getSlot() {
+        return this.slot;
     }
 
     @Override

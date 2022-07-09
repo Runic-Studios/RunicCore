@@ -7,7 +7,7 @@ import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.database.event.CacheSaveEvent;
+import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import org.bukkit.entity.Player;
@@ -44,7 +44,7 @@ public class SkillTreeManager implements Listener {
      * Saves player skill tree info whenever the player cache is saved.
      */
     @EventHandler
-    public void onCacheSave(CacheSaveEvent e) {
+    public void onCacheSave(MongoSaveEvent e) {
         if (RunicCoreAPI.getSkillTree(e.getPlayer(), 1) != null)
             RunicCoreAPI.getSkillTree(e.getPlayer(), 1).save(e.getMongoDataSection());
         if (RunicCoreAPI.getSkillTree(e.getPlayer(), 2) != null)

@@ -12,7 +12,7 @@ public class ModelListener implements Listener {
 
     @EventHandler
     public void onCharacterSelect(CharacterLoadedEvent e) {
-        RunicCore.getCacheManager().getPlayerDataMap().remove(e.getPlayer().getUniqueId());
+        RunicCore.getDatabaseManager().getPlayerDataMap().remove(e.getPlayer().getUniqueId());
     }
 
 }

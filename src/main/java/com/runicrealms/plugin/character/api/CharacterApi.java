@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.character.api;
 
-import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import org.bukkit.entity.Player;
 

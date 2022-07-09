@@ -8,8 +8,8 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
@@ -30,10 +30,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RunicCoreAPI {
@@ -69,13 +66,51 @@ public class RunicCoreAPI {
     }
 
     /**
-     * Quickly grab a string representing the class the player is using, in lowercase!
+     * Quickly grab a string representing the class the player is using from redis, in lowercase!
      *
      * @param player to grab class for
      * @return lowercase string representing their primary class
      */
-    public static String getPlayerClass(Player player) {
-        return RunicCoreAPI.getPlayerCache(player).getClassName().toLowerCase();
+//    public static String getPlayerClass(Player player) {
+//        return RedisUtil.getRedisValue(player, "classType");
+////        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+////        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+////            jedis.auth(RedisManager.REDIS_PASSWORD);
+////            int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
+////            String key = player.getUniqueId() + ":character:" + slot;
+////            if (jedis.exists(key)) {
+////                return jedis.hmget(key, "classType").get(0);
+////            }
+////        }
+////        return "";
+//    }
+
+    /**
+     * @param player
+     * @param field
+     * @return
+     */
+    public static String getRedisValue(Player player, String field) {
+        return RedisUtil.getRedisValue(player, field);
+    }
+
+    /**
+     * @param player
+     * @param fields
+     * @return
+     */
+    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
+        return RedisUtil.getRedisValues(player, fields);
+    }
+
+    /**
+     * @param player
+     * @param field
+     * @param value
+     * @return
+     */
+    public static boolean setRedisValue(Player player, String field, String value) {
+        return RedisUtil.setRedisValue(player, field, value);
     }
 
     /**
@@ -137,8 +172,8 @@ public class RunicCoreAPI {
         return RunicCore.getBaseOutlawRating();
     }
 
-    public static ConcurrentHashMap.KeySetView<Player, PlayerCache> getLoadedPlayers() {
-        return RunicCore.getCacheManager().getLoadedPlayers();
+    public static ConcurrentHashMap.KeySetView<UUID, Integer> getLoadedCharacters() {
+        return RunicCore.getDatabaseManager().getLoadedCharacters();
     }
 
     /**
@@ -182,13 +217,13 @@ public class RunicCoreAPI {
     }
 
     /**
-     * Returns specified player cache in-memory for player
+     * Returns the currently selected character for the given player
      *
-     * @param player to get cache for
-     * @return a PlayerCache for player with wrapper data
+     * @param uuid of the player
+     * @return an int representing their character slot (3, for example)
      */
-    public static PlayerCache getPlayerCache(Player player) {
-        return RunicCore.getCacheManager().getPlayerCaches().get(player);
+    public static int getCharacterSlot(UUID uuid) {
+        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid);
     }
 
     /**
@@ -410,8 +445,8 @@ public class RunicCoreAPI {
      *
      * @param player player to calculate mana for
      */
-    public static void updateMaxMana(Player player) {
-        ManaListener.calculateMana(player);
+    public static int calculateMaxMana(Player player) {
+        return ManaListener.calculateMaxMana(player);
     }
 
 

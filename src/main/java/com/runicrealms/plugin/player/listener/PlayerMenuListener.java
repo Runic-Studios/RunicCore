@@ -2,7 +2,6 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.StatsGUI;
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
@@ -24,10 +23,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Controls the player menu in the inventory crafting slots
@@ -41,9 +37,9 @@ public class PlayerMenuListener implements Listener {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
-            for (PlayerCache playerCache : RunicCore.getCacheManager().getPlayerCaches().values()) {
+            for (UUID uuid : RunicCore.getDatabaseManager().getLoadedCharacters()) {
 
-                Player player = Bukkit.getPlayer(playerCache.getPlayerID());
+                Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
                 InventoryView view = player.getOpenInventory();
 

@@ -3,7 +3,6 @@ package com.runicrealms.plugin.player.listener;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

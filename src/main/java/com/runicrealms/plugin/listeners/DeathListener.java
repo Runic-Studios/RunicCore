@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
@@ -40,8 +40,7 @@ public class DeathListener implements Listener {
         // reset health, food, mana
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(victim).getMaxMana();
-        RunicCore.getRegenManager().getCurrentManaList().put(victim.getUniqueId(), maxMana);
+        RunicCoreAPI.calculateMaxMana(victim);
 
         // particles, sounds
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);

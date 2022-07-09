@@ -5,7 +5,6 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
-import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.*;
 import com.runicrealms.plugin.database.DatabaseManager;
@@ -26,12 +25,10 @@ import com.runicrealms.plugin.party.PartyManager;
 import com.runicrealms.plugin.player.CombatManager;
 import com.runicrealms.plugin.player.PlayerHungerManager;
 import com.runicrealms.plugin.player.RegenManager;
-import com.runicrealms.plugin.player.cache.CacheManager;
 import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.redis.RedisManager;
-import com.runicrealms.plugin.redis.RedisSaveListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
@@ -53,6 +50,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -73,7 +71,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static TabListManager tabListManager;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
-    private static CacheManager cacheManager;
     private static ProtocolManager protocolManager;
     private static DatabaseManager databaseManager;
     private static PartyChannel partyChannel;
@@ -124,10 +121,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static BossTagger getBossTagger() {
         return bossTagger;
-    }
-
-    public static CacheManager getCacheManager() {
-        return cacheManager;
     }
 
     public static ProtocolManager getProtocolManager() {
@@ -190,7 +183,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         tabListManager = new TabListManager(this);
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
-        cacheManager = new CacheManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         databaseManager = new DatabaseManager();
         skillTreeManager = new SkillTreeManager();
@@ -261,7 +253,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         tabListManager = null;
         mobTagger = null;
         bossTagger = null;
-        cacheManager = null;
         databaseManager = null;
         partyChannel = null;
         skillTreeManager = null;
@@ -272,19 +263,20 @@ public class RunicCore extends JavaPlugin implements Listener {
         redisManager = null;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST) // first
     public void onRunicShutdown(ServerShutdownEvent e) {
         /*
         Save current state of player data
          */
-        getLogger().info(" §cRunicCore has been disabled.");
-        getCacheManager().saveCaches(); // save player data
-        //getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
-        getCacheManager().getCacheSavingTask().cancel(); // cancel cache saving queue
-        getCacheManager().saveAllCachedPlayers(CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
+//        getCacheManager().saveCaches(); // save player data
+//        getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
+//        getCacheManager().getCacheSavingTask().cancel(); // cancel cache saving queue
+        // todo: save all player data as well
+        getDatabaseManager().saveAllCharacters(CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
         /*
         Notify RunicRestart
          */
+        getLogger().info(" §cRunicCore has been disabled.");
         RunicRestartApi.markPluginSaved("core");
     }
 
@@ -297,7 +289,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         PluginManager pm = this.getServer().getPluginManager();
 
-        pm.registerEvents(RunicCore.getCacheManager(), this);
         pm.registerEvents(RunicCore.getScoreboardHandler(), this);
         pm.registerEvents(RunicCore.getMobTagger(), this);
         pm.registerEvents(RunicCore.getBossTagger(), this);
@@ -356,7 +347,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new EnderpearlListener(), this);
         pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
-        pm.registerEvents(new RedisSaveListener(), this);
         pm.registerEvents(new ModelListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);

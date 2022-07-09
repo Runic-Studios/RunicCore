@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -52,7 +51,7 @@ public abstract class Spell implements ISpell, Listener {
 
         // verify class
         boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
-                (RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName());
+                (RunicCoreAPI.getRedisValue(player, "classType"));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -100,11 +99,11 @@ public abstract class Spell implements ISpell, Listener {
         // probably unnecessary, but insurance
         if (playerAlly instanceof ArmorStand) return false;
 
-        PlayerCache casterData = RunicCoreAPI.getPlayerCache(caster);
-        PlayerCache allyData = RunicCoreAPI.getPlayerCache((Player) ally);
+        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster, "outlawEnabled"));
+        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly, "outlawEnabled"));
 
         // If either player is an outlaw
-        if (casterData.getIsOutlaw() || allyData.getIsOutlaw())
+        if (casterIsOutlaw || allyIsOutlaw)
             // Does the caster have a party?
             return RunicCore.getPartyManager().getPlayerParty(caster) != null
                     // Does that party contain the outlaw ally?
@@ -286,9 +285,9 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public int percentMissingHealth(Entity entity, double percent) {
         if (!(entity instanceof LivingEntity)) return 0;
-        LivingEntity le = (LivingEntity) entity;
-        double max = le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        double missing = max - le.getHealth();
+        LivingEntity livingEntity = (LivingEntity) entity;
+        double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double missing = max - livingEntity.getHealth();
         return (int) (missing * percent);
     }
 }

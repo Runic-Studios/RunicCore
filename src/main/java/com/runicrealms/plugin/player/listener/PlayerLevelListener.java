@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.player.listener;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.NametagUtil;
@@ -15,6 +14,7 @@ import org.bukkit.event.player.PlayerLevelChangeEvent;
 
 /**
  * Handles all the logic for when a player levels-up their primary class (archer, mage, etc.)
+ *
  * @author Skyfallin_
  */
 public class PlayerLevelListener implements Listener {
@@ -22,39 +22,35 @@ public class PlayerLevelListener implements Listener {
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent e) {
 
-        Player pl = e.getPlayer();
-        if (pl.getLevel() > PlayerLevelUtil.getMaxLevel())
-            return; // insurance
-        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCaches().get(pl);
+        Player player = e.getPlayer();
+        if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
 
-        // update player's level
-        playerCache.setClassLevel(pl.getLevel());
+        // update player's level in redis
+        RunicCoreAPI.setRedisValue(player, "level", String.valueOf(player.getLevel()));
 
         // grab the player's new info
-        String className = playerCache.getClassName();
-        if (className == null)
-            return;
-        int classLevel = playerCache.getClassLevel();
+        String className = RunicCoreAPI.getRedisValue(player, "classType");
+        if (className.equals("")) return;
+        int classLevel = player.getLevel();
 
-        HealthUtils.setPlayerMaxHealth(pl);
-        pl.setHealthScale(HealthUtils.getHeartAmount());
-        int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        pl.setHealth(playerHealth);
-        pl.setFoodLevel(20);
+        HealthUtils.setPlayerMaxHealth(player);
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        int playerHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        player.setHealth(playerHealth);
+        player.setFoodLevel(20);
 
-        if (pl.getLevel() == 0)
-            return;
+        if (player.getLevel() == 0) return;
 
-        NametagUtil.updateNametag(pl);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+        NametagUtil.updateNametag(player);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
         // title screen message
-        if (pl.getLevel() >= PlayerLevelUtil.getMaxLevel()) {
-            pl.sendTitle(
+        if (player.getLevel() >= PlayerLevelUtil.getMaxLevel()) {
+            player.sendTitle(
                     ChatColor.GOLD + "Max Level!",
                     ChatColor.GOLD + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         } else {
-            pl.sendTitle(
+            player.sendTitle(
                     ChatColor.GREEN + "Level Up!",
                     ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         }
@@ -63,29 +59,30 @@ public class PlayerLevelListener implements Listener {
     /**
      * This method is used to calculate how much HP the wearer has from items. So it subtracts the base hp of their
      * level. Everything uses GENERIC_MAX_HEALTH, so this is the simplest way I've done it for now.
+     *
      * @author Skyfallin
      */
-    public static int getHpAtLevel(Player pl) {
+    public static int getHpAtLevel(Player player) {
 
         // grab the player's new info
         String className;
         try {
-            className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+            className = RunicCoreAPI.getRedisValue(player, "classType");
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }
 
         switch (className.toLowerCase()) {
             case "archer":
-                return (PlayerLevelUtil.getArcherHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getArcherHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
             case "cleric":
-                return (PlayerLevelUtil.getClericHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getClericHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
             case "mage":
-                return (PlayerLevelUtil.getMageHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getMageHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
             case "rogue":
-                return (PlayerLevelUtil.getRogueHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getRogueHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
             case "warrior":
-                return (PlayerLevelUtil.getWarriorHpLv() * pl.getLevel()) + HealthUtils.getBaseHealth();
+                return (PlayerLevelUtil.getWarriorHpLv() * player.getLevel()) + HealthUtils.getBaseHealth();
         }
 
         return HealthUtils.getBaseHealth();

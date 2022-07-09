@@ -5,7 +5,6 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.RegenManager;
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,15 +23,12 @@ public class ManaListener implements Listener {
     @EventHandler
     public void onJoin(CharacterSelectEvent e) {
 
-        PlayerCache playerCache = e.getPlayerCache(); // grab right from event to prevent null issues
-
         Player player = e.getPlayer();
 
         // set their mana to their maxMana on login
-        int maxMana = playerCache.getMaxMana();
+        int maxMana = calculateMaxMana(player);
         if (maxMana == 0) {
             maxMana = (int) (RegenManager.getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(player) * player.getLevel()));
-            RunicCore.getCacheManager().getPlayerCaches().get(player).setMaxMana(maxMana);
         }
         // store player's current mana
         RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), maxMana);
@@ -45,7 +41,7 @@ public class ManaListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                calculateMana(player);
+                calculateMaxMana(player);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
@@ -64,7 +60,7 @@ public class ManaListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    calculateMana(player);
+                    calculateMaxMana(player);
                 }
             }.runTaskLater(RunicCore.getInstance(), 1L);
         }
@@ -79,7 +75,7 @@ public class ManaListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                calculateMana(player);
+                calculateMaxMana(player);
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
@@ -88,9 +84,7 @@ public class ManaListener implements Listener {
     public void onLevelUp(PlayerLevelChangeEvent e) {
         Player player = e.getPlayer();
         if (player.getLevel() > RegenManager.getBaseMana()) return;
-        calculateMana(player);
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
-        RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), maxMana);
+        calculateMaxMana(player);
     }
 
     /**
@@ -98,17 +92,15 @@ public class ManaListener implements Listener {
      *
      * @param player to calculate mana for
      */
-    public static void calculateMana(Player player) {
-
-        int totalItemManaBoost = 0;
-
-        // update stored mana in config, update scoreboard
-        int newMaxMana = (int) (RegenManager.getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(player) * player.getLevel()) + totalItemManaBoost);
-        // grab extra mana from intelligence
+    public static int calculateMaxMana(Player player) {
+        int maxMana;
+        // recalculate max mana based on player level
+        int newMaxMana = (int) (RegenManager.getBaseMana() + (RunicCore.getRegenManager().getManaPerLv(player) * player.getLevel()));
+        // grab extra mana from wisdom
         double wisdomBoost = newMaxMana * (Stat.getMaxManaMult() * RunicCoreAPI.getPlayerWisdom(player.getUniqueId()));
-        RunicCore.getCacheManager().getPlayerCaches().get(player).setMaxMana((int) (newMaxMana + wisdomBoost));
+        maxMana = (int) (newMaxMana + wisdomBoost);
 
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
+        // fix current mana if it is now too high
         int currentMana;
         try {
             currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
@@ -118,5 +110,6 @@ public class ManaListener implements Listener {
         if (currentMana > maxMana) {
             RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), maxMana);
         }
+        return maxMana;
     }
 }

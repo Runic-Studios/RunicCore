@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.character.gui;
 
-import com.runicrealms.plugin.model.ClassInfo;
+import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.PlayerData;
 
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class CharacterGuiInfo {
 
-    private final Map<Integer, ClassInfo> characters = new HashMap<>();
+    private final Map<Integer, ClassData> characters = new HashMap<>();
     private int firstUnusedSlot = 1;
 
     public CharacterGuiInfo(PlayerData playerData) {
@@ -35,7 +35,7 @@ public class CharacterGuiInfo {
     /**
      * @param character
      */
-    public void addCharacter(ClassInfo character) {
+    public void addCharacter(ClassData character) {
         this.characters.put(this.firstUnusedSlot, character);
         this.findFirstUnusedSlot();
     }
@@ -70,7 +70,7 @@ public class CharacterGuiInfo {
     /**
      * @return
      */
-    public Map<Integer, ClassInfo> getCharacterInfo() {
+    public Map<Integer, ClassData> getCharacterInfo() {
         return this.characters;
     }
 

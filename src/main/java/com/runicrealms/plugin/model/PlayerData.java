@@ -21,7 +21,7 @@ public class PlayerData {
     private static final String DATA_SECTION_KEY = "character";
     private final UUID playerUuid;
     private final String guild;
-    private final Map<Integer, ClassInfo> playerCharacters;
+    private final Map<Integer, ClassData> playerCharacters;
 
     /**
      * Build basic info about the player for the character select screen from mongo
@@ -37,7 +37,7 @@ public class PlayerData {
             if (mongoData.has(DATA_SECTION_KEY)) {
                 Bukkit.broadcastMessage("characters found");
                 for (String key : mongoData.getSection(DATA_SECTION_KEY).getKeys()) {
-                    playerCharacters.put(Integer.parseInt(key), new ClassInfo(
+                    playerCharacters.put(Integer.parseInt(key), new ClassData(
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.exp", Integer.class),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.level", Integer.class)));
@@ -57,7 +57,7 @@ public class PlayerData {
         return guild;
     }
 
-    public Map<Integer, ClassInfo> getPlayerCharacters() {
+    public Map<Integer, ClassData> getPlayerCharacters() {
         return playerCharacters;
     }
 }

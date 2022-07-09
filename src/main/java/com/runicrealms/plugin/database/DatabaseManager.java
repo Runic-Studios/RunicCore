@@ -6,32 +6,49 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.CharacterData;
+import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The singleton database manager responsible for creating the connection to mongo and loading documents
  * into memory for lookup
  */
-public class DatabaseManager {
+public class DatabaseManager implements Listener {
 
     private MongoDatabase playersDB;
-    private final HashMap<String, Document> playerDataLastMonth; // keyed by uuid
     private MongoCollection<Document> guild_data;
     private MongoCollection<Document> shop_data;
+    private final HashMap<String, Document> playerDataLastMonth; // keyed by uuid
+    private final ConcurrentHashMap<UUID, Integer> loadedCharacterMap;
+    private final Map<UUID, PlayerData> playerDataMap;
 
     public DatabaseManager() {
 
+        Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
         playerDataLastMonth = new HashMap<>();
+        loadedCharacterMap = new ConcurrentHashMap<>();
+        playerDataMap = new HashMap<>();
 
         // Connect to MongoDB database (Atlas)
         ConnectionString connString = new ConnectionString(
@@ -59,6 +76,26 @@ public class DatabaseManager {
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Database connection failed!");
         }
+    }
+
+    /**
+     * Call our custom character quit event
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        if (loadedCharacterMap.get(e.getPlayer().getUniqueId()) == null) return;
+        CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent(e.getPlayer(), loadedCharacterMap.get(e.getPlayer().getUniqueId()));
+        Bukkit.getPluginManager().callEvent(characterQuitEvent);
+    }
+
+    /**
+     * Remove reference to loaded players on logout
+     */
+    @EventHandler
+    public void onCharacterQuit(CharacterQuitEvent e) {
+        loadedCharacterMap.remove(e.getPlayer().getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> saveCharacter(e.getPlayer().getUniqueId()), 1L);
+        // todo: call a mongo save event here. save their stuff async, then mark them as saved.. sync?
     }
 
     /**
@@ -148,17 +185,10 @@ public class DatabaseManager {
      * @param slot   the slot of the character
      */
     public CharacterData loadCharacterData(Player player, Integer slot) {
-
         // Step 1: check if character data is cached in redis
-        RunicCore.getRedisManager().checkRedisForCharacterData(player, slot);
-        // todo: get the return value and load it from that
-//            return;
-
-        // Step 2: check mongo documents loaded in memory (last 30 days)
-        // new CharacterData(player, slot, new PlayerMongoData(player.getUniqueId().toString()
-        // todo: ADD TO REDIS (do we need to do this? think it'll get added after the event?)
-        // Step 3: check entire mongo collection
-        // todo: ADD TO REDIS (do we need to do this? think it'll get added after the event?)
+        CharacterData characterData = RunicCore.getRedisManager().checkRedisForCharacterData(player, slot);
+        if (characterData != null) return characterData;
+        // Step 2: check mongo documents
         return new CharacterData(player, slot, new PlayerMongoData(player.getUniqueId().toString()));
     }
 
@@ -169,24 +199,69 @@ public class DatabaseManager {
      */
     public void tryCreateNewPlayer(Player player) {
         UUID uuid = player.getUniqueId();
-        // Step 1: check if player data is cached in redis
-        if (RunicCore.getRedisManager().checkRedisForPlayerData(player)) return;
-        // Step 2: check mongo documents loaded in memory (last 30 days)
+        // Step 1: check mongo documents loaded in memory (last 30 days)
         if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().containsKey(uuid.toString())) return;
-        // Step 3: check entire mongo collection
+        // Step 2: check entire mongo collection
         if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
             return;
-        // Step 4: if no data is found, we create some data, add it to mongo, then store a reference in memory
+        // Step 3: if no data is found, we create some data, add it to mongo, then store a reference in memory
         RunicCore.getDatabaseManager().addNewDocument(uuid);
+    }
+
+    /**
+     *
+     */
+    public void saveCharacter(UUID uuid) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        CharacterData characterData;
+        int slot;
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            slot = loadedCharacterMap.get(uuid);
+            if (jedis.exists(uuid + ":character:" + slot)) {
+                Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on logout");
+                Player player = Bukkit.getPlayer(uuid);
+                assert player != null;
+                characterData = new CharacterData(player, slot, jedis); // build a data object
+                characterData.writeCharacterDataToMongo(player, CacheSaveReason.LOGOUT);
+            } else {
+                // log error
+            }
+        }
+    }
+
+    /**
+     * For
+     *
+     * @param cacheSaveReason
+     */
+    public void saveAllCharacters(CacheSaveReason cacheSaveReason) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        CharacterData characterData;
+        int slot;
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            for (UUID uuid : loadedCharacterMap.keySet()) {
+
+                slot = loadedCharacterMap.get(uuid);
+                if (jedis.exists(uuid + ":character:" + slot)) {
+                    Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on shutdown");
+
+
+                    Player player = Bukkit.getPlayer(uuid);
+                    assert player != null;
+                    characterData = new CharacterData(player, slot, jedis); // build a data object
+                    characterData.writeCharacterDataToMongo(player, cacheSaveReason);
+                } else {
+                    // log error
+                }
+            }
+        }
     }
 
     public MongoDatabase getPlayersDB() {
         return playersDB;
-    }
-
-    public HashMap<String, Document> getPlayerDataLastMonth() {
-        return playerDataLastMonth;
     }
 
     public MongoCollection<Document> getGuildData() {
@@ -195,5 +270,21 @@ public class DatabaseManager {
 
     public MongoCollection<Document> getShopData() {
         return shop_data;
+    }
+
+    public HashMap<String, Document> getPlayerDataLastMonth() {
+        return playerDataLastMonth;
+    }
+
+    public ConcurrentHashMap.KeySetView<UUID, Integer> getLoadedCharacters() {
+        return loadedCharacterMap.keySet();
+    }
+
+    public ConcurrentHashMap<UUID, Integer> getLoadedCharactersMap() {
+        return loadedCharacterMap;
+    }
+
+    public Map<UUID, PlayerData> getPlayerDataMap() {
+        return playerDataMap;
     }
 }

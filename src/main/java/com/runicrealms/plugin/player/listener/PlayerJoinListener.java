@@ -44,7 +44,7 @@ public class PlayerJoinListener implements Listener {
             RunicCore.getDatabaseManager().tryCreateNewPlayer(player);
             PlayerData playerData = new PlayerData(player, new PlayerMongoData(player.getUniqueId().toString()));
             Bukkit.broadcastMessage("building player data object");
-            RunicCore.getCacheManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
+            RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
             ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
         }, 1L);
     }
@@ -55,10 +55,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(CharacterSelectEvent e) {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> {
-                    loadDataFromCharacterObj(e.getPlayer(), e.getCharacterData());
-                    Bukkit.broadcastMessage("loading data from character obj");
-                }, 1L);
+                () -> loadCharacterData(e.getPlayer(), e.getCharacterData()), 1L);
     }
 
     /**
@@ -106,7 +103,7 @@ public class PlayerJoinListener implements Listener {
      * @param player        to set values for
      * @param characterData the stored object with values (to be deleted after use)
      */
-    private void loadDataFromCharacterObj(Player player, CharacterData characterData) {
+    private void loadCharacterData(Player player, CharacterData characterData) {
         player.setInvulnerable(false);
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
@@ -119,7 +116,8 @@ public class PlayerJoinListener implements Listener {
         if (proportion >= 1) proportion = 0.99f;
         player.setExp((float) proportion);
         player.teleport(characterData.getBaseCharacterInfo().getLocation()); // set their location
-        loadCurrentPlayerHealthAndHunger(player, characterData);
+        // restore their health and hunger (delayed by 1 tick because otherwise they get healed first)
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, characterData), 1L);
     }
 
     /**

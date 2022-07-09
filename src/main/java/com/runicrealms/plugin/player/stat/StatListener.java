@@ -57,7 +57,7 @@ public class StatListener implements Listener {
         if (newSpeed > (Stat.getMovementSpeedCap() / 100))
             newSpeed = (float) (Stat.getMovementSpeedCap() / 100);
         e.getPlayer().setWalkSpeed(newSpeed);
-        RunicCoreAPI.updateMaxMana(e.getPlayer());
+        RunicCoreAPI.calculateMaxMana(e.getPlayer());
     }
 
     @EventHandler

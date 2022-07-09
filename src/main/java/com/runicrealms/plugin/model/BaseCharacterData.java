@@ -1,15 +1,16 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class BaseCharacterInfo implements JedisSerializable {
+public class BaseCharacterData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
         add("slot");
         add("currentHp");
-        add("maxMana");
         add("storedHunger");
         add("playerUuid");
         add("location");
@@ -17,40 +18,57 @@ public class BaseCharacterInfo implements JedisSerializable {
 
     private final int slot;
     private final int currentHp;
-    private final int maxMana;
     private final int storedHunger;
     private final UUID playerUuid;
     private final Location location;
 
     /**
-     * A container of basic info used to load a player character profile
+     * A container of basic info used to load a player character profile, built from the player's session data values
      *
      * @param slot         the slot of the character (1 for first created profile)
-     * @param currentHp    the stored health of the character
-     * @param maxMana      the stored mana of the character
-     * @param storedHunger the stored hunger of the character
-     * @param playerUuid   the uuid of the player account
-     * @param location     the last known location of the character
+     * @param currentHp    the current health of the character
+     * @param storedHunger the current hunger of the character
+     * @param playerUuid   the uuid of the player
+     * @param location     the location of the character
      */
-    public BaseCharacterInfo(int slot, int currentHp, int maxMana, int storedHunger, UUID playerUuid, Location location) {
+    public BaseCharacterData(int slot, int currentHp, int storedHunger, UUID playerUuid, Location location) {
         this.slot = slot;
         this.currentHp = currentHp;
-        this.maxMana = maxMana;
         this.storedHunger = storedHunger;
         this.playerUuid = playerUuid;
         this.location = location;
     }
 
     /**
-     * @param fields
+     * A container of basic info used to load a player character profile, built from mongo
+     *
+     * @param player    the player that selected the character profile
+     * @param slot      the slot of the character (1 for first created profile)
+     * @param character a PlayerMongoDataSection corresponding to the chosen slot
      */
-    public BaseCharacterInfo(Map<String, String> fields) {
+    public BaseCharacterData(Player player, int slot, PlayerMongoDataSection character) {
+        this.slot = slot;
+        this.currentHp = character.get("currentHP", Integer.class);
+        this.storedHunger = character.get("storedHunger", Integer.class) != null ? character.get("storedHunger", Integer.class) : 20;
+        this.playerUuid = player.getUniqueId();
+        this.location = DatabaseUtil.loadLocation(player, character);
+    }
+
+    /**
+     * A container of basic info used to load a player character profile, built from redis
+     *
+     * @param fields a map of key-value pairs from redis
+     */
+    public BaseCharacterData(Map<String, String> fields) {
         this.slot = Integer.parseInt(fields.get("slot"));
         this.currentHp = Integer.parseInt(fields.get("currentHp"));
-        this.maxMana = Integer.parseInt(fields.get("maxMana"));
         this.storedHunger = Integer.parseInt(fields.get("storedHunger"));
         this.playerUuid = UUID.fromString(fields.get("playerUuid"));
         this.location = DatabaseUtil.loadLocation(fields.get("location"));
+    }
+
+    public static List<String> getFields() {
+        return fields;
     }
 
     public int getSlot() {
@@ -59,10 +77,6 @@ public class BaseCharacterInfo implements JedisSerializable {
 
     public int getCurrentHp() {
         return currentHp;
-    }
-
-    public int getMaxMana() {
-        return maxMana;
     }
 
     public int getStoredHunger() {
@@ -77,10 +91,6 @@ public class BaseCharacterInfo implements JedisSerializable {
         return location;
     }
 
-    public static List<String> getFields() {
-        return fields;
-    }
-
     /**
      * Returns a map that can be used to set values in redis
      *
@@ -91,10 +101,16 @@ public class BaseCharacterInfo implements JedisSerializable {
         return new HashMap<String, String>() {{
             put("slot", String.valueOf(slot));
             put("currentHp", String.valueOf(currentHp));
-            put("maxMana", String.valueOf(maxMana));
             put("storedHunger", String.valueOf(storedHunger));
             put("playerUuid", String.valueOf(playerUuid));
             put("location", DatabaseUtil.serializeLocation(location));
         }};
+    }
+
+    @Override
+    public void writeToMongo(PlayerMongoDataSection character) {
+        character.set("currentHP", this.currentHp);
+        character.set("storedHunger", this.storedHunger);
+        DatabaseUtil.saveLocation(character, this.location);
     }
 }

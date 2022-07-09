@@ -1,13 +1,12 @@
 package com.runicrealms.plugin.character.gui;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.CharacterManager;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.model.CharacterData;
-import com.runicrealms.plugin.model.ClassInfo;
+import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -76,19 +75,13 @@ public class CharacterGuiManager implements Listener {
                 classMenu.remove(player.getUniqueId());
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
-                CharacterManager.getSelectedCharacters().put(player.getUniqueId(), slot);
+                RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), slot); // now we always know which character is playing
                 CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player, slot);
-                // todo: if data is null, do something
                 if (characterData == null) {
-                    Bukkit.broadcastMessage("something went wrong");
+                    Bukkit.getLogger().info("Something went wrong with character selection");
+                    return;
                 }
-                CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent
-                        (
-                                RunicCore.getCacheManager().buildPlayerCache(player, slot),
-                                player,
-                                characterData
-                        );
-                RunicCore.getCacheManager().getPlayerCaches().put(characterSelectEvent.getPlayer(), characterSelectEvent.getPlayerCache());
+                CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent(player, characterData);
                 Bukkit.getPluginManager().callEvent(characterSelectEvent);
             }
         } else if (currentItem.getType() == CharacterSelectUtil.CHARACTER_CREATE_ITEM.getType()) {
@@ -106,7 +99,7 @@ public class CharacterGuiManager implements Listener {
         if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
             String className = getClassNameFromIcon(currentItem);
             RunicCore.getDatabaseManager().addNewCharacter(player, className, characterCache.get(player.getUniqueId()).getFirstUnusedSlot());
-            characterCache.get(player.getUniqueId()).addCharacter(new ClassInfo(ClassEnum.getFromName(className), 0, 0));
+            characterCache.get(player.getUniqueId()).addCharacter(new ClassData(ClassEnum.getFromName(className), 0, 0));
         }
         openSelectGui(player);
     }
@@ -169,7 +162,7 @@ public class CharacterGuiManager implements Listener {
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 UUID playerUuid = event.getPlayer().getUniqueId();
                 try {
-                    characterCache.put(playerUuid, new CharacterGuiInfo(RunicCore.getCacheManager().getPlayerDataMap().get(playerUuid)));
+                    characterCache.put(playerUuid, new CharacterGuiInfo(RunicCore.getDatabaseManager().getPlayerDataMap().get(playerUuid)));
                     openSelectGui(event.getPlayer());
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -282,7 +275,7 @@ public class CharacterGuiManager implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    public static ItemStack getCharacterIcon(ClassInfo character) {
+    public static ItemStack getCharacterIcon(ClassData character) {
         ItemStack item;
         if (RunicCore.getInstance().getConfig().contains("class-icons." + character.getClassType().getName().toLowerCase() + ".damage")) {
             item = new ItemStack(

@@ -18,6 +18,9 @@ public class PlayerMongoData implements MongoData {
     private final Set<MongoSetUpdate> setUpdates;
     private final Set<MongoUnsetUpdate> unsetUpdates;
 
+    /**
+     * @param uuid
+     */
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;
         this.setUpdates = new HashSet<>();

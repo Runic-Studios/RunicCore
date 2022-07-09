@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
+import com.runicrealms.plugin.player.listener.ManaListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -36,7 +37,7 @@ public class RegenManager implements Listener {
     private final HashMap<UUID, Integer> currentPlayerManaValues = new HashMap<>();
 
     public RegenManager() {
-        // regen health async because of costly location checks
+        // regen health async because of costly location checks (for checking for safe zones)
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::regenHealth, 0, REGEN_PERIOD * 20L);
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenMana, 0, REGEN_PERIOD * 20L);
     }
@@ -45,7 +46,9 @@ public class RegenManager implements Listener {
      * Task to regen health with appropriate modifiers
      */
     private void regenHealth() {
-        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
+        for (UUID loaded : RunicCore.getDatabaseManager().getLoadedCharacters()) {
+            Player online = Bukkit.getPlayer(loaded);
+            if (online == null) continue;
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
             if (!RunicCoreAPI.isInCombat(online)) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
@@ -61,12 +64,13 @@ public class RegenManager implements Listener {
         }
     }
 
+    /**
+     * Periodic task to regenerate mana for all online players
+     */
     private void regenMana() {
-
-        for (Player online : Bukkit.getOnlinePlayers()) {
-
-            // ensure they have loaded a character
-            if (!RunicCore.getCacheManager().hasCacheLoaded(online)) continue;
+        for (UUID loaded : RunicCore.getDatabaseManager().getLoadedCharacters()) {
+            Player online = Bukkit.getPlayer(loaded);
+            if (online == null) continue;
 
             int mana;
 
@@ -75,10 +79,10 @@ public class RegenManager implements Listener {
             else
                 mana = (int) (getBaseMana() + getManaPerLv(online));
 
-            int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(online).getMaxMana();
+            int maxMana = RunicCoreAPI.calculateMaxMana(online);
             if (mana >= maxMana) continue;
 
-            int regenAmt = MANA_REGEN_AMT; // todo: not sure where else this is called, but not needed? + GearScanner.getManaRegenBoost(online)
+            int regenAmt = MANA_REGEN_AMT;
             if (RunicCore.getCombatManager().getPlayersInCombat().get(online.getUniqueId()) == null)
                 regenAmt *= 5; // players regen a lot out of combat
 
@@ -102,12 +106,15 @@ public class RegenManager implements Listener {
         return MANA_REGEN_AMT;
     }
 
+    /**
+     * Determines the amount of mana to award per level to the given player based on class
+     *
+     * @param player to calculate mana for
+     * @return the mana per level
+     */
     public double getManaPerLv(Player player) {
-
-        if (RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName() == null)
-            return 0;
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName();
-
+        String className = RunicCoreAPI.getPlayerClass(player);
+        if (className.equals("")) return 0;
         switch (className.toLowerCase()) {
             case "archer":
                 return ARCHER_MANA_LV;
@@ -123,13 +130,25 @@ public class RegenManager implements Listener {
         return 0;
     }
 
+    /**
+     * Adds mana to the current pool for the given player. Cannot add above max mana pool
+     *
+     * @param player to receive mana
+     * @param amount of mana to receive
+     */
     public void addMana(Player player, int amount) {
         int mana = currentPlayerManaValues.get(player.getUniqueId());
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
+        int maxMana = ManaListener.calculateMaxMana(player);
         if (mana < maxMana)
             currentPlayerManaValues.put(player.getUniqueId(), Math.min(mana + amount, maxMana));
     }
 
+    /**
+     * Removes mana to the current pool for the given player. Cannot remove below 0
+     *
+     * @param player to lose mana
+     * @param amount of mana to lose
+     */
     public void subtractMana(Player player, int amount) {
         int mana = currentPlayerManaValues.get(player.getUniqueId());
         if (mana <= 0) return;
