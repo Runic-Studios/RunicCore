@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.redis;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -12,15 +13,17 @@ import java.util.Map;
 public class RedisUtil {
 
     /**
-     * @param player
-     * @param field
-     * @return
+     * Opens a jedis resource, authenticates it, reads and returns a value, and closes the connection
+     *
+     * @param player the player to lookup in redis
+     * @param field  the field to lookup (it's key-value pairs)
+     * @return the value corresponding to the field
      */
     public static String getRedisValue(Player player, String field) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD); // not sure if we need to do this every time
-            int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
             String key = player.getUniqueId() + ":character:" + slot;
             if (jedis.exists(key)) {
                 return jedis.hmget(key, field).get(0);
@@ -30,15 +33,17 @@ public class RedisUtil {
     }
 
     /**
-     * @param player
-     * @param fields
-     * @return
+     * Opens a jedis resource, authenticates it, reads and returns a map of key-value pairs, and closes the connection
+     *
+     * @param player the player to lookup in redis
+     * @param fields the fields to lookup (it's key-value pairs, returned in a map)
+     * @return the values corresponding to the field
      */
     public static Map<String, String> getRedisValues(Player player, List<String> fields) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD); // not sure if we need to do this every time
-            int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
             String key = player.getUniqueId() + ":character:" + slot;
             if (jedis.exists(key)) {
                 Map<String, String> fieldsMap = new HashMap<>();
@@ -54,16 +59,18 @@ public class RedisUtil {
     }
 
     /**
-     * @param player
-     * @param field
-     * @param value
-     * @return
+     * Attempts to update the redis value corresponding to the field for the given player
+     *
+     * @param player to write value for
+     * @param field  of the value (e.g., "currentHp")
+     * @param value  to write to the field
+     * @return true if the field was successfully written to
      */
     public static boolean setRedisValue(Player player, String field, String value) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD); // not sure if we need to do this every time
-            int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
             String key = player.getUniqueId() + ":character:" + slot;
             if (jedis.exists(key)) {
                 Map<String, String> fieldsMap = new HashMap<String, String>() {{

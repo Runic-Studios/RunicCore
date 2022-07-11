@@ -16,6 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
+import java.util.UUID;
+
 public class PlayerHungerManager implements Listener {
 
     private static final int HUNGER_TICK_TASK_DELAY = 60; // seconds
@@ -34,7 +36,9 @@ public class PlayerHungerManager implements Listener {
      * Manually reduce player hunger
      */
     private void tickAllOnlinePlayersHunger() {
-        for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+        for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) continue;
             if (RunicCoreAPI.isSafezone(player.getLocation())) { // prevent hunger loss in capital cities
                 if (player.getFoodLevel() < 20) {
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
@@ -84,13 +88,5 @@ public class PlayerHungerManager implements Listener {
             e.setCancelled(true);
             e.getPlayer().sendMessage(ChatColor.RED + "I can't eat that!");
         }
-    }
-
-    public static int getInvigoratedHungerThreshold() {
-        return INVIGORATED_HUNGER_THRESHOLD;
-    }
-
-    public static double getHalfHungerRegenMultiplier() {
-        return HALF_HUNGER_REGEN_MULTIPLIER;
     }
 }

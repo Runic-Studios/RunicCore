@@ -88,12 +88,13 @@ public class SkillTree {
      */
     private void updateValuesFromDB() {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         if (!character.has(PATH_LOCATION + "." + position)) return;  // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position);
         for (String key : perkSection.getKeys()) {
-            if (getPerk(Integer.parseInt(key)) == null) continue;
-            getPerk(Integer.parseInt(key)).setCurrentlyAllocatedPoints(perkSection.get(key, Integer.class));
+            Perk perk = getPerk(Integer.parseInt(key));
+            if (perk == null) continue;
+            perk.setCurrentlyAllocatedPoints(perkSection.get(key, Integer.class));
         }
     }
 
@@ -132,7 +133,7 @@ public class SkillTree {
      */
     public static void resetTree(Player player) {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
         character.save();
         mongoData.save();

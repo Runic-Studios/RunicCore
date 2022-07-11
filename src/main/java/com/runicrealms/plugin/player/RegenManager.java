@@ -46,7 +46,7 @@ public class RegenManager implements Listener {
      * Task to regen health with appropriate modifiers
      */
     private void regenHealth() {
-        for (UUID loaded : RunicCore.getDatabaseManager().getLoadedCharacters()) {
+        for (UUID loaded : RunicCoreAPI.getLoadedCharacters()) {
             Player online = Bukkit.getPlayer(loaded);
             if (online == null) continue;
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
@@ -113,7 +113,7 @@ public class RegenManager implements Listener {
      * @return the mana per level
      */
     public double getManaPerLv(Player player) {
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCoreAPI.getRedisValue(player, "classType");
         if (className.equals("")) return 0;
         switch (className.toLowerCase()) {
             case "archer":

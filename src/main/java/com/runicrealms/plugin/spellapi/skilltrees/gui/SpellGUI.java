@@ -37,7 +37,7 @@ public class SpellGUI implements InventoryHolder {
     }
 
     public String getSpellSlot() {
-        return  this.spellSlot;
+        return this.spellSlot;
     }
 
     /**
@@ -56,10 +56,11 @@ public class SpellGUI implements InventoryHolder {
 
     /**
      * Returns a dummy 'perk' that is used to represent the default spell for each class.
+     *
      * @return a perk that can be used to build an itemstack
      */
     private Perk determineDefaultSpellPerk() {
-        switch (RunicCoreAPI.getPlayerCache(player).getClassName()) {
+        switch (RunicCoreAPI.getRedisValue(player, "classType")) {
             case "Archer":
                 return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
             case "Cleric":
@@ -71,15 +72,16 @@ public class SpellGUI implements InventoryHolder {
             case "Warrior":
                 return WarriorTreeUtil.DEFAULT_WARRIOR_SPELL_PERK;
             default:
-                throw new IllegalStateException("Unexpected value: " + RunicCoreAPI.getPlayerCache(player).getClassName());
+                throw new IllegalStateException("Unexpected value: getting default spell perk. Check SpellGUI.java in RunicCore");
         }
     }
 
     /**
      * Populates the items in the spell inventory starting at index to all unlocked 'active' spells for the given
      * skill tree.
+     *
      * @param treePosition (which of the three sub-trees?) (1, 2, 3)
-     * @param index which index to begin filling items
+     * @param index        which index to begin filling items
      */
     private int grabUnlockedSpellsFromTree(int treePosition, int index) {
         if (RunicCoreAPI.getSkillTree(player, treePosition) == null) return index;

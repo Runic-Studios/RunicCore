@@ -65,7 +65,7 @@ public class SkillTreeManager implements Listener {
     public void onLoad(CharacterSelectEvent e) {
         Player player = e.getPlayer();
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getPlayerCache(player).getCharacterSlot());
+        MongoDataSection character = mongoData.getCharacter(RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId()));
         new SkillTree(player, 1);
         new SkillTree(player, 2);
         new SkillTree(player, 3);

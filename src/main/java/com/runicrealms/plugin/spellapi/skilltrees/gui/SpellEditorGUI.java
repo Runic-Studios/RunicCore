@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -97,7 +96,7 @@ public class SpellEditorGUI implements InventoryHolder {
     }
 
     public static boolean hasSlotUnlocked(Player player, int level) {
-        return (RunicCoreAPI.getPlayerCache(player).getClassLevel() >= level);
+        return player.getLevel() >= level;
     }
 
     public static int getSlotReq2() {

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.commands;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -12,13 +13,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.UUID;
+
 public class BoostCMD implements CommandExecutor {
 
     private static double COMBAT_EXPERIENCE_BOOST = 0;
 
     /**
-     it needs to generate the name and stats of the item and choose from a list of durabilities. (prob 0 or 1 rn)
-     it should use the custom item tagging class as well
+     * it needs to generate the name and stats of the item and choose from a list of durabilities. (prob 0 or 1 rn)
+     * it should use the custom item tagging class as well
      */
     public boolean onCommand(CommandSender sender, Command cmd, String lb, String[] args) {
 
@@ -33,8 +36,10 @@ public class BoostCMD implements CommandExecutor {
 
         COMBAT_EXPERIENCE_BOOST = percent;
         ClassUtil.launchFirework(pl, Color.FUCHSIA);
-        for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-            online.playSound(online.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+        for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) continue;
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         }
 
         Bukkit.broadcastMessage
@@ -42,7 +47,7 @@ public class BoostCMD implements CommandExecutor {
                         + ChatColor.WHITE + pl.getName()
                         + ChatColor.LIGHT_PURPLE + " has activated a "
                         + (int) percent + "% combat experience boost for "
-                        + duration/3600 +"h!");
+                        + duration / 3600 + "h!");
 
         new BukkitRunnable() {
             @Override
@@ -53,7 +58,7 @@ public class BoostCMD implements CommandExecutor {
                                 + ChatColor.WHITE + pl.getName() + "'s"
                                 + ChatColor.LIGHT_PURPLE + " global combat experience boost has ended!");
             }
-        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L*duration);
+        }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L * duration);
         return true;
     }
 

@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.model.ProfessionData;
 import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +13,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.*;
+
+import java.util.Map;
+import java.util.UUID;
 
 public class ScoreboardHandler implements Listener {
 
@@ -30,13 +35,17 @@ public class ScoreboardHandler implements Listener {
     public ScoreboardHandler() {
         // periodically update class, prof, guild info
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null) continue;
                 updatePlayerInfo(player, player.getScoreboard());
             }
         }, 100L, 20L);
         // periodically update combat info (much faster)
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (Player player : RunicCore.getCacheManager().getLoadedPlayers()) {
+            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null) continue;
                 updatePlayerCombatInfo(player, player.getScoreboard());
             }
         }, 100L, 4L);
@@ -164,13 +173,13 @@ public class ScoreboardHandler implements Listener {
 
     private String manaAsString(final Player player) {
         int mana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
-        int maxMana = RunicCore.getCacheManager().getPlayerCaches().get(player).getMaxMana();
+        int maxMana = RunicCoreAPI.calculateMaxMana(player);
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
     private String playerClass(final Player player) {
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName();
-        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
+        String className = RunicCoreAPI.getRedisValue(player, "classType");
+        int currentLevel = player.getLevel();
         String display;
         if (className == null) {
             display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
@@ -186,8 +195,9 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
 
     private String playerProf(final Player player) {
-        String profName = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfName();
-        int currentLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getProfLevel();
+        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
+        String profName = professionFields.get("profName");
+        int currentLevel = Integer.parseInt(professionFields.get("profLevel"));
         String display;
         if (profName == null) {
             display = NO_PROF_STRING;

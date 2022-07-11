@@ -1,7 +1,11 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.*;
+import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.events.LeaveCombatEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,7 +13,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -22,7 +25,6 @@ public class CombatManager implements Listener {
 
     private final HashMap<UUID, Long> playersInCombat;
     private final HashMap<UUID, Double> shieldedPlayers;
-    private final RunicCore plugin = RunicCore.getInstance();
     private static final double COMBAT_DURATION = 15;
 
     public CombatManager() {
@@ -83,19 +85,18 @@ public class CombatManager implements Listener {
      * starts the repeating task to manage pve/pvp timers
      */
     private void startCombatTask() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player online : RunicCore.getCacheManager().getLoadedPlayers()) {
-                    if (playersInCombat.containsKey(online.getUniqueId())) {
-                        if (System.currentTimeMillis() - playersInCombat.get(online.getUniqueId()) >= (COMBAT_DURATION * 1000)) {
-                            LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(online);
-                            Bukkit.getPluginManager().callEvent(leaveCombatEvent);
-                        }
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
+            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null) continue;
+                if (playersInCombat.containsKey(uuid)) {
+                    if (System.currentTimeMillis() - playersInCombat.get(uuid) >= (COMBAT_DURATION * 1000)) {
+                        LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(player);
+                        Bukkit.getPluginManager().callEvent(leaveCombatEvent);
                     }
                 }
             }
-        }.runTaskTimer(this.plugin, 0, 20);
+        }, 0, 20L);
     }
 
     public HashMap<UUID, Long> getPlayersInCombat() {

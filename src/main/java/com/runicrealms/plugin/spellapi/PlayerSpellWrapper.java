@@ -80,7 +80,7 @@ public class PlayerSpellWrapper {
     }
 
     public static String determineDefaultSpell(Player player) {
-        switch (RunicCoreAPI.getPlayerCache(player).getClassName()) {
+        switch (RunicCoreAPI.getRedisValue(player, "classType")) {
             case "Archer":
                 return DEFAULT_ARCHER;
             case "Cleric":

@@ -24,9 +24,13 @@
 
 package com.runicrealms.plugin.utilities;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.ClassData;
+import com.runicrealms.plugin.model.ProfessionData;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
+
+import java.util.Map;
 
 public class PlaceholderAPI extends PlaceholderExpansion {
 
@@ -51,23 +55,24 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player pl, String arg) {
+    public String onPlaceholderRequest(Player player, String arg) {
 
-        if (pl == null)  return null;
-
+        if (player == null) return null;
         String lowerArg = arg.toLowerCase();
 
+        Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
+        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
         switch (lowerArg) {
             case "class":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+                return classFields.get("classType");
             case "class_prefix":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().substring(0, 2);
+                return classFields.get("classType").substring(0, 2);
             case "level":
-                return pl.getLevel() + "";
+                return player.getLevel() + "";
             case "prof":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfName();
+                return professionFields.get("profName");
             case "prof_level":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfLevel() + "";
+                return professionFields.get("profLevel");
             default:
                 return "";
         }

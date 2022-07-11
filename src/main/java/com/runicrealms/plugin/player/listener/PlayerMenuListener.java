@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.StatsGUI;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -37,7 +38,7 @@ public class PlayerMenuListener implements Listener {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
-            for (UUID uuid : RunicCore.getDatabaseManager().getLoadedCharacters()) {
+            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
 
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
