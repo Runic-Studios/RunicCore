@@ -33,14 +33,15 @@ public class ScoreboardHandler implements Listener {
     private static final String MANA_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.AQUA;
 
     public ScoreboardHandler() {
-        // periodically update class, prof, guild info
-        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player == null) continue;
-                updatePlayerInfo(player, player.getScoreboard());
-            }
-        }, 100L, 20L);
+//        // periodically update class, prof, guild info
+//        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+//            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+//                Player player = Bukkit.getPlayer(uuid);
+//                if (player == null) continue;
+//                updatePlayerInfo(player, player.getScoreboard());
+//            }
+//        }, 100L, 20L);
+        // todo: update class when they level-up, update profession on prof change event, update guild on guild change event
         // periodically update combat info (much faster)
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
@@ -177,12 +178,14 @@ public class ScoreboardHandler implements Listener {
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
+    private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
+
     private String playerClass(final Player player) {
         String className = RunicCoreAPI.getRedisValue(player, "classType");
         int currentLevel = player.getLevel();
         String display;
         if (className == null) {
-            display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
+            display = NO_CLASS_STRING;
         } else {
             display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + className;
             if (currentLevel != 0) {
@@ -213,17 +216,13 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
 
     private String playerGuild(final Player player) {
-        try {
-            String display;
-            String guild = RunicCore.getCacheManager().getPlayerCaches().get(player).getGuild();
-            if (!guild.equalsIgnoreCase("none")) {
-                display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
-            } else {
-                display = NO_GUILD_STRING;
-            }
-            return display;
-        } catch (Exception e) {
-            return NO_GUILD_STRING;
+        String guild = RunicCoreAPI.getRedisValue(player, "guild");
+        String display;
+        if (guild == null) {
+            display = NO_GUILD_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
         }
+        return display;
     }
 }

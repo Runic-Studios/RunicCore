@@ -7,13 +7,13 @@ import org.bukkit.entity.Player;
 public class SubClassUtil {
 
     /**
-     * Determines the appropriate sub-class based on player class and specified position
+     * Determines the appropriate subclass based on player class and specified position
      *
      * @param position (which sub-class? 1, 2, or 3)
      */
     public static SubClassEnum determineSubClass(Player player, int position) {
         SubClassEnum subClassEnum = null;
-        switch (RunicCoreAPI.getPlayerCache(player).getClassName().toLowerCase()) {
+        switch (RunicCoreAPI.getPlayerClass(player)) {
             case "archer":
                 if (position == 1)
                     subClassEnum = SubClassEnum.MARKSMAN;

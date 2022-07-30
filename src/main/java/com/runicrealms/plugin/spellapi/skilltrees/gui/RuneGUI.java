@@ -52,7 +52,7 @@ public class RuneGUI implements InventoryHolder {
         if (meta == null) return skillTreeButton;
         meta.setDisplayName(ChatColor.GREEN + "Open Skill Trees");
         String lore = ChatColor.GRAY + "Open the skill trees for the " +
-                ChatColor.GREEN + RunicCoreAPI.getPlayerCache(player).getClassName() +
+                ChatColor.GREEN + RunicCoreAPI.getPlayerClass(player) +
                 ChatColor.GRAY + " class! Earn skill points by leveling-up " +
                 "and spend them on unique and powerful perks!";
         meta.setLore(ChatUtils.formattedText(lore));

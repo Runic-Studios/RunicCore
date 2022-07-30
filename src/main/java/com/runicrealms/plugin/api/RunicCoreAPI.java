@@ -66,24 +66,12 @@ public class RunicCoreAPI {
     }
 
     /**
-     * Quickly grab a string representing the class the player is using from redis, in lowercase!
-     *
-     * @param player to grab class for
-     * @return lowercase string representing their primary class
+     * @param player
+     * @return
      */
-//    public static String getPlayerClass(Player player) {
-//        return RedisUtil.getRedisValue(player, "classType");
-////        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-////        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-////            jedis.auth(RedisManager.REDIS_PASSWORD);
-////            int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
-////            String key = player.getUniqueId() + ":character:" + slot;
-////            if (jedis.exists(key)) {
-////                return jedis.hmget(key, "classType").get(0);
-////            }
-////        }
-////        return "";
-//    }
+    public static String getPlayerClass(Player player) {
+        return RedisUtil.getRedisValue(player, "classType");
+    }
 
     /**
      * @param player

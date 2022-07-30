@@ -35,20 +35,22 @@ public class EscapeArtist extends Spell {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player loaded : RunicCore.getCacheManager().getLoadedPlayers()) {
-                    if (!hasPassive(loaded, passiveName)) continue;
-                    if (escapeArtists.contains(loaded.getUniqueId())) continue; // on cooldown
+                for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                    Player player = Bukkit.getPlayer(uuid);
+                    if (player == null) continue;
+                    if (!hasPassive(player, passiveName)) continue;
+                    if (escapeArtists.contains(player.getUniqueId())) continue; // on cooldown
                     // listen for effects, remove
-                    if (RunicCoreAPI.isRooted(loaded)
-                            || RunicCoreAPI.isSilenced(loaded)
-                            || RunicCoreAPI.isStunned(loaded)) {
-                        loaded.getWorld().playSound(loaded.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-                        Cone.coneEffect(loaded, Particle.VILLAGER_HAPPY, 1, 0, 20L, Color.WHITE);
-                        escapeArtists.add(loaded.getUniqueId());
-                        RunicCore.getSpellManager().getRootedEntites().remove(loaded.getUniqueId());
-                        RunicCore.getSpellManager().getRootedEntites().remove(loaded.getUniqueId());
-                        RunicCore.getSpellManager().getRootedEntites().remove(loaded.getUniqueId());
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> escapeArtists.remove(loaded.getUniqueId()), COOLDOWN * 20L);
+                    if (RunicCoreAPI.isRooted(player)
+                            || RunicCoreAPI.isSilenced(player)
+                            || RunicCoreAPI.isStunned(player)) {
+                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+                        Cone.coneEffect(player, Particle.VILLAGER_HAPPY, 1, 0, 20L, Color.WHITE);
+                        escapeArtists.add(player.getUniqueId());
+                        RunicCore.getSpellManager().getRootedEntites().remove(player.getUniqueId());
+                        RunicCore.getSpellManager().getRootedEntites().remove(player.getUniqueId());
+                        RunicCore.getSpellManager().getRootedEntites().remove(player.getUniqueId());
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> escapeArtists.remove(player.getUniqueId()), COOLDOWN * 20L);
                     }
                 }
             }

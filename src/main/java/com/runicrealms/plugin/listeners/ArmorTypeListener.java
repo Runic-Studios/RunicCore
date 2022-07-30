@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,45 +26,45 @@ public class ArmorTypeListener implements Listener {
         if (e.getNewArmorPiece().getType().equals(Material.AIR)) return;
 
         ItemStack equippedItem = e.getNewArmorPiece();
-        Player pl = e.getPlayer();
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+        Player player = e.getPlayer();
+        String className = RunicCoreAPI.getPlayerClass(player);
 
         ItemType armorType = ItemType.matchType(equippedItem);
 
         switch (armorType) {
             case PLATE:
                 if (!className.equals("Warrior")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(armorMessage(className));
+                    player.sendMessage(armorMessage(className));
                 }
                 break;
             case GILDED:
                 if (!className.equals("Cleric")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(armorMessage(className));
+                    player.sendMessage(armorMessage(className));
                 }
                 break;
             case MAIL:
                 if (!className.equals("Archer")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(armorMessage(className));
+                    player.sendMessage(armorMessage(className));
                 }
                 break;
             case LEATHER:
                 if (!className.equals("Rogue")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(armorMessage(className));
+                    player.sendMessage(armorMessage(className));
                 }
                 break;
             case CLOTH:
                 if (!className.equals("Mage")) {
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     e.setCancelled(true);
-                    pl.sendMessage(armorMessage(className));
+                    player.sendMessage(armorMessage(className));
                 }
                 break;
         }
