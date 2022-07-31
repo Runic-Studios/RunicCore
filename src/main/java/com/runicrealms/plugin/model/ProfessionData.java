@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +10,9 @@ import java.util.Map;
 
 public class ProfessionData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
-        add("profName");
-        add("profExp");
-        add("profLevel");
+        add(RedisField.PROF_NAME.getField());
+        add(RedisField.PROF_EXP.getField());
+        add(RedisField.PROF_LEVEL.getField());
     }};
     private final String profName;
     private final int profExp;

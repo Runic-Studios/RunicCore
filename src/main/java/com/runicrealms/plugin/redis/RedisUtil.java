@@ -82,4 +82,25 @@ public class RedisUtil {
         }
         return false;
     }
+
+    /**
+     * Attempts to update the redis value corresponding to the field for the given player
+     *
+     * @param player to write value for
+     * @param map of field, value to write
+     * @return true if the field was successfully written to
+     */
+    public static boolean setRedisValues(Player player, Map<String, String> map) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+            String key = player.getUniqueId() + ":character:" + slot;
+            if (jedis.exists(key)) {
+                jedis.hmset(key, map);
+                return true;
+            }
+        }
+        return false;
+    }
 }

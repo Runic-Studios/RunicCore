@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -51,7 +52,7 @@ public abstract class Spell implements ISpell, Listener {
 
         // verify class
         boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
-                (RunicCoreAPI.getRedisValue(player, "classType"));
+                (RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -99,8 +100,8 @@ public abstract class Spell implements ISpell, Listener {
         // probably unnecessary, but insurance
         if (playerAlly instanceof ArmorStand) return false;
 
-        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster, "outlawEnabled"));
-        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly, "outlawEnabled"));
+        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster, RedisField.OUTLAW_ENABLED));
+        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly, RedisField.OUTLAW_ENABLED));
 
         // If either player is an outlaw
         if (casterIsOutlaw || allyIsOutlaw)

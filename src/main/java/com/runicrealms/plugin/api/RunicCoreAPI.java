@@ -9,6 +9,7 @@ import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -70,16 +71,16 @@ public class RunicCoreAPI {
      * @return
      */
     public static String getPlayerClass(Player player) {
-        return RedisUtil.getRedisValue(player, "classType");
+        return RedisUtil.getRedisValue(player, RedisField.CLASS_TYPE.getField());
     }
 
     /**
      * @param player
-     * @param field
+     * @param redisField
      * @return
      */
-    public static String getRedisValue(Player player, String field) {
-        return RedisUtil.getRedisValue(player, field);
+    public static String getRedisValue(Player player, RedisField redisField) {
+        return RedisUtil.getRedisValue(player, redisField.getField());
     }
 
     /**
@@ -99,6 +100,16 @@ public class RunicCoreAPI {
      */
     public static boolean setRedisValue(Player player, String field, String value) {
         return RedisUtil.setRedisValue(player, field, value);
+    }
+
+    /**
+     *
+     * @param player
+     * @param map
+     * @return
+     */
+    public static boolean setRedisValues(Player player, Map<String, String> map) {
+        return RedisUtil.setRedisValues(player, map);
     }
 
     /**

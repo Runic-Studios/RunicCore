@@ -1,9 +1,10 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
@@ -78,7 +79,7 @@ public class DamageListener implements Listener {
         // only listen for when a player swings or fires an arrow
         if (damager instanceof Player) {
 
-            Player pl = (Player) damager;
+            Player player = (Player) damager;
 
             ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
             WeaponType artifactType = WeaponType.matchType(artifact);
@@ -104,9 +105,9 @@ public class DamageListener implements Listener {
                 maxDamage = 1;
             // -------------------
 
-            if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
-                pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-                pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+            if (reqLv > player.getLevel()) {
+                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+                player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
                 e.setCancelled(true);
                 return;
             }
@@ -128,7 +129,7 @@ public class DamageListener implements Listener {
                     return;
 
                 // ensure correct class/weapon combo (archers and bows, etc)
-                if (!matchClass(pl, true))
+                if (!matchClass(player, true))
                     return;
 
                 // ---------------------------
@@ -154,16 +155,16 @@ public class DamageListener implements Listener {
         applySlainMechanics(e.getDamager(), ((Player) victim));
     }
 
-    public static boolean matchClass(Player pl, boolean sendMessage) {
-        ItemStack mainHand = pl.getInventory().getItemInMainHand();
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+    public static boolean matchClass(Player player, boolean sendMessage) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        String className = RunicCoreAPI.getPlayerClass(player);
         if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:
                 if (!className.equals("Archer")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -172,8 +173,8 @@ public class DamageListener implements Listener {
             case WOODEN_SHOVEL:
                 if (!className.equals("Cleric")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -182,8 +183,8 @@ public class DamageListener implements Listener {
             case WOODEN_HOE:
                 if (!className.equals("Mage")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -192,8 +193,8 @@ public class DamageListener implements Listener {
             case WOODEN_SWORD:
                 if (!className.equals("Rogue")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -202,8 +203,8 @@ public class DamageListener implements Listener {
             case WOODEN_AXE:
                 if (!className.equals("Warrior")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -297,8 +298,9 @@ public class DamageListener implements Listener {
 //            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
 
             // if both players are outlaws, amend the death message to display their rating
-            if (RunicCore.getCacheManager().getPlayerCaches().get(damager).getIsOutlaw()
-                    && RunicCore.getCacheManager().getPlayerCaches().get(victim).getIsOutlaw()) {
+            boolean damagerIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue((Player) damager, RedisField.OUTLAW_ENABLED));
+            boolean victimIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(victim, RedisField.OUTLAW_ENABLED));
+            if (damagerIsOutlaw && victimIsOutlaw) {
                 nameDam = ChatColor.WHITE + nameDam; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
                 nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
                 Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);

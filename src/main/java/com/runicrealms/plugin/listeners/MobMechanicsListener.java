@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
@@ -25,14 +24,16 @@ public final class MobMechanicsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarSpellDamage(SpellDamageEvent e) {
         if (e.isCancelled()) return;
-        if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
+        if (e.getVictim() instanceof Player
+                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getVictim().getUniqueId()) != null) return;
         updateDisplayName(e.getVictim(), e.getAmount());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
         if (e.isCancelled()) return;
-        if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
+        if (e.getVictim() instanceof Player
+                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getVictim().getUniqueId()) != null) return;
         updateDisplayName(e.getVictim(), e.getAmount());
     }
 
@@ -43,7 +44,8 @@ public final class MobMechanicsListener implements Listener {
     public void onMobRegainHealth(EntityRegainHealthEvent e) {
         if (!(e.getEntity() instanceof LivingEntity)) return;
         if (e.getEntity() instanceof ArmorStand) return;
-        if (e.getEntity() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getEntity()) != null) return;
+        if (e.getEntity() instanceof Player
+                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getEntity().getUniqueId()) != null) return;
         if (e.getEntity().getPassengers().size() == 0) return;
         if (e.getEntity() instanceof Horse) return;
         LivingEntity le = (LivingEntity) e.getEntity();

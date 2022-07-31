@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +10,8 @@ import java.util.Map;
 
 public class OutlawData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
-        add("outlawEnabled");
-        add("outlawRating");
+        add(RedisField.OUTLAW_ENABLED.getField());
+        add(RedisField.OUTLAW_RATING.getField());
     }};
     private final boolean outlawEnabled;
     private final int outlawRating;

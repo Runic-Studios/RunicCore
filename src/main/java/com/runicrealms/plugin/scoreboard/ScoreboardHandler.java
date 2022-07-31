@@ -4,6 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.model.ProfessionData;
+import com.runicrealms.plugin.professions.event.ProfessionChangeEvent;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.scoreboard.*;
 
 import java.util.Map;
@@ -32,17 +35,10 @@ public class ScoreboardHandler implements Listener {
     private static final String MANA_TEAM_STRING = "m";
     private static final String MANA_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.AQUA;
 
+    /**
+     * Create running task to update health / mana display
+     */
     public ScoreboardHandler() {
-//        // periodically update class, prof, guild info
-//        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-//            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
-//                Player player = Bukkit.getPlayer(uuid);
-//                if (player == null) continue;
-//                updatePlayerInfo(player, player.getScoreboard());
-//            }
-//        }, 100L, 20L);
-        // todo: update class when they level-up, update profession on prof change event, update guild on guild change event
-        // periodically update combat info (much faster)
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
@@ -58,6 +54,22 @@ public class ScoreboardHandler implements Listener {
         setupScoreboard(player);
         NametagUtil.updateNametag(player);
     }
+
+    @EventHandler
+    public void onPlayerLevel(PlayerLevelChangeEvent e) {
+        updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
+    }
+
+    @EventHandler
+    public void onProfessionChange(ProfessionChangeEvent e) {
+        updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
+    }
+
+    // todo: implement this event
+//    @EventHandler
+//    public void onGuildChange(GuildChangeEvent e) {
+//
+//    }
 
     /**
      * Set the scoreboard for the given player if they do not yet have one
@@ -181,7 +193,7 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
 
     private String playerClass(final Player player) {
-        String className = RunicCoreAPI.getRedisValue(player, "classType");
+        String className = RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE);
         int currentLevel = player.getLevel();
         String display;
         if (className == null) {
@@ -199,8 +211,8 @@ public class ScoreboardHandler implements Listener {
 
     private String playerProf(final Player player) {
         Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
-        String profName = professionFields.get("profName");
-        int currentLevel = Integer.parseInt(professionFields.get("profLevel"));
+        String profName = professionFields.get(RedisField.PROF_NAME.getField());
+        int currentLevel = Integer.parseInt(professionFields.get(RedisField.PROF_LEVEL.getField()));
         String display;
         if (profName == null) {
             display = NO_PROF_STRING;
@@ -216,7 +228,7 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
 
     private String playerGuild(final Player player) {
-        String guild = RunicCoreAPI.getRedisValue(player, "guild");
+        String guild = RunicCoreAPI.getRedisValue(player, RedisField.GUILD);
         String display;
         if (guild == null) {
             display = NO_GUILD_STRING;

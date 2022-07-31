@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.runicitems.Stat;
@@ -95,7 +96,7 @@ public class StatsGUI implements InventoryHolder {
         AttributeInstance playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         assert playerMaxHealth != null;
         int healthBonus = (int) playerMaxHealth.getValue() -
-                PlayerLevelUtil.calculateHealthAtLevel(player.getLevel(), RunicCoreAPI.getRedisValue(player, "classType"));
+                PlayerLevelUtil.calculateHealthAtLevel(player.getLevel(), RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE));
         return GUIUtil.dispItem(
                 Material.PAPER,
                 ChatColor.YELLOW + "Character Stats",

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +11,9 @@ import java.util.Map;
 
 public class ClassData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
-        add("classType");
-        add("exp");
-        add("level");
+        add(RedisField.CLASS_TYPE.getField());
+        add(RedisField.CLASS_EXP.getField());
+        add(RedisField.CLASS_LEVEL.getField());
     }};
     private final ClassEnum classType;
     private final int exp;
@@ -77,9 +78,9 @@ public class ClassData implements JedisSerializable {
     @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
-            put("classType", classType.getName());
-            put("exp", String.valueOf(exp));
-            put("level", String.valueOf(level));
+            put(RedisField.CLASS_TYPE.getField(), classType.getName());
+            put(RedisField.CLASS_EXP.getField(), String.valueOf(exp));
+            put(RedisField.CLASS_LEVEL.getField(), String.valueOf(level));
         }};
     }
 

@@ -24,7 +24,7 @@ public class RunicExpListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // executes last
     public void onExperienceGain(RunicExpEvent e) {
 
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
 
         // quests and other don't get exp modifiers, so skip calculations
         if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST
@@ -39,17 +39,17 @@ public class RunicExpListener implements Listener {
         int boost = (int) boostPercent * e.getOriginalAmount();
         e.setFinalAmount(e.getFinalAmount() + boost);
 
-        if (!isInParty(pl)) {
+        if (!isInParty(player)) {
             if (e.getLocation() != null) { // world mobs
                 Location loc = e.getLocation();
-                int plLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
+                int plLv = player.getLevel();
                 ChatColor expColor = ChatColor.WHITE;
                 if (e.getMobLevel() > (plLv + LEVEL_CUTOFF) || e.getMobLevel() < (plLv - LEVEL_CUTOFF)) {
                     e.setFinalAmount(0);
                     expColor = ChatColor.RED;
                 }
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&7+ " + expColor + e.getFinalAmount() + " &7exp"), 0, 2.5, 0);
-                HologramUtil.createStaticHologram(pl, loc.clone(), ColorUtil.format("&f" + pl.getName()), 0, 2.25, 0);
+                HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&7+ " + expColor + e.getFinalAmount() + " &7exp"), 0, 2.5, 0);
+                HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&f" + player.getName()), 0, 2.25, 0);
             }
             PlayerLevelUtil.giveExperience(e.getPlayer(), e.getFinalAmount());
 
@@ -60,7 +60,7 @@ public class RunicExpListener implements Listener {
                 extraAmt = 1;
             e.setFinalAmount(e.getFinalAmount() + extraAmt);
             //Use final amount in this case so we have Outlaw bonus's included in party bonus.
-            distributePartyExp(RunicCore.getPartyManager().getPlayerParty(pl), pl, e.getFinalAmount(), extraAmt, e.getMobLevel(), e.getLocation());
+            distributePartyExp(RunicCore.getPartyManager().getPlayerParty(player), player, e.getFinalAmount(), extraAmt, e.getMobLevel(), e.getLocation());
         }
     }
 
@@ -92,7 +92,7 @@ public class RunicExpListener implements Listener {
         for (Player member : party.getMembersWithLeader()) {
             if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
             if (pl.getLocation().distance(member.getLocation()) < RANGE) {
-                int memberLv = RunicCore.getCacheManager().getPlayerCaches().get(member).getClassLevel();
+                int memberLv = member.getLevel();
                 if (mobLv > (memberLv+ LEVEL_CUTOFF) || mobLv < (memberLv- LEVEL_CUTOFF)) {
                     PlayerLevelUtil.giveExperience(member, 0);
                     HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);

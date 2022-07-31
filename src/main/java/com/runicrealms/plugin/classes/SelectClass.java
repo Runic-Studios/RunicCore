@@ -1,7 +1,8 @@
 package com.runicrealms.plugin.classes;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
+import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -91,16 +92,15 @@ public class SelectClass {
 
     /**
      * Setup some basic cache info for players.
-     * @param pl to setup cache for
+     * @param player to setup cache for
      * @param className name of class
      */
-    public static void setupCache(Player pl, String className) {
-        pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(HealthUtils.getBaseHealth());
-        pl.setHealthScale(HealthUtils.getHeartAmount());
-        pl.setLevel(0);
-        pl.setExp(0);
-        RunicCore.getCacheManager().getPlayerCaches().get(pl).setClassName(className);
-        RunicCore.getCacheManager().getPlayerCaches().get(pl).setClassLevel(0);
-        RunicCore.getCacheManager().getPlayerCaches().get(pl).setClassExp(0);
+    public static void setupCache(Player player, String className) {
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(HealthUtils.getBaseHealth());
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        player.setLevel(0);
+        player.setExp(0);
+        ClassData classData = new ClassData(ClassEnum.getFromName(className), 0, 0);
+        RunicCoreAPI.setRedisValues(player, classData.toMap());
     }
 }

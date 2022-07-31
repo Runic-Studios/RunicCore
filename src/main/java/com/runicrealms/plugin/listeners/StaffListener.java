@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -50,7 +49,7 @@ public class StaffListener implements Listener {
         // IGNORE NON-STAFF ITEMS
         if (artifactType != Material.WOODEN_HOE) return;
 
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
 
         // only listen for left clicks
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) return;
@@ -62,14 +61,14 @@ public class StaffListener implements Listener {
         e.setCancelled(true);
 
         // check for mage
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+        String className = RunicCoreAPI.getPlayerClass(player);
         if (className == null) return;
         if (!className.equals("Mage")) return;
-        if (RunicCoreAPI.isCasting(pl)) return;
+        if (RunicCoreAPI.isCasting(player)) return;
 
-        staffAttack(pl, artifact);
+        staffAttack(player, artifact);
         // set the cooldown
-        pl.setCooldown(artifact.getType(), STAFF_COOLDOWN);
+        player.setCooldown(artifact.getType(), STAFF_COOLDOWN);
     }
 
     /**
@@ -138,7 +137,7 @@ public class StaffListener implements Listener {
             reqLv = 1;
         }
 
-        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel()) {
+        if (reqLv > player.getLevel()) {
             player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
             return;

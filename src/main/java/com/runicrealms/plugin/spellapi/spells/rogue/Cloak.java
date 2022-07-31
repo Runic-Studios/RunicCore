@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.SpellDamageEvent;
@@ -38,25 +39,27 @@ public class Cloak extends Spell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
         // poof!
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-        pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
+        player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.BLACK, 3));
 
         PacketPlayOutPlayerInfo packet =
                 new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
-                        ((CraftPlayer) pl).getHandle());
+                        ((CraftPlayer) player).getHandle());
 
         // hide the player, prevent them from disappearing in tab
-        for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
-            ps.hidePlayer(plugin, pl);
-            ((CraftPlayer) ps).getHandle().playerConnection.sendPacket(packet);
+        for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+            Player loaded = Bukkit.getPlayer(uuid);
+            if (loaded == null) continue;
+            loaded.hidePlayer(plugin, player);
+            ((CraftPlayer) loaded).getHandle().playerConnection.sendPacket(packet);
         }
 
-        cloakers.add(pl.getUniqueId());
-        pl.sendMessage(ChatColor.GRAY + "You vanished!");
+        cloakers.add(player.getUniqueId());
+        player.sendMessage(ChatColor.GRAY + "You vanished!");
 
         // reappear after duration or upon dealing damage. can't be tracked async :(
         new BukkitRunnable() {
@@ -64,19 +67,21 @@ public class Cloak extends Spell {
 
             @Override
             public void run() {
-                if (count >= DURATION || markedForEarlyReveal.contains(pl.getUniqueId())) {
+                if (count >= DURATION || markedForEarlyReveal.contains(player.getUniqueId())) {
                     this.cancel();
-                    Predator.getPredators().add(pl.getUniqueId());
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Predator.getPredators().remove(pl.getUniqueId()), Predator.getDuration() * 20L);
-                    cloakers.remove(pl.getUniqueId());
-                    for (Player ps : RunicCore.getCacheManager().getLoadedPlayers()) {
-                        ps.showPlayer(plugin, pl);
+                    Predator.getPredators().add(player.getUniqueId());
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Predator.getPredators().remove(player.getUniqueId()), Predator.getDuration() * 20L);
+                    cloakers.remove(player.getUniqueId());
+                    for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                        Player loaded = Bukkit.getPlayer(uuid);
+                        if (loaded == null) continue;
+                        loaded.showPlayer(plugin, player);
                     }
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                             new Particle.DustOptions(Color.BLACK, 3));
-                    pl.sendMessage(ChatColor.GRAY + "You reappeared!");
-                    markedForEarlyReveal.remove(pl.getUniqueId());
+                    player.sendMessage(ChatColor.GRAY + "You reappeared!");
+                    markedForEarlyReveal.remove(player.getUniqueId());
                 } else {
                     count++;
                 }

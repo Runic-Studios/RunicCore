@@ -3,6 +3,7 @@ package com.runicrealms.plugin.player.listener;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -29,7 +30,7 @@ public class PlayerLevelListener implements Listener {
         RunicCoreAPI.setRedisValue(player, "level", String.valueOf(player.getLevel()));
 
         // grab the player's new info
-        String className = RunicCoreAPI.getRedisValue(player, "classType");
+        String className = RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE);
         if (className.equals("")) return;
         int classLevel = player.getLevel();
 
@@ -67,7 +68,7 @@ public class PlayerLevelListener implements Listener {
         // grab the player's new info
         String className;
         try {
-            className = RunicCoreAPI.getRedisValue(player, "classType");
+            className = RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE);
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }

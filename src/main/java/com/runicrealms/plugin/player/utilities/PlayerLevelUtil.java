@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.model.ClassData;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,9 +57,9 @@ public class PlayerLevelUtil {
     public static void giveExperience(Player player, int expGained) {
 
         Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
-        String className = fieldValues.get("classType");
+        String className = fieldValues.get(RedisField.CLASS_TYPE.getField());
         int currentLv = player.getLevel();
-        int currentExp = Integer.parseInt(fieldValues.get("exp"));
+        int currentExp = Integer.parseInt(fieldValues.get(RedisField.CLASS_EXP.getField()));
 
         if (currentLv >= MAX_LEVEL) return;
 
@@ -143,7 +144,7 @@ public class PlayerLevelUtil {
      */
     private static void sendLevelMessage(Player player, int classLv) {
 
-        String className = RunicCoreAPI.getRedisValue(player, "classType");
+        String className = RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE);
         if (className == null) return;
 
         player.sendTitle(

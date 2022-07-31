@@ -2,6 +2,7 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
+import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -9,11 +10,11 @@ import java.util.*;
 
 public class BaseCharacterData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
-        add("slot");
-        add("currentHp");
-        add("storedHunger");
-        add("playerUuid");
-        add("location");
+        add(RedisField.SLOT.getField());
+        add(RedisField.CURRENT_HEALTH.getField());
+        add(RedisField.STORED_HUNGER.getField());
+        add(RedisField.PLAYER_UUID.getField());
+        add(RedisField.LOCATION.getField());
     }};
 
     private final int slot;

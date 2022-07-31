@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -80,7 +81,7 @@ public class PlayerSpellWrapper {
     }
 
     public static String determineDefaultSpell(Player player) {
-        switch (RunicCoreAPI.getRedisValue(player, "classType")) {
+        switch (RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE)) {
             case "Archer":
                 return DEFAULT_ARCHER;
             case "Cleric":

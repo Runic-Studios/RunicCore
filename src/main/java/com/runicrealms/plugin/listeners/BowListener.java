@@ -55,15 +55,15 @@ public class BowListener implements Listener {
         // only listen for bows
         if (!(artifactType.equals(WeaponType.BOW))) return;
 
-        Player pl = e.getPlayer();
+        Player player = e.getPlayer();
 
         // only listen for left clicks
         if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
-        // only apply cooldown if its not already active
+        // only apply cooldown if it's not already active
         if (cooldown != 0) return;
 
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+        String className = RunicCoreAPI.getPlayerClass(player);
         if (className == null) return;
         if (!className.equals("Archer")) return;
 
@@ -75,23 +75,23 @@ public class BowListener implements Listener {
             reqLv = 0;
         }
 
-        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
-            pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-            pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+        if (reqLv > player.getLevel()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
             e.setCancelled(true);
             return;
         }
 
-        if (RunicCoreAPI.isCasting(pl)) return;
+        if (RunicCoreAPI.isCasting(player)) return;
 
-        pl.playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
 
         // fire a custom arrow
-        final Vector direction = pl.getEyeLocation().getDirection().multiply(ARROW_VELOCITY_MULT);
-        Arrow myArrow = pl.launchProjectile(Arrow.class);
+        final Vector direction = player.getEyeLocation().getDirection().multiply(ARROW_VELOCITY_MULT);
+        Arrow myArrow = player.launchProjectile(Arrow.class);
 
         myArrow.setVelocity(direction);
-        myArrow.setShooter(pl);
+        myArrow.setShooter(player);
         myArrow.setCustomNameVisible(false);
         myArrow.setCustomName("autoAttack");
         myArrow.setBounce(false);
@@ -101,7 +101,7 @@ public class BowListener implements Listener {
             @Override
             public void run() {
                 Location arrowLoc = myArrow.getLocation();
-                pl.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
                 if (myArrow.isDead() || myArrow.isOnGround()) {
                     this.cancel();
                 }
@@ -109,7 +109,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         // set the cooldown
-        pl.setCooldown(artifact.getType(), BOW_GLOBAL_COOLDOWN);
+        player.setCooldown(artifact.getType(), BOW_GLOBAL_COOLDOWN);
     }
 
     @EventHandler

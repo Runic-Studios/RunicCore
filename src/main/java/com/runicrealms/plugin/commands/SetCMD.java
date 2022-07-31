@@ -4,11 +4,13 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.api.RunicProfessionsAPI;
 import com.runicrealms.plugin.professions.gathering.GatherPlayer;
 import com.runicrealms.plugin.professions.gathering.GatheringSkill;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
+import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -17,6 +19,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.runicrealms.plugin.classes.SelectClass.setPlayerClass;
 import static com.runicrealms.plugin.classes.SelectClass.setupCache;
@@ -27,8 +30,11 @@ public class SetCMD extends BaseCommand {
     public SetCMD() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("online", context -> {
             Set<String> onlinePlayers = new HashSet<>();
-            for (Player online : RunicCore.getCacheManager().getLoadedPlayers())
-                onlinePlayers.add(online.getName());
+            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null) continue;
+                onlinePlayers.add(player.getName());
+            }
             return onlinePlayers;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("classes", context -> {
@@ -115,13 +121,13 @@ public class SetCMD extends BaseCommand {
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         player.setLevel(0);
-        RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(0);
+        RunicCoreAPI.setRedisValue(player, "exp", String.valueOf(0));
         PlayerLevelUtil.giveExperience(player, expAtLevel);
-        RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
+        // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
         /*
         IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the class level!
         */
-        RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(expAtLevel);
+        // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(expAtLevel);
     }
 
     // set proflevel [player] [level]
@@ -137,12 +143,12 @@ public class SetCMD extends BaseCommand {
         }
         Player player = Bukkit.getPlayer(args[0]);
         if (player == null) return;
-        RunicCore.getCacheManager().getPlayerCaches().get(player).setProfLevel(Integer.parseInt(args[1]));
+        RunicCoreAPI.setRedisValue(player, RedisField.PROF_LEVEL.getField(), args[1]);
         // ----------------------
         // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
         int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
         // ----------------------
-        RunicCore.getCacheManager().getPlayerCaches().get(player).setProfExp(expAtLevel);
+        RunicCoreAPI.setRedisValue(player, RedisField.PROF_EXP.getField(), String.valueOf(expAtLevel));
     }
 
     // set gatheringlevel [player] [skill] [level]
