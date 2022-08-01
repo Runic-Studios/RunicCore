@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,18 +40,19 @@ public class RedisUtil {
      * @param fields the fields to lookup (it's key-value pairs, returned in a map)
      * @return the values corresponding to the field
      */
-    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
+    public static Map<RedisField, String> getRedisValues(Player player, List<RedisField> fields) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
             int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
             String key = player.getUniqueId() + ":character:" + slot;
             if (jedis.exists(key)) {
-                Map<String, String> fieldsMap = new HashMap<>();
-                String[] fieldsToArray = fields.toArray(new String[0]);
+                Map<RedisField, String> fieldsMap = new HashMap<>();
+                List<String> fieldsToString = redisFieldsToStrings(fields);
+                String[] fieldsToArray = fieldsToString.toArray(new String[0]);
                 List<String> values = jedis.hmget(key, fieldsToArray);
                 for (int i = 0; i < fieldsToArray.length; i++) {
-                    fieldsMap.put(fieldsToArray[i], values.get(i));
+                    fieldsMap.put(RedisField.getFromFieldString(fieldsToArray[i]), values.get(i));
                 }
                 return fieldsMap;
             }
@@ -87,7 +89,7 @@ public class RedisUtil {
      * Attempts to update the redis value corresponding to the field for the given player
      *
      * @param player to write value for
-     * @param map of field, value to write
+     * @param map    of field, value to write
      * @return true if the field was successfully written to
      */
     public static boolean setRedisValues(Player player, Map<String, String> map) {
@@ -102,5 +104,19 @@ public class RedisUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Quick conversion method to grab the strings from a list of redis fields
+     *
+     * @param redisFields a list of redis field constants
+     * @return a list of strings that can be placed in the session cache
+     */
+    public static List<String> redisFieldsToStrings(List<RedisField> redisFields) {
+        List<String> fieldsToString = new ArrayList<>();
+        for (RedisField redisField : redisFields) {
+            fieldsToString.add(redisField.getField());
+        }
+        return fieldsToString;
     }
 }

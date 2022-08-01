@@ -10,26 +10,26 @@ import java.util.List;
 import java.util.Map;
 
 public class ClassData implements JedisSerializable {
-    static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.CLASS_TYPE.getField());
-        add(RedisField.CLASS_EXP.getField());
-        add(RedisField.CLASS_LEVEL.getField());
+    static List<RedisField> fields = new ArrayList<RedisField>() {{
+        add(RedisField.CLASS_TYPE);
+        add(RedisField.CLASS_EXP);
+        add(RedisField.CLASS_LEVEL);
     }};
     private final ClassEnum classType;
-    private final int exp;
     private final int level;
+    private final int exp;
 
     /**
      * A container of class info used to load a player character profile
      *
      * @param classType the class of the character (e.g., Cleric)
-     * @param exp       the exp of the character
      * @param level     the level of the character
+     * @param exp       the exp of the character
      */
-    public ClassData(ClassEnum classType, int exp, int level) {
+    public ClassData(ClassEnum classType, int level, int exp) {
         this.classType = classType;
-        this.exp = exp;
         this.level = level;
+        this.exp = exp;
     }
 
     /**
@@ -48,13 +48,13 @@ public class ClassData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public ClassData(Map<String, String> fields) {
-        this.classType = ClassEnum.getFromName(fields.get("slot"));
-        this.exp = Integer.parseInt(fields.get("exp"));
-        this.level = Integer.parseInt(fields.get("level"));
+    public ClassData(Map<RedisField, String> fields) {
+        this.classType = ClassEnum.getFromName(fields.get(RedisField.SLOT));
+        this.exp = Integer.parseInt(fields.get(RedisField.CLASS_EXP));
+        this.level = Integer.parseInt(fields.get(RedisField.CLASS_LEVEL));
     }
 
-    public static List<String> getFields() {
+    public static List<RedisField> getFields() {
         return fields;
     }
 

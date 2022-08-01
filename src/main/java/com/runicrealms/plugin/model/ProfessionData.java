@@ -8,15 +8,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// todo: move to RunicProfessions?
 public class ProfessionData implements JedisSerializable {
-    static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.PROF_NAME.getField());
-        add(RedisField.PROF_EXP.getField());
-        add(RedisField.PROF_LEVEL.getField());
+    static List<RedisField> fields = new ArrayList<RedisField>() {{
+        add(RedisField.PROF_NAME);
+        add(RedisField.PROF_EXP);
+        add(RedisField.PROF_LEVEL);
     }};
     private final String profName;
-    private final int profExp;
     private final int profLevel;
+    private final int profExp;
+
+    /**
+     * A container of class info used to load a player character profile
+     *
+     * @param profName  the name of the profession
+     * @param profLevel the level of the profession
+     * @param profExp   the exp of the profession
+     */
+    public ProfessionData(String profName, int profLevel, int profExp) {
+        this.profName = profName;
+        this.profLevel = profLevel;
+        this.profExp = profExp;
+    }
 
     /**
      * A container of profession info used to load a player character profile, built from mongo
@@ -34,13 +48,13 @@ public class ProfessionData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public ProfessionData(Map<String, String> fields) {
-        this.profName = fields.get("profName");
-        this.profLevel = Integer.parseInt(fields.get("profExp"));
-        this.profExp = Integer.parseInt(fields.get("profLevel"));
+    public ProfessionData(Map<RedisField, String> fields) {
+        this.profName = fields.get(RedisField.PROF_NAME);
+        this.profLevel = Integer.parseInt(fields.get(RedisField.PROF_LEVEL));
+        this.profExp = Integer.parseInt(fields.get(RedisField.PROF_EXP));
     }
 
-    public static List<String> getFields() {
+    public static List<RedisField> getFields() {
         return fields;
     }
 
@@ -65,8 +79,8 @@ public class ProfessionData implements JedisSerializable {
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
             put("profName", profName);
-            put("profExp", String.valueOf(profExp));
             put("profLevel", String.valueOf(profLevel));
+            put("profExp", String.valueOf(profExp));
         }};
     }
 

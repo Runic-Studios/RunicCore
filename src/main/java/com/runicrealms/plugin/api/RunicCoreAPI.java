@@ -85,25 +85,24 @@ public class RunicCoreAPI {
 
     /**
      * @param player
-     * @param fields
+     * @param redisFields
      * @return
      */
-    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
-        return RedisUtil.getRedisValues(player, fields);
+    public static Map<RedisField, String> getRedisValues(Player player, List<RedisField> redisFields) {
+        return RedisUtil.getRedisValues(player, redisFields);
     }
 
     /**
      * @param player
-     * @param field
+     * @param redisField
      * @param value
      * @return
      */
-    public static boolean setRedisValue(Player player, String field, String value) {
-        return RedisUtil.setRedisValue(player, field, value);
+    public static boolean setRedisValue(Player player, RedisField redisField, String value) {
+        return RedisUtil.setRedisValue(player, redisField.getField(), value);
     }
 
     /**
-     *
      * @param player
      * @param map
      * @return

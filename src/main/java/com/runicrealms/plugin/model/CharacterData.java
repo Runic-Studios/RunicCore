@@ -5,7 +5,9 @@ import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
+import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.redis.RedisManager;
+import com.runicrealms.plugin.redis.RedisUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -62,16 +64,17 @@ public class CharacterData {
      * @param jedis  the jedis resource
      */
     public CharacterData(Player player, int slot, Jedis jedis) {
-        List<String> fields = new ArrayList<>();
-        Map<String, String> fieldsMap = new HashMap<>();
+        List<RedisField> fields = new ArrayList<>();
+        Map<RedisField, String> fieldsMap = new HashMap<>();
         fields.addAll(BaseCharacterData.getFields());
         fields.addAll(ClassData.getFields());
         fields.addAll(ProfessionData.getFields());
         fields.addAll(OutlawData.getFields());
-        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> fieldsToString = RedisUtil.redisFieldsToStrings(fields);
+        String[] fieldsToArray = fieldsToString.toArray(new String[0]);
         List<String> values = jedis.hmget(player.getUniqueId() + ":character:" + slot, fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
-            fieldsMap.put(fieldsToArray[i], values.get(i));
+            fieldsMap.put(RedisField.getFromFieldString(fieldsToArray[i]), values.get(i));
         }
         this.baseCharacterData = new BaseCharacterData(fieldsMap);
         this.classData = new ClassData(fieldsMap);

@@ -210,9 +210,9 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
 
     private String playerProf(final Player player) {
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
-        String profName = professionFields.get(RedisField.PROF_NAME.getField());
-        int currentLevel = Integer.parseInt(professionFields.get(RedisField.PROF_LEVEL.getField()));
+        Map<RedisField, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
+        String profName = professionFields.get(RedisField.PROF_NAME);
+        int currentLevel = Integer.parseInt(professionFields.get(RedisField.PROF_LEVEL));
         String display;
         if (profName == null) {
             display = NO_PROF_STRING;

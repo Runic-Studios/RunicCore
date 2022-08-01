@@ -26,4 +26,16 @@ public enum RedisField {
     public String getField() {
         return field;
     }
+
+    /**
+     * @param field
+     * @return
+     */
+    public static RedisField getFromFieldString(String field) {
+        for (RedisField redisField : RedisField.values()) {
+            if (redisField.getField().equalsIgnoreCase(field))
+                return redisField;
+        }
+        return null;
+    }
 }

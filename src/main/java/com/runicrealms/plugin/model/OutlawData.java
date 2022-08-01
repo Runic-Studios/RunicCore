@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public class OutlawData implements JedisSerializable {
-    static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.OUTLAW_ENABLED.getField());
-        add(RedisField.OUTLAW_RATING.getField());
+    static List<RedisField> fields = new ArrayList<RedisField>() {{
+        add(RedisField.OUTLAW_ENABLED);
+        add(RedisField.OUTLAW_RATING);
     }};
     private final boolean outlawEnabled;
     private final int outlawRating;
@@ -31,12 +31,12 @@ public class OutlawData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public OutlawData(Map<String, String> fields) {
-        this.outlawEnabled = Boolean.parseBoolean(fields.get("outlawEnabled"));
-        this.outlawRating = Integer.parseInt(fields.get("outlawRating"));
+    public OutlawData(Map<RedisField, String> fields) {
+        this.outlawEnabled = Boolean.parseBoolean(fields.get(RedisField.OUTLAW_ENABLED));
+        this.outlawRating = Integer.parseInt(fields.get(RedisField.OUTLAW_RATING));
     }
 
-    public static List<String> getFields() {
+    public static List<RedisField> getFields() {
         return fields;
     }
 

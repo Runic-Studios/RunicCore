@@ -56,15 +56,15 @@ public class PlayerLevelUtil {
      */
     public static void giveExperience(Player player, int expGained) {
 
-        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
-        String className = fieldValues.get(RedisField.CLASS_TYPE.getField());
+        Map<RedisField, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
+        String className = fieldValues.get(RedisField.CLASS_TYPE);
         int currentLv = player.getLevel();
-        int currentExp = Integer.parseInt(fieldValues.get(RedisField.CLASS_EXP.getField()));
+        int currentExp = Integer.parseInt(fieldValues.get(RedisField.CLASS_EXP));
 
         if (currentLv >= MAX_LEVEL) return;
 
         currentExp = currentExp + expGained;
-        RunicCoreAPI.setRedisValue(player, "exp", String.valueOf(currentExp));
+        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP, String.valueOf(currentExp));
 
         if (calculateExpectedLv(currentExp) != currentLv) {
 
@@ -81,7 +81,7 @@ public class PlayerLevelUtil {
 
             player.setLevel(calculateExpectedLv(currentExp));
             currentLv = calculateExpectedLv(currentExp);
-            RunicCoreAPI.setRedisValue(player, "level", String.valueOf(currentLv));
+            RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL, String.valueOf(currentLv));
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLv);
@@ -139,8 +139,10 @@ public class PlayerLevelUtil {
     }
 
     /**
-     * @param player
-     * @param classLv
+     * When the player earns a level, send them a message!
+     *
+     * @param player  to receive message
+     * @param classLv the level they reached
      */
     private static void sendLevelMessage(Player player, int classLv) {
 

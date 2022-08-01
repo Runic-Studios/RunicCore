@@ -30,11 +30,13 @@ import com.runicrealms.plugin.model.ProfessionData;
 import com.runicrealms.plugin.redis.RedisField;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
 public class PlaceholderAPI extends PlaceholderExpansion {
 
+    @NotNull
     @Override
     public String getIdentifier() {
         return "core";
@@ -45,35 +47,37 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         return true;
     }
 
+    @NotNull
     @Override
     public String getAuthor() {
         return "Skyfallin_";
     }
 
+    @NotNull
     @Override
     public String getVersion() {
         return "1.0.0";
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String arg) {
+    public String onPlaceholderRequest(Player player, @NotNull String arg) {
 
         if (player == null) return null;
         String lowerArg = arg.toLowerCase();
 
-        Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
+        Map<RedisField, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
+        Map<RedisField, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
         switch (lowerArg) {
             case "class":
-                return classFields.get(RedisField.CLASS_TYPE.getField());
+                return classFields.get(RedisField.CLASS_TYPE);
             case "class_prefix":
-                return classFields.get(RedisField.CLASS_TYPE.getField().substring(0, 2));
+                return classFields.get(RedisField.CLASS_TYPE).substring(0, 2);
             case "level":
                 return player.getLevel() + "";
             case "prof":
-                return professionFields.get(RedisField.PROF_NAME.getField());
+                return professionFields.get(RedisField.PROF_NAME);
             case "prof_level":
-                return professionFields.get(RedisField.PROF_LEVEL.getField());
+                return professionFields.get(RedisField.PROF_LEVEL);
             default:
                 return "";
         }

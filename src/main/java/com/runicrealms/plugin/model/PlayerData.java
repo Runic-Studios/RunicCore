@@ -39,8 +39,8 @@ public class PlayerData {
                 for (String key : mongoData.getSection(DATA_SECTION_KEY).getKeys()) {
                     playerCharacters.put(Integer.parseInt(key), new ClassData(
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),
-                            mongoData.get(DATA_SECTION_KEY + "." + key + ".class.exp", Integer.class),
-                            mongoData.get(DATA_SECTION_KEY + "." + key + ".class.level", Integer.class)));
+                            mongoData.get(DATA_SECTION_KEY + "." + key + ".class.level", Integer.class),
+                            mongoData.get(DATA_SECTION_KEY + "." + key + ".class.exp", Integer.class)));
 
                 }
             }

@@ -9,12 +9,12 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class BaseCharacterData implements JedisSerializable {
-    static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.SLOT.getField());
-        add(RedisField.CURRENT_HEALTH.getField());
-        add(RedisField.STORED_HUNGER.getField());
-        add(RedisField.PLAYER_UUID.getField());
-        add(RedisField.LOCATION.getField());
+    static List<RedisField> fields = new ArrayList<RedisField>() {{
+        add(RedisField.SLOT);
+        add(RedisField.CURRENT_HEALTH);
+        add(RedisField.STORED_HUNGER);
+        add(RedisField.PLAYER_UUID);
+        add(RedisField.LOCATION);
     }};
 
     private final int slot;
@@ -60,15 +60,15 @@ public class BaseCharacterData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public BaseCharacterData(Map<String, String> fields) {
-        this.slot = Integer.parseInt(fields.get("slot"));
-        this.currentHp = Integer.parseInt(fields.get("currentHp"));
-        this.storedHunger = Integer.parseInt(fields.get("storedHunger"));
-        this.playerUuid = UUID.fromString(fields.get("playerUuid"));
-        this.location = DatabaseUtil.loadLocation(fields.get("location"));
+    public BaseCharacterData(Map<RedisField, String> fields) {
+        this.slot = Integer.parseInt(fields.get(RedisField.SLOT));
+        this.currentHp = Integer.parseInt(fields.get(RedisField.CURRENT_HEALTH));
+        this.storedHunger = Integer.parseInt(fields.get(RedisField.STORED_HUNGER));
+        this.playerUuid = UUID.fromString(fields.get(RedisField.PLAYER_UUID));
+        this.location = DatabaseUtil.loadLocation(fields.get(RedisField.LOCATION));
     }
 
-    public static List<String> getFields() {
+    public static List<RedisField> getFields() {
         return fields;
     }
 
