@@ -84,9 +84,11 @@ public class RunicCoreAPI {
     }
 
     /**
-     * @param player
-     * @param redisFields
-     * @return
+     * Returns a map of values from session storage in redis as key-value pairs
+     *
+     * @param player      the player to lookup
+     * @param redisFields a list of constants
+     * @return a map of key-value pairs
      */
     public static Map<RedisField, String> getRedisValues(Player player, List<RedisField> redisFields) {
         return RedisUtil.getRedisValues(player, redisFields);
@@ -471,11 +473,31 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Returns a list of the names of all regions containing the given location
+     *
+     * @param location the location to query
+     * @return a list of region names
+     */
+    public static List<String> getRegionIds(Location location) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
+        Set<ProtectedRegion> regions = set.getRegions();
+        if (regions == null) return new ArrayList<>();
+        List<String> regionIds = new ArrayList<>();
+        for (ProtectedRegion region : regions) {
+            regionIds.add(region.getId());
+        }
+        return regionIds;
+    }
+
+    /**
      * Checks whether the given location is within a city
      *
      * @param location to check
      * @return true if it's within a city
      */
+    // todo: should use above method
     public static boolean isSafezone(Location location) {
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();

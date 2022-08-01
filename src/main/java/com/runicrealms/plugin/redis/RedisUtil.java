@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class RedisUtil {
 
+    public static final long EXPIRE_TIME = 86400; // seconds (24 hours)
+
     /**
      * Opens a jedis resource, authenticates it, reads and returns a value, and closes the connection
      *

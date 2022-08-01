@@ -27,7 +27,6 @@ import java.util.Map;
  */
 public class CharacterData {
 
-    private static final long EXPIRE_TIME = 86400; // seconds (24 hours)
     private final BaseCharacterData baseCharacterData;
     private final ClassData classData;
     private final ProfessionData professionData;
@@ -104,7 +103,7 @@ public class CharacterData {
             // save data (includes nested fields)
             mongoData.save();
         } catch (Exception e) {
-            RunicCore.getInstance().getLogger().info("[ERROR]: Data of player cache to save was null.");
+            RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
             e.printStackTrace();
         }
     }
@@ -123,7 +122,7 @@ public class CharacterData {
             jedis.hmset(key, classData.toMap());
             jedis.hmset(key, professionData.toMap());
             jedis.hmset(key, outlawData.toMap());
-            jedis.expire(key, EXPIRE_TIME);
+            jedis.expire(key, RedisUtil.EXPIRE_TIME);
         }
     }
 
