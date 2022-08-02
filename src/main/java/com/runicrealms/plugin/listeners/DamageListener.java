@@ -298,8 +298,8 @@ public class DamageListener implements Listener {
 //            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
 
             // if both players are outlaws, amend the death message to display their rating
-            boolean damagerIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue((Player) damager, RedisField.OUTLAW_ENABLED));
-            boolean victimIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(victim, RedisField.OUTLAW_ENABLED));
+            boolean damagerIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue((Player) damager, RedisField.OUTLAW_ENABLED.getField()));
+            boolean victimIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(victim, RedisField.OUTLAW_ENABLED.getField()));
             if (damagerIsOutlaw && victimIsOutlaw) {
                 nameDam = ChatColor.WHITE + nameDam; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
                 nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +

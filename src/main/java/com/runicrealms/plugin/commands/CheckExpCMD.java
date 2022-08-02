@@ -1,13 +1,15 @@
 package com.runicrealms.plugin.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.CatchUnknown;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.Conditions;
+import co.aikar.commands.annotation.Default;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.ColorUtil;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -21,16 +23,16 @@ public class CheckExpCMD extends BaseCommand implements Listener {
     @CatchUnknown
     @Conditions("is-player")
     public void onCommand(Player player) {
-        int classLv = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.CLASS_LEVEL));
-        int classExp = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.CLASS_EXP));
+        int classLv = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.CLASS_LEVEL.getField()));
+        int classExp = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.CLASS_EXP.getField()));
         int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
         int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv + 1);
         double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
         NumberFormat toDecimal = new DecimalFormat("#0.00");
         String classProgressFormatted = toDecimal.format(proportion);
 
-        int profLv = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.PROF_LEVEL));
-        int profExp = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.PROF_EXP));
+        int profLv = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.PROF_LEVEL.getField()));
+        int profExp = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.PROF_EXP.getField()));
         int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
         int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv + 1);
         double progress = (double) (profExp - profExpAtLevel) / (profTotalExpToLevel - profExpAtLevel);

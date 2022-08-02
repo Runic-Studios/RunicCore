@@ -52,7 +52,7 @@ public abstract class Spell implements ISpell, Listener {
 
         // verify class
         boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
-                (RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE));
+                (RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE.getField()));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -100,8 +100,8 @@ public abstract class Spell implements ISpell, Listener {
         // probably unnecessary, but insurance
         if (playerAlly instanceof ArmorStand) return false;
 
-        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster, RedisField.OUTLAW_ENABLED));
-        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly, RedisField.OUTLAW_ENABLED));
+        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster, RedisField.OUTLAW_ENABLED.getField()));
+        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly, RedisField.OUTLAW_ENABLED.getField()));
 
         // If either player is an outlaw
         if (casterIsOutlaw || allyIsOutlaw)

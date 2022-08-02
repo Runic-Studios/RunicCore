@@ -67,20 +67,24 @@ public class RunicCoreAPI {
     }
 
     /**
-     * @param player
-     * @return
+     * Quick method to grab player class from session data in redis
+     *
+     * @param player to lookup
+     * @return a string representing the class (Cleric, Mage, etc.)
      */
     public static String getPlayerClass(Player player) {
         return RedisUtil.getRedisValue(player, RedisField.CLASS_TYPE.getField());
     }
 
     /**
-     * @param player
-     * @param redisField
-     * @return
+     * Returns the value in the key-value pair in redis (if it exists)
+     *
+     * @param player the player to lookup
+     * @param field  the key
+     * @return the value
      */
-    public static String getRedisValue(Player player, RedisField redisField) {
-        return RedisUtil.getRedisValue(player, redisField.getField());
+    public static String getRedisValue(Player player, String field) {
+        return RedisUtil.getRedisValue(player, field);
     }
 
     /**
@@ -95,10 +99,12 @@ public class RunicCoreAPI {
     }
 
     /**
-     * @param player
-     * @param redisField
-     * @param value
-     * @return
+     * Set the cached value in redis for the given player and key
+     *
+     * @param player     to lookup
+     * @param redisField value of the key
+     * @param value      to set
+     * @return true if the key exists and was updated successfully
      */
     public static boolean setRedisValue(Player player, RedisField redisField, String value) {
         return RedisUtil.setRedisValue(player, redisField.getField(), value);

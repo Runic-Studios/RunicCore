@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 public class NametagUtil {
 
     public static void updateNametag(Player player) {
-        String levelColor = player.getLevel() >= PlayerLevelUtil.getMaxLevel()? "&6" : "&a";
-        boolean isOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(player, RedisField.OUTLAW_ENABLED));
+        String levelColor = player.getLevel() >= PlayerLevelUtil.getMaxLevel() ? "&6" : "&a";
+        boolean isOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(player, RedisField.OUTLAW_ENABLED.getField()));
         String nameColor = isOutlaw ? "&4" : "&r";
         String classPrefix = RunicCoreAPI.getPlayerClass(player).substring(0, 2);
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(),
