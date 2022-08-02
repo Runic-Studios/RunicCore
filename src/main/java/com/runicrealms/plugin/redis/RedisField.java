@@ -28,8 +28,9 @@ public enum RedisField {
     }
 
     /**
-     * @param field
-     * @return
+     * Returns the corresponding RedisField from the given string version
+     * @param field a string matching a constant
+     * @return the constant
      */
     public static RedisField getFromFieldString(String field) {
         for (RedisField redisField : RedisField.values()) {

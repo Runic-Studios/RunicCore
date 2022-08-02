@@ -78,9 +78,9 @@ public class ProfessionData implements JedisSerializable {
     @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
-            put("profName", profName);
-            put("profLevel", String.valueOf(profLevel));
-            put("profExp", String.valueOf(profExp));
+            put(RedisField.PROF_NAME.getField(), profName);
+            put(RedisField.PROF_LEVEL.getField(), String.valueOf(profLevel));
+            put(RedisField.PROF_EXP.getField(), String.valueOf(profExp));
         }};
     }
 

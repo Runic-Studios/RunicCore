@@ -33,7 +33,7 @@ public class CharacterData {
     private final OutlawData outlawData;
 
     /**
-     * Build basic info about the player for the character select screen from mongo
+     * Build the player's character data from mongo and add it to redis
      *
      * @param player          to be loaded
      * @param slot            the chosen character slot from the select screen
@@ -56,7 +56,7 @@ public class CharacterData {
     }
 
     /**
-     * Build basic info about the player for the character select screen from mongo
+     * Build the player's character data from redis
      *
      * @param player to be loaded
      * @param slot   the chosen character slot from the select screen
