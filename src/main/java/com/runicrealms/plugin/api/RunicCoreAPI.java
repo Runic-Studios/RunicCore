@@ -90,27 +90,29 @@ public class RunicCoreAPI {
     /**
      * Returns a map of values from session storage in redis as key-value pairs
      *
-     * @param player      the player to lookup
-     * @param redisFields a list of constants
+     * @param player the player to lookup
+     * @param fields a list of constants
      * @return a map of key-value pairs
      */
-    public static Map<RedisField, String> getRedisValues(Player player, List<RedisField> redisFields) {
-        return RedisUtil.getRedisValues(player, redisFields);
+    public static Map<RedisField, String> getRedisValues(Player player, List<String> fields) {
+        return RedisUtil.getRedisValues(player, fields);
     }
 
     /**
      * Set the cached value in redis for the given player and key
      *
-     * @param player     to lookup
-     * @param redisField value of the key
-     * @param value      to set
+     * @param player to lookup
+     * @param field  value of the key
+     * @param value  to set
      * @return true if the key exists and was updated successfully
      */
-    public static boolean setRedisValue(Player player, RedisField redisField, String value) {
-        return RedisUtil.setRedisValue(player, redisField.getField(), value);
+    public static boolean setRedisValue(Player player, String field, String value) {
+        return RedisUtil.setRedisValue(player, field, value);
     }
 
     /**
+     * Set the cached values in redis for the given player and map of key-value pairs
+     *
      * @param player
      * @param map
      * @return

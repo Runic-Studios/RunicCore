@@ -121,7 +121,7 @@ public class SetCMD extends BaseCommand {
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         player.setLevel(0);
-        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP, String.valueOf(0));
+        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP.getField(), String.valueOf(0));
         PlayerLevelUtil.giveExperience(player, expAtLevel);
         // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
         /*
@@ -143,12 +143,12 @@ public class SetCMD extends BaseCommand {
         }
         Player player = Bukkit.getPlayer(args[0]);
         if (player == null) return;
-        RunicCoreAPI.setRedisValue(player, RedisField.PROF_LEVEL, args[1]);
+        RunicCoreAPI.setRedisValue(player, RedisField.PROF_LEVEL.getField(), args[1]);
         // ----------------------
         // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
         int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
         // ----------------------
-        RunicCoreAPI.setRedisValue(player, RedisField.PROF_EXP, String.valueOf(expAtLevel));
+        RunicCoreAPI.setRedisValue(player, RedisField.PROF_EXP.getField(), String.valueOf(expAtLevel));
     }
 
     // set gatheringlevel [player] [skill] [level]

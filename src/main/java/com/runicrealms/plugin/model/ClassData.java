@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ClassData implements JedisSerializable {
-    static List<RedisField> fields = new ArrayList<RedisField>() {{
-        add(RedisField.CLASS_TYPE);
-        add(RedisField.CLASS_EXP);
-        add(RedisField.CLASS_LEVEL);
+    static List<String> fields = new ArrayList<String>() {{
+        add(RedisField.CLASS_TYPE.getField());
+        add(RedisField.CLASS_EXP.getField());
+        add(RedisField.CLASS_LEVEL.getField());
     }};
     private final ClassEnum classType;
     private final int level;
@@ -48,13 +48,13 @@ public class ClassData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public ClassData(Map<RedisField, String> fields) {
-        this.classType = ClassEnum.getFromName(fields.get(RedisField.SLOT));
-        this.exp = Integer.parseInt(fields.get(RedisField.CLASS_EXP));
-        this.level = Integer.parseInt(fields.get(RedisField.CLASS_LEVEL));
+    public ClassData(Map<String, String> fields) {
+        this.classType = ClassEnum.getFromName(fields.get(RedisField.SLOT.getField()));
+        this.exp = Integer.parseInt(fields.get(RedisField.CLASS_EXP.getField()));
+        this.level = Integer.parseInt(fields.get(RedisField.CLASS_LEVEL.getField()));
     }
 
-    public static List<RedisField> getFields() {
+    public static List<String> getFields() {
         return fields;
     }
 

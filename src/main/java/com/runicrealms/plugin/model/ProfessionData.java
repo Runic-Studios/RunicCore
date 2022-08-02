@@ -8,12 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// todo: move to RunicProfessions?
 public class ProfessionData implements JedisSerializable {
-    static List<RedisField> fields = new ArrayList<RedisField>() {{
-        add(RedisField.PROF_NAME);
-        add(RedisField.PROF_EXP);
-        add(RedisField.PROF_LEVEL);
+    static List<String> fields = new ArrayList<String>() {{
+        add(RedisField.PROF_NAME.getField());
+        add(RedisField.PROF_EXP.getField());
+        add(RedisField.PROF_LEVEL.getField());
     }};
     private final String profName;
     private final int profLevel;
@@ -48,13 +47,13 @@ public class ProfessionData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public ProfessionData(Map<RedisField, String> fields) {
-        this.profName = fields.get(RedisField.PROF_NAME);
-        this.profLevel = Integer.parseInt(fields.get(RedisField.PROF_LEVEL));
-        this.profExp = Integer.parseInt(fields.get(RedisField.PROF_EXP));
+    public ProfessionData(Map<String, String> fields) {
+        this.profName = fields.get(RedisField.PROF_NAME.getField());
+        this.profLevel = Integer.parseInt(fields.get(RedisField.PROF_LEVEL.getField()));
+        this.profExp = Integer.parseInt(fields.get(RedisField.PROF_EXP.getField()));
     }
 
-    public static List<RedisField> getFields() {
+    public static List<String> getFields() {
         return fields;
     }
 

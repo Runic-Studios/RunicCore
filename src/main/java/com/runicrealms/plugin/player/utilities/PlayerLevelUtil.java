@@ -64,7 +64,7 @@ public class PlayerLevelUtil {
         if (currentLv >= MAX_LEVEL) return;
 
         currentExp = currentExp + expGained;
-        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP, String.valueOf(currentExp));
+        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP.getField(), String.valueOf(currentExp));
 
         if (calculateExpectedLv(currentExp) != currentLv) {
 
@@ -81,7 +81,7 @@ public class PlayerLevelUtil {
 
             player.setLevel(calculateExpectedLv(currentExp));
             currentLv = calculateExpectedLv(currentExp);
-            RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL, String.valueOf(currentLv));
+            RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL.getField(), String.valueOf(currentLv));
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLv);

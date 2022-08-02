@@ -27,7 +27,7 @@ public class PlayerLevelListener implements Listener {
         if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
 
         // update player's level in redis
-        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL, String.valueOf(player.getLevel()));
+        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()));
 
         // grab the player's new info
         String className = RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE.getField());
