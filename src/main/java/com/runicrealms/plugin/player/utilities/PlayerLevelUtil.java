@@ -56,10 +56,10 @@ public class PlayerLevelUtil {
      */
     public static void giveExperience(Player player, int expGained) {
 
-        Map<RedisField, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
-        String className = fieldValues.get(RedisField.CLASS_TYPE);
+        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
+        String className = fieldValues.get(RedisField.CLASS_TYPE.getField());
         int currentLv = player.getLevel();
-        int currentExp = Integer.parseInt(fieldValues.get(RedisField.CLASS_EXP));
+        int currentExp = Integer.parseInt(fieldValues.get(RedisField.CLASS_EXP.getField()));
 
         if (currentLv >= MAX_LEVEL) return;
 

@@ -41,18 +41,18 @@ public class RedisUtil {
      * @param fields the fields to lookup (it's key-value pairs, returned in a map)
      * @return the values corresponding to the field
      */
-    public static Map<RedisField, String> getRedisValues(Player player, List<String> fields) {
+    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
             int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
             String key = player.getUniqueId() + ":character:" + slot;
             if (jedis.exists(key)) {
-                Map<RedisField, String> fieldsMap = new HashMap<>();
+                Map<String, String> fieldsMap = new HashMap<>();
                 String[] fieldsToArray = fields.toArray(new String[0]);
                 List<String> values = jedis.hmget(key, fieldsToArray);
                 for (int i = 0; i < fieldsToArray.length; i++) {
-                    fieldsMap.put(RedisField.getFromFieldString(fieldsToArray[i]), values.get(i));
+                    fieldsMap.put(fieldsToArray[i], values.get(i));
                 }
                 return fieldsMap;
             }

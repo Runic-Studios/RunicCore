@@ -94,7 +94,7 @@ public class RunicCoreAPI {
      * @param fields a list of constants
      * @return a map of key-value pairs
      */
-    public static Map<RedisField, String> getRedisValues(Player player, List<String> fields) {
+    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
         return RedisUtil.getRedisValues(player, fields);
     }
 

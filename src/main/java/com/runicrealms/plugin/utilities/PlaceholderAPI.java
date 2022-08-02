@@ -65,19 +65,19 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         if (player == null) return null;
         String lowerArg = arg.toLowerCase();
 
-        Map<RedisField, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
-        Map<RedisField, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
+        Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
+        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
         switch (lowerArg) {
             case "class":
-                return classFields.get(RedisField.CLASS_TYPE);
+                return classFields.get(RedisField.CLASS_TYPE.getField());
             case "class_prefix":
-                return classFields.get(RedisField.CLASS_TYPE).substring(0, 2);
+                return classFields.get(RedisField.CLASS_TYPE.getField()).substring(0, 2);
             case "level":
                 return player.getLevel() + "";
             case "prof":
-                return professionFields.get(RedisField.PROF_NAME);
+                return professionFields.get(RedisField.PROF_NAME.getField());
             case "prof_level":
-                return professionFields.get(RedisField.PROF_LEVEL);
+                return professionFields.get(RedisField.PROF_LEVEL.getField());
             default:
                 return "";
         }
