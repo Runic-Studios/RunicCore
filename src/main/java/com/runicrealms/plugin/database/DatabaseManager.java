@@ -179,9 +179,10 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * Attempts to populate the document for given character and slot with basic values
+     * Creates a CharacterData object. Tries to build it from session storage (Redis) first,
+     * then falls back to Mongo
      *
-     * @param player who created a new character
+     * @param player who is attempting to load their data
      * @param slot   the slot of the character
      */
     public CharacterData loadCharacterData(Player player, Integer slot) {
