@@ -30,7 +30,8 @@ public class PlayerLevelListener implements Listener {
         RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()));
 
         // grab the player's new info
-        String className = RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot);
         if (className.equals("")) return;
         int classLevel = player.getLevel();
 
@@ -67,8 +68,9 @@ public class PlayerLevelListener implements Listener {
 
         // grab the player's new info
         String className;
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
         try {
-            className = RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
+            className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot);
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }

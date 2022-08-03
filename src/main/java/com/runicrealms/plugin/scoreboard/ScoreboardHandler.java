@@ -193,7 +193,7 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
 
     private String playerClass(final Player player) {
-        String className = RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         int currentLevel = player.getLevel();
         String display;
         if (className == null) {
@@ -228,7 +228,7 @@ public class ScoreboardHandler implements Listener {
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
 
     private String playerGuild(final Player player) {
-        String guild = RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.GUILD.getField());
+        String guild = RunicCoreAPI.getRedisPlayerValue(player.getUniqueId(), RedisField.GUILD.getField());
         String display;
         if (guild == null) {
             display = NO_GUILD_STRING;

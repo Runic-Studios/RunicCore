@@ -94,7 +94,7 @@ public class RunicCoreAPI {
      * @param field the key
      * @return the value
      */
-    public static String getRedisValue(UUID uuid, String field) {
+    public static String getRedisPlayerValue(UUID uuid, String field) {
         return RedisUtil.getRedisValue(uuid, field);
     }
 
@@ -106,7 +106,7 @@ public class RunicCoreAPI {
      * @param field the key
      * @return the value
      */
-    public static String getRedisValue(UUID uuid, String field, int slot) {
+    public static String getRedisCharacterValue(UUID uuid, String field, int slot) {
         return RedisUtil.getRedisValue(uuid, field, slot);
     }
 

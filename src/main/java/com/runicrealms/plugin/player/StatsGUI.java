@@ -95,11 +95,12 @@ public class StatsGUI implements InventoryHolder {
     private ItemStack statInfoItem() {
         AttributeInstance playerMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         assert playerMaxHealth != null;
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
         int healthBonus = (int) playerMaxHealth.getValue() -
                 PlayerLevelUtil.calculateHealthAtLevel
                         (
                                 player.getLevel(),
-                                RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField())
+                                RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot)
                         );
         return GUIUtil.dispItem(
                 Material.PAPER,

@@ -61,7 +61,8 @@ public class SpellGUI implements InventoryHolder {
      * @return a perk that can be used to build an itemstack
      */
     private Perk determineDefaultSpellPerk() {
-        switch (RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField())) {
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        switch (RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot)) {
             case "Archer":
                 return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
             case "Cleric":

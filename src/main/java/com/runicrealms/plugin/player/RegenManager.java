@@ -114,7 +114,7 @@ public class RegenManager implements Listener {
      * @return the mana per level
      */
     public double getManaPerLv(Player player) {
-        String className = RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         if (className.equals("")) return 0;
         switch (className.toLowerCase()) {
             case "archer":
