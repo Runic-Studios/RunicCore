@@ -289,7 +289,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         PluginManager pm = this.getServer().getPluginManager();
 
-        pm.registerEvents(RunicCore.getScoreboardHandler(), this);
         pm.registerEvents(RunicCore.getMobTagger(), this);
         pm.registerEvents(RunicCore.getBossTagger(), this);
         pm.registerEvents(new ScoreboardListener(), this);

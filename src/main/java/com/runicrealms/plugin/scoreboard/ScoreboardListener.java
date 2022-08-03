@@ -1,11 +1,15 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.plugin.professions.event.ProfessionChangeEvent;
+import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -13,6 +17,34 @@ import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ScoreboardListener implements Listener {
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onPlayerJoin(CharacterSelectEvent e) {
+        Player player = e.getPlayer();
+        RunicCore.getScoreboardHandler().setupScoreboard(player);
+        NametagUtil.updateNametag(player);
+    }
+
+    /**
+     * Updates health and scoreboard on level change
+     */
+    @EventHandler
+    public void onLevelUp(PlayerLevelChangeEvent e) {
+        Player player = e.getPlayer();
+        RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
+    }
+
+    @EventHandler
+    public void onProfessionChange(ProfessionChangeEvent e) {
+        RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
+    }
+
+    // todo: implement this event
+//    @EventHandler
+//    public void onGuildChange(GuildChangeEvent e) {
+//
+//    }
 
     /**
      * Updates health and scoreboard on armor equip
@@ -43,15 +75,6 @@ public class ScoreboardListener implements Listener {
      */
     @EventHandler
     public void onOffhandSwap(PlayerSwapHandItemsEvent e) {
-        Player player = e.getPlayer();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
-    }
-
-    /**
-     * Updates health and scoreboard on level change
-     */
-    @EventHandler
-    public void onLevelUp(PlayerLevelChangeEvent e) {
         Player player = e.getPlayer();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
     }

@@ -2,25 +2,18 @@ package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.model.ProfessionData;
-import com.runicrealms.plugin.professions.event.ProfessionChangeEvent;
 import com.runicrealms.plugin.redis.RedisField;
-import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.scoreboard.*;
 
 import java.util.Map;
 import java.util.UUID;
 
-public class ScoreboardHandler implements Listener {
+public class ScoreboardHandler {
 
     // basic info
     private static final String CLASS_TEAM_STRING = "c";
@@ -48,35 +41,12 @@ public class ScoreboardHandler implements Listener {
         }, 100L, 4L);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onPlayerJoin(CharacterSelectEvent e) {
-        Player player = e.getPlayer();
-        setupScoreboard(player);
-        NametagUtil.updateNametag(player);
-    }
-
-    @EventHandler
-    public void onPlayerLevel(PlayerLevelChangeEvent e) {
-        updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
-    }
-
-    @EventHandler
-    public void onProfessionChange(ProfessionChangeEvent e) {
-        updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
-    }
-
-    // todo: implement this event
-//    @EventHandler
-//    public void onGuildChange(GuildChangeEvent e) {
-//
-//    }
-
     /**
      * Set the scoreboard for the given player if they do not yet have one
      *
      * @param player to receive scoreboard
      */
-    private void setupScoreboard(final Player player) {
+    public void setupScoreboard(final Player player) {
         assert Bukkit.getScoreboardManager() != null;
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective obj = scoreboard.registerNewObjective("ServerName", "", ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
@@ -128,6 +98,9 @@ public class ScoreboardHandler implements Listener {
     public void updatePlayerInfo(final Player player, final Scoreboard scoreboard) {
         try {
             String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+            Team playerClass = scoreboard.getTeam(playerNameSubString + CLASS_TEAM_STRING);
+            assert playerClass != null;
+            playerClass.setPrefix(playerClass(player));
             Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
             assert playerProf != null;
             playerProf.setPrefix(playerProf(player));
