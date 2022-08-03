@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.UUID;
 
 @CommandAlias("experience|exp")
 public class CheckExpCMD extends BaseCommand implements Listener {
@@ -23,16 +24,17 @@ public class CheckExpCMD extends BaseCommand implements Listener {
     @CatchUnknown
     @Conditions("is-player")
     public void onCommand(Player player) {
-        int classLv = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.CLASS_LEVEL.getField()));
-        int classExp = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.CLASS_EXP.getField()));
+        UUID uuid = player.getUniqueId();
+        int classLv = Integer.parseInt(RunicCoreAPI.getRedisValue(uuid, RedisField.CLASS_LEVEL.getField()));
+        int classExp = Integer.parseInt(RunicCoreAPI.getRedisValue(uuid, RedisField.CLASS_EXP.getField()));
         int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
         int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv + 1);
         double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
         NumberFormat toDecimal = new DecimalFormat("#0.00");
         String classProgressFormatted = toDecimal.format(proportion);
 
-        int profLv = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.PROF_LEVEL.getField()));
-        int profExp = Integer.parseInt(RunicCoreAPI.getRedisValue(player, RedisField.PROF_EXP.getField()));
+        int profLv = Integer.parseInt(RunicCoreAPI.getRedisValue(uuid, RedisField.PROF_LEVEL.getField()));
+        int profExp = Integer.parseInt(RunicCoreAPI.getRedisValue(uuid, RedisField.PROF_EXP.getField()));
         int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
         int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv + 1);
         double progress = (double) (profExp - profExpAtLevel) / (profTotalExpToLevel - profExpAtLevel);

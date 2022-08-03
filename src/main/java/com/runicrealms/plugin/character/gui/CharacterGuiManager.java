@@ -76,7 +76,7 @@ public class CharacterGuiManager implements Listener {
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
                 RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), slot); // now we always know which character is playing
-                CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player, slot);
+                CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player.getUniqueId(), slot);
                 if (characterData == null) {
                     Bukkit.getLogger().info("Something went wrong with character selection");
                     return;
@@ -99,7 +99,7 @@ public class CharacterGuiManager implements Listener {
         if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
             String className = getClassNameFromIcon(currentItem);
             RunicCore.getDatabaseManager().addNewCharacter(player, className, characterCache.get(player.getUniqueId()).getFirstUnusedSlot());
-            characterCache.get(player.getUniqueId()).addCharacter(new ClassData(ClassEnum.getFromName(className), 0, 0));
+            characterCache.get(player.getUniqueId()).addCharacter(new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0));
         }
         openSelectGui(player);
     }

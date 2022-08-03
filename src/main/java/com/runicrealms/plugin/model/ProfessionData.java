@@ -1,12 +1,11 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisField;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProfessionData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
@@ -14,6 +13,7 @@ public class ProfessionData implements JedisSerializable {
         add(RedisField.PROF_EXP.getField());
         add(RedisField.PROF_LEVEL.getField());
     }};
+    private final UUID uuid;
     private final String profName;
     private final int profLevel;
     private final int profExp;
@@ -21,11 +21,13 @@ public class ProfessionData implements JedisSerializable {
     /**
      * A container of class info used to load a player character profile
      *
+     * @param uuid      of the player
      * @param profName  the name of the profession
      * @param profLevel the level of the profession
      * @param profExp   the exp of the profession
      */
-    public ProfessionData(String profName, int profLevel, int profExp) {
+    public ProfessionData(UUID uuid, String profName, int profLevel, int profExp) {
+        this.uuid = uuid;
         this.profName = profName;
         this.profLevel = profLevel;
         this.profExp = profExp;
@@ -34,9 +36,11 @@ public class ProfessionData implements JedisSerializable {
     /**
      * A container of profession info used to load a player character profile, built from mongo
      *
+     * @param uuid      of the player
      * @param character a PlayerMongoDataSection corresponding to the chosen slot
      */
-    public ProfessionData(PlayerMongoDataSection character) {
+    public ProfessionData(UUID uuid, PlayerMongoDataSection character) {
+        this.uuid = uuid;
         this.profName = character.get("prof.name", String.class);
         this.profLevel = character.get("prof.level", Integer.class);
         this.profExp = character.get("prof.exp", Integer.class);
@@ -45,9 +49,11 @@ public class ProfessionData implements JedisSerializable {
     /**
      * A container of basic info used to load a player character profile, built from redis
      *
+     * @param uuid   of the player
      * @param fields a map of key-value pairs from redis
      */
-    public ProfessionData(Map<String, String> fields) {
+    public ProfessionData(UUID uuid, Map<String, String> fields) {
+        this.uuid = uuid;
         this.profName = fields.get(RedisField.PROF_NAME.getField());
         this.profLevel = Integer.parseInt(fields.get(RedisField.PROF_LEVEL.getField()));
         this.profExp = Integer.parseInt(fields.get(RedisField.PROF_EXP.getField()));
@@ -84,7 +90,8 @@ public class ProfessionData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoDataSection character) {
+    public void writeToMongo(PlayerMongoData playerMongoData) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
         character.set("prof.name", this.profName);
         character.set("prof.level", this.profLevel);
         character.set("prof.exp", this.profExp);

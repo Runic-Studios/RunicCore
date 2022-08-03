@@ -1,13 +1,12 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisField;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ClassData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
@@ -15,6 +14,7 @@ public class ClassData implements JedisSerializable {
         add(RedisField.CLASS_EXP.getField());
         add(RedisField.CLASS_LEVEL.getField());
     }};
+    private final UUID uuid;
     private final ClassEnum classType;
     private final int level;
     private final int exp;
@@ -22,11 +22,13 @@ public class ClassData implements JedisSerializable {
     /**
      * A container of class info used to load a player character profile
      *
+     * @param uuid
      * @param classType the class of the character (e.g., Cleric)
      * @param level     the level of the character
      * @param exp       the exp of the character
      */
-    public ClassData(ClassEnum classType, int level, int exp) {
+    public ClassData(UUID uuid, ClassEnum classType, int level, int exp) {
+        this.uuid = uuid;
         this.classType = classType;
         this.level = level;
         this.exp = exp;
@@ -37,7 +39,8 @@ public class ClassData implements JedisSerializable {
      *
      * @param character a PlayerMongoDataSection corresponding to the chosen slot
      */
-    public ClassData(PlayerMongoDataSection character) {
+    public ClassData(UUID uuid, PlayerMongoDataSection character) {
+        this.uuid = uuid;
         this.classType = ClassEnum.getFromName(character.get("class.name", String.class));
         this.exp = character.get("class.exp", Integer.class);
         this.level = character.get("class.level", Integer.class);
@@ -48,7 +51,8 @@ public class ClassData implements JedisSerializable {
      *
      * @param fields a map of key-value pairs from redis
      */
-    public ClassData(Map<String, String> fields) {
+    public ClassData(UUID uuid, Map<String, String> fields) {
+        this.uuid = uuid;
         this.classType = ClassEnum.getFromName(fields.get(RedisField.SLOT.getField()));
         this.exp = Integer.parseInt(fields.get(RedisField.CLASS_EXP.getField()));
         this.level = Integer.parseInt(fields.get(RedisField.CLASS_LEVEL.getField()));
@@ -85,7 +89,8 @@ public class ClassData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoDataSection character) {
+    public void writeToMongo(PlayerMongoData playerMongoData) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
         character.set("class.name", this.classType.getName());
         character.set("class.level", this.getLevel());
         character.set("class.exp", this.getExp());

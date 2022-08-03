@@ -13,6 +13,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.util.UUID;
+
 /**
  * Singleton class to manager connection to redis and jedis pool
  */
@@ -47,17 +49,17 @@ public class RedisManager implements Listener {
      * Checks redis to see if the currently selected character's data is cached.
      * And if it is, returns the CharacterData object
      *
-     * @param player to check
-     * @param slot   of the character
+     * @param uuid of player to check
+     * @param slot of the character
      * @return a CharacterData object if it is found in redis
      */
-    public CharacterData checkRedisForCharacterData(Player player, Integer slot) {
+    public CharacterData checkRedisForCharacterData(UUID uuid, Integer slot) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            if (jedis.exists(player.getUniqueId() + ":character:" + slot)) {
+            if (jedis.exists(uuid + ":character:" + slot)) {
                 Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building data from redis");
-                return new CharacterData(player, slot, jedis);
+                return new CharacterData(uuid, slot, jedis);
             }
         }
         Bukkit.broadcastMessage(ChatColor.RED + "redis character data not found");

@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.runicrealms.plugin.classes.SelectClass.setPlayerClass;
-import static com.runicrealms.plugin.classes.SelectClass.setupCache;
+import static com.runicrealms.plugin.classes.SelectClass.writeClassDataToRedis;
 
 @CommandAlias("set")
 public class SetCMD extends BaseCommand {
@@ -78,7 +78,7 @@ public class SetCMD extends BaseCommand {
             }
             String formattedStr = classString.substring(0, 1).toUpperCase() + classString.substring(1);
             setPlayerClass(player, formattedStr, true);
-            setupCache(player, formattedStr);
+            writeClassDataToRedis(player, formattedStr);
         } catch (Exception e) {
             e.printStackTrace();
         }

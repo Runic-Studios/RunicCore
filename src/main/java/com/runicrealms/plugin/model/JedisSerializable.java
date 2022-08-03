@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.database.PlayerMongoData;
 
 import java.util.Map;
 
@@ -8,5 +8,5 @@ public interface JedisSerializable {
 
     Map<String, String> toMap();
 
-    void writeToMongo(PlayerMongoDataSection character);
+    void writeToMongo(PlayerMongoData playerMongoData);
 }

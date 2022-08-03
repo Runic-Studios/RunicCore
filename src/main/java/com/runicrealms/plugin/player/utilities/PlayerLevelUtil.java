@@ -146,7 +146,7 @@ public class PlayerLevelUtil {
      */
     private static void sendLevelMessage(Player player, int classLv) {
 
-        String className = RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE.getField());
+        String className = RunicCoreAPI.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
         if (className == null) return;
 
         player.sendTitle(

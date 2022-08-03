@@ -1,27 +1,29 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisField;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OutlawData implements JedisSerializable {
     static List<String> fields = new ArrayList<String>() {{
         add(RedisField.OUTLAW_ENABLED.getField());
         add(RedisField.OUTLAW_RATING.getField());
     }};
+    private final UUID uuid;
     private final boolean outlawEnabled;
     private final int outlawRating;
 
     /**
      * A container of outlaw info used to load a player character profile, built from mongo
      *
+     * @param uuid      of the player that selected the character profile
      * @param character a PlayerMongoDataSection corresponding to the chosen slot
      */
-    public OutlawData(PlayerMongoDataSection character) {
+    public OutlawData(UUID uuid, PlayerMongoDataSection character) {
+        this.uuid = uuid;
         this.outlawEnabled = character.get("outlaw.enabled", Boolean.class);
         this.outlawRating = character.get("outlaw.rating", Integer.class);
     }
@@ -29,9 +31,11 @@ public class OutlawData implements JedisSerializable {
     /**
      * A container of basic info used to load a player character profile, built from redis
      *
+     * @param uuid   of the player that selected the character profile
      * @param fields a map of key-value pairs from redis
      */
-    public OutlawData(Map<String, String> fields) {
+    public OutlawData(UUID uuid, Map<String, String> fields) {
+        this.uuid = uuid;
         this.outlawEnabled = Boolean.parseBoolean(fields.get(RedisField.OUTLAW_ENABLED.getField()));
         this.outlawRating = Integer.parseInt(fields.get(RedisField.OUTLAW_RATING.getField()));
     }
@@ -62,7 +66,8 @@ public class OutlawData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoDataSection character) {
+    public void writeToMongo(PlayerMongoData playerMongoData) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
         character.set("outlaw.enabled", this.outlawEnabled);
         character.set("outlaw.rating", this.outlawRating);
     }

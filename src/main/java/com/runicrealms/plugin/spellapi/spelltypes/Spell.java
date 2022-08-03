@@ -23,6 +23,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import java.util.UUID;
+
 public abstract class Spell implements ISpell, Listener {
 
     private boolean isPassive = false;
@@ -49,10 +51,11 @@ public abstract class Spell implements ISpell, Listener {
     public void execute(Player player, SpellItemType type) {
 
         if (isOnCooldown(player)) return; // ensure spell is not on cooldown
+        UUID uuid = player.getUniqueId();
 
         // verify class
         boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
-                (RunicCoreAPI.getRedisValue(player, RedisField.CLASS_TYPE.getField()));
+                (RunicCoreAPI.getRedisValue(uuid, RedisField.CLASS_TYPE.getField()));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -100,8 +103,8 @@ public abstract class Spell implements ISpell, Listener {
         // probably unnecessary, but insurance
         if (playerAlly instanceof ArmorStand) return false;
 
-        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster, RedisField.OUTLAW_ENABLED.getField()));
-        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly, RedisField.OUTLAW_ENABLED.getField()));
+        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(caster.getUniqueId(), RedisField.OUTLAW_ENABLED.getField()));
+        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisValue(playerAlly.getUniqueId(), RedisField.OUTLAW_ENABLED.getField()));
 
         // If either player is an outlaw
         if (casterIsOutlaw || allyIsOutlaw)

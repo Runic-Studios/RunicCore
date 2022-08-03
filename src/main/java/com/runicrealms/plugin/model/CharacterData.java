@@ -13,10 +13,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Intermediary object used to read data from mongo or redis and then store data back in redis.
@@ -34,34 +31,34 @@ public class CharacterData {
     /**
      * Build the player's character data from mongo and add it to redis
      *
-     * @param player          to be loaded
+     * @param uuid            of the player that selected the character profile
      * @param slot            the chosen character slot from the select screen
      * @param playerMongoData associated with the player's unique id
      */
-    public CharacterData(Player player, int slot, PlayerMongoData playerMongoData) {
+    public CharacterData(UUID uuid, int slot, PlayerMongoData playerMongoData) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-        this.baseCharacterData = new BaseCharacterData(player, slot, character);
+        this.baseCharacterData = new BaseCharacterData(uuid, slot, character);
         ClassData tempClassData;
         try { // the player data object already stores basic class info, so let's try to grab it from there first
-            tempClassData = RunicCore.getDatabaseManager().getPlayerDataMap().get(player.getUniqueId()).getPlayerCharacters().get(slot);
+            tempClassData = RunicCore.getDatabaseManager().getPlayerDataMap().get(uuid).getPlayerCharacters().get(slot);
         } catch (NullPointerException e) {
-            tempClassData = new ClassData(character);
+            tempClassData = new ClassData(uuid, character);
             e.printStackTrace();
         }
         this.classData = tempClassData;
-        this.professionData = new ProfessionData(character);
-        this.outlawData = new OutlawData(character);
+        this.professionData = new ProfessionData(uuid, character);
+        this.outlawData = new OutlawData(uuid, character);
         writeCharacterDataToJedis(RunicCore.getRedisManager().getJedisPool());
     }
 
     /**
      * Build the player's character data from redis
      *
-     * @param player to be loaded
-     * @param slot   the chosen character slot from the select screen
-     * @param jedis  the jedis resource
+     * @param uuid  of the player that selected the character profile
+     * @param slot  the chosen character slot from the select screen
+     * @param jedis the jedis resource
      */
-    public CharacterData(Player player, int slot, Jedis jedis) {
+    public CharacterData(UUID uuid, int slot, Jedis jedis) {
         List<String> fields = new ArrayList<>();
         Map<String, String> fieldsMap = new HashMap<>();
         fields.addAll(BaseCharacterData.getFields());
@@ -69,14 +66,14 @@ public class CharacterData {
         fields.addAll(ProfessionData.getFields());
         fields.addAll(OutlawData.getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
-        List<String> values = jedis.hmget(player.getUniqueId() + ":character:" + slot, fieldsToArray);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot, fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
             fieldsMap.put(fieldsToArray[i], values.get(i));
         }
-        this.baseCharacterData = new BaseCharacterData(fieldsMap);
-        this.classData = new ClassData(fieldsMap);
-        this.professionData = new ProfessionData(fieldsMap);
-        this.outlawData = new OutlawData(fieldsMap);
+        this.baseCharacterData = new BaseCharacterData(uuid, fieldsMap);
+        this.classData = new ClassData(uuid, fieldsMap);
+        this.professionData = new ProfessionData(uuid, fieldsMap);
+        this.outlawData = new OutlawData(uuid, fieldsMap);
     }
 
     /**
@@ -88,18 +85,18 @@ public class CharacterData {
     public void writeCharacterDataToMongo(Player player, CacheSaveReason cacheSaveReason) {
         try {
             int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
-            PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-            mongoData.set("last_login", LocalDate.now());
-            PlayerMongoDataSection character = mongoData.getCharacter(slot);
-            MongoSaveEvent e = new MongoSaveEvent(player, mongoData, character, cacheSaveReason);
+            PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
+            playerMongoData.set("last_login", LocalDate.now());
+            PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+            MongoSaveEvent e = new MongoSaveEvent(player, playerMongoData, character, cacheSaveReason);
             Bukkit.getPluginManager().callEvent(e);
             if (e.isCancelled()) return;
-            this.baseCharacterData.writeToMongo(character);
-            this.classData.writeToMongo(character);
-            this.professionData.writeToMongo(character);
-            this.outlawData.writeToMongo(character);
+            this.baseCharacterData.writeToMongo(playerMongoData);
+            this.classData.writeToMongo(playerMongoData);
+            this.professionData.writeToMongo(playerMongoData);
+            this.outlawData.writeToMongo(playerMongoData);
             // save data (includes nested fields)
-            mongoData.save();
+            playerMongoData.save();
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
             e.printStackTrace();
@@ -114,7 +111,7 @@ public class CharacterData {
     public void writeCharacterDataToJedis(JedisPool jedisPool) {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            String uuid = String.valueOf(baseCharacterData.getPlayerUuid());
+            String uuid = String.valueOf(baseCharacterData.getUuid());
             String key = uuid + ":character:" + baseCharacterData.getSlot();
             jedis.hmset(key, baseCharacterData.toMap());
             jedis.hmset(key, classData.toMap());

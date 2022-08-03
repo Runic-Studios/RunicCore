@@ -11,6 +11,7 @@ import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
+import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
@@ -156,13 +157,13 @@ public class DatabaseManager implements Listener {
         mongoDataSection.set("prof.level", 0);
         mongoDataSection.set("prof.exp", 0);
         mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
-        mongoDataSection.set("maxMana", RunicCore.getRegenManager().getBaseMana());
+        mongoDataSection.set("maxMana", RegenManager.getBaseMana());
         mongoDataSection.set("storedHunger", 20);
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
         DatabaseUtil.saveLocation(playerMongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
         playerMongoData.save();
-        return new CharacterData(player, slot, playerMongoData);
+        return new CharacterData(player.getUniqueId(), slot, playerMongoData);
     }
 
     /**
@@ -182,15 +183,15 @@ public class DatabaseManager implements Listener {
      * Creates a CharacterData object. Tries to build it from session storage (Redis) first,
      * then falls back to Mongo
      *
-     * @param player who is attempting to load their data
-     * @param slot   the slot of the character
+     * @param uuid of player who is attempting to load their data
+     * @param slot the slot of the character
      */
-    public CharacterData loadCharacterData(Player player, Integer slot) {
+    public CharacterData loadCharacterData(UUID uuid, Integer slot) {
         // Step 1: check if character data is cached in redis
-        CharacterData characterData = RunicCore.getRedisManager().checkRedisForCharacterData(player, slot);
+        CharacterData characterData = RunicCore.getRedisManager().checkRedisForCharacterData(uuid, slot);
         if (characterData != null) return characterData;
         // Step 2: check mongo documents
-        return new CharacterData(player, slot, new PlayerMongoData(player.getUniqueId().toString()));
+        return new CharacterData(uuid, slot, new PlayerMongoData(uuid.toString()));
     }
 
     /**
@@ -224,7 +225,7 @@ public class DatabaseManager implements Listener {
                 Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on logout");
                 Player player = Bukkit.getPlayer(uuid);
                 assert player != null;
-                characterData = new CharacterData(player, slot, jedis); // build a data object
+                characterData = new CharacterData(uuid, slot, jedis); // build a data object
                 characterData.writeCharacterDataToMongo(player, CacheSaveReason.LOGOUT);
             } else {
                 // log error
@@ -252,7 +253,7 @@ public class DatabaseManager implements Listener {
 
                     Player player = Bukkit.getPlayer(uuid);
                     assert player != null;
-                    characterData = new CharacterData(player, slot, jedis); // build a data object
+                    characterData = new CharacterData(uuid, slot, jedis); // build a data object
                     characterData.writeCharacterDataToMongo(player, cacheSaveReason);
                 } else {
                     // log error

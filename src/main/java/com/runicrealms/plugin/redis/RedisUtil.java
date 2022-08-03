@@ -9,6 +9,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class RedisUtil {
 
@@ -16,17 +17,38 @@ public class RedisUtil {
 
     /**
      * Opens a jedis resource, authenticates it, reads and returns a value, and closes the connection
+     * Used for account-wide fields
      *
-     * @param player the player to lookup in redis
-     * @param field  the field to lookup (it's key-value pairs)
+     * @param uuid  of the player to lookup in redis
+     * @param field the field to lookup (it's key-value pairs)
      * @return the value corresponding to the field
      */
-    public static String getRedisValue(Player player, String field) {
+    public static String getRedisValue(UUID uuid, String field) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-            String key = player.getUniqueId() + ":character:" + slot;
+            String key = uuid.toString();
+            if (jedis.exists(key)) {
+                return jedis.hmget(key, field).get(0);
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Opens a jedis resource, authenticates it, reads and returns a value, and closes the connection
+     * Used for character-specific lookups
+     *
+     * @param uuid  of the player to lookup in redis
+     * @param field the field to lookup (it's key-value pairs)
+     * @param slot  of the selected character
+     * @return the value corresponding to the field
+     */
+    public static String getRedisValue(UUID uuid, String field, int slot) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            String key = uuid + ":character:" + slot;
             if (jedis.exists(key)) {
                 return jedis.hmget(key, field).get(0);
             }

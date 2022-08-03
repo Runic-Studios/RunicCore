@@ -73,18 +73,41 @@ public class RunicCoreAPI {
      * @return a string representing the class (Cleric, Mage, etc.)
      */
     public static String getPlayerClass(Player player) {
-        return RedisUtil.getRedisValue(player, RedisField.CLASS_TYPE.getField());
+        return RedisUtil.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
+    }
+
+    /**
+     * Quick method to grab player class from session data in redis
+     *
+     * @param uuid of player to lookup
+     * @return a string representing the class (Cleric, Mage, etc.)
+     */
+    public static String getPlayerClass(UUID uuid) {
+        return RedisUtil.getRedisValue(uuid, RedisField.CLASS_TYPE.getField());
     }
 
     /**
      * Returns the value in the key-value pair in redis (if it exists)
+     * Used for account-wide fields
      *
-     * @param player the player to lookup
-     * @param field  the key
+     * @param uuid  of the player to lookup
+     * @param field the key
      * @return the value
      */
-    public static String getRedisValue(Player player, String field) {
-        return RedisUtil.getRedisValue(player, field);
+    public static String getRedisValue(UUID uuid, String field) {
+        return RedisUtil.getRedisValue(uuid, field);
+    }
+
+    /**
+     * Returns the value in the key-value pair in redis (if it exists)
+     * Used for character specific lookups
+     *
+     * @param uuid  of the player to lookup
+     * @param field the key
+     * @return the value
+     */
+    public static String getRedisValue(UUID uuid, String field, int slot) {
+        return RedisUtil.getRedisValue(uuid, field, slot);
     }
 
     /**
