@@ -3,7 +3,7 @@ package com.runicrealms.plugin.classes;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 
-public enum SubClassEnum {
+public enum SubClass {
 
     /*
      archer
@@ -41,7 +41,7 @@ public enum SubClassEnum {
     private final ItemStack itemStack;
     private final String description;
 
-    SubClassEnum(String name, ClassEnum baseClass, ItemStack itemStack, String description) {
+    SubClass(String name, ClassEnum baseClass, ItemStack itemStack, String description) {
         this.name = name;
         this.baseClass = baseClass;
         this.itemStack = itemStack;
@@ -70,8 +70,8 @@ public enum SubClassEnum {
      * @param name of sub-class
      * @return enum of sub-class
      */
-    public static SubClassEnum getFromName(String name) {
-        for (SubClassEnum subClassType : SubClassEnum.values()) {
+    public static SubClass getFromName(String name) {
+        for (SubClass subClassType : SubClass.values()) {
             if (subClassType.getName().equalsIgnoreCase(name)) {
                 return subClassType;
             }

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -53,15 +53,15 @@ public class SubClassGUI implements InventoryHolder {
      * @return an ItemStack icon
      */
     private ItemStack subClassItem(int position) {
-        SubClassEnum subClassEnum = SubClassUtil.determineSubClass(player, position);
-        String displayName = subClassEnum.getName();
-        ItemStack subClassItem = subClassEnum.getItemStack();
+        SubClass subClass = SubClassUtil.determineSubClass(player, position);
+        String displayName = subClass.getName();
+        ItemStack subClassItem = subClass.getItemStack();
         ItemMeta meta = subClassItem.getItemMeta();
         if (meta == null) return subClassItem;
         meta.setDisplayName(ChatColor.GREEN + displayName);
         String lore = ChatColor.GRAY + "Open the skill tree for the " +
                 ChatColor.GREEN + displayName +
-                ChatColor.GRAY + " class! " + subClassEnum.getDescription();
+                ChatColor.GRAY + " class! " + subClass.getDescription();
         meta.setLore(ChatUtils.formattedText(lore));
         subClassItem.setItemMeta(meta);
         return subClassItem;

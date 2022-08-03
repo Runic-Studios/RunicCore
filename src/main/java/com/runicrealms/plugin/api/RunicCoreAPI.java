@@ -73,7 +73,12 @@ public class RunicCoreAPI {
      * @return a string representing the class (Cleric, Mage, etc.)
      */
     public static String getPlayerClass(Player player) {
-        return RedisUtil.getRedisValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField());
+        return RedisUtil.getRedisValue
+                (
+                        player.getUniqueId(),
+                        RedisField.CLASS_TYPE.getField(),
+                        getCharacterSlot(player.getUniqueId()
+                        ));
     }
 
     /**
@@ -83,7 +88,12 @@ public class RunicCoreAPI {
      * @return a string representing the class (Cleric, Mage, etc.)
      */
     public static String getPlayerClass(UUID uuid) {
-        return RedisUtil.getRedisValue(uuid, RedisField.CLASS_TYPE.getField());
+        return RedisUtil.getRedisValue
+                (
+                        uuid,
+                        RedisField.CLASS_TYPE.getField(),
+                        getCharacterSlot(uuid)
+                );
     }
 
     /**
@@ -117,6 +127,7 @@ public class RunicCoreAPI {
      * @param fields a list of constants
      * @return a map of key-value pairs
      */
+    // todo: split into player, character
     public static Map<String, String> getRedisValues(Player player, List<String> fields) {
         return RedisUtil.getRedisValues(player, fields);
     }
@@ -129,6 +140,7 @@ public class RunicCoreAPI {
      * @param value  to set
      * @return true if the key exists and was updated successfully
      */
+    // todo: split into player, character
     public static boolean setRedisValue(Player player, String field, String value) {
         return RedisUtil.setRedisValue(player, field, value);
     }
@@ -140,6 +152,7 @@ public class RunicCoreAPI {
      * @param map
      * @return
      */
+    // todo: split into player, character
     public static boolean setRedisValues(Player player, Map<String, String> map) {
         return RedisUtil.setRedisValues(player, map);
     }

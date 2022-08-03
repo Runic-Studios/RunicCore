@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.classes.utilities;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.SubClass;
 import org.bukkit.entity.Player;
 
 public class SubClassUtil {
@@ -11,50 +11,50 @@ public class SubClassUtil {
      *
      * @param position (which sub-class? 1, 2, or 3)
      */
-    public static SubClassEnum determineSubClass(Player player, int position) {
-        SubClassEnum subClassEnum = null;
+    public static SubClass determineSubClass(Player player, int position) {
+        SubClass subClass = null;
         switch (RunicCoreAPI.getPlayerClass(player)) {
-            case "archer":
+            case "Archer":
                 if (position == 1)
-                    subClassEnum = SubClassEnum.MARKSMAN;
+                    subClass = SubClass.MARKSMAN;
                 else if (position == 2)
-                    subClassEnum = SubClassEnum.SCOUT;
+                    subClass = SubClass.SCOUT;
                 else
-                    subClassEnum = SubClassEnum.WARDEN;
+                    subClass = SubClass.WARDEN;
                 break;
-            case "cleric":
+            case "Cleric":
                 if (position == 1)
-                    subClassEnum = SubClassEnum.BARD;
+                    subClass = SubClass.BARD;
                 else if (position == 2)
-                    subClassEnum = SubClassEnum.PALADIN;
+                    subClass = SubClass.PALADIN;
                 else
-                    subClassEnum = SubClassEnum.PRIEST;
+                    subClass = SubClass.PRIEST;
                 break;
-            case "mage":
+            case "Mage":
                 if (position == 1)
-                    subClassEnum = SubClassEnum.CRYOMANCER;
+                    subClass = SubClass.CRYOMANCER;
                 else if (position == 2)
-                    subClassEnum = SubClassEnum.PYROMANCER;
+                    subClass = SubClass.PYROMANCER;
                 else
-                    subClassEnum = SubClassEnum.WARLOCK;
+                    subClass = SubClass.WARLOCK;
                 break;
-            case "rogue":
+            case "Rogue":
                 if (position == 1)
-                    subClassEnum = SubClassEnum.ASSASSIN;
+                    subClass = SubClass.ASSASSIN;
                 else if (position == 2)
-                    subClassEnum = SubClassEnum.DUELIST;
+                    subClass = SubClass.DUELIST;
                 else
-                    subClassEnum = SubClassEnum.SWINDLER;
+                    subClass = SubClass.SWINDLER;
                 break;
-            case "warrior":
+            case "Warrior":
                 if (position == 1)
-                    subClassEnum = SubClassEnum.BERSERKER;
+                    subClass = SubClass.BERSERKER;
                 else if (position == 2)
-                    subClassEnum = SubClassEnum.GUARDIAN;
+                    subClass = SubClass.GUARDIAN;
                 else
-                    subClassEnum = SubClassEnum.INQUISITOR;
+                    subClass = SubClass.INQUISITOR;
                 break;
         }
-        return subClassEnum;
+        return subClass;
     }
 }

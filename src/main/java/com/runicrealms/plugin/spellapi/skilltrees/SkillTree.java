@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.SubClassEnum;
+import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -18,7 +18,7 @@ import java.util.List;
 public class SkillTree {
 
     private final int position;
-    private final SubClassEnum subClassEnum;
+    private final SubClass subClass;
     private final Player player;
     private final List<Perk> perks;
     public static final int FIRST_POINT_LEVEL = 10;
@@ -28,10 +28,10 @@ public class SkillTree {
 
     public SkillTree(Player player, int position) {
         this.position = position;
-        subClassEnum = SubClassUtil.determineSubClass(player, position);
+        this.subClass = SubClassUtil.determineSubClass(player, position);
         this.player = player;
-        // get sub-class, load default
-        perks = getSkillTreeBySubClass(subClassEnum);
+        // get subclass, load default
+        this.perks = getSkillTreeBySubClass(subClass);
         RunicCore.getSkillTreeManager().getSkillTree(position).add(this);
         // get allocated data from db, populate
         updateValuesFromDB();
@@ -147,14 +147,14 @@ public class SkillTree {
     }
 
     /**
-     * Returns the appropriate default perk list for the given sub-class, to be populated
+     * Returns the appropriate default perk list for the given subclass, to be populated
      * later by persistent data from the DB.
      *
-     * @param subClassEnum the sub-class of the player (try SubClassUtil)
+     * @param subClass the subclass of the player (try SubClassUtil)
      * @return A default list of perks (no purchased perks)
      */
-    private List<Perk> getSkillTreeBySubClass(SubClassEnum subClassEnum) throws NullPointerException {
-        switch (subClassEnum) {
+    private List<Perk> getSkillTreeBySubClass(SubClass subClass) throws NullPointerException {
+        switch (subClass) {
             case MARKSMAN:
                 return ArcherTreeUtil.marksmanPerkList();
             case SCOUT:
@@ -193,8 +193,8 @@ public class SkillTree {
         return position;
     }
 
-    public SubClassEnum getSubClassEnum() {
-        return subClassEnum;
+    public SubClass getSubClassEnum() {
+        return subClass;
     }
 
     public Player getPlayer() {

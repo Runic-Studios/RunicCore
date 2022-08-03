@@ -58,14 +58,15 @@ public class SkillTreeManager implements Listener {
     }
 
     /**
-     * Setup in-memory map of all three sub-class skill trees and "spent points," tracking how many
+     * Setup in-memory map of all three subclass skill trees and "spent points," tracking how many
      * skill points a player has already allocated from the total available at-level.
      */
     @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager
     public void onLoad(CharacterSelectEvent e) {
         Player player = e.getPlayer();
-        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection character = mongoData.getCharacter(RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId()));
+        int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
+        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
+        MongoDataSection character = playerMongoData.getCharacter(slot);
         new SkillTree(player, 1);
         new SkillTree(player, 2);
         new SkillTree(player, 3);

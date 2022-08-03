@@ -71,8 +71,8 @@ public class TabListManager implements Listener {
         tab.setHeaderFooter
                 (ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Runic Realms\n"
                                 + ChatColor.GREEN + ChatColor.BOLD + "Patch 1.9 - The Second Age!",
-                        ChatColor.DARK_GREEN + "Our website: " + ChatColor.GREEN + "www.runicrealms.com" +
-                                "\n" + ChatColor.DARK_AQUA + "Our Discord: " + ChatColor.GREEN + "discord.gg/5FjVVd4");
+                        ChatColor.DARK_GREEN + "Our Website: " + ChatColor.GREEN + "www.runicrealms.com" +
+                                "\n" + ChatColor.DARK_PURPLE + "Our Discord: " + ChatColor.LIGHT_PURPLE + "discord.gg/5FjVVd4");
 
         // Column 1 (Online)
         tab.set(0, 0, new TextTabItem
