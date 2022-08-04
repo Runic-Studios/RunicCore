@@ -96,13 +96,11 @@ public class DatabaseManager implements Listener {
      */
     @EventHandler
     public void onCharacterQuit(CharacterQuitEvent event) {
-
         Player player = event.getPlayer();
         int slot = event.getSlot();
         PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
         playerMongoData.set("last_login", LocalDate.now());
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-
         MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(slot, player, playerMongoData, character, CacheSaveReason.LOGOUT);
         Bukkit.getPluginManager().callEvent(mongoSaveEvent);
     }
@@ -245,6 +243,7 @@ public class DatabaseManager implements Listener {
                 Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo");
                 Player player = Bukkit.getPlayer(uuid);
                 assert player != null;
+                RunicCore.getRedisManager().updateBaseCharacterInfo(player, slot); // ensure jedis is up-to-date
                 characterData = new CharacterData(uuid, slot, jedis); // build a data object
                 characterData.writeCharacterDataToMongo(playerMongoData, slot);
             } else {

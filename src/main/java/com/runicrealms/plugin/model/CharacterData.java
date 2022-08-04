@@ -83,7 +83,6 @@ public class CharacterData {
             this.classData.writeToMongo(playerMongoData, slot);
             this.professionData.writeToMongo(playerMongoData, slot);
             this.outlawData.writeToMongo(playerMongoData, slot);
-            // playerMongoData.save(); // save data (includes nested fields)
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
             e.printStackTrace();
