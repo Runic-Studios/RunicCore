@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
@@ -8,7 +7,7 @@ import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.*;
 
-public class ClassData implements JedisSerializable {
+public class ClassData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
         add(RedisField.CLASS_TYPE.getField());
         add(RedisField.CLASS_EXP.getField());
@@ -22,7 +21,7 @@ public class ClassData implements JedisSerializable {
     /**
      * A container of class info used to load a player character profile
      *
-     * @param uuid
+     * @param uuid      of the player
      * @param classType the class of the character (e.g., Cleric)
      * @param level     the level of the character
      * @param exp       the exp of the character
@@ -53,13 +52,17 @@ public class ClassData implements JedisSerializable {
      */
     public ClassData(UUID uuid, Map<String, String> fields) {
         this.uuid = uuid;
-        this.classType = ClassEnum.getFromName(fields.get(RedisField.SLOT.getField()));
+        this.classType = ClassEnum.getFromName(fields.get(RedisField.CLASS_TYPE.getField()));
         this.exp = Integer.parseInt(fields.get(RedisField.CLASS_EXP.getField()));
         this.level = Integer.parseInt(fields.get(RedisField.CLASS_LEVEL.getField()));
     }
 
     public static List<String> getFields() {
         return fields;
+    }
+
+    public UUID getUuid() {
+        return this.uuid;
     }
 
     public ClassEnum getClassType() {
@@ -89,8 +92,8 @@ public class ClassData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData) {
-        PlayerMongoDataSection character = playerMongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
+    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("class.name", this.classType.getName());
         character.set("class.level", this.getLevel());
         character.set("class.exp", this.getExp());

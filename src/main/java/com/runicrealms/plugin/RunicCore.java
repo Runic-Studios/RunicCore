@@ -235,7 +235,7 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // motd
         String motd = ColorUtil.format("                    &d&lRUNIC REALMS&r" +
-                "\n              &a&l1.9 - The Second Age!");
+                "\n              &a&l2.0 - The Second Age!");
         MinecraftServer.getServer().setMotd(motd);
     }
 
@@ -265,13 +265,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onRunicShutdown(ServerShutdownEvent e) {
-        /*
-        Save current state of player data
-         */
-//        getCacheManager().saveCaches(); // save player data
-//        getCacheManager().saveQueuedFiles(false, false, CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
-//        getCacheManager().getCacheSavingTask().cancel(); // cancel cache saving queue
-        // todo: save all player data as well
         getDatabaseManager().saveAllCharacters(CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
         /*
         Notify RunicRestart

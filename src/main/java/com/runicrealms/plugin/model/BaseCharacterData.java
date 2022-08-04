@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class BaseCharacterData implements JedisSerializable {
+public class BaseCharacterData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
         add(RedisField.SLOT.getField());
         add(RedisField.CURRENT_HEALTH.getField());
@@ -117,8 +117,8 @@ public class BaseCharacterData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData) {
-        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("currentHP", this.currentHp);
         character.set("storedHunger", this.storedHunger);
         DatabaseUtil.saveLocation(character, this.location);

@@ -1,13 +1,12 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.*;
 
-public class ProfessionData implements JedisSerializable {
+public class ProfessionData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
         add(RedisField.PROF_NAME.getField());
         add(RedisField.PROF_EXP.getField());
@@ -63,6 +62,10 @@ public class ProfessionData implements JedisSerializable {
         return fields;
     }
 
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
     public String getProfName() {
         return profName;
     }
@@ -90,8 +93,8 @@ public class ProfessionData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData) {
-        PlayerMongoDataSection character = playerMongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
+    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("prof.name", this.profName);
         character.set("prof.level", this.profLevel);
         character.set("prof.exp", this.profExp);

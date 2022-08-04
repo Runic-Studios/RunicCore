@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList;
  */
 public class MongoSaveEvent extends Event implements Cancellable {
 
+    private final int slot;
     private final Player player;
     private final PlayerMongoData mongoData;
     private final PlayerMongoDataSection mongoDataSection;
@@ -20,18 +21,24 @@ public class MongoSaveEvent extends Event implements Cancellable {
     private boolean isCancelled;
 
     /**
+     * @param slot             the slot of the character
      * @param player           player of cache
      * @param mongoData        object file of player in DB
      * @param mongoDataSection section of object file being saved (typically character section)
      * @param cacheSaveReason  why the cache was saved (logout, shutdown, etc.)
      */
-    public MongoSaveEvent(Player player, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection,
+    public MongoSaveEvent(int slot, Player player, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection,
                           CacheSaveReason cacheSaveReason) {
+        this.slot = slot;
         this.player = player;
         this.mongoData = mongoData;
         this.mongoDataSection = mongoDataSection;
         this.cacheSaveReason = cacheSaveReason;
         this.isCancelled = false;
+    }
+
+    public int getSlot() {
+        return this.slot;
     }
 
     public Player getPlayer() {

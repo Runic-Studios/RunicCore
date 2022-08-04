@@ -1,13 +1,12 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.*;
 
-public class OutlawData implements JedisSerializable {
+public class OutlawData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
         add(RedisField.OUTLAW_ENABLED.getField());
         add(RedisField.OUTLAW_RATING.getField());
@@ -44,6 +43,10 @@ public class OutlawData implements JedisSerializable {
         return fields;
     }
 
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
     public boolean isOutlawEnabled() {
         return outlawEnabled;
     }
@@ -66,8 +69,8 @@ public class OutlawData implements JedisSerializable {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData) {
-        PlayerMongoDataSection character = playerMongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
+    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("outlaw.enabled", this.outlawEnabled);
         character.set("outlaw.rating", this.outlawRating);
     }

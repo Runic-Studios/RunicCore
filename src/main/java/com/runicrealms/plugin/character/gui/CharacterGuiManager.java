@@ -64,7 +64,7 @@ public class CharacterGuiManager implements Listener {
      * @param eventSlot    the slot of the item in the event inventory
      */
     private void handleSelectCharacter(ItemStack currentItem, Player player, boolean isRightClick, int eventSlot) {
-        if (currentItem.getType() == Material.REDSTONE_BLOCK) {
+        if (currentItem.getType() == Material.OAK_DOOR) {
             player.kickPlayer(ChatColor.GREEN + "Come back soon!");
             return;
         }

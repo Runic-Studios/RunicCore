@@ -3,16 +3,11 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.database.event.CacheSaveReason;
-import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.redis.RedisUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -79,24 +74,16 @@ public class CharacterData {
     /**
      * Used for the round trip to MongoDB. Saves all the data in the object to the database as nested fields
      *
-     * @param player          the player to save
-     * @param cacheSaveReason save reason (shutdown, logout, etc.)
+     * @param playerMongoData of the player
+     * @param slot            of the character
      */
-    public void writeCharacterDataToMongo(Player player, CacheSaveReason cacheSaveReason) {
+    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, int slot) {
         try {
-            int slot = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId());
-            PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
-            playerMongoData.set("last_login", LocalDate.now());
-            PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-            MongoSaveEvent e = new MongoSaveEvent(player, playerMongoData, character, cacheSaveReason);
-            Bukkit.getPluginManager().callEvent(e);
-            if (e.isCancelled()) return;
-            this.baseCharacterData.writeToMongo(playerMongoData);
-            this.classData.writeToMongo(playerMongoData);
-            this.professionData.writeToMongo(playerMongoData);
-            this.outlawData.writeToMongo(playerMongoData);
-            // save data (includes nested fields)
-            playerMongoData.save();
+            this.baseCharacterData.writeToMongo(playerMongoData, slot);
+            this.classData.writeToMongo(playerMongoData, slot);
+            this.professionData.writeToMongo(playerMongoData, slot);
+            this.outlawData.writeToMongo(playerMongoData, slot);
+            // playerMongoData.save(); // save data (includes nested fields)
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
             e.printStackTrace();

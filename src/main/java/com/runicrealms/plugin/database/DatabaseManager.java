@@ -8,6 +8,7 @@ import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
+import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
@@ -20,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import redis.clients.jedis.Jedis;
@@ -93,10 +95,26 @@ public class DatabaseManager implements Listener {
      * Remove reference to loaded players on logout
      */
     @EventHandler
-    public void onCharacterQuit(CharacterQuitEvent e) {
-        loadedCharacterMap.remove(e.getPlayer().getUniqueId());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> saveCharacter(e.getPlayer().getUniqueId()), 1L);
-        // todo: call a mongo save event here. save their stuff async, then mark them as saved.. sync?
+    public void onCharacterQuit(CharacterQuitEvent event) {
+
+        Player player = event.getPlayer();
+        int slot = event.getSlot();
+        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
+        playerMongoData.set("last_login", LocalDate.now());
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+
+        MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(slot, player, playerMongoData, character, CacheSaveReason.LOGOUT);
+        Bukkit.getPluginManager().callEvent(mongoSaveEvent);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // last
+    public void onDatabaseSave(MongoSaveEvent event) {
+        saveCharacter(event.getPlayer().getUniqueId(), event.getMongoData(), event.getSlot());
+        event.getMongoData().save();
+        event.getMongoDataSection().save();
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> loadedCharacterMap.remove(event.getPlayer().getUniqueId()), 1L);
+        // todo: mark the data as being saved here!
     }
 
     /**
@@ -212,21 +230,23 @@ public class DatabaseManager implements Listener {
     }
 
     /**
+     * Method to build a CharacterData object for the given uuid, then writes that data to mongo
      *
+     * @param uuid            of the player to save
+     * @param playerMongoData of the mongo save event
+     * @param slot            of the character to save
      */
-    public void saveCharacter(UUID uuid) {
+    public void saveCharacter(UUID uuid, PlayerMongoData playerMongoData, int slot) {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         CharacterData characterData;
-        int slot;
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            slot = loadedCharacterMap.get(uuid);
             if (jedis.exists(uuid + ":character:" + slot)) {
-                Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on logout");
+                Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo");
                 Player player = Bukkit.getPlayer(uuid);
                 assert player != null;
                 characterData = new CharacterData(uuid, slot, jedis); // build a data object
-                characterData.writeCharacterDataToMongo(player, CacheSaveReason.LOGOUT);
+                characterData.writeCharacterDataToMongo(playerMongoData, slot);
             } else {
                 // log error
             }
@@ -234,7 +254,7 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * For
+     * Saves all loaded characters to mongo
      *
      * @param cacheSaveReason
      */
@@ -254,7 +274,8 @@ public class DatabaseManager implements Listener {
                     Player player = Bukkit.getPlayer(uuid);
                     assert player != null;
                     characterData = new CharacterData(uuid, slot, jedis); // build a data object
-                    characterData.writeCharacterDataToMongo(player, cacheSaveReason);
+                    PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
+                    characterData.writeCharacterDataToMongo(playerMongoData, slot);
                 } else {
                     // log error
                 }

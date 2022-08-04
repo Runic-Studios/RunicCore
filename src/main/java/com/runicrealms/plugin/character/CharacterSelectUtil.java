@@ -179,7 +179,7 @@ public class CharacterSelectUtil {
         warriorItem.setItemMeta(warriorMeta);
         CLASS_ICONS.put(ClassEnum.WARRIOR, warriorItem);
 
-        EXIT_GAME_ITEM = new ItemStack(Material.REDSTONE_BLOCK, 1);
+        EXIT_GAME_ITEM = new ItemStack(Material.OAK_DOOR, 1);
         ItemMeta exitGameItemMeta = EXIT_GAME_ITEM.getItemMeta();
         assert exitGameItemMeta != null;
         exitGameItemMeta.setDisplayName(ColorUtil.format("&r&cLeave the Realm"));
