@@ -4,21 +4,15 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisField;
-import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 /**
  * A wrapper to store the assignment of spells to each spell slot
  */
 public class PlayerSpellWrapper {
 
-    private Player player;
-    private String spellHotbarOne;
-    private String spellLeftClick;
-    private String spellRightClick;
-    private String spellSwapHands;
-    private final HashSet<String> passives;
     public static final String PATH_1 = "hotBarOne";
     public static final String PATH_2 = "leftClick";
     public static final String PATH_3 = "rightClick";
@@ -29,18 +23,25 @@ public class PlayerSpellWrapper {
     public static final String DEFAULT_ROGUE = "Sprint";
     public static final String DEFAULT_WARRIOR = "Slam";
 
+    private String spellHotbarOne;
+    private String spellLeftClick;
+    private String spellRightClick;
+    private String spellSwapHands;
+    private final UUID uuid;
+    private final HashSet<String> passives;
+
     /**
      * Constructs a spell wrapper for the given player with specified spells, which can be left blank.
      *
-     * @param player          to generate wrapper for
+     * @param uuid            to generate wrapper for
      * @param spellHotbarOne  spell assigned to hotbar 1
      * @param spellLeftClick  spell assigned to left-click
      * @param spellRightClick spell assigned to right-click
      * @param spellSwapHands  spell assigned to swap hands
      */
-    public PlayerSpellWrapper(Player player, String spellHotbarOne, String spellLeftClick,
+    public PlayerSpellWrapper(UUID uuid, String spellHotbarOne, String spellLeftClick,
                               String spellRightClick, String spellSwapHands) {
-        this.player = player;
+        this.uuid = uuid;
         this.spellHotbarOne = spellHotbarOne;
         this.spellLeftClick = spellLeftClick;
         this.spellRightClick = spellRightClick;
@@ -52,20 +53,20 @@ public class PlayerSpellWrapper {
     /**
      * Constructs a player spell wrapper from DB
      *
-     * @param player player to generate wrapper for
+     * @param uuid   of player to generate wrapper for
      * @param spells spells section of DB for character
      */
-    public PlayerSpellWrapper(Player player, PlayerMongoDataSection spells) {
-        this.player = player;
+    public PlayerSpellWrapper(UUID uuid, PlayerMongoDataSection spells) {
+        this.uuid = uuid;
         this.spellHotbarOne = spells.get(PATH_1, String.class);
         this.spellLeftClick = spells.get(PATH_2, String.class);
         this.spellRightClick = spells.get(PATH_3, String.class);
         this.spellSwapHands = spells.get(PATH_4, String.class);
         passives = new HashSet<>();
         // call each skill tree and populate
-        RunicCoreAPI.getSkillTree(player, 1).applyPassives(this);
-        RunicCoreAPI.getSkillTree(player, 2).applyPassives(this);
-        RunicCoreAPI.getSkillTree(player, 3).applyPassives(this);
+        RunicCoreAPI.getSkillTree(uuid, 1).applyPassives(this);
+        RunicCoreAPI.getSkillTree(uuid, 2).applyPassives(this);
+        RunicCoreAPI.getSkillTree(uuid, 3).applyPassives(this);
         RunicCore.getSkillTreeManager().getPlayerSpellWrappers().add(this);
     }
 
@@ -73,16 +74,16 @@ public class PlayerSpellWrapper {
      * Reset in-memory spells for player, such as a skill point reset.
      */
     public void clearSpells() {
-        this.spellHotbarOne = determineDefaultSpell(player);
+        this.spellHotbarOne = determineDefaultSpell(uuid);
         this.spellLeftClick = "";
         this.spellRightClick = "";
         this.spellSwapHands = "";
         this.passives.clear();
     }
 
-    public static String determineDefaultSpell(Player player) {
-        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        switch (RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot)) {
+    public static String determineDefaultSpell(UUID uuid) {
+        int slot = RunicCoreAPI.getCharacterSlot(uuid);
+        switch (RunicCoreAPI.getRedisCharacterValue(uuid, RedisField.CLASS_TYPE.getField(), slot)) {
             case "Archer":
                 return DEFAULT_ARCHER;
             case "Cleric":
@@ -98,12 +99,8 @@ public class PlayerSpellWrapper {
         }
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
+    public UUID getUuid() {
+        return uuid;
     }
 
     public String getSpellHotbarOne() {

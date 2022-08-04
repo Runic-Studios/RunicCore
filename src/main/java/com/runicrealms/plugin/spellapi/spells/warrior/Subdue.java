@@ -32,13 +32,13 @@ public class Subdue extends Spell {
 
     @EventHandler
     public void onSilencingHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applySilence(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onSilencingHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applySilence(e.getPlayer(), e.getVictim());
     }
 

@@ -63,10 +63,10 @@ public class SpellEditorGUI implements InventoryHolder {
             ItemMeta meta = skillTreeButton.getItemMeta();
             if (meta == null) return skillTreeButton;
             meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Your Spell Setup:");
-            String spellOne = "&d[1] &7Spell Hotbar 1: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellHotbarOne();
-            String spellTwo = "&d[L] &7Spell Left-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellLeftClick();
-            String spellThree = "&d[R] &7Spell Right-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellRightClick();
-            String spellFour = "&d[F] &7Spell Swap-hands: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getSpellSwapHands();
+            String spellOne = "&d[1] &7Spell Hotbar 1: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellHotbarOne();
+            String spellTwo = "&d[L] &7Spell Left-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellLeftClick();
+            String spellThree = "&d[R] &7Spell Right-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellRightClick();
+            String spellFour = "&d[F] &7Spell Swap-hands: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellSwapHands();
             meta.setLore(Arrays.asList(ColorUtil.format(spellOne), ColorUtil.format(spellTwo),
                     ColorUtil.format(spellThree), ColorUtil.format(spellFour)));
             skillTreeButton.setItemMeta(meta);

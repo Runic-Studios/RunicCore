@@ -16,7 +16,7 @@ import org.bukkit.event.EventPriority;
 public class ShadowTouch extends Spell {
 
     public ShadowTouch() {
-        super ("Shadow Touch",
+        super("Shadow Touch",
                 "Your &aFireball &7spell is now &aShadowbolt&7, " +
                         "silencing its target for " + Shadowbolt.getDuration() + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
@@ -25,7 +25,7 @@ public class ShadowTouch extends Spell {
 
     @EventHandler(priority = EventPriority.HIGHEST) // fires LAST
     public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
         if (!(e.getSpell() instanceof Fireball)) return;
         e.setCancelled(true);
         SpellCastEvent spellCastEvent = new SpellCastEvent(e.getCaster(), RunicCore.getSpellManager().getSpellByName("Shadowbolt"));

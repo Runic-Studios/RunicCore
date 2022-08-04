@@ -32,13 +32,13 @@ public class Dissonance extends Spell {
 
     @EventHandler
     public void onBlindingHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         swapHotBar(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onBlindingHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         swapHotBar(e.getPlayer(), e.getVictim());
     }
 

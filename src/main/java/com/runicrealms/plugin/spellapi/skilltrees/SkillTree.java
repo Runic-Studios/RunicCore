@@ -3,33 +3,34 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.SubClass;
-import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.skilltrees.util.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 
 public class SkillTree {
 
     private final int position;
     private final SubClass subClass;
-    private final Player player;
+    private final UUID uuid;
     private final List<Perk> perks;
     public static final int FIRST_POINT_LEVEL = 10;
     public static final String PATH_LOCATION = "skillTree";
     public static final String POINTS_LOCATION = "spentPoints";
     public static final String SPELLS_LOCATION = "spells";
 
-    public SkillTree(Player player, int position) {
+    public SkillTree(UUID uuid, int position) {
         this.position = position;
-        this.subClass = SubClassUtil.determineSubClass(player, position);
-        this.player = player;
+        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.uuid = uuid;
         // get subclass, load default
         this.perks = getSkillTreeBySubClass(subClass);
         RunicCore.getSkillTreeManager().getSkillTree(position).add(this);
@@ -43,9 +44,13 @@ public class SkillTree {
      *
      * @return available skill points to spend
      */
-    public static int getAvailablePoints(Player player) {
-        int spentPoints = RunicCoreAPI.getSpentPoints(player);
-        return Math.max(0, player.getLevel() - (FIRST_POINT_LEVEL - 1) - spentPoints);
+    public static int getAvailablePoints(UUID uuid) {
+        int spentPoints = RunicCoreAPI.getSpentPoints(uuid);
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null)
+            return Math.max(0, player.getLevel() - (FIRST_POINT_LEVEL - 1) - spentPoints);
+        else
+            return 0;
     }
 
     /**
@@ -55,8 +60,8 @@ public class SkillTree {
      * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
      * @param perk     the perk attempting to be purchased
      */
-    public void attemptToPurchasePerk(Perk previous, Perk perk) {
-        int getAvailablePoints = getAvailablePoints(player);
+    public void attemptToPurchasePerk(Player player, Perk previous, Perk perk) {
+        int getAvailablePoints = getAvailablePoints(player.getUniqueId());
         if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You have already purchased this perk!");
@@ -73,10 +78,10 @@ public class SkillTree {
             return;
         }
         RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(),
-                RunicCoreAPI.getSpentPoints(player) + perk.getCost()); // spend a point
+                RunicCoreAPI.getSpentPoints(uuid) + perk.getCost()); // spend a point
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
         if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
-            applyPassives(RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player));
+            applyPassives(RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid));
         else if (perk instanceof PerkBaseStat)
             RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).increaseStat(((PerkBaseStat) perk).getStat(), ((PerkBaseStat) perk).getBonusAmount());
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
@@ -87,8 +92,8 @@ public class SkillTree {
      * Populates currently allocated points from DB once on skill tree load
      */
     private void updateValuesFromDB() {
-        PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
+        PlayerMongoData mongoData = new PlayerMongoData(uuid.toString());
+        MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getCharacterSlot(uuid));
         if (!character.has(PATH_LOCATION + "." + position)) return;  // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position);
         for (String key : perkSection.getKeys()) {
@@ -132,16 +137,17 @@ public class SkillTree {
      * @param player to reset tree for
      */
     public static void resetTree(Player player) {
+        UUID uuid = player.getUniqueId();
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
         character.save();
         mongoData.save();
-        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(player, 1));
-        RunicCore.getSkillTreeManager().getSkillTreeSetTwo().remove(RunicCoreAPI.getSkillTree(player, 2));
-        RunicCore.getSkillTreeManager().getSkillTreeSetThree().remove(RunicCoreAPI.getSkillTree(player, 3));
+        RunicCore.getSkillTreeManager().getSkillTreeSetOne().remove(RunicCoreAPI.getSkillTree(uuid, 1));
+        RunicCore.getSkillTreeManager().getSkillTreeSetTwo().remove(RunicCoreAPI.getSkillTree(uuid, 2));
+        RunicCore.getSkillTreeManager().getSkillTreeSetThree().remove(RunicCoreAPI.getSkillTree(uuid, 3));
         RunicCore.getSkillTreeManager().getSpentPoints().put(player.getUniqueId(), 0);
-        RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).clearSpells();
+        RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).clearSpells();
         RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).resetValues();
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
     }
@@ -197,8 +203,8 @@ public class SkillTree {
         return subClass;
     }
 
-    public Player getPlayer() {
-        return player;
+    public UUID getUuid() {
+        return uuid;
     }
 
     public List<Perk> getPerks() {

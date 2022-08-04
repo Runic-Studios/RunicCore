@@ -34,13 +34,13 @@ public class BearTrap extends Spell {
 
     @EventHandler
     public void onRangedHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }
 
     @EventHandler
     public void onRangedHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }
 

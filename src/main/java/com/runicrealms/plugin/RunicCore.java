@@ -8,7 +8,6 @@ import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.*;
 import com.runicrealms.plugin.database.DatabaseManager;
-import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.donator.ThreeD;
 import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.item.TeleportScrollListener;
@@ -243,6 +242,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     Prevent memory leaks
      */
     public void onDisable() {
+        RunicCore.getDatabaseManager().getPlayersToSave().clear();
         combatManager = null;
         instance = null;
         lootChestManager = null;
@@ -265,7 +265,8 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onRunicShutdown(ServerShutdownEvent e) {
-        getDatabaseManager().saveAllCharacters(CacheSaveReason.SERVER_SHUTDOWN); // saves SYNC
+        getDatabaseManager().saveAllCharacters(); // saves SYNC CacheSaveReason.SERVER_SHUTDOWN
+        // todo: call new mongo save event here
         /*
         Notify RunicRestart
          */

@@ -30,6 +30,7 @@ import redis.clients.jedis.JedisPool;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,6 +43,7 @@ public class DatabaseManager implements Listener {
     private MongoDatabase playersDB;
     private MongoCollection<Document> guild_data;
     private MongoCollection<Document> shop_data;
+    private final Map<UUID, Set<Integer>> playersToSave; // for redis-mongo saving
     private final HashMap<String, Document> playerDataLastMonth; // keyed by uuid
     private final ConcurrentHashMap<UUID, Integer> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
@@ -49,6 +51,7 @@ public class DatabaseManager implements Listener {
     public DatabaseManager() {
 
         Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
+        playersToSave = new HashMap<>();
         playerDataLastMonth = new HashMap<>();
         loadedCharacterMap = new ConcurrentHashMap<>();
         playerDataMap = new HashMap<>();
@@ -94,24 +97,16 @@ public class DatabaseManager implements Listener {
     /**
      * Remove reference to loaded players on logout
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onCharacterQuit(CharacterQuitEvent event) {
-        Player player = event.getPlayer();
-        int slot = event.getSlot();
-        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
-        playerMongoData.set("last_login", LocalDate.now());
-        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-        MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(slot, player, playerMongoData, character, CacheSaveReason.LOGOUT);
-        Bukkit.getPluginManager().callEvent(mongoSaveEvent);
+        loadedCharacterMap.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onDatabaseSave(MongoSaveEvent event) {
-        saveCharacter(event.getPlayer().getUniqueId(), event.getMongoData(), event.getSlot());
+        saveCharacter(event.getUuid(), event.getMongoData(), event.getSlot());
         event.getMongoData().save();
         event.getMongoDataSection().save();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> loadedCharacterMap.remove(event.getPlayer().getUniqueId()), 1L);
         // todo: mark the data as being saved here!
     }
 
@@ -253,30 +248,24 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * Saves all loaded characters to mongo
-     *
-     * @param cacheSaveReason
+     * Saves all characters to mongo who have logged in to this server (on any characters they've played)
      */
-    public void saveAllCharacters(CacheSaveReason cacheSaveReason) {
+    public void saveAllCharacters() {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        CharacterData characterData;
-        int slot;
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            for (UUID uuid : loadedCharacterMap.keySet()) {
-
-                slot = loadedCharacterMap.get(uuid);
-                if (jedis.exists(uuid + ":character:" + slot)) {
-                    Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on shutdown");
-
-
-                    Player player = Bukkit.getPlayer(uuid);
-                    assert player != null;
-                    characterData = new CharacterData(uuid, slot, jedis); // build a data object
-                    PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
-                    characterData.writeCharacterDataToMongo(playerMongoData, slot);
-                } else {
-                    // log error
+            for (UUID uuid : playersToSave.keySet()) {
+                for (int slot : playersToSave.get(uuid)) {
+                    if (jedis.exists(uuid + ":character:" + slot)) {
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on shutdown");
+                        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+                        playerMongoData.set("last_login", LocalDate.now());
+                        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+                        MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(slot, uuid, playerMongoData, character, CacheSaveReason.SERVER_SHUTDOWN);
+                        Bukkit.getPluginManager().callEvent(mongoSaveEvent);
+                    } else {
+                        Bukkit.getLogger().info(ChatColor.RED + "[ERROR]: There was a problem saving all redis data on shutdown!");
+                    }
                 }
             }
         }
@@ -292,6 +281,10 @@ public class DatabaseManager implements Listener {
 
     public MongoCollection<Document> getShopData() {
         return shop_data;
+    }
+
+    public Map<UUID, Set<Integer>> getPlayersToSave() {
+        return playersToSave;
     }
 
     public HashMap<String, Document> getPlayerDataLastMonth() {

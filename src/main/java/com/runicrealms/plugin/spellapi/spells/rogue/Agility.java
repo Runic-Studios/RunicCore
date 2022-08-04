@@ -21,7 +21,7 @@ public class Agility extends Spell {
 
     private static final int DURATION = 2;
     private static final int PERCENT = 10;
-    private static final int SPEED_MULT = 1;
+    private static final int SPEED_MULTIPLIER = 1;
 
     public Agility() {
         super("Agility",
@@ -33,13 +33,13 @@ public class Agility extends Spell {
 
     @EventHandler
     public void onSpeedyHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         getSpeed(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onSpeedyHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         getSpeed(e.getPlayer(), e.getVictim());
     }
 
@@ -54,7 +54,7 @@ public class Agility extends Spell {
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.8f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
                     25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 3));
-            pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_MULT));
+            pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_MULTIPLIER));
         }
     }
 }

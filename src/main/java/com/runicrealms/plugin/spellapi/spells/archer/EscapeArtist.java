@@ -19,7 +19,7 @@ public class EscapeArtist extends Spell {
     private final HashSet<UUID> escapeArtists;
 
     public EscapeArtist() {
-        super ("Escape Artist",
+        super("Escape Artist",
                 "Upon being rooted, silenced, or stunned, " +
                         "you masterfully escape the effects, " +
                         "removing all roots, silences, and stuns. " +
@@ -38,7 +38,7 @@ public class EscapeArtist extends Spell {
                 for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player == null) continue;
-                    if (!hasPassive(player, passiveName)) continue;
+                    if (!hasPassive(uuid, passiveName)) continue;
                     if (escapeArtists.contains(player.getUniqueId())) continue; // on cooldown
                     // listen for effects, remove
                     if (RunicCoreAPI.isRooted(player)

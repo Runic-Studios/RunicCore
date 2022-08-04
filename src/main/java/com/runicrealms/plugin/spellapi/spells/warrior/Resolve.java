@@ -58,7 +58,7 @@ public class Resolve extends Spell {
      * @return true if damage should be reduced, false if not
      */
     private boolean shouldReduceDamage(Player hurtPlayer) {
-        if (!hasPassive(hurtPlayer, this.getName())) return false;
+        if (!hasPassive(hurtPlayer.getUniqueId(), this.getName())) return false;
         double percent = PERCENT_HP / 100;
         double threshold = percent * hurtPlayer.getMaxHealth();
         return hurtPlayer.getHealth() < threshold;

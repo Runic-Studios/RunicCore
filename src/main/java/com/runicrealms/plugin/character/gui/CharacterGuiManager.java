@@ -76,6 +76,7 @@ public class CharacterGuiManager implements Listener {
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
                 RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), slot); // now we always know which character is playing
+                markCharacterForSave(player, slot);
                 CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player.getUniqueId(), slot);
                 if (characterData == null) {
                     Bukkit.getLogger().info("Something went wrong with character selection");
@@ -86,6 +87,25 @@ public class CharacterGuiManager implements Listener {
             }
         } else if (currentItem.getType() == CharacterSelectUtil.CHARACTER_CREATE_ITEM.getType()) {
             openAddCharacterInventory(player);
+        }
+    }
+
+    /**
+     * Redis saves all characters that logged into the current server on shutdown. This method keeps track of
+     * which characters were logged in at any point to avoid it saving characters from other shards
+     *
+     * @param player        who logged in
+     * @param characterSlot the character slot they selected
+     */
+    private void markCharacterForSave(Player player, int characterSlot) {
+        Set<Integer> charactersToSave = RunicCore.getDatabaseManager().getPlayersToSave().get(player.getUniqueId());
+        if (charactersToSave == null) {
+            charactersToSave = new HashSet<Integer>() {{
+                add(characterSlot);
+            }};
+            RunicCore.getDatabaseManager().getPlayersToSave().put(player.getUniqueId(), charactersToSave);
+        } else {
+            charactersToSave.add(characterSlot);
         }
     }
 

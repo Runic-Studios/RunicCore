@@ -32,7 +32,7 @@ public class WingClip extends Spell {
 
     @EventHandler
     public void onGrappleCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
         if (!(e.getSpell() instanceof Grapple)) return;
         wingClippers.add(e.getCaster().getUniqueId());
     }
@@ -41,7 +41,7 @@ public class WingClip extends Spell {
     public void onRangedHit(WeaponDamageEvent e) {
         if (!e.isRanged()) return;
         if (!e.isBasicAttack()) return;
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!(wingClippers.contains(e.getPlayer().getUniqueId()))) return;
         wingClippers.remove(e.getPlayer().getUniqueId());
         Entity en = e.getVictim();

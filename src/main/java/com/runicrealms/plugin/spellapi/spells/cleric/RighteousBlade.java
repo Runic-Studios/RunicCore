@@ -32,7 +32,7 @@ public class RighteousBlade extends Spell implements HealingSpell {
 
     @EventHandler
     public void onHealingHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!e.isBasicAttack()) return;
         healAllies(e.getPlayer());
     }

@@ -115,7 +115,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
 
             // scald
-            if (hasPassive(player, "Scald")) {
+            if (hasPassive(player.getUniqueId(), "Scald")) {
                 for (Entity en : fireball.getNearbyEntities(Scald.getRadius(), Scald.getRadius(), Scald.getRadius())) {
                     if (!verifyEnemy(player, en)) continue;
                     if (en.equals(victim)) continue;
@@ -125,7 +125,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
 
             if (applyBurn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, this);
+                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2.0), victim, player, this);
                     victim.getWorld().spawnParticle
                             (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

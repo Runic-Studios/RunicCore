@@ -51,7 +51,7 @@ public class SkillTreeGUIListener implements Listener {
 
         if (material == Material.LIGHT_GRAY_STAINED_GLASS_PANE)
             player.openInventory(new SubClassGUI(player).getInventory());
-        else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n-> n == e.getRawSlot())) {
+        else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n -> n == e.getRawSlot())) {
             int perkPosition = ArrayUtils.indexOf(SkillTreeGUI.getPerkSlots(), e.getRawSlot());
             Perk previous;
             if (perkPosition == 0)
@@ -59,7 +59,7 @@ public class SkillTreeGUIListener implements Listener {
             else
                 previous = skillTreeGUI.getSkillTree().getPerks().get(perkPosition - 1); // grab previous perk to ensure they follow path
             Perk perk = skillTreeGUI.getSkillTree().getPerks().get(perkPosition);
-            skillTreeGUI.getSkillTree().attemptToPurchasePerk(previous, perk);
+            skillTreeGUI.getSkillTree().attemptToPurchasePerk(player, previous, perk);
             skillTreeGUI.getInventory().setItem(e.getRawSlot(),
                     SkillTreeGUI.buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase"));
             skillTreeGUI.getInventory().setItem(SkillTreeGUI.getInfoItemPosition(), skillTreeGUI.infoItem());

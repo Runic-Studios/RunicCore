@@ -48,7 +48,7 @@ public class Shadowmeld extends Spell {
 
     @EventHandler
     public void onBlinkCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
         if (!(e.getSpell() instanceof Blink)) return;
         doomers.add(e.getCaster().getUniqueId());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,

@@ -39,7 +39,7 @@ public class SurvivalInstinct extends Spell {
     public void onMobDamage(MobDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         Player victim = (Player) e.getVictim();
-        if (!hasPassive(victim, this.getName())) return;
+        if (!hasPassive(victim.getUniqueId(), this.getName())) return;
         if (shielders.contains(victim.getUniqueId())) {
             e.setCancelled(true);
         } else if (victim.getHealth() - e.getAmount() <= (victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT_THRESHOLD)
@@ -52,7 +52,7 @@ public class SurvivalInstinct extends Spell {
     public void onWeaponDamage(WeaponDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         Player victim = (Player) e.getVictim();
-        if (!hasPassive(victim, this.getName())) return;
+        if (!hasPassive(victim.getUniqueId(), this.getName())) return;
         if (shielders.contains(victim.getUniqueId())) {
             e.setCancelled(true);
         } else if (victim.getHealth() - e.getAmount() <= (victim.getHealth() * PERCENT_THRESHOLD)

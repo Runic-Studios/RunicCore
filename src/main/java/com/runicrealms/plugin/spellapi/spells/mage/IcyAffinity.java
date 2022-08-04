@@ -14,7 +14,7 @@ public class IcyAffinity extends Spell {
     private static final double PERCENT = .25;
 
     public IcyAffinity() {
-        super ("Icy Affinity",
+        super("Icy Affinity",
                 "Your &aIceblock &7spell now restores✦ " +
                         (int) (PERCENT * 100) + "% of your health!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
@@ -23,7 +23,7 @@ public class IcyAffinity extends Spell {
 
     @EventHandler
     public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
         if (!(e.getSpell() instanceof IceBlock)) return;
         Player pl = e.getCaster();
         HealUtil.healPlayer((int) (pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT),

@@ -86,8 +86,8 @@ public class SpellGUI implements InventoryHolder {
      * @param index        which index to begin filling items
      */
     private int grabUnlockedSpellsFromTree(int treePosition, int index) {
-        if (RunicCoreAPI.getSkillTree(player, treePosition) == null) return index;
-        for (Perk perk : RunicCoreAPI.getSkillTree(player, treePosition).getPerks()) {
+        if (RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition) == null) return index;
+        for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
             if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;

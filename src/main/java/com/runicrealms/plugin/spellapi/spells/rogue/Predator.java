@@ -34,14 +34,14 @@ public class Predator extends Spell {
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs last
     public void onPredatorHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!predators.contains(e.getPlayer().getUniqueId())) return;
         e.setAmount((int) predatorDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs last
     public void onPredatorHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!predators.contains(e.getPlayer().getUniqueId())) return;
         e.setAmount((int) predatorDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }

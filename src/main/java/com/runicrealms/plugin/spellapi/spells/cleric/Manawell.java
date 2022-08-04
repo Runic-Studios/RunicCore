@@ -19,7 +19,7 @@ public class Manawell extends Spell {
     private static final double RADIUS = 100;
 
     public Manawell() {
-        super ("Manawell",
+        super("Manawell",
                 "Spending mana has a " + (int) PERCENT + "% chance " +
                         "to refund the cost to you and your allies!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
@@ -29,7 +29,7 @@ public class Manawell extends Spell {
     @EventHandler
     public void onSpellCast(SpellCastEvent e) {
 
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
@@ -46,7 +46,7 @@ public class Manawell extends Spell {
         for (Player ally : allies) {
             if (verifyAlly(e.getCaster(), ally)) {
                 if (!e.getCaster().getWorld().equals(ally.getWorld())) continue;
-                if (e.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS*RADIUS) continue;
+                if (e.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS * RADIUS) continue;
                 restoreMana(ally, e.getSpell().getManaCost());
             }
         }

@@ -24,7 +24,7 @@ public class Taunt extends Spell {
 
     @EventHandler
     public void onDrainingHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!e.isBasicAttack()) return; // only listen for basic attacks
         generateThreat(e.getPlayer(), e.getVictim());
     }

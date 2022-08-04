@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public interface ISpell {
 
     void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration);
@@ -23,7 +25,7 @@ public interface ISpell {
 
     int getManaCost();
 
-    boolean hasPassive(Player player, String passive);
+    boolean hasPassive(UUID uuid, String passive);
 
     boolean isInvulnerable(Entity entity);
 

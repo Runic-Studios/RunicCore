@@ -15,7 +15,7 @@ import org.bukkit.event.EventHandler;
 public class ColdTouch extends Spell {
 
     public ColdTouch() {
-        super ("Cold Touch",
+        super("Cold Touch",
                 "Your &aFireball &7spell is now &aFrostbolt&7, " +
                         "slowing its target!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
@@ -24,7 +24,7 @@ public class ColdTouch extends Spell {
 
     @EventHandler
     public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
         if (!(e.getSpell() instanceof Fireball)) return;
         e.setCancelled(true);
         SpellCastEvent spellCastEvent = new SpellCastEvent(e.getCaster(), RunicCore.getSpellManager().getSpellByName("Frostbolt"));

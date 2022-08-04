@@ -27,13 +27,13 @@ public class Backstab extends Spell {
 
     @EventHandler
     public void onDamage(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         e.setAmount(doBackstab(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler
     public void onDamage(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         e.setAmount(doBackstab(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 

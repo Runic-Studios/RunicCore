@@ -87,7 +87,7 @@ public class SkillTreeGUI implements InventoryHolder {
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + skillTree.getSubClassEnum().getName() + " Tree Info");
-        String lore = "&7Remaining Skill Points: &a" + SkillTree.getAvailablePoints(player);
+        String lore = "&7Remaining Skill Points: &a" + SkillTree.getAvailablePoints(player.getUniqueId());
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
         return infoItem;

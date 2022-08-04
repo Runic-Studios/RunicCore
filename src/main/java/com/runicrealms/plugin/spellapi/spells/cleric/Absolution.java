@@ -21,7 +21,7 @@ public class Absolution extends Spell {
 
     @EventHandler(priority = EventPriority.HIGH) // fires LAST, but before use listener 
     public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
+        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
         if (!(e.getSpell() instanceof Rejuvenate)) return;
         e.setCancelled(true);
         SpellCastEvent spellCastEvent = new SpellCastEvent(e.getCaster(), RunicCore.getSpellManager().getSpellByName("Purify"));

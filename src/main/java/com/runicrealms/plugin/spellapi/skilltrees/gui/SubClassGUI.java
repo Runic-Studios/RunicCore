@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.classes.SubClass;
-import com.runicrealms.plugin.classes.utilities.SubClassUtil;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -53,7 +52,7 @@ public class SubClassGUI implements InventoryHolder {
      * @return an ItemStack icon
      */
     private ItemStack subClassItem(int position) {
-        SubClass subClass = SubClassUtil.determineSubClass(player, position);
+        SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), position);
         String displayName = subClass.getName();
         ItemStack subClassItem = subClass.getItemStack();
         ItemMeta meta = subClassItem.getItemMeta();

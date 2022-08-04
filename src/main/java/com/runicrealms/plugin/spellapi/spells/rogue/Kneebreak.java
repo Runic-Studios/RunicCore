@@ -34,13 +34,13 @@ public class Kneebreak extends Spell {
 
     @EventHandler
     public void onKneebreakHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applySlow(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
     public void onKneebreakHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applySlow(e.getPlayer(), e.getVictim());
     }
 

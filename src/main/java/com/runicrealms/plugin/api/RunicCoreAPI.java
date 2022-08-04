@@ -279,8 +279,9 @@ public class RunicCoreAPI {
      */
     public static Spell getPlayerSpell(Player player, int number) {
         Spell spellToCast = null;
+        UUID uuid = player.getUniqueId();
         try {
-            PlayerSpellWrapper playerSpellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player);
+            PlayerSpellWrapper playerSpellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid);
             switch (number) {
                 case 1:
                     spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
@@ -320,11 +321,11 @@ public class RunicCoreAPI {
     /**
      * Returns Skill Tree for specified player
      *
-     * @param player to lookup
+     * @param uuid of player to lookup
      * @return Skill Tree
      */
-    public static SkillTree getSkillTree(Player player, int position) {
-        return RunicCore.getSkillTreeManager().searchSkillTree(player, position);
+    public static SkillTree getSkillTree(UUID uuid, int position) {
+        return RunicCore.getSkillTreeManager().searchSkillTree(uuid, position);
     }
 
     public static Spell getSpell(String name) {
@@ -334,21 +335,21 @@ public class RunicCoreAPI {
     /**
      * Gets the total skill points that are available to a given player that are NOT yet spent
      *
-     * @param player to check
+     * @param uuid of player to check
      * @return number of skill points availble (AFTER subtracting spent points)
      */
-    public static int getAvailableSkillPoints(Player player) {
-        return SkillTree.getAvailablePoints(player);
+    public static int getAvailableSkillPoints(UUID uuid) {
+        return SkillTree.getAvailablePoints(uuid);
     }
 
     /**
      * Gets the total allocated skill points of the given player
      *
-     * @param player to check
+     * @param uuid of player to check
      * @return number of skill points spent
      */
-    public static int getSpentPoints(Player player) {
-        return RunicCore.getSkillTreeManager().getSpentPoints().get(player.getUniqueId());
+    public static int getSpentPoints(UUID uuid) {
+        return RunicCore.getSkillTreeManager().getSpentPoints().get(uuid);
     }
 
     /**
@@ -366,12 +367,12 @@ public class RunicCoreAPI {
     /**
      * Used in Spell class to check if player has a passive applied!
      *
-     * @param player  to check passive for
+     * @param uuid    of player to check passive for
      * @param passive name of passive spell
      * @return boolean value whether passive found
      */
-    public static boolean hasPassive(Player player, String passive) {
-        return RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player).getPassives().contains(passive);
+    public static boolean hasPassive(UUID uuid, String passive) {
+        return RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).getPassives().contains(passive);
     }
 
     /**
@@ -404,15 +405,16 @@ public class RunicCoreAPI {
     /**
      * Returns a SkillTreeGUI for the given player
      *
-     * @param player   to build skill tree for
+     * @param player   of player to build skill tree for
      * @param position the position of sub-class (1, 2, or 3)
      * @return SkillTreeGUI
      */
     public static SkillTreeGUI skillTreeGUI(Player player, int position) {
-        if (RunicCore.getSkillTreeManager().searchSkillTree(player, position) != null)
-            return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().searchSkillTree(player, position));
+        UUID uuid = player.getUniqueId();
+        if (RunicCore.getSkillTreeManager().searchSkillTree(uuid, position) != null)
+            return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().searchSkillTree(uuid, position));
         else
-            return new SkillTreeGUI(player, new SkillTree(player, position));
+            return new SkillTreeGUI(player, new SkillTree(uuid, position));
     }
 
     /**

@@ -41,17 +41,17 @@ public class Insanity extends Spell {
         applyNausea(e.getPlayer(), e.getVictim());
     }
 
-    private void applyNausea(Player pl, Entity en) {
+    private void applyNausea(Player player, Entity entity) {
 
-        if (!hasPassive(pl, this.getName())) return;
+        if (!hasPassive(player.getUniqueId(), this.getName())) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(pl, en)) {
-            LivingEntity victim = (LivingEntity) en;
+        if (verifyEnemy(player, entity)) {
+            LivingEntity victim = (LivingEntity) entity;
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
             victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getEyeLocation(),
                     5, 0.5F, 0.5F, 0.5F, 0);

@@ -125,8 +125,8 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public boolean hasPassive(Player player, String passive) {
-        return RunicCoreAPI.hasPassive(player, passive);
+    public boolean hasPassive(UUID uuid, String passive) {
+        return RunicCoreAPI.hasPassive(uuid, passive);
     }
 
     /**

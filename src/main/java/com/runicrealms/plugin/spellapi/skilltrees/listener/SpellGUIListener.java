@@ -15,6 +15,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 public class SpellGUIListener implements Listener {
 
     @EventHandler
@@ -49,7 +51,7 @@ public class SpellGUIListener implements Listener {
             player.openInventory(new SpellEditorGUI(player).getInventory());
         else if (material == Material.PAPER) {
             String spellName = spellGUI.getInventory().getItem(e.getRawSlot()).getItemMeta().getDisplayName();
-            updateSpellInSlot(player, spellGUI, spellName);
+            updateSpellInSlot(player.getUniqueId(), spellGUI, spellName);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
             player.sendMessage(ChatColor.LIGHT_PURPLE + "You've set the spell in this slot to " + spellName + ChatColor.LIGHT_PURPLE + "!");
             player.openInventory(new SpellEditorGUI(player).getInventory());
@@ -58,23 +60,24 @@ public class SpellGUIListener implements Listener {
 
     /**
      * Sets the in-memory spell in the current GUI slot for given player.
-     * @param pl player to set spell for
-     * @param spellGUI associated open GUI
+     *
+     * @param uuid      of the player to set spell for
+     * @param spellGUI  associated open GUI
      * @param spellName name of spell to set in slot
      */
-    private void updateSpellInSlot(Player pl, SpellGUI spellGUI, String spellName) {
+    private void updateSpellInSlot(UUID uuid, SpellGUI spellGUI, String spellName) {
         switch (spellGUI.getSpellSlot()) {
             case PlayerSpellWrapper.PATH_1:
-                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(pl).setSpellHotbarOne(ChatColor.stripColor(spellName));
+                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).setSpellHotbarOne(ChatColor.stripColor(spellName));
                 break;
             case PlayerSpellWrapper.PATH_2:
-                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(pl).setSpellLeftClick(ChatColor.stripColor(spellName));
+                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).setSpellLeftClick(ChatColor.stripColor(spellName));
                 break;
             case PlayerSpellWrapper.PATH_3:
-                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(pl).setSpellRightClick(ChatColor.stripColor(spellName));
+                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).setSpellRightClick(ChatColor.stripColor(spellName));
                 break;
             case PlayerSpellWrapper.PATH_4:
-                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(pl).setSpellSwapHands(ChatColor.stripColor(spellName));
+                RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).setSpellSwapHands(ChatColor.stripColor(spellName));
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellSlot());

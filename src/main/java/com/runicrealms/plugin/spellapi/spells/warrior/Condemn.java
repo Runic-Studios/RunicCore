@@ -23,7 +23,7 @@ public class Condemn extends Spell {
 
     @EventHandler
     public void onSilencingHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!RunicCoreAPI.isSilenced(e.getVictim())) return;
         // particle
         e.setAmount((int) (e.getAmount() + (e.getAmount() * PERCENT)));
@@ -31,7 +31,7 @@ public class Condemn extends Spell {
 
     @EventHandler
     public void onSilencingHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!RunicCoreAPI.isSilenced(e.getVictim())) return;
         // particle
         e.setAmount((int) (e.getAmount() + (e.getAmount() * PERCENT)));

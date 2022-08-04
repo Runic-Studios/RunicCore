@@ -26,7 +26,7 @@ public class SkillPointsListener implements Listener {
             for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
-                if (!playerHasUnspentSkillPoints(player)) continue;
+                if (!playerHasUnspentSkillPoints(uuid)) continue;
                 sendSkillPointsReminderMessage(player);
             }
         }, 0, ANNOUNCEMENT_TIME * 20L);
@@ -57,7 +57,7 @@ public class SkillPointsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLogin(CharacterSelectEvent e) {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            if (playerHasUnspentSkillPoints(e.getPlayer()))
+            if (playerHasUnspentSkillPoints(e.getPlayer().getUniqueId()))
                 sendSkillPointsReminderMessage(e.getPlayer());
         }, 90 * 20L, 180 * 20L);
     }
@@ -65,11 +65,11 @@ public class SkillPointsListener implements Listener {
     /**
      * Check if a player has any available skill points to spend
      *
-     * @param player to check
+     * @param uuid of player to check
      * @return true if there are points to spend
      */
-    private boolean playerHasUnspentSkillPoints(Player player) {
-        return RunicCoreAPI.getAvailableSkillPoints(player) > 0;
+    private boolean playerHasUnspentSkillPoints(UUID uuid) {
+        return RunicCoreAPI.getAvailableSkillPoints(uuid) > 0;
     }
 
     /**
@@ -78,7 +78,7 @@ public class SkillPointsListener implements Listener {
     private void sendSkillPointsReminderMessage(Player player) {
         player.sendMessage
                 (
-                        ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE + RunicCoreAPI.getAvailableSkillPoints(player) +
+                        ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE + RunicCoreAPI.getAvailableSkillPoints(player.getUniqueId()) +
                                 ChatColor.LIGHT_PURPLE + " skill points to spend! Visit your " + ChatColor.GREEN + ChatColor.BOLD +
                                 "SKILL TREE" + ChatColor.LIGHT_PURPLE + " to purchase new perks!"
                 );

@@ -44,17 +44,18 @@ public class SkillTreeManager implements Listener {
      * Saves player skill tree info whenever the player cache is saved.
      */
     @EventHandler
-    public void onCacheSave(MongoSaveEvent e) {
-        if (RunicCoreAPI.getSkillTree(e.getPlayer(), 1) != null)
-            RunicCoreAPI.getSkillTree(e.getPlayer(), 1).save(e.getMongoDataSection());
-        if (RunicCoreAPI.getSkillTree(e.getPlayer(), 2) != null)
-            RunicCoreAPI.getSkillTree(e.getPlayer(), 2).save(e.getMongoDataSection());
-        if (RunicCoreAPI.getSkillTree(e.getPlayer(), 3) != null)
-            RunicCoreAPI.getSkillTree(e.getPlayer(), 3).save(e.getMongoDataSection());
-        if (spentPoints.get(e.getPlayer().getUniqueId()) != 0)
-            saveSpentPoints(e.getPlayer(), e.getMongoDataSection());
-        if (getPlayerSpellWrapper(e.getPlayer()) != null)
-            saveSpells(getPlayerSpellWrapper(e.getPlayer()), e.getMongoDataSection());
+    public void onDatabaseSave(MongoSaveEvent e) {
+        UUID uuid = e.getUuid();
+        if (RunicCoreAPI.getSkillTree(uuid, 1) != null)
+            RunicCoreAPI.getSkillTree(uuid, 1).save(e.getMongoDataSection());
+        if (RunicCoreAPI.getSkillTree(uuid, 2) != null)
+            RunicCoreAPI.getSkillTree(uuid, 2).save(e.getMongoDataSection());
+        if (RunicCoreAPI.getSkillTree(uuid, 3) != null)
+            RunicCoreAPI.getSkillTree(uuid, 3).save(e.getMongoDataSection());
+        if (spentPoints.get(uuid) != 0)
+            saveSpentPoints(uuid, e.getMongoDataSection());
+        if (getPlayerSpellWrapper(uuid) != null)
+            saveSpells(getPlayerSpellWrapper(uuid), e.getMongoDataSection());
     }
 
     /**
@@ -64,12 +65,13 @@ public class SkillTreeManager implements Listener {
     @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager
     public void onLoad(CharacterSelectEvent e) {
         Player player = e.getPlayer();
+        UUID uuid = player.getUniqueId();
         int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
-        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
+        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
         MongoDataSection character = playerMongoData.getCharacter(slot);
-        new SkillTree(player, 1);
-        new SkillTree(player, 2);
-        new SkillTree(player, 3);
+        new SkillTree(uuid, 1);
+        new SkillTree(uuid, 2);
+        new SkillTree(uuid, 3);
         int points = 0;
         if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION))
             points = character.get(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, Integer.class);
@@ -79,10 +81,10 @@ public class SkillTreeManager implements Listener {
             points = PlayerLevelUtil.getMaxLevel() - (SkillTree.FIRST_POINT_LEVEL - 1);
         spentPoints.put(player.getUniqueId(), points);
         if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION))
-            new PlayerSpellWrapper(player,
+            new PlayerSpellWrapper(uuid,
                     (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION));
         else
-            new PlayerSpellWrapper(player, PlayerSpellWrapper.determineDefaultSpell(e.getPlayer()), "",
+            new PlayerSpellWrapper(uuid, PlayerSpellWrapper.determineDefaultSpell(uuid), "",
                     "", "");
     }
 
@@ -91,12 +93,13 @@ public class SkillTreeManager implements Listener {
      */
     @EventHandler
     public void onQuit(CharacterQuitEvent e) {
+        UUID uuid = e.getPlayer().getUniqueId();
         new BukkitRunnable() {
             @Override
             public void run() {
-                skillTreeSetOne.remove(searchSkillTree(e.getPlayer(), 1));
-                skillTreeSetTwo.remove(searchSkillTree(e.getPlayer(), 2));
-                skillTreeSetThree.remove(searchSkillTree(e.getPlayer(), 3));
+                skillTreeSetOne.remove(searchSkillTree(uuid, 1));
+                skillTreeSetTwo.remove(searchSkillTree(uuid, 2));
+                skillTreeSetThree.remove(searchSkillTree(uuid, 3));
             }
         }.runTaskLater(RunicCore.getInstance(), 1L);
     }
@@ -104,10 +107,11 @@ public class SkillTreeManager implements Listener {
     /**
      * Saves the total spent points to DB
      *
+     * @param uuid      of the player
      * @param character mongo data section from save event
      */
-    private void saveSpentPoints(Player player, PlayerMongoDataSection character) {
-        character.set(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(player));
+    private void saveSpentPoints(UUID uuid, PlayerMongoDataSection character) {
+        character.set(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid));
     }
 
     /**
@@ -162,12 +166,12 @@ public class SkillTreeManager implements Listener {
     /**
      * Gets the spell wrapper for given player
      *
-     * @param player to return wrapper for
+     * @param uuid of player to return wrapper for
      * @return spell wrapper
      */
-    public PlayerSpellWrapper getPlayerSpellWrapper(Player player) {
+    public PlayerSpellWrapper getPlayerSpellWrapper(UUID uuid) {
         for (PlayerSpellWrapper playerSpellWrapper : playerSpellWrappers) {
-            if (playerSpellWrapper.getPlayer().equals(player))
+            if (playerSpellWrapper.getUuid().equals(uuid))
                 return playerSpellWrapper;
         }
         return null;
@@ -176,13 +180,13 @@ public class SkillTreeManager implements Listener {
     /**
      * Checks cached skill trees for given player.
      *
-     * @param player to search for in cache
+     * @param uuid of player to search for in cache
      * @return player's cached SkillTree
      */
-    public SkillTree searchSkillTree(Player player, int position) {
+    public SkillTree searchSkillTree(UUID uuid, int position) {
         HashSet<SkillTree> toSearch = getSkillTree(position);
         for (SkillTree skillTree : toSearch) {
-            if (skillTree.getPlayer().equals(player))
+            if (skillTree.getUuid().equals(uuid))
                 return skillTree;
         }
         return null;

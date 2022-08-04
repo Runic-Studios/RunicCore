@@ -35,7 +35,7 @@ public class DivineShield extends Spell {
 
     @EventHandler
     public void onHealingSpell(SpellHealEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > (PERCENT * 100)) return;

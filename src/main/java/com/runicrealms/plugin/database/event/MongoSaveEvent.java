@@ -2,19 +2,20 @@ package com.runicrealms.plugin.database.event;
 
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.UUID;
+
 /**
  * This custom event is called when the server attempts to write to Mongo.
- * Listen for this event to save all player-related persistent data at the same time.
+ * Listen for this event to save all player-related session data at the same time.
  */
 public class MongoSaveEvent extends Event implements Cancellable {
 
     private final int slot;
-    private final Player player;
+    private final UUID uuid;
     private final PlayerMongoData mongoData;
     private final PlayerMongoDataSection mongoDataSection;
     private final CacheSaveReason cacheSaveReason;
@@ -22,15 +23,15 @@ public class MongoSaveEvent extends Event implements Cancellable {
 
     /**
      * @param slot             the slot of the character
-     * @param player           player of cache
+     * @param uuid             of the player
      * @param mongoData        object file of player in DB
      * @param mongoDataSection section of object file being saved (typically character section)
      * @param cacheSaveReason  why the cache was saved (logout, shutdown, etc.)
      */
-    public MongoSaveEvent(int slot, Player player, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection,
+    public MongoSaveEvent(int slot, UUID uuid, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection,
                           CacheSaveReason cacheSaveReason) {
         this.slot = slot;
-        this.player = player;
+        this.uuid = uuid;
         this.mongoData = mongoData;
         this.mongoDataSection = mongoDataSection;
         this.cacheSaveReason = cacheSaveReason;
@@ -41,8 +42,8 @@ public class MongoSaveEvent extends Event implements Cancellable {
         return this.slot;
     }
 
-    public Player getPlayer() {
-        return this.player;
+    public UUID getUuid() {
+        return this.uuid;
     }
 
     public PlayerMongoData getMongoData() {

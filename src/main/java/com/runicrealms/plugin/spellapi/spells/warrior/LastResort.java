@@ -25,7 +25,7 @@ public class LastResort extends Spell {
     private final HashSet<UUID> resorters;
 
     public LastResort() {
-        super ("Last Resort",
+        super("Last Resort",
                 "Upon death, you are resurrected✦ with " +
                         (int) (PERCENT * 100) + "% health, blasting back enemies within " +
                         RADIUS + " blocks! Last Resort cannot occur " +
@@ -37,7 +37,7 @@ public class LastResort extends Spell {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRunicDeath(RunicDeathEvent e) {
-        if (!hasPassive(e.getVictim(), this.getName())) return;
+        if (!hasPassive(e.getVictim().getUniqueId(), this.getName())) return;
         if (resorters.contains(e.getVictim().getUniqueId())) return;
         Player pl = e.getVictim();
         e.setCancelled(true);
