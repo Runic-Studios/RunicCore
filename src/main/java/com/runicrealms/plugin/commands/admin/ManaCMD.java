@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.admin;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;

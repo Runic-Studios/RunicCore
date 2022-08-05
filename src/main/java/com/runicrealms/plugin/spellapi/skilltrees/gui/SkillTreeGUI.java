@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.SkillTree;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;

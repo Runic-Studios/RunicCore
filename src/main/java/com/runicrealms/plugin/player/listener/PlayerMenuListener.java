@@ -183,14 +183,14 @@ public class PlayerMenuListener implements Listener {
         return view.getTopInventory().getSize() == PLAYER_CRAFT_INV_SIZE;
     }
 
-    private ItemStack item(Player pl, Material material, String name, String description) {
+    private ItemStack item(Player player, Material material, String name, String description) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
 
         if (material == Material.PLAYER_HEAD) {
             SkullMeta skullMeta = (SkullMeta) meta;
-            skullMeta.setOwningPlayer(pl);
+            skullMeta.setOwningPlayer(player);
         }
 
         ArrayList<String> lore = new ArrayList<>();
@@ -200,7 +200,7 @@ public class PlayerMenuListener implements Listener {
             lore.add(ColorUtil.format(line));
         }
         meta.setLore(lore);
-        ((Damageable) meta).setDamage(3);
+        ((Damageable) meta).setDamage(5);
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);

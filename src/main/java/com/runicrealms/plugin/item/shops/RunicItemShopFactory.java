@@ -3,7 +3,7 @@ package com.runicrealms.plugin.item.shops;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.commands.TravelCMD;
+import com.runicrealms.plugin.commands.admin.TravelCMD;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.professions.Profession;
 import com.runicrealms.plugin.utilities.ChatUtils;

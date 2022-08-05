@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicExpEvent;
@@ -31,24 +31,24 @@ public class RunicVoteCMD implements CommandExecutor, Listener {
         if (!sender.isOp())
             return true;
 
-            Player pl = Bukkit.getPlayer(args[0]);
-            if (pl == null)
-                return true;
-
-            if (!votingBonuses.containsKey(pl.getUniqueId())) {
-                votingBonuses.put(pl.getUniqueId(), VOTE_AMT);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
-                    votingBonuses.remove(pl.getUniqueId());
-                    pl.sendMessage(ChatColor.GRAY + "Your voting experience bonus has expired!");
-                }, 3600 * 20L); // one hour
-            } else {
-                double currentAmt = votingBonuses.get(pl.getUniqueId());
-                votingBonuses.put(pl.getUniqueId(), currentAmt + VOTE_AMT); // bonus can stack
-            }
-
-            pl.sendMessage(ChatColor.GREEN + "Your voting experience bonus is now " + votingBonuses.get(pl.getUniqueId()).intValue() + "%!");
-
+        Player pl = Bukkit.getPlayer(args[0]);
+        if (pl == null)
             return true;
+
+        if (!votingBonuses.containsKey(pl.getUniqueId())) {
+            votingBonuses.put(pl.getUniqueId(), VOTE_AMT);
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
+                votingBonuses.remove(pl.getUniqueId());
+                pl.sendMessage(ChatColor.GRAY + "Your voting experience bonus has expired!");
+            }, 3600 * 20L); // one hour
+        } else {
+            double currentAmt = votingBonuses.get(pl.getUniqueId());
+            votingBonuses.put(pl.getUniqueId(), currentAmt + VOTE_AMT); // bonus can stack
+        }
+
+        pl.sendMessage(ChatColor.GREEN + "Your voting experience bonus is now " + votingBonuses.get(pl.getUniqueId()).intValue() + "%!");
+
+        return true;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

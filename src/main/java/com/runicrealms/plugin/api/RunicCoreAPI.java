@@ -8,12 +8,12 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
+import com.runicrealms.plugin.model.SkillTree;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
-import com.runicrealms.plugin.spellapi.skilltrees.SkillTree;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -555,5 +555,14 @@ public class RunicCoreAPI {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Used so that other plugins can trigger a scoreboard update
+     *
+     * @param player the player to update
+     */
+    public static void updatePlayerScoreboard(Player player) {
+        RunicCore.getScoreboardHandler().updatePlayerInfo(player, player.getScoreboard());
     }
 }

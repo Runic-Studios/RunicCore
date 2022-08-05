@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.skilltrees;
+package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
@@ -7,6 +7,9 @@ import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
+import com.runicrealms.plugin.spellapi.skilltrees.Perk;
+import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
+import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

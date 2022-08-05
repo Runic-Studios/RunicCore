@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.admin;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
@@ -6,7 +6,6 @@ import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -116,7 +115,7 @@ public class SetCMD extends BaseCommand {
         level = Integer.parseInt(args[1]);
         if (player == null) return;
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
-        int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
+        // int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         player.setLevel(0);
         RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP.getField(), String.valueOf(0));
         PlayerLevelUtil.giveExperience(player, expAtLevel);
@@ -125,27 +124,6 @@ public class SetCMD extends BaseCommand {
         IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the class level!
         */
         // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(expAtLevel);
-    }
-
-    // set proflevel [player] [level]
-
-    @Subcommand("proflevel")
-    @Syntax("<player> <level>")
-    @CommandCompletion("@online @nothing")
-    @Conditions("is-console-or-op")
-    public void onCommandProfLevel(CommandSender commandSender, String[] args) {
-        if (args.length != 2) {
-            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set proflevel {player} {level}");
-            return;
-        }
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null) return;
-        RunicCoreAPI.setRedisValue(player, RedisField.PROF_LEVEL.getField(), args[1]);
-        // ----------------------
-        // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
-        int expAtLevel = ProfExpUtil.calculateTotalExperience(Integer.parseInt(args[1]));
-        // ----------------------
-        RunicCoreAPI.setRedisValue(player, RedisField.PROF_EXP.getField(), String.valueOf(expAtLevel));
     }
 
 }

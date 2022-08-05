@@ -1,8 +1,7 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.admin;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.*;
@@ -96,24 +95,24 @@ public class TravelCMD extends BaseCommand {
     }
 
     public enum TravelLocation {
-        AZANA("azana", "Azana", new Location(Bukkit.getWorld("Alterra"), -998.5, 34, 170.5,  270, 0)),
-        KOLDORE("koldore", "Koldore", new Location(Bukkit.getWorld("Alterra"), -1539.5, 33, 203.5,  90, 0)),
-        WHALETOWN("whaletown", "Whaletown", new Location(Bukkit.getWorld("Alterra"), -1789.5, 35, -698.5,  0, 0)),
-        HILSTEAD("hilstead", "Hilstead", new Location(Bukkit.getWorld("Alterra"), -1688.5, 44, -2069.5,  90, 0)),
-        WINTERVALE("wintervale", "Wintervale", new Location(Bukkit.getWorld("Alterra"), -1640.5, 33, -2624.5,  90, 0)),
-        DEAD_MANS_REST("dead_mans_rest", "Dead Man's Rest", new Location(Bukkit.getWorld("Alterra"), -109.5, 31, -516.5,  270, 0)),
-        ISFODAR("isfodar", "Isfodar", new Location(Bukkit.getWorld("Alterra"), 499.5, 60, -86.5,  270, 0)),
-        TIRNEAS("tireneas", "Tireneas", new Location(Bukkit.getWorld("Alterra"), 899.5, 36, 581.5,  90, 0)),
-        ZENYTH("zenyth", "Zenyth", new Location(Bukkit.getWorld("Alterra"), 1583.5, 34, -196.5,  270, 0)),
-        NAHEEN("naheen", "Naheen", new Location(Bukkit.getWorld("Alterra"), 1861.5, 39, 154.5,  315, 0)),
-        NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5,  0, 0)),
+        AZANA("azana", "Azana", new Location(Bukkit.getWorld("Alterra"), -998.5, 34, 170.5, 270, 0)),
+        KOLDORE("koldore", "Koldore", new Location(Bukkit.getWorld("Alterra"), -1539.5, 33, 203.5, 90, 0)),
+        WHALETOWN("whaletown", "Whaletown", new Location(Bukkit.getWorld("Alterra"), -1789.5, 35, -698.5, 0, 0)),
+        HILSTEAD("hilstead", "Hilstead", new Location(Bukkit.getWorld("Alterra"), -1688.5, 44, -2069.5, 90, 0)),
+        WINTERVALE("wintervale", "Wintervale", new Location(Bukkit.getWorld("Alterra"), -1640.5, 33, -2624.5, 90, 0)),
+        DEAD_MANS_REST("dead_mans_rest", "Dead Man's Rest", new Location(Bukkit.getWorld("Alterra"), -109.5, 31, -516.5, 270, 0)),
+        ISFODAR("isfodar", "Isfodar", new Location(Bukkit.getWorld("Alterra"), 499.5, 60, -86.5, 270, 0)),
+        TIRNEAS("tireneas", "Tireneas", new Location(Bukkit.getWorld("Alterra"), 899.5, 36, 581.5, 90, 0)),
+        ZENYTH("zenyth", "Zenyth", new Location(Bukkit.getWorld("Alterra"), 1583.5, 34, -196.5, 270, 0)),
+        NAHEEN("naheen", "Naheen", new Location(Bukkit.getWorld("Alterra"), 1861.5, 39, 154.5, 315, 0)),
+        NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5, 0, 0)),
         FROSTS_END("frosts_end", "Frost's End", new Location(Bukkit.getWorld("Alterra"), 1116.5, 33, 2576.5, 90, 0)),
         /*
         Conquest Points
          */
-        SUNS_REACH_CITADEL("suns_reach_citadel", "Sun's Reach Citadel", new Location(Bukkit.getWorld("Alterra"), 2439.5, 29, -1172.5,  250, 0)),
-        BLACKGUARD_STRONGHOLD("blackguard_stronghold", "Blackguard Stronghold", new Location(Bukkit.getWorld("Alterra"), 2136.5, 34, -2170.5,  180, 0)),
-        CRIMSON_CHAPEL("crimson_chapel", "Crimson Chapel", new Location(Bukkit.getWorld("Alterra"), 1453.5, 24, -1119.5,  270, 0));
+        SUNS_REACH_CITADEL("suns_reach_citadel", "Sun's Reach Citadel", new Location(Bukkit.getWorld("Alterra"), 2439.5, 29, -1172.5, 250, 0)),
+        BLACKGUARD_STRONGHOLD("blackguard_stronghold", "Blackguard Stronghold", new Location(Bukkit.getWorld("Alterra"), 2136.5, 34, -2170.5, 180, 0)),
+        CRIMSON_CHAPEL("crimson_chapel", "Crimson Chapel", new Location(Bukkit.getWorld("Alterra"), 1453.5, 24, -1119.5, 270, 0));
 
         private final String identifier;
         private final String display;
@@ -160,6 +159,7 @@ public class TravelCMD extends BaseCommand {
 
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
 

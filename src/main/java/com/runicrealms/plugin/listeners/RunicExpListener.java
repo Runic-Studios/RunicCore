@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.commands.BoostCMD;
+import com.runicrealms.plugin.commands.admin.BoostCMD;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -35,7 +35,7 @@ public class RunicExpListener implements Listener {
         }
 
         // calculate global exp modifier (if applicable)
-        double boostPercent = BoostCMD.getCombatExperienceBoost()/100;
+        double boostPercent = BoostCMD.getCombatExperienceBoost() / 100;
         int boost = (int) boostPercent * e.getOriginalAmount();
         e.setFinalAmount(e.getFinalAmount() + boost);
 
@@ -70,13 +70,12 @@ public class RunicExpListener implements Listener {
     }
 
     /**
-     *
-     * @param party of player receiving exp
-     * @param pl who triggered event
+     * @param party       of player receiving exp
+     * @param pl          who triggered event
      * @param originalExp of event (before bonuses)
-     * @param extraAmt of party exp
-     * @param mobLv of mob (if applicable)
-     * @param loc of mob (if applicable)
+     * @param extraAmt    of party exp
+     * @param mobLv       of mob (if applicable)
+     * @param loc         of mob (if applicable)
      */
     private void distributePartyExp(Party party, Player pl, int originalExp, int extraAmt, int mobLv, Location loc) {
 
@@ -93,7 +92,7 @@ public class RunicExpListener implements Listener {
             if (pl.getLocation().getWorld() != member.getLocation().getWorld()) continue;
             if (pl.getLocation().distance(member.getLocation()) < RANGE) {
                 int memberLv = member.getLevel();
-                if (mobLv > (memberLv+ LEVEL_CUTOFF) || mobLv < (memberLv- LEVEL_CUTOFF)) {
+                if (mobLv > (memberLv + LEVEL_CUTOFF) || mobLv < (memberLv - LEVEL_CUTOFF)) {
                     PlayerLevelUtil.giveExperience(member, 0);
                     HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
                 } else {

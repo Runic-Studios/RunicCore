@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.player;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -15,7 +15,7 @@ public class MapLink implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] strings) {
         BaseComponent component = new TextComponent(ChatColor.GREEN + "Click here to open the Runic Realms online map: " + ChatColor.DARK_GREEN + "https://runicrealms.com/map");
         component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://runicrealms.com/map"));
-        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {new TextComponent("Runic Realms Map")}));
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("Runic Realms Map")}));
         sender.spigot().sendMessage(component);
         return true;
     }

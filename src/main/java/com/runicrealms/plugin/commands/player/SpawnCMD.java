@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.player;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

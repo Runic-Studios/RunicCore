@@ -6,7 +6,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
-import com.runicrealms.plugin.commands.*;
+import com.runicrealms.plugin.commands.admin.*;
+import com.runicrealms.plugin.commands.player.*;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.donator.ThreeD;
 import com.runicrealms.plugin.donator.ThreeDManager;
@@ -359,6 +360,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new PartyCommand());
         commandManager.registerCommand(new RunicTeleportCMD());
         commandManager.registerCommand(new RunicBossCMD());
+        commandManager.registerCommand(new HelpCMD());
     }
 
     private void registerOldStyleCommands() {

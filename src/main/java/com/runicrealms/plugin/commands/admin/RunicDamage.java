@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.admin;
 
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;

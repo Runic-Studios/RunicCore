@@ -8,6 +8,7 @@ import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
+import com.runicrealms.plugin.model.SkillTree;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import org.bukkit.entity.Player;

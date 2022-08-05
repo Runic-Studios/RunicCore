@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.commands;
+package com.runicrealms.plugin.commands.admin;
 
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import org.bukkit.Bukkit;
