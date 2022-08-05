@@ -9,16 +9,19 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 @CommandAlias("help")
 public class HelpCMD extends BaseCommand {
-    private static final Set<String> COMMANDS = new HashSet<String>() {{
-        add("exp");
-        add("map");
-        add("vote");
+    private static final Map<String, String> COMMANDS = new HashMap<String, String>() {{
+        put("exp", "View your character's progress");
+        put("guild", "Create a guild ");
+        put("map", "Get a link to the world map");
+        put("party", "Create a party and group with friends!");
+        put("vote", "Vote for the server and earn rewards!");
     }};
 
     private static final Set<String> HELP_PATHS = new LinkedHashSet<String>() {{
@@ -29,7 +32,7 @@ public class HelpCMD extends BaseCommand {
 
     public HelpCMD() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("helpPath", context -> HELP_PATHS);
-        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("commands", context -> COMMANDS);
+        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("commands", context -> COMMANDS.keySet());
     }
 
     @CatchUnknown
@@ -70,11 +73,9 @@ public class HelpCMD extends BaseCommand {
                         ChatColor.GOLD + ChatColor.BOLD + "COMMANDS " +
                         ChatColor.GOLD + "»»");
         player.sendMessage("");
-        player.sendMessage(ColorUtil.format("&eYour character's class can be seen on the scoreboard."));
-        player.sendMessage(ColorUtil.format("&eIt determines your fighting style, available armor and weaponry."));
-        player.sendMessage(ColorUtil.format("&eThe five classes are: &aArcher, Cleric, Mage, Rogue, or Warrior."));
-        player.sendMessage(ColorUtil.format("&eAt lv. 10, you can learn abilities from one of three subclasses."));
-        player.sendMessage(ColorUtil.format("&eFor example, the mage can learn &dfrost, fire, or shadow magic."));
+        for (String command : COMMANDS.keySet()) {
+            player.sendMessage(ColorUtil.format("&c/" + command + " &e- " + COMMANDS.get(command)));
+        }
     }
 
     @Subcommand("classes")
@@ -114,10 +115,10 @@ public class HelpCMD extends BaseCommand {
                         ChatColor.GOLD + ChatColor.BOLD + "PROFESSIONS " +
                         ChatColor.GOLD + "»»");
         player.sendMessage("");
-        player.sendMessage(ColorUtil.format("&eYour character's class can be seen on the scoreboard."));
-        player.sendMessage(ColorUtil.format("&eIt determines your fighting style, available armor and weaponry."));
-        player.sendMessage(ColorUtil.format("&eThe five classes are: &aArcher, Cleric, Mage, Rogue, or Warrior."));
-        player.sendMessage(ColorUtil.format("&eAt lv. 10, you can learn abilities from one of three subclasses."));
-        player.sendMessage(ColorUtil.format("&eFor example, the mage can learn &dfrost, fire, or shadow magic."));
+        player.sendMessage(ColorUtil.format("&eYour character's profession can be seen on the scoreboard."));
+        player.sendMessage(ColorUtil.format("&eIt determines which items you can craft."));
+        player.sendMessage(ColorUtil.format("&eThe five professions are: &aAlchemist, Blacksmith, Enchanter, Hunter, or Jeweler."));
+        player.sendMessage(ColorUtil.format("&eGathering skills are account-wide and can be seen from the inventory menu."));
+        player.sendMessage(ColorUtil.format("&eCombine crafting and gathering to create powerful items!"));
     }
 }
