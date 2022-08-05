@@ -63,8 +63,8 @@ public class OutlawData implements SessionData {
     @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
-            put("outlawEnabled", String.valueOf(outlawEnabled));
-            put("outlawRating", String.valueOf(outlawRating));
+            put(RedisField.OUTLAW_ENABLED.getField(), String.valueOf(outlawEnabled));
+            put(RedisField.OUTLAW_RATING.getField(), String.valueOf(outlawRating));
         }};
     }
 

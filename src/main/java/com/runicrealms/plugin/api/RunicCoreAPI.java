@@ -8,6 +8,7 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
+import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.model.SkillTree;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.redis.RedisField;
@@ -94,6 +95,18 @@ public class RunicCoreAPI {
                         RedisField.CLASS_TYPE.getField(),
                         getCharacterSlot(uuid)
                 );
+    }
+
+    /**
+     * Gets a copy of the PlayerData object from the database manager
+     * NOTE: this object is destroyed once the player loads their character!
+     * Only use it for login and select-based logic
+     *
+     * @param uuid of the player
+     * @return their data wrapper object (no character data)
+     */
+    public static PlayerData getPlayerData(UUID uuid) {
+        return RunicCore.getDatabaseManager().getPlayerDataMap().get(uuid);
     }
 
     /**

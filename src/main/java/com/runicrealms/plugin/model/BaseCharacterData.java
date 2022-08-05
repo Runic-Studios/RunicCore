@@ -53,7 +53,7 @@ public class BaseCharacterData implements SessionData {
     public BaseCharacterData(UUID uuid, int slot, PlayerMongoDataSection character) {
         this.uuid = uuid;
         this.slot = slot;
-        this.currentHp = character.get("currentHP", Integer.class);
+        this.currentHp = character.get("currentHp", Integer.class) != null ? character.get("currentHp", Integer.class) : 200;
         this.storedHunger = character.get("storedHunger", Integer.class) != null ? character.get("storedHunger", Integer.class) : 20;
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {

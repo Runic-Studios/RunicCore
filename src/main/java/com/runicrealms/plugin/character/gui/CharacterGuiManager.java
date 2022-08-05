@@ -1,12 +1,15 @@
 package com.runicrealms.plugin.character.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.ClassData;
+import com.runicrealms.plugin.model.PlayerData;
+import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +25,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.*;
 
@@ -32,7 +37,7 @@ import java.util.*;
  */
 public class CharacterGuiManager implements Listener {
 
-    private static final Map<UUID, CharacterGuiInfo> characterCache = new HashMap<>();
+    // private static final Map<UUID, CharacterGuiInfo> characterCache = new HashMap<>();
     private static final Map<UUID, CharacterGui> classMenu = new HashMap<>();
     private static final Map<UUID, Integer> deletingCharacters = new HashMap<>();
 
@@ -118,8 +123,9 @@ public class CharacterGuiManager implements Listener {
     private void handleAddCharacter(ItemStack currentItem, Player player) {
         if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
             String className = getClassNameFromIcon(currentItem);
-            RunicCore.getDatabaseManager().addNewCharacter(player, className, characterCache.get(player.getUniqueId()).getFirstUnusedSlot());
-            characterCache.get(player.getUniqueId()).addCharacter(new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0));
+            PlayerData playerData = RunicCoreAPI.getPlayerData(player.getUniqueId());
+            RunicCore.getDatabaseManager().addNewCharacter(player, className, playerData.findFirstUnusedSlot());
+            playerData.addCharacter(new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0));
         }
         openSelectGui(player);
     }
@@ -135,10 +141,11 @@ public class CharacterGuiManager implements Listener {
             classMenu.remove(player.getUniqueId());
             player.closeInventory();
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+                removeFromRedis(RunicCore.getRedisManager().getJedisPool(), player.getUniqueId(), deletingCharacters.get(player.getUniqueId()));
                 PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
                 mongoData.remove("character." + deletingCharacters.get(player.getUniqueId()));
                 mongoData.save();
-                characterCache.get(player.getUniqueId()).removeCharacter(deletingCharacters.get(player.getUniqueId()));
+                RunicCoreAPI.getPlayerData(player.getUniqueId()).removeCharacter(deletingCharacters.get(player.getUniqueId()));
                 deletingCharacters.remove(player.getUniqueId());
                 openSelectGui(player);
             });
@@ -146,6 +153,19 @@ public class CharacterGuiManager implements Listener {
             classMenu.put(player.getUniqueId(), CharacterGui.SELECT);
             deletingCharacters.remove(player.getUniqueId());
             openSelectGui(player);
+        }
+    }
+
+    /**
+     * @param jedisPool
+     * @param uuid
+     * @param slot
+     */
+    private void removeFromRedis(JedisPool jedisPool, UUID uuid, int slot) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            String key = uuid + ":character:" + slot;
+            jedis.del(key);
         }
     }
 
@@ -180,25 +200,21 @@ public class CharacterGuiManager implements Listener {
                 event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED ||
                 event.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD) {
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-                UUID playerUuid = event.getPlayer().getUniqueId();
+                UUID uuid = event.getPlayer().getUniqueId();
+                PlayerData playerData = RunicCoreAPI.getPlayerData(uuid);
                 try {
-                    characterCache.put(playerUuid, new CharacterGuiInfo(RunicCore.getDatabaseManager().getPlayerDataMap().get(playerUuid)));
                     openSelectGui(event.getPlayer());
                 } catch (Exception exception) {
                     exception.printStackTrace();
-                    characterCache.remove(playerUuid);
-                    classMenu.remove(playerUuid);
+                    RunicCore.getDatabaseManager().getPlayerDataMap().remove(playerData.getPlayerUuid());
+                    classMenu.remove(uuid);
                 }
             });
         }
     }
 
-    /**
-     *
-     */
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        characterCache.remove(event.getPlayer().getUniqueId());
         classMenu.remove(event.getPlayer().getUniqueId());
         deletingCharacters.remove(event.getPlayer().getUniqueId());
     }
@@ -223,9 +239,10 @@ public class CharacterGuiManager implements Listener {
 
     private void openSelectGui(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Select Your Character");
+        PlayerData playerData = RunicCoreAPI.getPlayerData(player.getUniqueId());
         for (int i = 1; i <= 10; i++) {
-            if (characterCache.get(player.getUniqueId()).getCharacterInfo().get(i) != null) {
-                inventory.setItem(i <= 5 ? i + 1 : i + 5, getCharacterIcon(characterCache.get(player.getUniqueId()).getCharacterInfo().get(i)));
+            if (playerData.getPlayerCharacters().get(i) != null) {
+                inventory.setItem(i <= 5 ? i + 1 : i + 5, getCharacterIcon(playerData.getPlayerCharacters().get(i)));
             } else {
                 if (i == 6) {
                     inventory.setItem(
@@ -319,9 +336,5 @@ public class CharacterGuiManager implements Listener {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
-    }
-
-    public static Map<UUID, CharacterGuiInfo> getCharacterCache() {
-        return characterCache;
     }
 }

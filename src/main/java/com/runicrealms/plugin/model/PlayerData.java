@@ -37,6 +37,7 @@ public class PlayerData {
             if (mongoData.has(DATA_SECTION_KEY)) {
                 Bukkit.broadcastMessage("characters found");
                 for (String key : mongoData.getSection(DATA_SECTION_KEY).getKeys()) {
+                    Bukkit.broadcastMessage("key of char is: " + key);
                     playerCharacters.put(Integer.parseInt(key), new ClassData(
                             playerUuid,
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),
@@ -48,6 +49,36 @@ public class PlayerData {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * @param character
+     */
+    public void addCharacter(ClassData character) {
+        this.playerCharacters.put(findFirstUnusedSlot(), character);
+    }
+
+    /**
+     * Removes a player character slot from the in-memory cache
+     *
+     * @param slot of the character
+     */
+    public void removeCharacter(Integer slot) {
+        this.playerCharacters.remove(slot);
+        this.findFirstUnusedSlot();
+    }
+
+    /**
+     * Determines which character slot (1-10) is the first unused for our player.
+     * Used when making a new character
+     */
+    public int findFirstUnusedSlot() {
+        for (int i = 1; i <= 10; i++) {
+            if (this.playerCharacters.get(i) == null) {
+                return i;
+            }
+        }
+        return 1;
     }
 
     public UUID getPlayerUuid() {

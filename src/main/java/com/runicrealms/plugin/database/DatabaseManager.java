@@ -41,10 +41,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DatabaseManager implements Listener {
 
     private MongoDatabase playersDB;
-    private MongoCollection<Document> guild_data;
-    private MongoCollection<Document> shop_data;
+    private MongoCollection<Document> guildDocuments;
+    private MongoCollection<Document> shopDocuments;
     private final Map<UUID, Set<Integer>> playersToSave; // for redis-mongo saving
-    private final HashMap<String, Document> playerDataLastMonth; // keyed by uuid
+    private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string)
     private final ConcurrentHashMap<UUID, Integer> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
 
@@ -52,7 +52,7 @@ public class DatabaseManager implements Listener {
 
         Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
         playersToSave = new HashMap<>();
-        playerDataLastMonth = new HashMap<>();
+        playerDocumentMap = new HashMap<>();
         loadedCharacterMap = new ConcurrentHashMap<>();
         playerDataMap = new HashMap<>();
 
@@ -71,14 +71,14 @@ public class DatabaseManager implements Listener {
             playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
             FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseUtil.LAST_LOGIN_DATE_FILTER);
             for (Document document : player_data_last_30_days) {
-                playerDataLastMonth.put(String.valueOf(document.get("player_uuid")), document);
+                playerDocumentMap.put(String.valueOf(document.get("player_uuid")), document);
             }
-            Bukkit.getLogger().info(playerDataLastMonth.size() + " is the size of the map!");
-            for (String uuid : playerDataLastMonth.keySet()) {
+            Bukkit.getLogger().info(playerDocumentMap.size() + " is the size of the map!");
+            for (String uuid : playerDocumentMap.keySet()) {
                 Bukkit.getLogger().info(uuid + " is uuid of document in map");
             }
-            guild_data = playersDB.getCollection("guild_data");
-            shop_data = playersDB.getCollection("shop_data");
+            guildDocuments = playersDB.getCollection("guild_data");
+            shopDocuments = playersDB.getCollection("shop_data");
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Database connection failed!");
         }
@@ -120,7 +120,7 @@ public class DatabaseManager implements Listener {
         Document document = playersDB.getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first();
         if (document != null) {
-            this.playerDataLastMonth.put(String.valueOf(uuid), document);
+            this.playerDocumentMap.put(String.valueOf(uuid), document);
         }
         return document;
     }
@@ -134,7 +134,7 @@ public class DatabaseManager implements Listener {
     public Document addNewDocument(String uuid) {
         Document newDataFile = new Document("player_uuid", uuid).append("guild", "None").append("last_login", LocalDate.now());
         playersDB.getCollection("player_data").insertOne(newDataFile);
-        playerDataLastMonth.put(uuid, newDataFile);
+        playerDocumentMap.put(uuid, newDataFile);
         return newDataFile;
     }
 
@@ -147,7 +147,7 @@ public class DatabaseManager implements Listener {
     public Document addNewDocument(UUID uuid) {
         Document newDataFile = new Document("player_uuid", uuid.toString()).append("guild", "None").append("last_login", LocalDate.now());
         playersDB.getCollection("player_data").insertOne(newDataFile);
-        playerDataLastMonth.put(uuid.toString(), newDataFile);
+        playerDocumentMap.put(uuid.toString(), newDataFile);
         return newDataFile;
     }
 
@@ -167,7 +167,7 @@ public class DatabaseManager implements Listener {
         mongoDataSection.set("prof.name", "None");
         mongoDataSection.set("prof.level", 0);
         mongoDataSection.set("prof.exp", 0);
-        mongoDataSection.set("currentHP", HealthUtils.getBaseHealth());
+        mongoDataSection.set("currentHp", HealthUtils.getBaseHealth());
         mongoDataSection.set("maxMana", RegenManager.getBaseMana());
         mongoDataSection.set("storedHunger", 20);
         mongoDataSection.set("outlaw.enabled", false);
@@ -213,7 +213,7 @@ public class DatabaseManager implements Listener {
     public void tryCreateNewPlayer(Player player) {
         UUID uuid = player.getUniqueId();
         // Step 1: check mongo documents loaded in memory (last 30 days)
-        if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().containsKey(uuid.toString())) return;
+        if (RunicCore.getDatabaseManager().getPlayerDocumentMap().containsKey(uuid.toString())) return;
         // Step 2: check entire mongo collection
         if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
@@ -271,24 +271,35 @@ public class DatabaseManager implements Listener {
         }
     }
 
+    /**
+     * Keeps the in-memory document consistent with the mongo disk.
+     * Updates a single player
+     *
+     * @param uuid     of the player to update
+     * @param document the updated document to replace the old
+     */
+    public void updateDocument(UUID uuid, Document document) {
+        playerDocumentMap.put(uuid.toString(), document);
+    }
+
     public MongoDatabase getPlayersDB() {
         return playersDB;
     }
 
     public MongoCollection<Document> getGuildData() {
-        return guild_data;
+        return guildDocuments;
     }
 
     public MongoCollection<Document> getShopData() {
-        return shop_data;
+        return shopDocuments;
     }
 
     public Map<UUID, Set<Integer>> getPlayersToSave() {
         return playersToSave;
     }
 
-    public HashMap<String, Document> getPlayerDataLastMonth() {
-        return playerDataLastMonth;
+    public HashMap<String, Document> getPlayerDocumentMap() {
+        return playerDocumentMap;
     }
 
     public ConcurrentHashMap.KeySetView<UUID, Integer> getLoadedCharacters() {

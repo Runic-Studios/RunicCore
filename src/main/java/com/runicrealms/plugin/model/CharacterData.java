@@ -33,14 +33,7 @@ public class CharacterData {
     public CharacterData(UUID uuid, int slot, PlayerMongoData playerMongoData) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
         this.baseCharacterData = new BaseCharacterData(uuid, slot, character);
-        ClassData tempClassData;
-        try { // the player data object already stores basic class info, so let's try to grab it from there first
-            tempClassData = RunicCore.getDatabaseManager().getPlayerDataMap().get(uuid).getPlayerCharacters().get(slot);
-        } catch (NullPointerException e) {
-            tempClassData = new ClassData(uuid, character);
-            e.printStackTrace();
-        }
-        this.classData = tempClassData;
+        this.classData = new ClassData(uuid, character);
         this.professionData = new ProfessionData(uuid, character);
         this.outlawData = new OutlawData(uuid, character);
         writeCharacterDataToJedis(RunicCore.getRedisManager().getJedisPool());

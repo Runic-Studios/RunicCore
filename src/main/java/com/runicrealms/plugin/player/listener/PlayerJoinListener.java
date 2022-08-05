@@ -40,7 +40,7 @@ public class PlayerJoinListener implements Listener {
         player.setFoodLevel(20);
         player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
         // build database file sync (if it doesn't exist)
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             RunicCore.getDatabaseManager().tryCreateNewPlayer(player);
             PlayerData playerData = new PlayerData(player, new PlayerMongoData(player.getUniqueId().toString()));
             Bukkit.broadcastMessage("building player data object");
@@ -129,6 +129,7 @@ public class PlayerJoinListener implements Listener {
     private void loadCurrentPlayerHealthAndHunger(Player player, CharacterData characterData) {
         // set their hp to stored value from last logout
         int storedHealth = characterData.getBaseCharacterInfo().getCurrentHp();
+        Bukkit.broadcastMessage("stored health is: " + storedHealth);
         // update their health
         if (storedHealth == 0) {
             storedHealth = HealthUtils.getBaseHealth(); // new players or corrupted data

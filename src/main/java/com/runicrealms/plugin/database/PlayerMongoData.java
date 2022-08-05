@@ -2,6 +2,7 @@ package com.runicrealms.plugin.database;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -19,15 +20,17 @@ public class PlayerMongoData implements MongoData {
     private final Set<MongoUnsetUpdate> unsetUpdates;
 
     /**
-     * @param uuid
+     * Build a reference to the in-memory document of the player and a wrapper for document updates
+     *
+     * @param uuid of the player
      */
     public PlayerMongoData(String uuid) {
         this.uuid = uuid;
         this.setUpdates = new HashSet<>();
         this.unsetUpdates = new HashSet<>();
         try {
-            if (RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid) != null) {
-                this.document = RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid);
+            if (RunicCore.getDatabaseManager().getPlayerDocumentMap().get(uuid) != null) {
+                this.document = RunicCore.getDatabaseManager().getPlayerDocumentMap().get(uuid);
                 Bukkit.broadcastMessage("loading mongo document from last 30 days");
             } else if (RunicCore.getDatabaseManager().isInCollection(UUID.fromString(uuid))) {
                 this.document = RunicCore.getDatabaseManager().retrieveDocumentFromCollection(UUID.fromString(uuid));
@@ -84,7 +87,9 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public void refresh() {
-        this.document = RunicCore.getDatabaseManager().getPlayerDataLastMonth().get(uuid);
+        MongoDatabase mongoDatabase = RunicCore.getDatabaseManager().getPlayersDB();
+        this.document = mongoDatabase.getCollection("player_data").find(Filters.eq("player_uuid", this.uuid)).first();
+        RunicCore.getDatabaseManager().getPlayerDocumentMap().put(this.uuid, this.document);
     }
 
     @Override
