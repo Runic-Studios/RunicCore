@@ -2,14 +2,13 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.*;
 
 public class OutlawData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.OUTLAW_ENABLED.getField());
-        add(RedisField.OUTLAW_RATING.getField());
+        add(CharacterField.OUTLAW_ENABLED.getField());
+        add(CharacterField.OUTLAW_RATING.getField());
     }};
     private final UUID uuid;
     private final boolean outlawEnabled;
@@ -35,8 +34,8 @@ public class OutlawData implements SessionData {
      */
     public OutlawData(UUID uuid, Map<String, String> fields) {
         this.uuid = uuid;
-        this.outlawEnabled = Boolean.parseBoolean(fields.get(RedisField.OUTLAW_ENABLED.getField()));
-        this.outlawRating = Integer.parseInt(fields.get(RedisField.OUTLAW_RATING.getField()));
+        this.outlawEnabled = Boolean.parseBoolean(fields.get(CharacterField.OUTLAW_ENABLED.getField()));
+        this.outlawRating = Integer.parseInt(fields.get(CharacterField.OUTLAW_RATING.getField()));
     }
 
     public static List<String> getFields() {
@@ -63,8 +62,8 @@ public class OutlawData implements SessionData {
     @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
-            put(RedisField.OUTLAW_ENABLED.getField(), String.valueOf(outlawEnabled));
-            put(RedisField.OUTLAW_RATING.getField(), String.valueOf(outlawRating));
+            put(CharacterField.OUTLAW_ENABLED.getField(), String.valueOf(outlawEnabled));
+            put(CharacterField.OUTLAW_RATING.getField(), String.valueOf(outlawRating));
         }};
     }
 

@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import com.runicrealms.plugin.redis.RedisField;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -58,7 +58,7 @@ public abstract class Spell implements ISpell, Listener {
                 (RunicCoreAPI.getRedisCharacterValue
                         (
                                 uuid,
-                                RedisField.CLASS_TYPE.getField(),
+                                CharacterField.CLASS_TYPE.getField(),
                                 RunicCoreAPI.getCharacterSlot(player.getUniqueId())
                         ));
 
@@ -110,8 +110,8 @@ public abstract class Spell implements ISpell, Listener {
 
         int slotCaster = RunicCoreAPI.getCharacterSlot(caster.getUniqueId());
         int slotAlly = RunicCoreAPI.getCharacterSlot(ally.getUniqueId());
-        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(caster.getUniqueId(), RedisField.OUTLAW_ENABLED.getField(), slotCaster));
-        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(playerAlly.getUniqueId(), RedisField.OUTLAW_ENABLED.getField(), slotAlly));
+        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(caster.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), slotCaster));
+        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(playerAlly.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), slotAlly));
 
         // If either player is an outlaw
         if (casterIsOutlaw || allyIsOutlaw)

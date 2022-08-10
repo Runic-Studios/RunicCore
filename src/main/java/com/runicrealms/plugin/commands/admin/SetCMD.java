@@ -5,8 +5,8 @@ import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -117,7 +117,7 @@ public class SetCMD extends BaseCommand {
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         // int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         player.setLevel(0);
-        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP.getField(), String.valueOf(0));
+        RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_EXP.getField(), String.valueOf(0));
         PlayerLevelUtil.giveExperience(player, expAtLevel);
         // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
         /*

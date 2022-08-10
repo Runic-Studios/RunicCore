@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.redis.RedisField;
+import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.model.SkillTreePosition;
+import com.runicrealms.plugin.model.SpellField;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.util.*;
@@ -18,12 +20,12 @@ public class SpellGUI implements InventoryHolder {
 
     private final Inventory inventory;
     private final Player player;
-    private final String spellSlot;
+    private final SpellField spellField;
 
-    public SpellGUI(Player player, String spellSlot) {
+    public SpellGUI(Player player, SpellField spellField) {
         this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&a&lAvailable Spells"));
         this.player = player;
-        this.spellSlot = spellSlot;
+        this.spellField = spellField;
         openMenu();
     }
 
@@ -37,8 +39,8 @@ public class SpellGUI implements InventoryHolder {
         return this.player;
     }
 
-    public String getSpellSlot() {
-        return this.spellSlot;
+    public SpellField getSpellField() {
+        return this.spellField;
     }
 
     /**
@@ -50,9 +52,10 @@ public class SpellGUI implements InventoryHolder {
         this.inventory.setItem(9, SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
                 false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
         int i = 10;
-        i = grabUnlockedSpellsFromTree(1, i);
-        i = grabUnlockedSpellsFromTree(2, i);
-        grabUnlockedSpellsFromTree(3, i);
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        i = grabUnlockedSpellsFromTree(SkillTreePosition.FIRST, slot, i);
+        i = grabUnlockedSpellsFromTree(SkillTreePosition.SECOND, slot, i);
+        grabUnlockedSpellsFromTree(SkillTreePosition.THIRD, slot, i);
     }
 
     /**
@@ -62,7 +65,7 @@ public class SpellGUI implements InventoryHolder {
      */
     private Perk determineDefaultSpellPerk() {
         int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        switch (RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot)) {
+        switch (RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot)) {
             case "Archer":
                 return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
             case "Cleric":
@@ -83,11 +86,12 @@ public class SpellGUI implements InventoryHolder {
      * skill tree.
      *
      * @param treePosition (which of the three sub-trees?) (1, 2, 3)
+     * @param slot         of the character
      * @param index        which index to begin filling items
      */
-    private int grabUnlockedSpellsFromTree(int treePosition, int index) {
-        if (RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition) == null) return index;
-        for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition).getPerks()) {
+    private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int slot, int index) {
+        if (RunicCoreAPI.getSkillTree(player.getUniqueId(), slot, treePosition) == null) return index;
+        for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), slot, treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
             if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;

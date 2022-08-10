@@ -3,8 +3,8 @@ package com.runicrealms.plugin.player.utilities;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.ClassData;
-import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,15 +56,15 @@ public class PlayerLevelUtil {
      */
     public static void giveExperience(Player player, int expGained) {
 
-        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields());
-        String className = fieldValues.get(RedisField.CLASS_TYPE.getField());
+        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFIELDS());
+        String className = fieldValues.get(CharacterField.CLASS_TYPE.getField());
         int currentLv = player.getLevel();
-        int currentExp = Integer.parseInt(fieldValues.get(RedisField.CLASS_EXP.getField()));
+        int currentExp = Integer.parseInt(fieldValues.get(CharacterField.CLASS_EXP.getField()));
 
         if (currentLv >= MAX_LEVEL) return;
 
         currentExp = currentExp + expGained;
-        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_EXP.getField(), String.valueOf(currentExp));
+        RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_EXP.getField(), String.valueOf(currentExp));
 
         if (calculateExpectedLv(currentExp) != currentLv) {
 
@@ -81,7 +81,7 @@ public class PlayerLevelUtil {
 
             player.setLevel(calculateExpectedLv(currentExp));
             currentLv = calculateExpectedLv(currentExp);
-            RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL.getField(), String.valueOf(currentLv));
+            RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_LEVEL.getField(), String.valueOf(currentLv));
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLv);
@@ -147,7 +147,7 @@ public class PlayerLevelUtil {
     private static void sendLevelMessage(Player player, int classLv) {
 
         int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot);
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot);
         if (className == null) return;
 
         player.sendTitle(

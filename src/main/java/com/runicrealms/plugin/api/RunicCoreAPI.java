@@ -8,12 +8,9 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
-import com.runicrealms.plugin.model.PlayerData;
-import com.runicrealms.plugin.model.SkillTree;
+import com.runicrealms.plugin.model.*;
 import com.runicrealms.plugin.player.listener.ManaListener;
-import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.redis.RedisUtil;
-import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
@@ -77,7 +74,7 @@ public class RunicCoreAPI {
         return RedisUtil.getRedisValue
                 (
                         player.getUniqueId(),
-                        RedisField.CLASS_TYPE.getField(),
+                        CharacterField.CLASS_TYPE.getField(),
                         getCharacterSlot(player.getUniqueId()
                         ));
     }
@@ -92,7 +89,7 @@ public class RunicCoreAPI {
         return RedisUtil.getRedisValue
                 (
                         uuid,
-                        RedisField.CLASS_TYPE.getField(),
+                        CharacterField.CLASS_TYPE.getField(),
                         getCharacterSlot(uuid)
                 );
     }
@@ -284,6 +281,16 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Return all the current passives mapped to the given player (by uuid)
+     *
+     * @param uuid of the player
+     * @return a set of strings representing their passives
+     */
+    public static Set<String> getPassives(UUID uuid) {
+        return RunicCore.getSkillTreeManager().getPlayerPassiveMap().get(uuid);
+    }
+
+    /**
      * Gets the spell in the associated 'slot' from player spell wrapper.
      *
      * @param player to grab spell for
@@ -294,32 +301,32 @@ public class RunicCoreAPI {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
-            PlayerSpellWrapper playerSpellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid);
+            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
             switch (number) {
                 case 1:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellHotbarOne());
-                    if (playerSpellWrapper.getSpellHotbarOne().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellHotbarOne());
+                    if (playerSpellData.getSpellHotbarOne().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 2:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellLeftClick());
-                    if (playerSpellWrapper.getSpellLeftClick().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellLeftClick());
+                    if (playerSpellData.getSpellLeftClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 3:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellRightClick());
-                    if (playerSpellWrapper.getSpellRightClick().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellRightClick());
+                    if (playerSpellData.getSpellRightClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 4:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellWrapper.getSpellSwapHands());
-                    if (playerSpellWrapper.getSpellSwapHands().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellSwapHands());
+                    if (playerSpellData.getSpellSwapHands().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
@@ -334,11 +341,13 @@ public class RunicCoreAPI {
     /**
      * Returns Skill Tree for specified player
      *
-     * @param uuid of player to lookup
+     * @param uuid     of player to lookup
+     * @param slot     of the character
+     * @param position of the skill tree (1, 2, 3)
      * @return Skill Tree
      */
-    public static SkillTree getSkillTree(UUID uuid, int position) {
-        return RunicCore.getSkillTreeManager().searchSkillTree(uuid, position);
+    public static SkillTreeData getSkillTree(UUID uuid, int slot, SkillTreePosition position) {
+        return RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position);
     }
 
     public static Spell getSpell(String name) {
@@ -352,7 +361,7 @@ public class RunicCoreAPI {
      * @return number of skill points availble (AFTER subtracting spent points)
      */
     public static int getAvailableSkillPoints(UUID uuid) {
-        return SkillTree.getAvailablePoints(uuid);
+        return SkillTreeData.getAvailablePoints(uuid);
     }
 
     /**
@@ -362,7 +371,7 @@ public class RunicCoreAPI {
      * @return number of skill points spent
      */
     public static int getSpentPoints(UUID uuid) {
-        return RunicCore.getSkillTreeManager().getSpentPoints().get(uuid);
+        return RunicCore.getSkillTreeManager().getSpentPoints(uuid, RunicCoreAPI.getCharacterSlot(uuid));
     }
 
     /**
@@ -385,7 +394,7 @@ public class RunicCoreAPI {
      * @return boolean value whether passive found
      */
     public static boolean hasPassive(UUID uuid, String passive) {
-        return RunicCore.getSkillTreeManager().getPlayerSpellWrapper(uuid).getPassives().contains(passive);
+        return RunicCore.getSkillTreeManager().getPlayerPassiveMap().get(uuid).contains(passive);
     }
 
     /**
@@ -419,15 +428,17 @@ public class RunicCoreAPI {
      * Returns a SkillTreeGUI for the given player
      *
      * @param player   of player to build skill tree for
+     * @param slot     of the character
      * @param position the position of sub-class (1, 2, or 3)
      * @return SkillTreeGUI
      */
-    public static SkillTreeGUI skillTreeGUI(Player player, int position) {
+    public static SkillTreeGUI skillTreeGUI(Player player, int slot, SkillTreePosition position) {
         UUID uuid = player.getUniqueId();
-        if (RunicCore.getSkillTreeManager().searchSkillTree(uuid, position) != null)
-            return new SkillTreeGUI(player, RunicCore.getSkillTreeManager().searchSkillTree(uuid, position));
+        SkillTreeData skillTreeData = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position);
+        if (skillTreeData != null)
+            return new SkillTreeGUI(player, skillTreeData);
         else
-            return new SkillTreeGUI(player, new SkillTree(uuid, position));
+            return new SkillTreeGUI(player, new SkillTreeData(uuid, position));
     }
 
     /**
@@ -556,19 +567,34 @@ public class RunicCoreAPI {
      * @param location to check
      * @return true if it's within a city
      */
-    // todo: should use above method
     public static boolean isSafezone(Location location) {
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
-        Set<ProtectedRegion> regions = set.getRegions();
-        if (regions == null) return false;
-        for (ProtectedRegion region : regions) {
-            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> region.getId().contains(cityLocation.getIdentifier())))
+        List<String> regionIds = getRegionIds(location);
+        for (String regionId : regionIds) {
+            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> regionId.contains(cityLocation.getIdentifier())))
                 return true;
         }
         return false;
     }
+
+//    /**
+//     * Checks whether the given location is within a city
+//     *
+//     * @param location to check
+//     * @return true if it's within a city
+//     */
+//    // todo: should use above method
+//    public static boolean isSafezone(Location location) {
+//        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+//        RegionQuery query = container.createQuery();
+//        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
+//        Set<ProtectedRegion> regions = set.getRegions();
+//        if (regions == null) return false;
+//        for (ProtectedRegion region : regions) {
+//            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> region.getId().contains(cityLocation.getIdentifier())))
+//                return true;
+//        }
+//        return false;
+//    }
 
     /**
      * Used so that other plugins can trigger a scoreboard update

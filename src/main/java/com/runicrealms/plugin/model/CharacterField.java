@@ -1,6 +1,6 @@
-package com.runicrealms.plugin.redis;
+package com.runicrealms.plugin.model;
 
-public enum RedisField {
+public enum CharacterField {
 
     SLOT("slot"),
     CURRENT_HEALTH("currentHp"),
@@ -19,7 +19,7 @@ public enum RedisField {
 
     private final String field;
 
-    RedisField(String field) {
+    CharacterField(String field) {
         this.field = field;
     }
 
@@ -29,13 +29,14 @@ public enum RedisField {
 
     /**
      * Returns the corresponding RedisField from the given string version
+     *
      * @param field a string matching a constant
      * @return the constant
      */
-    public static RedisField getFromFieldString(String field) {
-        for (RedisField redisField : RedisField.values()) {
-            if (redisField.getField().equalsIgnoreCase(field))
-                return redisField;
+    public static CharacterField getFromFieldString(String field) {
+        for (CharacterField characterField : CharacterField.values()) {
+            if (characterField.getField().equalsIgnoreCase(field))
+                return characterField;
         }
         return null;
     }

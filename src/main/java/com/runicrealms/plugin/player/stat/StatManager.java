@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.runicitems.Stat;
@@ -29,9 +30,10 @@ public class StatManager implements Listener {
         StatContainer statContainer = new StatContainer(e.getPlayer());
         UUID uuid = e.getPlayer().getUniqueId();
         playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
-        grabBaseStatsFromTree(uuid, 1);
-        grabBaseStatsFromTree(uuid, 2);
-        grabBaseStatsFromTree(uuid, 3);
+        int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST);
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND);
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD);
     }
 
     @EventHandler
@@ -43,11 +45,12 @@ public class StatManager implements Listener {
      * Loads the base stats across all subclass trees into memory.
      *
      * @param uuid         of player to load stats for
+     * @param slot         of the character
      * @param treePosition which subtree are we loading? (1,2,3)
      */
-    private void grabBaseStatsFromTree(UUID uuid, int treePosition) {
-        if (RunicCoreAPI.getSkillTree(uuid, treePosition) == null) return;
-        for (Perk perk : RunicCoreAPI.getSkillTree(uuid, treePosition).getPerks()) {
+    private void grabBaseStatsFromTree(UUID uuid, int slot, SkillTreePosition treePosition) {
+        if (RunicCoreAPI.getSkillTree(uuid, slot, treePosition) == null) return;
+        for (Perk perk : RunicCoreAPI.getSkillTree(uuid, slot, treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkBaseStat)) continue;
             PerkBaseStat perkBaseStat = (PerkBaseStat) perk;

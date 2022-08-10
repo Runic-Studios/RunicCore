@@ -4,7 +4,7 @@ import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.redis.RedisField;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
@@ -300,8 +300,8 @@ public class DamageListener implements Listener {
             // if both players are outlaws, amend the death message to display their rating
             int damagerSlot = RunicCoreAPI.getCharacterSlot(damager.getUniqueId());
             int victimSlot = RunicCoreAPI.getCharacterSlot(victim.getUniqueId());
-            boolean damagerIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(damager.getUniqueId(), RedisField.OUTLAW_ENABLED.getField(), damagerSlot));
-            boolean victimIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(victim.getUniqueId(), RedisField.OUTLAW_ENABLED.getField(), victimSlot));
+            boolean damagerIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(damager.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), damagerSlot));
+            boolean victimIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(victim.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), victimSlot));
             if (damagerIsOutlaw && victimIsOutlaw) {
                 nameDam = ChatColor.WHITE + nameDam; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
                 nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +

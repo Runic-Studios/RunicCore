@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
-import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
+import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ClericTreeUtil {
 
-    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, PlayerSpellWrapper.DEFAULT_CLERIC);
+    public static Perk DEFAULT_CLERIC_SPELL_PERK = new PerkSpell(996, 0, 1, 1, PlayerSpellData.DEFAULT_CLERIC);
 
     public static List<Perk> bardPerkList() {
         List<Perk> perks = new ArrayList<>();

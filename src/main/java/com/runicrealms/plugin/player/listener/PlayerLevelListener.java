@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -27,11 +27,11 @@ public class PlayerLevelListener implements Listener {
         if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
 
         // update player's level in redis
-        RunicCoreAPI.setRedisValue(player, RedisField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()));
+        RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()));
 
         // grab the player's new info
         int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot);
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot);
         if (className.equals("")) return;
         int classLevel = player.getLevel();
 
@@ -70,7 +70,7 @@ public class PlayerLevelListener implements Listener {
         String className;
         int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
         try {
-            className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), slot);
+            className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot);
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }

@@ -4,7 +4,6 @@ import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
-import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,11 +12,11 @@ import java.util.*;
 
 public class BaseCharacterData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.SLOT.getField());
-        add(RedisField.CURRENT_HEALTH.getField());
-        add(RedisField.STORED_HUNGER.getField());
-        add(RedisField.PLAYER_UUID.getField());
-        add(RedisField.LOCATION.getField());
+        add(CharacterField.SLOT.getField());
+        add(CharacterField.CURRENT_HEALTH.getField());
+        add(CharacterField.STORED_HUNGER.getField());
+        add(CharacterField.PLAYER_UUID.getField());
+        add(CharacterField.LOCATION.getField());
     }};
 
     private final int slot;
@@ -70,10 +69,10 @@ public class BaseCharacterData implements SessionData {
      */
     public BaseCharacterData(UUID uuid, Map<String, String> fields) {
         this.uuid = uuid;
-        this.slot = Integer.parseInt(fields.get(RedisField.SLOT.getField()));
-        this.currentHp = Integer.parseInt(fields.get(RedisField.CURRENT_HEALTH.getField()));
-        this.storedHunger = Integer.parseInt(fields.get(RedisField.STORED_HUNGER.getField()));
-        this.location = DatabaseUtil.loadLocation(fields.get(RedisField.LOCATION.getField()));
+        this.slot = Integer.parseInt(fields.get(CharacterField.SLOT.getField()));
+        this.currentHp = Integer.parseInt(fields.get(CharacterField.CURRENT_HEALTH.getField()));
+        this.storedHunger = Integer.parseInt(fields.get(CharacterField.STORED_HUNGER.getField()));
+        this.location = DatabaseUtil.loadLocation(fields.get(CharacterField.LOCATION.getField()));
     }
 
     public static List<String> getFields() {

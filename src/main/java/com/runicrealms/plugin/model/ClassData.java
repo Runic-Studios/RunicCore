@@ -3,15 +3,14 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.*;
 
 public class ClassData implements SessionData {
-    static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.CLASS_TYPE.getField());
-        add(RedisField.CLASS_EXP.getField());
-        add(RedisField.CLASS_LEVEL.getField());
+    static List<String> FIELDS = new ArrayList<String>() {{
+        add(CharacterField.CLASS_TYPE.getField());
+        add(CharacterField.CLASS_EXP.getField());
+        add(CharacterField.CLASS_LEVEL.getField());
     }};
     private final UUID uuid;
     private final ClassEnum classType;
@@ -48,17 +47,17 @@ public class ClassData implements SessionData {
     /**
      * A container of basic info used to load a player character profile, built from redis
      *
-     * @param fields a map of key-value pairs from redis
+     * @param FIELDS a map of key-value pairs from redis
      */
-    public ClassData(UUID uuid, Map<String, String> fields) {
+    public ClassData(UUID uuid, Map<String, String> FIELDS) {
         this.uuid = uuid;
-        this.classType = ClassEnum.getFromName(fields.get(RedisField.CLASS_TYPE.getField()));
-        this.exp = Integer.parseInt(fields.get(RedisField.CLASS_EXP.getField()));
-        this.level = Integer.parseInt(fields.get(RedisField.CLASS_LEVEL.getField()));
+        this.classType = ClassEnum.getFromName(FIELDS.get(CharacterField.CLASS_TYPE.getField()));
+        this.exp = Integer.parseInt(FIELDS.get(CharacterField.CLASS_EXP.getField()));
+        this.level = Integer.parseInt(FIELDS.get(CharacterField.CLASS_LEVEL.getField()));
     }
 
-    public static List<String> getFields() {
-        return fields;
+    public static List<String> getFIELDS() {
+        return FIELDS;
     }
 
     public UUID getUuid() {
@@ -85,9 +84,9 @@ public class ClassData implements SessionData {
     @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
-            put(RedisField.CLASS_TYPE.getField(), classType.getName());
-            put(RedisField.CLASS_EXP.getField(), String.valueOf(exp));
-            put(RedisField.CLASS_LEVEL.getField(), String.valueOf(level));
+            put(CharacterField.CLASS_TYPE.getField(), classType.getName());
+            put(CharacterField.CLASS_EXP.getField(), String.valueOf(exp));
+            put(CharacterField.CLASS_LEVEL.getField(), String.valueOf(level));
         }};
     }
 

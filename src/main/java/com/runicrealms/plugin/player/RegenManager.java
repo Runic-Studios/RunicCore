@@ -4,8 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.listener.ManaListener;
-import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -114,7 +114,7 @@ public class RegenManager implements Listener {
      * @return the mana per level
      */
     public double getManaPerLv(Player player) {
-        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         if (className.equals("")) return 0;
         switch (className.toLowerCase()) {
             case "archer":

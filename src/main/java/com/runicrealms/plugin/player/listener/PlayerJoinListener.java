@@ -2,7 +2,6 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
-import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -41,8 +40,7 @@ public class PlayerJoinListener implements Listener {
         player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
         // build database file sync (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            RunicCore.getDatabaseManager().tryCreateNewPlayer(player);
-            PlayerData playerData = new PlayerData(player, new PlayerMongoData(player.getUniqueId().toString()));
+            PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player);
             Bukkit.broadcastMessage("building player data object");
             RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
             ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)

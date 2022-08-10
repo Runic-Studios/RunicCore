@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -50,23 +52,28 @@ public class SpellEditorGUI implements InventoryHolder {
     private void openMenu() {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
-        this.inventory.setItem(31, ancientRune());
+        this.inventory.setItem(31, ancientRunestone());
         this.inventory.setItem(SPELL_ONE_INDEX, spellButton("Hotbar 1", 0));
         this.inventory.setItem(SPELL_TWO_INDEX, spellButton("Left-click", SLOT_REQ_2));
         this.inventory.setItem(SPELL_THREE_INDEX, spellButton("Right-click", SLOT_REQ_3));
         this.inventory.setItem(SPELL_FOUR_INDEX, spellButton("Swap-hands", SLOT_REQ_4));
     }
 
-    private ItemStack ancientRune() {
+    private ItemStack ancientRunestone() {
         ItemStack skillTreeButton = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         try {
+            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData
+                    (
+                            player.getUniqueId(),
+                            RunicCoreAPI.getCharacterSlot(player.getUniqueId())
+                    );
             ItemMeta meta = skillTreeButton.getItemMeta();
             if (meta == null) return skillTreeButton;
             meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Your Spell Setup:");
-            String spellOne = "&d[1] &7Spell Hotbar 1: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellHotbarOne();
-            String spellTwo = "&d[L] &7Spell Left-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellLeftClick();
-            String spellThree = "&d[R] &7Spell Right-click: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellRightClick();
-            String spellFour = "&d[F] &7Spell Swap-hands: &f" + RunicCore.getSkillTreeManager().getPlayerSpellWrapper(player.getUniqueId()).getSpellSwapHands();
+            String spellOne = "&d[1] &7Spell Hotbar 1: &f" + playerSpellData.getSpellHotbarOne();
+            String spellTwo = "&d[L] &7Spell Left-click: &f" + playerSpellData.getSpellLeftClick();
+            String spellThree = "&d[R] &7Spell Right-click: &f" + playerSpellData.getSpellRightClick();
+            String spellFour = "&d[F] &7Spell Swap-hands: &f" + playerSpellData.getSpellSwapHands();
             meta.setLore(Arrays.asList(ColorUtil.format(spellOne), ColorUtil.format(spellTwo),
                     ColorUtil.format(spellThree), ColorUtil.format(spellFour)));
             skillTreeButton.setItemMeta(meta);

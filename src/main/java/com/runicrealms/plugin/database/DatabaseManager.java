@@ -44,7 +44,7 @@ public class DatabaseManager implements Listener {
     private MongoCollection<Document> guildDocuments;
     private MongoCollection<Document> shopDocuments;
     private final Map<UUID, Set<Integer>> playersToSave; // for redis-mongo saving
-    private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string)
+    private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string) (stores last 30 days)
     private final ConcurrentHashMap<UUID, Integer> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
 
@@ -209,17 +209,20 @@ public class DatabaseManager implements Listener {
      * Builds a new database document for the given player if it doesn't already exist when they join server/lobby
      *
      * @param player who joined
+     * @return a PlayerData object
      */
-    public void tryCreateNewPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
+    public PlayerData loadPlayerData(Player player) {
         // Step 1: check mongo documents loaded in memory (last 30 days)
-        if (RunicCore.getDatabaseManager().getPlayerDocumentMap().containsKey(uuid.toString())) return;
+        UUID uuid = player.getUniqueId();
+        if (RunicCore.getDatabaseManager().getPlayerDocumentMap().containsKey(uuid.toString()))
+            return new PlayerData(player, new PlayerMongoData(uuid.toString()));
         // Step 2: check entire mongo collection
         if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
-            return;
+            return new PlayerData(player, new PlayerMongoData(uuid.toString()));
         // Step 3: if no data is found, we create some data, add it to mongo, then store a reference in memory
         RunicCore.getDatabaseManager().addNewDocument(uuid);
+        return new PlayerData(player, new PlayerMongoData(uuid.toString()));
     }
 
     /**

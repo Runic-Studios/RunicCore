@@ -2,15 +2,14 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisField;
 
 import java.util.*;
 
 public class ProfessionData implements SessionData {
     static List<String> fields = new ArrayList<String>() {{
-        add(RedisField.PROF_NAME.getField());
-        add(RedisField.PROF_EXP.getField());
-        add(RedisField.PROF_LEVEL.getField());
+        add(CharacterField.PROF_NAME.getField());
+        add(CharacterField.PROF_EXP.getField());
+        add(CharacterField.PROF_LEVEL.getField());
     }};
     private final UUID uuid;
     private final String profName;
@@ -53,9 +52,9 @@ public class ProfessionData implements SessionData {
      */
     public ProfessionData(UUID uuid, Map<String, String> fields) {
         this.uuid = uuid;
-        this.profName = fields.get(RedisField.PROF_NAME.getField());
-        this.profLevel = Integer.parseInt(fields.get(RedisField.PROF_LEVEL.getField()));
-        this.profExp = Integer.parseInt(fields.get(RedisField.PROF_EXP.getField()));
+        this.profName = fields.get(CharacterField.PROF_NAME.getField());
+        this.profLevel = Integer.parseInt(fields.get(CharacterField.PROF_LEVEL.getField()));
+        this.profExp = Integer.parseInt(fields.get(CharacterField.PROF_EXP.getField()));
     }
 
     public static List<String> getFields() {
@@ -86,9 +85,9 @@ public class ProfessionData implements SessionData {
     @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
-            put(RedisField.PROF_NAME.getField(), profName);
-            put(RedisField.PROF_LEVEL.getField(), String.valueOf(profLevel));
-            put(RedisField.PROF_EXP.getField(), String.valueOf(profExp));
+            put(CharacterField.PROF_NAME.getField(), profName);
+            put(CharacterField.PROF_LEVEL.getField(), String.valueOf(profLevel));
+            put(CharacterField.PROF_EXP.getField(), String.valueOf(profExp));
         }};
     }
 

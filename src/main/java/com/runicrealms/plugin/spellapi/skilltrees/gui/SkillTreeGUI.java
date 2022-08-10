@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.model.SkillTree;
+import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -27,14 +27,14 @@ public class SkillTreeGUI implements InventoryHolder {
     private static final int INFO_ITEM_POSITION = 4;
     private final Inventory inventory;
     private final Player player;
-    private final SkillTree skillTree;
+    private final SkillTreeData skillTreeData;
     private static final int[] PERK_SLOTS = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
 
-    public SkillTreeGUI(Player player, SkillTree skillTree) {
+    public SkillTreeGUI(Player player, SkillTreeData skillTreeData) {
         this.inventory = Bukkit.createInventory(this, 54,
-                ColorUtil.format("&a&l" + skillTree.getSubClassEnum().getName() + " Skill Tree"));
+                ColorUtil.format("&a&l" + skillTreeData.getSubClassEnum().getName() + " Skill Tree"));
         this.player = player;
-        this.skillTree = skillTree;
+        this.skillTreeData = skillTreeData;
         openMenu();
     }
 
@@ -48,8 +48,8 @@ public class SkillTreeGUI implements InventoryHolder {
         return this.player;
     }
 
-    public SkillTree getSkillTree() {
-        return this.skillTree;
+    public SkillTreeData getSkillTree() {
+        return this.skillTreeData;
     }
 
     /**
@@ -62,7 +62,7 @@ public class SkillTreeGUI implements InventoryHolder {
         this.inventory.setItem(INFO_ITEM_POSITION, infoItem());
         int i = 0;
 
-        for (Perk perk : skillTree.getPerks()) {
+        for (Perk perk : skillTreeData.getPerks()) {
             ItemStack item = buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase");
             this.inventory.setItem(PERK_SLOTS[i++], item);
         }
@@ -83,11 +83,11 @@ public class SkillTreeGUI implements InventoryHolder {
     }
 
     public ItemStack infoItem() {
-        ItemStack infoItem = new ItemStack(skillTree.getSubClassEnum().getItemStack());
+        ItemStack infoItem = new ItemStack(skillTreeData.getSubClassEnum().getItemStack());
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
-        meta.setDisplayName(ChatColor.GREEN + skillTree.getSubClassEnum().getName() + " Tree Info");
-        String lore = "&7Remaining Skill Points: &a" + SkillTree.getAvailablePoints(player.getUniqueId());
+        meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubClassEnum().getName() + " Tree Info");
+        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId());
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
         return infoItem;

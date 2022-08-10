@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.classes.SubClass;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -40,18 +41,18 @@ public class SubClassGUI implements InventoryHolder {
     private void openMenu() {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
-        this.inventory.setItem(11, subClassItem(1));
-        this.inventory.setItem(13, subClassItem(2));
-        this.inventory.setItem(15, subClassItem(3));
+        this.inventory.setItem(11, subClassItem(SkillTreePosition.FIRST));
+        this.inventory.setItem(13, subClassItem(SkillTreePosition.SECOND));
+        this.inventory.setItem(15, subClassItem(SkillTreePosition.THIRD));
     }
 
     /**
-     * Adds an ItemStack with some type of glazed terracotta to represent a sub-class.
+     * Adds an ItemStack with some type of glazed terracotta to represent a subclass.
      *
-     * @param position which sub-class? (1, 2, or 3)
+     * @param position which subclass
      * @return an ItemStack icon
      */
-    private ItemStack subClassItem(int position) {
+    private ItemStack subClassItem(SkillTreePosition position) {
         SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), position);
         String displayName = subClass.getName();
         ItemStack subClassItem = subClass.getItemStack();

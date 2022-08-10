@@ -50,7 +50,7 @@ public class CharacterData {
         List<String> fields = new ArrayList<>();
         Map<String, String> fieldsMap = new HashMap<>();
         fields.addAll(BaseCharacterData.getFields());
-        fields.addAll(ClassData.getFields());
+        fields.addAll(ClassData.getFIELDS());
         fields.addAll(ProfessionData.getFields());
         fields.addAll(OutlawData.getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);

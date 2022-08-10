@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
-import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
+import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RogueTreeUtil {
 
-    public static Perk DEFAULT_ROGUE_SPELL_PERK = new PerkSpell(998, 0, 1, 1, PlayerSpellWrapper.DEFAULT_ROGUE);
+    public static Perk DEFAULT_ROGUE_SPELL_PERK = new PerkSpell(998, 0, 1, 1, PlayerSpellData.DEFAULT_ROGUE);
 
     public static List<Perk> assassinPerkList() {
         List<Perk> perks = new ArrayList<>();

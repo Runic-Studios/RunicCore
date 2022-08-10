@@ -57,8 +57,10 @@ public class RedisManager implements Listener {
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            if (jedis.exists(uuid + ":character:" + slot)) {
+            String key = uuid + ":character:" + slot;
+            if (jedis.exists(key)) {
                 Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building data from redis");
+                jedis.expire(key, RedisUtil.EXPIRE_TIME);
                 return new CharacterData(uuid, slot, jedis);
             }
         }

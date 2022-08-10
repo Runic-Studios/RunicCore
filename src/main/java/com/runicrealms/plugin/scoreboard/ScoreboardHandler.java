@@ -2,8 +2,8 @@ package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.ProfessionData;
-import com.runicrealms.plugin.redis.RedisField;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -166,7 +166,7 @@ public class ScoreboardHandler {
     private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
 
     private String playerClass(final Player player) {
-        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), RedisField.CLASS_TYPE.getField(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
+        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         int currentLevel = player.getLevel();
         String display;
         if (className == null) {
@@ -184,8 +184,8 @@ public class ScoreboardHandler {
 
     private String playerProf(final Player player) {
         Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
-        String profName = professionFields.get(RedisField.PROF_NAME.getField());
-        int currentLevel = Integer.parseInt(professionFields.get(RedisField.PROF_LEVEL.getField()));
+        String profName = professionFields.get(CharacterField.PROF_NAME.getField());
+        int currentLevel = Integer.parseInt(professionFields.get(CharacterField.PROF_LEVEL.getField()));
         String display;
         if (profName == null) {
             display = NO_PROF_STRING;
@@ -201,7 +201,7 @@ public class ScoreboardHandler {
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
 
     private String playerGuild(final Player player) {
-        String guild = RunicCoreAPI.getRedisPlayerValue(player.getUniqueId(), RedisField.GUILD.getField());
+        String guild = RunicCoreAPI.getRedisPlayerValue(player.getUniqueId(), CharacterField.GUILD.getField());
         String display;
         if (guild == null) {
             display = NO_GUILD_STRING;

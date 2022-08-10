@@ -2,42 +2,35 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
-import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
-import com.runicrealms.plugin.model.SkillTree;
+import com.runicrealms.plugin.model.PlayerSpellData;
+import com.runicrealms.plugin.model.SkillTreeData;
+import com.runicrealms.plugin.model.SkillTreeField;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
+import com.runicrealms.plugin.redis.RedisManager;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Caches three skill trees per-player, one for each sub-class.
+ * Caches three skill trees per-player, one for each subclass.
  */
 public class SkillTreeManager implements Listener {
 
-    private final HashMap<UUID, Integer> spentPoints; // allocated points across all skill trees
-    private final HashSet<SkillTree> skillTreeSetOne; // first sub-class
-    private final HashSet<SkillTree> skillTreeSetTwo; // second sub-class
-    private final HashSet<SkillTree> skillTreeSetThree; // third sub-class
-    private final HashSet<PlayerSpellWrapper> playerSpellWrappers;
+    private final Map<UUID, Set<String>> playerPassiveMap = new HashMap<>();
 
     public SkillTreeManager() {
-        spentPoints = new HashMap<>();
-        skillTreeSetOne = new HashSet<>();
-        skillTreeSetTwo = new HashSet<>();
-        skillTreeSetThree = new HashSet<>();
-        this.playerSpellWrappers = new HashSet<>();
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
@@ -47,62 +40,140 @@ public class SkillTreeManager implements Listener {
     @EventHandler
     public void onDatabaseSave(MongoSaveEvent e) {
         UUID uuid = e.getUuid();
-        if (RunicCoreAPI.getSkillTree(uuid, 1) != null)
-            RunicCoreAPI.getSkillTree(uuid, 1).save(e.getMongoDataSection());
-        if (RunicCoreAPI.getSkillTree(uuid, 2) != null)
-            RunicCoreAPI.getSkillTree(uuid, 2).save(e.getMongoDataSection());
-        if (RunicCoreAPI.getSkillTree(uuid, 3) != null)
-            RunicCoreAPI.getSkillTree(uuid, 3).save(e.getMongoDataSection());
-        if (spentPoints.get(uuid) != 0)
+        int slot = e.getSlot();
+        PlayerMongoData playerMongoData = e.getMongoData();
+        PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot);
+        SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
+        SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
+        SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
+        first.writeToMongo(playerMongoData, slot);
+        second.writeToMongo(playerMongoData, slot);
+        third.writeToMongo(playerMongoData, slot);
+        if (getSpentPoints(uuid, slot) != 0) // todo: remove if check?
             saveSpentPoints(uuid, e.getMongoDataSection());
-        if (getPlayerSpellWrapper(uuid) != null)
-            saveSpells(getPlayerSpellWrapper(uuid), e.getMongoDataSection());
+        playerSpellData.writeToMongo(playerMongoData, slot);
     }
 
-    /**
-     * Setup in-memory map of all three subclass skill trees and "spent points," tracking how many
-     * skill points a player has already allocated from the total available at-level.
-     */
     @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager
     public void onLoad(CharacterSelectEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
         int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
-        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
-        MongoDataSection character = playerMongoData.getCharacter(slot);
-        new SkillTree(uuid, 1);
-        new SkillTree(uuid, 2);
-        new SkillTree(uuid, 3);
+        this.getPlayerPassiveMap().put(uuid, new HashSet<>()); // setup for passive map
+        /*
+        Ensures skill trees exist in redis, //todo: make sure every login updates expiry
+         */
+        loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
+        loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
+        loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
+
+
+        // todo: this should be a standard load method
         int points = 0;
-        if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION))
-            points = character.get(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, Integer.class);
+        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+        if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION))
+            points = character.get(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, Integer.class);
         if (points < 0) // insurance
             points = 0;
-        if (points > PlayerLevelUtil.getMaxLevel() - (SkillTree.FIRST_POINT_LEVEL - 1))
-            points = PlayerLevelUtil.getMaxLevel() - (SkillTree.FIRST_POINT_LEVEL - 1);
-        spentPoints.put(player.getUniqueId(), points);
-        if (character.has(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION))
-            new PlayerSpellWrapper(uuid,
-                    (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION));
-        else
-            new PlayerSpellWrapper(uuid, PlayerSpellWrapper.determineDefaultSpell(uuid), "",
-                    "", "");
+        if (points > PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1))
+            points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);
+        RunicCoreAPI.setRedisValue(player, SkillTreeField.SPENT_POINTS.getField(), String.valueOf(points));
+        // ------------------------------
+
+
+        // todo: spell setup? do we need this?
+//        PlayerSpellData playerSpellData = loadPlayerSpellData(uuid, slot);
+//        if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION))
+//            new PlayerSpellData(uuid,
+//                    (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION));
+//        else
+//            new PlayerSpellData(uuid, PlayerSpellData.determineDefaultSpell(uuid), "",
+//                    "", "");
     }
 
     /**
-     * Removes player skill trees from memory on logout.
+     * Checks redis to see if the currently selected character's data is cached.
+     * And if it is, returns the SpellData object
+     *
+     * @param uuid of player to check
+     * @param slot of the character
+     * @return a SpellData object if it is found in redis
      */
-    @EventHandler
-    public void onQuit(CharacterQuitEvent e) {
-        UUID uuid = e.getPlayer().getUniqueId();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                skillTreeSetOne.remove(searchSkillTree(uuid, 1));
-                skillTreeSetTwo.remove(searchSkillTree(uuid, 2));
-                skillTreeSetThree.remove(searchSkillTree(uuid, 3));
+    public PlayerSpellData checkRedisForSpellData(UUID uuid, Integer slot) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            if (jedis.exists(PlayerSpellData.getJedisKey(uuid, slot))) {
+                Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building spell data from redis");
+                return new PlayerSpellData(uuid, slot, jedis);
             }
-        }.runTaskLater(RunicCore.getInstance(), 1L);
+        }
+        Bukkit.broadcastMessage(ChatColor.RED + "redis spell data not found");
+        return null;
+    }
+
+    /**
+     * Creates a PlayerSpellData object. Tries to build it from session storage (Redis) first,
+     * then falls back to Mongo
+     *
+     * @param uuid of player who is attempting to load their data
+     * @param slot the slot of the character
+     */
+    public PlayerSpellData loadPlayerSpellData(UUID uuid, Integer slot) {
+        // Step 1: check if spell data is cached in redis
+        PlayerSpellData playerSpellData = checkRedisForSpellData(uuid, slot);
+        if (playerSpellData != null) return playerSpellData;
+        // Step 2: check mongo documents
+        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+        return new PlayerSpellData
+                (
+                        uuid,
+                        slot,
+                        (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION)
+                );
+    }
+
+    /**
+     * Checks redis to see if the currently selected character's data is cached.
+     * And if it is, returns the SpellData object
+     *
+     * @param uuid              of player to check
+     * @param slot              of the character
+     * @param skillTreePosition which position is the skill tree? first, second, etc.
+     * @return a SpellData object if it is found in redis
+     */
+    public SkillTreeData checkRedisForSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            if (jedis.exists(SkillTreeData.getJedisKey(uuid, slot, skillTreePosition))) {
+                Bukkit.broadcastMessage(ChatColor.GREEN + "redis skill tree data found, building skill tree data from redis");
+                return new SkillTreeData(uuid, slot, skillTreePosition, jedis);
+            }
+        }
+        Bukkit.broadcastMessage(ChatColor.RED + "redis skill tree data not found");
+        return null;
+    }
+
+    /**
+     * Creates a PlayerSpellData object. Tries to build it from session storage (Redis) first,
+     * then falls back to Mongo
+     *
+     * @param uuid              of player who is attempting to load their data
+     * @param slot              the slot of the character
+     * @param skillTreePosition which position is the skill tree? first, second, etc.
+     * @return a SkillTreeData object
+     */
+    public SkillTreeData loadSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition) {
+        // Step 1: check if spell data is cached in redis
+        SkillTreeData skillTreeData = checkRedisForSkillTreeData(uuid, slot, skillTreePosition);
+        if (skillTreeData != null) return skillTreeData;
+        // Step 2: check mongo documents
+        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+        return new SkillTreeData(uuid, skillTreePosition, character);
     }
 
     /**
@@ -112,84 +183,21 @@ public class SkillTreeManager implements Listener {
      * @param character mongo data section from save event
      */
     private void saveSpentPoints(UUID uuid, PlayerMongoDataSection character) {
-        character.set(SkillTree.PATH_LOCATION + "." + SkillTree.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid));
+        character.set(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid));
     }
 
     /**
-     * Saves the alt-specific spell setup for given player
+     * Returns the total allocated skill points of the given player character
      *
-     * @param playerSpellWrapper wrapper of in-memory spells
-     * @param character          character section of mongo
+     * @param uuid of the player
+     * @param slot of the character
+     * @return the number of points they have spent
      */
-    private void saveSpells(PlayerSpellWrapper playerSpellWrapper, PlayerMongoDataSection character) {
-        PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTree.PATH_LOCATION + "." + SkillTree.SPELLS_LOCATION);
-        spells.set(PlayerSpellWrapper.PATH_1, playerSpellWrapper.getSpellHotbarOne());
-        spells.set(PlayerSpellWrapper.PATH_2, playerSpellWrapper.getSpellLeftClick());
-        spells.set(PlayerSpellWrapper.PATH_3, playerSpellWrapper.getSpellRightClick());
-        spells.set(PlayerSpellWrapper.PATH_4, playerSpellWrapper.getSpellSwapHands());
+    public int getSpentPoints(UUID uuid, int slot) {
+        return Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, SkillTreeField.SPENT_POINTS.getField(), slot));
     }
 
-    /**
-     * Grabs the associated in-memory skill tree cache
-     *
-     * @param position of the sub-class (1, 2, or 3)
-     * @return a HashSet of cached skill trees
-     */
-    public HashSet<SkillTree> getSkillTree(int position) {
-        if (position == 1)
-            return skillTreeSetOne;
-        else if (position == 2)
-            return skillTreeSetTwo;
-        else
-            return skillTreeSetThree;
-    }
-
-    public HashMap<UUID, Integer> getSpentPoints() {
-        return spentPoints;
-    }
-
-    public HashSet<SkillTree> getSkillTreeSetOne() {
-        return skillTreeSetOne;
-    }
-
-    public HashSet<SkillTree> getSkillTreeSetTwo() {
-        return skillTreeSetTwo;
-    }
-
-    public HashSet<SkillTree> getSkillTreeSetThree() {
-        return skillTreeSetThree;
-    }
-
-    public HashSet<PlayerSpellWrapper> getPlayerSpellWrappers() {
-        return playerSpellWrappers;
-    }
-
-    /**
-     * Gets the spell wrapper for given player
-     *
-     * @param uuid of player to return wrapper for
-     * @return spell wrapper
-     */
-    public PlayerSpellWrapper getPlayerSpellWrapper(UUID uuid) {
-        for (PlayerSpellWrapper playerSpellWrapper : playerSpellWrappers) {
-            if (playerSpellWrapper.getUuid().equals(uuid))
-                return playerSpellWrapper;
-        }
-        return null;
-    }
-
-    /**
-     * Checks cached skill trees for given player.
-     *
-     * @param uuid of player to search for in cache
-     * @return player's cached SkillTree
-     */
-    public SkillTree searchSkillTree(UUID uuid, int position) {
-        HashSet<SkillTree> toSearch = getSkillTree(position);
-        for (SkillTree skillTree : toSearch) {
-            if (skillTree.getUuid().equals(uuid))
-                return skillTree;
-        }
-        return null;
+    public Map<UUID, Set<String>> getPlayerPassiveMap() {
+        return this.playerPassiveMap;
     }
 }

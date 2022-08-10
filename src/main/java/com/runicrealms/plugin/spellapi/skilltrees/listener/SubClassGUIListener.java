@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -43,13 +44,14 @@ public class SubClassGUIListener implements Listener {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
+        int characterSlot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
         if (material == GUIUtil.backButton().getType())
             player.openInventory(new RuneGUI(player).getInventory());
-        else if (e.getRawSlot() == 11) // sub-class 1
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, 1).getInventory());
-        else if (e.getRawSlot() == 13) // sub-class 2
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, 2).getInventory());
-        else // sub-class 3
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, 3).getInventory());
+        else if (e.getRawSlot() == 11) // subclass 1
+            player.openInventory(RunicCoreAPI.skillTreeGUI(player, characterSlot, SkillTreePosition.FIRST).getInventory());
+        else if (e.getRawSlot() == 13) // subclass 2
+            player.openInventory(RunicCoreAPI.skillTreeGUI(player, characterSlot, SkillTreePosition.SECOND).getInventory());
+        else // subclass 3
+            player.openInventory(RunicCoreAPI.skillTreeGUI(player, characterSlot, SkillTreePosition.THIRD).getInventory());
     }
 }

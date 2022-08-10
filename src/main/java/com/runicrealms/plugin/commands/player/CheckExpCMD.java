@@ -6,9 +6,9 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
-import com.runicrealms.plugin.redis.RedisField;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -26,16 +26,16 @@ public class CheckExpCMD extends BaseCommand implements Listener {
     public void onCommand(Player player) {
         UUID uuid = player.getUniqueId();
         int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        int classLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, RedisField.CLASS_LEVEL.getField(), slot));
-        int classExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, RedisField.CLASS_EXP.getField(), slot));
+        int classLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_LEVEL.getField(), slot));
+        int classExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_EXP.getField(), slot));
         int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
         int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv + 1);
         double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
         NumberFormat toDecimal = new DecimalFormat("#0.00");
         String classProgressFormatted = toDecimal.format(proportion);
 
-        int profLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, RedisField.PROF_LEVEL.getField(), slot));
-        int profExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, RedisField.PROF_EXP.getField(), slot));
+        int profLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.PROF_LEVEL.getField(), slot));
+        int profExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.PROF_EXP.getField(), slot));
         int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
         int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv + 1);
         double progress = (double) (profExp - profExpAtLevel) / (profTotalExpToLevel - profExpAtLevel);

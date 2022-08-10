@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.util;
 
-import com.runicrealms.plugin.spellapi.PlayerSpellWrapper;
+import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ArcherTreeUtil {
 
-    public static Perk DEFAULT_ARCHER_SPELL_PERK = new PerkSpell(995, 0, 1, 1, PlayerSpellWrapper.DEFAULT_ARCHER);
+    public static Perk DEFAULT_ARCHER_SPELL_PERK = new PerkSpell(995, 0, 1, 1, PlayerSpellData.DEFAULT_ARCHER);
 
     public static List<Perk> marksmanPerkList() {
         List<Perk> perks = new ArrayList<>();
