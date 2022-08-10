@@ -9,17 +9,14 @@ import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A wrapper to store the assignment of spells to each spell slot
  */
 public class PlayerSpellData implements SessionData {
-    static List<String> FIELDS = new ArrayList<String>() {{
-        add(CharacterField.CLASS_TYPE.getField());
-        add(CharacterField.CLASS_EXP.getField());
-        add(CharacterField.CLASS_LEVEL.getField());
-    }};
     public static final String DEFAULT_ARCHER = "Barrage";
     public static final String DEFAULT_CLERIC = "Holy Water";
     public static final String DEFAULT_MAGE = "Fireball";
@@ -78,12 +75,7 @@ public class PlayerSpellData implements SessionData {
      * @param jedis the jedis resource
      */
     public PlayerSpellData(UUID uuid, int slot, Jedis jedis) {
-        Map<String, String> fieldsMap = new HashMap<>();
-        String[] fieldsToArray = FIELDS.toArray(new String[0]);
-        List<String> values = jedis.hmget(uuid + ":character:" + slot, fieldsToArray);
-        for (int i = 0; i < fieldsToArray.length; i++) {
-            fieldsMap.put(fieldsToArray[i], values.get(i));
-        }
+        Map<String, String> fieldsMap = jedis.hgetAll(getJedisKey(uuid, slot));
         this.uuid = uuid;
         this.spellHotbarOne = fieldsMap.get(SpellField.HOT_BAR_ONE.getField());
         this.spellLeftClick = fieldsMap.get(SpellField.LEFT_CLICK.getField());
@@ -132,10 +124,6 @@ public class PlayerSpellData implements SessionData {
      */
     public static String getJedisKey(UUID uuid, int slot) {
         return uuid + ":character:" + slot + ":" + SkillTreeData.PATH_LOCATION + ":" + SkillTreeData.SPELLS_LOCATION;
-    }
-
-    public List<String> getFields() {
-        return FIELDS;
     }
 
     public UUID getUuid() {
