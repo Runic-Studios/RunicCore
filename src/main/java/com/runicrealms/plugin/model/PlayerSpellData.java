@@ -99,9 +99,9 @@ public class PlayerSpellData implements SessionData {
     public void writeSpellDataToJedis(JedisPool jedisPool) {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            String uuid = String.valueOf(this.uuid);
-            jedis.hmset(uuid, this.toMap());
-            jedis.expire(uuid, RedisUtil.EXPIRE_TIME);
+            String key = getJedisKey(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+            jedis.hmset(key, this.toMap());
+            jedis.expire(key, RedisUtil.EXPIRE_TIME);
         }
     }
 
