@@ -10,6 +10,7 @@ import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.model.SkillTreeField;
 import com.runicrealms.plugin.model.SkillTreePosition;
+import com.runicrealms.plugin.model.cache.SpellWrapper;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.redis.RedisManager;
 import org.bukkit.Bukkit;
@@ -29,6 +30,7 @@ import java.util.*;
 public class SkillTreeManager implements Listener {
 
     private final Map<UUID, Set<String>> playerPassiveMap = new HashMap<>();
+    private final Map<UUID, SpellWrapper> playerSpellMap = new HashMap<>();
 
     public SkillTreeManager() {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
@@ -59,9 +61,10 @@ public class SkillTreeManager implements Listener {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
         int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
-        this.getPlayerPassiveMap().put(uuid, new HashSet<>()); // setup for passive map
+        this.playerPassiveMap.put(uuid, new HashSet<>()); // setup for passive map
+        this.playerSpellMap.put(uuid, new SpellWrapper(uuid)); // default spell setup
         /*
-        Ensures skill trees exist in redis, //todo: make sure every login updates expiry
+        Ensures skill trees exist in redis, //todo: make sure every login updates expiry (for points and spells, too)
          */
         loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
         loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
@@ -80,16 +83,7 @@ public class SkillTreeManager implements Listener {
             points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);
         RunicCoreAPI.setRedisValue(player, SkillTreeField.SPENT_POINTS.getField(), String.valueOf(points));
         // ------------------------------
-
-
-        // todo: spell setup? do we need this?
-//        PlayerSpellData playerSpellData = loadPlayerSpellData(uuid, slot);
-//        if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION))
-//            new PlayerSpellData(uuid,
-//                    (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION));
-//        else
-//            new PlayerSpellData(uuid, PlayerSpellData.determineDefaultSpell(uuid), "",
-//                    "", "");
+        loadPlayerSpellData(uuid, slot); // ensure spells are properly memoized
     }
 
     /**
@@ -199,5 +193,9 @@ public class SkillTreeManager implements Listener {
 
     public Map<UUID, Set<String>> getPlayerPassiveMap() {
         return this.playerPassiveMap;
+    }
+
+    public Map<UUID, SpellWrapper> getPlayerSpellMap() {
+        return this.playerSpellMap;
     }
 }

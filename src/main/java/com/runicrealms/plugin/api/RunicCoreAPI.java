@@ -8,7 +8,11 @@ import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
-import com.runicrealms.plugin.model.*;
+import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.model.PlayerData;
+import com.runicrealms.plugin.model.SkillTreeData;
+import com.runicrealms.plugin.model.SkillTreePosition;
+import com.runicrealms.plugin.model.cache.SpellWrapper;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -140,6 +144,19 @@ public class RunicCoreAPI {
     // todo: split into player, character
     public static Map<String, String> getRedisValues(Player player, List<String> fields) {
         return RedisUtil.getRedisValues(player, fields);
+    }
+
+    /**
+     * Set the cached value in redis for the given player and key
+     *
+     * @param key   of the outer object in redis
+     * @param field value of the key in the map
+     * @param value to set
+     * @return true if the key exists and was updated successfully
+     */
+    // todo: split into player, character
+    public static boolean setRedisValue(String key, String field, String value) {
+        return RedisUtil.setRedisValue(key, field, value);
     }
 
     /**
@@ -301,32 +318,33 @@ public class RunicCoreAPI {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
-            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+//            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+            SpellWrapper spellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid);
             switch (number) {
                 case 1:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellHotbarOne());
-                    if (playerSpellData.getSpellHotbarOne().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellHotbarOne());
+                    if (spellWrapper.getSpellHotbarOne().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 2:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellLeftClick());
-                    if (playerSpellData.getSpellLeftClick().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellLeftClick());
+                    if (spellWrapper.getSpellLeftClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 3:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellRightClick());
-                    if (playerSpellData.getSpellRightClick().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellRightClick());
+                    if (spellWrapper.getSpellRightClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 4:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellSwapHands());
-                    if (playerSpellData.getSpellSwapHands().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellSwapHands());
+                    if (spellWrapper.getSpellSwapHands().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }

@@ -108,6 +108,29 @@ public class RedisUtil {
     }
 
     /**
+     * Attempts to update the nested redis value corresponding to the field for the given key
+     *
+     * @param key   the path of the field in redis
+     * @param field of the value (e.g., "currentHp")
+     * @param value to write to the field
+     * @return true if the field was successfully written to
+     */
+    public static boolean setRedisValue(String key, String field, String value) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            if (jedis.exists(key)) {
+                Map<String, String> fieldsMap = new HashMap<String, String>() {{
+                    put(field, value);
+                }};
+                jedis.hmset(key, fieldsMap);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Attempts to update the redis value corresponding to the field for the given player
      *
      * @param player to write value for

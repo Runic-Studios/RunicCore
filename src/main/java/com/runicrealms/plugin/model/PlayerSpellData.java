@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.model.cache.SpellWrapper;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
@@ -45,6 +46,7 @@ public class PlayerSpellData implements SessionData {
         this.spellLeftClick = spellLeftClick;
         this.spellRightClick = spellRightClick;
         this.spellSwapHands = spellSwapHands;
+        updateInMemorySpellMap();
     }
 
     /**
@@ -64,6 +66,7 @@ public class PlayerSpellData implements SessionData {
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD).addPassivesToMap();
+        updateInMemorySpellMap();
         writeSpellDataToJedis(RunicCore.getRedisManager().getJedisPool());
     }
 
@@ -81,6 +84,7 @@ public class PlayerSpellData implements SessionData {
         this.spellLeftClick = fieldsMap.get(SpellField.LEFT_CLICK.getField());
         this.spellRightClick = fieldsMap.get(SpellField.RIGHT_CLICK.getField());
         this.spellSwapHands = fieldsMap.get(SpellField.SWAP_HANDS.getField());
+        updateInMemorySpellMap();
     }
 
     /**
@@ -95,6 +99,14 @@ public class PlayerSpellData implements SessionData {
             jedis.hmset(key, this.toMap());
             jedis.expire(key, RedisUtil.EXPIRE_TIME);
         }
+    }
+
+    private void updateInMemorySpellMap() {
+        SpellWrapper spellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid);
+        spellWrapper.setSpellHotbarOne(this.spellHotbarOne);
+        spellWrapper.setSpellLeftClick(this.spellLeftClick);
+        spellWrapper.setSpellRightClick(this.spellRightClick);
+        spellWrapper.setSpellSwapHands(this.spellSwapHands);
     }
 
     public static String determineDefaultSpell(UUID uuid) {
