@@ -133,6 +133,7 @@ public class SkillTreeData implements SessionData {
      * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
      * @param perk     the perk attempting to be purchased
      */
+    // todo: this creates no permanence?
     public void attemptToPurchasePerk(Player player, Perk previous, Perk perk) {
         int getAvailablePoints = getAvailablePoints(player.getUniqueId());
         if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
@@ -161,6 +162,7 @@ public class SkillTreeData implements SessionData {
             addPassivesToMap();
         else if (perk instanceof PerkBaseStat)
             RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).increaseStat(((PerkBaseStat) perk).getStat(), ((PerkBaseStat) perk).getBonusAmount());
+        this.writeSkillTreeDataToJedis(RunicCore.getRedisManager().getJedisPool(), position);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
     }
@@ -186,13 +188,10 @@ public class SkillTreeData implements SessionData {
      */
     public static void resetTree(Player player) {
         UUID uuid = player.getUniqueId();
-        SkillTreeData first = new SkillTreeData(uuid, SkillTreePosition.FIRST);
-        SkillTreeData second = new SkillTreeData(uuid, SkillTreePosition.SECOND);
-        SkillTreeData third = new SkillTreeData(uuid, SkillTreePosition.THIRD);
+        int slot = RunicCoreAPI.getCharacterSlot(uuid);
         JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        first.writeSkillTreeDataToJedis(jedisPool, SkillTreePosition.FIRST);
-        second.writeSkillTreeDataToJedis(jedisPool, SkillTreePosition.SECOND);
-        third.writeSkillTreeDataToJedis(jedisPool, SkillTreePosition.THIRD);
+        String parentKey = uuid + ":character:" + slot + ":" + PATH_LOCATION;
+        RedisUtil.removeAllFromRedis(jedisPool, parentKey);
         RunicCoreAPI.setRedisValue(player, SkillTreeField.SPENT_POINTS.getField(), "0"); // reset spent points
         PlayerSpellData playerSpellData = new PlayerSpellData(uuid, PlayerSpellData.determineDefaultSpell(uuid), "", "", "");
         playerSpellData.writeSpellDataToJedis(jedisPool);

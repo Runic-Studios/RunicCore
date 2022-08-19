@@ -9,7 +9,7 @@ import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.PlayerData;
-import com.runicrealms.plugin.redis.RedisManager;
+import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,8 +25,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.util.*;
 
@@ -141,7 +139,8 @@ public class CharacterGuiManager implements Listener {
             classMenu.remove(player.getUniqueId());
             player.closeInventory();
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-                removeFromRedis(RunicCore.getRedisManager().getJedisPool(), player.getUniqueId(), deletingCharacters.get(player.getUniqueId()));
+                String parentKey = player.getUniqueId() + ":character:" + deletingCharacters.get(player.getUniqueId());
+                RedisUtil.removeAllFromRedis(RunicCore.getRedisManager().getJedisPool(), parentKey); // removes all sub-keys
                 PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
                 mongoData.remove("character." + deletingCharacters.get(player.getUniqueId()));
                 mongoData.save();
@@ -153,19 +152,6 @@ public class CharacterGuiManager implements Listener {
             classMenu.put(player.getUniqueId(), CharacterGui.SELECT);
             deletingCharacters.remove(player.getUniqueId());
             openSelectGui(player);
-        }
-    }
-
-    /**
-     * @param jedisPool
-     * @param uuid
-     * @param slot
-     */
-    private void removeFromRedis(JedisPool jedisPool, UUID uuid, int slot) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            String key = uuid + ":character:" + slot;
-            jedis.del(key);
         }
     }
 

@@ -5,6 +5,8 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,45 @@ import java.util.UUID;
 public class RedisUtil {
 
     public static final long EXPIRE_TIME = 86400; // seconds (24 hours)
+
+    /**
+     * Removes all character-specific data from the redis cache
+     *
+     * @param jedisPool the jedis pool from core
+     * @param key       to remove
+     */
+    public static void removeFromRedis(JedisPool jedisPool, String key) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            if (jedis.exists(key))
+                jedis.del(key);
+        }
+    }
+
+    /**
+     * Removes the specified key and all sub-keys from redis
+     *
+     * @param jedisPool the jedis pool from core
+     * @param key       the parent key to remove (i.e., character:3)
+     */
+    public static void removeAllFromRedis(JedisPool jedisPool, String key) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            String subKeyPath = key + ":*"; // grab all sub-keys
+            ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
+            String cur = ScanParams.SCAN_POINTER_START;
+            boolean cycleIsFinished = false;
+            while (!cycleIsFinished) {
+                ScanResult<String> scanResult = jedis.scan(cur, scanParams);
+                scanResult.getResult().forEach(jedis::del);
+                cur = scanResult.getCursor();
+                if (cur.equals("0")) {
+                    cycleIsFinished = true;
+                }
+            }
+            jedis.del(key);
+        }
+    }
 
     /**
      * Opens a jedis resource, authenticates it, reads and returns a value, and closes the connection
