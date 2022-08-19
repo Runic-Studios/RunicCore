@@ -194,7 +194,11 @@ public class SkillTreeManager implements Listener {
      * @return the number of points they have spent
      */
     public int getSpentPoints(UUID uuid, int slot) {
-        return Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, SkillTreeField.SPENT_POINTS.getField(), slot));
+        String spentPoints = RunicCoreAPI.getRedisCharacterValue(uuid, SkillTreeField.SPENT_POINTS.getField(), slot);
+        if (!spentPoints.equals(""))
+            return Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, SkillTreeField.SPENT_POINTS.getField(), slot));
+        else
+            return 0;
     }
 
     public Map<UUID, Set<String>> getPlayerPassiveMap() {
