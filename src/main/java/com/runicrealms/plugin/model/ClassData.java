@@ -3,6 +3,7 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -30,6 +31,24 @@ public class ClassData implements SessionData {
         this.classType = classType;
         this.level = level;
         this.exp = exp;
+    }
+
+    /**
+     * @param uuid
+     * @param slot
+     * @param jedis
+     */
+    public ClassData(UUID uuid, int slot, Jedis jedis) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        String[] fieldsToArray = FIELDS.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot, fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        this.uuid = uuid;
+        this.classType = ClassEnum.getFromName(fieldsMap.get(CharacterField.CLASS_TYPE.getField()));
+        this.exp = Integer.parseInt(fieldsMap.get(CharacterField.CLASS_EXP.getField()));
+        this.level = Integer.parseInt(fieldsMap.get(CharacterField.CLASS_LEVEL.getField()));
     }
 
     /**

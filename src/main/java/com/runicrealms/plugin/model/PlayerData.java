@@ -1,9 +1,12 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.MongoData;
+import com.runicrealms.plugin.redis.RedisManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +46,7 @@ public class PlayerData {
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.level", Integer.class),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.exp", Integer.class)));
-
+                    updateFromRedis(this.playerUuid, Integer.parseInt(key));
                 }
             }
         } catch (Exception e) {
@@ -91,5 +94,28 @@ public class PlayerData {
 
     public Map<Integer, ClassData> getPlayerCharacters() {
         return playerCharacters;
+    }
+
+    /**
+     * Updates the memoized list of player characters for display in the character select menu.
+     * Used on logout and whenever the class data might change in-game (levels, etc.)
+     * Designed this way because if they're only playing one character over and over, no need to load everything into redis.
+     * We can just read whatever they have already loaded. Idk. Maybe this object should be cached.
+     *
+     * @param uuid of the player
+     * @param slot of the character
+     */
+    private boolean updateFromRedis(UUID uuid, int slot) {
+        try (Jedis jedis = RunicCore.getRedisManager().getJedisPool().getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            if (jedis.exists(uuid + ":character:" + slot)) {
+                ClassData classData = new ClassData(uuid, slot, jedis);
+                this.playerCharacters.put(slot, classData);
+                return true;
+            } else {
+                // log error
+            }
+        }
+        return false;
     }
 }
