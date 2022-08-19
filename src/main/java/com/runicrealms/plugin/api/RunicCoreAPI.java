@@ -89,12 +89,12 @@ public class RunicCoreAPI {
      * @param uuid of player to lookup
      * @return a string representing the class (Cleric, Mage, etc.)
      */
-    public static String getPlayerClass(UUID uuid) {
+    public static String getPlayerClass(UUID uuid, int slot) {
         return RedisUtil.getRedisValue
                 (
                         uuid,
                         CharacterField.CLASS_TYPE.getField(),
-                        getCharacterSlot(uuid)
+                        slot
                 );
     }
 
@@ -378,7 +378,7 @@ public class RunicCoreAPI {
      * @param uuid of player to check
      * @return number of skill points availble (AFTER subtracting spent points)
      */
-    public static int getAvailableSkillPoints(UUID uuid) {
+    public static int getAvailableSkillPoints(UUID uuid, int slot) {
         return SkillTreeData.getAvailablePoints(uuid);
     }
 
@@ -388,8 +388,8 @@ public class RunicCoreAPI {
      * @param uuid of player to check
      * @return number of skill points spent
      */
-    public static int getSpentPoints(UUID uuid) {
-        return RunicCore.getSkillTreeManager().getSpentPoints(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+    public static int getSpentPoints(UUID uuid, int slot) {
+        return RunicCore.getSkillTreeManager().loadSpentPointsData(uuid, slot);
     }
 
     /**
@@ -456,7 +456,7 @@ public class RunicCoreAPI {
         if (skillTreeData != null)
             return new SkillTreeGUI(player, skillTreeData);
         else
-            return new SkillTreeGUI(player, new SkillTreeData(uuid, position));
+            return new SkillTreeGUI(player, new SkillTreeData(uuid, position, slot));
     }
 
     /**
@@ -593,26 +593,6 @@ public class RunicCoreAPI {
         }
         return false;
     }
-
-//    /**
-//     * Checks whether the given location is within a city
-//     *
-//     * @param location to check
-//     * @return true if it's within a city
-//     */
-//    // todo: should use above method
-//    public static boolean isSafezone(Location location) {
-//        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-//        RegionQuery query = container.createQuery();
-//        ApplicableRegionSet set = query.getApplicableRegions(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(location));
-//        Set<ProtectedRegion> regions = set.getRegions();
-//        if (regions == null) return false;
-//        for (ProtectedRegion region : regions) {
-//            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> region.getId().contains(cityLocation.getIdentifier())))
-//                return true;
-//        }
-//        return false;
-//    }
 
     /**
      * Used so that other plugins can trigger a scoreboard update

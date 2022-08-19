@@ -56,11 +56,12 @@ public enum SubClass {
      * Determines the appropriate subclass based on player class and specified position
      *
      * @param position (which sub-class? 1, 2, or 3)
+     * @param slot     of the character
      */
-    public static SubClass determineSubClass(UUID uuid, SkillTreePosition position) {
+    public static SubClass determineSubClass(UUID uuid, SkillTreePosition position, int slot) {
         SubClass subClass = null;
         int value = position.getValue();
-        switch (RunicCoreAPI.getPlayerClass(uuid)) {
+        switch (RunicCoreAPI.getPlayerClass(uuid, slot)) {
             case "Archer":
                 if (value == 1)
                     subClass = SubClass.MARKSMAN;

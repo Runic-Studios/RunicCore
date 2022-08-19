@@ -40,10 +40,11 @@ public class SkillTreeData implements SessionData {
      *
      * @param uuid     of the player
      * @param position of the skill tree (1-3)
+     * @param slot     of the character
      */
-    public SkillTreeData(UUID uuid, SkillTreePosition position) {
+    public SkillTreeData(UUID uuid, SkillTreePosition position, int slot) {
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.subClass = SubClass.determineSubClass(uuid, position, slot);
         this.uuid = uuid;
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
     }
@@ -54,11 +55,12 @@ public class SkillTreeData implements SessionData {
      * @param uuid      of the player
      * @param position  of the skill tree
      * @param character the character section of their mongo document
+     * @param slot      of the character
      */
-    public SkillTreeData(UUID uuid, SkillTreePosition position, PlayerMongoDataSection character) {
+    public SkillTreeData(UUID uuid, SkillTreePosition position, PlayerMongoDataSection character, int slot) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.subClass = SubClass.determineSubClass(uuid, position, slot);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks for skill tree in position
         if (!character.has(PATH_LOCATION + "." + position.getValue())) return; // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position.getValue());
@@ -80,7 +82,7 @@ public class SkillTreeData implements SessionData {
     public SkillTreeData(UUID uuid, int slot, SkillTreePosition position, Jedis jedis) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.subClass = SubClass.determineSubClass(uuid, position, slot);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
         String key = getJedisKey(uuid, slot, position);
         Map<String, String> perkDataMap = jedis.hgetAll(key); // get all the values for skill tree in position
@@ -117,7 +119,9 @@ public class SkillTreeData implements SessionData {
      * @return available skill points to spend
      */
     public static int getAvailablePoints(UUID uuid) {
-        int spentPoints = RunicCoreAPI.getSpentPoints(uuid);
+        int slot = RunicCoreAPI.getCharacterSlot(uuid);
+        int spentPoints = RunicCoreAPI.getSpentPoints(uuid, slot);
+        Bukkit.broadcastMessage("spent points is: " + spentPoints);
         Player player = Bukkit.getPlayer(uuid);
         if (player != null)
             return Math.max(0, player.getLevel() - (FIRST_POINT_LEVEL - 1) - spentPoints);
@@ -133,7 +137,6 @@ public class SkillTreeData implements SessionData {
      * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
      * @param perk     the perk attempting to be purchased
      */
-    // todo: this creates no permanence?
     public void attemptToPurchasePerk(Player player, Perk previous, Perk perk) {
         int getAvailablePoints = getAvailablePoints(player.getUniqueId());
         if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
@@ -151,11 +154,12 @@ public class SkillTreeData implements SessionData {
             player.sendMessage(ChatColor.RED + "You don't have enough skill points to purchase this!");
             return;
         }
+        int slot = RunicCoreAPI.getCharacterSlot(uuid);
         RunicCoreAPI.setRedisValue
                 (
                         player,
                         SkillTreeField.SPENT_POINTS.getField(),
-                        String.valueOf(RunicCoreAPI.getSpentPoints(uuid) + perk.getCost())
+                        String.valueOf(RunicCoreAPI.getSpentPoints(uuid, slot) + perk.getCost())
                 ); // spend point
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
         if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
@@ -199,8 +203,8 @@ public class SkillTreeData implements SessionData {
         PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
         MongoDataSection character = mongoData.getCharacter(RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
-        character.save(); // todo: is this necessary?
-        mongoData.save(); // todo: is this necessary?
+        character.save();
+        mongoData.save();
         RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).resetValues();
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
     }

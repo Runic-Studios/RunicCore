@@ -243,7 +243,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     Prevent memory leaks
      */
     public void onDisable() {
-        RunicCore.getDatabaseManager().getPlayersToSave().clear();
         combatManager = null;
         instance = null;
         lootChestManager = null;
@@ -267,7 +266,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onRunicShutdown(ServerShutdownEvent e) {
         getDatabaseManager().saveAllCharacters(); // saves SYNC CacheSaveReason.SERVER_SHUTDOWN
-        // todo: call new mongo save event here
         /*
         Notify RunicRestart
          */

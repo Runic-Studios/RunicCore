@@ -51,8 +51,7 @@ public class SkillTreeManager implements Listener {
         first.writeToMongo(playerMongoData, slot);
         second.writeToMongo(playerMongoData, slot);
         third.writeToMongo(playerMongoData, slot);
-        if (getSpentPoints(uuid, slot) != 0) // todo: remove if check?
-            saveSpentPoints(uuid, e.getMongoDataSection());
+        saveSpentPoints(uuid, e.getMongoDataSection(), slot);
         playerSpellData.writeToMongo(playerMongoData, slot);
     }
 
@@ -65,31 +64,69 @@ public class SkillTreeManager implements Listener {
         /*
         Ensures spell-related data is properly memoized
          */
+        // todo: make sure updates expiry on login
         this.playerPassiveMap.put(uuid, new HashSet<>()); // setup for passive map
         this.playerSpellMap.put(uuid, new SpellWrapper(uuid)); // default spell setup
         loadPlayerSpellData(uuid, slot);
-
         /*
         Ensure skill tree data is in redis
          */
-        //todo: make sure every login updates expiry (for points and spells, too)
+        // todo: make sure every login updates expiry (for points and spells, too)
         loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
         loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
         loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
-
-
-        // todo: this should be a standard load method
-        int points = 0;
-        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
-        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-        if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION))
-            points = character.get(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, Integer.class);
-        if (points < 0) // insurance
-            points = 0;
+        // todo: make sure updates expiry on login
+        int points = loadSpentPointsData(uuid, slot);
         if (points > PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1))
             points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);
         RunicCoreAPI.setRedisValue(player, SkillTreeField.SPENT_POINTS.getField(), String.valueOf(points));
-        // ------------------------------
+    }
+
+    /**
+     * Checks redis to see if the currently selected character's spent points (skill tree) data is cached
+     * And if it is, returns the int
+     *
+     * @param uuid of player to check
+     * @param slot of the character
+     * @return an int if found in redis
+     */
+    public int checkRedisForSpentPoints(UUID uuid, Integer slot) {
+        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
+        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
+            jedis.auth(RedisManager.REDIS_PASSWORD);
+            String key = uuid + ":character:" + slot;
+            if (jedis.exists(key)) {
+                String spentPoints = jedis.hmget(key, SkillTreeField.SPENT_POINTS.getField()).get(0);
+                if (spentPoints != null && !spentPoints.equals(""))
+                    return Integer.parseInt(jedis.hmget(key, SkillTreeField.SPENT_POINTS.getField()).get(0));
+            }
+        }
+        Bukkit.broadcastMessage(ChatColor.RED + "redis spent points data not found");
+        return -1;
+    }
+
+    /**
+     * Determines how many points the player has spent on their skill tree.
+     * Tries to build it from session storage (Redis) first, then falls back to Mongo
+     *
+     * @param uuid of player who is attempting to load their data
+     * @param slot the slot of the character
+     */
+    public int loadSpentPointsData(UUID uuid, Integer slot) {
+        // Step 1: check if spent points data is cached in redis
+        int spentPoints = checkRedisForSpentPoints(uuid, slot);
+        if (spentPoints != -1) return spentPoints;
+        // Step 2: check mongo documents
+        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
+        if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION)) {
+            int points = character.get(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, Integer.class);
+            RunicCoreAPI.setRedisValue(Bukkit.getPlayer(uuid), SkillTreeField.SPENT_POINTS.getField(), String.valueOf(points));
+            return points;
+        } else {
+            RunicCoreAPI.setRedisValue(Bukkit.getPlayer(uuid), SkillTreeField.SPENT_POINTS.getField(), "0");
+            return 0;
+        }
     }
 
     /**
@@ -173,7 +210,7 @@ public class SkillTreeManager implements Listener {
         // Step 2: check mongo documents
         PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-        return new SkillTreeData(uuid, skillTreePosition, character);
+        return new SkillTreeData(uuid, skillTreePosition, character, slot);
     }
 
     /**
@@ -181,24 +218,10 @@ public class SkillTreeManager implements Listener {
      *
      * @param uuid      of the player
      * @param character mongo data section from save event
+     * @param slot      of the character
      */
-    private void saveSpentPoints(UUID uuid, PlayerMongoDataSection character) {
-        character.set(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid));
-    }
-
-    /**
-     * Returns the total allocated skill points of the given player character
-     *
-     * @param uuid of the player
-     * @param slot of the character
-     * @return the number of points they have spent
-     */
-    public int getSpentPoints(UUID uuid, int slot) {
-        String spentPoints = RunicCoreAPI.getRedisCharacterValue(uuid, SkillTreeField.SPENT_POINTS.getField(), slot);
-        if (!spentPoints.equals(""))
-            return Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, SkillTreeField.SPENT_POINTS.getField(), slot));
-        else
-            return 0;
+    private void saveSpentPoints(UUID uuid, PlayerMongoDataSection character, int slot) {
+        character.set(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid, slot));
     }
 
     public Map<UUID, Set<String>> getPlayerPassiveMap() {

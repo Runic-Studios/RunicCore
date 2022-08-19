@@ -104,6 +104,7 @@ public class DatabaseManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onDatabaseSave(MongoSaveEvent event) {
+        Bukkit.broadcastMessage("SAVING EVENT SLOT IS " + event.getSlot());
         saveCharacter(event.getUuid(), event.getMongoData(), event.getSlot());
         event.getMongoData().save();
         event.getMongoDataSection().save();
@@ -240,8 +241,9 @@ public class DatabaseManager implements Listener {
             if (jedis.exists(uuid + ":character:" + slot)) {
                 Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo");
                 Player player = Bukkit.getPlayer(uuid);
-                assert player != null;
-                RunicCore.getRedisManager().updateBaseCharacterInfo(player, slot); // ensure jedis is up-to-date
+                if (player != null) {
+                    RunicCore.getRedisManager().updateBaseCharacterInfo(player, slot); // ensure jedis is up-to-date if player is online
+                }
                 characterData = new CharacterData(uuid, slot, jedis); // build a data object
                 characterData.writeCharacterDataToMongo(playerMongoData, slot);
             } else {
@@ -260,7 +262,7 @@ public class DatabaseManager implements Listener {
             for (UUID uuid : playersToSave.keySet()) {
                 for (int slot : playersToSave.get(uuid)) {
                     if (jedis.exists(uuid + ":character:" + slot)) {
-                        Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo on shutdown");
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving slot " + slot + " to mongo on shutdown");
                         PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
                         playerMongoData.set("last_login", LocalDate.now());
                         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
@@ -272,6 +274,7 @@ public class DatabaseManager implements Listener {
                 }
             }
         }
+        RunicCore.getDatabaseManager().getPlayersToSave().clear();
     }
 
     /**
