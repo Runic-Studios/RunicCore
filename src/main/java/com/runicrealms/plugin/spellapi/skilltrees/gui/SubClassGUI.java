@@ -28,6 +28,7 @@ public class SubClassGUI implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, 27, ColorUtil.format("&aChoose a sub-class!"));
         this.player = player;
         this.slot = slot;
+        setupMenu();
     }
 
     @NotNull
@@ -43,7 +44,7 @@ public class SubClassGUI implements InventoryHolder {
     /**
      * Opens the inventory associated w/ this GUI, ordering perks
      */
-    private void openMenu() {
+    private void setupMenu() {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
         this.inventory.setItem(11, subClassItem(SkillTreePosition.FIRST, slot));
