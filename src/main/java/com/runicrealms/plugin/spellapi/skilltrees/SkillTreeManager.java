@@ -61,11 +61,18 @@ public class SkillTreeManager implements Listener {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
         int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
+        Bukkit.broadcastMessage("the slot of the select event is: " + slot);
+        /*
+        Ensures spell-related data is properly memoized
+         */
         this.playerPassiveMap.put(uuid, new HashSet<>()); // setup for passive map
         this.playerSpellMap.put(uuid, new SpellWrapper(uuid)); // default spell setup
+        loadPlayerSpellData(uuid, slot);
+
         /*
-        Ensures skill trees exist in redis, //todo: make sure every login updates expiry (for points and spells, too)
+        Ensure skill tree data is in redis
          */
+        //todo: make sure every login updates expiry (for points and spells, too)
         loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
         loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
         loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
@@ -83,7 +90,6 @@ public class SkillTreeManager implements Listener {
             points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);
         RunicCoreAPI.setRedisValue(player, SkillTreeField.SPENT_POINTS.getField(), String.valueOf(points));
         // ------------------------------
-        loadPlayerSpellData(uuid, slot); // ensure spells are properly memoized
     }
 
     /**
@@ -99,7 +105,7 @@ public class SkillTreeManager implements Listener {
         try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
             jedis.auth(RedisManager.REDIS_PASSWORD);
             if (jedis.exists(PlayerSpellData.getJedisKey(uuid, slot))) {
-                Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building spell data from redis");
+                Bukkit.broadcastMessage(ChatColor.GREEN + "redis spell data found, building spell data from redis");
                 return new PlayerSpellData(uuid, slot, jedis);
             }
         }
@@ -125,7 +131,7 @@ public class SkillTreeManager implements Listener {
                 (
                         uuid,
                         slot,
-                        (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION)
+                        character
                 );
     }
 

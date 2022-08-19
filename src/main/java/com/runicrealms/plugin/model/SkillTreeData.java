@@ -102,8 +102,11 @@ public class SkillTreeData implements SessionData {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.auth(RedisManager.REDIS_PASSWORD);
             String key = getJedisKey(this.uuid, RunicCoreAPI.getCharacterSlot(this.uuid), skillTreePosition);
-            jedis.hmset(key, this.toMap());
-            jedis.expire(key, RedisUtil.EXPIRE_TIME);
+            Map<String, String> perkDataMap = this.toMap();
+            if (!perkDataMap.isEmpty()) {
+                jedis.hmset(key, this.toMap());
+                jedis.expire(key, RedisUtil.EXPIRE_TIME);
+            }
         }
     }
 
