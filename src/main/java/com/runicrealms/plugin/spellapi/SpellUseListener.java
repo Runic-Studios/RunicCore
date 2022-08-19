@@ -52,7 +52,7 @@ public class SpellUseListener implements Listener {
         if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
         Player player = e.getPlayer();
         String className = RunicCoreAPI.getPlayerClass(player); // lowercase
-        boolean isArcher = className.equals("archer");
+        boolean isArcher = className.equalsIgnoreCase("archer");
         if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.LEFT, 2, isArcher);
         else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
