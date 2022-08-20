@@ -2,6 +2,7 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.model.cache.SpellWrapper;
@@ -60,11 +61,11 @@ public class PlayerSpellData implements SessionData {
     public PlayerSpellData(UUID uuid, int slot, PlayerMongoDataSection character) {
         this.uuid = uuid;
         if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION)) {
-            PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
-            this.spellHotbarOne = spells.get(SpellField.HOT_BAR_ONE.getField(), String.class) != null ? spells.get(SpellField.HOT_BAR_ONE.getField(), String.class) : determineDefaultSpell(uuid);
-            this.spellLeftClick = spells.get(SpellField.LEFT_CLICK.getField(), String.class) != null ? spells.get(SpellField.LEFT_CLICK.getField(), String.class) : "";
-            this.spellRightClick = spells.get(SpellField.RIGHT_CLICK.getField(), String.class) != null ? spells.get(SpellField.LEFT_CLICK.getField(), String.class) : "";
-            this.spellSwapHands = spells.get(SpellField.SWAP_HANDS.getField(), String.class) != null ? spells.get(SpellField.LEFT_CLICK.getField(), String.class) : "";
+            MongoDataSection spells = character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
+            this.spellHotbarOne = spells.get(SpellField.HOT_BAR_ONE.getField()) != null ? spells.get(SpellField.HOT_BAR_ONE.getField(), String.class) : determineDefaultSpell(uuid);
+            this.spellLeftClick = spells.get(SpellField.LEFT_CLICK.getField()) != null ? spells.get(SpellField.LEFT_CLICK.getField(), String.class) : "";
+            this.spellRightClick = spells.get(SpellField.RIGHT_CLICK.getField()) != null ? spells.get(SpellField.RIGHT_CLICK.getField(), String.class) : "";
+            this.spellSwapHands = spells.get(SpellField.SWAP_HANDS.getField()) != null ? spells.get(SpellField.SWAP_HANDS.getField(), String.class) : "";
         } else {
             this.spellHotbarOne = determineDefaultSpell(uuid);
             this.spellLeftClick = "";

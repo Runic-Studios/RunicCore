@@ -73,7 +73,7 @@ public class SkillTreeData implements SessionData {
     }
 
     /**
-     * Build the character;s skill tree data from jedis
+     * Build the character's skill tree data from jedis
      *
      * @param uuid     of the player
      * @param position of the skill tree (1, 2, or 3)
