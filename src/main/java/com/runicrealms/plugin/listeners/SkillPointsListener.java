@@ -28,8 +28,13 @@ public class SkillPointsListener implements Listener {
                 if (player == null) continue;
                 int slot = RunicCoreAPI.getCharacterSlot(uuid);
                 if (slot == 0) continue;
-                if (!playerHasUnspentSkillPoints(uuid, slot)) continue;
-                sendSkillPointsReminderMessage(player, slot);
+                int pointsToSpend = RunicCoreAPI.getAvailableSkillPoints
+                        (
+                                uuid,
+                                slot
+                        );
+                if (pointsToSpend > 0)
+                    sendSkillPointsReminderMessage(player, pointsToSpend);
             }
         }, 0, ANNOUNCEMENT_TIME * 20L);
     }
@@ -57,30 +62,26 @@ public class SkillPointsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLogin(CharacterLoadedEvent e) {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            if (playerHasUnspentSkillPoints(e.getPlayer().getUniqueId(), e.getCharacterData().getBaseCharacterInfo().getSlot()))
-                sendSkillPointsReminderMessage(e.getPlayer(), e.getCharacterData().getBaseCharacterInfo().getSlot());
-        }, 90 * 20L, 180 * 20L);
+    public void onLoaded(CharacterLoadedEvent e) {
+        int pointsToSpend = RunicCoreAPI.getAvailableSkillPoints
+                (
+                        e.getPlayer().getUniqueId(),
+                        e.getCharacterData().getBaseCharacterInfo().getSlot()
+                );
+        if (pointsToSpend > 0)
+            sendSkillPointsReminderMessage(e.getPlayer(), pointsToSpend);
     }
 
     /**
-     * Check if a player has any available skill points to spend
+     * Sends the player a reminder to spend their available skill points
      *
-     * @param uuid of player to check
-     * @return true if there are points to spend
+     * @param player to receive message
+     * @param points their available points
      */
-    private boolean playerHasUnspentSkillPoints(UUID uuid, int slot) {
-        return RunicCoreAPI.getAvailableSkillPoints(uuid, slot) > 0;
-    }
-
-    /**
-     * Message to remind players to spend skill points
-     */
-    private void sendSkillPointsReminderMessage(Player player, int slot) {
+    private void sendSkillPointsReminderMessage(Player player, int points) {
         player.sendMessage
                 (
-                        ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE + RunicCoreAPI.getAvailableSkillPoints(player.getUniqueId(), slot) +
+                        ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE + points +
                                 ChatColor.LIGHT_PURPLE + " skill points to spend! Visit your " + ChatColor.GREEN + ChatColor.BOLD +
                                 "SKILL TREE" + ChatColor.LIGHT_PURPLE + " to purchase new perks!"
                 );

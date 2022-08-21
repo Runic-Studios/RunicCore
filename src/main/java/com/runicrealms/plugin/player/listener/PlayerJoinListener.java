@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
@@ -115,7 +116,11 @@ public class PlayerJoinListener implements Listener {
         player.setExp((float) proportion);
         player.teleport(characterData.getBaseCharacterInfo().getLocation()); // set their location
         // restore their health and hunger (delayed by 1 tick because otherwise they get healed first)
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, characterData), 1L);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            loadCurrentPlayerHealthAndHunger(player, characterData);
+            CharacterLoadedEvent characterLoadedEvent = new CharacterLoadedEvent(player, characterData);
+            Bukkit.getPluginManager().callEvent(characterLoadedEvent); // inform plugins that character is loaded!
+        }, 1L);
     }
 
     /**

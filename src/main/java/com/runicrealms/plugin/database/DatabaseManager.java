@@ -108,7 +108,7 @@ public class DatabaseManager implements Listener {
         saveCharacter(event.getUuid(), event.getMongoData(), event.getSlot());
         event.getMongoData().save();
         event.getMongoDataSection().save();
-        // todo: mark the data as being saved here!
+        // TODO: mark the data as being saved here!
     }
 
     /**
