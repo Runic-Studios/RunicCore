@@ -80,7 +80,7 @@ public class SpellUseListener implements Listener {
                                     " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
                     );
         } else {
-            castSpell(player, whichSpellToCast, RunicCoreAPI.getPlayerClass(player).equals("archer"));
+            castSpell(player, whichSpellToCast, RunicCoreAPI.getPlayerClass(player).equalsIgnoreCase("archer"));
         }
         CAST_MENU_CASTERS.add(player.getUniqueId());
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> CAST_MENU_CASTERS.remove(player.getUniqueId()), GLOBAL_COOLDOWN_TICKS);
@@ -106,7 +106,7 @@ public class SpellUseListener implements Listener {
         if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
         if (e.getNewSlot() != 0) return;
         e.setCancelled(true);
-        castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
+        castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -118,13 +118,13 @@ public class SpellUseListener implements Listener {
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
         if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
-        castSpell(e.getPlayer(), 4, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
+        castSpell(e.getPlayer(), 4, RunicCoreAPI.getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
     /**
      * Removes the player from casters set and executes spell logic
      *
-     * @param player who casted the spell
+     * @param player who cast the spell
      * @param number which spell to execute (1, 2, 3, 4)
      */
     private void castSpell(Player player, int number, boolean isArcher) {
