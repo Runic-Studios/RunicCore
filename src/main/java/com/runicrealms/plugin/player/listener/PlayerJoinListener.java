@@ -19,6 +19,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
@@ -39,6 +41,7 @@ public class PlayerJoinListener implements Listener {
         player.setExp(0);
         player.setFoodLevel(20);
         player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2));
         // build database file sync (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player);
@@ -84,6 +87,14 @@ public class PlayerJoinListener implements Listener {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer()), 5L);
     }
 
+    @EventHandler
+    public void onCharacterLoaded(CharacterLoadedEvent event) {
+        Location location = event.getCharacterData().getBaseCharacterInfo().getLocation();
+        event.getPlayer().teleport(location);
+        event.getPlayer().setInvulnerable(false);
+        event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS);
+    }
+
     /**
      * Allows donator ranks to enter a full server
      */
@@ -103,7 +114,6 @@ public class PlayerJoinListener implements Listener {
      * @param characterData the stored object with values (to be deleted after use)
      */
     private void loadCharacterData(Player player, CharacterData characterData) {
-        player.setInvulnerable(false);
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setLevel(characterData.getClassInfo().getLevel());
@@ -114,7 +124,6 @@ public class PlayerJoinListener implements Listener {
         if (proportion < 0) proportion = 0.0f;
         if (proportion >= 1) proportion = 0.99f;
         player.setExp((float) proportion);
-        player.teleport(characterData.getBaseCharacterInfo().getLocation()); // set their location
         // restore their health and hunger (delayed by 1 tick because otherwise they get healed first)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             loadCurrentPlayerHealthAndHunger(player, characterData);

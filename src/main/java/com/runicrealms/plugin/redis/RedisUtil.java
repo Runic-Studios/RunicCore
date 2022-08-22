@@ -8,10 +8,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class RedisUtil {
 
@@ -35,12 +32,12 @@ public class RedisUtil {
      * Removes the specified key and all sub-keys from redis
      *
      * @param jedisPool the jedis pool from core
-     * @param key       the parent key to remove (i.e., character:3)
+     * @param parentKey the parent key to remove (i.e., character, character:3, character:3:skills, etc.)
      */
-    public static void removeAllFromRedis(JedisPool jedisPool, String key) {
+    public static void removeAllFromRedis(JedisPool jedisPool, String parentKey) {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.auth(RedisManager.REDIS_PASSWORD);
-            String subKeyPath = key + ":*"; // grab all sub-keys
+            String subKeyPath = parentKey + ":*"; // grab all sub-keys
             ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
             String cur = ScanParams.SCAN_POINTER_START;
             boolean cycleIsFinished = false;
@@ -52,8 +49,36 @@ public class RedisUtil {
                     cycleIsFinished = true;
                 }
             }
-            jedis.del(key);
+            jedis.del(parentKey);
         }
+    }
+
+    /**
+     * Returns all the keys nested from the parent key.
+     * Useful for cascading deletion or nested value iteration
+     * Can also use hgetAll if the nested keys match a single pattern
+     *
+     * @param jedisPool the jedis pool from core
+     * @param parentKey the parent key to remove (i.e., character:3)
+     * @return a list of redis keys nested inside the parent
+     */
+    public static List<String> getNestedKeys(JedisPool jedisPool, String parentKey) {
+        List<String> nestedKeys = new ArrayList<>();
+        try (Jedis jedis = jedisPool.getResource()) {
+            String subKeyPath = parentKey + ":*"; // grab all sub-keys
+            ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
+            String cur = ScanParams.SCAN_POINTER_START;
+            boolean cycleIsFinished = false;
+            while (!cycleIsFinished) {
+                ScanResult<String> scanResult = jedis.scan(cur, scanParams);
+                nestedKeys.addAll(scanResult.getResult());
+                cur = scanResult.getCursor();
+                if (cur.equals("0")) {
+                    cycleIsFinished = true;
+                }
+            }
+        }
+        return nestedKeys;
     }
 
     /**

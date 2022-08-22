@@ -78,7 +78,7 @@ public class StaffListener implements Listener {
      * @param itemStack to be passed down to damage function
      */
     private void staffAttack(Player player, ItemStack itemStack) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.4f, 2.0F);
         createStaffParticle(player, player.getEyeLocation(), player.getTargetBlock(null, MAX_DIST).getLocation(), itemStack);
     }
 
