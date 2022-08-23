@@ -29,6 +29,7 @@ public class HologramUtil {
      * @param createAround the location to spawn around (location is slightly random)
      */
     public static void createHealthBarHologram(Player createFor, Location createAround, int damageReceived) {
+        createAround.add(0, 1, 0);
         int healthToDisplay = (int) (createFor.getHealth() - damageReceived);
         int maxHealth = (int) createFor.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         double healthPercent = (double) healthToDisplay / maxHealth;
@@ -46,7 +47,8 @@ public class HologramUtil {
                 (
                         createFor,
                         createAround,
-                        chatColor + "" + healthToDisplay + "/" + maxHealth + " ❤"
+                        chatColor + "" + healthToDisplay + "/" + maxHealth + " ❤",
+                        30
                 ); // todo: rename this method
     }
 
@@ -82,9 +84,10 @@ public class HologramUtil {
      * @param createFor
      * @param createAround
      * @param display
+     * @param durationInTicks
      */
     @SuppressWarnings("unchecked")
-    public static void createDamageHologram(Player createFor, Location createAround, String display) {
+    public static void createDamageHologram(Player createFor, Location createAround, String display, int... durationInTicks) {
 
         // variation of the tag
         //Random rand = new ThreadLocalRandom();
@@ -111,13 +114,14 @@ public class HologramUtil {
         HashMap<ArmorStand, BukkitTask> holograms = HOLOGRAMS.computeIfAbsent(createFor, k -> new HashMap<>());
 
         // create our runnable
+        int duration = durationInTicks.length > 0 ? durationInTicks[0] : 20;
         BukkitTask runnable = new BukkitRunnable() {
 
             int ticks = 0;
 
             @Override
             public void run() {
-                if (ticks >= 20 || !stand.isValid() || createFor != null && !createFor.isOnline()) {
+                if (ticks >= duration || !stand.isValid() || createFor != null && !createFor.isOnline()) {
                     cancel();
                     removeDamageHologram(createFor, stand);
                     return;
