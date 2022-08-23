@@ -43,12 +43,12 @@ public class Rejuvenate extends Spell implements HealingSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        pl.swingMainHand();
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-        Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
-        startTask(pl, new Vector[]{middle});
+    public void executeSpell(Player player, SpellItemType type) {
+        player.swingMainHand();
+        HealUtil.healPlayer(HEAL_AMT, player, player, false, this);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
+        Vector middle = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
+        startTask(player, new Vector[]{middle});
     }
 
     // particle effect
