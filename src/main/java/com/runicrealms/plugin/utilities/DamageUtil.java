@@ -51,7 +51,8 @@ public class DamageUtil {
 
         // apply the damage
         damageEntityByEntity(dmgAmt, recipient, caster, false);
-        HologramUtil.createSpellDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
+        if (!(recipient instanceof Player)) // we use health bars now for PvP
+            HologramUtil.createSpellDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
     }
 
     /**
@@ -91,7 +92,8 @@ public class DamageUtil {
         }
 
         damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
-        HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
+        if (!(recipient instanceof Player)) // we use health bars now for PvP
+            HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
     }
 
     public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {

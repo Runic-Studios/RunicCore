@@ -6,6 +6,7 @@ import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
@@ -20,6 +21,34 @@ import java.util.concurrent.ThreadLocalRandom;
 public class HologramUtil {
 
     private static final HashMap<Player, HashMap<ArmorStand, BukkitTask>> HOLOGRAMS = new HashMap<>();
+
+    /**
+     * Used in place of damage holograms for when players are fighting each other
+     *
+     * @param createFor    the hologram is client-sided, only displays for player
+     * @param createAround the location to spawn around (location is slightly random)
+     */
+    public static void createHealthBarHologram(Player createFor, Location createAround, int damageReceived) {
+        int healthToDisplay = (int) (createFor.getHealth() - damageReceived);
+        int maxHealth = (int) createFor.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double healthPercent = (double) healthToDisplay / maxHealth;
+        ChatColor chatColor;
+        if (healthPercent >= .75) {
+            chatColor = ChatColor.GREEN;
+        } else if (healthPercent >= .5) {
+            chatColor = ChatColor.YELLOW;
+        } else if (healthPercent >= .25) {
+            chatColor = ChatColor.RED;
+        } else {
+            chatColor = ChatColor.DARK_RED;
+        }
+        createDamageHologram
+                (
+                        createFor,
+                        createAround,
+                        chatColor + "" + healthToDisplay + "/" + maxHealth + " ❤"
+                ); // todo: rename this method
+    }
 
     // builds the damage hologram
     public static void createDamageHologram(Player createFor, Location createAround, double hp, boolean... isCritical) {
@@ -50,7 +79,9 @@ public class HologramUtil {
     }
 
     /**
-     * Create a hologram that floats up and deletes itself
+     * @param createFor
+     * @param createAround
+     * @param display
      */
     @SuppressWarnings("unchecked")
     public static void createDamageHologram(Player createFor, Location createAround, String display) {
@@ -68,8 +99,8 @@ public class HologramUtil {
         }
 
         // use our consumer to prevent the armorstand from spawning into the world before it's invisible
-        Consumer consumer = new InvisStandSpawner();
-        ArmorStand stand = createAround.getWorld().spawn(createAround.add(xDif, yDif, zDif).subtract(0, 1, 0), ArmorStand.class, (Consumer<ArmorStand>) (Consumer<?>) consumer);
+        Consumer<ArmorStand> consumer = new InvisStandSpawner();
+        ArmorStand stand = createAround.getWorld().spawn(createAround.add(xDif, yDif, zDif).subtract(0, 1, 0), ArmorStand.class, consumer);
         stand.setCustomName(display);
 
         // nms
