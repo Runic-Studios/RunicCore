@@ -38,7 +38,7 @@ public class RegenManager implements Listener {
     private final HashMap<UUID, Integer> currentPlayerManaValues = new HashMap<>();
 
     public RegenManager() {
-        // regen health async because of costly location checks (for checking for safe zones)
+        // regen health async to speed up
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::regenHealth, 0, REGEN_PERIOD * 20L);
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenMana, 0, REGEN_PERIOD * 20L);
     }
@@ -47,9 +47,8 @@ public class RegenManager implements Listener {
      * Task to regen health with appropriate modifiers
      */
     private void regenHealth() {
-        for (UUID loaded : RunicCoreAPI.getLoadedCharacters()) {
-            Player online = Bukkit.getPlayer(loaded);
-            if (online == null) continue;
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (!RunicCoreAPI.getLoadedCharacters().contains(online.getUniqueId())) continue;
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
             if (!RunicCoreAPI.isInCombat(online)) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
