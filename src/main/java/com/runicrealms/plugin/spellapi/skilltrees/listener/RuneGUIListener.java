@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
@@ -46,7 +45,7 @@ public class RuneGUIListener implements Listener {
         e.setCancelled(true);
 
         if (material == runeGUI.skillTreeButton().getType())
-            player.openInventory(new SubClassGUI(player, RunicCoreAPI.getCharacterSlot(player.getUniqueId())).getInventory());
+            player.openInventory(new SubClassGUI(player).getInventory());
         else if (material == RuneGUI.spellEditorButton().getType())
             // prevent using the spell editor in combat
             if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId()))

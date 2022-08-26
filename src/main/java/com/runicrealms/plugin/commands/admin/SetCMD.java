@@ -80,7 +80,10 @@ public class SetCMD extends BaseCommand {
         }
     }
 
+    // set hearthstone [player] [location]
+
     @Subcommand("hearthstone|hs")
+    @CommandCompletion("@online @locations")
     @Conditions("is-console-or-op")
     public void onCommandHearthstone(CommandSender commandSender, String[] args) {
         if (args.length != 2) {

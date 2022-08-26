@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
@@ -49,7 +48,7 @@ public class SkillTreeGUIListener implements Listener {
         e.setCancelled(true);
 
         if (material == Material.LIGHT_GRAY_STAINED_GLASS_PANE)
-            player.openInventory(new SubClassGUI(player, RunicCoreAPI.getCharacterSlot(player.getUniqueId())).getInventory());
+            player.openInventory(new SubClassGUI(player).getInventory());
         else if (Arrays.stream(SkillTreeGUI.getPerkSlots()).anyMatch(n -> n == e.getRawSlot())) {
             int perkPosition = ArrayUtils.indexOf(SkillTreeGUI.getPerkSlots(), e.getRawSlot());
             Perk previous;

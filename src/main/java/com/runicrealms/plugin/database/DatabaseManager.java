@@ -7,6 +7,7 @@ import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
@@ -16,6 +17,7 @@ import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
+import com.runicrealms.plugin.utilities.Pair;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,7 +47,7 @@ public class DatabaseManager implements Listener {
     private MongoCollection<Document> shopDocuments;
     private final Map<UUID, Set<Integer>> playersToSave; // for redis-mongo saving
     private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string) (stores last 30 days)
-    private final ConcurrentHashMap<UUID, Integer> loadedCharacterMap;
+    private final ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
 
     public DatabaseManager() {
@@ -90,7 +92,7 @@ public class DatabaseManager implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         if (loadedCharacterMap.get(e.getPlayer().getUniqueId()) == null) return;
-        CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent(e.getPlayer(), loadedCharacterMap.get(e.getPlayer().getUniqueId()));
+        CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent(e.getPlayer(), loadedCharacterMap.get(e.getPlayer().getUniqueId()).first);
         Bukkit.getPluginManager().callEvent(characterQuitEvent);
     }
 
@@ -308,11 +310,11 @@ public class DatabaseManager implements Listener {
         return playerDocumentMap;
     }
 
-    public ConcurrentHashMap.KeySetView<UUID, Integer> getLoadedCharacters() {
+    public ConcurrentHashMap.KeySetView<UUID, Pair<Integer, ClassEnum>> getLoadedCharacters() {
         return loadedCharacterMap.keySet();
     }
 
-    public ConcurrentHashMap<UUID, Integer> getLoadedCharactersMap() {
+    public ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> getLoadedCharactersMap() {
         return loadedCharacterMap;
     }
 

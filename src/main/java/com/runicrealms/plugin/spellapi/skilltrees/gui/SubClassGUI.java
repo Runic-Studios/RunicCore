@@ -18,16 +18,13 @@ public class SubClassGUI implements InventoryHolder {
 
     private final Inventory inventory;
     private final Player player;
-    private final int slot;
 
     /**
      * @param player who opened the gui
-     * @param slot   of the character
      */
-    public SubClassGUI(Player player, int slot) {
+    public SubClassGUI(Player player) {
         this.inventory = Bukkit.createInventory(this, 27, ColorUtil.format("&aChoose a sub-class!"));
         this.player = player;
-        this.slot = slot;
         setupMenu();
     }
 
@@ -47,9 +44,9 @@ public class SubClassGUI implements InventoryHolder {
     private void setupMenu() {
         this.inventory.clear();
         this.inventory.setItem(0, GUIUtil.backButton());
-        this.inventory.setItem(11, subClassItem(SkillTreePosition.FIRST, slot));
-        this.inventory.setItem(13, subClassItem(SkillTreePosition.SECOND, slot));
-        this.inventory.setItem(15, subClassItem(SkillTreePosition.THIRD, slot));
+        this.inventory.setItem(11, subClassItem(SkillTreePosition.FIRST));
+        this.inventory.setItem(13, subClassItem(SkillTreePosition.SECOND));
+        this.inventory.setItem(15, subClassItem(SkillTreePosition.THIRD));
     }
 
     /**
@@ -58,8 +55,8 @@ public class SubClassGUI implements InventoryHolder {
      * @param position which subclass
      * @return an ItemStack icon
      */
-    private ItemStack subClassItem(SkillTreePosition position, int slot) {
-        SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), position, slot);
+    private ItemStack subClassItem(SkillTreePosition position) {
+        SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), position);
         String displayName = subClass.getName();
         ItemStack subClassItem = subClass.getItemStack();
         ItemMeta meta = subClassItem.getItemMeta();

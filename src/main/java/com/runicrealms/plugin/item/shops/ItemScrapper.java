@@ -2,7 +2,7 @@ package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
-import com.runicrealms.plugin.utilities.Tuple;
+import com.runicrealms.plugin.utilities.Pair;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;
@@ -56,11 +56,11 @@ public class ItemScrapper implements RunicShop {
         for (Integer slot : SCRAPPER_SLOTS) {
             if (inventory.getItem(slot) == null) continue;
             ItemStack itemStack = inventory.getItem(slot);
-            Tuple<RunicItem, Integer> scrapItems = determineScrappedItems(itemStack);
+            Pair<RunicItem, Integer> scrapItems = determineScrappedItems(itemStack);
             if (scrapItems == null) continue;
             storedItems.get(player.getUniqueId()).add(itemStack);
-            scrapItems.x.setCount(scrapItems.y);
-            RunicItemsAPI.addItem(player.getInventory(), scrapItems.x.generateItem());
+            scrapItems.first.setCount(scrapItems.second);
+            RunicItemsAPI.addItem(player.getInventory(), scrapItems.first.generateItem());
             placedValidItem = true;
         }
 
@@ -81,11 +81,11 @@ public class ItemScrapper implements RunicShop {
      * @param itemStack to be scrapped
      * @return a list of scrap items to reward
      */
-    private static Tuple<RunicItem, Integer> determineScrappedItems(ItemStack itemStack) {
+    private static Pair<RunicItem, Integer> determineScrappedItems(ItemStack itemStack) {
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
         RunicItem runicItemScrap = determineRunicItemScrap(itemStack);
         if (runicItemScrap == null) return null;
-        return new Tuple<>(runicItemScrap, determineNumberOfScraps(runicItem));
+        return new Pair<>(runicItemScrap, determineNumberOfScraps(runicItem));
     }
 
     /**

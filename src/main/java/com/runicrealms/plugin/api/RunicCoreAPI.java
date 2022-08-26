@@ -4,11 +4,11 @@ import co.aikar.commands.PaperCommandManager;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
-import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.model.SkillTreePosition;
@@ -19,6 +19,7 @@ import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.Pair;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -75,12 +76,7 @@ public class RunicCoreAPI {
      * @return a string representing the class (Cleric, Mage, etc.)
      */
     public static String getPlayerClass(Player player) {
-        return RedisUtil.getRedisValue
-                (
-                        player.getUniqueId(),
-                        CharacterField.CLASS_TYPE.getField(),
-                        getCharacterSlot(player.getUniqueId()
-                        ));
+        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(player.getUniqueId()).second.getName();
     }
 
     /**
@@ -89,13 +85,8 @@ public class RunicCoreAPI {
      * @param uuid of player to lookup
      * @return a string representing the class (Cleric, Mage, etc.)
      */
-    public static String getPlayerClass(UUID uuid, int slot) {
-        return RedisUtil.getRedisValue
-                (
-                        uuid,
-                        CharacterField.CLASS_TYPE.getField(),
-                        slot
-                );
+    public static String getPlayerClass(UUID uuid) {
+        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid).second.getName();
     }
 
     /**
@@ -243,7 +234,7 @@ public class RunicCoreAPI {
         return RunicCore.getBaseOutlawRating();
     }
 
-    public static ConcurrentHashMap.KeySetView<UUID, Integer> getLoadedCharacters() {
+    public static ConcurrentHashMap.KeySetView<UUID, Pair<Integer, ClassEnum>> getLoadedCharacters() {
         return RunicCore.getDatabaseManager().getLoadedCharacters();
     }
 
@@ -294,7 +285,7 @@ public class RunicCoreAPI {
      * @return an int representing their character slot (3, for example)
      */
     public static int getCharacterSlot(UUID uuid) {
-        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid);
+        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid).first;
     }
 
     /**
@@ -456,7 +447,7 @@ public class RunicCoreAPI {
         if (skillTreeData != null)
             return new SkillTreeGUI(player, skillTreeData);
         else
-            return new SkillTreeGUI(player, new SkillTreeData(uuid, position, slot));
+            return new SkillTreeGUI(player, new SkillTreeData(uuid, position));
     }
 
     /**

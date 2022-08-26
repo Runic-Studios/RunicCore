@@ -43,13 +43,13 @@ public class SpellUseListener implements Listener {
 
     @EventHandler
     public void onWeaponInteract(PlayerInteractEvent e) {
+        if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         WeaponType heldItemType = WeaponType.matchType(e.getPlayer().getInventory().getItemInMainHand());
         if (heldItemType == WeaponType.NONE) return;
         if (heldItemType == WeaponType.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(e.getPlayer(), false)) return;
-        if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
         Player player = e.getPlayer();
         String className = RunicCoreAPI.getPlayerClass(player); // lowercase
         boolean isArcher = className.equalsIgnoreCase("archer");

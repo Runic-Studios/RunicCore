@@ -11,6 +11,7 @@ import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
+import com.runicrealms.plugin.utilities.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -78,13 +79,13 @@ public class CharacterGuiManager implements Listener {
                 classMenu.remove(player.getUniqueId());
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
-                RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), slot); // now we always know which character is playing
                 markCharacterForSave(player, slot);
                 CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player.getUniqueId(), slot);
                 if (characterData == null) {
                     Bukkit.getLogger().info("Something went wrong with character selection");
                     return;
                 }
+                RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), Pair.pair(slot, characterData.getClassInfo().getClassType())); // now we always know which character is playing
                 CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent(player, characterData);
                 Bukkit.getPluginManager().callEvent(characterSelectEvent);
             }

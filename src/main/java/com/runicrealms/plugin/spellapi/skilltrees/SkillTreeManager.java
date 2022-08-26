@@ -210,7 +210,7 @@ public class SkillTreeManager implements Listener {
         // Step 2: check mongo documents
         PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-        return new SkillTreeData(uuid, skillTreePosition, character, slot);
+        return new SkillTreeData(uuid, skillTreePosition, character);
     }
 
     /**

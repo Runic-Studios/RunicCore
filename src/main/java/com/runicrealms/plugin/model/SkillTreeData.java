@@ -40,11 +40,10 @@ public class SkillTreeData implements SessionData {
      *
      * @param uuid     of the player
      * @param position of the skill tree (1-3)
-     * @param slot     of the character
      */
-    public SkillTreeData(UUID uuid, SkillTreePosition position, int slot) {
+    public SkillTreeData(UUID uuid, SkillTreePosition position) {
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position, slot);
+        this.subClass = SubClass.determineSubClass(uuid, position);
         this.uuid = uuid;
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
     }
@@ -55,12 +54,11 @@ public class SkillTreeData implements SessionData {
      * @param uuid      of the player
      * @param position  of the skill tree
      * @param character the character section of their mongo document
-     * @param slot      of the character
      */
-    public SkillTreeData(UUID uuid, SkillTreePosition position, PlayerMongoDataSection character, int slot) {
+    public SkillTreeData(UUID uuid, SkillTreePosition position, PlayerMongoDataSection character) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position, slot);
+        this.subClass = SubClass.determineSubClass(uuid, position);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks for skill tree in position
         if (!character.has(PATH_LOCATION + "." + position.getValue())) return; // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position.getValue());
@@ -82,7 +80,7 @@ public class SkillTreeData implements SessionData {
     public SkillTreeData(UUID uuid, int slot, SkillTreePosition position, Jedis jedis) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position, slot);
+        this.subClass = SubClass.determineSubClass(uuid, position);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
         String key = getJedisKey(uuid, slot, position);
         Map<String, String> perkDataMap = jedis.hgetAll(key); // get all the values for skill tree in position
