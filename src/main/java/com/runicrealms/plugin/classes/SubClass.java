@@ -5,6 +5,8 @@ import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public enum SubClass {
@@ -24,7 +26,7 @@ public enum SubClass {
     /*
      mage
      */
-    CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with crows control!"),
+    CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with crowd control!"),
     PYROMANCER("Pyromancer", ClassEnum.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect damage!"),
     WARLOCK("Warlock", ClassEnum.MAGE, warlockItem(), "Warlock has utility and buffs to out-maneuver opponents!"),
     /*
@@ -50,6 +52,36 @@ public enum SubClass {
         this.baseClass = baseClass;
         this.itemStack = itemStack;
         this.description = description;
+    }
+
+    public static final Set<SubClass> ARCHER_SUBCLASSES = new LinkedHashSet<>();
+    public static final Set<SubClass> CLERIC_SUBCLASSES = new LinkedHashSet<>();
+    public static final Set<SubClass> MAGE_SUBCLASSES = new LinkedHashSet<>();
+    public static final Set<SubClass> ROGUE_SUBCLASSES = new LinkedHashSet<>();
+    public static final Set<SubClass> WARRIOR_SUBCLASSES = new LinkedHashSet<>();
+
+    static {
+        for (SubClass subClass : SubClass.values()) {
+            switch (subClass.getBaseClass()) {
+                case ANY:
+                    break;
+                case ARCHER:
+                    ARCHER_SUBCLASSES.add(subClass);
+                    break;
+                case CLERIC:
+                    CLERIC_SUBCLASSES.add(subClass);
+                    break;
+                case MAGE:
+                    MAGE_SUBCLASSES.add(subClass);
+                    break;
+                case ROGUE:
+                    ROGUE_SUBCLASSES.add(subClass);
+                    break;
+                case WARRIOR:
+                    WARRIOR_SUBCLASSES.add(subClass);
+                    break;
+            }
+        }
     }
 
     /**

@@ -2,6 +2,8 @@ package com.runicrealms.plugin.character;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.SubClass;
+import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,10 +12,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CharacterSelectUtil {
 
@@ -81,17 +80,29 @@ public class CharacterSelectUtil {
         archerMeta.setUnbreakable(true);
         archerMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         archerMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Archer ⚔");
-        archerMeta.setLore(Arrays.asList(
-                ChatColor.GRAY + "",
-                ChatColor.GOLD + "● Long-range",
-                ChatColor.GOLD + "● Bowman",
-                ChatColor.GOLD + "● Single Target",
-                ChatColor.GRAY + "",
-                ChatColor.GRAY + "The archer features a diverse",
-                ChatColor.GRAY + "pool of damage, mobility, and",
-                ChatColor.GRAY + "utility spells, a master of",
-                ChatColor.GRAY + "terrain and single combat!"
-        ));
+        List<String> archerLore = new ArrayList<>();
+        archerLore.add(ChatColor.GRAY + "");
+        archerLore.add(ChatColor.GOLD + "● Long-range");
+        archerLore.add(ChatColor.GOLD + "● Bowman");
+        archerLore.add(ChatColor.GOLD + "● Single Target");
+        archerLore.add(ChatColor.GRAY + "");
+        archerLore.addAll
+                (
+                        ChatUtils.formattedText(ChatColor.GRAY + "The archer features a diverse array of damage, " +
+                                "mobility, and utility spells, a master of natural terrain and single combat!")
+                );
+        archerLore.add("");
+        archerLore.add(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Subclasses: ");
+        StringBuilder stringBuilder = new StringBuilder();
+        SubClass.ARCHER_SUBCLASSES.forEach(subClass -> {
+            stringBuilder.setLength(0);
+            stringBuilder
+                    .append(ChatColor.AQUA)
+                    .append("● ")
+                    .append(subClass.getName());
+            archerLore.add(stringBuilder.toString());
+        });
+        archerMeta.setLore(archerLore);
         archerItem.setItemMeta(archerMeta);
         CLASS_ICONS.put(ClassEnum.ARCHER, archerItem);
 
@@ -102,17 +113,30 @@ public class CharacterSelectUtil {
         clericMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         clericMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         clericMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Cleric ✦");
-        clericMeta.setLore(Arrays.asList(
-                ChatColor.GRAY + "",
-                ChatColor.GOLD + "● Close-range",
-                ChatColor.GOLD + "● Healer",
-                ChatColor.GOLD + "● Area-of-effect",
-                ChatColor.GRAY + "",
-                ChatColor.GRAY + "The cleric features a range",
-                ChatColor.GRAY + "crowd control, healing, and",
-                ChatColor.GRAY + "utility spells, bolstering",
-                ChatColor.GRAY + "any party!"
-        ));
+
+
+        List<String> clericLore = new ArrayList<>();
+        clericLore.add(ChatColor.GRAY + "");
+        clericLore.add(ChatColor.GOLD + "● Close-range");
+        clericLore.add(ChatColor.GOLD + "● Healer");
+        clericLore.add(ChatColor.GOLD + "● Area-of-effect");
+        clericLore.add(ChatColor.GRAY + "");
+        clericLore.addAll
+                (
+                        ChatUtils.formattedText(ChatColor.GRAY + "The cleric enjoys a range of crowd control, " +
+                                "healing, and utility spells, bolstering any party!")
+                );
+        clericLore.add("");
+        clericLore.add(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Subclasses: ");
+        SubClass.CLERIC_SUBCLASSES.forEach(subClass -> {
+            stringBuilder.setLength(0);
+            stringBuilder
+                    .append(ChatColor.AQUA)
+                    .append("● ")
+                    .append(subClass.getName());
+            clericLore.add(stringBuilder.toString());
+        });
+        clericMeta.setLore(clericLore);
         clericItem.setItemMeta(clericMeta);
         CLASS_ICONS.put(ClassEnum.CLERIC, clericItem);
 
@@ -123,17 +147,28 @@ public class CharacterSelectUtil {
         mageMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         mageMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         mageMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Mage ʔ");
-        mageMeta.setLore(Arrays.asList(
-                ChatColor.GRAY + "",
-                ChatColor.GOLD + "● Medium-range",
-                ChatColor.GOLD + "● Caster",
-                ChatColor.GOLD + "● Area-of-effect",
-                ChatColor.GRAY + "",
-                ChatColor.GRAY + "The mage is a master of widespread",
-                ChatColor.GRAY + "damage, controlling the flow of",
-                ChatColor.GRAY + "battle and deadly if left unchecked",
-                ChatColor.GRAY + "in the back lines!"
-        ));
+        List<String> mageLore = new ArrayList<>();
+        mageLore.add(ChatColor.GRAY + "");
+        mageLore.add(ChatColor.GOLD + "● Medium-range");
+        mageLore.add(ChatColor.GOLD + "● Caster");
+        mageLore.add(ChatColor.GOLD + "● Area-of-effect");
+        mageLore.add(ChatColor.GRAY + "");
+        mageLore.addAll
+                (
+                        ChatUtils.formattedText(ChatColor.GRAY + "The mage is a master of widespread damage, " +
+                                "controlling the flow of battle and deadly if left unchecked in the back lines!")
+                );
+        mageLore.add("");
+        mageLore.add(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Subclasses: ");
+        SubClass.MAGE_SUBCLASSES.forEach(subClass -> {
+            stringBuilder.setLength(0);
+            stringBuilder
+                    .append(ChatColor.AQUA)
+                    .append("● ")
+                    .append(subClass.getName());
+            mageLore.add(stringBuilder.toString());
+        });
+        mageMeta.setLore(mageLore);
         mageItem.setItemMeta(mageMeta);
         CLASS_ICONS.put(ClassEnum.MAGE, mageItem);
 
@@ -144,17 +179,28 @@ public class CharacterSelectUtil {
         rogueMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         rogueMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         rogueMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Rogue ⚔");
-        rogueMeta.setLore(Arrays.asList(
-                ChatColor.GRAY + "",
-                ChatColor.GOLD + "● Close-range",
-                ChatColor.GOLD + "● Duelist",
-                ChatColor.GOLD + "● Single Target",
-                ChatColor.GRAY + "",
-                ChatColor.GRAY + "The rogue does not play fair,",
-                ChatColor.GRAY + "Equipped with a pool of crowd",
-                ChatColor.GRAY + "control, stealth, and damage",
-                ChatColor.GRAY + "to engage any foe!"
-        ));
+        List<String> rogueLore = new ArrayList<>();
+        rogueLore.add(ChatColor.GRAY + "");
+        rogueLore.add(ChatColor.GOLD + "● Close-range");
+        rogueLore.add(ChatColor.GOLD + "● Fighter");
+        rogueLore.add(ChatColor.GOLD + "● Single Target");
+        rogueLore.add(ChatColor.GRAY + "");
+        rogueLore.addAll
+                (
+                        ChatUtils.formattedText(ChatColor.GRAY + "The rogue does not play fair, arming itself " +
+                                "with a set of stealth and mobility to engage any foe!")
+                );
+        rogueLore.add("");
+        rogueLore.add(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Subclasses: ");
+        SubClass.ROGUE_SUBCLASSES.forEach(subClass -> {
+            stringBuilder.setLength(0);
+            stringBuilder
+                    .append(ChatColor.AQUA)
+                    .append("● ")
+                    .append(subClass.getName());
+            rogueLore.add(stringBuilder.toString());
+        });
+        rogueMeta.setLore(rogueLore);
         rogueItem.setItemMeta(rogueMeta);
         CLASS_ICONS.put(ClassEnum.ROGUE, rogueItem);
 
@@ -165,17 +211,29 @@ public class CharacterSelectUtil {
         warriorMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         warriorMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         warriorMeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "Warrior ■");
-        warriorMeta.setLore(Arrays.asList(
-                ChatColor.GRAY + "",
-                ChatColor.GOLD + "● Close-range",
-                ChatColor.GOLD + "● Tank",
-                ChatColor.GOLD + "● Single Target",
-                ChatColor.GRAY + "",
-                ChatColor.GRAY + "The warrior is a force to be",
-                ChatColor.GRAY + "reckoned with, featuring both",
-                ChatColor.GRAY + "offensive and defensive spells",
-                ChatColor.GRAY + "to charge into the front lines!"
-        ));
+
+        List<String> warriorLore = new ArrayList<>();
+        warriorLore.add(ChatColor.GRAY + "");
+        warriorLore.add(ChatColor.GOLD + "● Close-range");
+        warriorLore.add(ChatColor.GOLD + "● Tank");
+        warriorLore.add(ChatColor.GOLD + "● Single Target");
+        warriorLore.add(ChatColor.GRAY + "");
+        warriorLore.addAll
+                (
+                        ChatUtils.formattedText(ChatColor.GRAY + "The warrior is a force to be reckoned with, " +
+                                "featuring both offensive and defensive spells to charge into the front lines!")
+                );
+        warriorLore.add("");
+        warriorLore.add(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Subclasses: ");
+        SubClass.WARRIOR_SUBCLASSES.forEach(subClass -> {
+            stringBuilder.setLength(0);
+            stringBuilder
+                    .append(ChatColor.AQUA)
+                    .append("● ")
+                    .append(subClass.getName());
+            warriorLore.add(stringBuilder.toString());
+        });
+        warriorMeta.setLore(warriorLore);
         warriorItem.setItemMeta(warriorMeta);
         CLASS_ICONS.put(ClassEnum.WARRIOR, warriorItem);
 
@@ -184,6 +242,10 @@ public class CharacterSelectUtil {
         assert exitGameItemMeta != null;
         exitGameItemMeta.setDisplayName(ColorUtil.format("&r&cLeave the Realm"));
         EXIT_GAME_ITEM.setItemMeta(exitGameItemMeta);
+    }
+
+    private static void foo() {
+
     }
 
     public static Map<ClassEnum, ItemStack> getClassIcons() {
