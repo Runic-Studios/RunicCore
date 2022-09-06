@@ -40,7 +40,7 @@ public class ScoreboardListener implements Listener {
         RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
     }
 
-    // todo: implement this event
+    // TODO: implement this event
 //    @EventHandler
 //    public void onGuildChange(GuildChangeEvent e) {
 //

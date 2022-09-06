@@ -6,6 +6,7 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import java.util.*;
 
 public class OutlawData implements SessionData {
+    private static final Map<UUID, Boolean> OUTLAW_DATA_MAP = new HashMap<>();
     static List<String> fields = new ArrayList<String>() {{
         add(CharacterField.OUTLAW_ENABLED.getField());
         add(CharacterField.OUTLAW_RATING.getField());
@@ -24,6 +25,7 @@ public class OutlawData implements SessionData {
         this.uuid = uuid;
         this.outlawEnabled = character.get("outlaw.enabled", Boolean.class);
         this.outlawRating = character.get("outlaw.rating", Integer.class);
+        OUTLAW_DATA_MAP.put(uuid, this.outlawEnabled);
     }
 
     /**
@@ -36,6 +38,7 @@ public class OutlawData implements SessionData {
         this.uuid = uuid;
         this.outlawEnabled = Boolean.parseBoolean(fields.get(CharacterField.OUTLAW_ENABLED.getField()));
         this.outlawRating = Integer.parseInt(fields.get(CharacterField.OUTLAW_RATING.getField()));
+        OUTLAW_DATA_MAP.put(uuid, this.outlawEnabled);
     }
 
     public static List<String> getFields() {
@@ -72,5 +75,14 @@ public class OutlawData implements SessionData {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("outlaw.enabled", this.outlawEnabled);
         character.set("outlaw.rating", this.outlawRating);
+    }
+
+    /**
+     * Used for memoization of outlaw status
+     *
+     * @return a map of uuid to the status of their outlaw setting
+     */
+    public static Map<UUID, Boolean> getOutlawDataMap() {
+        return OUTLAW_DATA_MAP;
     }
 }

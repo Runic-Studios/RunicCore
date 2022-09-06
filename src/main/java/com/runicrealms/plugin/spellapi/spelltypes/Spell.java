@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.model.OutlawData;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -102,10 +102,8 @@ public abstract class Spell implements ISpell, Listener {
         // probably unnecessary, but insurance
         if (playerAlly instanceof ArmorStand) return false;
 
-        int slotCaster = RunicCoreAPI.getCharacterSlot(caster.getUniqueId());
-        int slotAlly = RunicCoreAPI.getCharacterSlot(ally.getUniqueId());
-        boolean casterIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(caster.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), slotCaster));
-        boolean allyIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(playerAlly.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), slotAlly));
+        boolean casterIsOutlaw = OutlawData.getOutlawDataMap().get(caster.getUniqueId());
+        boolean allyIsOutlaw = OutlawData.getOutlawDataMap().get(ally.getUniqueId());
 
         // If either player is an outlaw
         if (casterIsOutlaw || allyIsOutlaw)

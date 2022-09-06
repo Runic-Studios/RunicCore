@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
+import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 import java.util.UUID;
@@ -96,19 +97,19 @@ public class ScoreboardHandler {
      * @param scoreboard the scoreboard of the player
      */
     public void updatePlayerInfo(final Player player, final Scoreboard scoreboard) {
-        try {
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
             String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
             Team playerClass = scoreboard.getTeam(playerNameSubString + CLASS_TEAM_STRING);
             assert playerClass != null;
             playerClass.setPrefix(playerClass(player));
             Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
             assert playerProf != null;
-            playerProf.setPrefix(playerProf(player));
+            playerProf.setPrefix(playerProf(player, jedis));
             Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
             assert playerGuild != null;
             playerGuild.setPrefix(playerGuild(player));
         } catch (NullPointerException e) {
-            // wrapped in try-catch in-case scoreboard can't set up in time
+            // wrapped in try-catch in-case scoreboard can't set up in time (also closes jedis resource)
         }
     }
 
@@ -182,8 +183,15 @@ public class ScoreboardHandler {
 
     private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
 
-    private String playerProf(final Player player) {
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
+    /**
+     * Update the scoreboard info on the player's current profession data
+     *
+     * @param player to update
+     * @param jedis  the jedis resource
+     * @return a string with their profession info
+     */
+    private String playerProf(final Player player, Jedis jedis) {
+        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields(), jedis);
         String profName = professionFields.get(CharacterField.PROF_NAME.getField());
         int currentLevel = Integer.parseInt(professionFields.get(CharacterField.PROF_LEVEL.getField()));
         String display;
