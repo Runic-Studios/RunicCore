@@ -1,16 +1,12 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.model.cache.SpellWrapper;
-import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.redis.RedisUtil;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,17 +44,16 @@ public class PlayerSpellData implements SessionData {
         this.spellLeftClick = spellLeftClick;
         this.spellRightClick = spellRightClick;
         this.spellSwapHands = spellSwapHands;
-        updateInMemorySpellMap();
     }
 
     /**
      * Constructs a player spell wrapper from DB
      *
      * @param uuid      of player to generate wrapper for
-     * @param slot      of the character
      * @param character section of DB for character
+     * @param jedis     the jedis resource
      */
-    public PlayerSpellData(UUID uuid, int slot, PlayerMongoDataSection character) {
+    public PlayerSpellData(UUID uuid, PlayerMongoDataSection character, Jedis jedis) {
         this.uuid = uuid;
         if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION)) {
             MongoDataSection spells = character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
@@ -73,11 +68,10 @@ public class PlayerSpellData implements SessionData {
             this.spellSwapHands = "";
         }
         // call each skill tree and populate
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD).addPassivesToMap();
-        updateInMemorySpellMap();
-        writeSpellDataToJedis(RunicCore.getRedisManager().getJedisPool());
+        RunicCoreAPI.getSkillTree(uuid, SkillTreePosition.FIRST).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, SkillTreePosition.SECOND).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, SkillTreePosition.THIRD).addPassivesToMap();
+        writeSpellDataToJedis(jedis);
     }
 
     /**
@@ -94,35 +88,38 @@ public class PlayerSpellData implements SessionData {
         this.spellLeftClick = fieldsMap.get(SpellField.LEFT_CLICK.getField());
         this.spellRightClick = fieldsMap.get(SpellField.RIGHT_CLICK.getField());
         this.spellSwapHands = fieldsMap.get(SpellField.SWAP_HANDS.getField());
-        updateInMemorySpellMap();
     }
 
     /**
      * Adds the object into session storage in redis
      *
-     * @param jedisPool the jedis pool resource from core
+     * @param jedis the jedis resource
      */
-    public void writeSpellDataToJedis(JedisPool jedisPool) {
+    public void writeSpellDataToJedis(Jedis jedis) {
         Bukkit.broadcastMessage("writing spell data to jedis");
-        try (Jedis jedis = jedisPool.getResource()) {
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            String key = getJedisKey(uuid, RunicCoreAPI.getCharacterSlot(uuid));
-            jedis.hmset(key, this.toMap());
-            jedis.expire(key, RedisUtil.EXPIRE_TIME);
-        }
+        String key = getJedisKey(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+        jedis.hmset(key, this.toMap());
+        jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
 
-    private void updateInMemorySpellMap() {
-        SpellWrapper spellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid);
-        spellWrapper.setSpellHotbarOne(this.spellHotbarOne);
-        spellWrapper.setSpellLeftClick(this.spellLeftClick);
-        spellWrapper.setSpellRightClick(this.spellRightClick);
-        spellWrapper.setSpellSwapHands(this.spellSwapHands);
+    /**
+     * Reset the spells to their defaults
+     */
+    public void resetSpells() {
+        this.spellHotbarOne = determineDefaultSpell(this.uuid);
+        this.spellLeftClick = "";
+        this.spellRightClick = "";
+        this.spellSwapHands = "";
     }
 
+    /**
+     * Determines the default starter spell for each class
+     *
+     * @param uuid of the player
+     * @return a string corresponding to the spell name of the starter spell
+     */
     public static String determineDefaultSpell(UUID uuid) {
-        int slot = RunicCoreAPI.getCharacterSlot(uuid);
-        switch (RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_TYPE.getField(), slot)) {
+        switch (RunicCoreAPI.getPlayerClass(uuid)) {
             case "Archer":
                 return DEFAULT_ARCHER;
             case "Cleric":
@@ -139,11 +136,11 @@ public class PlayerSpellData implements SessionData {
     }
 
     /**
-     * Helper method to
+     * Helper method to look up the jedis key corresponding to this section of the data
      *
-     * @param uuid
-     * @param slot
-     * @return
+     * @param uuid of the player
+     * @param slot of the character
+     * @return a string key which is used to identify all relevant spell data
      */
     public static String getJedisKey(UUID uuid, int slot) {
         return uuid + ":character:" + slot + ":" + SkillTreeData.PATH_LOCATION + ":" + SkillTreeData.SPELLS_LOCATION;

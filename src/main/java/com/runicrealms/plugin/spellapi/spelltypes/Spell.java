@@ -54,13 +54,7 @@ public abstract class Spell implements ISpell, Listener {
         UUID uuid = player.getUniqueId();
 
         // verify class
-        boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
-                (RunicCoreAPI.getRedisCharacterValue
-                        (
-                                uuid,
-                                CharacterField.CLASS_TYPE.getField(),
-                                RunicCoreAPI.getCharacterSlot(player.getUniqueId())
-                        ));
+        boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase(RunicCoreAPI.getPlayerClass(uuid));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

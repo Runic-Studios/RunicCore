@@ -26,6 +26,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -36,7 +37,6 @@ import java.util.*;
  */
 public class CharacterGuiManager implements Listener {
 
-    // private static final Map<UUID, CharacterGuiInfo> characterCache = new HashMap<>();
     private static final Map<UUID, CharacterGui> classMenu = new HashMap<>();
     private static final Map<UUID, Integer> deletingCharacters = new HashMap<>();
 
@@ -55,7 +55,9 @@ public class CharacterGuiManager implements Listener {
         } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.ADD) {
             handleAddCharacter(event.getCurrentItem(), (Player) event.getWhoClicked());
         } else if (classMenu.get(event.getWhoClicked().getUniqueId()) == CharacterGui.REMOVE) {
-            handleRemoveCharacter(event.getCurrentItem(), (Player) event.getWhoClicked());
+            try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+                handleRemoveCharacter(event.getCurrentItem(), (Player) event.getWhoClicked(), jedis);
+            }
         }
     }
 
@@ -80,13 +82,14 @@ public class CharacterGuiManager implements Listener {
                 player.closeInventory();
                 Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
                 markCharacterForSave(player, slot);
-                CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player.getUniqueId(), slot);
+                Jedis jedis = RunicCoreAPI.getNewJedisResource();
+                CharacterData characterData = RunicCore.getDatabaseManager().loadCharacterData(player.getUniqueId(), slot, jedis);
                 if (characterData == null) {
                     Bukkit.getLogger().info("Something went wrong with character selection");
                     return;
                 }
                 RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), Pair.pair(slot, characterData.getClassInfo().getClassType())); // now we always know which character is playing
-                CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent(player, characterData);
+                CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent(player, characterData, jedis);
                 Bukkit.getPluginManager().callEvent(characterSelectEvent);
             }
         } else if (currentItem.getType() == CharacterSelectUtil.CHARACTER_CREATE_ITEM.getType()) {
@@ -120,13 +123,15 @@ public class CharacterGuiManager implements Listener {
      * @param player      the player who clicked
      */
     private void handleAddCharacter(ItemStack currentItem, Player player) {
-        if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
-            String className = getClassNameFromIcon(currentItem);
-            PlayerData playerData = RunicCoreAPI.getPlayerData(player.getUniqueId());
-            RunicCore.getDatabaseManager().addNewCharacter(player, className, playerData.findFirstUnusedSlot());
-            playerData.addCharacter(new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0));
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            if (currentItem.getType() != CharacterSelectUtil.GO_BACK_ITEM.getType()) {
+                String className = getClassNameFromIcon(currentItem);
+                PlayerData playerData = RunicCoreAPI.getPlayerData(player.getUniqueId());
+                RunicCore.getDatabaseManager().addNewCharacter(player, className, playerData.findFirstUnusedSlot(), jedis);
+                playerData.addCharacter(new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0));
+            }
+            openSelectGui(player);
         }
-        openSelectGui(player);
     }
 
     /**
@@ -134,14 +139,15 @@ public class CharacterGuiManager implements Listener {
      *
      * @param currentItem the itemStack in the inventory
      * @param player      the player who clicked
+     * @param jedis       the jedis resource
      */
-    private void handleRemoveCharacter(ItemStack currentItem, Player player) {
+    private void handleRemoveCharacter(ItemStack currentItem, Player player, Jedis jedis) {
         if (currentItem.getType() == CharacterSelectUtil.CONFIRM_DELETION_ITEM.getType()) {
             classMenu.remove(player.getUniqueId());
             player.closeInventory();
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 String parentKey = player.getUniqueId() + ":character:" + deletingCharacters.get(player.getUniqueId());
-                RedisUtil.removeAllFromRedis(RunicCore.getRedisManager().getJedisPool(), parentKey); // removes all sub-keys
+                RedisUtil.removeAllFromRedis(jedis, parentKey); // removes all sub-keys
                 PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
                 mongoData.remove("character." + deletingCharacters.get(player.getUniqueId()));
                 mongoData.save();

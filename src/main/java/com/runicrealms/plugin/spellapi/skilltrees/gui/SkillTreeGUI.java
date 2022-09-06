@@ -32,7 +32,7 @@ public class SkillTreeGUI implements InventoryHolder {
 
     public SkillTreeGUI(Player player, SkillTreeData skillTreeData) {
         this.inventory = Bukkit.createInventory(this, 54,
-                ColorUtil.format("&a&l" + skillTreeData.getSubClassEnum().getName() + " Skill Tree"));
+                ColorUtil.format("&a&l" + skillTreeData.getSubclass().getName() + " Skill Tree"));
         this.player = player;
         this.skillTreeData = skillTreeData;
         openMenu();
@@ -83,10 +83,10 @@ public class SkillTreeGUI implements InventoryHolder {
     }
 
     public ItemStack infoItem() {
-        ItemStack infoItem = new ItemStack(skillTreeData.getSubClassEnum().getItemStack());
+        ItemStack infoItem = new ItemStack(skillTreeData.getSubclass().getItemStack());
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
-        meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubClassEnum().getName() + " Tree Info");
+        meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubclass().getName() + " Tree Info");
         String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId());
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);

@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
+import redis.clients.jedis.Jedis;
 
 /**
  * Handles all the logic for when a player levels-up their primary class (archer, mage, etc.)
@@ -27,11 +28,12 @@ public class PlayerLevelListener implements Listener {
         if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
 
         // update player's level in redis
-        RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()));
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) { // try-with-resources to close the resource for us
+            RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()), jedis);
+        }
 
         // grab the player's new info
-        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        String className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot);
+        String className = RunicCoreAPI.getPlayerClass(player);
         if (className.equals("")) return;
         int classLevel = player.getLevel();
 
@@ -68,9 +70,8 @@ public class PlayerLevelListener implements Listener {
 
         // grab the player's new info
         String className;
-        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
         try {
-            className = RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot);
+            className = RunicCoreAPI.getPlayerClass(player);
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }

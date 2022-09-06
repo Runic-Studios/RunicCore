@@ -40,7 +40,7 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
     @CommandCompletion("@players")
     public void onCommand(CommandSender commandSender, String[] args) {
         if (args.length == 0 && commandSender instanceof Player) {
-            SkillTreeData.resetTree((Player) commandSender);
+            SkillTreeData.resetSkillTrees((Player) commandSender);
             return;
         }
         try {
@@ -54,7 +54,7 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
                         );
                 chatters.add(toReset.getUniqueId());
             } else {
-                SkillTreeData.resetTree(toReset);
+                SkillTreeData.resetSkillTrees(toReset);
             }
         } catch (Exception e) {
             Bukkit.getLogger().info(ChatColor.RED + "Player not found!");
@@ -70,7 +70,7 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
-                SkillTreeData.resetTree(player);
+                SkillTreeData.resetSkillTrees(player);
             });
         } else if (e.getChatMessage().toLowerCase().contains("yes") && !RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);

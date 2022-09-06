@@ -287,25 +287,23 @@ public class DamageListener implements Listener {
         broadcastSlainDeathMessage(damager, victim);
     }
 
+    /**
+     * @param damager
+     * @param victim
+     */
     private static void broadcastSlainDeathMessage(Entity damager, Player victim) {
-
         String nameVic = victim.getName();
-
         if (damager instanceof Player) {
-
-            String nameDam = damager.getName();
-//            double ratingP1 = RunicCore.getCacheManager().getPlayerCaches().get((Player) damager).getRating();
-//            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
-
+            String damagerName = damager.getName();
             // if both players are outlaws, amend the death message to display their rating
             int damagerSlot = RunicCoreAPI.getCharacterSlot(damager.getUniqueId());
             int victimSlot = RunicCoreAPI.getCharacterSlot(victim.getUniqueId());
             boolean damagerIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(damager.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), damagerSlot));
             boolean victimIsOutlaw = Boolean.parseBoolean(RunicCoreAPI.getRedisCharacterValue(victim.getUniqueId(), CharacterField.OUTLAW_ENABLED.getField(), victimSlot));
             if (damagerIsOutlaw && victimIsOutlaw) {
-                nameDam = ChatColor.WHITE + nameDam; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
+                damagerName = ChatColor.WHITE + damagerName; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
                 nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
-                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
+                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + damagerName);
             }
         }
     }

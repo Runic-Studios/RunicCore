@@ -44,14 +44,13 @@ public class SubClassGUIListener implements Listener {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
-        int characterSlot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
         if (material == GUIUtil.backButton().getType())
             player.openInventory(new RuneGUI(player).getInventory());
         else if (e.getRawSlot() == 11) // subclass 1
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, characterSlot, SkillTreePosition.FIRST).getInventory());
+            player.openInventory(RunicCoreAPI.skillTreeGUI(player, SkillTreePosition.FIRST).getInventory());
         else if (e.getRawSlot() == 13) // subclass 2
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, characterSlot, SkillTreePosition.SECOND).getInventory());
+            player.openInventory(RunicCoreAPI.skillTreeGUI(player, SkillTreePosition.SECOND).getInventory());
         else // subclass 3
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, characterSlot, SkillTreePosition.THIRD).getInventory());
+            player.openInventory(RunicCoreAPI.skillTreeGUI(player, SkillTreePosition.THIRD).getInventory());
     }
 }

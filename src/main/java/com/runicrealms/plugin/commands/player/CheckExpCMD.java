@@ -12,6 +12,7 @@ import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -24,30 +25,32 @@ public class CheckExpCMD extends BaseCommand implements Listener {
     @CatchUnknown
     @Conditions("is-player")
     public void onCommand(Player player) {
-        UUID uuid = player.getUniqueId();
-        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        int classLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_LEVEL.getField(), slot));
-        int classExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_EXP.getField(), slot));
-        int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
-        int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv + 1);
-        double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
-        NumberFormat toDecimal = new DecimalFormat("#0.00");
-        String classProgressFormatted = toDecimal.format(proportion);
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            UUID uuid = player.getUniqueId();
+            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+            int classLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_LEVEL.getField(), slot, jedis));
+            int classExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_EXP.getField(), slot, jedis));
+            int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLv);
+            int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLv + 1);
+            double proportion = (double) (classExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel) * 100;
+            NumberFormat toDecimal = new DecimalFormat("#0.00");
+            String classProgressFormatted = toDecimal.format(proportion);
 
-        int profLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.PROF_LEVEL.getField(), slot));
-        int profExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.PROF_EXP.getField(), slot));
-        int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
-        int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv + 1);
-        double progress = (double) (profExp - profExpAtLevel) / (profTotalExpToLevel - profExpAtLevel);
-        String profProgress = toDecimal.format(progress);
+            int profLv = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.PROF_LEVEL.getField(), slot, jedis));
+            int profExp = Integer.parseInt(RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.PROF_EXP.getField(), slot, jedis));
+            int profExpAtLevel = ProfExpUtil.calculateTotalExperience(profLv);
+            int profTotalExpToLevel = ProfExpUtil.calculateTotalExperience(profLv + 1);
+            double progress = (double) (profExp - profExpAtLevel) / (profTotalExpToLevel - profExpAtLevel);
+            String profProgress = toDecimal.format(progress);
 
-        player.sendMessage("");
-        player.sendMessage(ColorUtil.format
-                ("&a&lPlayer " + player.getName() +
-                        "\n&7Class: &f" + classExp + " &7total exp, &f" + (classExp - totalExpAtLevel) + "&7/&f"
-                        + (totalExpToLevel - totalExpAtLevel) + " &7exp to level &a(" + classProgressFormatted + "%)" +
-                        "\n&7Profession: &f" + profExp + " &7total exp, &f" + (profExp - profExpAtLevel) + "&7/&f"
-                        + (profTotalExpToLevel - profExpAtLevel) + " &7to level &a(" + profProgress + "%)"));
-        player.sendMessage("");
+            player.sendMessage("");
+            player.sendMessage(ColorUtil.format
+                    ("&a&lPlayer " + player.getName() +
+                            "\n&7Class: &f" + classExp + " &7total exp, &f" + (classExp - totalExpAtLevel) + "&7/&f"
+                            + (totalExpToLevel - totalExpAtLevel) + " &7exp to level &a(" + classProgressFormatted + "%)" +
+                            "\n&7Profession: &f" + profExp + " &7total exp, &f" + (profExp - profExpAtLevel) + "&7/&f"
+                            + (profTotalExpToLevel - profExpAtLevel) + " &7to level &a(" + profProgress + "%)"));
+            player.sendMessage("");
+        }
     }
 }

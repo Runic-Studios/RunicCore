@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.model.SpellField;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
@@ -52,10 +51,9 @@ public class SpellGUI implements InventoryHolder {
         this.inventory.setItem(9, SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
                 false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
         int i = 10;
-        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        i = grabUnlockedSpellsFromTree(SkillTreePosition.FIRST, slot, i);
-        i = grabUnlockedSpellsFromTree(SkillTreePosition.SECOND, slot, i);
-        grabUnlockedSpellsFromTree(SkillTreePosition.THIRD, slot, i);
+        i = grabUnlockedSpellsFromTree(SkillTreePosition.FIRST, i);
+        i = grabUnlockedSpellsFromTree(SkillTreePosition.SECOND, i);
+        grabUnlockedSpellsFromTree(SkillTreePosition.THIRD, i);
     }
 
     /**
@@ -64,8 +62,7 @@ public class SpellGUI implements InventoryHolder {
      * @return a perk that can be used to build an itemstack
      */
     private Perk determineDefaultSpellPerk() {
-        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-        switch (RunicCoreAPI.getRedisCharacterValue(player.getUniqueId(), CharacterField.CLASS_TYPE.getField(), slot)) {
+        switch (RunicCoreAPI.getPlayerClass(player)) {
             case "Archer":
                 return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
             case "Cleric":
@@ -86,12 +83,11 @@ public class SpellGUI implements InventoryHolder {
      * skill tree.
      *
      * @param treePosition (which of the three sub-trees?) (1, 2, 3)
-     * @param slot         of the character
      * @param index        which index to begin filling items
      */
-    private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int slot, int index) {
-        if (RunicCoreAPI.getSkillTree(player.getUniqueId(), slot, treePosition) == null) return index;
-        for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), slot, treePosition).getPerks()) {
+    private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int index) {
+        if (RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition) == null) return index;
+        for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkSpell)) continue;
             if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;

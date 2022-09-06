@@ -5,6 +5,7 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class MongoSaveEvent extends Event implements Cancellable {
 
     private final int slot;
     private final UUID uuid;
+    private final Jedis jedis; // the jedis resource to read from
     private final PlayerMongoData mongoData;
     private final PlayerMongoDataSection mongoDataSection;
     private final CacheSaveReason cacheSaveReason;
@@ -24,14 +26,20 @@ public class MongoSaveEvent extends Event implements Cancellable {
     /**
      * @param slot             the slot of the character
      * @param uuid             of the player
+     * @param jedis            the jedis resource
      * @param mongoData        object file of player in DB
      * @param mongoDataSection section of object file being saved (typically character section)
      * @param cacheSaveReason  why the cache was saved (logout, shutdown, etc.)
      */
-    public MongoSaveEvent(int slot, UUID uuid, PlayerMongoData mongoData, PlayerMongoDataSection mongoDataSection,
+    public MongoSaveEvent(int slot,
+                          UUID uuid,
+                          Jedis jedis,
+                          PlayerMongoData mongoData,
+                          PlayerMongoDataSection mongoDataSection,
                           CacheSaveReason cacheSaveReason) {
         this.slot = slot;
         this.uuid = uuid;
+        this.jedis = jedis;
         this.mongoData = mongoData;
         this.mongoDataSection = mongoDataSection;
         this.cacheSaveReason = cacheSaveReason;
@@ -44,6 +52,10 @@ public class MongoSaveEvent extends Event implements Cancellable {
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public Jedis getJedis() {
+        return this.jedis;
     }
 
     public PlayerMongoData getMongoData() {

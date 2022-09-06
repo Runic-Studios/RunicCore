@@ -1,9 +1,7 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.MongoData;
-import com.runicrealms.plugin.redis.RedisManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -32,7 +30,7 @@ public class PlayerData {
      * @param player    to be loaded
      * @param mongoData associated with the player's unique id
      */
-    public PlayerData(Player player, MongoData mongoData) {
+    public PlayerData(Player player, MongoData mongoData, Jedis jedis) {
         this.playerUuid = player.getUniqueId();
         this.guild = mongoData.get("guild", String.class);
         this.playerCharacters = new HashMap<>();
@@ -46,7 +44,7 @@ public class PlayerData {
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.level", Integer.class),
                             mongoData.get(DATA_SECTION_KEY + "." + key + ".class.exp", Integer.class)));
-                    updateFromRedis(this.playerUuid, Integer.parseInt(key));
+                    updateFromRedis(this.playerUuid, Integer.parseInt(key), jedis);
                 }
             }
         } catch (Exception e) {
@@ -105,16 +103,13 @@ public class PlayerData {
      * @param uuid of the player
      * @param slot of the character
      */
-    private boolean updateFromRedis(UUID uuid, int slot) {
-        try (Jedis jedis = RunicCore.getRedisManager().getJedisPool().getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            if (jedis.exists(uuid + ":character:" + slot)) {
-                ClassData classData = new ClassData(uuid, slot, jedis);
-                this.playerCharacters.put(slot, classData);
-                return true;
-            } else {
-                // log error
-            }
+    private boolean updateFromRedis(UUID uuid, int slot, Jedis jedis) {
+        if (jedis.exists(uuid + ":character:" + slot)) {
+            ClassData classData = new ClassData(uuid, slot, jedis);
+            this.playerCharacters.put(slot, classData);
+            return true;
+        } else {
+            // log error
         }
         return false;
     }

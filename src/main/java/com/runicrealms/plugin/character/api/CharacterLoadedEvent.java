@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.character.api;
 
-import com.runicrealms.plugin.model.CharacterData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -14,21 +13,21 @@ import org.bukkit.event.HandlerList;
 public class CharacterLoadedEvent extends Event {
 
     private final Player player;
-    private final CharacterData characterData;
+    private final CharacterSelectEvent characterSelectEvent;
 
     private static final HandlerList handlers = new HandlerList();
 
-    public CharacterLoadedEvent(Player player, CharacterData characterData) {
+    public CharacterLoadedEvent(Player player, CharacterSelectEvent characterSelectEvent) {
         this.player = player;
-        this.characterData = characterData;
+        this.characterSelectEvent = characterSelectEvent;
     }
 
     public Player getPlayer() {
         return this.player;
     }
 
-    public CharacterData getCharacterData() {
-        return characterData;
+    public CharacterSelectEvent getCharacterSelectEvent() {
+        return characterSelectEvent;
     }
 
     @Override

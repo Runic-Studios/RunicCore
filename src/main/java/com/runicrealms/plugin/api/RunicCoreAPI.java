@@ -10,9 +10,9 @@ import com.runicrealms.plugin.item.shops.RunicItemShop;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.listeners.HearthstoneListener;
 import com.runicrealms.plugin.model.PlayerData;
+import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.model.SkillTreePosition;
-import com.runicrealms.plugin.model.cache.SpellWrapper;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
@@ -33,6 +33,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,6 +68,15 @@ public class RunicCoreAPI {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Opens a new jedis resource which MUST BE CLOSED
+     *
+     * @return a jedis resource
+     */
+    public static Jedis getNewJedisResource() {
+        return RunicCore.getRedisManager().getJedisResource();
     }
 
     /**
@@ -109,8 +119,8 @@ public class RunicCoreAPI {
      * @param field the key
      * @return the value
      */
-    public static String getRedisPlayerValue(UUID uuid, String field) {
-        return RedisUtil.getRedisValue(uuid, field);
+    public static String getRedisPlayerValue(UUID uuid, String field, Jedis jedis) {
+        return RedisUtil.getRedisValue(uuid, field, jedis);
     }
 
     /**
@@ -121,8 +131,8 @@ public class RunicCoreAPI {
      * @param field the key
      * @return the value
      */
-    public static String getRedisCharacterValue(UUID uuid, String field, int slot) {
-        return RedisUtil.getRedisValue(uuid, field, slot);
+    public static String getRedisCharacterValue(UUID uuid, String field, int slot, Jedis jedis) {
+        return RedisUtil.getRedisValue(uuid, field, slot, jedis);
     }
 
     /**
@@ -133,8 +143,8 @@ public class RunicCoreAPI {
      * @return a map of key-value pairs
      */
     // todo: split into player, character
-    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
-        return RedisUtil.getRedisValues(player, fields);
+    public static Map<String, String> getRedisValues(Player player, List<String> fields, Jedis jedis) {
+        return RedisUtil.getRedisValues(player, fields, jedis);
     }
 
     /**
@@ -146,8 +156,8 @@ public class RunicCoreAPI {
      * @return true if the key exists and was updated successfully
      */
     // todo: split into player, character
-    public static boolean setRedisValue(String key, String field, String value) {
-        return RedisUtil.setRedisValue(key, field, value);
+    public static boolean setRedisValue(String key, String field, String value, Jedis jedis) {
+        return RedisUtil.setRedisValue(key, field, value, jedis);
     }
 
     /**
@@ -159,8 +169,8 @@ public class RunicCoreAPI {
      * @return true if the key exists and was updated successfully
      */
     // todo: split into player, character
-    public static boolean setRedisValue(Player player, String field, String value) {
-        return RedisUtil.setRedisValue(player, field, value);
+    public static boolean setRedisValue(Player player, String field, String value, Jedis jedis) {
+        return RedisUtil.setRedisValue(player, field, value, jedis);
     }
 
     /**
@@ -171,8 +181,8 @@ public class RunicCoreAPI {
      * @return
      */
     // todo: split into player, character
-    public static boolean setRedisValues(Player player, Map<String, String> map) {
-        return RedisUtil.setRedisValues(player, map);
+    public static boolean setRedisValues(Player player, Map<String, String> map, Jedis jedis) {
+        return RedisUtil.setRedisValues(player, map, jedis);
     }
 
     /**
@@ -309,33 +319,32 @@ public class RunicCoreAPI {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
-//            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
-            SpellWrapper spellWrapper = RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid);
+            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid);
             switch (number) {
                 case 1:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellHotbarOne());
-                    if (spellWrapper.getSpellHotbarOne().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellHotbarOne());
+                    if (playerSpellData.getSpellHotbarOne().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 2:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellLeftClick());
-                    if (spellWrapper.getSpellLeftClick().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellLeftClick());
+                    if (playerSpellData.getSpellLeftClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 3:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellRightClick());
-                    if (spellWrapper.getSpellRightClick().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellRightClick());
+                    if (playerSpellData.getSpellRightClick().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
                     break;
                 case 4:
-                    spellToCast = RunicCore.getSpellManager().getSpellByName(spellWrapper.getSpellSwapHands());
-                    if (spellWrapper.getSpellSwapHands().equals("")) {
+                    spellToCast = RunicCore.getSpellManager().getSpellByName(playerSpellData.getSpellSwapHands());
+                    if (playerSpellData.getSpellSwapHands().equals("")) {
                         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
                         player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
                     }
@@ -348,15 +357,14 @@ public class RunicCoreAPI {
     }
 
     /**
-     * Returns Skill Tree for specified player
+     * Returns Skill Tree for specified player (from in memory cache)
      *
      * @param uuid     of player to lookup
-     * @param slot     of the character
      * @param position of the skill tree (1, 2, 3)
      * @return Skill Tree
      */
-    public static SkillTreeData getSkillTree(UUID uuid, int slot, SkillTreePosition position) {
-        return RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position);
+    public static SkillTreeData getSkillTree(UUID uuid, SkillTreePosition position) {
+        return RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + position.getValue());
     }
 
     public static Spell getSpell(String name) {
@@ -379,8 +387,8 @@ public class RunicCoreAPI {
      * @param uuid of player to check
      * @return number of skill points spent
      */
-    public static int getSpentPoints(UUID uuid, int slot) {
-        return RunicCore.getSkillTreeManager().loadSpentPointsData(uuid, slot);
+    public static int getSpentPoints(UUID uuid) {
+        return RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().get(uuid);
     }
 
     /**
@@ -437,13 +445,12 @@ public class RunicCoreAPI {
      * Returns a SkillTreeGUI for the given player
      *
      * @param player   of player to build skill tree for
-     * @param slot     of the character
      * @param position the position of sub-class (1, 2, or 3)
      * @return SkillTreeGUI
      */
-    public static SkillTreeGUI skillTreeGUI(Player player, int slot, SkillTreePosition position) {
+    public static SkillTreeGUI skillTreeGUI(Player player, SkillTreePosition position) {
         UUID uuid = player.getUniqueId();
-        SkillTreeData skillTreeData = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position);
+        SkillTreeData skillTreeData = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + position.getValue());
         if (skillTreeData != null)
             return new SkillTreeGUI(player, skillTreeData);
         else

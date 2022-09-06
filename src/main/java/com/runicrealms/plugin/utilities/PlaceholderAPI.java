@@ -31,6 +31,7 @@ import com.runicrealms.plugin.model.ProfessionData;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 
@@ -65,21 +66,23 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         if (player == null) return null;
         String lowerArg = arg.toLowerCase();
 
-        Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFIELDS());
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields());
-        switch (lowerArg) {
-            case "class":
-                return classFields.get(CharacterField.CLASS_TYPE.getField());
-            case "class_prefix":
-                return classFields.get(CharacterField.CLASS_TYPE.getField()).substring(0, 2);
-            case "level":
-                return player.getLevel() + "";
-            case "prof":
-                return professionFields.get(CharacterField.PROF_NAME.getField());
-            case "prof_level":
-                return professionFields.get(CharacterField.PROF_LEVEL.getField());
-            default:
-                return "";
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFIELDS(), jedis);
+            Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields(), jedis);
+            switch (lowerArg) {
+                case "class":
+                    return classFields.get(CharacterField.CLASS_TYPE.getField());
+                case "class_prefix":
+                    return classFields.get(CharacterField.CLASS_TYPE.getField()).substring(0, 2);
+                case "level":
+                    return player.getLevel() + "";
+                case "prof":
+                    return professionFields.get(CharacterField.PROF_NAME.getField());
+                case "prof_level":
+                    return professionFields.get(CharacterField.PROF_LEVEL.getField());
+                default:
+                    return "";
+            }
         }
     }
 }

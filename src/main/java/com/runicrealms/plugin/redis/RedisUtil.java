@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.redis;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -17,40 +16,34 @@ public class RedisUtil {
     /**
      * Removes all character-specific data from the redis cache
      *
-     * @param jedisPool the jedis pool from core
-     * @param key       to remove
+     * @param jedis the jedis resource
+     * @param key   to remove
      */
-    public static void removeFromRedis(JedisPool jedisPool, String key) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            if (jedis.exists(key))
-                jedis.del(key);
-        }
+    public static void removeFromRedis(Jedis jedis, String key) {
+        if (jedis.exists(key))
+            jedis.del(key);
     }
 
     /**
      * Removes the specified key and all sub-keys from redis
      *
-     * @param jedisPool the jedis pool from core
+     * @param jedis     the jedis resource
      * @param parentKey the parent key to remove (i.e., character, character:3, character:3:skills, etc.)
      */
-    public static void removeAllFromRedis(JedisPool jedisPool, String parentKey) {
-        try (Jedis jedis = jedisPool.getResource()) {
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            String subKeyPath = parentKey + ":*"; // grab all sub-keys
-            ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
-            String cur = ScanParams.SCAN_POINTER_START;
-            boolean cycleIsFinished = false;
-            while (!cycleIsFinished) {
-                ScanResult<String> scanResult = jedis.scan(cur, scanParams);
-                scanResult.getResult().forEach(jedis::del);
-                cur = scanResult.getCursor();
-                if (cur.equals("0")) {
-                    cycleIsFinished = true;
-                }
+    public static void removeAllFromRedis(Jedis jedis, String parentKey) {
+        String subKeyPath = parentKey + ":*"; // grab all sub-keys
+        ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
+        String cur = ScanParams.SCAN_POINTER_START;
+        boolean cycleIsFinished = false;
+        while (!cycleIsFinished) {
+            ScanResult<String> scanResult = jedis.scan(cur, scanParams);
+            scanResult.getResult().forEach(jedis::del);
+            cur = scanResult.getCursor();
+            if (cur.equals("0")) {
+                cycleIsFinished = true;
             }
-            jedis.del(parentKey);
         }
+        jedis.del(parentKey);
     }
 
     /**
@@ -89,14 +82,10 @@ public class RedisUtil {
      * @param field the field to lookup (it's key-value pairs)
      * @return the value corresponding to the field
      */
-    public static String getRedisValue(UUID uuid, String field) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            String key = uuid.toString();
-            if (jedis.exists(key)) {
-                return jedis.hmget(key, field).get(0);
-            }
+    public static String getRedisValue(UUID uuid, String field, Jedis jedis) {
+        String key = uuid.toString();
+        if (jedis.exists(key)) {
+            return jedis.hmget(key, field).get(0);
         }
         return "";
     }
@@ -110,14 +99,10 @@ public class RedisUtil {
      * @param slot  of the selected character
      * @return the value corresponding to the field
      */
-    public static String getRedisValue(UUID uuid, String field, int slot) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            String key = uuid + ":character:" + slot;
-            if (jedis.exists(key)) {
-                return jedis.hmget(key, field).get(0);
-            }
+    public static String getRedisValue(UUID uuid, String field, int slot, Jedis jedis) {
+        String key = uuid + ":character:" + slot;
+        if (jedis.exists(key)) {
+            return jedis.hmget(key, field).get(0);
         }
         return "";
     }
@@ -129,21 +114,17 @@ public class RedisUtil {
      * @param fields the fields to lookup (it's key-value pairs, returned in a map)
      * @return the values corresponding to the field
      */
-    public static Map<String, String> getRedisValues(Player player, List<String> fields) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-            String key = player.getUniqueId() + ":character:" + slot;
-            if (jedis.exists(key)) {
-                Map<String, String> fieldsMap = new HashMap<>();
-                String[] fieldsToArray = fields.toArray(new String[0]);
-                List<String> values = jedis.hmget(key, fieldsToArray);
-                for (int i = 0; i < fieldsToArray.length; i++) {
-                    fieldsMap.put(fieldsToArray[i], values.get(i));
-                }
-                return fieldsMap;
+    public static Map<String, String> getRedisValues(Player player, List<String> fields, Jedis jedis) {
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        String key = player.getUniqueId() + ":character:" + slot;
+        if (jedis.exists(key)) {
+            Map<String, String> fieldsMap = new HashMap<>();
+            String[] fieldsToArray = fields.toArray(new String[0]);
+            List<String> values = jedis.hmget(key, fieldsToArray);
+            for (int i = 0; i < fieldsToArray.length; i++) {
+                fieldsMap.put(fieldsToArray[i], values.get(i));
             }
+            return fieldsMap;
         }
         return new HashMap<>();
     }
@@ -156,19 +137,15 @@ public class RedisUtil {
      * @param value  to write to the field
      * @return true if the field was successfully written to
      */
-    public static boolean setRedisValue(Player player, String field, String value) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-            String key = player.getUniqueId() + ":character:" + slot;
-            if (jedis.exists(key)) {
-                Map<String, String> fieldsMap = new HashMap<String, String>() {{
-                    put(field, value);
-                }};
-                jedis.hmset(key, fieldsMap);
-                return true;
-            }
+    public static boolean setRedisValue(Player player, String field, String value, Jedis jedis) {
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        String key = player.getUniqueId() + ":character:" + slot;
+        if (jedis.exists(key)) {
+            Map<String, String> fieldsMap = new HashMap<String, String>() {{
+                put(field, value);
+            }};
+            jedis.hmset(key, fieldsMap);
+            return true;
         }
         return false;
     }
@@ -181,17 +158,13 @@ public class RedisUtil {
      * @param value to write to the field
      * @return true if the field was successfully written to
      */
-    public static boolean setRedisValue(String key, String field, String value) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            if (jedis.exists(key)) {
-                Map<String, String> fieldsMap = new HashMap<String, String>() {{
-                    put(field, value);
-                }};
-                jedis.hmset(key, fieldsMap);
-                return true;
-            }
+    public static boolean setRedisValue(String key, String field, String value, Jedis jedis) {
+        if (jedis.exists(key)) {
+            Map<String, String> fieldsMap = new HashMap<String, String>() {{
+                put(field, value);
+            }};
+            jedis.hmset(key, fieldsMap);
+            return true;
         }
         return false;
     }
@@ -203,16 +176,12 @@ public class RedisUtil {
      * @param map    of field, value to write
      * @return true if the field was successfully written to
      */
-    public static boolean setRedisValues(Player player, Map<String, String> map) {
-        JedisPool jedisPool = RunicCore.getRedisManager().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
-            String key = player.getUniqueId() + ":character:" + slot;
-            if (jedis.exists(key)) {
-                jedis.hmset(key, map);
-                return true;
-            }
+    public static boolean setRedisValues(Player player, Map<String, String> map, Jedis jedis) {
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        String key = player.getUniqueId() + ":character:" + slot;
+        if (jedis.exists(key)) {
+            jedis.hmset(key, map);
+            return true;
         }
         return false;
     }

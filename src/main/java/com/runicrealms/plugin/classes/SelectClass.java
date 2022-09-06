@@ -9,6 +9,7 @@ import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import static org.bukkit.Color.*;
 
@@ -95,13 +96,14 @@ public class SelectClass {
      *
      * @param player    to set up cache for
      * @param className name of class
+     * @param jedis     the jedis resource
      */
-    public static void writeClassDataToRedis(Player player, String className) {
+    public static void writeClassDataToRedis(Player player, String className, Jedis jedis) {
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(HealthUtils.getBaseHealth());
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setLevel(0);
         player.setExp(0);
         ClassData classData = new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0);
-        RunicCoreAPI.setRedisValues(player, classData.toMap());
+        RunicCoreAPI.setRedisValues(player, classData.toMap(), jedis);
     }
 }

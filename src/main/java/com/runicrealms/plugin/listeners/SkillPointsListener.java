@@ -3,6 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
+import com.runicrealms.plugin.model.CharacterData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -62,14 +63,15 @@ public class SkillPointsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLoaded(CharacterLoadedEvent e) {
+    public void onLoaded(CharacterLoadedEvent event) {
+        CharacterData characterData = event.getCharacterSelectEvent().getCharacterData();
         int pointsToSpend = RunicCoreAPI.getAvailableSkillPoints
                 (
-                        e.getPlayer().getUniqueId(),
-                        e.getCharacterData().getBaseCharacterInfo().getSlot()
+                        event.getPlayer().getUniqueId(),
+                        characterData.getBaseCharacterInfo().getSlot()
                 );
         if (pointsToSpend > 0)
-            sendSkillPointsReminderMessage(e.getPlayer(), pointsToSpend);
+            sendSkillPointsReminderMessage(event.getPlayer(), pointsToSpend);
     }
 
     /**

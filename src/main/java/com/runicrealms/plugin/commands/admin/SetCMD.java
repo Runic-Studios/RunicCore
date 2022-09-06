@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +63,7 @@ public class SetCMD extends BaseCommand {
             player = Bukkit.getPlayer(args[0]);
             classString = args[1].toLowerCase();
         }
-        try {
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
             if (!(classString.equals("archer")
                     || classString.equals("cleric")
                     || classString.equals("mage")
@@ -74,7 +75,7 @@ public class SetCMD extends BaseCommand {
             }
             String formattedStr = classString.substring(0, 1).toUpperCase() + classString.substring(1);
             setPlayerClass(player, formattedStr, true);
-            writeClassDataToRedis(player, formattedStr);
+            writeClassDataToRedis(player, formattedStr, jedis);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,15 +119,11 @@ public class SetCMD extends BaseCommand {
         level = Integer.parseInt(args[1]);
         if (player == null) return;
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
-        // int expectedLv = PlayerLevelUtil.calculateExpectedLv(expAtLevel);
         player.setLevel(0);
-        RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_EXP.getField(), String.valueOf(0));
-        PlayerLevelUtil.giveExperience(player, expAtLevel);
-        // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassLevel(expectedLv);
-        /*
-        IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the class level!
-        */
-        // RunicCore.getCacheManager().getPlayerCaches().get(player).setClassExp(expAtLevel);
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_EXP.getField(), String.valueOf(0), jedis);
+            PlayerLevelUtil.giveExperience(player, expAtLevel, jedis);
+        }
     }
 
 }
