@@ -6,7 +6,6 @@ import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
@@ -99,7 +98,6 @@ public class SkillTreeData implements SessionData {
      * @param slot              of the character
      */
     public void writeSkillTreeDataToJedis(Jedis jedis, SkillTreePosition skillTreePosition, int slot) {
-        jedis.auth(RedisManager.REDIS_PASSWORD);
         String key = getJedisKey(this.uuid, RunicCoreAPI.getCharacterSlot(this.uuid), skillTreePosition);
         Map<String, String> perkDataMap = this.toMap();
         if (!perkDataMap.isEmpty()) {

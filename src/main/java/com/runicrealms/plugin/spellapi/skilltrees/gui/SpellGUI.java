@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+import redis.clients.jedis.Jedis;
 
 public class SpellGUI implements InventoryHolder {
 
@@ -86,15 +87,18 @@ public class SpellGUI implements InventoryHolder {
      * @param index        which index to begin filling items
      */
     private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int index) {
-        if (RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition) == null) return index;
-        for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), treePosition).getPerks()) {
-            if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
-            if (!(perk instanceof PerkSpell)) continue;
-            if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
-            if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
-            this.getInventory().setItem(index, SkillTreeGUI.buildPerkItem(perk, false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
-            index++;
+        int slot = RunicCoreAPI.getCharacterSlot(player.getUniqueId());
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            if (RunicCoreAPI.getSkillTree(player.getUniqueId(), slot, treePosition, jedis) == null) return index;
+            for (Perk perk : RunicCoreAPI.getSkillTree(player.getUniqueId(), slot, treePosition, jedis).getPerks()) {
+                if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
+                if (!(perk instanceof PerkSpell)) continue;
+                if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
+                if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
+                this.getInventory().setItem(index, SkillTreeGUI.buildPerkItem(perk, false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
+                index++;
+            }
+            return index;
         }
-        return index;
     }
 }

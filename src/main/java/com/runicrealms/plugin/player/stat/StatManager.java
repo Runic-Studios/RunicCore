@@ -11,6 +11,7 @@ import com.runicrealms.runicitems.Stat;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -26,14 +27,14 @@ public class StatManager implements Listener {
 
     // Fire as HIGHEST so that runic items loads cached stats first for base stat tree grab, and SkillTreeManager loads skill trees
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLoad(CharacterSelectEvent e) {
-        StatContainer statContainer = new StatContainer(e.getPlayer());
-        UUID uuid = e.getPlayer().getUniqueId();
-        playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
-        int slot = e.getCharacterData().getBaseCharacterInfo().getSlot();
-        grabBaseStatsFromTree(uuid, SkillTreePosition.FIRST);
-        grabBaseStatsFromTree(uuid, SkillTreePosition.SECOND);
-        grabBaseStatsFromTree(uuid, SkillTreePosition.THIRD);
+    public void onLoad(CharacterSelectEvent event) {
+        StatContainer statContainer = new StatContainer(event.getPlayer());
+        UUID uuid = event.getPlayer().getUniqueId();
+        playerStatMap.put(event.getPlayer().getUniqueId(), statContainer);
+        int slot = event.getCharacterData().getBaseCharacterInfo().getSlot();
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST, event.getJedis());
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND, event.getJedis());
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD, event.getJedis());
     }
 
     @EventHandler
@@ -47,9 +48,9 @@ public class StatManager implements Listener {
      * @param uuid         of player to load stats for
      * @param treePosition which subtree are we loading? (1,2,3)
      */
-    private void grabBaseStatsFromTree(UUID uuid, SkillTreePosition treePosition) {
-        if (RunicCoreAPI.getSkillTree(uuid, treePosition) == null) return;
-        for (Perk perk : RunicCoreAPI.getSkillTree(uuid, treePosition).getPerks()) {
+    private void grabBaseStatsFromTree(UUID uuid, int slot, SkillTreePosition treePosition, Jedis jedis) {
+        if (RunicCoreAPI.getSkillTree(uuid, slot, treePosition, jedis) == null) return;
+        for (Perk perk : RunicCoreAPI.getSkillTree(uuid, slot, treePosition, jedis).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkBaseStat)) continue;
             PerkBaseStat perkBaseStat = (PerkBaseStat) perk;

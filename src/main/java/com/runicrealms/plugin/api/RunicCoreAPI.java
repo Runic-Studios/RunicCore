@@ -174,6 +174,18 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Set the cached value in redis for the given player and key
+     *
+     * @param uuid  of player to lookup
+     * @param field value of the key
+     * @param value to set
+     * @return true if the key exists and was updated successfully
+     */
+    public static boolean setRedisValue(UUID uuid, String field, String value, Jedis jedis) {
+        return RedisUtil.setRedisValue(uuid, field, value, jedis);
+    }
+
+    /**
      * Set the cached values in redis for the given player and map of key-value pairs
      *
      * @param player
@@ -360,11 +372,13 @@ public class RunicCoreAPI {
      * Returns Skill Tree for specified player (from in memory cache)
      *
      * @param uuid     of player to lookup
+     * @param slot     of the character
      * @param position of the skill tree (1, 2, 3)
+     * @param jedis    the jedis resource
      * @return Skill Tree
      */
-    public static SkillTreeData getSkillTree(UUID uuid, SkillTreePosition position) {
-        return RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + position.getValue());
+    public static SkillTreeData getSkillTree(UUID uuid, int slot, SkillTreePosition position, Jedis jedis) {
+        return RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position, jedis);
     }
 
     public static Spell getSpell(String name) {

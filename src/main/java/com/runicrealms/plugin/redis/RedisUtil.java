@@ -151,6 +151,27 @@ public class RedisUtil {
     }
 
     /**
+     * Attempts to update the redis value corresponding to the field for the given player
+     *
+     * @param uuid  of player to write value for
+     * @param field of the value (e.g., "currentHp")
+     * @param value to write to the field
+     * @return true if the field was successfully written to
+     */
+    public static boolean setRedisValue(UUID uuid, String field, String value, Jedis jedis) {
+        int slot = RunicCoreAPI.getCharacterSlot(uuid);
+        String key = uuid + ":character:" + slot;
+        if (jedis.exists(key)) {
+            Map<String, String> fieldsMap = new HashMap<String, String>() {{
+                put(field, value);
+            }};
+            jedis.hmset(key, fieldsMap);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Attempts to update the nested redis value corresponding to the field for the given key
      *
      * @param key   the path of the field in redis

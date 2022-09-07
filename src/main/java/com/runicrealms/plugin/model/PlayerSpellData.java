@@ -53,7 +53,7 @@ public class PlayerSpellData implements SessionData {
      * @param character section of DB for character
      * @param jedis     the jedis resource
      */
-    public PlayerSpellData(UUID uuid, PlayerMongoDataSection character, Jedis jedis) {
+    public PlayerSpellData(UUID uuid, int slot, PlayerMongoDataSection character, Jedis jedis) {
         this.uuid = uuid;
         if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION)) {
             MongoDataSection spells = character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
@@ -68,9 +68,9 @@ public class PlayerSpellData implements SessionData {
             this.spellSwapHands = "";
         }
         // call each skill tree and populate
-        RunicCoreAPI.getSkillTree(uuid, SkillTreePosition.FIRST).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, SkillTreePosition.SECOND).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, SkillTreePosition.THIRD).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
         writeSpellDataToJedis(jedis);
     }
 

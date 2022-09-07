@@ -2,7 +2,6 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.MongoData;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
@@ -36,9 +35,7 @@ public class PlayerData {
         this.playerCharacters = new HashMap<>();
         try {
             if (mongoData.has(DATA_SECTION_KEY)) {
-                Bukkit.broadcastMessage("characters found");
                 for (String key : mongoData.getSection(DATA_SECTION_KEY).getKeys()) {
-                    Bukkit.broadcastMessage("key of char is: " + key);
                     playerCharacters.put(Integer.parseInt(key), new ClassData(
                             playerUuid,
                             ClassEnum.getFromName(mongoData.get(DATA_SECTION_KEY + "." + key + ".class.name", String.class)),

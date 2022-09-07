@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.professions.gathering.GatheringSkill;
 import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
@@ -14,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -92,7 +94,9 @@ public class RunicGiveCMD extends BaseCommand {
         Player player = Bukkit.getPlayer(args[0]);
         if (player == null) return;
         int exp = Integer.parseInt(args[1]);
-        ProfExpUtil.giveCraftingExperience(player, exp);
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            ProfExpUtil.giveCraftingExperience(player, exp, jedis);
+        }
     }
 
     // runicgive gatheringexp [player] [skill] [amount]
@@ -112,6 +116,8 @@ public class RunicGiveCMD extends BaseCommand {
         if (gatheringSkill == null) return;
         // skip all other calculations for quest exp
         int exp = Integer.parseInt(args[2]);
-        ProfExpUtil.giveGatheringExperience(player, gatheringSkill, exp);
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            ProfExpUtil.giveGatheringExperience(player, gatheringSkill, exp, jedis);
+        }
     }
 }
