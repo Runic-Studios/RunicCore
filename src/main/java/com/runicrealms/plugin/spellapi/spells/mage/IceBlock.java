@@ -32,23 +32,23 @@ public class IceBlock extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         // on-use
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
-        Location toBeTrapped = pl.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
-        addStatusEffect(pl, EffectEnum.ROOT, DURATION);
-        addStatusEffect(pl, EffectEnum.INVULN, DURATION);
-        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20, Color.AQUA);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> pl.teleport(toBeTrapped), 2L);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
+        Location castLocation = player.getLocation().getBlock().getLocation().add(0.5, 0.5, 0.5);
+        addStatusEffect(player, EffectEnum.ROOT, DURATION);
+        addStatusEffect(player, EffectEnum.INVULN, DURATION);
+        Cone.coneEffect(player, Particle.REDSTONE, DURATION, 0, 20, Color.AQUA);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> player.teleport(castLocation), 2L);
         // after duration
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
-            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.3f, 1.5f);
-            pl.getWorld().spawnParticle(Particle.SNOWBALL, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
-            for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                if (!verifyEnemy(pl, en)) continue;
-                en.getWorld().spawnParticle(Particle.SNOWBALL, en.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, this);
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.3f, 1.5f);
+            player.getWorld().spawnParticle(Particle.SNOWBALL, player.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
+            for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+                if (!verifyEnemy(player, entity)) continue;
+                entity.getWorld().spawnParticle(Particle.SNOWBALL, entity.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) entity, player, this);
             }
         }, DURATION * 20L);
     }

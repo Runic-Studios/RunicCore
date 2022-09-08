@@ -44,6 +44,8 @@ public class SkillTreeManager implements Listener {
         UUID uuid = event.getUuid();
         int slot = event.getSlot();
         Jedis jedis = event.getJedis();
+        saveSkillTreesToJedis(uuid, slot, jedis);
+        removeDataFromMemory(uuid);
         PlayerMongoData playerMongoData = event.getMongoData();
         PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);

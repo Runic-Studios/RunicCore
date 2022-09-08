@@ -22,7 +22,6 @@ import java.util.UUID;
 
 public class Blizzard extends Spell implements MagicDamageSpell {
 
-    private final boolean increaseDuration;
     private static final int DAMAGE_AMOUNT = 15;
     private static final double DAMAGE_PER_LEVEL = 0.75;
     private static final int DURATION = 5;
@@ -37,51 +36,65 @@ public class Blizzard extends Spell implements MagicDamageSpell {
                         "each dealing (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) spellʔ damage to enemies and slowing them!",
                 ChatColor.WHITE, ClassEnum.MAGE, 15, 40);
-        this.increaseDuration = false;
         this.snowballMap = new HashMap<>();
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        Location lookLoc = pl.getTargetBlock(null, MAX_DIST).getLocation();
+        Location lookLoc = player.getTargetBlock(null, MAX_DIST).getLocation();
         Vector launchPath = new Vector(0, -1.0, 0).normalize().multiply(SNOWBALL_SPEED);
-        double startTime = System.currentTimeMillis();
 
         new BukkitRunnable() {
+            int count = 1;
+
             @Override
             public void run() {
-
-                // cancel after duration
-                int durationIncrease = 0;
-                if (increaseDuration)
-                    durationIncrease = DURATION_INCREASE();
-                if (System.currentTimeMillis() - startTime >= (DURATION + durationIncrease) * 1000)
+                if (count > DURATION)
                     this.cancel();
+                else {
+                    count++;
 
-                Location cloudLoc = new Location(pl.getWorld(), lookLoc.getX(),
-                        pl.getLocation().getY(), lookLoc.getZ()).add(0, 7.5, 0);
+                    Location cloudLoc = new Location(player.getWorld(), lookLoc.getX(),
+                            player.getLocation().getY(), lookLoc.getZ()).add(0, 7.5, 0);
 
-                // sounds, reduced volume due to quantity of snowballs
-                pl.getWorld().playSound(cloudLoc, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.25f, 1.0f);
+                    // sounds, reduced volume due to quantity of snowballs
+                    player.getWorld().playSound(cloudLoc, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.25f, 1.0f);
 
-                // particles
-                pl.getWorld().spawnParticle(Particle.REDSTONE, cloudLoc,
-                        25, 1.5f, 0.75f, 0.75f, new Particle.DustOptions(Color.WHITE, 20));
+                    // particles
+                    player.getWorld().spawnParticle(Particle.REDSTONE, cloudLoc,
+                            25, 1.5f, 0.75f, 0.75f, new Particle.DustOptions(Color.WHITE, 20));
 
-                // spawn 9 snowballs in a 3x3 square
-                spawnSnowball(pl, cloudLoc, launchPath);
-                spawnSnowball(pl, cloudLoc.add(1, 0, 0), launchPath);
-                spawnSnowball(pl, cloudLoc.add(-2, 0, 0), launchPath);
-                spawnSnowball(pl, cloudLoc.add(2, 0, 1), launchPath);
-                spawnSnowball(pl, cloudLoc.add(0, 0, -2), launchPath);
-                spawnSnowball(pl, cloudLoc.add(-1, 0, 2), launchPath);
-                spawnSnowball(pl, cloudLoc.add(-1, 0, 0), launchPath);
-                spawnSnowball(pl, cloudLoc.add(0, 0, -2), launchPath);
-                spawnSnowball(pl, cloudLoc.add(1, 0, 0), launchPath);
+                    // spawn 9 snowballs in a 3x3 square
+                    spawnSnowball(player, cloudLoc, launchPath);
+                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
+                    spawnSnowball(player, cloudLoc.add(-2, 0, 0), launchPath);
+                    spawnSnowball(player, cloudLoc.add(2, 0, 1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(0, 0, -2), launchPath);
+                    spawnSnowball(player, cloudLoc.add(-1, 0, 2), launchPath);
+                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
+                    spawnSnowball(player, cloudLoc.add(0, 0, -2), launchPath);
+                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
 
+                    // 1
+                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
+                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
+                    // 2
+                    spawnSnowball(player, cloudLoc.add(1, 0, 1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
+                    // 3
+                    spawnSnowball(player, cloudLoc.add(-1, 0, 1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
+                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
+                    // 4
+                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
+                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
+                }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 10); // drops a snowball every half second
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20); // drops a snowball every second
     }
 
     // listener to damage player
@@ -112,14 +125,10 @@ public class Blizzard extends Spell implements MagicDamageSpell {
         }
     }
 
-    private void spawnSnowball(Player pl, Location loc, Vector vec) {
-        Snowball snowball = pl.getWorld().spawn(loc, Snowball.class);
+    private void spawnSnowball(Player player, Location loc, Vector vec) {
+        Snowball snowball = player.getWorld().spawn(loc, Snowball.class);
         snowball.setVelocity(vec);
-        snowballMap.put(snowball, pl.getUniqueId());
-    }
-
-    public static int DURATION_INCREASE() {
-        return 3;
+        snowballMap.put(snowball, player.getUniqueId());
     }
 
     @Override
