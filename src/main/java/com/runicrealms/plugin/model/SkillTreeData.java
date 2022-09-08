@@ -115,8 +115,7 @@ public class SkillTreeData implements SessionData {
      * @return available skill points to spend
      */
     public static int getAvailablePoints(UUID uuid) {
-        int spentPoints = RunicCoreAPI.getSpentPoints(uuid);
-        Bukkit.broadcastMessage("spent points is: " + spentPoints);
+        int spentPoints = RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().get(uuid);
         Player player = Bukkit.getPlayer(uuid);
         if (player != null)
             return Math.max(0, player.getLevel() - (FIRST_POINT_LEVEL - 1) - spentPoints);
@@ -149,7 +148,8 @@ public class SkillTreeData implements SessionData {
             player.sendMessage(ChatColor.RED + "You don't have enough skill points to purchase this!");
             return;
         }
-        RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().put(uuid, RunicCoreAPI.getSpentPoints(uuid) + perk.getCost());
+        int spentPoints = RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().get(uuid);
+        RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().put(uuid, spentPoints + perk.getCost());
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
         if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
             addPassivesToMap();

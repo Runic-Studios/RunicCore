@@ -57,12 +57,12 @@ public class SkillTreeManager implements Listener {
             add(third);
         }};
         skillTreeDataList.forEach(skillTreeData -> skillTreeData.writeToMongo(playerMongoData, slot));
-        saveSpentPointsToMongo(uuid, event.getMongoDataSection());
+        saveSpentPointsToMongo(uuid, slot, jedis, event.getMongoDataSection());
         playerSpellData.writeToMongo(playerMongoData, slot);
     }
 
     @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager
-    public void onLoad(CharacterSelectEvent event) {
+    public void onCharacterSelect(CharacterSelectEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         int slot = event.getCharacterData().getBaseCharacterInfo().getSlot();
@@ -97,7 +97,6 @@ public class SkillTreeManager implements Listener {
         if (points > PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1))
             points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);
         saveSpentPointsToJedis(uuid, points, jedis); // ensure points are loaded in memory (if only in mongo)
-        Bukkit.broadcastMessage("adding spent points to memory");
         this.playerSpentPointsMap.put(uuid, points); // memoize spent points for faster lookup
     }
 
@@ -253,8 +252,8 @@ public class SkillTreeManager implements Listener {
      * @param uuid      of the player
      * @param character mongo data section from save event
      */
-    private void saveSpentPointsToMongo(UUID uuid, PlayerMongoDataSection character) {
-        character.set(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid));
+    private void saveSpentPointsToMongo(UUID uuid, int slot, Jedis jedis, PlayerMongoDataSection character) {
+        character.set(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid, slot, jedis));
     }
 
     /**
