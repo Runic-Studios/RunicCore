@@ -9,7 +9,6 @@ import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;
-import com.runicrealms.runicnpcs.api.RunicNpcsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.potion.PotionEffect;
@@ -27,13 +27,24 @@ import redis.clients.jedis.Jedis;
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
 
+    @EventHandler
+    public void onPreJoin(AsyncPlayerPreLoginEvent event) {
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                        "You recently played and your data is saving!" +
+                                "\nTry again in a moment");
+            }
+        }
+    }
+
     /**
      * Reset the player's displayed values when they join the server, before selecting a character
      */
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onJoin(PlayerJoinEvent e) {
-        e.setJoinMessage("");
-        Player player = e.getPlayer();
+    public void onJoin(PlayerJoinEvent event) {
+        event.setJoinMessage("");
+        Player player = event.getPlayer();
         player.getInventory().clear();
         player.setInvulnerable(true);
         player.setMaxHealth(20);
@@ -44,7 +55,7 @@ public class PlayerJoinListener implements Listener {
         player.setFoodLevel(20);
         player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2));
-        // build database file sync (if it doesn't exist)
+        // build database file synchronously (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             Jedis jedis = RunicCoreAPI.getNewJedisResource();
             PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player, jedis);
@@ -60,8 +71,10 @@ public class PlayerJoinListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(CharacterSelectEvent event) {
+        Location location = event.getCharacterData().getBaseCharacterInfo().getLocation();
+        event.getPlayer().teleport(location);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> loadCharacterData(event.getPlayer(), event), 1L);
+                () -> loadCharacterData(event.getPlayer(), event), 1L); // run 1 tick late so that player stats load
     }
 
     /**
@@ -82,22 +95,11 @@ public class PlayerJoinListener implements Listener {
         player.setFoodLevel(20);
     }
 
-    /**
-     * Handles loading in Runic NPCs on player login
-     * Loads with delay, allowing for data loading in NPCs plugin
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onLoadHandleNPCs(CharacterSelectEvent event) {
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer()), 5L);
-    }
-
     @EventHandler
     public void onCharacterLoaded(CharacterLoadedEvent event) {
-        CharacterData characterData = event.getCharacterSelectEvent().getCharacterData();
-        Location location = characterData.getBaseCharacterInfo().getLocation();
-        event.getPlayer().teleport(location);
         event.getPlayer().setInvulnerable(false);
-        event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS), 5L);
     }
 
     /**

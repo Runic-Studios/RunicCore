@@ -41,18 +41,20 @@ public class SkillPointsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLevel(PlayerLevelChangeEvent e) {
-        if (e.getNewLevel() > SKILL_TREE_UNLOCK_LEVEL) return;
-        Player player = e.getPlayer();
-        if (e.getNewLevel() == 10 && e.getOldLevel() != 0) { // ignores login level-up
+    public void onLevel(PlayerLevelChangeEvent event) {
+        if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+            return; // ignore the change from PlayerJoinEvent
+        if (event.getNewLevel() > SKILL_TREE_UNLOCK_LEVEL) return;
+        Player player = event.getPlayer();
+        if (event.getNewLevel() == 10 && event.getOldLevel() != 0) { // ignores login level-up
             player.sendMessage
                     (
                             ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have unlocked " +
                                     ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.LIGHT_PURPLE +
                                     "! Right click your Ancient Rune to unlock new perks with your skill points!"
                     );
-        } else if (e.getOldLevel() != 0 || (e.getOldLevel() == 0 && e.getNewLevel() == 1)) { // ignores login level-up
-            int levelsRemainingUntilSkillTrees = SKILL_TREE_UNLOCK_LEVEL - e.getNewLevel();
+        } else if (event.getOldLevel() != 0 || (event.getOldLevel() == 0 && event.getNewLevel() == 1)) { // ignores login level-up
+            int levelsRemainingUntilSkillTrees = SKILL_TREE_UNLOCK_LEVEL - event.getNewLevel();
             player.sendMessage
                     (
                             ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE +
@@ -65,10 +67,11 @@ public class SkillPointsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLoaded(CharacterLoadedEvent event) {
         CharacterData characterData = event.getCharacterSelectEvent().getCharacterData();
-        int pointsToSpend = RunicCoreAPI.getAvailableSkillPoints
+        int pointsToSpend = RunicCore.getSkillTreeManager().loadSpentPointsData
                 (
                         event.getPlayer().getUniqueId(),
-                        characterData.getBaseCharacterInfo().getSlot()
+                        characterData.getBaseCharacterInfo().getSlot(),
+                        event.getCharacterSelectEvent().getJedis()
                 );
         if (pointsToSpend > 0)
             sendSkillPointsReminderMessage(event.getPlayer(), pointsToSpend);

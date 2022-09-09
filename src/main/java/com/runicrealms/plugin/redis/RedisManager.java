@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -41,9 +42,9 @@ public class RedisManager implements Listener {
         return jedis;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // runs last
     public void onCharacterQuit(CharacterQuitEvent e) {
-        if (!updateBaseCharacterInfo(e.getPlayer(), e.getSlot(), e.getJedis()))
+        if (!updateBaseCharacterInfo(e.getPlayer(), e.getSlot(), e.getJedis())) // todo: this aint right
             Bukkit.getLogger().info(ChatColor.RED + "There was an error updating redis values on logout.");
     }
 

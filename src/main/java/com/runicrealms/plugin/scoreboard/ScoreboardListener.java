@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -29,9 +30,11 @@ public class ScoreboardListener implements Listener {
      * Updates health and scoreboard on level change
      */
     @EventHandler
-    public void onLevelUp(PlayerLevelChangeEvent e) {
-        Player player = e.getPlayer();
-        RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
+    public void onLevelUp(PlayerLevelChangeEvent event) {
+        if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+            return; // ignore the change from PlayerJoinEvent
+        Player player = event.getPlayer();
+        RunicCore.getScoreboardHandler().updatePlayerInfo(event.getPlayer(), event.getPlayer().getScoreboard());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
     }
 

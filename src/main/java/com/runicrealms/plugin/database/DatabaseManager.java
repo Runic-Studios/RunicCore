@@ -2,11 +2,13 @@ package com.runicrealms.plugin.database;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
@@ -36,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The singleton database manager responsible for creating the connection to mongo and loading documents
@@ -43,6 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DatabaseManager implements Listener {
 
+    private MongoClient mongoClient;
     private MongoDatabase playersDB;
     private MongoCollection<Document> guildDocuments;
     private MongoCollection<Document> shopDocuments;
@@ -63,14 +67,16 @@ public class DatabaseManager implements Listener {
         ConnectionString connString = new ConnectionString(
                 "mongodb+srv://RunicCore:vggRBvA1MjNEw4pE@cluster0-mf2re.mongodb.net/test?retryWrites=true&w=majority"
         );
-        MongoClientSettings settings = MongoClientSettings.builder()
+        MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
+                .applyToSocketSettings(builder -> builder.connectTimeout(30, TimeUnit.SECONDS))
                 .applyConnectionString(connString)
                 .retryWrites(true)
+                .writeConcern(WriteConcern.W2)
                 .build();
 
-        // create a client
+        // create a client (keep it open / alive)
         try {
-            MongoClient mongoClient = MongoClients.create(settings);
+            mongoClient = MongoClients.create(mongoClientSettings);
             playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
             FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseUtil.LAST_LOGIN_DATE_FILTER);
             for (Document document : player_data_last_30_days) {
@@ -111,11 +117,17 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * Remove reference to loaded players on logout
+     * Synchronously call an event when the player has finished saving their quit data.
+     * Allows player to log back in
      */
-    @EventHandler(priority = EventPriority.HIGHEST) // last
-    public void onCharacterQuit(CharacterQuitEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST) // last thing that runs
+    public void onCharacterQuitFinished(CharacterQuitEvent event) {
         loadedCharacterMap.remove(event.getPlayer().getUniqueId());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> {
+                    CharacterHasQuitEvent characterHasQuitEvent = new CharacterHasQuitEvent(event.getPlayer(), event);
+                    Bukkit.getPluginManager().callEvent(characterHasQuitEvent); // inform plugins that character has finished data save!
+                }, 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
@@ -306,6 +318,10 @@ public class DatabaseManager implements Listener {
      */
     public void updateDocument(UUID uuid, Document document) {
         playerDocumentMap.put(uuid.toString(), document);
+    }
+
+    public MongoClient getMongoClient() {
+        return mongoClient;
     }
 
     public MongoDatabase getPlayersDB() {

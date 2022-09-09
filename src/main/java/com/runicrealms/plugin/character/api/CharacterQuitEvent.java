@@ -40,6 +40,10 @@ public class CharacterQuitEvent extends Event {
         this.jedis = jedis;
     }
 
+    public void close() {
+        this.jedis.close();
+    }
+
     public Player getPlayer() {
         return this.player;
     }

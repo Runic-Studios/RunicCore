@@ -22,9 +22,12 @@ import redis.clients.jedis.Jedis;
 public class PlayerLevelListener implements Listener {
 
     @EventHandler
-    public void onLevelUp(PlayerLevelChangeEvent e) {
+    public void onLevelUp(PlayerLevelChangeEvent event) {
 
-        Player player = e.getPlayer();
+        if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+            return; // ignore the change from PlayerJoinEvent
+
+        Player player = event.getPlayer();
         if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
 
         // update player's level in redis

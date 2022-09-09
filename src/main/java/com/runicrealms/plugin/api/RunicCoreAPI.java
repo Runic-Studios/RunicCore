@@ -389,7 +389,7 @@ public class RunicCoreAPI {
      * Gets the total skill points that are available to a given player that are NOT yet spent
      *
      * @param uuid of player to check
-     * @return number of skill points availble (AFTER subtracting spent points)
+     * @return number of skill points available (AFTER subtracting spent points)
      */
     public static int getAvailableSkillPoints(UUID uuid, int slot) {
         return SkillTreeData.getAvailablePoints(uuid);

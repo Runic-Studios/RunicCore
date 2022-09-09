@@ -82,6 +82,8 @@ public class ManaListener implements Listener {
 
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent e) {
+        if (!RunicCoreAPI.getLoadedCharacters().contains(e.getPlayer().getUniqueId()))
+            return; // ignore the change from PlayerJoinEvent
         Player player = e.getPlayer();
         if (player.getLevel() > RegenManager.getBaseMana()) return;
         calculateMaxMana(player);

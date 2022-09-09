@@ -263,7 +263,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onRunicShutdown(ServerShutdownEvent e) {
+    public void onRunicShutdown(ServerShutdownEvent event) {
         getDatabaseManager().saveAllCharacters(); // saves SYNC CacheSaveReason.SERVER_SHUTDOWN
         /*
         Notify RunicRestart
