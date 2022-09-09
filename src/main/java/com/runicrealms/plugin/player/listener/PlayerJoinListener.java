@@ -74,7 +74,7 @@ public class PlayerJoinListener implements Listener {
         Location location = event.getCharacterData().getBaseCharacterInfo().getLocation();
         event.getPlayer().teleport(location);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> loadCharacterData(event.getPlayer(), event), 1L); // run 1 tick late so that player stats load
+                () -> buildCharacterFromEvent(event.getPlayer(), event), 1L); // run 1 tick late so that player stats load
     }
 
     /**
@@ -120,7 +120,7 @@ public class PlayerJoinListener implements Listener {
      * @param player               to set values for
      * @param characterSelectEvent the associated select event to finish loading
      */
-    private void loadCharacterData(Player player, CharacterSelectEvent characterSelectEvent) {
+    private void buildCharacterFromEvent(Player player, CharacterSelectEvent characterSelectEvent) {
         CharacterData characterData = characterSelectEvent.getCharacterData();
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());

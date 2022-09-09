@@ -21,6 +21,7 @@ import java.util.UUID;
  */
 public class RedisManager implements Listener {
 
+    private static final int MAX_CONNECTIONS = 128;
     private static final int REDIS_PORT = 17083; // TODO: these should be env vars (application.properties)
     private static final String REDIS_CONNECTION_STRING = "redis-17083.c15.us-east-1-2.ec2.cloud.redislabs.com";
     public static final String REDIS_PASSWORD = "i3yIgvdVw13MbFO2RJF382dX8kvZzUaD";
@@ -29,7 +30,8 @@ public class RedisManager implements Listener {
     public RedisManager() {
         Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxTotal(128); // max pool size
+        jedisPoolConfig.setMaxTotal(MAX_CONNECTIONS); // max pool size
+        jedisPoolConfig.setMaxIdle(MAX_CONNECTIONS);
         jedisPool = new JedisPool(jedisPoolConfig, REDIS_CONNECTION_STRING, REDIS_PORT);
     }
 
