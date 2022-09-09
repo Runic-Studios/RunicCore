@@ -21,23 +21,24 @@ public class VectorUtil {
     }
 
 
-    public static void drawLine(Player pl, Particle particle, Color color,
-                                Location point1, Location point2, double space) {
+    public static Vector drawLine(Player player, Particle particle, Color color,
+                                  Location point1, Location point2, double space) {
         double distance = point1.distance(point2);
         Vector p1 = point1.toVector();
         Vector p2 = point2.toVector();
         Vector vector = p2.clone().subtract(p1).normalize().multiply(space);
         for (double length = 0; length < distance; p1.add(vector)) {
             if (particle == Particle.REDSTONE) {
-                pl.getWorld().spawnParticle(particle,
-                        new Location(pl.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
+                player.getWorld().spawnParticle(particle,
+                        new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
                         25, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
             } else {
-                pl.getWorld().spawnParticle(particle,
-                        new Location(pl.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
+                player.getWorld().spawnParticle(particle,
+                        new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
                         25, 0, 0, 0, 0);
             }
             length += space;
         }
+        return vector;
     }
 }
