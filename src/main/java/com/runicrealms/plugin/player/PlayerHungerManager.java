@@ -28,7 +28,7 @@ public class PlayerHungerManager implements Listener {
 
     public PlayerHungerManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(RunicCore.getInstance(),
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(),
                 this::tickAllOnlinePlayersHunger, HUNGER_TICK_TASK_DELAY * 20L, PLAYER_HUNGER_TIME * 20L);
     }
 
@@ -41,15 +41,19 @@ public class PlayerHungerManager implements Listener {
             if (player == null) continue;
             if (RunicCoreAPI.isSafezone(player.getLocation())) { // prevent hunger loss in capital cities
                 if (player.getFoodLevel() < 20) {
-                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-                    player.sendMessage(ChatColor.GREEN + "You feel safe within the city! Your hunger has been restored.");
-                    player.setFoodLevel(20);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> restoreHunger(player));
                 }
                 continue;
             }
             if (player.getFoodLevel() <= STARVATION_HUNGER_LEVEL) continue;
             player.setFoodLevel(player.getFoodLevel() - 1);
         }
+    }
+
+    private void restoreHunger(Player player) {
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+        player.sendMessage(ChatColor.GREEN + "You feel safe within the city! Your hunger has been restored.");
+        player.setFoodLevel(20);
     }
 
     /**
