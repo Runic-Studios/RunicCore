@@ -104,14 +104,6 @@ public class PartyCommand extends BaseCommand {
     @CommandCompletion("@party-invite")
     @Conditions("is-player")
     public void onCommandInvite(Player player, String[] args) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be in a party to use this command!"));
-            return;
-        }
-        if (RunicCore.getPartyManager().getPlayerParty(player).getLeader() != player) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
-            return;
-        }
         if (args.length < 1) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cPlease specify a player to invite!"));
             return;
@@ -129,7 +121,18 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player has already been invited to your/a different party!"));
             return;
         }
+        if (invited.equals(player)) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou cannot invite yourself!"));
+            return;
+        }
+        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+            onCommandCreate(player);
+        }
         Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        if (party.getLeader() != player) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
+            return;
+        }
         if (Math.abs(party.getLeader().getLevel() - invited.getLevel()) > 15) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is outside the party level range [15]"));
             return;
