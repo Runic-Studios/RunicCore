@@ -24,6 +24,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -55,7 +56,7 @@ public class LootChestListener implements Listener {
         Location blockLoc = block.getLocation();
         if (block.getType() == Material.AIR) return;
 
-        if (RunicCore.getLootChestManager().getQueuedChest(blockLoc) != null) return; // chest already queued
+        // if (RunicCore.getLootChestManager().getQueuedChest(blockLoc) != null) return; // chest already queued
         if (RunicCore.getLootChestManager().getLootChest(blockLoc) == null)
             return; // chest doesn't match saved chest locations
         LootChest lootChest = RunicCore.getLootChestManager().getLootChest(blockLoc);
@@ -74,11 +75,18 @@ public class LootChestListener implements Listener {
             return;
         }
 
-        // destroy chest, open inv if all conditions are met
-        RunicCore.getLootChestManager().getQueuedChests().put(lootChest, System.currentTimeMillis()); // update respawn timer
-        player.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
-        block.setType(Material.AIR);
+        // verify chest has not already been looted
+        Map<LootChest, Long> chestsOnCD = RunicCore.getLootChestManager().getChestsOnCDForUuid(player.getUniqueId());
+        if (chestsOnCD.containsKey(lootChest)) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            long timeLeft = (lootChest.getLootChestRarity().getRespawnTimeSeconds() * 1000L) - (System.currentTimeMillis() - chestsOnCD.get(lootChest));
+            player.sendMessage(ChatColor.RED + "You must wait " + (int) (timeLeft / 1000) + " seconds to loot this chest again!");
+            return;
+        }
 
+        // open inv if all conditions are met, put chest on CD for player
+        chestsOnCD.put(lootChest, System.currentTimeMillis()); // put chest on CD
+        player.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
         player.openInventory(new LootChestInventory(player, lootChestTier).getInventory());
     }

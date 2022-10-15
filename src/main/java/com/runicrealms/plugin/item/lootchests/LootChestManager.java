@@ -1,25 +1,21 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class LootChestManager {
 
-    private static final int TASK_INTERVAL = 15; // seconds
-
-    private final HashSet<LootChest> lootChests; // maps chest to respawn time
-    private final LinkedHashMap<LootChest, Long> queuedChests;
-
+    private final HashSet<LootChest> lootChests;
+    private final HashMap<UUID, Map<LootChest, Long>> playerChestCooldownMap; // maps player to which chests they have looted
     private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
             "chests.yml");
     private final FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
@@ -28,7 +24,7 @@ public class LootChestManager {
     public LootChestManager() {
 
         lootChests = new HashSet<>();
-        queuedChests = new LinkedHashMap<>();
+        playerChestCooldownMap = new HashMap<>();
         if (locations == null) return;
 
         /*
@@ -53,7 +49,7 @@ public class LootChestManager {
             e.printStackTrace();
         }
 
-        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenChests, 100L, TASK_INTERVAL * 20L); // time * seconds / ticks
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::regenChests, 100L, 3 * 20L); // time * seconds / ticks
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), this::particleTask, 20L, 3 * 20L);
     }
 
@@ -61,30 +57,18 @@ public class LootChestManager {
      * Respawns chest based upon their respawn time left
      */
     private void regenChests() {
-
-        int limit = (int) Math.ceil(queuedChests.size() / 4) + 1;
-        int count = 0;
-
-        Set<LootChest> remove = new HashSet<>();
-        for (LootChest chest : queuedChests.keySet()) {
-            if (queuedChests.size() < 1) continue;
-            if (count >= limit) break;
-            Location loc = chest.getLocation();
-            if (!Objects.requireNonNull(loc.getWorld()).isChunkLoaded(loc.getChunk())) continue; // chunk must be loaded
-            if (loc.getBlock().getType() == Material.CHEST) continue; // chest already loaded
-            if ((System.currentTimeMillis() - queuedChests.get(chest)) < chest.getLootChestRarity().getRespawnTime() * 1000L)
-                continue;
-            loc.getBlock().setType(Material.CHEST);
-            remove.add(chest);
-            count++;
-        }
-        for (LootChest chest : remove) {
-            queuedChests.remove(chest);
+        for (UUID uuid : playerChestCooldownMap.keySet()) {
+            for (LootChest lootChest : playerChestCooldownMap.get(uuid).keySet()) {
+                if ((System.currentTimeMillis() - playerChestCooldownMap.get(uuid).get(lootChest))
+                        < lootChest.getLootChestRarity().getRespawnTimeSeconds() * 1000L)
+                    continue; // chest not finished CD
+                playerChestCooldownMap.get(uuid).remove(lootChest);
+            }
         }
     }
 
     /**
-     * Generates particles based on the loot chest color
+     * Generates particles based on the loot chest color for all players who have not looted the chest
      */
     private void particleTask() {
         for (LootChest lootChest : lootChests) {
@@ -92,8 +76,17 @@ public class LootChestManager {
                 continue;
             Location location = lootChest.getLocation();
             if (location.getBlock().getType() != Material.CHEST) continue;
-            Objects.requireNonNull(location.getWorld()).spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
-                    10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
+            for (UUID loaded : RunicCoreAPI.getLoadedCharacters()) {
+                Player online = Bukkit.getPlayer(loaded);
+                if (online == null) continue;
+                if (playerChestCooldownMap.containsKey(loaded)) {
+                    Map<LootChest, Long> chestsOnCooldown = playerChestCooldownMap.get(online.getUniqueId());
+                    if (chestsOnCooldown.containsKey(lootChest))
+                        continue; // only display particles to players who are not on cooldown
+                }
+                online.spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
+                        10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
+            }
         }
     }
 
@@ -121,26 +114,23 @@ public class LootChestManager {
     }
 
     /**
-     * Grabs our list of chests which are queued for respawn
+     * Get a map containing the player's chest cooldowns
      *
-     * @return a linked hash map
+     * @return a Map of uuid to a set of chests on cooldown
      */
-    public LinkedHashMap<LootChest, Long> getQueuedChests() {
-        return queuedChests;
+    public Map<UUID, Map<LootChest, Long>> getPlayerChestCooldownMap() {
+        return playerChestCooldownMap;
     }
 
     /**
-     * Grab the chest queued for respawn at the given location
+     * Returns a map of the chests which are on cooldown for the given uuid, along with their remaining CD time
      *
-     * @param location to check
-     * @return a loot chest object
+     * @param uuid of the player to check
+     * @return a set of chests on cooldown
      */
-    public LootChest getQueuedChest(Location location) {
-        for (LootChest queuedChest : queuedChests.keySet()) {
-            if (queuedChest.getLocation().equals(location))
-                return queuedChest;
-        }
-        return null;
+    public Map<LootChest, Long> getChestsOnCDForUuid(UUID uuid) {
+        playerChestCooldownMap.putIfAbsent(uuid, new HashMap<>());
+        return playerChestCooldownMap.get(uuid);
     }
 
     /**

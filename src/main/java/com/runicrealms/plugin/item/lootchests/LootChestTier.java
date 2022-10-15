@@ -16,22 +16,22 @@ public enum LootChestTier {
     private final int maxLootLevel;
     private final int minimumItems;
     private final int maximumItems;
-    private final int respawnTime;
+    private final int respawnTimeSeconds;
 
     /**
      * Enumerates a set of loot chest rarities which determine the content of the box
      *
-     * @param identifier     the string name of the rarity e.g., common
-     * @param color          the color associated with the rarity
-     * @param minAccessLevel the minimum level to open the box
-     * @param minLootLevel   the minimum level of the item loot
-     * @param maxLootLevel   the max level of the item loot
-     * @param minimumItems   the min number of items in the box
-     * @param maximumItems   the max number of items in the box
-     * @param respawnTime    how long before boxes of this rarity respawn (shared timer)
+     * @param identifier         the string name of the rarity e.g., common
+     * @param color              the color associated with the rarity
+     * @param minAccessLevel     the minimum level to open the box
+     * @param minLootLevel       the minimum level of the item loot
+     * @param maxLootLevel       the max level of the item loot
+     * @param minimumItems       the min number of items in the box
+     * @param maximumItems       the max number of items in the box
+     * @param respawnTimeSeconds how long before boxes of this rarity respawn (shared timer)
      */
     LootChestTier(String identifier, Color color, int minAccessLevel, int minLootLevel, int maxLootLevel,
-                  int minimumItems, int maximumItems, int respawnTime) {
+                  int minimumItems, int maximumItems, int respawnTimeSeconds) {
         this.identifier = identifier;
         this.color = color;
         this.minAccessLevel = minAccessLevel;
@@ -39,7 +39,7 @@ public enum LootChestTier {
         this.maxLootLevel = maxLootLevel;
         this.minimumItems = minimumItems;
         this.maximumItems = maximumItems;
-        this.respawnTime = respawnTime;
+        this.respawnTimeSeconds = respawnTimeSeconds;
     }
 
     public String getIdentifier() {
@@ -70,8 +70,8 @@ public enum LootChestTier {
         return maximumItems;
     }
 
-    public int getRespawnTime() {
-        return respawnTime;
+    public int getRespawnTimeSeconds() {
+        return respawnTimeSeconds;
     }
 
     /**
