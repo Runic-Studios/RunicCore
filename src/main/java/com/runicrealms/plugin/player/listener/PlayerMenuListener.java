@@ -52,7 +52,7 @@ public class PlayerMenuListener implements Listener {
 
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
-                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(combatStatsIcon(player)));
+                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(achievementsIcon(player)));
                     PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenuIcon(player)));
                     PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
                     PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(groupFinderIcon(player)));
@@ -121,13 +121,13 @@ public class PlayerMenuListener implements Listener {
      * @param player who the menu belongs to
      * @return a visual menu item for settings
      */
-    private ItemStack combatStatsIcon(Player player) {
+    private ItemStack achievementsIcon(Player player) {
         return item
                 (
                         player,
                         Material.PLAYER_HEAD,
-                        "&e" + player.getName(),
-                        "\n&7Character insights &ccoming soon&7!"
+                        "&e" + player.getName() + "'s Achievements",
+                        "\n&c&lCLICK" + "\n&7Achievments &ccoming soon!"
                 );
     }
 
@@ -173,8 +173,8 @@ public class PlayerMenuListener implements Listener {
         return item
                 (
                         player,
-                        Material.ENDER_EYE,
-                        ChatColor.RED + "Group Finder",
+                        Material.BELL,
+                        ChatColor.YELLOW + "Group Finder",
                         "\n&6&lCLICK" + "\n&7To open the Group Finder!"
                 );
     }
