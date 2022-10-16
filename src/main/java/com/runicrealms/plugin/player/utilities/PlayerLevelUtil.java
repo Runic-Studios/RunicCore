@@ -38,15 +38,17 @@ public class PlayerLevelUtil {
      */
     public static int calculateTotalExp(int currentLv) {
         int cubed = (int) Math.pow((currentLv + 5), 3);
-        return ((30 * cubed) / 5) - 750;
+        return ((53 * cubed) / 5) - 1325;
     }
 
-    /*
-    This method takes in an experience amount and returns the level which corresponds to that amount.
-    i.e., passing 997,500 will return level 50.
+    /**
+     * This method takes in an experience amount and returns the level which corresponds to that amount.
+     * i.e., passing 997,500 will return level 50.
+     *
+     * @param experience the experience of the player
      */
     public static int calculateExpectedLv(int experience) {
-        return (int) Math.cbrt(((experience + 750.0) / 6)) - 5;
+        return (int) Math.cbrt((((5 * experience) + 6625.0) / 53)) - 5;
     }
 
     /**
