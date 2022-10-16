@@ -4,7 +4,7 @@ import org.bukkit.Color;
 
 public enum LootChestTier {
 
-    TIER_I("common", Color.WHITE, 3, 1, 9, 2, 4, 600), // 10 min
+    TIER_I("common", Color.WHITE, 0, 1, 9, 2, 4, 600), // 10 min
     TIER_II("uncommon", Color.LIME, 10, 10, 24, 2, 4, 900), // 15 min
     TIER_III("rare", Color.AQUA, 25, 25, 39, 3, 5, 1200), // 20 min
     TIER_IV("epic", Color.FUCHSIA, 40, 40, 60, 3, 6, 2700); // 45 min
