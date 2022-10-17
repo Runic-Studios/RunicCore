@@ -35,6 +35,7 @@ public class RunicItemShopFactory {
         getTailor();
         getWagonMaster();
         initializeInnkeepers();
+        getTutorialShop();
         /*
         PROFESSION TUTORS
          */
@@ -382,6 +383,24 @@ public class RunicItemShopFactory {
         shopItems.add(new RunicShopItem(2000, "Coin", chestnutMare));
         shopItems.add(new RunicShopItem(2000, "Coin", grayStallion));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Mount Vendor", Arrays.asList(510, 239, 243, 257, 535, 534, 274, 508, 280, 284, 317), shopItems);
+    }
+
+    private final ItemStack tutorialArcherChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-archer-chestplate").generateItem();
+    private final ItemStack tutorialClericChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-cleric-chestplate").generateItem();
+    private final ItemStack tutorialMageChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-mage-chestplate").generateItem();
+    private final ItemStack tutorialRogueChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-rogue-chestplate").generateItem();
+    private final ItemStack tutorialWarriorChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-warrior-chestplate").generateItem();
+
+
+    public RunicShopGeneric getTutorialShop() {
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add(new RunicShopItem(1, "tutorial-metal", tutorialArcherChestplate, "Scrap of Metal"));
+        shopItems.add(new RunicShopItem(1, "tutorial-flower", tutorialClericChestplate, ""));
+        shopItems.add(new RunicShopItem(1, "tutorial-feather", tutorialMageChestplate, "Seagull Feather"));
+        shopItems.add(new RunicShopItem(1, "tutorial-leather", tutorialRogueChestplate, "Horsehide"));
+        shopItems.add(new RunicShopItem(1, "tutorial-shell", tutorialWarriorChestplate, "Sea Turtle Shell"));
+        return new RunicShopGeneric(45, ChatColor.YELLOW + "Redbrand Armorer", Collections.singletonList(646), shopItems,
+                new int[]{4, 13, 22, 31, 40});
     }
 
     /*
