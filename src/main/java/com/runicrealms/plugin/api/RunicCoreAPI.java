@@ -14,6 +14,7 @@ import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
@@ -615,5 +616,13 @@ public class RunicCoreAPI {
      */
     public static void updatePlayerScoreboard(Player player) {
         RunicCore.getScoreboardHandler().updatePlayerInfo(player, player.getScoreboard());
+    }
+
+    public static class CombatAPI {
+        public static void giveCombatExp(Player player, int exp) {
+            try (Jedis jedis = RunicCore.getRedisManager().getJedisResource()) {
+                PlayerLevelUtil.giveExperience(player, exp, jedis);
+            }
+        }
     }
 }

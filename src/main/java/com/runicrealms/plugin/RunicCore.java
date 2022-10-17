@@ -38,12 +38,10 @@ import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.cmd.ResetTreeCMD;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.runicrestart.api.RunicRestartApi;
 import com.runicrealms.runicrestart.api.ServerShutdownEvent;
-import net.minecraft.server.v1_16_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -231,11 +229,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PlaceholderAPI().register();
         }
-
-        // motd
-        String motd = ColorUtil.format("                    &d&lRUNIC REALMS&r" +
-                "\n              &a&l2.0 - The Second Age!");
-        MinecraftServer.getServer().setMotd(motd);
     }
 
     /*
@@ -338,6 +331,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
         pm.registerEvents(new HealthBarListener(), this);
+        pm.registerEvents(new ServerListPingListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

@@ -116,8 +116,6 @@ public class RunicGiveCMD extends BaseCommand {
         if (gatheringSkill == null) return;
         // skip all other calculations for quest exp
         int exp = Integer.parseInt(args[2]);
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            ProfExpUtil.giveGatheringExperience(player, gatheringSkill, exp, jedis);
-        }
+        ProfExpUtil.giveGatheringExperience(player, gatheringSkill, exp);
     }
 }
