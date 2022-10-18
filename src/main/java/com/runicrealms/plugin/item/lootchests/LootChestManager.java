@@ -58,6 +58,7 @@ public class LootChestManager {
      */
     private void regenChests() {
         for (UUID uuid : playerChestCooldownMap.keySet()) {
+            if (playerChestCooldownMap.get(uuid) == null) continue;
             for (LootChest lootChest : playerChestCooldownMap.get(uuid).keySet()) {
                 if ((System.currentTimeMillis() - playerChestCooldownMap.get(uuid).get(lootChest))
                         < lootChest.getLootChestRarity().getRespawnTimeSeconds() * 1000L)
