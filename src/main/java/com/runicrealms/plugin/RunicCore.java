@@ -9,8 +9,6 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
 import com.runicrealms.plugin.commands.player.*;
 import com.runicrealms.plugin.database.DatabaseManager;
-import com.runicrealms.plugin.donator.ThreeD;
-import com.runicrealms.plugin.donator.ThreeDManager;
 import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
@@ -74,7 +72,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PaperCommandManager commandManager;
     private static SkillTreeManager skillTreeManager;
     private static StatManager statManager;
-    private static ThreeDManager threeDManager;
     private static RunicShopManager runicShopManager;
     private static PlayerHungerManager playerHungerManager;
     private static RedisManager redisManager;
@@ -144,10 +141,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return statManager;
     }
 
-    public static ThreeDManager getThreeDManager() {
-        return threeDManager;
-    }
-
     public static RunicShopManager getRunicShopManager() {
         return runicShopManager;
     }
@@ -184,7 +177,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         databaseManager = new DatabaseManager();
         skillTreeManager = new SkillTreeManager();
         statManager = new StatManager();
-        threeDManager = new ThreeDManager();
         runicShopManager = new RunicShopManager();
         playerHungerManager = new PlayerHungerManager();
         redisManager = new RedisManager();
@@ -249,7 +241,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyChannel = null;
         skillTreeManager = null;
         statManager = null;
-        threeDManager = null;
         runicShopManager = null;
         playerHungerManager = null;
         redisManager = null;
@@ -358,8 +349,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // boost
         getCommand("boost").setExecutor(new BoostCMD());
-        // register 3d command
-        getCommand("3d").setExecutor(new ThreeD());
 
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());

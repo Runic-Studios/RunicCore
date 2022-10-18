@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
-import com.runicrealms.plugin.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -29,9 +29,21 @@ public class ArmorTypeListener implements Listener {
         Player player = e.getPlayer();
         String className = RunicCoreAPI.getPlayerClass(player);
 
-        ItemType armorType = ItemType.matchType(equippedItem);
+        ItemType itemType = ItemType.matchType(equippedItem);
+        // Bukkit.broadcastMessage(itemType.name());
 
-        switch (armorType) {
+        switch (itemType) {
+            case GEMSTONE:
+            case MAINHAND:
+            case OFFHAND:
+            case CONSUMABLE:
+            case ARCHER:
+            case CLERIC:
+            case MAGE:
+            case ROGUE:
+            case WARRIOR:
+            case AIR:
+                break;
             case PLATE:
                 if (!className.equals("Warrior")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -67,6 +79,8 @@ public class ArmorTypeListener implements Listener {
                     player.sendMessage(armorMessage(className));
                 }
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + itemType);
         }
     }
 
