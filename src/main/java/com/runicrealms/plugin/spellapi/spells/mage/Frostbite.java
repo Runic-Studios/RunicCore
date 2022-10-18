@@ -41,6 +41,7 @@ public class Frostbite extends Spell {
         Location finalTargetBlockLocation = targetBlockLocation.getLocation();
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION) {
@@ -48,7 +49,7 @@ public class Frostbite extends Spell {
                 } else {
                     count += 1;
                     createCircle(pl, finalTargetBlockLocation);
-                    pl.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_CAT_HISS, 0.5f, 0.1f);
+                    pl.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : pl.getWorld().getNearbyEntities(finalTargetBlockLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(verifyEnemy(pl, en))) continue;
                         if (isRooted(en)) continue;

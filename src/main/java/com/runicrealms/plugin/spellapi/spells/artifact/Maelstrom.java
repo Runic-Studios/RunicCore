@@ -53,7 +53,7 @@ public class Maelstrom extends Spell implements ArtifactSpell {
      * @param damage of the spell
      */
     private void createMaelstrom(Player player, Entity victim, int damage) {
-        player.getWorld().playSound(victim.getLocation(), Sound.ENTITY_CAT_HISS, 0.5f, 0.1f);
+        player.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         player.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
         for (Entity en : player.getWorld().getNearbyEntities(victim.getLocation(), RADIUS, RADIUS, RADIUS)) {
             if (!(verifyEnemy(player, en))) continue;

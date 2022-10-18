@@ -37,7 +37,7 @@ public class SkillTreeManager implements Listener {
     }
 
     /**
-     * Saves player skill tree info whenever the player cache is saved.
+     * Saves player skill tree info when the server is shut down
      */
     @EventHandler
     public void onDatabaseSave(MongoSaveEvent event) {
@@ -45,7 +45,6 @@ public class SkillTreeManager implements Listener {
         int slot = event.getSlot();
         Jedis jedis = event.getJedis();
         saveSkillTreesToJedis(uuid, slot, jedis);
-        removeDataFromMemory(uuid);
         PlayerMongoData playerMongoData = event.getMongoData();
         PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
@@ -70,13 +69,13 @@ public class SkillTreeManager implements Listener {
         /*
         Ensures spell-related data is properly memoized
          */
-        // todo: make sure updates expiry on login
+        // todo: make sure updates expiry on login?
         this.playerPassiveMap.put(uuid, new HashSet<>()); // setup for passive map
         this.playerSpellMap.put(uuid, loadPlayerSpellData(uuid, slot, jedis)); // memoize spell data
         /*
         Ensure skill tree data is in redis
          */
-        // todo: make sure every login updates expiry (for points and spells, too)
+        // todo: make sure every login updates expiry (for points and spells, too)?
         this.playerSkillTreeMap.put
                 (
                         uuid + ":" + SkillTreePosition.FIRST.getValue(),
@@ -92,7 +91,7 @@ public class SkillTreeManager implements Listener {
                         uuid + ":" + SkillTreePosition.THIRD.getValue(),
                         loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis)
                 );
-        // todo: make sure updates expiry on login
+        // todo: make sure updates expiry on login?
         int points = loadSpentPointsData(uuid, slot, jedis);
         if (points > PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1))
             points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);

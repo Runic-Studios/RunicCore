@@ -69,7 +69,7 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
         Player pl = (Player) e.getPotion().getShooter();
 
         expiredBomb.getWorld().playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
-        expiredBomb.getWorld().playSound(loc, Sound.ENTITY_CAT_HISS, 0.5F, 0.5F);
+        expiredBomb.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1.0F);
 
         expiredBomb.getWorld().spawnParticle(Particle.REDSTONE, loc,

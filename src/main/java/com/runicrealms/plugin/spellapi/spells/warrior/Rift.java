@@ -33,6 +33,7 @@ public class Rift extends Spell {
         Location finalCastLocation = castLocation;
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION)
@@ -47,7 +48,7 @@ public class Rift extends Spell {
 
     private void spawnRift(Player pl, Location castLocation) {
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CAT_HISS, 0.5F, 0.5F);
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
 
         // create circle
         createCircle(pl, castLocation, RADIUS);

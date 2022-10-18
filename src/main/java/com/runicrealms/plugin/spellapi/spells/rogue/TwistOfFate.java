@@ -104,7 +104,7 @@ public class TwistOfFate extends Spell {
                 }
 
                 // More effect noises
-                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CAT_HISS, 0.01F, 0.5F);
+                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
 
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {

@@ -35,7 +35,7 @@ public class Discord extends Spell implements MagicDamageSpell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DELAY * 20, 2));
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CAT_HISS, 0.01f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
         Cone.coneEffect(player, Particle.NOTE, DELAY, 0, 20, Color.GREEN);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(player), DELAY * 20L);

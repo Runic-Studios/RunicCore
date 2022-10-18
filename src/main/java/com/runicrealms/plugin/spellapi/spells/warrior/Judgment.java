@@ -81,19 +81,20 @@ public class Judgment extends Spell {
         final long startTime = System.currentTimeMillis();
         new BukkitRunnable() {
             double phi = 0;
+
             @Override
             public void run() {
 
                 // create visual bubble
-                phi += Math.PI/10;
+                phi += Math.PI / 10;
                 Location loc = pl.getLocation();
-                for (double theta = 0; theta <= 2*Math.PI; theta += Math.PI/40) {
-                    double x = BUBBLE_SIZE*cos(theta)*sin(phi);
-                    double y = BUBBLE_SIZE*cos(phi) + 1.5;
-                    double z = BUBBLE_SIZE*sin(theta)*sin(phi);
-                    loc.add(x,y,z);
+                for (double theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 40) {
+                    double x = BUBBLE_SIZE * cos(theta) * sin(phi);
+                    double y = BUBBLE_SIZE * cos(phi) + 1.5;
+                    double z = BUBBLE_SIZE * sin(theta) * sin(phi);
+                    loc.add(x, y, z);
                     pl.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
-                    loc.subtract(x,y,z);
+                    loc.subtract(x, y, z);
                 }
 
                 // Spell duration, allow cancel by sneaking
@@ -106,7 +107,7 @@ public class Judgment extends Spell {
                 }
 
                 // More effect noises
-                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CAT_HISS, 0.01F, 0.5F);
+                pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
 
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
@@ -118,7 +119,7 @@ public class Judgment extends Spell {
                     }
                 }
             }
-        }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20/UPDATES_PER_SECOND));
+        }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20 / UPDATES_PER_SECOND));
     }
 
     /*
