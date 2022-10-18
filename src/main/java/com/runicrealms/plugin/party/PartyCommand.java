@@ -133,10 +133,6 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
             return;
         }
-        if (Math.abs(party.getLeader().getLevel() - invited.getLevel()) > 15) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is outside the party level range [15]"));
-            return;
-        }
         invited.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
