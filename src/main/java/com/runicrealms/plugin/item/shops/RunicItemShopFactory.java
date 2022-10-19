@@ -395,12 +395,11 @@ public class RunicItemShopFactory {
     public RunicShopGeneric getTutorialShop() {
         LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
         shopItems.add(new RunicShopItem(1, "tutorial-metal", tutorialArcherChestplate, "Scrap of Metal"));
-        shopItems.add(new RunicShopItem(1, "tutorial-flower", tutorialClericChestplate, ""));
+        shopItems.add(new RunicShopItem(1, "tutorial-flower", tutorialClericChestplate, "Cornflower"));
         shopItems.add(new RunicShopItem(1, "tutorial-feather", tutorialMageChestplate, "Seagull Feather"));
         shopItems.add(new RunicShopItem(1, "tutorial-leather", tutorialRogueChestplate, "Horsehide"));
         shopItems.add(new RunicShopItem(1, "tutorial-shell", tutorialWarriorChestplate, "Sea Turtle Shell"));
-        return new RunicShopGeneric(45, ChatColor.YELLOW + "Redbrand Armorer", Collections.singletonList(646), shopItems,
-                new int[]{4, 13, 22, 31, 40});
+        return new RunicShopGeneric(45, ChatColor.YELLOW + "Redbrand Armorer", Collections.singletonList(646), shopItems);
     }
 
     /*
