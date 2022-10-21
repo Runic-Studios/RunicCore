@@ -5,7 +5,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,13 +30,13 @@ public class PlayerMongoData implements MongoData {
         try {
             if (RunicCore.getDatabaseManager().getPlayerDocumentMap().get(uuid) != null) {
                 this.document = RunicCore.getDatabaseManager().getPlayerDocumentMap().get(uuid);
-                Bukkit.broadcastMessage("loading mongo document from last 30 days");
+                // Bukkit.broadcastMessage("loading mongo document from last 30 days");
             } else if (RunicCore.getDatabaseManager().isInCollection(UUID.fromString(uuid))) {
                 this.document = RunicCore.getDatabaseManager().retrieveDocumentFromCollection(UUID.fromString(uuid));
-                Bukkit.broadcastMessage("loading mongo document from collection");
+                // Bukkit.broadcastMessage("loading mongo document from collection");
             } else {
                 this.document = RunicCore.getDatabaseManager().addNewDocument(uuid);
-                Bukkit.broadcastMessage("building new mongo document");
+                // Bukkit.broadcastMessage("building new mongo document");
             }
         } catch (Exception e) {
             e.printStackTrace();

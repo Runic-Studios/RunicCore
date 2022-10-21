@@ -38,25 +38,41 @@ public class SkillTreeManager implements Listener {
 
     /**
      * Saves player skill tree info when the server is shut down
+     * for EACH alt the player has used during the runtime of this server.
+     * Works even if the player is now entirely offline
      */
     @EventHandler
     public void onDatabaseSave(MongoSaveEvent event) {
-        UUID uuid = event.getUuid();
-        int slot = event.getSlot();
-        Jedis jedis = event.getJedis();
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            for (int characterSlot : event.getPlayersToSave().get(uuid)) {
+                PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+                PlayerMongoDataSection character = playerMongoData.getCharacter(characterSlot);
+                saveSpellsAndSkillTreesToMongo(uuid, characterSlot, event.getJedis(), playerMongoData, character);
+                playerMongoData.save();
+            }
+        }
+    }
+
+    /**
+     * @param uuid
+     * @param slot
+     * @param jedis
+     * @param playerMongoData
+     * @param character
+     */
+    private void saveSpellsAndSkillTreesToMongo(UUID uuid, int slot, Jedis jedis,
+                                                PlayerMongoData playerMongoData, PlayerMongoDataSection character) {
+        character.remove(SkillTreeData.PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
+        character.save();
         saveSkillTreesToJedis(uuid, slot, jedis);
-        PlayerMongoData playerMongoData = event.getMongoData();
         PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
         SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis);
         SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis);
-        List<SkillTreeData> skillTreeDataList = new ArrayList<SkillTreeData>() {{
-            add(first);
-            add(second);
-            add(third);
-        }};
-        skillTreeDataList.forEach(skillTreeData -> skillTreeData.writeToMongo(playerMongoData, slot));
-        saveSpentPointsToMongo(uuid, slot, jedis, event.getMongoDataSection());
+        first.writeToMongo(playerMongoData, slot);
+        second.writeToMongo(playerMongoData, slot);
+        third.writeToMongo(playerMongoData, slot);
+        saveSpentPointsToMongo(uuid, slot, jedis, character);
         playerSpellData.writeToMongo(playerMongoData, slot);
     }
 
@@ -121,7 +137,7 @@ public class SkillTreeManager implements Listener {
             if (spentPoints != null && !spentPoints.equals(""))
                 return Integer.parseInt(jedis.hmget(key, SkillTreeField.SPENT_POINTS.getField()).get(0));
         }
-        Bukkit.broadcastMessage(ChatColor.RED + "redis spent points data not found");
+        Bukkit.getLogger().info(ChatColor.RED + "redis spent points data not found");
         return -1;
     }
 
@@ -160,10 +176,10 @@ public class SkillTreeManager implements Listener {
      */
     public PlayerSpellData checkRedisForSpellData(UUID uuid, Integer slot, Jedis jedis) {
         if (jedis.exists(PlayerSpellData.getJedisKey(uuid, slot))) {
-            Bukkit.broadcastMessage(ChatColor.GREEN + "redis spell data found, building spell data from redis");
+            // Bukkit.broadcastMessage(ChatColor.GREEN + "redis spell data found, building spell data from redis");
             return new PlayerSpellData(uuid, slot, jedis);
         }
-        Bukkit.broadcastMessage(ChatColor.RED + "redis spell data not found");
+        // Bukkit.broadcastMessage(ChatColor.RED + "redis spell data not found");
         return null;
     }
 
@@ -205,10 +221,10 @@ public class SkillTreeManager implements Listener {
      */
     public SkillTreeData checkRedisForSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition, Jedis jedis) {
         if (jedis.exists(SkillTreeData.getJedisKey(uuid, slot, skillTreePosition))) {
-            Bukkit.broadcastMessage(ChatColor.GREEN + "redis skill tree data found, building skill tree data from redis");
+            // Bukkit.broadcastMessage(ChatColor.GREEN + "redis skill tree data found, building skill tree data from redis");
             return new SkillTreeData(uuid, slot, skillTreePosition, jedis);
         }
-        Bukkit.broadcastMessage(ChatColor.RED + "redis skill tree data not found");
+        // Bukkit.broadcastMessage(ChatColor.RED + "redis skill tree data not found");
         return null;
     }
 

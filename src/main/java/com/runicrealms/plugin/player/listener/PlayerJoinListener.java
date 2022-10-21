@@ -59,7 +59,7 @@ public class PlayerJoinListener implements Listener {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             Jedis jedis = RunicCoreAPI.getNewJedisResource();
             PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player, jedis);
-            Bukkit.broadcastMessage("building player data object");
+            // Bukkit.broadcastMessage("building player data object");
             RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
             ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
             jedis.close();
@@ -149,7 +149,7 @@ public class PlayerJoinListener implements Listener {
     private void loadCurrentPlayerHealthAndHunger(Player player, CharacterData characterData) {
         // set their hp to stored value from last logout
         int storedHealth = characterData.getBaseCharacterInfo().getCurrentHp();
-        Bukkit.broadcastMessage("stored health is: " + storedHealth);
+        // Bukkit.broadcastMessage("stored health is: " + storedHealth);
         // update their health
         if (storedHealth == 0) {
             storedHealth = HealthUtils.getBaseHealth(); // new players or corrupted data

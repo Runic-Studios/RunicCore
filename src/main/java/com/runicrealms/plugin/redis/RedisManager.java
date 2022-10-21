@@ -62,11 +62,11 @@ public class RedisManager implements Listener {
     public CharacterData checkRedisForCharacterData(UUID uuid, Integer slot, Jedis jedis) {
         String key = uuid + ":character:" + slot;
         if (jedis.exists(key)) {
-            Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building data from redis");
+            // Bukkit.broadcastMessage(ChatColor.GREEN + "redis character data found, building data from redis");
             jedis.expire(key, RedisUtil.EXPIRE_TIME);
             return new CharacterData(uuid, slot, jedis);
         }
-        Bukkit.broadcastMessage(ChatColor.RED + "redis character data not found");
+        // Bukkit.broadcastMessage(ChatColor.RED + "redis character data not found");
         return null;
     }
 

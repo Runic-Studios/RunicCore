@@ -7,24 +7,20 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.database.event.CacheSaveReason;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
-import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import com.runicrealms.plugin.utilities.Pair;
 import org.bson.Document;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -130,13 +126,22 @@ public class DatabaseManager implements Listener {
                 }, 1L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // last
+    /**
+     * Saves all character-related core data (class, professions, etc.) on server shutdown
+     * for EACH alt the player has used during the runtime of this server.
+     * Works even if the player is now entirely offline
+     */
+    @EventHandler
     public void onDatabaseSave(MongoSaveEvent event) {
-        Bukkit.broadcastMessage("SAVING EVENT SLOT IS " + event.getSlot());
-        saveCharacter(event.getUuid(), event.getMongoData(), event.getSlot(), event.getJedis());
-        event.getMongoData().save();
-        event.getMongoDataSection().save();
-        // TODO: mark the data as being saved here!
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            for (int characterSlot : event.getPlayersToSave().get(uuid)) {
+                // Bukkit.broadcastMessage("SAVING EVENT SLOT IS " + characterSlot);
+                PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+                playerMongoData.set("last_login", LocalDate.now());
+                saveCharacter(uuid, playerMongoData, characterSlot, event.getJedis());
+                playerMongoData.save();
+            }
+        }
     }
 
     /**
@@ -265,7 +270,7 @@ public class DatabaseManager implements Listener {
     public void saveCharacter(UUID uuid, PlayerMongoData playerMongoData, int slot, Jedis jedis) {
         CharacterData characterData;
         if (jedis.exists(uuid + ":character:" + slot)) {
-            Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo");
+            // Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo");
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
                 RunicCore.getRedisManager().updateBaseCharacterInfo(player, slot, jedis); // ensure jedis is up-to-date if player is online
@@ -275,38 +280,6 @@ public class DatabaseManager implements Listener {
         } else {
             // log error
         }
-    }
-
-    /**
-     * Saves all characters to mongo who have logged in to this server (on any characters they've played)
-     */
-    public void saveAllCharacters() {
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) { // try-with-resources to close the connection for us
-            jedis.auth(RedisManager.REDIS_PASSWORD);
-            for (UUID uuid : playersToSave.keySet()) {
-                for (int slot : playersToSave.get(uuid)) {
-                    if (jedis.exists(uuid + ":character:" + slot)) {
-                        Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving slot " + slot + " to mongo on shutdown");
-                        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
-                        playerMongoData.set("last_login", LocalDate.now());
-                        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-                        MongoSaveEvent mongoSaveEvent = new MongoSaveEvent
-                                (
-                                        slot,
-                                        uuid,
-                                        jedis,
-                                        playerMongoData,
-                                        character,
-                                        CacheSaveReason.SERVER_SHUTDOWN
-                                );
-                        Bukkit.getPluginManager().callEvent(mongoSaveEvent);
-                    } else {
-                        Bukkit.getLogger().info(ChatColor.RED + "[ERROR]: There was a problem saving all redis data on shutdown!");
-                    }
-                }
-            }
-        }
-        RunicCore.getDatabaseManager().getPlayersToSave().clear();
     }
 
     /**

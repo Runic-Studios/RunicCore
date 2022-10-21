@@ -9,6 +9,7 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
 import com.runicrealms.plugin.commands.player.*;
 import com.runicrealms.plugin.database.DatabaseManager;
+import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
@@ -38,8 +39,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
-import com.runicrealms.runicrestart.api.RunicRestartApi;
-import com.runicrealms.runicrestart.api.ServerShutdownEvent;
+import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -49,6 +49,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import redis.clients.jedis.Jedis;
 
 import java.io.File;
 
@@ -246,14 +247,17 @@ public class RunicCore extends JavaPlugin implements Listener {
         redisManager = null;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onRunicShutdown(ServerShutdownEvent event) {
-        getDatabaseManager().saveAllCharacters(); // saves SYNC CacheSaveReason.SERVER_SHUTDOWN
-        /*
-        Notify RunicRestart
-         */
-        getLogger().info(" §cRunicCore has been disabled.");
-        RunicRestartApi.markPluginSaved("core");
+    @EventHandler
+    public void onPreShutdownEvent(PreShutdownEvent event) {
+        try (Jedis jedis = getRedisManager().getJedisResource()) {
+            MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(event, jedis);
+            Bukkit.getPluginManager().callEvent(mongoSaveEvent);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
+    public void onCoreSaveComplete(MongoSaveEvent event) {
+        event.markPluginSaved("core");
     }
 
     private void loadConfig() {

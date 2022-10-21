@@ -5,7 +5,6 @@ import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisUtil;
-import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -96,7 +95,7 @@ public class PlayerSpellData implements SessionData {
      * @param jedis the jedis resource
      */
     public void writeSpellDataToJedis(Jedis jedis) {
-        Bukkit.broadcastMessage("writing spell data to jedis");
+        // Bukkit.broadcastMessage("writing spell data to jedis");
         String key = getJedisKey(uuid, RunicCoreAPI.getCharacterSlot(uuid));
         jedis.hmset(key, this.toMap());
         jedis.expire(key, RedisUtil.EXPIRE_TIME);
@@ -200,5 +199,6 @@ public class PlayerSpellData implements SessionData {
         spells.set(SpellField.LEFT_CLICK.getField(), this.spellLeftClick);
         spells.set(SpellField.RIGHT_CLICK.getField(), this.spellRightClick);
         spells.set(SpellField.SWAP_HANDS.getField(), this.spellSwapHands);
+        character.save();
     }
 }

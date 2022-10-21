@@ -91,24 +91,6 @@ public class SkillTreeData implements SessionData {
     }
 
     /**
-     * Adds the object into session storage in redis
-     *
-     * @param jedis             the jedis resource from core
-     * @param skillTreePosition of the skill tree
-     * @param slot              of the character
-     */
-    public void writeSkillTreeDataToJedis(Jedis jedis, SkillTreePosition skillTreePosition, int slot) {
-        String key = getJedisKey(this.uuid, RunicCoreAPI.getCharacterSlot(this.uuid), skillTreePosition);
-        Map<String, String> perkDataMap = this.toMap();
-        if (!perkDataMap.isEmpty()) {
-            String parentKey = uuid + ":character:" + slot + ":" + PATH_LOCATION;
-            RedisUtil.removeAllFromRedis(jedis, parentKey); // clear existing keys
-            jedis.hmset(key, this.toMap());
-            jedis.expire(key, RedisUtil.EXPIRE_TIME);
-        }
-    }
-
-    /**
      * Calculates the available skill points of the player.
      * First point is given at level 10, so first 9 levels are ignored.
      *
@@ -297,15 +279,34 @@ public class SkillTreeData implements SessionData {
         return skillTreeDataMap;
     }
 
+    /**
+     * Adds the object into session storage in redis
+     *
+     * @param jedis             the jedis resource from core
+     * @param skillTreePosition of the skill tree
+     * @param slot              of the character
+     */
+    public void writeSkillTreeDataToJedis(Jedis jedis, SkillTreePosition skillTreePosition, int slot) {
+        String key = getJedisKey(this.uuid, RunicCoreAPI.getCharacterSlot(this.uuid), skillTreePosition);
+        Map<String, String> perkDataMap = this.toMap();
+        if (!perkDataMap.isEmpty()) {
+            String parentKey = uuid + ":character:" + slot + ":" + PATH_LOCATION;
+            RedisUtil.removeAllFromRedis(jedis, parentKey); // clear existing keys
+            jedis.hmset(key, this.toMap());
+            jedis.expire(key, RedisUtil.EXPIRE_TIME);
+        }
+    }
+
     @Override
     public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         try {
             PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-            character.remove(PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
+            PlayerMongoDataSection skillTrees = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + position.getValue());
             for (Perk perk : perks) {
                 if (perk.getCurrentlyAllocatedPoints() == 0) continue;
-                character.set(PATH_LOCATION + "." + position.getValue() + "." + perk.getPerkID(), perk.getCurrentlyAllocatedPoints());
+                skillTrees.set(perk.getPerkID().toString(), perk.getCurrentlyAllocatedPoints());
             }
+            character.save();
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving skill tree data to mongo!");
             e.printStackTrace();
