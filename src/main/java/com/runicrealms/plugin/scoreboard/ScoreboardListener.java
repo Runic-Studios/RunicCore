@@ -51,11 +51,12 @@ public class ScoreboardListener implements Listener {
 
     /**
      * Updates health and scoreboard on armor equip
+     * This NEEDS to be delayed by at least several ticks, or it won't update correctly
      */
     @EventHandler
     public void onArmorEquip(ArmorEquipEvent e) {
         Player player = e.getPlayer();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 5L);
     }
 
     /**
