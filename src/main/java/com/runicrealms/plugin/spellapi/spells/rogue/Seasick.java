@@ -5,10 +5,10 @@ import com.runicrealms.plugin.events.SpellDamageEvent;
 import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.potion.PotionEffect;
@@ -17,44 +17,45 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Random;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Agility extends Spell {
+public class Seasick extends Spell {
 
     private static final int DURATION = 2;
     private static final int PERCENT = 10;
-    private static final int SPEED_MULTIPLIER = 1;
+    private static final int NAUSEA_MULT = 2;
 
-    public Agility() {
-        super("Agility",
+    public Seasick() {
+        super("Seasick",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance " +
-                        "to grant you speed for " + DURATION + "s!",
+                        "to cause nausea for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 
     @EventHandler
-    public void onSpeedyHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        getSpeed(e.getPlayer(), e.getVictim());
+    public void onNauseaHit(SpellDamageEvent e) {
+        applyNausea(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
-    public void onSpeedyHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        getSpeed(e.getPlayer(), e.getVictim());
+    public void onNauseaHit(WeaponDamageEvent e) {
+        applyNausea(e.getPlayer(), e.getVictim());
     }
 
-    private void getSpeed(Player pl, Entity en) {
+    private void applyNausea(Player player, Entity entity) {
+
+        if (!hasPassive(player.getUniqueId(), this.getName())) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(pl, en)) {
-            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.8f);
-            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
-                    25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 3));
-            pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_MULTIPLIER));
+        if (verifyEnemy(player, entity)) {
+            LivingEntity victim = (LivingEntity) entity;
+            victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
+            victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getEyeLocation(),
+                    5, 0.5F, 0.5F, 0.5F, 0);
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, DURATION * 20, NAUSEA_MULT));
         }
     }
 }

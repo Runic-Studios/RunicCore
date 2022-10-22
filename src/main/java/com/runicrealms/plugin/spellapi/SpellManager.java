@@ -163,13 +163,13 @@ public class SpellManager implements Listener {
         this.spellList.add(new PowerShot());
         this.spellList.add(new Smite());
         this.spellList.add(new ShadowBomb());
-        this.spellList.add(new Cleanse());
+        this.spellList.add(new CureScurvy());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Shadowbolt());
-        this.spellList.add(new Insanity());
+        this.spellList.add(new Seasick());
         this.spellList.add(new Hawkeye());
         this.spellList.add(new Manawell());
-        this.spellList.add(new Agility());
+        this.spellList.add(new SeaLegs());
         this.spellList.add(new Predator());
         this.spellList.add(new Resolve());
         this.spellList.add(new Taunt());
@@ -235,6 +235,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Maelstrom());
         this.spellList.add(new Thundershock());
         this.spellList.add(new ThunderousRift());
+        this.spellList.add(new Cannonfire());
 //        this.spellList.add(new ScorchedBlade());
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());

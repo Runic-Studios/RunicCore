@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -15,7 +16,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class SpellEditorGUI implements InventoryHolder {
 
@@ -69,13 +73,39 @@ public class SpellEditorGUI implements InventoryHolder {
             String spellTwo = "&d[L] &7Spell Left-click: &f" + playerSpellData.getSpellLeftClick();
             String spellThree = "&d[R] &7Spell Right-click: &f" + playerSpellData.getSpellRightClick();
             String spellFour = "&d[F] &7Spell Swap-hands: &f" + playerSpellData.getSpellSwapHands();
-            meta.setLore(Arrays.asList(ColorUtil.format(spellOne), ColorUtil.format(spellTwo),
-                    ColorUtil.format(spellThree), ColorUtil.format(spellFour)));
+            List<String> lore = new ArrayList<String>() {
+                {
+                    add(ColorUtil.format(spellOne));
+                    add(ColorUtil.format(spellTwo));
+                    add(ColorUtil.format(spellThree));
+                    add(ColorUtil.format(spellFour));
+                }
+            };
+            lore.add("");
+            List<String> passives = passiveList(player.getUniqueId());
+            lore.addAll(passives);
+            meta.setLore(lore);
             skillTreeButton.setItemMeta(meta);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
         return skillTreeButton;
+    }
+
+    /**
+     * Nicely formats the player's list of passives
+     *
+     * @param uuid
+     * @return
+     */
+    private static List<String> passiveList(UUID uuid) {
+        List<String> passiveStringList = new ArrayList<>();
+        passiveStringList.add(ChatColor.LIGHT_PURPLE + "Your Passives:");
+        Set<String> passives = RunicCoreAPI.getPassives(uuid);
+        for (String passive : passives) {
+            passiveStringList.add(ChatColor.WHITE + "- " + passive);
+        }
+        return passiveStringList;
     }
 
     private ItemStack spellButton(String displayName, int level) {

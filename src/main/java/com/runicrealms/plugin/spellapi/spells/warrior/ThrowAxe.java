@@ -100,7 +100,7 @@ public class ThrowAxe extends Spell implements WeaponDamageSpell {
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), hasBeenHit::clear, DURATION * 20L);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), hasBeenHit::clear, DURATION * 20L);
     }
 
     @Override

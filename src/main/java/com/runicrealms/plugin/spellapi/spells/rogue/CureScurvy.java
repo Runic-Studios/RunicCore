@@ -17,14 +17,14 @@ import java.util.HashSet;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Cleanse extends Spell {
+public class CureScurvy extends Spell {
 
     private static final int DURATION = 5;
     private static final double PERCENT = .25;
     private final HashSet<UUID> damageReductionPlayers;
 
-    public Cleanse() {
-        super("Cleanse",
+    public CureScurvy() {
+        super("Cure Scurvy",
                 "You cleanse negative effects " +
                         "on you, freeing you from " +
                         "blindness, slows, silences, and stuns! After, " +
@@ -34,22 +34,20 @@ public class Cleanse extends Spell {
         damageReductionPlayers = new HashSet<>();
     }
 
-    // spell execute code
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 2.0F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
-        for (PotionEffect effect : pl.getActivePotionEffects()) {
-            pl.removePotionEffect(effect.getType());
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 2.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            player.removePotionEffect(effect.getType());
         }
-        RunicCore.getSpellManager().getSilencedEntities().remove(pl.getUniqueId());
-        RunicCore.getSpellManager().getStunnedEntities().remove(pl.getUniqueId());
-        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20L, Color.TEAL);
-        Cone.coneEffect(pl, Particle.SPELL_INSTANT, DURATION, 0, 20L, Color.WHITE);
-        damageReductionPlayers.add(pl.getUniqueId());
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin,
-                () -> damageReductionPlayers.remove(pl.getUniqueId()), DURATION * 20L);
+        RunicCore.getSpellManager().getSilencedEntities().remove(player.getUniqueId());
+        RunicCore.getSpellManager().getStunnedEntities().remove(player.getUniqueId());
+        Cone.coneEffect(player, Particle.REDSTONE, DURATION, 0, 20L, Color.ORANGE);
+        damageReductionPlayers.add(player.getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin,
+                () -> damageReductionPlayers.remove(player.getUniqueId()), DURATION * 20L);
     }
 
     @EventHandler

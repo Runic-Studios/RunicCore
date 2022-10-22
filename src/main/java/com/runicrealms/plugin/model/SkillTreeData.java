@@ -211,8 +211,8 @@ public class SkillTreeData implements SessionData {
                 return RogueTreeUtil.assassinPerkList();
             case DUELIST:
                 return RogueTreeUtil.duelistPerkList();
-            case SWINDLER:
-                return RogueTreeUtil.swindlerPerkList();
+            case PIRATE:
+                return RogueTreeUtil.piratePerkList();
             case BERSERKER:
                 return WarriorTreeUtil.berserkerPerkList();
             case GUARDIAN:

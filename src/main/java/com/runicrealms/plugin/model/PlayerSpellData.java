@@ -66,7 +66,7 @@ public class PlayerSpellData implements SessionData {
             this.spellRightClick = "";
             this.spellSwapHands = "";
         }
-        // call each skill tree and populate
+        // call each skill tree and populate passives
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
@@ -87,6 +87,10 @@ public class PlayerSpellData implements SessionData {
         this.spellLeftClick = fieldsMap.get(SpellField.LEFT_CLICK.getField());
         this.spellRightClick = fieldsMap.get(SpellField.RIGHT_CLICK.getField());
         this.spellSwapHands = fieldsMap.get(SpellField.SWAP_HANDS.getField());
+        // call each skill tree and populate passives
+        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
+        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
     }
 
     /**

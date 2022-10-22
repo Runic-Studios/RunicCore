@@ -47,20 +47,20 @@ public class RogueTreeUtil {
         return perks;
     }
 
-    public static List<Perk> swindlerPerkList() {
+    public static List<Perk> piratePerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(132, 1, 0, 1, "Cleanse"));
+        perks.add(new PerkSpell(132, 1, 0, 1, "Cannonfire"));
         perks.add(new PerkBaseStat(133, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(134, 1, 0, 1, "Agility"));
+        perks.add(new PerkSpell(134, 1, 0, 1, "Sea Legs"));
         perks.add(new PerkBaseStat(135, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(136, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(137, 1, 0, 1, "Harpoon"));
+        perks.add(new PerkSpell(137, 1, 0, 1, "Cure Scurvy"));
         perks.add(new PerkBaseStat(138, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(139, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(141, 1, 0, 5, Stat.DEXTERITY));
-        perks.add(new PerkSpell(140, 1, 0, 1, "Twist of Fate"));
+        perks.add(new PerkSpell(140, 1, 0, 1, "Harpoon"));
         perks.add(new PerkBaseStat(142, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(143, 1, 0, 1, "Insanity"));
+        perks.add(new PerkSpell(143, 1, 0, 1, "Seasick"));
         return perks;
     }
 }

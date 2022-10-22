@@ -36,7 +36,7 @@ public enum SubClass {
      */
     ASSASSIN("Assassin", ClassEnum.ROGUE, assassinItem(), "Assassin emerges from the shadows to quickly burst an opponent!"),
     DUELIST("Duelist", ClassEnum.ROGUE, duelistItem(), "Duelist is an excellent fighter against a single opponent!"),
-    SWINDLER("Swindler", ClassEnum.ROGUE, swindlerItem(), "Swindler uses deception to manipulate enemies!"),
+    PIRATE("Pirate", ClassEnum.ROGUE, pirateItem(), "Pirate uses projectiles to control the battle!"),
     /*
     warrior
      */
@@ -135,7 +135,7 @@ public enum SubClass {
                 else if (value == 2)
                     subClass = SubClass.DUELIST;
                 else
-                    subClass = SubClass.SWINDLER;
+                    subClass = SubClass.PIRATE;
                 break;
             case "warrior":
                 if (value == 1)
@@ -238,7 +238,7 @@ public enum SubClass {
                 "leHR1cmUvYmIxNzliNTY0ODc2MGRiNjY1NTg1YTMwZWM4YjFiZThjM2QyNTFjYTMwNzUwNjA1OTJhYzU1YmI5ZDg1M2U4In19fQ==");
     }
 
-    private static ItemStack swindlerItem() {
+    private static ItemStack pirateItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
                 "leHR1cmUvOTg4MGE1YjM2OTcyZWFmNTY2M2Y5Y2ExYjBiZDAwZWE4YzRmMDU1ZmM2ZTJhOWU3YTIyMDZlYzM5OTA5ZGVhMSJ9fX0=");
     }

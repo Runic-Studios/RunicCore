@@ -3,7 +3,6 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
@@ -21,21 +20,19 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Harpoon extends Spell implements WeaponDamageSpell {
 
-    private static final int DAMAGE_AMT = 35;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final int DAMAGE_AMT = 50;
+    private static final double DAMAGE_PER_LEVEL = 2.15;
     private static final int DURATION = 3;
-    private static final int SILENCE_DURATION = 1;
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
 
     public Harpoon() {
         super("Harpoon",
-                "You launch a projectile harpoon " +
-                        "which deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage, pulls your enemy towards you, " +
-                        "silences them for " + SILENCE_DURATION + "s, and slows them for " +
-                        DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 12, 15);
+                "You launch a projectile harpoon of the sea! Upon hitting an enemy, " +
+                        "the trident deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) weapon⚔ damage and pulls its target towards you, slowing them for " + DURATION + "s! " +
+                        "If an ally is hit, you are instead teleported to their location.",
+                ChatColor.WHITE, ClassEnum.ROGUE, 18, 35);
     }
 
     // spell execute code
@@ -47,7 +44,7 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
         trident.setDamage(0);
         trident.setVelocity(velocity);
         trident.setShooter(player);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.75f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_SPLASH_HIGH_SPEED, 0.5f, 1.5f);
 
         // more particles
@@ -89,7 +86,6 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
         //final double hPower = 0.5D;
 
         DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, this);
-        addStatusEffect(victim, EffectEnum.SILENCE, SILENCE_DURATION);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
 
         new BukkitRunnable() {
