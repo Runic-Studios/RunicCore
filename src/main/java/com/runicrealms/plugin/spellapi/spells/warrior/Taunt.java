@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.ChatColor;
@@ -23,7 +23,7 @@ public class Taunt extends Spell {
     }
 
     @EventHandler
-    public void onDrainingHit(WeaponDamageEvent e) {
+    public void onDrainingHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!e.isBasicAttack()) return; // only listen for basic attacks
         generateThreat(e.getPlayer(), e.getVictim());

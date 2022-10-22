@@ -36,7 +36,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
         super("Fireball",
                 "You launch a projectile fireball " +
                         "that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage on impact!",
+                        + "x&7 lvl) magicʔ damage on impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 4, 15);
         fireCone = false;
         applyBurn = false;

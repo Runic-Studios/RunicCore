@@ -27,7 +27,7 @@ public class Consecration extends Spell implements MagicDamageSpell {
                 "You conjure a ring of holy magic on the ground " +
                         "for " + DURATION + "s, slowing enemies within " + RADIUS + " " +
                         "blocks and dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage each second!",
+                        + "x&7 lvl) magicʔ damage each second!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 20);
     }
 

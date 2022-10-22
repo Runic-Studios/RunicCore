@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -119,12 +119,12 @@ public class MobTagger implements Listener {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         tagMob(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         tagMob(e.getPlayer(), e.getVictim());
     }
 

@@ -26,7 +26,7 @@ public class IceBlock extends Spell implements MagicDamageSpell {
                 "You entomb yourself in ice for " + DURATION +
                         "s, rooting you and granting you invulnerability! " +
                         "After, the ice block explodes, dealing (" + DAMAGE_AMT +
-                        " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ damage " +
+                        " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage " +
                         "to enemies within " + RADIUS + " blocks!",
                 ChatColor.WHITE, ClassEnum.MAGE, 18, 20);
     }

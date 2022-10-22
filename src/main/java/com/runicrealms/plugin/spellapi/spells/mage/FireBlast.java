@@ -27,7 +27,7 @@ public class FireBlast extends Spell implements MagicDamageSpell {
         super("Fire Blast",
                 "You erupt a powerful blast of fire at " +
                         "your target location that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage to enemies within " + RADIUS + " blocks and " +
+                        + "x&7 lvl) magicʔ damage to enemies within " + RADIUS + " blocks and " +
                         "stuns them for " + STUN_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 12, 30);
     }

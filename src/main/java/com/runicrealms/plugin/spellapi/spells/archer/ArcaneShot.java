@@ -29,7 +29,7 @@ public class ArcaneShot extends Spell implements MagicDamageSpell {
         super("Arcane Shot",
                 "You fire a magical arrow which " +
                         "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage to its " +
+                        + "x&7 lvl) magicʔ damage to its " +
                         "target and silences it for " + DURATION + " " +
                         "seconds, preventing it from " +
                         "healing or dealing damage!",

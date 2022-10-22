@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -49,6 +49,7 @@ public class ArcaneOrb extends Spell {
         }
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION) {
@@ -82,7 +83,7 @@ public class ArcaneOrb extends Spell {
         for (double i = 0; i <= Math.PI; i += Math.PI / 12) {
             double radius = Math.sin(i);
             double y = Math.cos(i);
-            for (double a = 0; a < Math.PI * 2; a+= Math.PI / 12) {
+            for (double a = 0; a < Math.PI * 2; a += Math.PI / 12) {
                 double x = .9 * Math.cos(a) * radius;
                 double z = .9 * Math.sin(a) * radius;
                 loc.add(x, y, z);
@@ -93,7 +94,7 @@ public class ArcaneOrb extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
 
         Player pl = e.getPlayer();
         UUID id = pl.getUniqueId();

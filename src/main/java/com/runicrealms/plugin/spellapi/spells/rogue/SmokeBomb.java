@@ -36,7 +36,7 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke " +
                         "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) spellʔ damage, slows and " +
+                        "x&7 lvl) magicʔ damage, slows and " +
                         "blinds enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 8, 15);
@@ -46,7 +46,7 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
     public SmokeBomb(boolean frostBomb) {
         super("Smoke Bomb",
                 "You fire a cloud of toxic smoke " +
-                        "that deals " + DAMAGE_AMT + " spellʔ damage, slows and " +
+                        "that deals " + DAMAGE_AMT + " magicʔ damage, slows and " +
                         "blinds enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + " seconds!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);

@@ -37,7 +37,7 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
                         "are healed✦ for (" + HEAL_AMT + " + &f" +
                         HEALING_PER_LEVEL + "x&7 lvl) health! " +
                         "Against enemies, the vial deals (" + DAMAGE + " + &f" +
-                        DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ damage!",
+                        DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 10, 20);
     }
 

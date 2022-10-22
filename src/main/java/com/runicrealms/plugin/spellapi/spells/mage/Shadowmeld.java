@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,13 +35,13 @@ public class Shadowmeld extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (!doomers.contains(e.getVictim().getUniqueId())) return;
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!doomers.contains(e.getVictim().getUniqueId())) return;
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }

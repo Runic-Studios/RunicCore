@@ -38,7 +38,7 @@ public class Flare extends Spell implements MagicDamageSpell {
     public Flare() {
         super("Flare",
                 "You launch a flare that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) " +
-                        "spellʔ damage to the first enemy hit, then dispells " +
+                        "magicʔ damage to the first enemy hit, then dispells " +
                         "the beneficial effects of enemies within " + RADIUS + " " +
                         "blocks, removing speed and invisibility! The flare then " +
                         "dazes its targets, causing blindness and " +

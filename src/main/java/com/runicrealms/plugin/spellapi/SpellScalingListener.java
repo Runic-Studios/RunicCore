@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.spellapi;
 
-import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,16 +23,16 @@ public class SpellScalingListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (e.getSpell() == null) return;
         if (!(e.getSpell() instanceof MagicDamageSpell)) return;
         e.setAmount((int) (e.getAmount() + (((MagicDamageSpell) e.getSpell()).getDamagePerLevel() * e.getPlayer().getLevel())));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (e.getSpell() == null) return;
-        if (!(e.getSpell() instanceof WeaponDamageSpell)) return;
-        e.setAmount((int) (e.getAmount() + (((WeaponDamageSpell) e.getSpell()).getDamagePerLevel() * e.getPlayer().getLevel())));
+        if (!(e.getSpell() instanceof PhysicalDamageSpell)) return;
+        e.setAmount((int) (e.getAmount() + (((PhysicalDamageSpell) e.getSpell()).getDamagePerLevel() * e.getPlayer().getLevel())));
     }
 }

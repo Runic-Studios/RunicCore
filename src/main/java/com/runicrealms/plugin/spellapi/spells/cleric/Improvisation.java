@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,7 +28,7 @@ public class Improvisation extends Spell {
         super("Improvisation",
                 "Your melee weapon⚔ attacks have a " + PERCENT + "% chance " +
                         "to grant yourself and nearby allies within " + RADIUS + " " +
-                        "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% weapon⚔ damage buff " +
+                        "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% physical⚔ damage buff " +
                         "for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
@@ -36,7 +36,7 @@ public class Improvisation extends Spell {
     }
 
     @EventHandler
-    public void onWeaponHit(WeaponDamageEvent e) {
+    public void onWeaponHit(PhysicalDamageEvent e) {
         Player player = e.getPlayer();
         if (hasPassive(player.getUniqueId(), this.getName()) && e.isBasicAttack())
             attemptToBuffAllies(player);

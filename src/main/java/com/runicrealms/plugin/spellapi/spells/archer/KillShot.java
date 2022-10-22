@@ -32,7 +32,7 @@ public class KillShot extends Spell {
         super("Kill Shot",
                 "You launch an enchanted arrow which " +
                         "deals " + "(" + DAMAGE + " + &f" + PERCENT + "x&7 " +
-                        "missing health) as weapon⚔ damage! " +
+                        "missing health) as physical⚔ damage! " +
                         "Capped at " + DAMAGE_CAP + " against monsters.",
                 ChatColor.WHITE, ClassEnum.ARCHER, 8, 25);
         killShots = new ArrayList<>();
@@ -88,6 +88,6 @@ public class KillShot extends Spell {
         int amount = DAMAGE + percentMissingHealth(le, PERCENT);
         if (!(le instanceof Player) && amount > DAMAGE_CAP)
             amount = DAMAGE_CAP;
-        DamageUtil.damageEntityWeapon(amount, le, pl, false, true);
+        DamageUtil.damageEntityPhysical(amount, le, pl, false, true);
     }
 }

@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Barrage extends Spell implements WeaponDamageSpell {
+public class Barrage extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 4;
     private static final double DAMAGE_PER_LEVEL = 0.4;
@@ -33,7 +33,7 @@ public class Barrage extends Spell implements WeaponDamageSpell {
         super("Barrage",
                 "You rapid-fire a volley of five arrows, " +
                         "each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage to enemies hit!",
+                        "x&7 lvl) physical⚔ damage to enemies hit!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 6, 10);
         this.bArrows = new HashMap<>();
     }
@@ -107,7 +107,7 @@ public class Barrage extends Spell implements WeaponDamageSpell {
             if (verifyEnemy(pl, le)) {
                 e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 2.0f);
                 e.getEntity().getWorld().spawnParticle(Particle.CRIT, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
-                DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true, this);
+                DamageUtil.damageEntityPhysical(DAMAGE, le, pl, false, true, this);
             }
         }
     }

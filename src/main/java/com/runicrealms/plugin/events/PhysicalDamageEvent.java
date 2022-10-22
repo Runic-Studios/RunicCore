@@ -12,7 +12,7 @@ import org.bukkit.event.HandlerList;
  * Can specify the cause of the event, ranged or melee, for use with on-hit runic spells,
  * or applying different knockback for ranged spells, etc.
  */
-public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
+public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable {
 
     private final Player player;
     private final boolean isBasicAttack;
@@ -22,7 +22,7 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
     private boolean isCancelled;
 
     /**
-     * Constructor of weapon damage event w/ all the info we need!
+     * Constructor of damage event w/ all the info we need!
      *
      * @param amount        of damage to inflict
      * @param damager       player who is causing damage
@@ -31,7 +31,7 @@ public class WeaponDamageEvent extends RunicDamageEvent implements Cancellable {
      * @param isRanged      whether the attack is a ranged physical spell (archers)
      * @param spell         optional parameter to specify a spell source (for damage scaling)
      */
-    public WeaponDamageEvent(int amount, Player damager, LivingEntity victim, boolean isBasicAttack, boolean isRanged, Spell... spell) {
+    public PhysicalDamageEvent(int amount, Player damager, LivingEntity victim, boolean isBasicAttack, boolean isRanged, Spell... spell) {
         super(victim, amount);
         this.player = damager;
         this.isBasicAttack = isBasicAttack;

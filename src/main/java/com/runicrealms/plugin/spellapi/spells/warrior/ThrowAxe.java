@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.FloatingItemUtil;
 import org.bukkit.*;
@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class ThrowAxe extends Spell implements WeaponDamageSpell {
+public class ThrowAxe extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 20;
     private static final double DAMAGE_PER_LEVEL = 1.5;
@@ -33,7 +33,7 @@ public class ThrowAxe extends Spell implements WeaponDamageSpell {
     public ThrowAxe() {
         super("Throw Axe",
                 "You throw your weapon, dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage to the first enemy " +
+                        "x&7 lvl) physical⚔ damage to the first enemy " +
                         "hit and silencing it, preventing it " +
                         "from dealing damage for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
@@ -93,7 +93,7 @@ public class ThrowAxe extends Spell implements WeaponDamageSpell {
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) entity, pl, false, false, spell);
+                        DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) entity, pl, false, false, spell);
                         projectile.remove();
                     }
                 }

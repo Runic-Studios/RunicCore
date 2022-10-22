@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -33,7 +33,7 @@ public class Reflect extends Spell implements MagicDamageSpell {
                 "For " + DURATION + "s, you gain a reflective " +
                         "enchantment! Enemies who strike " +
                         "you suffer (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) spellʔ damage!",
+                        "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 16, 20);
     }
 
@@ -55,7 +55,7 @@ public class Reflect extends Spell implements MagicDamageSpell {
     }
 
     @EventHandler
-    public void onPlayerDamage(WeaponDamageEvent e) {
+    public void onPlayerDamage(PhysicalDamageEvent e) {
 
         if (!(e.getVictim() instanceof Player)) return;
         Player damager = e.getPlayer();

@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -19,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class BindingShot extends Spell implements WeaponDamageSpell {
+public class BindingShot extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 25;
     private static final int DAMAGE_PER_LEVEL = 2;
@@ -31,7 +31,7 @@ public class BindingShot extends Spell implements WeaponDamageSpell {
         super("Binding Shot",
                 "You fire a cursed arrow which " +
                         "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) weapon⚔ damage to its " +
+                        + "x&7 lvl) physical⚔ damage to its " +
                         "target and creates a small rift at its " +
                         "location! For " + DURATION + "s, enemies " +
                         "within " + RADIUS + " blocks are pulled to " +
@@ -64,7 +64,7 @@ public class BindingShot extends Spell implements WeaponDamageSpell {
 
         // spell effect
         addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
-        DamageUtil.damageEntityWeapon(DAMAGE, livingEntity, pl, false, true, this);
+        DamageUtil.damageEntityPhysical(DAMAGE, livingEntity, pl, false, true, this);
 
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_WITCH_DEATH, 0.5f, 0.5f);
 

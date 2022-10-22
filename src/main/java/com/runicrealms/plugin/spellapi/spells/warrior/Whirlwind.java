@@ -31,7 +31,7 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
                 "For " + DURATION + " seconds, you unleash the " +
                         "fury of the winds, summoning a cyclone around you that damages " +
                         "enemies within " + (double) RADIUS + " blocks for (" +
-                        DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ damage!",
+                        DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 20, 25);
     }
 

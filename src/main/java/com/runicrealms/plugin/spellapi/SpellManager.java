@@ -290,7 +290,7 @@ public class SpellManager implements Listener {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
                 || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
@@ -307,7 +307,7 @@ public class SpellManager implements Listener {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
                 || stunnedEntities.containsKey(e.getPlayer().getUniqueId())

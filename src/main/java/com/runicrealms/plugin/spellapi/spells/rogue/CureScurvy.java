@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -51,14 +51,14 @@ public class CureScurvy extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (!damageReductionPlayers.contains(e.getVictim().getUniqueId())) return;
         double newAmt = e.getAmount() * (1 - PERCENT);
         e.setAmount((int) newAmt);
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!damageReductionPlayers.contains(e.getVictim().getUniqueId())) return;
         double newAmt = e.getAmount() * (1 - PERCENT);
         e.setAmount((int) newAmt);

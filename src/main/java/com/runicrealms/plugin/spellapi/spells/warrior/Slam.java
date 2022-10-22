@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Slam extends Spell implements WeaponDamageSpell {
+public class Slam extends Spell implements PhysicalDamageSpell {
 
     private final boolean ignite;
     private static final double KNOCKUP_AMT = 0.2;
@@ -29,7 +29,7 @@ public class Slam extends Spell implements WeaponDamageSpell {
                 "You charge fearlessly into the air! " +
                         "Upon hitting the ground, you deal (" +
                         DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage to enemies within " +
+                        "x&7 lvl) physical⚔ damage to enemies within " +
                         RADIUS + " blocks and knock them up!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
         ignite = false;
@@ -88,7 +88,7 @@ public class Slam extends Spell implements WeaponDamageSpell {
 
                     for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (verifyEnemy(pl, en)) {
-                            DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, false, spell);
+                            DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) en, pl, false, false, spell);
                             Vector force = (pl.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             en.setVelocity(force.normalize());

@@ -35,7 +35,7 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
         super("Shadow Bomb",
                 "You launch a magical vial of shadow, " +
                         "dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage per second for " +
+                        + "x&7 lvl) magicʔ damage per second for " +
                         DURATION + "s to enemies within " +
                         RADIUS + " blocks of the cloud. ",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);

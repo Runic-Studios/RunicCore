@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.api.ArmorStandAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
@@ -21,7 +21,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SummonSentry extends Spell implements WeaponDamageSpell {
+public class SummonSentry extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 3;
     private static final int DURATION = 8;
@@ -37,7 +37,7 @@ public class SummonSentry extends Spell implements WeaponDamageSpell {
                         "For " + DURATION + "s, the crossbow fires " +
                         "at all enemies within " + RADIUS + " blocks, " +
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage and slowing them for " +
+                        "x&7 lvl) physical⚔ damage and slowing them for " +
                         POTION_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 30, 75);
     }
@@ -109,7 +109,7 @@ public class SummonSentry extends Spell implements WeaponDamageSpell {
         if (!e.getDamager().hasMetadata("player")) return;
         e.setCancelled(true);
         Player pl = Bukkit.getPlayer(e.getDamager().getMetadata("player").get(0).asString());
-        DamageUtil.damageEntityWeapon(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, this);
+        DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, this);
     }
 
     @Override

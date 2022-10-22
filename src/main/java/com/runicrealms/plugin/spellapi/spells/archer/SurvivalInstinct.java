@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.*;
@@ -26,7 +26,7 @@ public class SurvivalInstinct extends Spell {
         super("Survival Instinct",
                 "Upon taking damage that would reduce you below " +
                         (int) (PERCENT_THRESHOLD * 100) + "% health, you " +
-                        "gain a shield which negates all mob and weapon⚔ damage " +
+                        "gain a shield which negates all mob and physical⚔ damage " +
                         "for " + DURATION + "s! Cannot occur more than once " +
                         "every " + COOLDOWN + "s.",
                 ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
@@ -49,7 +49,7 @@ public class SurvivalInstinct extends Spell {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         Player victim = (Player) e.getVictim();
         if (!hasPassive(victim.getUniqueId(), this.getName())) return;

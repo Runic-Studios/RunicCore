@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
@@ -60,7 +60,7 @@ public class Lunge extends Spell {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // fires FIRST
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!lungers.contains(e.getPlayer())) return;
         e.setAmount((int) (e.getAmount() * PERCENT_MULT));
         e.getPlayer().getWorld().playSound(e.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);

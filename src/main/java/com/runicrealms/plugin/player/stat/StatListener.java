@@ -73,7 +73,7 @@ public class StatListener implements Listener {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         double magicDamageBonusPercent = Stat.getMagicDmgMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * magicDamageBonusPercent)));
@@ -102,7 +102,7 @@ public class StatListener implements Listener {
     }
 
     @EventHandler
-    public void onRangedDamage(WeaponDamageEvent e) {
+    public void onRangedDamage(PhysicalDamageEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         if (e.isRanged()) {
             double rangedDamageBonusPercent = Stat.getRangedDmgMult() * RunicCoreAPI.getPlayerDexterity(uuid);

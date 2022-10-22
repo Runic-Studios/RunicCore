@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -33,13 +33,13 @@ public class Kneebreak extends Spell {
     }
 
     @EventHandler
-    public void onKneebreakHit(SpellDamageEvent e) {
+    public void onKneebreakHit(MagicDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applySlow(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
-    public void onKneebreakHit(WeaponDamageEvent e) {
+    public void onKneebreakHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applySlow(e.getPlayer(), e.getVictim());
     }

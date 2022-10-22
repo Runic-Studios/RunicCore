@@ -2,8 +2,8 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -39,7 +39,7 @@ public class PowerShot extends Spell implements MagicDamageSpell {
         super("Power Shot",
                 "You launch an enchanted arrow which " +
                         "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl)" + " spellʔ damage on-hit to " +
+                        + "x&7 lvl)" + " magicʔ damage on-hit to " +
                         "all enemies within " + RADIUS + " blocks! " +
                         "For " + DURATION + "s, enemies hit by this spell are afflicted " +
                         "with &aHunter's Mark&7, increasing all damage you " +
@@ -101,12 +101,12 @@ public class PowerShot extends Spell implements MagicDamageSpell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 

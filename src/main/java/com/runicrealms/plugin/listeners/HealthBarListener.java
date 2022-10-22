@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +14,7 @@ import org.bukkit.event.Listener;
 public class HealthBarListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
-    public void onGenericDamage(SpellDamageEvent event) {
+    public void onGenericDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
         if (!(event.getVictim() instanceof Player)) return;
         Player player = (Player) event.getVictim();
@@ -22,7 +22,7 @@ public class HealthBarListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
-    public void onGenericDamage(WeaponDamageEvent event) {
+    public void onGenericDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (!(event.getVictim() instanceof Player)) return;
         Player player = (Player) event.getVictim();

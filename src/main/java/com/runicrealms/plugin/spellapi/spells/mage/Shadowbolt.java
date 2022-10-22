@@ -27,10 +27,10 @@ public class Shadowbolt extends Spell implements MagicDamageSpell {
     private EnderPearl shadowbolt;
 
     public Shadowbolt() {
-        super ("Shadowbolt",
+        super("Shadowbolt",
                 "You launch a ball of shadow " +
                         "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage and silences enemies on impact " +
+                        + "x&7 lvl) magicʔ damage and silences enemies on impact " +
                         "for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 8, 20);
     }

@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,7 +28,7 @@ public class Resolve extends Spell {
     }
 
     @EventHandler
-    public void onResolvedHit(SpellDamageEvent e) {
+    public void onResolvedHit(MagicDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         Player hurtPlayer = (Player) e.getVictim();
         if (!shouldReduceDamage(hurtPlayer)) return;
@@ -36,7 +36,7 @@ public class Resolve extends Spell {
     }
 
     @EventHandler
-    public void onResolvedHit(WeaponDamageEvent e) {
+    public void onResolvedHit(PhysicalDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         Player hurtPlayer = (Player) e.getVictim();
         if (!shouldReduceDamage(hurtPlayer)) return;

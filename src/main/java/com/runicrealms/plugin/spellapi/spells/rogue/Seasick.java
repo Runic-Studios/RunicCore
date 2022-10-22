@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -32,12 +32,12 @@ public class Seasick extends Spell {
     }
 
     @EventHandler
-    public void onNauseaHit(SpellDamageEvent e) {
+    public void onNauseaHit(MagicDamageEvent e) {
         applyNausea(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
-    public void onNauseaHit(WeaponDamageEvent e) {
+    public void onNauseaHit(PhysicalDamageEvent e) {
         applyNausea(e.getPlayer(), e.getVictim());
     }
 

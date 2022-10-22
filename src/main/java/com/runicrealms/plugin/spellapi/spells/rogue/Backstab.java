@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -26,13 +26,13 @@ public class Backstab extends Spell {
     }
 
     @EventHandler
-    public void onDamage(SpellDamageEvent e) {
+    public void onDamage(MagicDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         e.setAmount(doBackstab(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler
-    public void onDamage(WeaponDamageEvent e) {
+    public void onDamage(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         e.setAmount(doBackstab(e.getPlayer(), e.getVictim(), e.getAmount()));
     }

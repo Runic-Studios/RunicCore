@@ -29,7 +29,7 @@ public class FireAura extends Spell implements MagicDamageSpell {
                 "For " + DURATION + " seconds, you conjure a terrible " +
                         "firestorm, damaging enemies within " + RADIUS + " blocks " +
                         "every " + PERIOD + "s for (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) spellʔ damage!",
+                        "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, ClassEnum.MAGE, 12, 25);
     }
 

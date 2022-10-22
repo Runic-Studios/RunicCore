@@ -29,7 +29,7 @@ public class Smite extends Spell implements MagicDamageSpell {
         super("Smite",
                 "You launch a ripple of magic, colliding with the first enemy hit, " +
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage and launching them back!",
+                        + "x&7 lvl) magicʔ damage and launching them back!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 8, 20);
     }
 

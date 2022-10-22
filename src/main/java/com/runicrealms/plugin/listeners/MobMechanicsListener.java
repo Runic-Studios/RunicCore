@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,18 +22,20 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 public final class MobMechanicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void updateHealthBarSpellDamage(SpellDamageEvent e) {
+    public void updateHealthBarSpellDamage(MagicDamageEvent e) {
         if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player
-                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getVictim().getUniqueId()) != null) return;
+                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getVictim().getUniqueId()) != null)
+            return;
         updateDisplayName(e.getVictim(), e.getAmount());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
+    public void updateHealthBarOnPhysicalDamage(PhysicalDamageEvent e) {
         if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player
-                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getVictim().getUniqueId()) != null) return;
+                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getVictim().getUniqueId()) != null)
+            return;
         updateDisplayName(e.getVictim(), e.getAmount());
     }
 
@@ -45,7 +47,8 @@ public final class MobMechanicsListener implements Listener {
         if (!(e.getEntity() instanceof LivingEntity)) return;
         if (e.getEntity() instanceof ArmorStand) return;
         if (e.getEntity() instanceof Player
-                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getEntity().getUniqueId()) != null) return;
+                && RunicCore.getDatabaseManager().getLoadedCharactersMap().get(e.getEntity().getUniqueId()) != null)
+            return;
         if (e.getEntity().getPassengers().size() == 0) return;
         if (e.getEntity() instanceof Horse) return;
         LivingEntity le = (LivingEntity) e.getEntity();

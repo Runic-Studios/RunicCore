@@ -246,7 +246,7 @@ public class BowListener implements Listener {
 
             e.setCancelled(true);
 
-            DamageUtil.damageEntityWeapon(randomNum, (LivingEntity) victim, damager, true, true);
+            DamageUtil.damageEntityPhysical(randomNum, (LivingEntity) victim, damager, true, true);
         }
     }
 

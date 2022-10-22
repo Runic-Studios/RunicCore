@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -31,7 +31,7 @@ public class RighteousBlade extends Spell implements HealingSpell {
     }
 
     @EventHandler
-    public void onHealingHit(WeaponDamageEvent e) {
+    public void onHealingHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!e.isBasicAttack()) return;
         healAllies(e.getPlayer());

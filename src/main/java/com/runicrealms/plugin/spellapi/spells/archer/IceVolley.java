@@ -32,7 +32,7 @@ public class IceVolley extends Spell implements MagicDamageSpell {
         super("Ice Volley",
                 "You rapid-fire a volley of five arrows, " +
                         "each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl)" + " spellʔ damage " +
+                        + "x&7 lvl)" + " magicʔ damage " +
                         "and slowing any enemies hit for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 10, 30);
         iceArrows = new HashSet<>();

@@ -32,7 +32,7 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         super("Frostbolt",
                 "You launch a projectile bolt of ice " +
                         "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage on " +
+                        + "x&7 lvl) magicʔ damage on " +
                         "impact and slows its target!",
                 ChatColor.WHITE, ClassEnum.MAGE, 5, 20);
     }

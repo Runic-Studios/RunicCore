@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -51,7 +51,7 @@ public class Leech extends Spell implements HealingSpell {
      * Activate on-hit effects
      */
     @EventHandler
-    public void onSuccessfulHit(WeaponDamageEvent e) {
+    public void onSuccessfulHit(PhysicalDamageEvent e) {
         if (!leechers.contains(e.getPlayer().getUniqueId())) return;
         if (e.isCancelled()) return;
         Player pl = e.getPlayer();

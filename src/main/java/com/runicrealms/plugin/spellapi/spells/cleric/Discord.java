@@ -28,7 +28,7 @@ public class Discord extends Spell implements MagicDamageSpell {
                 "You prime yourself with chaotic magic, slowing yourself for " + DELAY + "s. " +
                         "After, enemies within " + RADIUS + " blocks are stunned for " +
                         DURATION + "s and suffer (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage!",
+                        + "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 20, 20);
     }
 

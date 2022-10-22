@@ -3,9 +3,9 @@ package com.runicrealms.plugin.player;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,7 +46,7 @@ public class CombatManager implements Listener {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (e.getVictim() instanceof Player
                 && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
             e.setAmount(shieldDamage((Player) e.getVictim(),
@@ -56,7 +56,7 @@ public class CombatManager implements Listener {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (e.getVictim() instanceof Player
                 && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
             e.setAmount(shieldDamage((Player) e.getVictim(),

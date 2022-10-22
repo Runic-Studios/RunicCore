@@ -13,9 +13,9 @@ public class Scald extends Spell {
     private static final int RADIUS = 4;
 
     public Scald() {
-        super ("Scald",
+        super("Scald",
                 "Your &aFireball &7spell now deals, " +
-                        (int) (DAMAGE_PERCENT * 100) + "% spellʔ damage to enemies within " +
+                        (int) (DAMAGE_PERCENT * 100) + "% magicʔ damage to enemies within " +
                         RADIUS + " blocks!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);

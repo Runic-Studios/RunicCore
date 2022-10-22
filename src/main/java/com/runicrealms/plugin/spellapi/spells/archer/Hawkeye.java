@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -30,13 +30,13 @@ public class Hawkeye extends Spell { // implements MagicDamageSpell, WeaponDamag
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onRangedHit(SpellDamageEvent e) {
+    public void onRangedHit(MagicDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         e.setAmount(hawkeyeDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onRangedHit(WeaponDamageEvent e) {
+    public void onRangedHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         e.setAmount(hawkeyeDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -33,7 +33,7 @@ public class Sprint extends Spell implements MagicDamageSpell {
                 "For " + DURATION + " seconds, you gain a " +
                         "massive boost of speed! Your next melee attack against " +
                         "an enemy deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) spellʔ damage!",
+                        "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 10, 10);
     }
 
@@ -52,7 +52,7 @@ public class Sprint extends Spell implements MagicDamageSpell {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!e.isBasicAttack()) return;
         if (!sprinters.contains(e.getPlayer().getUniqueId())) return;
         Player player = e.getPlayer();

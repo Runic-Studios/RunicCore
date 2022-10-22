@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -33,13 +33,13 @@ public class BearTrap extends Spell {
     }
 
     @EventHandler
-    public void onRangedHit(SpellDamageEvent e) {
+    public void onRangedHit(MagicDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }
 
     @EventHandler
-    public void onRangedHit(WeaponDamageEvent e) {
+    public void onRangedHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }

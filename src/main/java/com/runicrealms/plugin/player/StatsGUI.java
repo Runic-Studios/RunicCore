@@ -150,21 +150,21 @@ public class StatsGUI implements InventoryHolder {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
                         ChatColor.GRAY + "Mana Regen: " + statPrefix(intelligence) + manaRegenString + "%",
-                        ChatColor.GRAY + "Spell Damage: " + statPrefix(intelligence) + spellDamageString + "%"
+                        ChatColor.GRAY + "Magic Damage: " + statPrefix(intelligence) + spellDamageString + "%"
                 });
     }
 
     private ItemStack strengthMenuItem() {
         double critChancePercent = (Stat.getCriticalChance() * 100) * strength;
-        double weaponDamagePercent = (Stat.getMeleeDmgMult() * 100) * strength;
+        double physicalDamagePercent = (Stat.getMeleeDmgMult() * 100) * strength;
         String critChanceString = critChancePercent > 0 ? DECIMAL_FORMAT.format(critChancePercent) : "0";
-        String weaponDamageString = weaponDamagePercent > 0 ? DECIMAL_FORMAT.format(weaponDamagePercent) : "0";
+        String physicalDamageString = physicalDamagePercent > 0 ? DECIMAL_FORMAT.format(physicalDamagePercent) : "0";
         return GUIUtil.dispItem(Material.REDSTONE, ChatColor.YELLOW + "Strength: " + strength, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
                         ChatColor.GRAY + "Crit Chance: " + statPrefix(strength) + critChanceString + "%",
-                        ChatColor.GRAY + "Weapon Damage: " + statPrefix(strength) + weaponDamageString + "%"
+                        ChatColor.GRAY + "Physical Damage: " + statPrefix(strength) + physicalDamageString + "%"
                 });
     }
 

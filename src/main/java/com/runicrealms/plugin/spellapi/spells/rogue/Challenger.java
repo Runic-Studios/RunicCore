@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -28,7 +28,7 @@ public class Challenger extends Spell {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // fires AFTER other weapon events
-    public void onDamage(WeaponDamageEvent e) {
+    public void onDamage(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         LivingEntity le = e.getVictim();
         int bonus = (int) (le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * HEALTH_MULT);

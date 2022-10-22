@@ -96,7 +96,7 @@ public class StaffListener implements Listener {
     }
 
     /**
-     * Create a WeaponDamageEvent for our staff attack, verify that the player can use the weapon
+     * Create a PhysicalDamageEvent for our staff attack, verify that the player can use the weapon
      *
      * @param player    who summoned staff attack
      * @param victim    to be damaged
@@ -128,9 +128,9 @@ public class StaffListener implements Listener {
         // apply attack effects, random damage amount
         if (maxDamage != 0) {
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            DamageUtil.damageEntityWeapon(randomNum, victim, player, true, true);
+            DamageUtil.damageEntityPhysical(randomNum, victim, player, true, true);
         } else {
-            DamageUtil.damageEntityWeapon(maxDamage, victim, player, true, true);
+            DamageUtil.damageEntityPhysical(maxDamage, victim, player, true, true);
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

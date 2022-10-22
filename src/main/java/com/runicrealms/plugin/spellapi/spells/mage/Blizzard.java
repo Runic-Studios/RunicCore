@@ -34,7 +34,7 @@ public class Blizzard extends Spell implements MagicDamageSpell {
                 "You summon a cloud of snow that " +
                         "rains down snowballs for " + DURATION + " seconds, " +
                         "each dealing (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage to enemies and slowing them!",
+                        + "x&7 lvl) magicʔ damage to enemies and slowing them!",
                 ChatColor.WHITE, ClassEnum.MAGE, 15, 40);
         this.snowballMap = new HashMap<>();
     }

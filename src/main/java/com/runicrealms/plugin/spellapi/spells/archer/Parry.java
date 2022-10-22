@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Parry extends Spell implements WeaponDamageSpell {
+public class Parry extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 4;
     private static final int DAMAGE_PER_LEVEL = 1;
@@ -35,7 +35,7 @@ public class Parry extends Spell implements WeaponDamageSpell {
                 "You launch yourself backwards in the air, " +
                         "shooting a flurry of five arrows in front " +
                         "of you, each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage!",
+                        "x&7 lvl) physical⚔ damage!",
                 ChatColor.WHITE, ClassEnum.ARCHER, 8, 15);
         parryArrows = new ArrayList<>();
         hasBeenHit = new HashSet<>();
@@ -120,7 +120,7 @@ public class Parry extends Spell implements WeaponDamageSpell {
 
         if (verifyEnemy(pl, le) && !hasBeenHit.contains(le.getUniqueId())) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(le.getUniqueId()), 20L);
-            DamageUtil.damageEntityWeapon(DAMAGE, le, pl, false, true, this);
+            DamageUtil.damageEntityPhysical(DAMAGE, le, pl, false, true, this);
         }
     }
 

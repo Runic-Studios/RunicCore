@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Harpoon extends Spell implements WeaponDamageSpell {
+public class Harpoon extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE_AMT = 50;
     private static final double DAMAGE_PER_LEVEL = 2.15;
@@ -30,7 +30,7 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
         super("Harpoon",
                 "You launch a projectile harpoon of the sea! Upon hitting an enemy, " +
                         "the trident deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage and pulls its target towards you, slowing them for " + DURATION + "s! " +
+                        "x&7 lvl) physical⚔ damage and pulls its target towards you, slowing them for " + DURATION + "s! " +
                         "If an ally is hit, you are instead teleported to their location.",
                 ChatColor.WHITE, ClassEnum.ROGUE, 18, 35);
     }
@@ -85,7 +85,7 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
         double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
         //final double hPower = 0.5D;
 
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, this);
+        DamageUtil.damageEntityPhysical(DAMAGE_AMT, victim, player, false, true, this);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
 
         new BukkitRunnable() {

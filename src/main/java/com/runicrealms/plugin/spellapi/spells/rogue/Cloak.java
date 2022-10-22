@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo;
@@ -102,7 +102,7 @@ public class Cloak extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (!(cloakers.contains(e.getPlayer().getUniqueId())
                 || cloakers.contains(e.getVictim().getUniqueId()))) return;
         if (cloakers.contains(e.getPlayer().getUniqueId()))
@@ -112,7 +112,7 @@ public class Cloak extends Spell {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!(cloakers.contains(e.getPlayer().getUniqueId())
                 || cloakers.contains(e.getVictim().getUniqueId()))) return;
         if (cloakers.contains(e.getPlayer().getUniqueId()))

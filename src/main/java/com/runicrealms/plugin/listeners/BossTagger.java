@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.item.lootchests.BossChest;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
@@ -93,12 +93,12 @@ public class BossTagger implements Listener {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         trackBossDamage(e.getPlayer(), e.getVictim(), e.getAmount());
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         trackBossDamage(e.getPlayer(), e.getVictim(), e.getAmount());
     }
 

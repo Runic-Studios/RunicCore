@@ -2,8 +2,8 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -22,7 +22,7 @@ public class Condemn extends Spell {
     }
 
     @EventHandler
-    public void onSilencingHit(SpellDamageEvent e) {
+    public void onSilencingHit(MagicDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!RunicCoreAPI.isSilenced(e.getVictim())) return;
         // particle
@@ -30,7 +30,7 @@ public class Condemn extends Spell {
     }
 
     @EventHandler
-    public void onSilencingHit(WeaponDamageEvent e) {
+    public void onSilencingHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!RunicCoreAPI.isSilenced(e.getVictim())) return;
         // particle

@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -63,7 +63,7 @@ public class ManaShield extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (!shielded.contains(e.getVictim().getUniqueId()))
             return;
         if (!(e.getVictim() instanceof Player))
@@ -73,7 +73,7 @@ public class ManaShield extends Spell {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!shielded.contains(e.getVictim().getUniqueId()))
             return;
         if (!(e.getVictim() instanceof Player))

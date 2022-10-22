@@ -40,7 +40,7 @@ public class CombatListener implements Listener {
      * If the victim is a Player, we let RunicPvP handle it
      */
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player) return; // handled in RunicPvP
         EnterCombatEvent enterCombatEvent = new EnterCombatEvent(e.getPlayer());
@@ -48,11 +48,11 @@ public class CombatListener implements Listener {
     }
 
     /**
-     * WeaponDamageEvent can only be triggered by players, not mobs
+     * PhysicalDamageEvent can only be triggered by players, not mobs
      * If the victim is a Player, we let RunicPvP handle it
      */
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (e.isCancelled()) return;
         if (e.getVictim() instanceof Player) return; // handled in RunicPvP
         EnterCombatEvent enterCombatEvent = new EnterCombatEvent(e.getPlayer());

@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -32,13 +32,13 @@ public class SeaLegs extends Spell {
     }
 
     @EventHandler
-    public void onSpeedyHit(SpellDamageEvent e) {
+    public void onSpeedyHit(MagicDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         getSpeed(e.getPlayer(), e.getVictim());
     }
 
     @EventHandler
-    public void onSpeedyHit(WeaponDamageEvent e) {
+    public void onSpeedyHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         getSpeed(e.getPlayer(), e.getVictim());
     }

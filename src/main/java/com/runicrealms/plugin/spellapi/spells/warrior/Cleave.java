@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
@@ -28,7 +28,7 @@ public class Cleave extends Spell {
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!Enrage.getRagers().contains(e.getPlayer().getUniqueId())) return;
         if (!e.isBasicAttack()) return; // only listen for basic attacks
@@ -41,7 +41,7 @@ public class Cleave extends Spell {
             if (targetsHit > MAX_TARGETS) return;
             targetsHit++;
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.5f, 1.0f);
-            DamageUtil.damageEntityWeapon(e.getAmount() * PERCENT, (LivingEntity) en, pl, false, false);
+            DamageUtil.damageEntityPhysical(e.getAmount() * PERCENT, (LivingEntity) en, pl, false, false);
         }
     }
 }

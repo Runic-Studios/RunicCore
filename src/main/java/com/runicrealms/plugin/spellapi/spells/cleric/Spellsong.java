@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -30,7 +30,7 @@ public class Spellsong extends Spell {
                 "You sing a song of battle, granting a buff " +
                         "to all allies within " + RADIUS + " blocks! " +
                         "For " + DURATION + "s, the buff increases the " +
-                        "spellʔ damage of you and your allies " +
+                        "magicʔ damage of you and your allies " +
                         "by " + (int) PERCENT + "%!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
         singers = new ArrayList<>();
@@ -84,7 +84,7 @@ public class Spellsong extends Spell {
     }
 
     @EventHandler
-    public void onSpellHit(SpellDamageEvent e) {
+    public void onSpellHit(MagicDamageEvent e) {
 
         Player damager = e.getPlayer();
         if (singers == null) return;

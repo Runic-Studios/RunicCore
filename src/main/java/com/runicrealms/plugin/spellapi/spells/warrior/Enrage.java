@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -32,7 +32,7 @@ public class Enrage extends Spell implements MagicDamageSpell {
                         "rage, slowing your speed. After, " +
                         "you gain an immense boost of speed " +
                         "and your weapon⚔ attacks deal (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) extra spellʔ damage for " + BUFF_DURATION + "s!",
+                        "x&7 lvl) extra magicʔ damage for " + BUFF_DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 12, 25);
     }
 
@@ -75,7 +75,7 @@ public class Enrage extends Spell implements MagicDamageSpell {
      * Activate on-hit effects
      */
     @EventHandler
-    public void onSuccessfulHit(WeaponDamageEvent e) {
+    public void onSuccessfulHit(PhysicalDamageEvent e) {
 
         if (!e.isBasicAttack()) return;
         if (!ragers.contains(e.getPlayer().getUniqueId())) return;

@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
@@ -30,7 +30,7 @@ public class DamageUtil {
         }
 
         // call our custom event
-        SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster, spell);
+        MagicDamageEvent event = new MagicDamageEvent((int) dmgAmt, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
@@ -56,7 +56,7 @@ public class DamageUtil {
     }
 
     /**
-     * Our universal method to apply weapon damage to a player using custom calculation.
+     * Our universal method to apply physical damage to a player using custom calculation.
      *
      * @param dmgAmt        amount to be healed before gem or buff calculations
      * @param recipient     player to be healed
@@ -65,15 +65,15 @@ public class DamageUtil {
      * @param isRanged      whether the attack is ranged
      * @param spell         include a reference to spell for spell scaling
      */
-    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
-                                          boolean isBasicAttack, boolean isRanged, Spell... spell) {
+    public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
+                                            boolean isBasicAttack, boolean isRanged, Spell... spell) {
 
         // prevent healing
         if (dmgAmt < 0)
             dmgAmt = 0;
 
         // call an event, apply modifiers if necessary
-        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, isRanged, spell);
+        PhysicalDamageEvent event = new PhysicalDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, isRanged, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();

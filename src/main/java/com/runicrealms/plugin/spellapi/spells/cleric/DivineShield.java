@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.*;
@@ -52,13 +52,13 @@ public class DivineShield extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }

@@ -3,9 +3,9 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.plugin.utilities.FloatingItemUtil;
 import org.bukkit.*;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Cannonfire extends Spell implements WeaponDamageSpell {
+public class Cannonfire extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE_AMT = 35;
     private static final int DURATION = 2;
@@ -34,7 +34,7 @@ public class Cannonfire extends Spell implements WeaponDamageSpell {
         super("Cannonfire",
                 "You fire a flurry of " + TOTAL_PELLETS + " shrapnel fragments! " +
                         "On hit, each fragment will deal " +
-                        "(" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) weapon⚔ damage, " +
+                        "(" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) physical⚔ damage, " +
                         "silences the target for " + DURATION + "s, and launches them back!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 7, 15);
         this.hasBeenHit = new HashMap<>();
@@ -91,7 +91,7 @@ public class Cannonfire extends Spell implements WeaponDamageSpell {
         pellet.remove();
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 1.0f);
         victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) victim, shooter, false, false, spell);
+        DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) victim, shooter, false, false, spell);
         addStatusEffect(victim, EffectEnum.SILENCE, DURATION);
         Vector force = shooter.getLocation().toVector().subtract(victim.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
         victim.setVelocity(force);

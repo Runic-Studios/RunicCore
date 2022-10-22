@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -32,7 +32,7 @@ public class Icebrand extends Spell {
     }
 
     @EventHandler
-    public void onKneebreakHit(WeaponDamageEvent e) {
+    public void onKneebreakHit(PhysicalDamageEvent e) {
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
         if (!e.isRanged()) return;
         applySlow(e.getPlayer(), e.getVictim());

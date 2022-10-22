@@ -10,7 +10,7 @@ import org.bukkit.event.HandlerList;
  * This custom event is called when a player is damaged by a magic source.
  * This gets called in our DamageUtil.
  */
-public class SpellDamageEvent extends RunicDamageEvent implements Cancellable {
+public class MagicDamageEvent extends RunicDamageEvent implements Cancellable {
 
     private final Player player;
     private final Spell spell;
@@ -18,14 +18,14 @@ public class SpellDamageEvent extends RunicDamageEvent implements Cancellable {
     private boolean isCancelled;
 
     /**
-     * Constructor for any event which causes spell damage to a player or mob
+     * Constructor for any event which causes magic damage to a player or mob
      *
      * @param amount  of damage to inflict
      * @param victim  who is receiving damage
      * @param damager player who is causing damage
      * @param spell   optional parameter to specify a spell source (for damage scaling)
      */
-    public SpellDamageEvent(int amount, LivingEntity victim, Player damager, Spell... spell) {
+    public MagicDamageEvent(int amount, LivingEntity victim, Player damager, Spell... spell) {
         super(victim, amount);
         this.player = damager;
         this.spell = spell.length > 0 ? spell[0] : null;

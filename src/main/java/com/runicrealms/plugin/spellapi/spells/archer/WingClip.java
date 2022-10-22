@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
@@ -38,7 +38,7 @@ public class WingClip extends Spell {
     }
 
     @EventHandler
-    public void onRangedHit(WeaponDamageEvent e) {
+    public void onRangedHit(PhysicalDamageEvent e) {
         if (!e.isRanged()) return;
         if (!e.isBasicAttack()) return;
         if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;

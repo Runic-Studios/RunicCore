@@ -40,7 +40,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
         super("Meteor Shower",
                 "You launch four projectile meteors " +
                         "that deal (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage on impact!",
+                        + "x&7 lvl) magicʔ damage on impact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
         fireCone = false;
@@ -56,7 +56,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
     public MeteorShower(boolean fireCone, boolean applyBurn) {
         super("Meteor Shower",
                 "You launch four projectile meteors" +
-                        "\nthat deal " + DAMAGE_AMOUNT + " spellʔ damage on" +
+                        "\nthat deal " + DAMAGE_AMOUNT + " magicʔ damage on" +
                         "\nimpact!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
         hasBeenHit = new HashMap<>();
