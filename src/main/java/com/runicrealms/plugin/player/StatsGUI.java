@@ -122,21 +122,18 @@ public class StatsGUI implements InventoryHolder {
     }
 
     private ItemStack dexterityMenuItem() {
-        double dodgeChancePercent = (Stat.getDodgeChance() * 100) * dexterity;
         double moveSpeedPercent = (Stat.getMovementSpeedMult() * 100) * dexterity;
         if (moveSpeedPercent > Stat.getMovementSpeedCap())
             moveSpeedPercent = Stat.getMovementSpeedCap();
-        double rangedDamagePercent = (Stat.getRangedDmgMult() * 100) * dexterity;
-        String dodgeChanceString = dodgeChancePercent > 0 ? DECIMAL_FORMAT.format(dodgeChancePercent) : "0";
+        double critChancePercent = (Stat.getCriticalChance() * 100) * dexterity;
+        String critChanceString = critChancePercent > 0 ? DECIMAL_FORMAT.format(critChancePercent) : "0";
         String moveSpeedString = moveSpeedPercent > 0 ? DECIMAL_FORMAT.format(moveSpeedPercent) : "0";
-        String rangedDamageString = rangedDamagePercent > 0 ? DECIMAL_FORMAT.format(rangedDamagePercent) : "0";
-        return GUIUtil.dispItem(Material.QUARTZ, ChatColor.YELLOW + "Dexterity: " + dexterity, new String[]
+        return GUIUtil.dispItem(Material.QUARTZ, ChatColor.YELLOW + "Dexterity" + Stat.DEXTERITY.getIcon() + ": " + dexterity, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Dodge chance: " + statPrefix(dexterity) + dodgeChanceString + "%",
+                        ChatColor.GRAY + "Crit Chance: " + statPrefix(dexterity) + critChanceString + "%",
                         ChatColor.GRAY + "Movespeed: " + statPrefix(dexterity) + moveSpeedString + "%" + (moveSpeedPercent >= Stat.getMovementSpeedCap() ? " (Cap Reached)" : ""),
-                        ChatColor.GRAY + "Ranged Damage: " + statPrefix(dexterity) + rangedDamageString + "%"
                 });
     }
 
@@ -145,25 +142,22 @@ public class StatsGUI implements InventoryHolder {
         double spellDamagePercent = (Stat.getMagicDmgMult() * 100) * intelligence;
         String manaRegenString = manaRegenPercent > 0 ? DECIMAL_FORMAT.format(manaRegenPercent) : "0";
         String spellDamageString = manaRegenPercent > 0 ? DECIMAL_FORMAT.format(spellDamagePercent) : "0";
-        return GUIUtil.dispItem(Material.LAPIS_LAZULI, ChatColor.YELLOW + "Intelligence: " + intelligence, new String[]
+        return GUIUtil.dispItem(Material.LAPIS_LAZULI, ChatColor.YELLOW + "Intelligence" + Stat.INTELLIGENCE.getIcon() + ": " + intelligence, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
                         ChatColor.GRAY + "Mana Regen: " + statPrefix(intelligence) + manaRegenString + "%",
-                        ChatColor.GRAY + "Magic Damage: " + statPrefix(intelligence) + spellDamageString + "%"
+                        ChatColor.GRAY + "Spell Damage: " + statPrefix(intelligence) + spellDamageString + "%"
                 });
     }
 
     private ItemStack strengthMenuItem() {
-        double critChancePercent = (Stat.getCriticalChance() * 100) * strength;
-        double physicalDamagePercent = (Stat.getMeleeDmgMult() * 100) * strength;
-        String critChanceString = critChancePercent > 0 ? DECIMAL_FORMAT.format(critChancePercent) : "0";
+        double physicalDamagePercent = (Stat.getPhysicalDmgMult() * 100) * strength;
         String physicalDamageString = physicalDamagePercent > 0 ? DECIMAL_FORMAT.format(physicalDamagePercent) : "0";
-        return GUIUtil.dispItem(Material.REDSTONE, ChatColor.YELLOW + "Strength: " + strength, new String[]
+        return GUIUtil.dispItem(Material.REDSTONE, ChatColor.YELLOW + "Strength" + Stat.STRENGTH.getIcon() + ": " + strength, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Crit Chance: " + statPrefix(strength) + critChanceString + "%",
                         ChatColor.GRAY + "Physical Damage: " + statPrefix(strength) + physicalDamageString + "%"
                 });
     }
@@ -173,7 +167,7 @@ public class StatsGUI implements InventoryHolder {
         double spellHealingPercent = (Stat.getSpellHealingMult() * 100) * wisdom;
         String maxManaString = maxManaPercent > 0 ? DECIMAL_FORMAT.format(maxManaPercent) : "0";
         String spellHealingString = spellHealingPercent > 0 ? DECIMAL_FORMAT.format(spellHealingPercent) : "0";
-        return GUIUtil.dispItem(Material.EMERALD, ChatColor.YELLOW + "Wisdom: " + wisdom, new String[]
+        return GUIUtil.dispItem(Material.EMERALD, ChatColor.YELLOW + "Wisdom" + Stat.WISDOM.getIcon() + ": " + wisdom, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
@@ -189,7 +183,7 @@ public class StatsGUI implements InventoryHolder {
         double healthRegenPercent = (Stat.getHealthRegenMult() * 100) * vitality;
         String defenseString = defensePercent > 0 ? DECIMAL_FORMAT.format(defensePercent) : "0";
         String healthRegenString = healthRegenPercent > 0 ? DECIMAL_FORMAT.format(healthRegenPercent) : "0";
-        return GUIUtil.dispItem(Material.DIAMOND, ChatColor.YELLOW + "Vitality: " + vitality, new String[]
+        return GUIUtil.dispItem(Material.DIAMOND, ChatColor.YELLOW + "Vitality" + Stat.VITALITY.getIcon() + ": " + vitality, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",

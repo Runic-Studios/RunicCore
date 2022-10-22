@@ -3,8 +3,6 @@ package com.runicrealms.plugin.player.stat;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.*;
 import com.runicrealms.runicitems.Stat;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,13 +34,6 @@ public class StatListener implements Listener {
     public void onMobDamage(MobDamageEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
         UUID uuid = e.getVictim().getUniqueId();
-        double chanceToDodge = ThreadLocalRandom.current().nextDouble();
-        if (chanceToDodge <= (Stat.getDodgeChance() * RunicCoreAPI.getPlayerDexterity(uuid))) {
-            e.setCancelled(true);
-            ((Player) e.getVictim()).playSound(e.getVictim().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
-            e.getVictim().getWorld().spawnParticle(Particle.CLOUD, e.getVictim().getLocation(), 15, 0.25f, 0.25f, 0.25f, 0);
-            return;
-        }
         double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuid);
         if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
             damageMitigationPercent = Stat.getDamageReductionCap() / 100; // cap it
@@ -73,12 +64,12 @@ public class StatListener implements Listener {
     }
 
     @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
+    public void onMagicDamage(MagicDamageEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         double magicDamageBonusPercent = Stat.getMagicDmgMult() * RunicCoreAPI.getPlayerIntelligence(uuid);
         e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * magicDamageBonusPercent)));
         double chanceToCrit = ThreadLocalRandom.current().nextDouble();
-        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerStrength(uuid))) {
+        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerDexterity(uuid))) {
             e.setCritical(true);
             e.setAmount((int) (e.getAmount() * Stat.getCriticalDamageMultiplier()));
         }
@@ -87,13 +78,6 @@ public class StatListener implements Listener {
          */
         if (e.getVictim() instanceof Player) {
             UUID uuidVictim = e.getVictim().getUniqueId();
-            double chanceToDodge = ThreadLocalRandom.current().nextDouble();
-            if (chanceToDodge <= (Stat.getDodgeChance() * RunicCoreAPI.getPlayerDexterity(uuidVictim))) {
-                e.setCancelled(true);
-                ((Player) e.getVictim()).playSound(e.getVictim().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
-                e.getVictim().getWorld().spawnParticle(Particle.CLOUD, e.getVictim().getLocation(), 15, 0.25f, 0.25f, 0.25f, 0);
-                return;
-            }
             double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
             if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
                 damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
@@ -102,17 +86,12 @@ public class StatListener implements Listener {
     }
 
     @EventHandler
-    public void onRangedDamage(PhysicalDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        if (e.isRanged()) {
-            double rangedDamageBonusPercent = Stat.getRangedDmgMult() * RunicCoreAPI.getPlayerDexterity(uuid);
-            e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * rangedDamageBonusPercent)));
-        } else {
-            double meleeDamageBonusPercent = Stat.getMeleeDmgMult() * RunicCoreAPI.getPlayerStrength(uuid);
-            e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * meleeDamageBonusPercent)));
-        }
+        double physicalDamageBonusPercent = Stat.getPhysicalDmgMult() * RunicCoreAPI.getPlayerStrength(uuid);
+        e.setAmount((int) (e.getAmount() + Math.ceil(e.getAmount() * physicalDamageBonusPercent)));
         double chanceToCrit = ThreadLocalRandom.current().nextDouble();
-        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerStrength(uuid))) {
+        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCoreAPI.getPlayerDexterity(uuid))) {
             e.setCritical(true);
             e.setAmount((int) (e.getAmount() * Stat.getCriticalDamageMultiplier()));
         }
@@ -121,12 +100,6 @@ public class StatListener implements Listener {
          */
         if (e.getVictim() instanceof Player) {
             UUID uuidVictim = e.getVictim().getUniqueId();
-            double chanceToDodge = ThreadLocalRandom.current().nextDouble();
-            if (chanceToDodge <= (Stat.getDodgeChance() * RunicCoreAPI.getPlayerDexterity(uuidVictim))) {
-                e.setCancelled(true);
-                ((Player) e.getVictim()).playSound(e.getVictim().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 2.0f, 1.0f);
-                return;
-            }
             double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCoreAPI.getPlayerVitality(uuidVictim);
             if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
                 damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
