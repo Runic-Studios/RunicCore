@@ -37,11 +37,12 @@ public class SkillTreeData implements SessionData {
      * Build default skill tree data (if there is no persistent data)
      *
      * @param uuid     of the player
+     * @param slot     of the character
      * @param position of the skill tree (1-3)
      */
-    public SkillTreeData(UUID uuid, SkillTreePosition position) {
+    public SkillTreeData(UUID uuid, int slot, SkillTreePosition position) {
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.subClass = SubClass.determineSubClass(uuid, slot, position);
         this.uuid = uuid;
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
     }
@@ -57,7 +58,7 @@ public class SkillTreeData implements SessionData {
     public SkillTreeData(UUID uuid, int slot, SkillTreePosition position, PlayerMongoDataSection character, Jedis jedis) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.subClass = SubClass.determineSubClass(uuid, slot, position);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks for skill tree in position
         if (!character.has(PATH_LOCATION + "." + position.getValue())) return; // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position.getValue());
@@ -79,7 +80,7 @@ public class SkillTreeData implements SessionData {
     public SkillTreeData(UUID uuid, int slot, SkillTreePosition position, Jedis jedis) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, position);
+        this.subClass = SubClass.determineSubClass(uuid, slot, position);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
         String key = getJedisKey(uuid, slot, position);
         Map<String, String> perkDataMap = jedis.hgetAll(key); // get all the values for skill tree in position
@@ -287,7 +288,7 @@ public class SkillTreeData implements SessionData {
      * @param slot              of the character
      */
     public void writeSkillTreeDataToJedis(Jedis jedis, SkillTreePosition skillTreePosition, int slot) {
-        String key = getJedisKey(this.uuid, RunicCoreAPI.getCharacterSlot(this.uuid), skillTreePosition);
+        String key = getJedisKey(this.uuid, slot, skillTreePosition);
         Map<String, String> perkDataMap = this.toMap();
         if (!perkDataMap.isEmpty()) {
             String parentKey = uuid + ":character:" + slot + ":" + PATH_LOCATION;

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.utilities.ChatUtils;
@@ -56,7 +57,7 @@ public class SubClassGUI implements InventoryHolder {
      * @return an ItemStack icon
      */
     private ItemStack subClassItem(SkillTreePosition position) {
-        SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), position);
+        SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()), position);
         String displayName = subClass.getName();
         ItemStack subClassItem = subClass.getItemStack();
         ItemMeta meta = subClassItem.getItemMeta();

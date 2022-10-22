@@ -2,8 +2,10 @@ package com.runicrealms.plugin.classes;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.item.util.ItemUtils;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import org.bukkit.inventory.ItemStack;
+import redis.clients.jedis.Jedis;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -87,13 +89,23 @@ public enum SubClass {
     /**
      * Determines the appropriate subclass based on player class and specified position
      *
-     * @param position (which sub-class? 1, 2, or 3)
+     * @param uuid          of the player
+     * @param position      (which sub-class? 1, 2, or 3)
+     * @param characterSlot
      */
-    public static SubClass determineSubClass(UUID uuid, SkillTreePosition position) {
-        SubClass subClass = null;
+    public static SubClass determineSubClass(UUID uuid, int characterSlot, SkillTreePosition position) {
+        SubClass subClass;
         int value = position.getValue();
-        switch (RunicCoreAPI.getPlayerClass(uuid)) {
-            case "Archer":
+        String playerClass;
+        if (RunicCoreAPI.getPlayerClass(uuid) == null) { // player probably offline
+            try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+                playerClass = RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_TYPE.getField(), characterSlot, jedis);
+            }
+        } else {
+            playerClass = RunicCoreAPI.getPlayerClass(uuid);
+        }
+        switch (playerClass.toLowerCase()) {
+            case "archer":
                 if (value == 1)
                     subClass = SubClass.MARKSMAN;
                 else if (value == 2)
@@ -101,7 +113,7 @@ public enum SubClass {
                 else
                     subClass = SubClass.WARDEN;
                 break;
-            case "Cleric":
+            case "cleric":
                 if (value == 1)
                     subClass = SubClass.BARD;
                 else if (value == 2)
@@ -109,7 +121,7 @@ public enum SubClass {
                 else
                     subClass = SubClass.PRIEST;
                 break;
-            case "Mage":
+            case "mage":
                 if (value == 1)
                     subClass = SubClass.CRYOMANCER;
                 else if (value == 2)
@@ -117,7 +129,7 @@ public enum SubClass {
                 else
                     subClass = SubClass.WARLOCK;
                 break;
-            case "Rogue":
+            case "rogue":
                 if (value == 1)
                     subClass = SubClass.ASSASSIN;
                 else if (value == 2)
@@ -125,7 +137,7 @@ public enum SubClass {
                 else
                     subClass = SubClass.SWINDLER;
                 break;
-            case "Warrior":
+            case "warrior":
                 if (value == 1)
                     subClass = SubClass.BERSERKER;
                 else if (value == 2)
@@ -133,6 +145,8 @@ public enum SubClass {
                 else
                     subClass = SubClass.INQUISITOR;
                 break;
+            default:
+                return null;
         }
         return subClass;
     }

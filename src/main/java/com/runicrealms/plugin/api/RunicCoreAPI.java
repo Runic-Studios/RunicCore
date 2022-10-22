@@ -97,7 +97,11 @@ public class RunicCoreAPI {
      * @return a string representing the class (Cleric, Mage, etc.)
      */
     public static String getPlayerClass(UUID uuid) {
-        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid).second.getName();
+        Pair<Integer, ClassEnum> slotAndClass = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid);
+        if (slotAndClass != null) {
+            return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid).second.getName();
+        }
+        return null;
     }
 
     /**
@@ -308,7 +312,11 @@ public class RunicCoreAPI {
      * @return an int representing their character slot (3, for example)
      */
     public static int getCharacterSlot(UUID uuid) {
-        return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid).first;
+        Pair<Integer, ClassEnum> slotAndClass = RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid);
+        if (slotAndClass != null) {
+            return RunicCore.getDatabaseManager().getLoadedCharactersMap().get(uuid).first;
+        }
+        return -1;
     }
 
     /**
@@ -468,10 +476,11 @@ public class RunicCoreAPI {
     public static SkillTreeGUI skillTreeGUI(Player player, SkillTreePosition position) {
         UUID uuid = player.getUniqueId();
         SkillTreeData skillTreeData = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + position.getValue());
+        int slot = RunicCoreAPI.getCharacterSlot(uuid);
         if (skillTreeData != null)
             return new SkillTreeGUI(player, skillTreeData);
         else
-            return new SkillTreeGUI(player, new SkillTreeData(uuid, position));
+            return new SkillTreeGUI(player, new SkillTreeData(uuid, slot, position));
     }
 
     /**

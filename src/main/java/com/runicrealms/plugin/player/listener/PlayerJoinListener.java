@@ -57,12 +57,13 @@ public class PlayerJoinListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2));
         // build database file synchronously (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            Jedis jedis = RunicCoreAPI.getNewJedisResource();
-            PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player, jedis);
-            // Bukkit.broadcastMessage("building player data object");
-            RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
-            ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
-            jedis.close();
+            try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+                PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player, jedis);
+                // Bukkit.broadcastMessage("building player data object");
+                RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
+                ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
+                // jedis.close();
+            }
         }, 1L);
     }
 
@@ -148,17 +149,18 @@ public class PlayerJoinListener implements Listener {
      */
     private void loadCurrentPlayerHealthAndHunger(Player player, CharacterData characterData) {
         // set their hp to stored value from last logout
-        int storedHealth = characterData.getBaseCharacterInfo().getCurrentHp();
-        // Bukkit.broadcastMessage("stored health is: " + storedHealth);
-        // update their health
-        if (storedHealth == 0) {
-            storedHealth = HealthUtils.getBaseHealth(); // new players or corrupted data
-        }
-        if (storedHealth <= player.getMaxHealth()) {
-            player.setHealth(storedHealth);
-        } else {
-            player.setHealth(player.getMaxHealth());
-        }
+//        int storedHealth = characterData.getBaseCharacterInfo().getCurrentHp();
+//        // Bukkit.broadcastMessage("stored health is: " + storedHealth);
+//        // update their health
+//        if (storedHealth == 0) {
+//            storedHealth = HealthUtils.getBaseHealth(); // new players or corrupted data
+//        }
+        player.setHealth(player.getMaxHealth());
+//        if (storedHealth <= player.getMaxHealth()) {
+//            player.setHealth(storedHealth);
+//        } else {
+//            player.setHealth(player.getMaxHealth());
+//        }
         // set their last stored hunger
         player.setFoodLevel(characterData.getBaseCharacterInfo().getStoredHunger());
     }

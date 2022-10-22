@@ -64,7 +64,7 @@ public class SkillTreeManager implements Listener {
                                                 PlayerMongoData playerMongoData, PlayerMongoDataSection character) {
         character.remove(SkillTreeData.PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
         character.save();
-        saveSkillTreesToJedis(uuid, slot, jedis);
+        // saveSkillTreesToJedis(uuid, slot, jedis);
         PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
         SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis);

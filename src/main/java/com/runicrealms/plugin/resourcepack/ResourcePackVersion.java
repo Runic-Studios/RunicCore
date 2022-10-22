@@ -13,9 +13,9 @@ public enum ResourcePackVersion {
     MC_1_13("https://www.dropbox.com/s/k33evk3fvnq56a6/1.14_RR.zip?dl=1", 340, 404), // same as 1.14
     MC_1_14("https://www.dropbox.com/s/k33evk3fvnq56a6/1.14_RR.zip?dl=1", 404, 498),
     MC_1_15("https://www.dropbox.com/s/k33evk3fvnq56a6/1.14_RR.zip?dl=1", 498, 578),
-    MC_1_16("https://www.dropbox.com/s/9l0q1xgvaqjcjhi/Runic%20Realms%20Resourcepack.zip?dl=1", 578, 754),
-    MC_1_17("https://www.dropbox.com/s/9l0q1xgvaqjcjhi/Runic%20Realms%20Resourcepack.zip?dl=1", 754, 756),
-    MC_1_18("https://www.dropbox.com/s/9l0q1xgvaqjcjhi/Runic%20Realms%20Resourcepack.zip?dl=1", 756, 9999);
+    MC_1_16("https://www.dropbox.com/s/7ie0minem2h9t4y/Runic%20Realms%20Resourcepack.zip?dl=1", 578, 754),
+    MC_1_17("https://www.dropbox.com/s/7ie0minem2h9t4y/Runic%20Realms%20Resourcepack.zip?dl=1", 754, 756),
+    MC_1_18("https://www.dropbox.com/s/7ie0minem2h9t4y/Runic%20Realms%20Resourcepack.zip?dl=1", 756, 9999);
 
     private final String link;
     private final Integer minVersion;
