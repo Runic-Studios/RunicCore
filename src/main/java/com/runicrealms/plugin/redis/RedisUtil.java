@@ -3,7 +3,6 @@ package com.runicrealms.plugin.redis;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
 
@@ -51,24 +50,22 @@ public class RedisUtil {
      * Useful for cascading deletion or nested value iteration
      * Can also use hgetAll if the nested keys match a single pattern
      *
-     * @param jedisPool the jedis pool from core
      * @param parentKey the parent key to remove (i.e., character:3)
+     * @param jedis     the jedis resource
      * @return a list of redis keys nested inside the parent
      */
-    public static List<String> getNestedKeys(JedisPool jedisPool, String parentKey) {
+    public static List<String> getNestedKeys(String parentKey, Jedis jedis) {
         List<String> nestedKeys = new ArrayList<>();
-        try (Jedis jedis = jedisPool.getResource()) {
-            String subKeyPath = parentKey + ":*"; // grab all sub-keys
-            ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
-            String cur = ScanParams.SCAN_POINTER_START;
-            boolean cycleIsFinished = false;
-            while (!cycleIsFinished) {
-                ScanResult<String> scanResult = jedis.scan(cur, scanParams);
-                nestedKeys.addAll(scanResult.getResult());
-                cur = scanResult.getCursor();
-                if (cur.equals("0")) {
-                    cycleIsFinished = true;
-                }
+        String subKeyPath = parentKey + ":*"; // grab all sub-keys
+        ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
+        String cur = ScanParams.SCAN_POINTER_START;
+        boolean cycleIsFinished = false;
+        while (!cycleIsFinished) {
+            ScanResult<String> scanResult = jedis.scan(cur, scanParams);
+            nestedKeys.addAll(scanResult.getResult());
+            cur = scanResult.getCursor();
+            if (cur.equals("0")) {
+                cycleIsFinished = true;
             }
         }
         return nestedKeys;

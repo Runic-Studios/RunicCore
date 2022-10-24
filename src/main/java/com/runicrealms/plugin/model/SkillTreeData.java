@@ -146,6 +146,7 @@ public class SkillTreeData implements SessionData {
      * Loops through currently purchased perks to store passives in memory
      */
     public void addPassivesToMap() {
+        if (RunicCoreAPI.getPassives(uuid) == null) return; // player is offline or removed from memory
         for (Perk perk : perks) {
             if (perk instanceof PerkBaseStat) continue;
             if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;

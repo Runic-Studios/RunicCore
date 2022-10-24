@@ -81,6 +81,17 @@ public class RunicCoreAPI {
     }
 
     /**
+     * Returns a string list of all nested keys in jedis beginning with the parent key
+     *
+     * @param parentKey the key at the top of the section
+     * @param jedis     the jedis resource
+     * @return a list of nested keys
+     */
+    public static List<String> getNestedJedisKeys(String parentKey, Jedis jedis) {
+        return RedisUtil.getNestedKeys(parentKey, jedis);
+    }
+
+    /**
      * Quick method to grab player class from session data in redis
      *
      * @param player to lookup
