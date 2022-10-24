@@ -109,7 +109,7 @@ public class DatabaseUtil {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return new ItemStack[invSize]; // That is bad! todo: if they load a blank inv then logout, they lose data. re-write this.
+        return new ItemStack[invSize]; // That is bad!
     }
 
     /*
