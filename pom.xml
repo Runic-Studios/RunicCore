@@ -222,9 +222,9 @@
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicGuilds</artifactId>
-            <version>1.16.4</version>
+            <version>1.16.5</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/RunicGuilds-1.16.4.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicGuilds-1.16.5.jar</systemPath>
         </dependency>
         <!-- RunicItems -->
         <dependency>
@@ -246,9 +246,9 @@
         <dependency>
             <groupId>com.runicrealms.plugin</groupId>
             <artifactId>RunicProfessions</artifactId>
-            <version>1.16.4</version>
+            <version>1.16.5</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/RunicProfessions-1.16.4.jar</systemPath>
+            <systemPath>${project.basedir}/../lib/RunicProfessions-1.16.5.jar</systemPath>
         </dependency>
         <!-- RunicRestart -->
         <dependency>

@@ -43,12 +43,6 @@ public class ScoreboardListener implements Listener {
         RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
     }
 
-    // TODO: implement this event
-//    @EventHandler
-//    public void onGuildChange(GuildChangeEvent e) {
-//
-//    }
-
     /**
      * Updates health and scoreboard on armor equip
      * This NEEDS to be delayed by at least several ticks, or it won't update correctly

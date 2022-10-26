@@ -107,7 +107,7 @@ public class ScoreboardHandler {
             playerProf.setPrefix(playerProf(player, jedis));
             Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
             assert playerGuild != null;
-            playerGuild.setPrefix(playerGuild(player));
+            playerGuild.setPrefix(playerGuild(player, jedis));
         } catch (NullPointerException e) {
             // wrapped in try-catch in-case scoreboard can't set up in time (also closes jedis resource)
         }
@@ -208,12 +208,19 @@ public class ScoreboardHandler {
 
     private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
 
-    private String playerGuild(final Player player) {
-        String guild = "None";
+    /**
+     * Update the scoreboard info on the player's current guild data
+     *
+     * @param player to update
+     * @param jedis  the jedis resource
+     * @return a string with their guild info
+     */
+    private String playerGuild(final Player player, Jedis jedis) {
         String display;
-        if (guild == null) {
+        if (!jedis.exists(player.getUniqueId() + ":guild")) {
             display = NO_GUILD_STRING;
         } else {
+            String guild = jedis.get(player.getUniqueId() + ":guild");
             display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
         }
         return display;
