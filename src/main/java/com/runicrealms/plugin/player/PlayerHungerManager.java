@@ -46,6 +46,8 @@ public class PlayerHungerManager implements Listener {
                 continue;
             }
             if (player.getFoodLevel() <= STARVATION_HUNGER_LEVEL) continue;
+            if (player.getSaturation() > 0) return;
+            // todo
             player.setFoodLevel(player.getFoodLevel() - 1);
         }
     }

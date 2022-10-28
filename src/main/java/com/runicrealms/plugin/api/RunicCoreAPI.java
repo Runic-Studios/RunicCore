@@ -623,7 +623,7 @@ public class RunicCoreAPI {
     public static boolean isSafezone(Location location) {
         List<String> regionIds = getRegionIds(location);
         for (String regionId : regionIds) {
-            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> regionId.contains(cityLocation.getIdentifier())))
+            if (Arrays.stream(CityLocation.values()).anyMatch(cityLocation -> regionId.equals(cityLocation.getIdentifier())))
                 return true;
         }
         return false;

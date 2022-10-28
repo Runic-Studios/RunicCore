@@ -145,6 +145,25 @@ public class SetCMD extends BaseCommand {
         }
     }
 
+    // set hunger [player] [hunger]
+
+    @Subcommand("hunger")
+    @Syntax("<player> <hunger>")
+    @CommandCompletion("@online @nothing")
+    @Conditions("is-console-or-op")
+    public void onCommandHunger(CommandSender commandSender, String[] args) {
+        if (args.length != 2) {
+            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set hunger [player] [hunger]");
+            return;
+        }
+        Player player;
+        int hunger;
+        player = Bukkit.getPlayer(args[0]);
+        hunger = Integer.parseInt(args[1]);
+        if (player == null) return;
+        player.setFoodLevel(hunger);
+    }
+
     // set level [player] [level]
 
     @Subcommand("level")

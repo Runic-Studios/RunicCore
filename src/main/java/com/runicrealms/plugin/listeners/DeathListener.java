@@ -56,6 +56,7 @@ public class DeathListener implements Listener {
         if (dungeonLocation == null) {
             victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
             victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
+            victim.sendMessage(ChatColor.RED + "Any soulbound, quest, and untradeable items have been returned also.");
         } else {
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
                 victim.teleport(dungeonLocation.getLocation());
