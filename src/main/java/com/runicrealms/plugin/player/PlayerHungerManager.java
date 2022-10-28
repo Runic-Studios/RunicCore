@@ -33,7 +33,8 @@ public class PlayerHungerManager implements Listener {
     }
 
     /**
-     * Manually reduce player hunger
+     * Manually reduce player hunger. Either reduces player saturation if it exists,
+     * or reduces player hunger value if there is no saturation
      */
     private void tickAllOnlinePlayersHunger() {
         for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
@@ -46,8 +47,7 @@ public class PlayerHungerManager implements Listener {
                 continue;
             }
             if (player.getFoodLevel() <= STARVATION_HUNGER_LEVEL) continue;
-            if (player.getSaturation() > 0) return;
-            // todo
+            if (player.getSaturation() > 0) continue;
             player.setFoodLevel(player.getFoodLevel() - 1);
         }
     }
@@ -73,12 +73,12 @@ public class PlayerHungerManager implements Listener {
      * Reduces regen for players below half hunger
      */
     @EventHandler
-    public void onHealthRegen(HealthRegenEvent e) {
-        int foodLevel = e.getPlayer().getFoodLevel();
+    public void onHealthRegen(HealthRegenEvent event) {
+        int foodLevel = event.getPlayer().getFoodLevel();
         if (foodLevel <= INVIGORATED_HUNGER_THRESHOLD) {
-            e.setCancelled(true);
+            event.setCancelled(true);
         } else if (foodLevel <= 10) {
-            e.setAmount((int) (e.getAmount() * HALF_HUNGER_REGEN_MULTIPLIER));
+            event.setAmount((int) (event.getAmount() * HALF_HUNGER_REGEN_MULTIPLIER));
         }
     }
 
@@ -86,13 +86,15 @@ public class PlayerHungerManager implements Listener {
      * Prevent eating items which are not consumables
      */
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onFoodInteract(PlayerItemConsumeEvent e) {
-        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(e.getItem());
+    public void onFoodInteract(PlayerItemConsumeEvent event) {
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(event.getItem());
         if (runicItem == null) return;
         boolean isConsumable = runicItem.getTags().contains(RunicItemTag.CONSUMABLE);
         if (!isConsumable) {
-            e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "I can't eat that!");
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "I can't eat that!");
+        } else {
+            Bukkit.broadcastMessage(event.getPlayer().getSaturation() + " is saturation");
         }
     }
 }
