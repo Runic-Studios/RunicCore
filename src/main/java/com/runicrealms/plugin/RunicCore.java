@@ -227,6 +227,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     /*
     Prevent memory leaks
      */
+    @Override
     public void onDisable() {
         combatManager = null;
         instance = null;

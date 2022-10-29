@@ -127,7 +127,7 @@ public class PlayerMenuListener implements Listener {
                         player,
                         Material.PLAYER_HEAD,
                         "&e" + player.getName() + "'s Achievements",
-                        "\n&c&lCLICK" + "\n&7Achievments &ccoming soon!"
+                        "\n&6&lCLICK" + "\n&7To view your achievements!"
                 );
     }
 
