@@ -35,8 +35,10 @@ public class TitleData implements SessionData {
     }
 
     /**
-     * @param uuid
-     * @param jedis
+     * Build the player's title data from redis, then add to memory
+     *
+     * @param uuid  of the player to save
+     * @param jedis the jedis resource
      */
     public TitleData(UUID uuid, Jedis jedis) {
         this.uuid = uuid;
