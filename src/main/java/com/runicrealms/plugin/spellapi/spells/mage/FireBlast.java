@@ -40,7 +40,7 @@ public class FireBlast extends Spell implements MagicDamageSpell {
         pl.getWorld().spawnParticle(Particle.LAVA, blastLoc, 25, 0.3f, 0.3f, 0.3f, 0);
 
         for (Entity en : pl.getWorld().getNearbyEntities(blastLoc, RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             LivingEntity le = (LivingEntity) en;
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, this);
             en.getWorld().spawnParticle(Particle.FLAME, le.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);

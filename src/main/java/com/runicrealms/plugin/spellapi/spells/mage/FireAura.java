@@ -54,7 +54,7 @@ public class FireAura extends Spell implements MagicDamageSpell {
                     createSphere(player, player.getEyeLocation());
 
                     for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (verifyEnemy(player, en))
+                        if (isValidEnemy(player, en))
                             DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, spell);
                     }
                 }

@@ -40,7 +40,7 @@ public class Electrocute extends Spell implements ArtifactSpell {
         e.getPlayer().getWorld().playSound(onKillEvent.getVictim().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 2.0f, 1.0f);
         onKillEvent.getVictim().getWorld().spawnParticle(Particle.CRIT_MAGIC, onKillEvent.getVictim().getLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
         for (Entity en : onKillEvent.getVictim().getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(e.getPlayer(), en)) continue;
+            if (!isValidEnemy(e.getPlayer(), en)) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) en, e.getPlayer());
         }
     }

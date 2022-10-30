@@ -64,7 +64,7 @@ public class Rebuke extends Spell implements PhysicalDamageSpell {
 
     private boolean checkForEnemy(Player caster, Location beamLocation) {
         for (Entity en : caster.getWorld().getNearbyEntities(beamLocation, COLLISION_RADIUS, COLLISION_RADIUS, COLLISION_RADIUS)) {
-            if (!verifyEnemy(caster, en)) continue;
+            if (!isValidEnemy(caster, en)) continue;
             caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 1.0f, 1.0f);
             knockUpParticleTask(en);
             DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) en, caster, false, false, this);

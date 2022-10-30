@@ -56,7 +56,7 @@ public class ArcaneShot extends Spell implements MagicDamageSpell {
         e.setCancelled(true);
         Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
         LivingEntity livingEntity = (LivingEntity) e.getEntity();
-        if (!verifyEnemy(pl, livingEntity)) return;
+        if (!isValidEnemy(pl, livingEntity)) return;
 
         // spell effect
         addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);

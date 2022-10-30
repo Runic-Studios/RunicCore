@@ -43,7 +43,7 @@ public class RighteousBlade extends Spell implements HealingSpell {
         if (roll > PERCENT) return;
         HealUtil.healPlayer(HEAL_AMOUNT, pl, pl, false, this);
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyAlly(pl, en)) continue;
+            if (!isValidAlly(pl, en)) continue;
             HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, pl, false, this);
         }
     }

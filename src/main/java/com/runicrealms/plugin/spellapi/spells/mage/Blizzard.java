@@ -118,7 +118,7 @@ public class Blizzard extends Spell implements MagicDamageSpell {
         if (le.hasMetadata("NPC")) return;
         if (victim.getUniqueId() == shooter.getUniqueId()) return;
 
-        if (verifyEnemy(shooter, le)) {
+        if (isValidEnemy(shooter, le)) {
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, shooter, this);
             victim.setLastDamageCause(e);
             le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));

@@ -58,7 +58,7 @@ public class Shadowbolt extends Spell implements MagicDamageSpell {
 
     private void silenceNearest(Player pl) {
         for (Entity en : shadowbolt.getNearbyEntities(1, 1, 1)) {
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             LivingEntity victim = (LivingEntity) en;
             DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
             // victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) (DURATION * 20), 2));

@@ -83,7 +83,7 @@ public class KillShot extends Spell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        if (!verifyEnemy(pl, le)) return;
+        if (!isValidEnemy(pl, le)) return;
 
         int amount = DAMAGE + percentMissingHealth(le, PERCENT);
         if (!(le instanceof Player) && amount > DAMAGE_CAP)

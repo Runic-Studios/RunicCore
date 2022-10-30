@@ -87,7 +87,7 @@ public class Slam extends Spell implements PhysicalDamageSpell {
                             25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
                     for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (verifyEnemy(pl, en)) {
+                        if (isValidEnemy(pl, en)) {
                             DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) en, pl, false, false, spell);
                             Vector force = (pl.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));

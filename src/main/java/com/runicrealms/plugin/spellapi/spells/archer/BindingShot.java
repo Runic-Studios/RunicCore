@@ -60,7 +60,7 @@ public class BindingShot extends Spell implements PhysicalDamageSpell {
         Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
         if (pl == null) return;
         LivingEntity livingEntity = (LivingEntity) e.getEntity();
-        if (!verifyEnemy(pl, livingEntity)) return;
+        if (!isValidEnemy(pl, livingEntity)) return;
 
         // spell effect
         addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
@@ -101,7 +101,7 @@ public class BindingShot extends Spell implements PhysicalDamageSpell {
         createCircle(pl, castLocation, (int) (RADIUS * 0.2));
 
         for (Entity en : pl.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             LivingEntity victim = (LivingEntity) en;
             victim.teleport(castLocation);
         }

@@ -75,7 +75,7 @@ public class PowerShot extends Spell implements MagicDamageSpell {
                     powerShot.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 25, 0.5f, 0.5f, 0.5f, 0);
                     for (Entity entity : player.getWorld().getNearbyEntities(arrowLoc, RADIUS, RADIUS, RADIUS)) {
                         if (!(entity instanceof LivingEntity)) continue;
-                        if (!verifyEnemy(player, entity)) continue;
+                        if (!isValidEnemy(player, entity)) continue;
                         applyHuntersMark(player, (LivingEntity) entity);
                     }
                 }

@@ -16,6 +16,7 @@ import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
+import com.runicrealms.plugin.model.TitleManager;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
@@ -76,6 +77,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static RunicShopManager runicShopManager;
     private static PlayerHungerManager playerHungerManager;
     private static RedisManager redisManager;
+    private static TitleManager titleManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -154,6 +156,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return redisManager;
     }
 
+    public static TitleManager getTitleManager() {
+        return titleManager;
+    }
+
     public static int getBaseOutlawRating() {
         return BASE_OUTLAW_RATING;
     }
@@ -181,6 +187,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         runicShopManager = new RunicShopManager();
         playerHungerManager = new PlayerHungerManager();
         redisManager = new RedisManager();
+        titleManager = new TitleManager();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
@@ -246,6 +253,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         runicShopManager = null;
         playerHungerManager = null;
         redisManager = null;
+        titleManager = null;
     }
 
     @EventHandler

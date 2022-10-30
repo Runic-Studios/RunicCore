@@ -75,7 +75,7 @@ public class SummonSentry extends Spell implements PhysicalDamageSpell {
                                     25, 0.75f, 0.25f, 0.75f, 0
                             );
                     for (Entity en : armorStand.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (!verifyEnemy(pl, en)) continue;
+                        if (!isValidEnemy(pl, en)) continue;
                         Location newLocation = standLocation.clone().setDirection(en.getLocation().subtract(standLocation).toVector());
                         armorStand.teleport(newLocation);
                         final Vector direction =

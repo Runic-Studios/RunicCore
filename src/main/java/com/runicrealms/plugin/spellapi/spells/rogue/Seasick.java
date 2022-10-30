@@ -19,13 +19,13 @@ import java.util.Random;
 @SuppressWarnings("FieldCanBeLocal")
 public class Seasick extends Spell {
 
-    private static final int DURATION = 2;
+    private static final int DURATION = 6;
     private static final int PERCENT = 10;
     private static final int NAUSEA_MULT = 2;
 
     public Seasick() {
         super("Seasick",
-                "Damaging an enemy has a " + (int) PERCENT + "% chance " +
+                "Damaging an enemy has a " + PERCENT + "% chance " +
                         "to cause nausea for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
@@ -50,7 +50,7 @@ public class Seasick extends Spell {
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(player, entity)) {
+        if (isValidEnemy(player, entity)) {
             LivingEntity victim = (LivingEntity) entity;
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
             victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getEyeLocation(),

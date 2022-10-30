@@ -59,7 +59,7 @@ public class LastResort extends Spell {
         pl.getWorld().spigot().strikeLightningEffect(pl.getLocation(), true);
         // knockback
         for (Entity entity : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(pl, entity)) continue;
+            if (!isValidEnemy(pl, entity)) continue;
             Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-0.25).setY(0.3);
             entity.setVelocity(force);
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);

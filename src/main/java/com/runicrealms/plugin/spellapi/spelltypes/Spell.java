@@ -91,7 +91,7 @@ public abstract class Spell implements ISpell, Listener {
      * @return whether target is valid
      */
     @Override
-    public boolean verifyAlly(Player caster, Entity ally) {
+    public boolean isValidAlly(Player caster, Entity ally) {
 
         // target must be a player
         if (!(ally instanceof Player)) return false;
@@ -129,10 +129,10 @@ public abstract class Spell implements ISpell, Listener {
      * @return whether target is valid
      */
     @Override
-    public boolean verifyEnemy(Player caster, Entity victim) {
-        EnemyVerifyEvent e = new EnemyVerifyEvent(caster, victim);
-        Bukkit.getServer().getPluginManager().callEvent(e);
-        return !e.isCancelled();
+    public boolean isValidEnemy(Player caster, Entity victim) {
+        EnemyVerifyEvent event = new EnemyVerifyEvent(caster, victim);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        return !event.isCancelled();
     }
 
     @Override

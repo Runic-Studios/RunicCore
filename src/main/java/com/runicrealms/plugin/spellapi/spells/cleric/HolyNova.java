@@ -85,14 +85,14 @@ public class HolyNova extends Spell implements MagicDamageSpell, HealingSpell {
             LivingEntity le = (LivingEntity) en;
 
             // Executes the damage aspect of spell
-            if (verifyEnemy(pl, en)) {
+            if (isValidEnemy(pl, en)) {
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
                 Vector force = pl.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
                 en.setVelocity(force);
             }
 
             // heal party members
-            if (en instanceof Player && verifyAlly(pl, en))
+            if (en instanceof Player && isValidAlly(pl, en))
                 HealUtil.healPlayer(HEAL_AMT, ((Player) le), pl, false, this);
         }
     }

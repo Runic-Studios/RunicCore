@@ -57,7 +57,7 @@ public class Improvisation extends Spell {
 
         buffPlayer(pl);
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!(verifyAlly(pl, en))) continue;
+            if (!(isValidAlly(pl, en))) continue;
             buffPlayer((Player) en);
         }
     }

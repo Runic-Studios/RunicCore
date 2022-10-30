@@ -20,12 +20,12 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Harpoon extends Spell implements PhysicalDamageSpell {
 
-    private static final int DAMAGE_AMT = 50;
-    private static final double DAMAGE_PER_LEVEL = 2.15;
+    private static final int DAMAGE_AMT = 100;
+    private static final int DAMAGE_PER_LEVEL = 4;
     private static final int DURATION = 3;
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
-
+    
     public Harpoon() {
         super("Harpoon",
                 "You launch a projectile harpoon of the sea! Upon hitting an enemy, " +
@@ -35,7 +35,6 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
                 ChatColor.WHITE, ClassEnum.ROGUE, 18, 35);
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.swingMainHand();
@@ -62,41 +61,48 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
     }
 
     @EventHandler
-    public void onTridentDamage(ProjectileCollideEvent e) {
+    public void onTridentDamage(ProjectileCollideEvent event) {
 
-        if (!e.getEntity().equals(this.trident)) return;
-        e.setCancelled(true);
-        e.getEntity().remove();
+        if (!event.getEntity().equals(this.trident)) return;
+        event.setCancelled(true);
+        event.getEntity().remove();
 
         // grab our variables
         Player player = (Player) trident.getShooter();
         if (player == null) return;
-        LivingEntity victim = (LivingEntity) e.getCollidedWith();
-        if (!verifyEnemy(player, victim)) return;
+        LivingEntity victim = (LivingEntity) event.getCollidedWith();
+        if (isValidAlly(player, victim)) {
+            player.teleport(victim.getEyeLocation());
+            final Vector velocity = player.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
+            player.setVelocity(velocity);
+            return;
+        }
+        if (isValidEnemy(player, victim)) {
 
-        // apply spell mechanics
-        Location playerLoc = player.getLocation();
-        Location targetLoc = victim.getLocation();
+            // apply spell mechanics
+            Location playerLoc = player.getLocation();
+            Location targetLoc = victim.getLocation();
 
-        Vector pushUpVector = new Vector(0.0D, 0.4D, 0.0D);
-        victim.setVelocity(pushUpVector);
+            Vector pushUpVector = new Vector(0.0D, 0.4D, 0.0D);
+            victim.setVelocity(pushUpVector);
 
-        final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3.0D;
-        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
-        //final double hPower = 0.5D;
+            final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3.0D;
+            double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
+            //final double hPower = 0.5D;
 
-        DamageUtil.damageEntityPhysical(DAMAGE_AMT, victim, player, false, true, this);
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
+            DamageUtil.damageEntityPhysical(DAMAGE_AMT, victim, player, false, true, this);
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Vector pushVector = new Vector(xDir, 0.0D, zDir).normalize().multiply(2).setY(0.4D);
-                victim.setVelocity(pushVector);
-                victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-            }
-        }.runTaskLater(RunicCore.getInstance(), 4L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Vector pushVector = new Vector(xDir, 0.0D, zDir).normalize().multiply(2).setY(0.4D);
+                    victim.setVelocity(pushVector);
+                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                    victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                }
+            }.runTaskLater(RunicCore.getInstance(), 4L);
+        }
     }
 
     @Override

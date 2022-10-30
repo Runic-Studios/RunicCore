@@ -80,7 +80,7 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
             LivingEntity le = (LivingEntity) en;
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
         }
     }

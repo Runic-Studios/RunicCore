@@ -38,7 +38,7 @@ public class SoulLink extends Spell {
         affectedAllies.add(pl);
         double totalCurrentHealth = pl.getHealth();
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyAlly(pl, en)) continue;
+            if (!isValidAlly(pl, en)) continue;
             Player ally = (Player) en;
             affectedAllies.add(ally);
             double allyCurrentHealth = ally.getHealth();
@@ -47,7 +47,7 @@ public class SoulLink extends Spell {
         double averageCurrentHealth = totalCurrentHealth / affectedAllies.size();
         for (Player ally : affectedAllies) {
             double maxHealth = ally.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-            Cone.coneEffect(ally, Particle.VILLAGER_HAPPY,1, 0, 20, Color.GREEN);
+            Cone.coneEffect(ally, Particle.VILLAGER_HAPPY, 1, 0, 20, Color.GREEN);
             ally.setHealth(Math.min(averageCurrentHealth, maxHealth));
         }
     }

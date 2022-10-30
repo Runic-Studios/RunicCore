@@ -44,7 +44,7 @@ public class Manawell extends Spell {
 
         Set<Player> allies = RunicCore.getPartyManager().getPlayerParty(e.getCaster()).getMembersWithLeader();
         for (Player ally : allies) {
-            if (verifyAlly(e.getCaster(), ally)) {
+            if (isValidAlly(e.getCaster(), ally)) {
                 if (!e.getCaster().getWorld().equals(ally.getWorld())) continue;
                 if (e.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS * RADIUS) continue;
                 restoreMana(ally, e.getSpell().getManaCost());

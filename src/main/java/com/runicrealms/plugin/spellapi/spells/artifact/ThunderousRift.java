@@ -53,7 +53,7 @@ public class ThunderousRift extends Spell implements ArtifactSpell {
                     createCircle(player, castLocation);
                     player.getWorld().playSound(castLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!(verifyEnemy(player, en))) continue;
+                        if (!(isValidEnemy(player, en))) continue;
                         LivingEntity victim = (LivingEntity) en;
                         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 2.0f);
                         DamageUtil.damageEntitySpell(damage, victim, player);

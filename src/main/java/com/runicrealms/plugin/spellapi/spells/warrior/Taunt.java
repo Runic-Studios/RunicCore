@@ -30,7 +30,7 @@ public class Taunt extends Spell {
     }
 
     private void generateThreat(Player pl, Entity en) {
-        if (verifyEnemy(pl, en)) {
+        if (isValidEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
             if (!(victim instanceof Monster || victim instanceof Wolf || victim instanceof PolarBear)) return;
             en.getWorld().playSound(en.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.05f, 0.2f);

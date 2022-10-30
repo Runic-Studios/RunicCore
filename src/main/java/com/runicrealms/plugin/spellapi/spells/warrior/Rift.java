@@ -58,7 +58,7 @@ public class Rift extends Spell {
         createCircle(pl, castLocation, (int) (RADIUS * 0.2));
 
         for (Entity en : pl.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             LivingEntity victim = (LivingEntity) en;
             victim.teleport(castLocation);
         }

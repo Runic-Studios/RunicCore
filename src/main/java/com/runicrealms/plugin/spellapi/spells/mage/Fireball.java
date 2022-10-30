@@ -87,7 +87,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
             if (!(e.getEntity() instanceof LivingEntity)) return;
             LivingEntity victim = (LivingEntity) e.getEntity();
 
-            if (verifyEnemy(player, victim)) {
+            if (isValidEnemy(player, victim)) {
                 DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, this);
                 victim.getWorld().spawnParticle(Particle.SNOWBALL, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
@@ -108,7 +108,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
         if (!(e.getEntity() instanceof LivingEntity)) return;
         LivingEntity victim = (LivingEntity) e.getEntity();
 
-        if (verifyEnemy(player, victim)) {
+        if (isValidEnemy(player, victim)) {
 //            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT + (DAMAGE_PER_LEVEL * player.getLevel()), victim, player, 100);
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, victim, player, this);
             victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
@@ -117,7 +117,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
             // scald
             if (hasPassive(player.getUniqueId(), "Scald")) {
                 for (Entity en : fireball.getNearbyEntities(Scald.getRadius(), Scald.getRadius(), Scald.getRadius())) {
-                    if (!verifyEnemy(player, en)) continue;
+                    if (!isValidEnemy(player, en)) continue;
                     if (en.equals(victim)) continue;
                     DamageUtil.damageEntitySpell(DAMAGE_AMOUNT * Scald.getDamagePercent(), (LivingEntity) en, player, this);
                 }

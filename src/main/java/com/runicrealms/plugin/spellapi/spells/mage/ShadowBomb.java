@@ -78,7 +78,7 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
             LivingEntity le = (LivingEntity) en;
-            if (!verifyEnemy(pl, le)) continue;
+            if (!isValidEnemy(pl, le)) continue;
             damageOverTime(le, pl);
             // Doom (passive)
             if (pl == null) continue;

@@ -47,7 +47,7 @@ public class Hawkeye extends Spell { // implements MagicDamageSpell, WeaponDamag
         if (distance < DISTANCE) return originalAmt;
 
         // particles, sounds
-        if (!verifyEnemy(pl, en)) return originalAmt;
+        if (!isValidEnemy(pl, en)) return originalAmt;
         pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 2.0f);
         LivingEntity victim = (LivingEntity) en;
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.25f, 2.0f);

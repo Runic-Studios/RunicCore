@@ -56,7 +56,7 @@ public class Maelstrom extends Spell implements ArtifactSpell {
         player.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         player.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
         for (Entity en : player.getWorld().getNearbyEntities(victim.getLocation(), RADIUS, RADIUS, RADIUS)) {
-            if (!(verifyEnemy(player, en))) continue;
+            if (!(isValidEnemy(player, en))) continue;
             LivingEntity livingEntity = (LivingEntity) en;
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 2.0f);
             livingEntity.getWorld().spawnParticle(Particle.CRIT_MAGIC, livingEntity.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);

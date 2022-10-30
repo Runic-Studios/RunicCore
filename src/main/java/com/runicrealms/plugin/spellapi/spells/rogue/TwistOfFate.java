@@ -108,7 +108,7 @@ public class TwistOfFate extends Spell {
 
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-                    if (!verifyEnemy(pl, entity)) continue;
+                    if (!isValidEnemy(pl, entity)) continue;
                     if (invertedEntities.containsKey(entity.getUniqueId())) continue;
                     invertedEntities.put(entity.getUniqueId(), pl);
                     BukkitTask cone = Cone.coneEffect((LivingEntity) entity, Particle.SMOKE_NORMAL, BUBBLE_DURATION, 0, 20, Color.BLACK);

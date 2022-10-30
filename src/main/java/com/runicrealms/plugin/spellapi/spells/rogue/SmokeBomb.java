@@ -112,7 +112,7 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
 
     private void damageNearby(Player pl, Location loc) {
         for (Entity entity : pl.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (entity instanceof LivingEntity && verifyEnemy(pl, entity)) {
+            if (entity instanceof LivingEntity && isValidEnemy(pl, entity)) {
                 LivingEntity victim = (LivingEntity) entity;
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 2));

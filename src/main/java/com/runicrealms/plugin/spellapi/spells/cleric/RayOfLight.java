@@ -30,7 +30,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
     private final HashSet<UUID> hitEntities;
 
     public RayOfLight() {
-        super ("Ray of Light",
+        super("Ray of Light",
                 "You summon an orb of holy magic at " +
                         "your target location that persists for " + DURATION +
                         "s and deals (" + DAMAGE_AMOUNT + " + &f" +
@@ -58,6 +58,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
         Location finalOrbLocation = orbLocation;
         new BukkitRunnable() {
             int count = 1;
+
             @Override
             public void run() {
                 if (count > DURATION)
@@ -66,7 +67,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
                     count += 1;
                     spawnSphere(finalOrbLocation);
                     for (Entity en : pl.getWorld().getNearbyEntities(finalOrbLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!verifyEnemy(pl, en)) continue;
+                        if (!isValidEnemy(pl, en)) continue;
                         if (hitEntities.contains(en.getUniqueId())) continue;
                         hitEntities.add(en.getUniqueId());
                         LivingEntity le = (LivingEntity) en;
@@ -85,7 +86,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
         for (double i = 0; i <= Math.PI; i += Math.PI / 12) {
             double radius = Math.sin(i);
             double y = Math.cos(i);
-            for (double a = 0; a < Math.PI * 2; a+= Math.PI / 12) {
+            for (double a = 0; a < Math.PI * 2; a += Math.PI / 12) {
                 double x = .9 * Math.cos(a) * radius;
                 double z = .9 * Math.sin(a) * radius;
                 loc.add(x, y, z);

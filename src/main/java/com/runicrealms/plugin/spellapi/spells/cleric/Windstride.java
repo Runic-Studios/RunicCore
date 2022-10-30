@@ -31,7 +31,7 @@ public class Windstride extends Spell {
     public void executeSpell(Player pl, SpellItemType type) {
         applySpell(pl);
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyAlly(pl, en)) continue;
+            if (!isValidAlly(pl, en)) continue;
             applySpell((Player) en);
         }
     }

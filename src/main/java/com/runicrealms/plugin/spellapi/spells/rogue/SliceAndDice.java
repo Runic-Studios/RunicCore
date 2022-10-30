@@ -60,7 +60,7 @@ public class SliceAndDice extends Spell {
                 for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                     if (!(en instanceof LivingEntity))
                         continue;
-                    if (verifyEnemy(pl, en)) {
+                    if (isValidEnemy(pl, en)) {
                         pl.getWorld().spawnParticle(Particle.SWEEP_ATTACK, ((LivingEntity) en).getEyeLocation(), 5, 0, 0, 0, 0);
                         int amount = DAMAGE_AMT + percentMissingHealth(en, PERCENT);
                         if (!(en instanceof Player) && amount > DAMAGE_CAP)

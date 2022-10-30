@@ -60,7 +60,7 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         if (pl == null) return;
 
         LivingEntity victim = (LivingEntity) event.getEntity();
-        if (!verifyEnemy(pl, victim)) return;
+        if (!isValidEnemy(pl, victim)) return;
 
         // cancel the event, apply spell mechanics
         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);

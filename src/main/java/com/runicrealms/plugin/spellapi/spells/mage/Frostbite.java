@@ -51,7 +51,7 @@ public class Frostbite extends Spell {
                     createCircle(pl, finalTargetBlockLocation);
                     pl.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : pl.getWorld().getNearbyEntities(finalTargetBlockLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!(verifyEnemy(pl, en))) continue;
+                        if (!(isValidEnemy(pl, en))) continue;
                         if (isRooted(en)) continue;
                         LivingEntity victim = (LivingEntity) en;
                         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);

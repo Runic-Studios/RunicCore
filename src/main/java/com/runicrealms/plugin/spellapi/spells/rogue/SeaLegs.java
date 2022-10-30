@@ -50,7 +50,7 @@ public class SeaLegs extends Spell {
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(pl, en)) {
+        if (isValidEnemy(pl, en)) {
             pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.8f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
                     25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 3));

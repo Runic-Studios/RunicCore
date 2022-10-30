@@ -36,7 +36,7 @@ public class Cleave extends Spell {
         int targetsHit = 0;
         Player pl = e.getPlayer();
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             if (en.equals(e.getVictim())) continue;
             if (targetsHit > MAX_TARGETS) return;
             targetsHit++;

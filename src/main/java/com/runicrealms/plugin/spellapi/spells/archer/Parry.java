@@ -118,7 +118,7 @@ public class Parry extends Spell implements PhysicalDamageSpell {
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        if (verifyEnemy(pl, le) && !hasBeenHit.contains(le.getUniqueId())) {
+        if (isValidEnemy(pl, le) && !hasBeenHit.contains(le.getUniqueId())) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> hasBeenHit.remove(le.getUniqueId()), 20L);
             DamageUtil.damageEntityPhysical(DAMAGE, le, pl, false, true, this);
         }

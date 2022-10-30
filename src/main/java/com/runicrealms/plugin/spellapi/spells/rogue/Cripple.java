@@ -47,7 +47,7 @@ public class Cripple extends Spell {
 
         for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!(en instanceof LivingEntity)) continue;
-            if (!verifyEnemy(pl, en)) continue;
+            if (!isValidEnemy(pl, en)) continue;
             en.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) en).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
             crippledEntities.add(en.getUniqueId());
             en.sendMessage(ChatColor.RED + "You have been crippled!");

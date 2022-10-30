@@ -46,7 +46,7 @@ public class IceBlock extends Spell implements MagicDamageSpell {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.3f, 1.5f);
             player.getWorld().spawnParticle(Particle.SNOWBALL, player.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
             for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                if (!verifyEnemy(player, entity)) continue;
+                if (!isValidEnemy(player, entity)) continue;
                 entity.getWorld().spawnParticle(Particle.SNOWBALL, entity.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
                 DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) entity, player, this);
             }

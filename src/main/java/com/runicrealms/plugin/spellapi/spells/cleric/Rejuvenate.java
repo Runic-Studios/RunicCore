@@ -80,7 +80,7 @@ public class Rejuvenate extends Spell implements HealingSpell {
         HashSet<UUID> allies = new HashSet<>();
         affectedPlayers.put(caster.getUniqueId(), allies);
         for (Entity entity : caster.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-            if (verifyAlly(caster, entity)) {
+            if (isValidAlly(caster, entity)) {
                 // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                 // multiple times
                 Player ally = (Player) entity;

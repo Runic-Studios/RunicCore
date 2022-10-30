@@ -78,13 +78,13 @@ public class Flare extends Spell implements MagicDamageSpell {
         Player pl = (Player) ((Arrow) e.getDamager()).getShooter();
         assert pl != null;
         LivingEntity le = (LivingEntity) e.getEntity();
-        if (!verifyEnemy(pl, le)) return;
+        if (!isValidEnemy(pl, le)) return;
         DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
     }
 
     private void flareEffect(Player player, Arrow arrow) {
         for (Entity en : player.getWorld().getNearbyEntities(arrow.getLocation(), RADIUS, RADIUS, RADIUS)) {
-            if (!verifyEnemy(player, en)) continue;
+            if (!isValidEnemy(player, en)) continue;
             LivingEntity le = (LivingEntity) en;
             le.getWorld().playSound(le.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 0.5f, 1.0f);
             ClassUtil.launchFirework(le, Color.RED);

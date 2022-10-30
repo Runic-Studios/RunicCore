@@ -46,7 +46,7 @@ public class Backstab extends Spell {
         if (!(pl.getLocation().getDirection().dot(en.getLocation().getDirection()) >= 0.0D)) return originalAmt;
 
         // execute skill effects
-        if (verifyEnemy(pl, en)) {
+        if (isValidEnemy(pl, en)) {
             LivingEntity le = (LivingEntity) en;
             le.getWorld().spawnParticle(Particle.CRIT_MAGIC, le.getEyeLocation(), 25, 0.25, 0.25, 0.25, 0);
             le.getWorld().playSound(le.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.5f, 1.0f);

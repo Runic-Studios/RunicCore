@@ -70,7 +70,7 @@ public class Judgment extends Spell {
             public void run() {
                 HealUtil.shieldPlayer(SHIELD_AMT, pl, pl, false);
                 for (Entity en : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-                    if (verifyAlly(pl, en)) {
+                    if (isValidAlly(pl, en)) {
                         HealUtil.shieldPlayer(SHIELD_AMT, (Player) en, pl, false);
                     }
                 }
@@ -112,7 +112,7 @@ public class Judgment extends Spell {
                 // Look for targets nearby
                 for (Entity entity : pl.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
                     //if (entity instanceof ItemStack) continue;
-                    if (verifyEnemy(pl, entity)) {
+                    if (isValidEnemy(pl, entity)) {
                         Vector force = pl.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-KNOCKBACK).setY(0.3);
                         entity.setVelocity(force);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);

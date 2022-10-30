@@ -72,7 +72,7 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                 for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
                     if (canHitAllies) {
                         if (entity.equals(pl)) continue;
-                        if (verifyAlly(pl, entity)) {
+                        if (isValidAlly(pl, entity)) {
                             if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
                                 hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
                                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
@@ -86,7 +86,7 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                             }
                         }
                     }
-                    if (verifyEnemy(pl, entity)) {
+                    if (isValidEnemy(pl, entity)) {
                         if (hasBeenHit.get(pl.getUniqueId()) == entity.getUniqueId()) continue;
                         hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
                         addStatusEffect(entity, EffectEnum.SILENCE, DURATION);

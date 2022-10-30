@@ -92,7 +92,7 @@ public class IceVolley extends Spell implements MagicDamageSpell {
         if (pl == null) return;
         LivingEntity le = (LivingEntity) e.getEntity();
 
-        if (verifyEnemy(pl, le)) {
+        if (isValidEnemy(pl, le)) {
             e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);
             e.getEntity().getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getEntity().getLocation(), 1, 0, 0, 0, 0);
             le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (DURATION * 20L), 2));

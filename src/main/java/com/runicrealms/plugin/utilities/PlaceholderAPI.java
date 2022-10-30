@@ -24,10 +24,12 @@
 
 package com.runicrealms.plugin.utilities;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.ProfessionData;
+import com.runicrealms.plugin.model.TitleData;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -51,13 +53,13 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     @NotNull
     @Override
     public String getAuthor() {
-        return "Skyfallin_";
+        return "Skyfallin";
     }
 
     @NotNull
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return "2.0.0";
     }
 
     @Override
@@ -66,6 +68,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         if (player == null) return null;
         String lowerArg = arg.toLowerCase();
 
+        TitleData titleData = RunicCore.getTitleManager().loadTitleData(player.getUniqueId());
         try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
             Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFIELDS(), jedis);
             Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields(), jedis);
@@ -80,6 +83,10 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                     return professionFields.get(CharacterField.PROF_NAME.getField());
                 case "prof_level":
                     return professionFields.get(CharacterField.PROF_LEVEL.getField());
+                case "prefix":
+                    return titleData.getPrefix();
+                case "suffix":
+                    return titleData.getSuffix();
                 default:
                     return "";
             }

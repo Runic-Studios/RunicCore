@@ -59,7 +59,7 @@ public class Rescue extends Spell {
                 for (Entity entity : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                     if (entity.equals(pl)) continue; // skip caster
                     if (hasBeenHit.containsKey(entity.getUniqueId())) continue;
-                    if (verifyAlly(pl, entity)) {
+                    if (isValidAlly(pl, entity)) {
                         if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
                             this.cancel();
                             hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits

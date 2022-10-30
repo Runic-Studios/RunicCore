@@ -21,11 +21,11 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Cannonfire extends Spell implements PhysicalDamageSpell {
 
-    private static final int DAMAGE_AMT = 35;
+    private static final int DAMAGE_AMT = 5;
     private static final int DURATION = 2;
     private static final int PELLET_SPEED = 1;
     private static final int TOTAL_PELLETS = 5;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
+    private static final double DAMAGE_PER_LEVEL = 1.25;
     private static final double KNOCKBACK_MULT = -2.75;
     private static final Material MATERIAL = Material.FIREWORK_STAR;
     private final HashMap<UUID, UUID> hasBeenHit;
@@ -74,8 +74,9 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
                     pellet.getWorld().spawnParticle(Particle.CRIT, pellet.getLocation(), 1, 0, 0, 0, 0);
 
                     for (Entity entity : pellet.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
-                        if (verifyEnemy(player, entity)) {
-                            if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
+                        if (isValidEnemy(player, entity)) {
+                            if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId())
+                                continue; // todo: broken, needs to be Map<UUID, List<UUID>> and add it
                             explode(entity, player, spell, pellet);
                         }
                     }

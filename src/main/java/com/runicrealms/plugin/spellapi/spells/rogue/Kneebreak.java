@@ -51,7 +51,7 @@ public class Kneebreak extends Spell {
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(pl, en)) {
+        if (isValidEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
             victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getLocation(),

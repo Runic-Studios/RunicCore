@@ -60,7 +60,7 @@ public class Smite extends Spell implements MagicDamageSpell {
 
     private boolean checkForEnemy(Player caster, Location beamLocation) {
         for (Entity en : caster.getWorld().getNearbyEntities(beamLocation, COLLISION_RADIUS, COLLISION_RADIUS, COLLISION_RADIUS)) {
-            if (!verifyEnemy(caster, en)) continue;
+            if (!isValidEnemy(caster, en)) continue;
             caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
             en.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, en.getLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
             DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, caster, this);

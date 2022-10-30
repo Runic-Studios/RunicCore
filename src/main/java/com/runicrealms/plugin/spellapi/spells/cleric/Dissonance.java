@@ -49,7 +49,7 @@ public class Dissonance extends Spell {
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(pl, en)) {
+        if (isValidEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_NOTE_BLOCK_COW_BELL, 0.5f, 1.75f);
             pl.getWorld().spawnParticle(Particle.CRIT_MAGIC, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f);

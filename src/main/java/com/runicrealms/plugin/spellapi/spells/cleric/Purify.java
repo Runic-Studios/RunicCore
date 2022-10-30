@@ -82,7 +82,7 @@ public class Purify extends Spell implements HealingSpell {
     @SuppressWarnings("deprecation")
     private void allyCheck(Player pl, Location location) {
         for (Entity e : pl.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-            if (verifyAlly(pl, e)) {
+            if (isValidAlly(pl, e)) {
                 // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                 // multiple times
                 Player ally = (Player) e;

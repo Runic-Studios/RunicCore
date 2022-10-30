@@ -76,9 +76,9 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
                 50, 1f, 1f, 1f, new Particle.DustOptions(Color.WHITE, 10));
 
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (verifyAlly(pl, en))
+            if (isValidAlly(pl, en))
                 HealUtil.healPlayer(HEAL_AMT, (Player) en, pl, false, this);
-            if (verifyEnemy(pl, en))
+            if (isValidEnemy(pl, en))
                 DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, this);
         }
     }

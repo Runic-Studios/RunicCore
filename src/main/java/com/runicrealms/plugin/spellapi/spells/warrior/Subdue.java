@@ -49,7 +49,7 @@ public class Subdue extends Spell {
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (verifyEnemy(pl, en)) {
+        if (isValidEnemy(pl, en)) {
             LivingEntity victim = (LivingEntity) en;
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.25f, 1.75f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
