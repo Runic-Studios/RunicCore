@@ -47,8 +47,8 @@ public class HologramUtil {
                 (
                         createFor,
                         createAround,
-                        chatColor + "" + healthToDisplay + "/" + maxHealth + " ❤",
-                        30
+                        chatColor + "" + healthToDisplay + " ❤",
+                        25
                 ); // todo: rename this method
     }
 

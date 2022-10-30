@@ -23,6 +23,8 @@ public class ScoreboardHandler {
     private static final String PROF_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.GREEN;
     private static final String GUILD_TEAM_STRING = "g";
     private static final String GUILD_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.GOLD;
+    private static final String OUTLAW_TEAM_STRING = "o";
+    private static final String OUTLAW_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.DARK_RED;
     // combat team info
     private static final String HEALTH_TEAM_STRING = "h";
     private static final String HEALTH_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.RED;
@@ -54,9 +56,9 @@ public class ScoreboardHandler {
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         // setup basic fields
         Score blankSpaceSeven = obj.getScore("§1");
-        blankSpaceSeven.setScore(8);
+        blankSpaceSeven.setScore(9);
         Score characterInfo = obj.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + player.getName());
-        characterInfo.setScore(7);
+        characterInfo.setScore(8);
         setupPlayerInfo(player, scoreboard, obj);
         updatePlayerInfo(player, scoreboard);
         Score blankSpaceTwo = obj.getScore("§2");
@@ -79,14 +81,17 @@ public class ScoreboardHandler {
         String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
         Team playerClass = scoreboard.registerNewTeam(playerNameSubString + CLASS_TEAM_STRING);
         playerClass.addEntry(CLASS_ENTRY_STRING);
-        obj.getScore(CLASS_ENTRY_STRING).setScore(6);
+        obj.getScore(CLASS_ENTRY_STRING).setScore(7);
         playerClass.setPrefix(playerClass(player)); // setup class prefix ONCE
         Team playerProf = scoreboard.registerNewTeam(playerNameSubString + PROF_TEAM_STRING);
         playerProf.addEntry(PROF_ENTRY_STRING);
-        obj.getScore(PROF_ENTRY_STRING).setScore(5);
+        obj.getScore(PROF_ENTRY_STRING).setScore(6);
         Team playerGuild = scoreboard.registerNewTeam(playerNameSubString + GUILD_TEAM_STRING);
         playerGuild.addEntry(GUILD_ENTRY_STRING);
-        obj.getScore(GUILD_ENTRY_STRING).setScore(4);
+        obj.getScore(GUILD_ENTRY_STRING).setScore(5);
+        Team playerOutlaw = scoreboard.registerNewTeam(playerNameSubString + OUTLAW_TEAM_STRING);
+        playerOutlaw.addEntry(OUTLAW_ENTRY_STRING);
+        obj.getScore(OUTLAW_ENTRY_STRING).setScore(4);
     }
 
     /**
@@ -108,6 +113,9 @@ public class ScoreboardHandler {
             Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
             assert playerGuild != null;
             playerGuild.setPrefix(playerGuild(player, jedis));
+            Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
+            assert playerOutlaw != null;
+            playerOutlaw.setPrefix(playerOutlaw(player, jedis));
         } catch (NullPointerException e) {
             // wrapped in try-catch in-case scoreboard can't set up in time (also closes jedis resource)
         }
@@ -222,6 +230,24 @@ public class ScoreboardHandler {
         } else {
             String guild = jedis.get(player.getUniqueId() + ":guild");
             display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
+        }
+        return display;
+    }
+
+    private static final String OUTLAW_DISABLED_STRING = ChatColor.YELLOW + "Outlaw: " + ChatColor.GREEN + "OFF";
+
+    private String playerOutlaw(final Player player, final Jedis jedis) {
+        String display;
+        if (RunicCoreAPI.getRedisCharacterValue
+                (
+                        player.getUniqueId(),
+                        "outlaw",
+                        RunicCoreAPI.getCharacterSlot(player.getUniqueId()),
+                        jedis
+                ) == null) {
+            display = OUTLAW_DISABLED_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
         }
         return display;
     }
