@@ -54,11 +54,13 @@ public class SkillTreeManager implements Listener {
     }
 
     /**
-     * @param uuid
-     * @param slot
-     * @param jedis
-     * @param playerMongoData
-     * @param character
+     * Saves all spell-related and skill tree data to mongo on a server shutdown
+     *
+     * @param uuid            of the player
+     * @param slot            of the character
+     * @param jedis           the jedis resource
+     * @param playerMongoData the player's data in mongo
+     * @param character       the character's mongo data section
      */
     private void saveSpellsAndSkillTreesToMongo(UUID uuid, int slot, Jedis jedis,
                                                 PlayerMongoData playerMongoData, PlayerMongoDataSection character) {
@@ -299,9 +301,9 @@ public class SkillTreeManager implements Listener {
             add(second);
             add(third);
         }};
-        skillTreeDataList.forEach(skillTreeData -> skillTreeData.writeSkillTreeDataToJedis(jedis, skillTreeData.getPosition(), slot));
+        skillTreeDataList.forEach(skillTreeData -> skillTreeData.writeToJedis(jedis, slot));
         saveSpentPointsToJedis(uuid, this.playerSpentPointsMap.get(uuid), jedis);
-        playerSpellData.writeSpellDataToJedis(jedis);
+        playerSpellData.writeToJedis(jedis, slot);
     }
 
     public Map<UUID, Set<String>> getPlayerPassiveMap() {

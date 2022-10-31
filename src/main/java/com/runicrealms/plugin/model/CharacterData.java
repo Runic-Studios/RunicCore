@@ -87,12 +87,12 @@ public class CharacterData {
      * @param jedis the jedis resource
      */
     public void writeCharacterDataToJedis(Jedis jedis) {
+        this.baseCharacterData.writeToJedis(jedis, this.baseCharacterData.getSlot());
+        this.classData.writeToJedis(jedis, this.baseCharacterData.getSlot());
+        this.professionData.writeToJedis(jedis, this.baseCharacterData.getSlot());
+        this.outlawData.writeToJedis(jedis, this.baseCharacterData.getSlot());
         String uuid = String.valueOf(baseCharacterData.getUuid());
         String key = uuid + ":character:" + baseCharacterData.getSlot();
-        jedis.hmset(key, baseCharacterData.toMap());
-        jedis.hmset(key, classData.toMap());
-        jedis.hmset(key, professionData.toMap());
-        jedis.hmset(key, outlawData.toMap());
         jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
 

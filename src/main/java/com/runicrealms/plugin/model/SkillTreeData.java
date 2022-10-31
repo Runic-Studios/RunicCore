@@ -67,7 +67,7 @@ public class SkillTreeData implements SessionData {
             if (perk == null) continue;
             perk.setCurrentlyAllocatedPoints(perkSection.get(key, Integer.class));
         }
-        writeSkillTreeDataToJedis(jedis, position, slot);
+        writeToJedis(jedis, slot);
     }
 
     /**
@@ -284,15 +284,15 @@ public class SkillTreeData implements SessionData {
     /**
      * Adds the object into session storage in redis
      *
-     * @param jedis             the jedis resource from core
-     * @param skillTreePosition of the skill tree
-     * @param slot              of the character
+     * @param jedis the jedis resource from core
+     * @param slot  of the character
      */
-    public void writeSkillTreeDataToJedis(Jedis jedis, SkillTreePosition skillTreePosition, int slot) {
-        String key = getJedisKey(this.uuid, slot, skillTreePosition);
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String key = getJedisKey(this.uuid, slot[0], this.getPosition());
         Map<String, String> perkDataMap = this.toMap();
         if (!perkDataMap.isEmpty()) {
-            String parentKey = uuid + ":character:" + slot + ":" + PATH_LOCATION;
+            String parentKey = uuid + ":character:" + slot[0] + ":" + PATH_LOCATION;
             RedisUtil.removeAllFromRedis(jedis, parentKey); // clear existing keys
             jedis.hmset(key, this.toMap());
             jedis.expire(key, RedisUtil.EXPIRE_TIME);

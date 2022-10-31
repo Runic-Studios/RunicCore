@@ -32,7 +32,7 @@ public class TitleManager implements Listener {
     @EventHandler
     public void onCharacterQuit(CharacterQuitEvent event) {
         TitleData titleData = loadTitleData(event.getPlayer().getUniqueId());
-        titleData.writeTitleDataToJedis(event.getJedis());
+        titleData.writeToJedis(event.getJedis());
     }
 
     @EventHandler

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -89,6 +90,13 @@ public class ProfessionData implements SessionData {
             put(CharacterField.PROF_LEVEL.getField(), String.valueOf(profLevel));
             put(CharacterField.PROF_EXP.getField(), String.valueOf(profExp));
         }};
+    }
+
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String uuid = String.valueOf(this.uuid);
+        String key = uuid + ":character:" + slot[0];
+        jedis.hmset(key, this.toMap());
     }
 
     @Override

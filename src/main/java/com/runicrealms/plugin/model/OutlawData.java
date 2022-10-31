@@ -2,6 +2,7 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -68,6 +69,13 @@ public class OutlawData implements SessionData {
             put(CharacterField.OUTLAW_ENABLED.getField(), String.valueOf(outlawEnabled));
             put(CharacterField.OUTLAW_RATING.getField(), String.valueOf(outlawRating));
         }};
+    }
+
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String uuid = String.valueOf(this.uuid);
+        String key = uuid + ":character:" + slot[0];
+        jedis.hmset(key, this.toMap());
     }
 
     @Override

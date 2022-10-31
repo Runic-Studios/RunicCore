@@ -19,7 +19,7 @@ public class ClassData implements SessionData {
     private final int exp;
 
     /**
-     * A container of class info used to load a player character profile
+     * A container of class info used to load a player's character profile
      *
      * @param uuid      of the player
      * @param classType the class of the character (e.g., Cleric)
@@ -34,9 +34,11 @@ public class ClassData implements SessionData {
     }
 
     /**
-     * @param uuid
-     * @param slot
-     * @param jedis
+     * A container of class info used to load a player's character profile from jedis
+     *
+     * @param uuid  of the player
+     * @param slot  of the character
+     * @param jedis the jedis resource
      */
     public ClassData(UUID uuid, int slot, Jedis jedis) {
         Map<String, String> fieldsMap = new HashMap<>();
@@ -107,6 +109,13 @@ public class ClassData implements SessionData {
             put(CharacterField.CLASS_EXP.getField(), String.valueOf(exp));
             put(CharacterField.CLASS_LEVEL.getField(), String.valueOf(level));
         }};
+    }
+
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String uuid = String.valueOf(this.uuid);
+        String key = uuid + ":character:" + slot[0];
+        jedis.hmset(key, this.toMap());
     }
 
     @Override

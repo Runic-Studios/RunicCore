@@ -7,6 +7,7 @@ import com.runicrealms.plugin.database.util.DatabaseUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -113,6 +114,13 @@ public class BaseCharacterData implements SessionData {
             put("playerUuid", String.valueOf(uuid));
             put("location", DatabaseUtil.serializeLocation(location));
         }};
+    }
+
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String uuid = String.valueOf(this.uuid);
+        String key = uuid + ":character:" + this.slot;
+        jedis.hmset(key, this.toMap());
     }
 
     @Override

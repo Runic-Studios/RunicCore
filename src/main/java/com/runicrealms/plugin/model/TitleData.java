@@ -36,7 +36,7 @@ public class TitleData implements SessionData {
         this.prefix = playerMongoData.get("title." + DATA_SECTION_PREFIX, String.class) != null ? playerMongoData.get("title." + DATA_SECTION_PREFIX, String.class) : "";
         this.suffix = playerMongoData.get("title." + DATA_SECTION_SUFFIX, String.class) != null ? playerMongoData.get("title." + DATA_SECTION_SUFFIX, String.class) : "";
         this.unlockedTitles = getUnlockedTitlesFromMongo(playerMongoData); // get from mongo
-        writeTitleDataToJedis(jedis);
+        writeToJedis(jedis);
         RunicCore.getTitleManager().getTitleDataMap().put(uuid, this);
     }
 
@@ -123,10 +123,12 @@ public class TitleData implements SessionData {
 
     /**
      * Saves the current prefix and suffix to jedis, and keeps track of a list of all unlocked titles
+     * Slot param is not used, since this account-wide data
      *
      * @param jedis the jedis resource
      */
-    public void writeTitleDataToJedis(Jedis jedis) {
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
         String uuid = String.valueOf(this.uuid);
         jedis.set(uuid + ":" + DATA_SECTION_PREFIX, this.prefix);
         jedis.set(uuid + ":" + DATA_SECTION_SUFFIX, this.suffix);

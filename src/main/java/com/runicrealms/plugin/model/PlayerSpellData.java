@@ -70,7 +70,7 @@ public class PlayerSpellData implements SessionData {
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
-        writeSpellDataToJedis(jedis);
+        writeToJedis(jedis, slot);
     }
 
     /**
@@ -91,18 +91,6 @@ public class PlayerSpellData implements SessionData {
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
         RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
-    }
-
-    /**
-     * Adds the object into session storage in redis
-     *
-     * @param jedis the jedis resource
-     */
-    public void writeSpellDataToJedis(Jedis jedis) {
-        // Bukkit.broadcastMessage("writing spell data to jedis");
-        String key = getJedisKey(uuid, RunicCoreAPI.getCharacterSlot(uuid));
-        jedis.hmset(key, this.toMap());
-        jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
 
     /**
@@ -193,6 +181,19 @@ public class PlayerSpellData implements SessionData {
             put(SpellField.RIGHT_CLICK.getField(), spellRightClick);
             put(SpellField.SWAP_HANDS.getField(), spellSwapHands);
         }};
+    }
+
+    /**
+     * Adds the object into session storage in jedis
+     *
+     * @param jedis the jedis resource
+     * @param slot  the character slot
+     */
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String key = getJedisKey(uuid, slot[0]);
+        jedis.hmset(key, this.toMap());
+        jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
 
     @Override
