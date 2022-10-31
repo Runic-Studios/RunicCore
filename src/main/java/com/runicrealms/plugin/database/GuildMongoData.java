@@ -12,9 +12,9 @@ import java.util.Set;
 public class GuildMongoData implements MongoData {
 
     private Document document;
-    private String prefix;
-    private volatile Set<MongoSetUpdate> setUpdates;
-    private volatile Set<MongoUnsetUpdate> unsetUpdates;
+    private final String prefix;
+    private final Set<MongoSetUpdate> setUpdates;
+    private final Set<MongoUnsetUpdate> unsetUpdates;
 
     public GuildMongoData(String prefix) {
         this.prefix = prefix;
@@ -45,13 +45,16 @@ public class GuildMongoData implements MongoData {
     public <T> T get(String key, Class<T> type) {
         if (key.contains(".")) {
             Object element = this.document.getEmbedded(Arrays.asList(key.split("\\.")), Object.class);
-            if (type == Integer.class && element instanceof String) return type.cast(Integer.parseInt((String) element));
+            if (type == Integer.class && element instanceof String)
+                return type.cast(Integer.parseInt((String) element));
             if (type == Short.class && element instanceof String) return type.cast(Short.parseShort((String) element));
             if (type == Long.class && element instanceof String) return type.cast(Long.parseLong((String) element));
             if (type == Byte.class && element instanceof String) return type.cast(Byte.parseByte((String) element));
-            if (type == Double.class && element instanceof String) return type.cast(Double.parseDouble((String) element));
+            if (type == Double.class && element instanceof String)
+                return type.cast(Double.parseDouble((String) element));
             if (type == Float.class && element instanceof String) return type.cast(Float.parseFloat((String) element));
-            if (type == Boolean.class && element instanceof String) return type.cast(Boolean.parseBoolean((String) element));
+            if (type == Boolean.class && element instanceof String)
+                return type.cast(Boolean.parseBoolean((String) element));
             return (T) element;
         }
         Object element = this.document.get(key);
@@ -61,7 +64,8 @@ public class GuildMongoData implements MongoData {
         if (type == Byte.class && element instanceof String) return type.cast(Byte.parseByte((String) element));
         if (type == Double.class && element instanceof String) return type.cast(Double.parseDouble((String) element));
         if (type == Float.class && element instanceof String) return type.cast(Float.parseFloat((String) element));
-        if (type == Boolean.class && element instanceof String) return type.cast(Boolean.parseBoolean((String) element));
+        if (type == Boolean.class && element instanceof String)
+            return type.cast(Boolean.parseBoolean((String) element));
         return (T) element;
     }
 
@@ -73,14 +77,6 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public void save() {
-        if (this.setUpdates.size() > 0) {
-            BasicDBObject updates = new BasicDBObject();
-            for (MongoSetUpdate update : this.setUpdates) {
-                updates.append(update.getKey(), update.getValue());
-            }
-            RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$set", updates));
-            this.setUpdates.clear();
-        }
         if (this.unsetUpdates.size() > 0) {
             BasicDBObject updates = new BasicDBObject();
             for (MongoUnsetUpdate update : this.unsetUpdates) {
@@ -88,6 +84,14 @@ public class GuildMongoData implements MongoData {
             }
             RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$unset", updates));
             this.unsetUpdates.clear();
+        }
+        if (this.setUpdates.size() > 0) {
+            BasicDBObject updates = new BasicDBObject();
+            for (MongoSetUpdate update : this.setUpdates) {
+                updates.append(update.getKey(), update.getValue());
+            }
+            RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$set", updates));
+            this.setUpdates.clear();
         }
         this.refresh();
     }

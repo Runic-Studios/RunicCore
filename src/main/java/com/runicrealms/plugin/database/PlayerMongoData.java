@@ -94,14 +94,6 @@ public class PlayerMongoData implements MongoData {
     @Override
     public void save() {
         MongoDatabase mongoDatabase = RunicCore.getDatabaseManager().getPlayersDB();
-        if (this.setUpdates.size() > 0) {
-            BasicDBObject updates = new BasicDBObject();
-            for (MongoSetUpdate update : this.setUpdates) {
-                updates.append(update.getKey(), update.getValue());
-            }
-            mongoDatabase.getCollection("player_data").updateOne(new Document("player_uuid", this.uuid), new Document("$set", updates));
-            this.setUpdates.clear();
-        }
         if (this.unsetUpdates.size() > 0) {
             BasicDBObject updates = new BasicDBObject();
             for (MongoUnsetUpdate update : this.unsetUpdates) {
@@ -109,6 +101,14 @@ public class PlayerMongoData implements MongoData {
             }
             mongoDatabase.getCollection("player_data").updateOne(new Document("player_uuid", this.uuid), new Document("$unset", updates));
             this.unsetUpdates.clear();
+        }
+        if (this.setUpdates.size() > 0) {
+            BasicDBObject updates = new BasicDBObject();
+            for (MongoSetUpdate update : this.setUpdates) {
+                updates.append(update.getKey(), update.getValue());
+            }
+            mongoDatabase.getCollection("player_data").updateOne(new Document("player_uuid", this.uuid), new Document("$set", updates));
+            this.setUpdates.clear();
         }
         this.refresh();
     }
