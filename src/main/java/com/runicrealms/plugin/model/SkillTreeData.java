@@ -119,9 +119,15 @@ public class SkillTreeData implements SessionData {
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
         SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
         SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
-        spentPoints += first.getPerks().size();
-        spentPoints += second.getPerks().size();
-        spentPoints += third.getPerks().size();
+        for (Perk perk : first.getPerks()) {
+            spentPoints += perk.getCurrentlyAllocatedPoints();
+        }
+        for (Perk perk : second.getPerks()) {
+            spentPoints += perk.getCurrentlyAllocatedPoints();
+        }
+        for (Perk perk : third.getPerks()) {
+            spentPoints += perk.getCurrentlyAllocatedPoints();
+        }
         return spentPoints;
     }
 
