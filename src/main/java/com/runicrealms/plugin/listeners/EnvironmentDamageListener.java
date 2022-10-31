@@ -18,22 +18,31 @@ public class EnvironmentDamageListener implements Listener {
         switch (e.getCause()) {
             case CONTACT:
             case DROWNING:
-            case FALL:
             case FIRE:
             case HOT_FLOOR:
             case LAVA:
                 e.setCancelled(true);
                 if (entity instanceof Player) {
-                    GenericDamageEvent.DamageCauses damageCauses = GenericDamageEvent.DamageCauses.getFromDamageCause(e.getCause());
-                    GenericDamageEvent genericDamageEvent = new GenericDamageEvent
-                            (
-                                    (Player) entity,
-                                    DamageEventUtil.calculateRunicDamageFromVanillaDamage((Player) entity, e.getDamage(), damageCauses),
-                                    damageCauses
-                            );
-                    Bukkit.getPluginManager().callEvent(genericDamageEvent);
+                    createGenericDamageEvent((Player) entity, e.getCause(), e.getDamage());
+                }
+                break;
+            case FALL: // not cancelled for most mobs
+                if (entity instanceof Player) {
+                    e.setCancelled(true);
+                    createGenericDamageEvent((Player) entity, e.getCause(), e.getDamage());
                 }
                 break;
         }
+    }
+
+    private void createGenericDamageEvent(Player player, EntityDamageEvent.DamageCause cause, double eventDamage) {
+        GenericDamageEvent.DamageCauses damageCauses = GenericDamageEvent.DamageCauses.getFromDamageCause(cause);
+        GenericDamageEvent genericDamageEvent = new GenericDamageEvent
+                (
+                        player,
+                        DamageEventUtil.calculateRunicDamageFromVanillaDamage(player, eventDamage, damageCauses),
+                        damageCauses
+                );
+        Bukkit.getPluginManager().callEvent(genericDamageEvent);
     }
 }

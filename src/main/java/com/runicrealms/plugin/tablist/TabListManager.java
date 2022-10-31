@@ -13,6 +13,7 @@ import com.runicrealms.runicguilds.util.GuildUtil;
 import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,24 +33,20 @@ public class TabListManager implements Listener {
         updateTablists();
     }
 
-    /*
+    /**
      * Keeps party column updated w/ player health.
      */
     private void updateTablists() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player online : Bukkit.getOnlinePlayers()) {
-                    if (tabbed.getTabList(online) == null) continue;
-                    updatePartyColumn(online);
-                }
-                //Bukkit.getOnlinePlayers().forEach(p -> updatePartyColumn(p));
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (tabbed.getTabList(online) == null) continue;
+                updatePartyColumn(online);
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 200L, 5L);
+        }, 200L, 5L);
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+    public void onJoin(PlayerJoinEvent event) {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.hasMetadata("NPC")) continue;
             RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
@@ -57,15 +54,15 @@ public class TabListManager implements Listener {
         }
     }
 
-    public void setupTab(Player pl) {
+    public void setupTab(Player player) {
 
         // make sure we're starting with a clean slate
-        if (tabbed.getTabList(pl) != null) {
-            tabbed.destroyTabList(pl);
+        if (tabbed.getTabList(player) != null) {
+            tabbed.destroyTabList(player);
         }
 
         // build new tablist
-        TableTabList tab = tabbed.newTableTabList(pl);
+        TableTabList tab = tabbed.newTableTabList(player);
 
         // header, footer
         tab.setHeaderFooter
@@ -89,7 +86,7 @@ public class TabListManager implements Listener {
             }
 
             // Column 2 (Guild)
-            Guild guild = RunicGuildsAPI.getGuild(pl.getUniqueId());
+            Guild guild = RunicGuildsAPI.getGuild(player.getUniqueId());
             if (guild == null) {
                 tab.set(1, 0, new TextTabItem
                         (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [0]", 0, Skins.getDot(ChatColor.GOLD)));
@@ -117,22 +114,39 @@ public class TabListManager implements Listener {
     /**
      * Used in the running task to keep party health displays accurate.
      */
-    private void updatePartyColumn(Player pl) {
-        TableTabList tab = (TableTabList) tabbed.getTabList(pl);
-        if (RunicCore.getPartyManager().getPlayerParty(pl) == null) {
+    private void updatePartyColumn(Player player) {
+        TableTabList tab = (TableTabList) tabbed.getTabList(player);
+        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [0]", 0, Skins.getDot(ChatColor.GREEN)));
         } else {
-            Party party = RunicCore.getPartyManager().getPlayerParty(pl);
+            Party party = RunicCore.getPartyManager().getPlayerParty(player);
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getSize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int k = 0;
             for (Player member : party.getMembersWithLeader()) {
                 if (k > 19) break;
-                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + ChatColor.RED + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
+                tab.set(2, k + 1, new TextTabItem(member.getName() + " " + getHealthChatColor(member) + (int) member.getHealth() + "❤", getPing(member), Skins.getPlayer(member)));
                 k++;
             }
         }
+    }
+
+    private ChatColor getHealthChatColor(Player player) {
+        int healthToDisplay = (int) (player.getHealth());
+        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double healthPercent = (double) healthToDisplay / maxHealth;
+        ChatColor chatColor;
+        if (healthPercent >= .75) {
+            chatColor = ChatColor.GREEN;
+        } else if (healthPercent >= .5) {
+            chatColor = ChatColor.YELLOW;
+        } else if (healthPercent >= .25) {
+            chatColor = ChatColor.RED;
+        } else {
+            chatColor = ChatColor.DARK_RED;
+        }
+        return chatColor;
     }
 
     /**
@@ -147,9 +161,11 @@ public class TabListManager implements Listener {
         return entityPlayer.ping;
     }
 
-    // update tablist on player quit
+    /**
+     * Update tablist on player quit
+     */
     @EventHandler
-    public void onQuit(PlayerQuitEvent e) {
+    public void onQuit(PlayerQuitEvent event) {
         new BukkitRunnable() {
             @Override
             public void run() {
