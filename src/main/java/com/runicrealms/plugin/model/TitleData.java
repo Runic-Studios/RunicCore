@@ -138,7 +138,7 @@ public class TitleData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         try {
             playerMongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
             playerMongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
@@ -146,5 +146,6 @@ public class TitleData implements SessionData {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving title data to mongo!");
             e.printStackTrace();
         }
+        return playerMongoData;
     }
 }

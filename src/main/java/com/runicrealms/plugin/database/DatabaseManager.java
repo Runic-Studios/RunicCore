@@ -31,7 +31,6 @@ import redis.clients.jedis.Jedis;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +45,7 @@ public class DatabaseManager implements Listener {
     private MongoDatabase playersDB;
     private MongoCollection<Document> guildDocuments;
     private MongoCollection<Document> shopDocuments;
-    private final Map<UUID, Set<Integer>> playersToSave; // for redis-mongo saving
+    private final Map<UUID, ShutdownSaveWrapper> playersToSave; // for redis-mongo saving
     private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string) (stores last 30 days)
     private final ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
@@ -134,12 +133,12 @@ public class DatabaseManager implements Listener {
     @EventHandler
     public void onDatabaseSave(MongoSaveEvent event) {
         for (UUID uuid : event.getPlayersToSave().keySet()) {
-            for (int characterSlot : event.getPlayersToSave().get(uuid)) {
+            for (int characterSlot : event.getPlayersToSave().get(uuid).getCharactersToSave()) {
                 // Bukkit.broadcastMessage("SAVING EVENT SLOT IS " + characterSlot);
-                PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+                PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
                 playerMongoData.set("last_login", LocalDate.now());
                 saveCharacter(uuid, playerMongoData, characterSlot, event.getJedis());
-                playerMongoData.save();
+                // playerMongoData.save();
             }
         }
     }
@@ -309,7 +308,7 @@ public class DatabaseManager implements Listener {
         return shopDocuments;
     }
 
-    public Map<UUID, Set<Integer>> getPlayersToSave() {
+    public Map<UUID, ShutdownSaveWrapper> getPlayersToSave() {
         return playersToSave;
     }
 

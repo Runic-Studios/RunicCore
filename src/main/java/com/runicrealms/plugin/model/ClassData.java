@@ -119,10 +119,11 @@ public class ClassData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("class.name", this.classType.getName());
         character.set("class.level", this.getLevel());
         character.set("class.exp", this.getExp());
+        return playerMongoData;
     }
 }

@@ -79,10 +79,11 @@ public class OutlawData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("outlaw.enabled", this.outlawEnabled);
         character.set("outlaw.rating", this.outlawRating);
+        return playerMongoData;
     }
 
     /**

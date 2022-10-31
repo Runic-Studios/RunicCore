@@ -13,8 +13,6 @@ import com.runicrealms.plugin.model.SkillTreeField;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.redis.RedisManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,11 +42,11 @@ public class SkillTreeManager implements Listener {
     @EventHandler
     public void onDatabaseSave(MongoSaveEvent event) {
         for (UUID uuid : event.getPlayersToSave().keySet()) {
-            for (int characterSlot : event.getPlayersToSave().get(uuid)) {
-                PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+            for (int characterSlot : event.getPlayersToSave().get(uuid).getCharactersToSave()) {
+                PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
                 PlayerMongoDataSection character = playerMongoData.getCharacter(characterSlot);
                 saveSpellsAndSkillTreesToMongo(uuid, characterSlot, event.getJedis(), playerMongoData, character);
-                playerMongoData.save();
+                // playerMongoData.save();
             }
         }
     }
@@ -65,7 +63,7 @@ public class SkillTreeManager implements Listener {
     private void saveSpellsAndSkillTreesToMongo(UUID uuid, int slot, Jedis jedis,
                                                 PlayerMongoData playerMongoData, PlayerMongoDataSection character) {
         character.remove(SkillTreeData.PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
-        character.save();
+        // character.save();
         // saveSkillTreesToJedis(uuid, slot, jedis);
         PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
@@ -136,7 +134,7 @@ public class SkillTreeManager implements Listener {
             if (spentPoints != null && !spentPoints.equals(""))
                 return Integer.parseInt(jedis.hmget(key, SkillTreeField.SPENT_POINTS.getField()).get(0));
         }
-        Bukkit.getLogger().info(ChatColor.RED + "redis spent points data not found");
+        // Bukkit.broadcastMessage(ChatColor.RED + "redis spent points data not found");
         return -1;
     }
 

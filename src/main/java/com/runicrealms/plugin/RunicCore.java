@@ -9,6 +9,7 @@ import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
 import com.runicrealms.plugin.commands.player.*;
 import com.runicrealms.plugin.database.DatabaseManager;
+import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
@@ -53,6 +54,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
 
 import java.io.File;
+import java.util.UUID;
 
 public class RunicCore extends JavaPlugin implements Listener {
 
@@ -266,6 +268,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
     public void onCoreSaveComplete(MongoSaveEvent event) {
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
+            playerMongoData.save();
+        }
         event.markPluginSaved("core");
     }
 

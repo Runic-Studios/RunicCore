@@ -6,6 +6,7 @@ import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.PlayerMongoData;
+import com.runicrealms.plugin.database.ShutdownSaveWrapper;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.PlayerData;
@@ -105,14 +106,15 @@ public class CharacterGuiManager implements Listener {
      * @param characterSlot the character slot they selected
      */
     private void markCharacterForSave(Player player, int characterSlot) {
-        Set<Integer> charactersToSave = RunicCore.getDatabaseManager().getPlayersToSave().get(player.getUniqueId());
-        if (charactersToSave == null) {
-            charactersToSave = new HashSet<Integer>() {{
+        ShutdownSaveWrapper shutdownSaveWrapper = RunicCore.getDatabaseManager().getPlayersToSave().get(player.getUniqueId());
+        if (shutdownSaveWrapper == null) {
+            Set<Integer> charactersToSave = new HashSet<Integer>() {{
                 add(characterSlot);
             }};
-            RunicCore.getDatabaseManager().getPlayersToSave().put(player.getUniqueId(), charactersToSave);
+            shutdownSaveWrapper = new ShutdownSaveWrapper(new PlayerMongoData(player.getUniqueId().toString()), charactersToSave);
+            RunicCore.getDatabaseManager().getPlayersToSave().put(player.getUniqueId(), shutdownSaveWrapper);
         } else {
-            charactersToSave.add(characterSlot);
+            shutdownSaveWrapper.getCharactersToSave().add(characterSlot);
         }
     }
 
@@ -150,7 +152,7 @@ public class CharacterGuiManager implements Listener {
                 RedisUtil.removeAllFromRedis(jedis, parentKey); // removes all sub-keys
                 PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
                 mongoData.remove("character." + deletingCharacters.get(player.getUniqueId()));
-                mongoData.save();
+                // mongoData.save();
                 RunicCoreAPI.getPlayerData(player.getUniqueId()).removeCharacter(deletingCharacters.get(player.getUniqueId()));
                 deletingCharacters.remove(player.getUniqueId());
                 openSelectGui(player);

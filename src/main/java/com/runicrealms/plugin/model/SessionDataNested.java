@@ -34,5 +34,5 @@ public interface SessionDataNested {
      * @param playerMongoData the mongo data of the player
      * @param slot            an optional argument to represent the character slot (for alt-specific data)
      */
-    void writeToMongo(PlayerMongoData playerMongoData, int... slot);
+    PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot);
 }

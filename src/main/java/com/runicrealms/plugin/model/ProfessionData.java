@@ -100,10 +100,11 @@ public class ProfessionData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("prof.name", this.profName);
         character.set("prof.level", this.profLevel);
         character.set("prof.exp", this.profExp);
+        return playerMongoData;
     }
 }

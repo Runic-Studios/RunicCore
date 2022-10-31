@@ -300,7 +300,7 @@ public class SkillTreeData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         try {
             PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
             PlayerMongoDataSection skillTrees = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + position.getValue());
@@ -308,10 +308,11 @@ public class SkillTreeData implements SessionData {
                 if (perk.getCurrentlyAllocatedPoints() == 0) continue;
                 skillTrees.set(perk.getPerkID().toString(), perk.getCurrentlyAllocatedPoints());
             }
-            character.save();
+            // character.save();
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving skill tree data to mongo!");
             e.printStackTrace();
         }
+        return playerMongoData;
     }
 }

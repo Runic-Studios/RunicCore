@@ -197,13 +197,14 @@ public class PlayerSpellData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
         spells.set(SpellField.HOT_BAR_ONE.getField(), this.spellHotbarOne);
         spells.set(SpellField.LEFT_CLICK.getField(), this.spellLeftClick);
         spells.set(SpellField.RIGHT_CLICK.getField(), this.spellRightClick);
         spells.set(SpellField.SWAP_HANDS.getField(), this.spellSwapHands);
-        character.save();
+        // character.save();
+        return playerMongoData;
     }
 }

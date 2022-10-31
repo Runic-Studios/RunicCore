@@ -124,10 +124,11 @@ public class BaseCharacterData implements SessionData {
     }
 
     @Override
-    public void writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("currentHP", this.currentHp);
         character.set("storedHunger", this.storedHunger);
         DatabaseUtil.saveLocation(character, this.location);
+        return playerMongoData;
     }
 }

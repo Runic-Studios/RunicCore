@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.database.event;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.database.ShutdownSaveWrapper;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -8,7 +9,6 @@ import org.bukkit.event.HandlerList;
 import redis.clients.jedis.Jedis;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -20,9 +20,9 @@ public class MongoSaveEvent extends Event implements Cancellable {
     private final PreShutdownEvent preShutdownEvent;
     private final Jedis jedis; // the jedis resource to read from
     /*
-    A collection of all players to save and the slot of the character to save. This includes players who are not currently online!
+    A collection of all players to save and the slot (or slots) of the character(s) to save. This includes players who are not currently online!
      */
-    private final Map<UUID, Set<Integer>> playersToSave;
+    private final Map<UUID, ShutdownSaveWrapper> playersToSave;
     private boolean isCancelled;
 
     /**
@@ -47,7 +47,7 @@ public class MongoSaveEvent extends Event implements Cancellable {
         return this.jedis;
     }
 
-    public Map<UUID, Set<Integer>> getPlayersToSave() {
+    public Map<UUID, ShutdownSaveWrapper> getPlayersToSave() {
         return playersToSave;
     }
 
