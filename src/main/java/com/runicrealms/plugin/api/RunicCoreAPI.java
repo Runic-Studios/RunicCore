@@ -398,7 +398,7 @@ public class RunicCoreAPI {
      * @return Skill Tree
      */
     public static SkillTreeData getSkillTree(UUID uuid, int slot, SkillTreePosition position, Jedis jedis) {
-        return RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position, jedis);
+        return RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, position);
     }
 
     public static Spell getSpell(String name) {

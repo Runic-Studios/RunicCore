@@ -314,9 +314,9 @@ public class SkillTreeData implements SessionData {
     public void writeToJedis(Jedis jedis, int... slot) {
         String key = getJedisKey(this.uuid, slot[0], this.getPosition());
         Map<String, String> perkDataMap = this.toMap();
+        String parentKey = uuid + ":character:" + slot[0] + ":" + PATH_LOCATION;
+        RedisUtil.removeAllFromRedis(jedis, parentKey); // clear existing keys
         if (!perkDataMap.isEmpty()) {
-            String parentKey = uuid + ":character:" + slot[0] + ":" + PATH_LOCATION;
-            RedisUtil.removeAllFromRedis(jedis, parentKey); // clear existing keys
             jedis.hmset(key, this.toMap());
             jedis.expire(key, RedisUtil.EXPIRE_TIME);
         }

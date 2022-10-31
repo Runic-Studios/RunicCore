@@ -58,10 +58,10 @@ public class SkillTreeManager implements Listener {
     private void saveSpellsAndSkillTreesToMongo(UUID uuid, int slot, Jedis jedis,
                                                 PlayerMongoData playerMongoData, PlayerMongoDataSection character) {
         character.remove(SkillTreeData.PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
-        PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
-        SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
-        SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis);
-        SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis);
+        PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot);
+        SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
+        SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
+        SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
         first.writeToMongo(playerMongoData, slot);
         second.writeToMongo(playerMongoData, slot);
         third.writeToMongo(playerMongoData, slot);
@@ -78,24 +78,24 @@ public class SkillTreeManager implements Listener {
         Ensures spell-related data is properly memoized
          */
         this.playerPassiveMap.put(uuid, new HashSet<>()); // setup for passive map
-        this.playerSpellMap.put(uuid, loadPlayerSpellData(uuid, slot, jedis)); // memoize spell data
+        this.playerSpellMap.put(uuid, loadPlayerSpellData(uuid, slot)); // memoize spell data
         /*
         Ensure skill tree data is in redis
          */
         this.playerSkillTreeMap.put
                 (
                         uuid + ":" + SkillTreePosition.FIRST.getValue(),
-                        loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis)
+                        loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST)
                 );
         this.playerSkillTreeMap.put
                 (
                         uuid + ":" + SkillTreePosition.SECOND.getValue(),
-                        loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis)
+                        loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND)
                 );
         this.playerSkillTreeMap.put
                 (
                         uuid + ":" + SkillTreePosition.THIRD.getValue(),
-                        loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis)
+                        loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD)
                 );
     }
 
@@ -129,14 +129,28 @@ public class SkillTreeManager implements Listener {
      * @param uuid of player who is attempting to load their data
      * @param slot the slot of the character
      */
-    public PlayerSpellData loadPlayerSpellData(UUID uuid, Integer slot, Jedis jedis) {
+    public PlayerSpellData loadPlayerSpellData(UUID uuid, Integer slot) {
         // Step 1: check if spell data is memoized
         PlayerSpellData playerSpellData = this.getPlayerSpellMap().get(uuid);
         if (playerSpellData != null) return playerSpellData;
         // Step 2: check if spell data is cached in redis
-        playerSpellData = checkRedisForSpellData(uuid, slot, jedis);
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            return loadPlayerSpellData(uuid, slot, jedis);
+        }
+    }
+
+    /**
+     * Creates a PlayerSpellData object. Tries to build it from session storage (Redis) first,
+     * then falls back to Mongo
+     *
+     * @param uuid of player who is attempting to load their data
+     * @param slot the slot of the character
+     */
+    public PlayerSpellData loadPlayerSpellData(UUID uuid, Integer slot, Jedis jedis) {
+        // Step 1: check if spell data is cached in redis
+        PlayerSpellData playerSpellData = checkRedisForSpellData(uuid, slot, jedis);
         if (playerSpellData != null) return playerSpellData;
-        // Step 3: check mongo documents
+        // Step 2: check mongo documents
         PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
         return new PlayerSpellData
@@ -226,10 +240,10 @@ public class SkillTreeManager implements Listener {
      * @param jedis the jedis resource
      */
     private void saveSkillTreesToJedis(UUID uuid, int slot, Jedis jedis) {
-        PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
-        SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
-        SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis);
-        SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis);
+        PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot);
+        SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
+        SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
+        SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
         List<SkillTreeData> skillTreeDataList = new ArrayList<SkillTreeData>() {{
             add(first);
             add(second);
