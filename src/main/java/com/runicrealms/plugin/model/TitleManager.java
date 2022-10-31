@@ -2,8 +2,10 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.PlayerMongoData;
+import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,6 +27,22 @@ public class TitleManager implements Listener {
     @EventHandler
     public void onCharacterSelect(CharacterSelectEvent event) {
         loadTitleData(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onCharacterQuit(CharacterQuitEvent event) {
+        TitleData titleData = loadTitleData(event.getPlayer().getUniqueId());
+        titleData.writeTitleDataToJedis(event.getJedis());
+    }
+
+    @EventHandler
+    public void onMongoSave(MongoSaveEvent event) {
+        TitleData titleData;
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            titleData = loadTitleData(uuid);
+            PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
+            titleData.writeToMongo(playerMongoData);
+        }
     }
 
     /**

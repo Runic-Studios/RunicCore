@@ -27,6 +27,8 @@ import redis.clients.jedis.Jedis;
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
 
+    private static final String WORLD_NAME = "Alterra";
+
     @EventHandler
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
         try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
@@ -53,16 +55,14 @@ public class PlayerJoinListener implements Listener {
         player.setLevel(0);
         player.setExp(0);
         player.setFoodLevel(20);
-        player.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
+        player.teleport(new Location(Bukkit.getWorld(WORLD_NAME), -2318.5, 2, 1720.5));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2));
         // build database file synchronously (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
                 PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player, jedis);
-                // Bukkit.broadcastMessage("building player data object");
                 RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
                 ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
-                // jedis.close();
             }
         }, 1L);
     }
@@ -133,7 +133,7 @@ public class PlayerJoinListener implements Listener {
         if (proportion < 0) proportion = 0.0f;
         if (proportion >= 1) proportion = 0.99f;
         player.setExp((float) proportion);
-        // restore their health and hunger (delayed by 1 tick because otherwise they get healed first)
+        // restore their hunger (delayed by 1 tick because otherwise they get healed / full hunger first)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             loadCurrentPlayerHealthAndHunger(player, characterData);
             CharacterLoadedEvent characterLoadedEvent = new CharacterLoadedEvent(player, characterSelectEvent);
