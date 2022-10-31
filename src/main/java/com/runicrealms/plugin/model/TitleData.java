@@ -112,8 +112,11 @@ public class TitleData implements SessionData {
      * @return
      */
     private Set<String> getUnlockedTitlesFromMongo(PlayerMongoData playerMongoData) {
-        PlayerMongoDataSection playerMongoDataSection = (PlayerMongoDataSection) playerMongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
-        return new HashSet<>(playerMongoDataSection.getKeys());
+        if (playerMongoData.get("title." + DATA_SECTION_UNLOCKED_TITLES) != null) {
+            PlayerMongoDataSection unlockedTitles = (PlayerMongoDataSection) playerMongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
+            return new HashSet<>(unlockedTitles.getKeys());
+        }
+        return new HashSet<>();
     }
 
     @Override
@@ -132,6 +135,7 @@ public class TitleData implements SessionData {
         String uuid = String.valueOf(this.uuid);
         jedis.set(uuid + ":" + DATA_SECTION_PREFIX, this.prefix);
         jedis.set(uuid + ":" + DATA_SECTION_SUFFIX, this.suffix);
+        jedis.del(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES); // reset keys
         for (String unlockedTitle : this.unlockedTitles) {
             jedis.lpush(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, unlockedTitle);
         }
@@ -142,6 +146,11 @@ public class TitleData implements SessionData {
         try {
             playerMongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
             playerMongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
+            playerMongoData.remove("title." + DATA_SECTION_UNLOCKED_TITLES);
+            PlayerMongoDataSection unlockedTitles = (PlayerMongoDataSection) playerMongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
+            for (String title : this.unlockedTitles) {
+                unlockedTitles.set(title, "true");
+            }
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving title data to mongo!");
             e.printStackTrace();

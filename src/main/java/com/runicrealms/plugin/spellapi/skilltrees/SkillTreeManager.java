@@ -9,10 +9,7 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.model.SkillTreeData;
-import com.runicrealms.plugin.model.SkillTreeField;
 import com.runicrealms.plugin.model.SkillTreePosition;
-import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.redis.RedisManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,7 +25,6 @@ public class SkillTreeManager implements Listener {
     private final Map<UUID, Set<String>> playerPassiveMap = new HashMap<>();
     private final Map<String, SkillTreeData> playerSkillTreeMap = new HashMap<>(); // memoization, keyed by uuid + ":" + position
     private final Map<UUID, PlayerSpellData> playerSpellMap = new HashMap<>(); // memoization
-    private final Map<UUID, Integer> playerSpentPointsMap = new HashMap<>(); // memoization
 
     public SkillTreeManager() {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
@@ -46,7 +42,6 @@ public class SkillTreeManager implements Listener {
                 PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
                 PlayerMongoDataSection character = playerMongoData.getCharacter(characterSlot);
                 saveSpellsAndSkillTreesToMongo(uuid, characterSlot, event.getJedis(), playerMongoData, character);
-                // playerMongoData.save();
             }
         }
     }
@@ -63,8 +58,6 @@ public class SkillTreeManager implements Listener {
     private void saveSpellsAndSkillTreesToMongo(UUID uuid, int slot, Jedis jedis,
                                                 PlayerMongoData playerMongoData, PlayerMongoDataSection character) {
         character.remove(SkillTreeData.PATH_LOCATION); // removes ALL THREE SkillTree data sections AND spent points
-        // character.save();
-        // saveSkillTreesToJedis(uuid, slot, jedis);
         PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, slot, jedis);
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST, jedis);
         SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND, jedis);
@@ -72,7 +65,6 @@ public class SkillTreeManager implements Listener {
         first.writeToMongo(playerMongoData, slot);
         second.writeToMongo(playerMongoData, slot);
         third.writeToMongo(playerMongoData, slot);
-        saveSpentPointsToMongo(uuid, slot, jedis, character);
         playerSpellData.writeToMongo(playerMongoData, slot);
     }
 
@@ -105,62 +97,12 @@ public class SkillTreeManager implements Listener {
                         uuid + ":" + SkillTreePosition.THIRD.getValue(),
                         loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD, jedis)
                 );
-        int points = loadSpentPointsData(uuid, slot, jedis);
-        if (points > PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1))
-            points = PlayerLevelUtil.getMaxLevel() - (SkillTreeData.FIRST_POINT_LEVEL - 1);
-        saveSpentPointsToJedis(uuid, points, jedis); // ensure points are loaded in memory (if only in mongo)
-        this.playerSpentPointsMap.put(uuid, points); // memoize spent points for faster lookup
     }
 
     @EventHandler
     public void onCharacterQuit(CharacterQuitEvent event) {
         saveSkillTreesToJedis(event.getPlayer().getUniqueId(), event.getSlot(), event.getJedis());
         removeDataFromMemory(event.getPlayer().getUniqueId());
-    }
-
-    /**
-     * Checks redis to see if the currently selected character's spent points (skill tree) data is cached
-     * And if it is, returns the int
-     *
-     * @param uuid of player to check
-     * @param slot of the character
-     * @return an int if found in redis
-     */
-    public int checkRedisForSpentPoints(UUID uuid, Integer slot, Jedis jedis) {
-        jedis.auth(RedisManager.REDIS_PASSWORD);
-        String key = uuid + ":character:" + slot;
-        if (jedis.exists(key)) {
-            String spentPoints = jedis.hmget(key, SkillTreeField.SPENT_POINTS.getField()).get(0);
-            if (spentPoints != null && !spentPoints.equals(""))
-                return Integer.parseInt(jedis.hmget(key, SkillTreeField.SPENT_POINTS.getField()).get(0));
-        }
-        // Bukkit.broadcastMessage(ChatColor.RED + "redis spent points data not found");
-        return -1;
-    }
-
-    /**
-     * Determines how many points the player has spent on their skill tree.
-     * Tries to build it from session storage (Redis) first, then falls back to Mongo
-     *
-     * @param uuid  of player who is attempting to load their data
-     * @param slot  the slot of the character
-     * @param jedis the jedis resource
-     */
-    public int loadSpentPointsData(UUID uuid, Integer slot, Jedis jedis) {
-        // Step 1: check if spent points data is cached in redis
-        int spentPoints = checkRedisForSpentPoints(uuid, slot, jedis);
-        if (spentPoints != -1) return spentPoints;
-        // Step 2: check mongo documents
-        PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
-        PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
-        if (character.has(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION)) {
-            int points = character.get(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, Integer.class);
-            saveSpentPointsToJedis(uuid, points, jedis);
-            return points;
-        } else {
-            saveSpentPointsToJedis(uuid, 0, jedis);
-            return 0;
-        }
     }
 
     /**
@@ -226,46 +168,41 @@ public class SkillTreeManager implements Listener {
     }
 
     /**
-     * Creates a PlayerSpellData object. Tries to build it from session storage (Redis) first,
-     * then falls back to Mongo
+     * Creates a PlayerSpellData object. Tries to build it from memory first, then falls back to redis/mongo
      *
      * @param uuid              of player who is attempting to load their data
      * @param slot              the slot of the character
      * @param skillTreePosition which position is the skill tree? first, second, etc.
      * @return a SkillTreeData object
      */
-    public SkillTreeData loadSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition, Jedis jedis) {
+    public SkillTreeData loadSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition) {
         // Step 1: check if skill tree data is memoized
         SkillTreeData skillTreeData = this.getPlayerSkillTreeMap().get(uuid + ":" + skillTreePosition.getValue());
         if (skillTreeData != null) return skillTreeData;
         // Step 2: check if skill tree data is cached in redis
-        skillTreeData = checkRedisForSkillTreeData(uuid, slot, skillTreePosition, jedis);
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            return loadSkillTreeData(uuid, slot, skillTreePosition, jedis);
+        }
+    }
+
+    /**
+     * Creates a PlayerSpellData object. Tries to build it from session storage (Redis) first,
+     * then falls back to Mongo
+     *
+     * @param uuid              of player who is attempting to load their data
+     * @param slot              the slot of the character
+     * @param skillTreePosition which position is the skill tree? first, second, etc.
+     * @param jedis             the jedis resource
+     * @return a SkillTreeData object
+     */
+    public SkillTreeData loadSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition, Jedis jedis) {
+        // Step 1: check if skill tree data is cached in redis
+        SkillTreeData skillTreeData = checkRedisForSkillTreeData(uuid, slot, skillTreePosition, jedis);
         if (skillTreeData != null) return skillTreeData;
-        // Step 3: check mongo documents
+        // Step 2: check mongo documents
         PlayerMongoData playerMongoData = new PlayerMongoData(uuid.toString());
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
         return new SkillTreeData(uuid, slot, skillTreePosition, character, jedis);
-    }
-
-    /**
-     * Updates the cached value in redis for the player's total allocated points
-     *
-     * @param uuid   of player to update
-     * @param points the total spent points of the player
-     * @param jedis  the jedis resource
-     */
-    private void saveSpentPointsToJedis(UUID uuid, int points, Jedis jedis) {
-        RunicCoreAPI.setRedisValue(uuid, SkillTreeField.SPENT_POINTS.getField(), String.valueOf(points), jedis);
-    }
-
-    /**
-     * Saves the total spent points to DB
-     *
-     * @param uuid      of the player
-     * @param character mongo data section from save event
-     */
-    private void saveSpentPointsToMongo(UUID uuid, int slot, Jedis jedis, PlayerMongoDataSection character) {
-        character.set(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.POINTS_LOCATION, RunicCoreAPI.getSpentPoints(uuid, slot, jedis));
     }
 
     /**
@@ -278,7 +215,6 @@ public class SkillTreeManager implements Listener {
         this.playerSkillTreeMap.remove(uuid + ":" + SkillTreePosition.SECOND.getValue());
         this.playerSkillTreeMap.remove(uuid + ":" + SkillTreePosition.THIRD.getValue());
         this.playerSpellMap.remove(uuid);
-        this.playerSpentPointsMap.remove(uuid);
         this.playerPassiveMap.remove(uuid);
     }
 
@@ -300,7 +236,6 @@ public class SkillTreeManager implements Listener {
             add(third);
         }};
         skillTreeDataList.forEach(skillTreeData -> skillTreeData.writeToJedis(jedis, slot));
-        saveSpentPointsToJedis(uuid, this.playerSpentPointsMap.get(uuid), jedis);
         playerSpellData.writeToJedis(jedis, slot);
     }
 
@@ -314,9 +249,5 @@ public class SkillTreeManager implements Listener {
 
     public Map<UUID, PlayerSpellData> getPlayerSpellMap() {
         return this.playerSpellMap;
-    }
-
-    public Map<UUID, Integer> getPlayerSpentPointsMap() {
-        return this.playerSpentPointsMap;
     }
 }

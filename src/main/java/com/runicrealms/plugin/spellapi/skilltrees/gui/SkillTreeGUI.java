@@ -87,7 +87,7 @@ public class SkillTreeGUI implements InventoryHolder {
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubclass().getName() + " Tree Info");
-        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId());
+        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
         return infoItem;

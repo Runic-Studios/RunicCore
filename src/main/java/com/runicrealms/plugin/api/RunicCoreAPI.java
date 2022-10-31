@@ -412,19 +412,18 @@ public class RunicCoreAPI {
      * @return number of skill points available (AFTER subtracting spent points)
      */
     public static int getAvailableSkillPoints(UUID uuid, int slot) {
-        return SkillTreeData.getAvailablePoints(uuid);
+        return SkillTreeData.getAvailablePoints(uuid, slot);
     }
 
     /**
      * Gets the total allocated skill points of the given player
      *
-     * @param uuid  of player to check
-     * @param slot  of the character
-     * @param jedis the jedis resource
+     * @param uuid of player to check
+     * @param slot of the character
      * @return number of skill points spent
      */
-    public static int getSpentPoints(UUID uuid, int slot, Jedis jedis) {
-        return RunicCore.getSkillTreeManager().loadSpentPointsData(uuid, slot, jedis);
+    public static int getSpentPoints(UUID uuid, int slot) {
+        return SkillTreeData.getSpentPoints(uuid, slot);
     }
 
     /**

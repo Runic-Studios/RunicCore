@@ -89,10 +89,8 @@ public class TitleManager implements Listener {
      */
     public TitleData checkRedisForTitleData(UUID uuid, Jedis jedis) {
         if (jedis.exists(uuid.toString() + ":" + TitleData.DATA_SECTION_PREFIX)) {
-            // Bukkit.broadcastMessage(ChatColor.GREEN + "redis title data found, building data from redis");
             return new TitleData(uuid, jedis);
         }
-        // Bukkit.broadcastMessage(ChatColor.RED + "redis title data not found");
         return null;
     }
 

@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
+import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
@@ -57,7 +58,7 @@ public class SkillTreeGUIListener implements Listener {
             else
                 previous = skillTreeGUI.getSkillTree().getPerks().get(perkPosition - 1); // grab previous perk to ensure they follow path
             Perk perk = skillTreeGUI.getSkillTree().getPerks().get(perkPosition);
-            skillTreeGUI.getSkillTree().attemptToPurchasePerk(player, previous, perk);
+            skillTreeGUI.getSkillTree().attemptToPurchasePerk(player, RunicCoreAPI.getCharacterSlot(player.getUniqueId()), previous, perk);
             skillTreeGUI.getInventory().setItem(e.getRawSlot(),
                     SkillTreeGUI.buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase"));
             skillTreeGUI.getInventory().setItem(SkillTreeGUI.getInfoItemPosition(), skillTreeGUI.infoItem());

@@ -25,7 +25,6 @@ import java.util.UUID;
 public class SkillTreeData implements SessionData {
     public static final int FIRST_POINT_LEVEL = 10;
     public static final String PATH_LOCATION = "skillTree";
-    public static final String POINTS_LOCATION = "spentPoints";
     public static final String SPELLS_LOCATION = "spells";
 
     private final SkillTreePosition position;
@@ -94,12 +93,16 @@ public class SkillTreeData implements SessionData {
     /**
      * Calculates the available skill points of the player.
      * First point is given at level 10, so first 9 levels are ignored.
+     * For level 10 onward, we award 1 point per level. Then,
+     * subtract 1 point for each purchased perk across all skill trees
      *
+     * @param uuid of the player
+     * @param slot of the character
      * @return available skill points to spend
      */
-    public static int getAvailablePoints(UUID uuid) {
-        int spentPoints = RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().get(uuid);
+    public static int getAvailablePoints(UUID uuid, int slot) {
         Player player = Bukkit.getPlayer(uuid);
+        int spentPoints = getSpentPoints(uuid, slot);
         if (player != null)
             return Math.max(0, player.getLevel() - (FIRST_POINT_LEVEL - 1) - spentPoints);
         else
@@ -107,15 +110,32 @@ public class SkillTreeData implements SessionData {
     }
 
     /**
+     * @param uuid of the player
+     * @param slot of the character
+     * @return total points that have been allocated
+     */
+    public static int getSpentPoints(UUID uuid, int slot) {
+        int spentPoints = 0;
+        SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
+        SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
+        SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
+        spentPoints += first.getPerks().size();
+        spentPoints += second.getPerks().size();
+        spentPoints += third.getPerks().size();
+        return spentPoints;
+    }
+
+    /**
      * Attempts to purchase perk selected from inv click event.
      * Will fail for a variety of reasons, or succeeds, updates currently allocated points, and
      *
      * @param player   purchasing the perk
+     * @param slot     of the character
      * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
      * @param perk     the perk attempting to be purchased
      */
-    public void attemptToPurchasePerk(Player player, Perk previous, Perk perk) {
-        int getAvailablePoints = getAvailablePoints(player.getUniqueId());
+    public void attemptToPurchasePerk(Player player, int slot, Perk previous, Perk perk) {
+        int getAvailablePoints = getAvailablePoints(player.getUniqueId(), slot);
         if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You have already purchased this perk!");
@@ -131,8 +151,6 @@ public class SkillTreeData implements SessionData {
             player.sendMessage(ChatColor.RED + "You don't have enough skill points to purchase this!");
             return;
         }
-        int spentPoints = RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().get(uuid);
-        RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().put(uuid, spentPoints + perk.getCost());
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
         if (perk instanceof PerkSpell && (RunicCoreAPI.getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
             addPassivesToMap();
@@ -174,7 +192,6 @@ public class SkillTreeData implements SessionData {
         second.setPerks(second.getSkillTreeBySubClass(second.getSubclass()));
         third.setPerks(third.getSkillTreeBySubClass(third.getSubclass()));
         // --------------------------------------------
-        RunicCore.getSkillTreeManager().getPlayerSpentPointsMap().put(uuid, 0);
         RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid).resetSpells(); // reset assigned spells in-memory
         RunicCoreAPI.getPassives(uuid).clear(); // reset passives
         RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
