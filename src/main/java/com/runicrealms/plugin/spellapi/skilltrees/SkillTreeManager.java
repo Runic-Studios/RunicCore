@@ -73,7 +73,6 @@ public class SkillTreeManager implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         int slot = event.getCharacterData().getBaseCharacterInfo().getSlot();
-        Jedis jedis = event.getJedis();
         /*
         Ensures spell-related data is properly memoized
          */

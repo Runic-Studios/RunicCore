@@ -164,6 +164,9 @@ public class SkillTreeData implements SessionData {
             RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).increaseStat(((PerkBaseStat) perk).getStat(), ((PerkBaseStat) perk).getBonusAmount());
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            this.writeToJedis(jedis, slot);
+        }
     }
 
     /**
@@ -202,6 +205,13 @@ public class SkillTreeData implements SessionData {
         RunicCoreAPI.getPassives(uuid).clear(); // reset passives
         RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            first.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+            second.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+            third.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+            playerSpellData.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+        }
     }
 
     /**
@@ -298,7 +308,6 @@ public class SkillTreeData implements SessionData {
         Map<String, String> skillTreeDataMap = new HashMap<>();
         for (Perk perk : this.perks) {
             if (perk == null) continue;
-            if (perk.getCurrentlyAllocatedPoints() <= 0) continue;
             skillTreeDataMap.put(String.valueOf(perk.getPerkID()), String.valueOf(perk.getCurrentlyAllocatedPoints()));
         }
         return skillTreeDataMap;
@@ -313,13 +322,8 @@ public class SkillTreeData implements SessionData {
     @Override
     public void writeToJedis(Jedis jedis, int... slot) {
         String key = getJedisKey(this.uuid, slot[0], this.getPosition());
-        Map<String, String> perkDataMap = this.toMap();
-        String parentKey = uuid + ":character:" + slot[0] + ":" + PATH_LOCATION;
-        RedisUtil.removeAllFromRedis(jedis, parentKey); // clear existing keys
-        if (!perkDataMap.isEmpty()) {
-            jedis.hmset(key, this.toMap());
-            jedis.expire(key, RedisUtil.EXPIRE_TIME);
-        }
+        jedis.hmset(key, this.toMap());
+        jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
 
     @Override
@@ -331,7 +335,6 @@ public class SkillTreeData implements SessionData {
                 if (perk.getCurrentlyAllocatedPoints() == 0) continue;
                 skillTrees.set(perk.getPerkID().toString(), perk.getCurrentlyAllocatedPoints());
             }
-            // character.save();
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving skill tree data to mongo!");
             e.printStackTrace();

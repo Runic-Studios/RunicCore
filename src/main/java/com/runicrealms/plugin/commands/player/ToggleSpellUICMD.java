@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.skilltrees.cmd;
+package com.runicrealms.plugin.commands.player;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;

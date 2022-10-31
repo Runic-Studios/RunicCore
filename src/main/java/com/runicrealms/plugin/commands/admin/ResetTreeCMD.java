@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.spellapi.skilltrees.cmd;
+package com.runicrealms.plugin.commands.admin;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
@@ -62,17 +62,17 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // executes FIRST
-    public void onChat(ChatChannelMessageEvent e) {
-        if (!chatters.contains(e.getMessageSender().getUniqueId())) return;
-        e.setCancelled(true);
-        Player player = e.getMessageSender();
-        if (e.getChatMessage().toLowerCase().contains("yes") && RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
+    public void onChat(ChatChannelMessageEvent event) {
+        if (!chatters.contains(event.getMessageSender().getUniqueId())) return;
+        event.setCancelled(true);
+        Player player = event.getMessageSender();
+        if (event.getChatMessage().toLowerCase().contains("yes") && RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
                 SkillTreeData.resetSkillTrees(player);
             });
-        } else if (e.getChatMessage().toLowerCase().contains("yes") && !RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
+        } else if (event.getChatMessage().toLowerCase().contains("yes") && !RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You don't have enough gold!");
         } else {

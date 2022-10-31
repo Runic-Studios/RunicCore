@@ -36,7 +36,6 @@ import com.runicrealms.plugin.spellapi.SpellManager;
 import com.runicrealms.plugin.spellapi.SpellScalingListener;
 import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
-import com.runicrealms.plugin.spellapi.skilltrees.cmd.ResetTreeCMD;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.utilities.FilterUtil;
