@@ -3,6 +3,7 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import redis.clients.jedis.Jedis;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,9 +15,14 @@ import java.util.Map;
 public interface SessionDataNested {
 
     /**
+     * @return
+     */
+    List<String> getFields();
+
+    /**
      * Different implementation of toMap that allows for a nested object
      *
-     * @param nestedObject
+     * @param nestedObject some nested object to set the data map for
      * @return a map of key-value pairs of data on the nested object
      */
     Map<String, String> toMap(Object nestedObject);

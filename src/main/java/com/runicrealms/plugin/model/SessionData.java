@@ -3,6 +3,7 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import redis.clients.jedis.Jedis;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,6 +12,11 @@ import java.util.Map;
  * @author Skyfallin
  */
 public interface SessionData {
+
+    /**
+     * @return
+     */
+    List<String> getFields();
 
     /**
      * Ensures that all session data has a map of key-value string pairs for storage in jedis

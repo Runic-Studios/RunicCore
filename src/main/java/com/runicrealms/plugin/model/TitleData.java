@@ -11,7 +11,6 @@ import java.util.*;
  *
  */
 public class TitleData implements SessionData {
-
     private static final String DATA_SECTION_UNLOCKED_TITLES = "unlockedTitles";
     public static final String DATA_SECTION_PREFIX = "prefix";
     public static final String DATA_SECTION_SUFFIX = "suffix";
@@ -102,6 +101,11 @@ public class TitleData implements SessionData {
     }
 
     @Override
+    public List<String> getFields() {
+        return null;
+    }
+
+    @Override
     public Map<String, String> toMap() {
         return null;
     }
@@ -116,9 +120,6 @@ public class TitleData implements SessionData {
     public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
 
         Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(ClassData.getFields());
-        String[] fieldsToArray = fields.toArray(new String[0]);
-
         final String key = this.uuid + ":" + DATA_SECTION_UNLOCKED_TITLES;
         Set<String> unlockedTitles = new HashSet<>();
         for (int i = 0; i < jedis.llen(key); i++) {
@@ -127,7 +128,7 @@ public class TitleData implements SessionData {
 
         int i = 0;
         for (String title : unlockedTitles) {
-            fieldsMap.put(title, fieldsToArray[i]);
+            fieldsMap.put(title, i + "");
             i++;
         }
         return fieldsMap;

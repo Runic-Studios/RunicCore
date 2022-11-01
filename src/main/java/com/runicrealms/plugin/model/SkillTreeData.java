@@ -304,6 +304,11 @@ public class SkillTreeData implements SessionData {
     }
 
     @Override
+    public List<String> getFields() {
+        return null;
+    }
+
+    @Override
     public Map<String, String> toMap() {
         Map<String, String> skillTreeDataMap = new HashMap<>();
         for (Perk perk : this.perks) {

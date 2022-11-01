@@ -8,7 +8,7 @@ import redis.clients.jedis.Jedis;
 import java.util.*;
 
 public class ClassData implements SessionData {
-    static List<String> FIELDS = new ArrayList<String>() {{
+    public static final List<String> FIELDS = new ArrayList<String>() {{
         add(CharacterField.CLASS_TYPE.getField());
         add(CharacterField.CLASS_EXP.getField());
         add(CharacterField.CLASS_LEVEL.getField());
@@ -77,10 +77,6 @@ public class ClassData implements SessionData {
         this.level = Integer.parseInt(FIELDS.get(CharacterField.CLASS_LEVEL.getField()));
     }
 
-    public static List<String> getFields() {
-        return FIELDS;
-    }
-
     public UUID getUuid() {
         return this.uuid;
     }
@@ -95,6 +91,11 @@ public class ClassData implements SessionData {
 
     public int getLevel() {
         return this.level;
+    }
+
+    @Override
+    public List<String> getFields() {
+        return FIELDS;
     }
 
     /**
@@ -114,7 +115,7 @@ public class ClassData implements SessionData {
     @Override
     public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(ClassData.getFields());
+        List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
         List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {

@@ -60,7 +60,7 @@ public class PlayerLevelUtil {
      */
     public static void giveExperience(Player player, int expGained, Jedis jedis) {
 
-        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.getFields(), jedis);
+        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.FIELDS, jedis);
         String className = fieldValues.get(CharacterField.CLASS_TYPE.getField());
         int currentLv = player.getLevel();
         int currentExp = Integer.parseInt(fieldValues.get(CharacterField.CLASS_EXP.getField()));

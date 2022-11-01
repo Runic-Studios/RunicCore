@@ -7,7 +7,7 @@ import redis.clients.jedis.Jedis;
 import java.util.*;
 
 public class ProfessionData implements SessionData {
-    static List<String> fields = new ArrayList<String>() {{
+    public static final List<String> FIELDS = new ArrayList<String>() {{
         add(CharacterField.PROF_NAME.getField());
         add(CharacterField.PROF_EXP.getField());
         add(CharacterField.PROF_LEVEL.getField());
@@ -45,10 +45,6 @@ public class ProfessionData implements SessionData {
         this.profExp = Integer.parseInt(fieldsMap.get(CharacterField.PROF_EXP.getField()));
     }
 
-    public static List<String> getFields() {
-        return fields;
-    }
-
     public UUID getUuid() {
         return this.uuid;
     }
@@ -63,6 +59,11 @@ public class ProfessionData implements SessionData {
 
     public int getProfLevel() {
         return profLevel;
+    }
+
+    @Override
+    public List<String> getFields() {
+        return FIELDS;
     }
 
     /**
@@ -82,7 +83,7 @@ public class ProfessionData implements SessionData {
     @Override
     public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(ProfessionData.getFields());
+        List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
         List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {

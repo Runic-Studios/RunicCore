@@ -7,14 +7,15 @@ import redis.clients.jedis.Jedis;
 import java.util.*;
 
 public class OutlawData implements SessionData {
-    private static final Map<UUID, Boolean> OUTLAW_DATA_MAP = new HashMap<>();
-    static List<String> fields = new ArrayList<String>() {{
+    public static final List<String> FIELDS = new ArrayList<String>() {{
         add(CharacterField.OUTLAW_ENABLED.getField());
         add(CharacterField.OUTLAW_RATING.getField());
     }};
+
     private final UUID uuid;
     private final boolean outlawEnabled;
     private final int outlawRating;
+    private static final Map<UUID, Boolean> OUTLAW_DATA_MAP = new HashMap<>();
 
     /**
      * A container of outlaw info used to load a player character profile, built from mongo
@@ -33,8 +34,8 @@ public class OutlawData implements SessionData {
      * A container of basic info used to load a player character profile, built from redis
      *
      * @param uuid  of the player that selected the character profile
-     * @param slot
-     * @param jedis
+     * @param slot  of the character
+     * @param jedis the jedis resource
      */
     public OutlawData(UUID uuid, int slot, Jedis jedis) {
         this.uuid = uuid;
@@ -42,10 +43,6 @@ public class OutlawData implements SessionData {
         this.outlawEnabled = Boolean.parseBoolean(fieldsMap.get(CharacterField.OUTLAW_ENABLED.getField()));
         this.outlawRating = Integer.parseInt(fieldsMap.get(CharacterField.OUTLAW_RATING.getField()));
         OUTLAW_DATA_MAP.put(uuid, this.outlawEnabled);
-    }
-
-    public static List<String> getFields() {
-        return fields;
     }
 
     public UUID getUuid() {
@@ -58,6 +55,11 @@ public class OutlawData implements SessionData {
 
     public int getOutlawRating() {
         return outlawRating;
+    }
+
+    @Override
+    public List<String> getFields() {
+        return FIELDS;
     }
 
     /**
@@ -76,7 +78,7 @@ public class OutlawData implements SessionData {
     @Override
     public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(OutlawData.getFields());
+        List<String> fields = new ArrayList<>(OutlawData.FIELDS);
         String[] fieldsToArray = fields.toArray(new String[0]);
         List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {

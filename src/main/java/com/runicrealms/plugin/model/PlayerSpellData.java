@@ -13,7 +13,7 @@ import java.util.*;
  * A wrapper to store the assignment of spells to each spell slot
  */
 public class PlayerSpellData implements SessionData {
-    static List<String> fields = new ArrayList<String>() {{
+    public static final List<String> FIELDS = new ArrayList<String>() {{
         add(SpellField.HOT_BAR_ONE.getField());
         add(SpellField.LEFT_CLICK.getField());
         add(SpellField.RIGHT_CLICK.getField());
@@ -142,10 +142,6 @@ public class PlayerSpellData implements SessionData {
         return uuid + ":character:" + slot + ":" + SkillTreeData.PATH_LOCATION + ":" + SkillTreeData.SPELLS_LOCATION;
     }
 
-    public static List<String> getFields() {
-        return fields;
-    }
-
     public UUID getUuid() {
         return uuid;
     }
@@ -183,6 +179,11 @@ public class PlayerSpellData implements SessionData {
     }
 
     @Override
+    public List<String> getFields() {
+        return FIELDS;
+    }
+
+    @Override
     public Map<String, String> toMap() {
         return new HashMap<String, String>() {{
             put(SpellField.HOT_BAR_ONE.getField(), spellHotbarOne);
@@ -195,7 +196,7 @@ public class PlayerSpellData implements SessionData {
     @Override
     public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(PlayerSpellData.getFields());
+        List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
         List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
@@ -216,7 +217,7 @@ public class PlayerSpellData implements SessionData {
         jedis.hmset(key, this.toMap());
         jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
-    
+
     @Override
     public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);

@@ -12,7 +12,7 @@ import redis.clients.jedis.Jedis;
 import java.util.*;
 
 public class BaseCharacterData implements SessionData {
-    static List<String> fields = new ArrayList<String>() {{
+    public static final List<String> FIELDS = new ArrayList<String>() {{
         add(CharacterField.SLOT.getField());
         add(CharacterField.CURRENT_HEALTH.getField());
         add(CharacterField.STORED_HUNGER.getField());
@@ -66,9 +66,9 @@ public class BaseCharacterData implements SessionData {
     /**
      * A container of basic info used to load a player character profile, built from jedis
      *
-     * @param uuid
-     * @param slot
-     * @param jedis
+     * @param uuid  of the player that selected the character profile
+     * @param slot  the slot of the character (1 for first created profile)
+     * @param jedis the jedis resource
      */
     public BaseCharacterData(UUID uuid, int slot, Jedis jedis) {
         this.uuid = uuid;
@@ -77,10 +77,6 @@ public class BaseCharacterData implements SessionData {
         this.currentHp = Integer.parseInt(fieldsMap.get(CharacterField.CURRENT_HEALTH.getField()));
         this.storedHunger = Integer.parseInt(fieldsMap.get(CharacterField.STORED_HUNGER.getField()));
         this.location = DatabaseUtil.loadLocation(fieldsMap.get(CharacterField.LOCATION.getField()));
-    }
-
-    public static List<String> getFields() {
-        return fields;
     }
 
     public int getSlot() {
@@ -103,6 +99,11 @@ public class BaseCharacterData implements SessionData {
         return location;
     }
 
+    @Override
+    public List<String> getFields() {
+        return FIELDS;
+    }
+
     /**
      * Returns a map that can be used to set values in redis
      *
@@ -122,7 +123,7 @@ public class BaseCharacterData implements SessionData {
     @Override
     public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(BaseCharacterData.getFields());
+        List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
         List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {

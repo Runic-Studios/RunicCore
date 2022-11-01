@@ -70,8 +70,8 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
         TitleData titleData = RunicCore.getTitleManager().loadTitleData(player.getUniqueId());
         try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.getFields(), jedis);
-            Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields(), jedis);
+            Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.FIELDS, jedis);
+            Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
             switch (lowerArg) {
                 case "class":
                     return classFields.get(CharacterField.CLASS_TYPE.getField());

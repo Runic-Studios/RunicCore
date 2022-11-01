@@ -199,7 +199,7 @@ public class ScoreboardHandler {
      * @return a string with their profession info
      */
     private String playerProf(final Player player, Jedis jedis) {
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.getFields(), jedis);
+        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
         String profName = professionFields.get(CharacterField.PROF_NAME.getField());
         int currentLevel = Integer.parseInt(professionFields.get(CharacterField.PROF_LEVEL.getField()));
         String display;
