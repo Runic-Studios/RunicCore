@@ -16,6 +16,7 @@ public interface SessionDataNested {
     /**
      * Different implementation of toMap that allows for a nested object
      *
+     * @param nestedObject
      * @return a map of key-value pairs of data on the nested object
      */
     Map<String, String> toMap(Object nestedObject);
@@ -23,9 +24,12 @@ public interface SessionDataNested {
     /**
      * Method to return some data from jedis as a map of key-value pairs
      *
+     * @param jedis        the jedis resource
+     * @param nestedObject some nested object to get the data map for
+     * @param slot         an optional character slot for character-specific data
      * @return a map of key-value pairs
      */
-    Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot);
+    Map<String, String> getDataMapFromJedis(Jedis jedis, Object nestedObject, int... slot);
 
     /**
      * Ensures that all session data has a method to save the data in jedis
