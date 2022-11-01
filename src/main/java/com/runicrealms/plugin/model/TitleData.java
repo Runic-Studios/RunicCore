@@ -67,7 +67,8 @@ public class TitleData implements SessionData {
      */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-        this.unlockedTitles.add(prefix); // insurance
+        if (!prefix.equals(""))
+            this.unlockedTitles.add(prefix); // insurance
     }
 
     public String getSuffix() {
@@ -82,11 +83,16 @@ public class TitleData implements SessionData {
      */
     public void setSuffix(String suffix) {
         this.suffix = suffix;
-        this.unlockedTitles.add(suffix); // insurance
+        if (!suffix.equals(""))
+            this.unlockedTitles.add(suffix); // insurance
     }
 
     public Set<String> getUnlockedTitles() {
         return unlockedTitles;
+    }
+
+    private void unlockTitle(String title) {
+        this.unlockedTitles.add(title);
     }
 
     /**
