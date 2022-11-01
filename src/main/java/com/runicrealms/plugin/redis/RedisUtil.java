@@ -68,6 +68,15 @@ public class RedisUtil {
                 cycleIsFinished = true;
             }
         }
+        /*
+        String list is in format 'uuid:character:achievements'
+        This code makes it return 'achievements', or the final nested key, which is intended behavior
+         */
+        for (String nestedKey : nestedKeys) {
+            String[] split = nestedKey.split(":");
+            nestedKey = split[split.length - 1];
+            nestedKeys.set(nestedKeys.indexOf(nestedKey), split[split.length - 1]);
+        }
         return nestedKeys;
     }
 
