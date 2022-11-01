@@ -18,6 +18,22 @@ public class ProfessionData implements SessionData {
     private final int profExp;
 
     /**
+     * A container of class info used to load a player character profile
+     *
+     * @param uuid      of the player
+     * @param profName  the name of the profession
+     * @param profLevel the level of the profession
+     * @param profExp   the exp of the profession
+     */
+    public ProfessionData(UUID uuid, String profName, int profLevel, int profExp) {
+        this.uuid = uuid;
+        this.profName = profName;
+        this.profLevel = profLevel;
+        this.profExp = profExp;
+    }
+
+
+    /**
      * A container of profession info used to load a player character profile, built from mongo
      *
      * @param uuid      of the player
