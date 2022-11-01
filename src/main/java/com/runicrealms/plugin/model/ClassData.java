@@ -65,18 +65,6 @@ public class ClassData implements SessionData {
         this.level = character.get("class.level", Integer.class);
     }
 
-    /**
-     * A container of basic info used to load a player character profile, built from redis
-     *
-     * @param FIELDS a map of key-value pairs from redis
-     */
-    public ClassData(UUID uuid, Map<String, String> FIELDS) {
-        this.uuid = uuid;
-        this.classType = ClassEnum.getFromName(FIELDS.get(CharacterField.CLASS_TYPE.getField()));
-        this.exp = Integer.parseInt(FIELDS.get(CharacterField.CLASS_EXP.getField()));
-        this.level = Integer.parseInt(FIELDS.get(CharacterField.CLASS_LEVEL.getField()));
-    }
-
     public UUID getUuid() {
         return this.uuid;
     }
@@ -134,7 +122,7 @@ public class ClassData implements SessionData {
     @Override
     public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("class.name", this.classType);
+        character.set("class.name", this.classType.getName());
         character.set("class.level", this.level);
         character.set("class.exp", this.exp);
         return playerMongoData;

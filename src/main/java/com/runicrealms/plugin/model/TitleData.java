@@ -3,6 +3,7 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
+import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -145,10 +146,13 @@ public class TitleData implements SessionData {
         String uuid = String.valueOf(this.uuid);
         jedis.set(uuid + ":" + DATA_SECTION_PREFIX, this.prefix);
         jedis.set(uuid + ":" + DATA_SECTION_SUFFIX, this.suffix);
+        jedis.expire(uuid + ":" + DATA_SECTION_PREFIX, RedisUtil.EXPIRE_TIME);
+        jedis.expire(uuid + ":" + DATA_SECTION_SUFFIX, RedisUtil.EXPIRE_TIME);
         jedis.del(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES); // reset keys
         for (String unlockedTitle : this.unlockedTitles) {
             jedis.lpush(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, unlockedTitle);
         }
+        jedis.expire(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, RedisUtil.EXPIRE_TIME);
     }
 
     @Override
