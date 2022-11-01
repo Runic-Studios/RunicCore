@@ -341,14 +341,13 @@ public class SkillTreeData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         try {
             PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-            PlayerMongoDataSection skillTrees = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + position.getValue());
-            Map<String, String> dataMap = getDataMapFromJedis(jedis, slot[0]);
-            for (String perkId : dataMap.keySet()) {
-                if (Integer.parseInt(dataMap.get(perkId)) == 0) continue; // no allocated points
-                skillTrees.set(perkId, dataMap.get(perkId));
+            PlayerMongoDataSection skillTrees = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + this.position.getValue());
+            for (Perk perk : this.perks) {
+                if (perk.getCurrentlyAllocatedPoints() == 0) continue;
+                skillTrees.set(perk.getPerkID().toString(), perk.getCurrentlyAllocatedPoints());
             }
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving skill tree data to mongo!");
@@ -356,4 +355,5 @@ public class SkillTreeData implements SessionData {
         }
         return playerMongoData;
     }
+
 }

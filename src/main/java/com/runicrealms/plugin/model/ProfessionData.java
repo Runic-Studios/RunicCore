@@ -100,12 +100,11 @@ public class ProfessionData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("prof.name", fieldsMap.get(CharacterField.PROF_NAME.getField()));
-        character.set("prof.level", Integer.parseInt(fieldsMap.get(CharacterField.PROF_LEVEL.getField())));
-        character.set("prof.exp", Integer.parseInt(fieldsMap.get(CharacterField.PROF_LEVEL.getField())));
+        character.set("prof.name", this.profName);
+        character.set("prof.level", this.profLevel);
+        character.set("prof.exp", this.profExp);
         return playerMongoData;
     }
 }

@@ -95,11 +95,10 @@ public class OutlawData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("outlaw.enabled", Boolean.parseBoolean(fieldsMap.get(CharacterField.OUTLAW_ENABLED.getField())));
-        character.set("outlaw.rating", Integer.parseInt(fieldsMap.get(CharacterField.OUTLAW_RATING.getField())));
+        character.set("outlaw.enabled", this.outlawEnabled);
+        character.set("outlaw.rating", this.outlawRating);
         return playerMongoData;
     }
 

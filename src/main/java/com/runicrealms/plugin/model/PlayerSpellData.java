@@ -219,14 +219,13 @@ public class PlayerSpellData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
-        spells.set(SpellField.HOT_BAR_ONE.getField(), fieldsMap.get(SpellField.HOT_BAR_ONE.getField()));
-        spells.set(SpellField.LEFT_CLICK.getField(), fieldsMap.get(SpellField.LEFT_CLICK.getField()));
-        spells.set(SpellField.RIGHT_CLICK.getField(), fieldsMap.get(SpellField.RIGHT_CLICK.getField()));
-        spells.set(SpellField.SWAP_HANDS.getField(), fieldsMap.get(SpellField.SWAP_HANDS.getField()));
+        spells.set(SpellField.HOT_BAR_ONE.getField(), this.spellHotbarOne);
+        spells.set(SpellField.LEFT_CLICK.getField(), this.spellLeftClick);
+        spells.set(SpellField.RIGHT_CLICK.getField(), this.spellRightClick);
+        spells.set(SpellField.SWAP_HANDS.getField(), this.spellSwapHands);
         return playerMongoData;
     }
 }

@@ -140,12 +140,11 @@ public class BaseCharacterData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("currentHP", Integer.parseInt(fieldsMap.get(CharacterField.CURRENT_HEALTH.getField())));
-        character.set("storedHunger", Integer.parseInt(fieldsMap.get(CharacterField.STORED_HUNGER.getField())));
-        DatabaseUtil.saveLocation(character, DatabaseUtil.loadLocation(fieldsMap.get(CharacterField.LOCATION.getField())));
+        character.set("currentHP", this.currentHp);
+        character.set("storedHunger", this.storedHunger);
+        DatabaseUtil.saveLocation(character, this.location);
         return playerMongoData;
     }
 }

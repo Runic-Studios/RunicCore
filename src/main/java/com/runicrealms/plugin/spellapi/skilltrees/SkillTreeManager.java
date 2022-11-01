@@ -62,10 +62,10 @@ public class SkillTreeManager implements Listener {
         SkillTreeData first = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
         SkillTreeData second = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
         SkillTreeData third = RunicCore.getSkillTreeManager().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
-        first.writeToMongo(playerMongoData, jedis, slot);
-        second.writeToMongo(playerMongoData, jedis, slot);
-        third.writeToMongo(playerMongoData, jedis, slot);
-        playerSpellData.writeToMongo(playerMongoData, jedis, slot);
+        first.writeToMongo(playerMongoData, slot);
+        second.writeToMongo(playerMongoData, slot);
+        third.writeToMongo(playerMongoData, slot);
+        playerSpellData.writeToMongo(playerMongoData, slot);
     }
 
     @EventHandler(priority = EventPriority.HIGH) // loads last, but BEFORE StatManager

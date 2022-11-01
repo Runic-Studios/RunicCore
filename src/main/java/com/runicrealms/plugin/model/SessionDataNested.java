@@ -46,12 +46,10 @@ public interface SessionDataNested {
     void writeToJedis(Jedis jedis, int... slot);
 
     /**
-     * Ensure that all session data has a method to save the data in mongo.
-     * Saves from jedis, which is available even if player is offline
+     * Ensure that all session data has a method to save the data in mongo
      *
      * @param playerMongoData the mongo data of the player
-     * @param jedis           the jedis resource
      * @param slot            an optional argument to represent the character slot (for alt-specific data)
      */
-    PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot);
+    PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot);
 }

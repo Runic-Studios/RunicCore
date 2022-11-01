@@ -56,15 +56,14 @@ public class CharacterData {
      * Used for the round trip to MongoDB. Saves all the data in the object to the database as nested fields
      *
      * @param playerMongoData of the player
-     * @param jedis           the jedis resource
      * @param slot            of the character
      */
-    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, Jedis jedis, int slot) {
+    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, int slot) {
         try {
-            this.baseCharacterData.writeToMongo(playerMongoData, jedis, slot);
-            this.classData.writeToMongo(playerMongoData, jedis, slot);
-            this.professionData.writeToMongo(playerMongoData, jedis, slot);
-            this.outlawData.writeToMongo(playerMongoData, jedis, slot);
+            this.baseCharacterData.writeToMongo(playerMongoData, slot);
+            this.classData.writeToMongo(playerMongoData, slot);
+            this.professionData.writeToMongo(playerMongoData, slot);
+            this.outlawData.writeToMongo(playerMongoData, slot);
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
             e.printStackTrace();

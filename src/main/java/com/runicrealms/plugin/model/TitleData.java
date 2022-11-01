@@ -152,13 +152,13 @@ public class TitleData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         try {
-            playerMongoData.set("title." + DATA_SECTION_PREFIX, jedis.get(uuid + ":" + DATA_SECTION_PREFIX));
-            playerMongoData.set("title." + DATA_SECTION_SUFFIX, jedis.get(uuid + ":" + DATA_SECTION_SUFFIX));
+            playerMongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
+            playerMongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
             playerMongoData.remove("title." + DATA_SECTION_UNLOCKED_TITLES);
             PlayerMongoDataSection titlesSection = (PlayerMongoDataSection) playerMongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
-            for (String title : getDataMapFromJedis(jedis).keySet()) {
+            for (String title : this.unlockedTitles) {
                 titlesSection.set(title, "true");
             }
         } catch (Exception e) {

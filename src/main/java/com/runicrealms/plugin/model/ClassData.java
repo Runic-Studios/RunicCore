@@ -132,12 +132,11 @@ public class ClassData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("class.name", fieldsMap.get(CharacterField.CLASS_TYPE.getField()));
-        character.set("class.level", Integer.parseInt(fieldsMap.get(CharacterField.CLASS_LEVEL.getField())));
-        character.set("class.exp", Integer.parseInt(fieldsMap.get(CharacterField.CLASS_EXP.getField())));
+        character.set("class.name", this.classType);
+        character.set("class.level", this.level);
+        character.set("class.exp", this.exp);
         return playerMongoData;
     }
 }
