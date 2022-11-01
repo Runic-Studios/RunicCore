@@ -74,7 +74,6 @@ public class RedisUtil {
          */
         for (String nestedKey : nestedKeys) {
             String[] split = nestedKey.split(":");
-            nestedKey = split[split.length - 1];
             nestedKeys.set(nestedKeys.indexOf(nestedKey), split[split.length - 1]);
         }
         return nestedKeys;
