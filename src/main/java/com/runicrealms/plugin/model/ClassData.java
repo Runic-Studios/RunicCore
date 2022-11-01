@@ -77,7 +77,7 @@ public class ClassData implements SessionData {
         this.level = Integer.parseInt(FIELDS.get(CharacterField.CLASS_LEVEL.getField()));
     }
 
-    public static List<String> getFIELDS() {
+    public static List<String> getFields() {
         return FIELDS;
     }
 
@@ -112,6 +112,18 @@ public class ClassData implements SessionData {
     }
 
     @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(ClassData.getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
+    }
+
+    @Override
     public void writeToJedis(Jedis jedis, int... slot) {
         String uuid = String.valueOf(this.uuid);
         String key = uuid + ":character:" + slot[0];
@@ -119,11 +131,12 @@ public class ClassData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("class.name", this.classType.getName());
-        character.set("class.level", this.getLevel());
-        character.set("class.exp", this.getExp());
+        character.set("class.name", fieldsMap.get(CharacterField.CLASS_TYPE.getField()));
+        character.set("class.level", Integer.parseInt(fieldsMap.get(CharacterField.CLASS_LEVEL.getField())));
+        character.set("class.exp", Integer.parseInt(fieldsMap.get(CharacterField.CLASS_EXP.getField())));
         return playerMongoData;
     }
 }

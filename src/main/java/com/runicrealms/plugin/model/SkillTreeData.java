@@ -313,6 +313,15 @@ public class SkillTreeData implements SessionData {
         return skillTreeDataMap;
     }
 
+    @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        String key = getJedisKey(uuid, slot[0], position);
+        /*
+        Get all the values for skill tree in position. Stored as id-pointsAllocated key-value pair
+         */
+        return jedis.hgetAll(key);
+    }
+
     /**
      * Adds the object into session storage in redis
      *
@@ -327,13 +336,14 @@ public class SkillTreeData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
         try {
             PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
             PlayerMongoDataSection skillTrees = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + position.getValue());
-            for (Perk perk : perks) {
-                if (perk.getCurrentlyAllocatedPoints() == 0) continue;
-                skillTrees.set(perk.getPerkID().toString(), perk.getCurrentlyAllocatedPoints());
+            Map<String, String> dataMap = getDataMapFromJedis(jedis, slot[0]);
+            for (String perkId : dataMap.keySet()) {
+                if (Integer.parseInt(dataMap.get(perkId)) == 0) continue; // no allocated points
+                skillTrees.set(perkId, dataMap.get(perkId));
             }
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving skill tree data to mongo!");

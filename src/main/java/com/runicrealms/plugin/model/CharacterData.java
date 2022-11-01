@@ -6,7 +6,7 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.UUID;
 
 /**
  * Intermediary object used to read data from mongo or redis and then store data back in redis.
@@ -46,35 +46,25 @@ public class CharacterData {
      * @param jedis the jedis resource
      */
     public CharacterData(UUID uuid, int slot, Jedis jedis) {
-        List<String> fields = new ArrayList<>();
-        Map<String, String> fieldsMap = new HashMap<>();
-        fields.addAll(BaseCharacterData.getFields());
-        fields.addAll(ClassData.getFIELDS());
-        fields.addAll(ProfessionData.getFields());
-        fields.addAll(OutlawData.getFields());
-        String[] fieldsToArray = fields.toArray(new String[0]);
-        List<String> values = jedis.hmget(uuid + ":character:" + slot, fieldsToArray);
-        for (int i = 0; i < fieldsToArray.length; i++) {
-            fieldsMap.put(fieldsToArray[i], values.get(i));
-        }
-        this.baseCharacterData = new BaseCharacterData(uuid, fieldsMap);
-        this.classData = new ClassData(uuid, fieldsMap);
-        this.professionData = new ProfessionData(uuid, fieldsMap);
-        this.outlawData = new OutlawData(uuid, fieldsMap);
+        this.baseCharacterData = new BaseCharacterData(uuid, slot, jedis);
+        this.classData = new ClassData(uuid, slot, jedis);
+        this.professionData = new ProfessionData(uuid, slot, jedis);
+        this.outlawData = new OutlawData(uuid, slot, jedis);
     }
 
     /**
      * Used for the round trip to MongoDB. Saves all the data in the object to the database as nested fields
      *
      * @param playerMongoData of the player
+     * @param jedis           the jedis resource
      * @param slot            of the character
      */
-    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, int slot) {
+    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, Jedis jedis, int slot) {
         try {
-            this.baseCharacterData.writeToMongo(playerMongoData, slot);
-            this.classData.writeToMongo(playerMongoData, slot);
-            this.professionData.writeToMongo(playerMongoData, slot);
-            this.outlawData.writeToMongo(playerMongoData, slot);
+            this.baseCharacterData.writeToMongo(playerMongoData, jedis, slot);
+            this.classData.writeToMongo(playerMongoData, jedis, slot);
+            this.professionData.writeToMongo(playerMongoData, jedis, slot);
+            this.outlawData.writeToMongo(playerMongoData, jedis, slot);
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
             e.printStackTrace();

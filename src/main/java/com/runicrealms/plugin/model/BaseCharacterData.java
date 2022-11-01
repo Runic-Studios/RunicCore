@@ -64,16 +64,19 @@ public class BaseCharacterData implements SessionData {
     }
 
     /**
-     * A container of basic info used to load a player character profile, built from redis
+     * A container of basic info used to load a player character profile, built from jedis
      *
-     * @param fields a map of key-value pairs from redis
+     * @param uuid
+     * @param slot
+     * @param jedis
      */
-    public BaseCharacterData(UUID uuid, Map<String, String> fields) {
+    public BaseCharacterData(UUID uuid, int slot, Jedis jedis) {
         this.uuid = uuid;
-        this.slot = Integer.parseInt(fields.get(CharacterField.SLOT.getField()));
-        this.currentHp = Integer.parseInt(fields.get(CharacterField.CURRENT_HEALTH.getField()));
-        this.storedHunger = Integer.parseInt(fields.get(CharacterField.STORED_HUNGER.getField()));
-        this.location = DatabaseUtil.loadLocation(fields.get(CharacterField.LOCATION.getField()));
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot);
+        this.slot = Integer.parseInt(fieldsMap.get(CharacterField.SLOT.getField()));
+        this.currentHp = Integer.parseInt(fieldsMap.get(CharacterField.CURRENT_HEALTH.getField()));
+        this.storedHunger = Integer.parseInt(fieldsMap.get(CharacterField.STORED_HUNGER.getField()));
+        this.location = DatabaseUtil.loadLocation(fieldsMap.get(CharacterField.LOCATION.getField()));
     }
 
     public static List<String> getFields() {
@@ -117,6 +120,18 @@ public class BaseCharacterData implements SessionData {
     }
 
     @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(BaseCharacterData.getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
+    }
+
+    @Override
     public void writeToJedis(Jedis jedis, int... slot) {
         String uuid = String.valueOf(this.uuid);
         String key = uuid + ":character:" + this.slot;
@@ -124,11 +139,12 @@ public class BaseCharacterData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("currentHP", this.currentHp);
-        character.set("storedHunger", this.storedHunger);
-        DatabaseUtil.saveLocation(character, this.location);
+        character.set("currentHP", Integer.parseInt(fieldsMap.get(CharacterField.CURRENT_HEALTH.getField())));
+        character.set("storedHunger", Integer.parseInt(fieldsMap.get(CharacterField.STORED_HUNGER.getField())));
+        DatabaseUtil.saveLocation(character, DatabaseUtil.loadLocation(fieldsMap.get(CharacterField.LOCATION.getField())));
         return playerMongoData;
     }
 }

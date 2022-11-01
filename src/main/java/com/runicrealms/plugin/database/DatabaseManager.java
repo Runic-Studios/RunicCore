@@ -275,7 +275,7 @@ public class DatabaseManager implements Listener {
                 RunicCore.getRedisManager().updateBaseCharacterInfo(player, slot, jedis); // ensure jedis is up-to-date if player is online
             }
             characterData = new CharacterData(uuid, slot, jedis); // build a data object
-            characterData.writeCharacterDataToMongo(playerMongoData, slot);
+            characterData.writeCharacterDataToMongo(playerMongoData, jedis, slot);
         } else {
             // log error
         }

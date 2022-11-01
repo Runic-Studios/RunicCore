@@ -18,21 +18,6 @@ public class ProfessionData implements SessionData {
     private final int profExp;
 
     /**
-     * A container of class info used to load a player character profile
-     *
-     * @param uuid      of the player
-     * @param profName  the name of the profession
-     * @param profLevel the level of the profession
-     * @param profExp   the exp of the profession
-     */
-    public ProfessionData(UUID uuid, String profName, int profLevel, int profExp) {
-        this.uuid = uuid;
-        this.profName = profName;
-        this.profLevel = profLevel;
-        this.profExp = profExp;
-    }
-
-    /**
      * A container of profession info used to load a player character profile, built from mongo
      *
      * @param uuid      of the player
@@ -48,14 +33,16 @@ public class ProfessionData implements SessionData {
     /**
      * A container of basic info used to load a player character profile, built from redis
      *
-     * @param uuid   of the player
-     * @param fields a map of key-value pairs from redis
+     * @param uuid  of the player
+     * @param slot  of the character
+     * @param jedis the jedis resource
      */
-    public ProfessionData(UUID uuid, Map<String, String> fields) {
+    public ProfessionData(UUID uuid, int slot, Jedis jedis) {
         this.uuid = uuid;
-        this.profName = fields.get(CharacterField.PROF_NAME.getField());
-        this.profLevel = Integer.parseInt(fields.get(CharacterField.PROF_LEVEL.getField()));
-        this.profExp = Integer.parseInt(fields.get(CharacterField.PROF_EXP.getField()));
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot);
+        this.profName = fieldsMap.get(CharacterField.PROF_NAME.getField());
+        this.profLevel = Integer.parseInt(fieldsMap.get(CharacterField.PROF_LEVEL.getField()));
+        this.profExp = Integer.parseInt(fieldsMap.get(CharacterField.PROF_EXP.getField()));
     }
 
     public static List<String> getFields() {
@@ -93,6 +80,18 @@ public class ProfessionData implements SessionData {
     }
 
     @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(ProfessionData.getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
+    }
+
+    @Override
     public void writeToJedis(Jedis jedis, int... slot) {
         String uuid = String.valueOf(this.uuid);
         String key = uuid + ":character:" + slot[0];
@@ -100,11 +99,12 @@ public class ProfessionData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("prof.name", this.profName);
-        character.set("prof.level", this.profLevel);
-        character.set("prof.exp", this.profExp);
+        character.set("prof.name", fieldsMap.get(CharacterField.PROF_NAME.getField()));
+        character.set("prof.level", Integer.parseInt(fieldsMap.get(CharacterField.PROF_LEVEL.getField())));
+        character.set("prof.exp", Integer.parseInt(fieldsMap.get(CharacterField.PROF_LEVEL.getField())));
         return playerMongoData;
     }
 }

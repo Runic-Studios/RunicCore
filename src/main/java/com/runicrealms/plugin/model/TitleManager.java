@@ -41,7 +41,7 @@ public class TitleManager implements Listener {
         for (UUID uuid : event.getPlayersToSave().keySet()) {
             titleData = loadTitleData(uuid);
             PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
-            titleData.writeToMongo(playerMongoData);
+            titleData.writeToMongo(playerMongoData, event.getJedis());
         }
     }
 

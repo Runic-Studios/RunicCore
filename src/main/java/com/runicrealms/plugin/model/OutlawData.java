@@ -32,13 +32,15 @@ public class OutlawData implements SessionData {
     /**
      * A container of basic info used to load a player character profile, built from redis
      *
-     * @param uuid   of the player that selected the character profile
-     * @param fields a map of key-value pairs from redis
+     * @param uuid  of the player that selected the character profile
+     * @param slot
+     * @param jedis
      */
-    public OutlawData(UUID uuid, Map<String, String> fields) {
+    public OutlawData(UUID uuid, int slot, Jedis jedis) {
         this.uuid = uuid;
-        this.outlawEnabled = Boolean.parseBoolean(fields.get(CharacterField.OUTLAW_ENABLED.getField()));
-        this.outlawRating = Integer.parseInt(fields.get(CharacterField.OUTLAW_RATING.getField()));
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot);
+        this.outlawEnabled = Boolean.parseBoolean(fieldsMap.get(CharacterField.OUTLAW_ENABLED.getField()));
+        this.outlawRating = Integer.parseInt(fieldsMap.get(CharacterField.OUTLAW_RATING.getField()));
         OUTLAW_DATA_MAP.put(uuid, this.outlawEnabled);
     }
 
@@ -72,6 +74,18 @@ public class OutlawData implements SessionData {
     }
 
     @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(OutlawData.getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
+    }
+
+    @Override
     public void writeToJedis(Jedis jedis, int... slot) {
         String uuid = String.valueOf(this.uuid);
         String key = uuid + ":character:" + slot[0];
@@ -79,10 +93,11 @@ public class OutlawData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("outlaw.enabled", this.outlawEnabled);
-        character.set("outlaw.rating", this.outlawRating);
+        character.set("outlaw.enabled", Boolean.parseBoolean(fieldsMap.get(CharacterField.OUTLAW_ENABLED.getField())));
+        character.set("outlaw.rating", Integer.parseInt(fieldsMap.get(CharacterField.OUTLAW_RATING.getField())));
         return playerMongoData;
     }
 

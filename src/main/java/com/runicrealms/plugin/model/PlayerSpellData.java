@@ -7,14 +7,19 @@ import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A wrapper to store the assignment of spells to each spell slot
  */
 public class PlayerSpellData implements SessionData {
+    static List<String> fields = new ArrayList<String>() {{
+        add(SpellField.HOT_BAR_ONE.getField());
+        add(SpellField.LEFT_CLICK.getField());
+        add(SpellField.RIGHT_CLICK.getField());
+        add(SpellField.SWAP_HANDS.getField());
+    }};
+
     public static final String DEFAULT_ARCHER = "Barrage";
     public static final String DEFAULT_CLERIC = "Holy Water";
     public static final String DEFAULT_MAGE = "Fireball";
@@ -137,6 +142,10 @@ public class PlayerSpellData implements SessionData {
         return uuid + ":character:" + slot + ":" + SkillTreeData.PATH_LOCATION + ":" + SkillTreeData.SPELLS_LOCATION;
     }
 
+    public static List<String> getFields() {
+        return fields;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -183,6 +192,18 @@ public class PlayerSpellData implements SessionData {
         }};
     }
 
+    @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(PlayerSpellData.getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
+    }
+
     /**
      * Adds the object into session storage in jedis
      *
@@ -195,16 +216,16 @@ public class PlayerSpellData implements SessionData {
         jedis.hmset(key, this.toMap());
         jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
-
+    
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = getDataMapFromJedis(jedis, slot[0]);
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
-        spells.set(SpellField.HOT_BAR_ONE.getField(), this.spellHotbarOne);
-        spells.set(SpellField.LEFT_CLICK.getField(), this.spellLeftClick);
-        spells.set(SpellField.RIGHT_CLICK.getField(), this.spellRightClick);
-        spells.set(SpellField.SWAP_HANDS.getField(), this.spellSwapHands);
-        // character.save();
+        spells.set(SpellField.HOT_BAR_ONE.getField(), fieldsMap.get(SpellField.HOT_BAR_ONE.getField()));
+        spells.set(SpellField.LEFT_CLICK.getField(), fieldsMap.get(SpellField.LEFT_CLICK.getField()));
+        spells.set(SpellField.RIGHT_CLICK.getField(), fieldsMap.get(SpellField.RIGHT_CLICK.getField()));
+        spells.set(SpellField.SWAP_HANDS.getField(), fieldsMap.get(SpellField.SWAP_HANDS.getField()));
         return playerMongoData;
     }
 }
