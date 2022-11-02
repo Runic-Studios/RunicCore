@@ -7,8 +7,8 @@ import com.keenant.tabbed.util.Skins;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.Party;
 import com.runicrealms.runicguilds.api.RunicGuildsAPI;
-import com.runicrealms.runicguilds.guilds.Guild;
-import com.runicrealms.runicguilds.guilds.GuildMember;
+import com.runicrealms.runicguilds.guild.Guild;
+import com.runicrealms.runicguilds.guild.GuildMember;
 import com.runicrealms.runicguilds.util.GuildUtil;
 import net.minecraft.server.v1_16_R3.EntityPlayer;
 import org.bukkit.Bukkit;
@@ -94,9 +94,9 @@ public class TabListManager implements Listener {
                 tab.set(1, 0, new TextTabItem
                         (ChatColor.GOLD + "" + ChatColor.BOLD + "  Guild [" + GuildUtil.getOnlineMembersWithOwner(guild).size() + "]", 0, Skins.getDot(ChatColor.GOLD))); // +1 for owner
                 int j = 0;
-                for (GuildMember guildy : GuildUtil.getOnlineMembersWithOwner(guild)) {
+                for (GuildMember guildMember : GuildUtil.getOnlineMembersWithOwner(guild)) {
                     if (j > 19) break;
-                    Player plMem = Bukkit.getPlayer(guildy.getUUID());
+                    Player plMem = Bukkit.getPlayer(guildMember.getUUID());
                     if (plMem == null) continue;
                     tab.set(1, j + 1, new TextTabItem(plMem.getName(), getPing(plMem), Skins.getPlayer(plMem)));
                     j++;

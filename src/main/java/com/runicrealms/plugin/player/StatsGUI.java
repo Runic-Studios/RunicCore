@@ -80,8 +80,8 @@ public class StatsGUI implements InventoryHolder {
     private void openMenu() {
         this.inventory.clear();
         GUIUtil.fillInventoryBorders(this.inventory);
-        this.inventory.setItem(0, GUIUtil.closeButton());
         this.inventory.setItem(4, statInfoItem());
+        this.inventory.setItem(8, GUIUtil.closeButton());
         for (int i = 0; i < statMenuItems.length; i++) {
             this.inventory.setItem(STAT_ITEM_SLOTS[i], statMenuItems[i]);
         }
