@@ -32,6 +32,7 @@ import java.util.UUID;
 public class PlayerJoinListener implements Listener {
 
     private static final String WORLD_NAME = "Alterra";
+    private static final Location SPAWN_BOX = new Location(Bukkit.getWorld(WORLD_NAME), -2271.5, 2, 2289.5);
     public static final Set<UUID> LOADING_PLAYERS = new HashSet<>();
 
     @EventHandler
@@ -60,7 +61,7 @@ public class PlayerJoinListener implements Listener {
         player.setLevel(0);
         player.setExp(0);
         player.setFoodLevel(20);
-        player.teleport(new Location(Bukkit.getWorld(WORLD_NAME), -2318.5, 2, 1720.5));
+        player.teleport(SPAWN_BOX);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2));
         // build database file synchronously (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
