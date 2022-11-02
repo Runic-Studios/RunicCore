@@ -60,15 +60,12 @@ public class TitleData implements SessionData {
     }
 
     /**
-     * Sets the current in-memory prefix of the player to the specified prefix.
-     * Also adds the prefix to the set (which ignores duplicates), to ensure it is saved as 'unlocked'
+     * Sets the current in-memory prefix of the player to the specified prefix
      *
      * @param prefix to set
      */
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-        if (!prefix.equals(""))
-            this.unlockedTitles.add(prefix); // insurance
     }
 
     public String getSuffix() {
@@ -76,15 +73,12 @@ public class TitleData implements SessionData {
     }
 
     /**
-     * Sets the current in-memory prefix of the player to the specified suffix.
-     * Also adds the suffix to the set (which ignores duplicates), to ensure it is saved as 'unlocked'
+     * Sets the current in-memory prefix of the player to the specified suffix
      *
      * @param suffix to set
      */
     public void setSuffix(String suffix) {
         this.suffix = suffix;
-        if (!suffix.equals(""))
-            this.unlockedTitles.add(suffix); // insurance
     }
 
     public Set<String> getUnlockedTitles() {

@@ -85,8 +85,18 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                     return professionFields.get(CharacterField.PROF_LEVEL.getField());
                 case "prefix":
                     return titleData.getPrefix();
+                case "prefix_formatted":
+                    if (!titleData.getPrefix().equals("")) {
+                        return "[" + titleData.getPrefix() + "] ";
+                    }
+                    return "";
                 case "suffix":
                     return titleData.getSuffix();
+                case "suffix_formatted":
+                    if (!titleData.getSuffix().equals("")) {
+                        return "[" + titleData.getSuffix() + "] ";
+                    }
+                    return "";
                 default:
                     return "";
             }

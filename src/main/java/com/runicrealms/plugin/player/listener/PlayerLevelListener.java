@@ -5,13 +5,14 @@ import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.NametagUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
+import org.bukkit.inventory.meta.FireworkMeta;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -61,6 +62,16 @@ public class PlayerLevelListener implements Listener {
                     ChatColor.GREEN + "Level Up!",
                     ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
         }
+
+        shootFirework(player.getWorld(), player.getEyeLocation());
+    }
+
+    private void shootFirework(World world, Location location) {
+        Firework firework = world.spawn(location, Firework.class);
+        FireworkMeta meta = firework.getFireworkMeta();
+        meta.setPower(0);
+        meta.addEffect(FireworkEffect.builder().with(FireworkEffect.Type.BALL).withColor(Color.GREEN).build());
+        firework.setFireworkMeta(meta);
     }
 
     /**
