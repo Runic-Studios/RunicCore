@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.character.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
@@ -12,7 +13,6 @@ import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.redis.RedisUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
-import com.runicrealms.plugin.utilities.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

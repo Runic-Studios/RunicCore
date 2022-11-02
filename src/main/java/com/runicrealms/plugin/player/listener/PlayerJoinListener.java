@@ -24,10 +24,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
 
     private static final String WORLD_NAME = "Alterra";
+    public static final Set<UUID> LOADING_PLAYERS = new HashSet<>();
 
     @EventHandler
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
@@ -100,17 +105,20 @@ public class PlayerJoinListener implements Listener {
     public void onCharacterLoaded(CharacterLoadedEvent event) {
         event.getPlayer().setInvulnerable(false);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS), 5L);
+                () -> {
+                    event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS);
+                    this.LOADING_PLAYERS.remove(event.getPlayer().getUniqueId());
+                }, 7L);
     }
 
     /**
      * Allows donator ranks to enter a full server
      */
     @EventHandler
-    public void onJoinFullServer(PlayerLoginEvent e) {
-        if (e.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (e.getPlayer().hasPermission("core.full.join")) {
-                e.allow();
+    public void onJoinFullServer(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            if (event.getPlayer().hasPermission("core.full.join")) {
+                event.allow();
             }
         }
     }
@@ -125,6 +133,7 @@ public class PlayerJoinListener implements Listener {
         CharacterData characterData = characterSelectEvent.getCharacterData();
         HealthUtils.setPlayerMaxHealth(player);
         player.setHealthScale(HealthUtils.getHeartAmount());
+        this.LOADING_PLAYERS.add(player.getUniqueId());
         player.setLevel(characterData.getClassInfo().getLevel());
         int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(characterData.getClassInfo().getLevel());
         int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(characterData.getClassInfo().getLevel() + 1);
@@ -148,20 +157,7 @@ public class PlayerJoinListener implements Listener {
      * @param characterData the stored object with values (to be deleted after use)
      */
     private void loadCurrentPlayerHealthAndHunger(Player player, CharacterData characterData) {
-        // set their hp to stored value from last logout
-//        int storedHealth = characterData.getBaseCharacterInfo().getCurrentHp();
-//        // Bukkit.broadcastMessage("stored health is: " + storedHealth);
-//        // update their health
-//        if (storedHealth == 0) {
-//            storedHealth = HealthUtils.getBaseHealth(); // new players or corrupted data
-//        }
         player.setHealth(player.getMaxHealth());
-//        if (storedHealth <= player.getMaxHealth()) {
-//            player.setHealth(storedHealth);
-//        } else {
-//            player.setHealth(player.getMaxHealth());
-//        }
-        // set their last stored hunger
         player.setFoodLevel(characterData.getBaseCharacterInfo().getStoredHunger());
     }
 }

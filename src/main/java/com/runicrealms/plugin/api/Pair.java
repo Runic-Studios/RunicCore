@@ -1,8 +1,10 @@
-package com.runicrealms.plugin.utilities;
+package com.runicrealms.plugin.api;
 
 /**
- * @param <T>
- * @param <U>
+ * A simple implementation of a Pair/Tuple that returns two values
+ *
+ * @param <T> some object T
+ * @param <U> some object U
  */
 public final class Pair<T, U> {
     public final T first;

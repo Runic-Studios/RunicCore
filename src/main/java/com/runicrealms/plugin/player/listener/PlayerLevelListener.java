@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.listener;
 
+import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -53,17 +54,48 @@ public class PlayerLevelListener implements Listener {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 
         // title screen message
-        if (player.getLevel() >= PlayerLevelUtil.getMaxLevel()) {
-            player.sendTitle(
-                    ChatColor.GOLD + "Max Level!",
-                    ChatColor.GOLD + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
-        } else {
-            player.sendTitle(
-                    ChatColor.GREEN + "Level Up!",
-                    ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel, 10, 40, 10);
-        }
+        Pair<String, String> levelTitleMessage = getLevelTitle(player, className, classLevel);
+        player.sendTitle(levelTitleMessage.first, levelTitleMessage.second, 10, 60, 10);
 
-        shootFirework(player.getWorld(), player.getEyeLocation());
+        if (!PlayerJoinListener.LOADING_PLAYERS.contains(player.getUniqueId()))
+            shootFirework(player.getWorld(), player.getEyeLocation());
+    }
+
+    /**
+     * Returns of pair containing title and subtitle to display to player on level up and join
+     *
+     * @param player     who joined or gained a level (levels are restored from data on join)
+     * @param className  of the character's class
+     * @param classLevel of the character
+     * @return a pair that contains the title and subtitle
+     */
+    private Pair<String, String> getLevelTitle(Player player, String className, int classLevel) {
+        if (PlayerJoinListener.LOADING_PLAYERS.contains(player.getUniqueId())) {
+            return Pair.pair
+                    (
+
+                            ChatColor.DARK_GREEN + "Data Loaded!",
+
+                            ChatColor.GREEN + "Welcome " + player.getName()
+                    );
+        }
+        if (player.getLevel() >= PlayerLevelUtil.getMaxLevel()) {
+            return Pair.pair
+                    (
+
+                            ChatColor.GOLD + "Max Level!",
+
+                            ChatColor.GOLD + className + " Level " + ChatColor.WHITE + classLevel
+                    );
+        } else {
+            return Pair.pair
+                    (
+
+                            ChatColor.GREEN + "Level Up!",
+
+                            ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLevel
+                    );
+        }
     }
 
     private void shootFirework(World world, Location location) {

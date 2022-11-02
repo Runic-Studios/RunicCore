@@ -7,6 +7,7 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
@@ -18,7 +19,6 @@ import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
-import com.runicrealms.plugin.utilities.Pair;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -76,10 +76,6 @@ public class DatabaseManager implements Listener {
             FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseUtil.LAST_LOGIN_DATE_FILTER);
             for (Document document : player_data_last_30_days) {
                 playerDocumentMap.put(String.valueOf(document.get("player_uuid")), document);
-            }
-            Bukkit.getLogger().info(playerDocumentMap.size() + " is the size of the map!");
-            for (String uuid : playerDocumentMap.keySet()) {
-                Bukkit.getLogger().info(uuid + " is uuid of document in map");
             }
             guildDocuments = playersDB.getCollection("guild_data");
             shopDocuments = playersDB.getCollection("shop_data");

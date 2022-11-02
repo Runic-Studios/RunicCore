@@ -20,7 +20,6 @@ import com.runicrealms.plugin.spellapi.SpellUseListener;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.utilities.Pair;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
