@@ -55,7 +55,7 @@ public class PlayerLevelListener implements Listener {
 
         // title screen message
         Pair<String, String> levelTitleMessage = getLevelTitle(player, className, classLevel);
-        player.sendTitle(levelTitleMessage.first, levelTitleMessage.second, 10, 60, 10);
+        player.sendTitle(levelTitleMessage.first, levelTitleMessage.second, 10, 50, 10);
 
         if (!PlayerJoinListener.LOADING_PLAYERS.contains(player.getUniqueId()))
             shootFirework(player.getWorld(), player.getEyeLocation());
