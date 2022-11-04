@@ -461,6 +461,7 @@ public class RunicItemShopFactory {
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sebath's Cave Shop", Collections.singletonList(32));
     }
 
+    // todo: needs to accept multiple keys
     public Set<RunicShopGeneric> getCaveGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(515, "SilverKey", 1, DungeonLocation.SEBATHS_CAVE, 1);
@@ -522,7 +523,7 @@ public class RunicItemShopFactory {
     public RunicShopGeneric getCavernShop() {
         RunicDungeonShop caveShop = new RunicDungeonShop
                 (
-                        2,
+                        1,
                         0,
                         DungeonLocation.CRYSTAL_CAVERN.getCurrencyTemplateId(),
                         null,
@@ -533,8 +534,8 @@ public class RunicItemShopFactory {
     public RunicShopGeneric getKeepShop() {
         RunicDungeonShop caveShop = new RunicDungeonShop
                 (
-                        5,
-                        3,
+                        2,
+                        2,
                         DungeonLocation.JORUNDRS_KEEP.getCurrencyTemplateId(),
                         new String[]{"runeforged-piercer", "runeforged-crusher", "runeforged-scepter", "lost-runeblade", "jorundrs-wrath"},
                         "jorundr-keep");
@@ -544,8 +545,8 @@ public class RunicItemShopFactory {
     public RunicShopGeneric getLibraryShop() {
         RunicDungeonShop caveShop = new RunicDungeonShop
                 (
-                        5,
-                        3,
+                        2,
+                        2,
                         DungeonLocation.SUNKEN_LIBRARY.getCurrencyTemplateId(),
                         new String[]{"skeletal-shortbow", "bonecleaver", "ancient-arcane-rod", "wolfspine", "deathbringer"},
                         "sunken-library");
@@ -555,8 +556,8 @@ public class RunicItemShopFactory {
     public RunicShopGeneric getCryptsShop() {
         RunicDungeonShop caveShop = new RunicDungeonShop
                 (
-                        5,
-                        3,
+                        2,
+                        2,
                         DungeonLocation.CRYPTS_OF_DERA.getCurrencyTemplateId(),
                         new String[]{"triumph", "gilded-impaler", "prophets-cane", "nightshade", "sandfury"},
                         "crypts");
@@ -566,8 +567,8 @@ public class RunicItemShopFactory {
     public RunicShopGeneric getFortressShop() {
         RunicDungeonShop caveShop = new RunicDungeonShop
                 (
-                        5,
-                        3,
+                        2,
+                        2,
                         DungeonLocation.FROZEN_FORTRESS.getCurrencyTemplateId(),
                         new String[]{"winters-howl", "chillrend", "permafrost", "blade-of-the-betrayer", "frosts-edge"},
                         "frozen-fortress");
