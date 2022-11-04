@@ -93,8 +93,6 @@ public class PlayerHungerManager implements Listener {
         if (!isConsumable) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "I can't eat that!");
-        } else {
-            Bukkit.broadcastMessage(event.getPlayer().getSaturation() + " is saturation");
         }
     }
 }
