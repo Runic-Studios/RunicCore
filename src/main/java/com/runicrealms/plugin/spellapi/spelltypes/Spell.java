@@ -2,9 +2,9 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.api.event.AllyVerifyEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import com.runicrealms.plugin.model.OutlawData;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -84,36 +83,17 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     /**
-     * Method to check for valid enemy before applying healing calculation. True if enemy can be healed.
+     * Method to check for valid enemy before applying healing / buff spell calculation. True if enemy can be healed.
      *
      * @param caster player who used spell
-     * @param ally   player who was hit by spell
+     * @param ally   entity who was hit by spell
      * @return whether target is valid
      */
     @Override
     public boolean isValidAlly(Player caster, Entity ally) {
-
-        // target must be a player
-        if (!(ally instanceof Player)) return false;
-        Player playerAlly = (Player) ally;
-
-        // ignore NPCs
-        if (playerAlly.hasMetadata("NPC")) return false;
-        // probably unnecessary, but insurance
-        if (playerAlly instanceof ArmorStand) return false;
-
-        boolean casterIsOutlaw = OutlawData.getOutlawDataMap().get(caster.getUniqueId());
-        boolean allyIsOutlaw = OutlawData.getOutlawDataMap().get(ally.getUniqueId());
-
-        // If either player is an outlaw
-        if (casterIsOutlaw || allyIsOutlaw)
-            // Does the caster have a party?
-            return RunicCore.getPartyManager().getPlayerParty(caster) != null
-                    // Does that party contain the outlaw ally?
-                    && RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
-        // skip the target player if the caster has a party and the target is NOT in it
-        return RunicCore.getPartyManager().getPlayerParty(caster) == null
-                || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
+        AllyVerifyEvent allyVerifyEvent = new AllyVerifyEvent(caster, ally);
+        Bukkit.getServer().getPluginManager().callEvent(allyVerifyEvent);
+        return !allyVerifyEvent.isCancelled();
     }
 
     @Override
@@ -130,9 +110,9 @@ public abstract class Spell implements ISpell, Listener {
      */
     @Override
     public boolean isValidEnemy(Player caster, Entity victim) {
-        EnemyVerifyEvent event = new EnemyVerifyEvent(caster, victim);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        return !event.isCancelled();
+        EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(caster, victim);
+        Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
+        return !enemyVerifyEvent.isCancelled();
     }
 
     @Override

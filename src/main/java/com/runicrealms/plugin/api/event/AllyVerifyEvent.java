@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.events;
+package com.runicrealms.plugin.api.event;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -7,18 +7,22 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This custom event is called when a spell attempts to activate the spell logic on an entity.
- * Used to prevent non-pvpers from taking damage/effects
+ * This custom event is called when a player attempts to heal another player
+ * Used to prevent healing enemy outlaws, duel targets, etc.
  */
-public class EnemyVerifyEvent extends Event implements Cancellable {
+public class AllyVerifyEvent extends Event implements Cancellable {
 
     private final Player caster;
-    private final Entity victim;
+    private final Entity recipient;
     private boolean isCancelled;
 
-    public EnemyVerifyEvent(Player damager, Entity victim) {
-        this.caster = damager;
-        this.victim = victim;
+    /**
+     * @param caster    player who cast heal spell
+     * @param recipient entity that would receive heal
+     */
+    public AllyVerifyEvent(Player caster, Entity recipient) {
+        this.caster = caster;
+        this.recipient = recipient;
         this.isCancelled = false;
     }
 
@@ -26,8 +30,8 @@ public class EnemyVerifyEvent extends Event implements Cancellable {
         return this.caster;
     }
 
-    public Entity getVictim() {
-        return this.victim;
+    public Entity getRecipient() {
+        return this.recipient;
     }
 
     @Override
