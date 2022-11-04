@@ -37,7 +37,7 @@ public class HolyNova extends Spell implements MagicDamageSpell, HealingSpell {
                         "power, conjuring rings of light " +
                         "that deal (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to enemies " +
-                        "and push them back! The rings restore✦ " +
+                        "and push them back! The rings restore✸ " +
                         "(" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) health to allies!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);

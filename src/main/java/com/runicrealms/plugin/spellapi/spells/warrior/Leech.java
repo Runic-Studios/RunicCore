@@ -24,7 +24,7 @@ public class Leech extends Spell implements HealingSpell {
     public Leech() {
         super("Leech",
                 "For " + BUFF_DURATION + " seconds, your weapon⚔ " +
-                        "attacks restore✦ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
+                        "attacks restore✸ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) of your health!",
                 ChatColor.WHITE, ClassEnum.WARRIOR, 20, 35);
     }

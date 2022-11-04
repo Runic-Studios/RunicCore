@@ -27,27 +27,27 @@ public class Manawell extends Spell {
     }
 
     @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-
-        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
 
-        e.getCaster().getWorld().playSound(e.getCaster().getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
-        e.getCaster().playSound(e.getCaster().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
-        if (RunicCore.getPartyManager().getPlayerParty(e.getCaster()) == null) {
-            restoreMana(e.getCaster(), e.getSpell().getManaCost());
+        event.getCaster().getWorld().playSound(event.getCaster().getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
+        event.getCaster().playSound(event.getCaster().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
+        if (RunicCore.getPartyManager().getPlayerParty(event.getCaster()) == null) {
+            restoreMana(event.getCaster(), event.getSpell().getManaCost());
             return;
         }
 
-        Set<Player> allies = RunicCore.getPartyManager().getPlayerParty(e.getCaster()).getMembersWithLeader();
+        Set<Player> allies = RunicCore.getPartyManager().getPlayerParty(event.getCaster()).getMembersWithLeader();
         for (Player ally : allies) {
-            if (isValidAlly(e.getCaster(), ally)) {
-                if (!e.getCaster().getWorld().equals(ally.getWorld())) continue;
-                if (e.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS * RADIUS) continue;
-                restoreMana(ally, e.getSpell().getManaCost());
+            if (isValidAlly(event.getCaster(), ally)) {
+                if (!event.getCaster().getWorld().equals(ally.getWorld())) continue;
+                if (event.getCaster().getLocation().distanceSquared(ally.getLocation()) > RADIUS * RADIUS) continue;
+                restoreMana(ally, event.getSpell().getManaCost());
             }
         }
     }

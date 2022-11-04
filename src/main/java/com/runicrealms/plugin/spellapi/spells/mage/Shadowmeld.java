@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -46,13 +47,14 @@ public class Shadowmeld extends Spell {
         e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
-    @EventHandler
-    public void onBlinkCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
-        if (!(e.getSpell() instanceof Blink)) return;
-        doomers.add(e.getCaster().getUniqueId());
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlinkCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof Blink)) return;
+        doomers.add(event.getCaster().getUniqueId());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-                () -> doomers.remove(e.getCaster().getUniqueId()), DURATION * 20L);
+                () -> doomers.remove(event.getCaster().getUniqueId()), DURATION * 20L);
     }
 
     public static int getDuration() {

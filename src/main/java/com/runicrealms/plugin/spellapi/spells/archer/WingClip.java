@@ -31,20 +31,21 @@ public class WingClip extends Spell {
     }
 
     @EventHandler
-    public void onGrappleCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
-        if (!(e.getSpell() instanceof Grapple)) return;
-        wingClippers.add(e.getCaster().getUniqueId());
+    public void onGrappleCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof Grapple)) return;
+        wingClippers.add(event.getCaster().getUniqueId());
     }
 
     @EventHandler
-    public void onRangedHit(PhysicalDamageEvent e) {
-        if (!e.isRanged()) return;
-        if (!e.isBasicAttack()) return;
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        if (!(wingClippers.contains(e.getPlayer().getUniqueId()))) return;
-        wingClippers.remove(e.getPlayer().getUniqueId());
-        Entity en = e.getVictim();
+    public void onRangedHit(PhysicalDamageEvent event) {
+        if (!event.isRanged()) return;
+        if (!event.isBasicAttack()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!(wingClippers.contains(event.getPlayer().getUniqueId()))) return;
+        wingClippers.remove(event.getPlayer().getUniqueId());
+        Entity en = event.getVictim();
         addStatusEffect(en, EffectEnum.ROOT, DURATION);
         en.getWorld().spawnParticle(Particle.REDSTONE, en.getLocation(), 15, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.fromRGB(210, 180, 140), 3));

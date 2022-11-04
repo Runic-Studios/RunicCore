@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 public class IcyAffinity extends Spell {
 
@@ -15,19 +16,20 @@ public class IcyAffinity extends Spell {
 
     public IcyAffinity() {
         super("Icy Affinity",
-                "Your &aIceblock &7spell now restores✦ " +
+                "Your &aIceblock &7spell now restores✸ " +
                         (int) (PERCENT * 100) + "% of your health!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 
-    @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
-        if (!(e.getSpell() instanceof IceBlock)) return;
-        Player pl = e.getCaster();
-        HealUtil.healPlayer((int) (pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT),
-                pl, pl, false, this);
+    @EventHandler(priority = EventPriority.HIGH) // toward the end
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof IceBlock)) return;
+        Player player = event.getCaster();
+        HealUtil.healPlayer((int) (player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT),
+                player, player, false, this);
     }
 }
 

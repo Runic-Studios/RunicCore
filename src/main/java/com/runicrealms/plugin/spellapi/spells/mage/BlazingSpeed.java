@@ -19,10 +19,11 @@ public class BlazingSpeed extends Spell {
     }
 
     @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
-        if (!(e.getSpell() instanceof FireAura)) return;
-        e.getCaster().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, FireAura.getDuration() * 20, 1));
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof FireAura)) return;
+        event.getCaster().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, FireAura.getDuration() * 20, 1));
     }
 }
 

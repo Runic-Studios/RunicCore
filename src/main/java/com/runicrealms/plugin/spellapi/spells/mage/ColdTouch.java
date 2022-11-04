@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 /**
  * Logic for hit found in Fireball.
@@ -22,15 +23,16 @@ public class ColdTouch extends Spell {
         this.setIsPassive(true);
     }
 
-    @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster().getUniqueId(), this.getName())) return;
-        if (!(e.getSpell() instanceof Fireball)) return;
-        e.setCancelled(true);
-        SpellCastEvent spellCastEvent = new SpellCastEvent(e.getCaster(), RunicCore.getSpellManager().getSpellByName("Frostbolt"));
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof Fireball)) return;
+        event.setCancelled(true);
+        SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellManager().getSpellByName("Frostbolt"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())
-            spellCastEvent.getSpellCasted().execute(e.getCaster(), SpellItemType.ARTIFACT);
+            spellCastEvent.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
     }
 }
 

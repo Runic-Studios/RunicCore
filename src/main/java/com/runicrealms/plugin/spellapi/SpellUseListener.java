@@ -24,16 +24,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 public class SpellUseListener implements Listener {
 
     private static final int SPELL_TIMEOUT = 5;
-    private static final int GLOBAL_COOLDOWN_TICKS = 5; // 0.25s
+    // private static final int GLOBAL_COOLDOWN_TICKS = 5; // 0.25s
     private static final String ACTIVATE_RIGHT = "R";
     private static final String ACTIVATE_LEFT = "L";
-    private static final HashSet<UUID> CAST_MENU_CASTERS = new HashSet<>();
+    // private static final HashSet<UUID> CAST_MENU_CASTERS = new HashSet<>();
     private static final HashMap<UUID, BukkitTask> casters = new HashMap<>();
 
     enum ClickType {
@@ -43,7 +42,7 @@ public class SpellUseListener implements Listener {
 
     @EventHandler
     public void onWeaponInteract(PlayerInteractEvent e) {
-        if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
+        // if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         WeaponType heldItemType = WeaponType.matchType(e.getPlayer().getInventory().getItemInMainHand());
@@ -82,8 +81,8 @@ public class SpellUseListener implements Listener {
         } else {
             castSpell(player, whichSpellToCast, RunicCoreAPI.getPlayerClass(player).equalsIgnoreCase("archer"));
         }
-        CAST_MENU_CASTERS.add(player.getUniqueId());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> CAST_MENU_CASTERS.remove(player.getUniqueId()), GLOBAL_COOLDOWN_TICKS);
+        // CAST_MENU_CASTERS.add(player.getUniqueId());
+        // Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> CAST_MENU_CASTERS.remove(player.getUniqueId()), GLOBAL_COOLDOWN_TICKS);
     }
 
     /**
@@ -110,9 +109,9 @@ public class SpellUseListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onSpellCast(SpellCastEvent e) {
-        if (!e.isCancelled() && e.willExecute())
-            e.getSpellCasted().execute(e.getCaster(), SpellItemType.ARTIFACT);
+    public void onSpellCast(SpellCastEvent event) {
+        if (!event.isCancelled() && event.willExecute())
+            event.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
     }
 
     @EventHandler

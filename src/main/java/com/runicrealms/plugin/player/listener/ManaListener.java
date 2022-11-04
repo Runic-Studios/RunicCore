@@ -4,10 +4,14 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.runicitems.Stat;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -19,6 +23,17 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Updates player mana on login and upon armor equip
  */
 public class ManaListener implements Listener {
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onSpellCastEvent(SpellCastEvent event) {
+        int manaCost = event.getSpell().getManaCost();
+        int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(event.getCaster().getUniqueId());
+        if (currentMana < manaCost) {
+            event.setCancelled(true);
+            event.getCaster().playSound(event.getCaster().getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.5f);
+            event.getCaster().sendMessage(ChatColor.RED + "You don't have enough mana to cast " + event.getSpell().getName() + "!");
+        }
+    }
 
     @EventHandler
     public void onJoin(CharacterSelectEvent e) {
