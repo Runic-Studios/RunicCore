@@ -232,13 +232,13 @@ public class ItemScrapper implements RunicShop {
          */
         private void setupInventory() {
             this.inventory.clear();
-            this.inventory.setItem(0, GUIUtil.backButton());
+            this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
             for (int i = 0; i < SHOP_SIZE; i++) {
                 if (SCRAPPER_SLOTS.contains(i)) continue; // skip scrapper slots
-                this.inventory.setItem(i, GUIUtil.borderItem());
+                this.inventory.setItem(i, GUIUtil.BORDER_ITEM);
             }
             this.inventory.setItem(16, checkMark());
-            this.inventory.setItem(17, GUIUtil.closeButton());
+            this.inventory.setItem(17, GUIUtil.CLOSE_BUTTON);
         }
     }
 

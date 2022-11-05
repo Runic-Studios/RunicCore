@@ -54,7 +54,7 @@ public class SpellEditorGUI implements InventoryHolder {
      */
     private void openMenu() {
         this.inventory.clear();
-        this.inventory.setItem(0, GUIUtil.backButton());
+        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(31, ancientRunestone());
         this.inventory.setItem(SPELL_ONE_INDEX, spellButton("Hotbar 1", 0));
         this.inventory.setItem(SPELL_TWO_INDEX, spellButton("Left-click", SLOT_REQ_2));

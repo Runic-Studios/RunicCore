@@ -44,7 +44,7 @@ public class SubClassGUI implements InventoryHolder {
      */
     private void setupMenu() {
         this.inventory.clear();
-        this.inventory.setItem(0, GUIUtil.backButton());
+        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(11, subClassItem(SkillTreePosition.FIRST));
         this.inventory.setItem(13, subClassItem(SkillTreePosition.SECOND));
         this.inventory.setItem(15, subClassItem(SkillTreePosition.THIRD));

@@ -49,7 +49,7 @@ public class ScrapperListener implements Listener {
             e.setCancelled(true);
         }
 
-        if (material == GUIUtil.closeButton().getType())
+        if (material == GUIUtil.CLOSE_BUTTON.getType())
             player.closeInventory();
         else if (material == ItemScrapper.checkMark().getType())
             itemScrapper.scrapItems(player);

@@ -44,7 +44,7 @@ public class SubClassGUIListener implements Listener {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
 
-        if (material == GUIUtil.backButton().getType())
+        if (material == GUIUtil.BACK_BUTTON.getType())
             player.openInventory(new RuneGUI(player).getInventory());
         else if (e.getRawSlot() == 11) // subclass 1
             player.openInventory(RunicCoreAPI.skillTreeGUI(player, SkillTreePosition.FIRST).getInventory());

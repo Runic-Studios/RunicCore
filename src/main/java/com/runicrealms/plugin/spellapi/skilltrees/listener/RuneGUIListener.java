@@ -46,7 +46,7 @@ public class RuneGUIListener implements Listener {
 
         if (material == runeGUI.skillTreeButton().getType())
             player.openInventory(new SubClassGUI(player).getInventory());
-        else if (material == RuneGUI.spellEditorButton().getType())
+        else if (material == RuneGUI.SPELL_EDITOR_BUTTON.getType())
             // prevent using the spell editor in combat
             if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId()))
                 player.sendMessage(ChatColor.RED + "You can't use that in combat!");

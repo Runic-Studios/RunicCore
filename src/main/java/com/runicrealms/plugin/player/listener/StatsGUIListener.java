@@ -44,7 +44,7 @@ public class StatsGUIListener implements Listener {
         Material material = item.getType();
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         e.setCancelled(true);
-        if (material == GUIUtil.closeButton().getType())
+        if (material == GUIUtil.CLOSE_BUTTON.getType())
             e.getWhoClicked().closeInventory();
     }
 }

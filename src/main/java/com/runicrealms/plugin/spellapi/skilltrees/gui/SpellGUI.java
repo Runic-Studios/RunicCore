@@ -48,7 +48,7 @@ public class SpellGUI implements InventoryHolder {
      */
     private void openMenu() {
         this.inventory.clear();
-        this.inventory.setItem(0, GUIUtil.backButton());
+        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(9, SkillTreeGUI.buildPerkItem(determineDefaultSpellPerk(),
                 false, ChatColor.LIGHT_PURPLE + "» Click to activate"));
         int i = 10;

@@ -254,7 +254,7 @@ public class CharacterGuiManager implements Listener {
         }
         //set bottom row
         for (int i = 18; i < 27; i++) {
-            inventory.setItem(i, GUIUtil.borderItem());
+            inventory.setItem(i, GUIUtil.BORDER_ITEM);
         }
         //set exit button
         inventory.setItem(22, CharacterSelectUtil.EXIT_GAME_ITEM);

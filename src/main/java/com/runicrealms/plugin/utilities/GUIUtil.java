@@ -14,33 +14,38 @@ import java.util.List;
 
 public class GUIUtil {
 
-    public static ItemStack backButton() {
-        ItemStack backButton = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        ItemMeta meta = backButton.getItemMeta();
-        if (meta == null) return backButton;
-        meta.setDisplayName(ChatColor.RED + "Return");
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Return to the previous menu"));
-        backButton.setItemMeta(meta);
-        return backButton;
-    }
+    public static final ItemStack BACK_BUTTON;
+    public static final ItemStack BORDER_ITEM;
+    public static final ItemStack CLOSE_BUTTON;
+    public static final ItemStack FORWARD_BUTTON;
 
-    public static ItemStack borderItem() {
-        ItemStack borderItem = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-        ItemMeta meta = borderItem.getItemMeta();
-        if (meta == null) return borderItem;
-        meta.setDisplayName(ChatColor.GRAY + "");
-        borderItem.setItemMeta(meta);
-        return borderItem;
-    }
+    static {
+        BACK_BUTTON = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+        ItemMeta backButtonMeta = BACK_BUTTON.getItemMeta();
+        assert backButtonMeta != null;
+        backButtonMeta.setDisplayName(ChatColor.RED + "Return");
+        backButtonMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Return to the previous menu"));
+        BACK_BUTTON.setItemMeta(backButtonMeta);
 
-    public static ItemStack closeButton() {
-        ItemStack closeButton = new ItemStack(Material.BARRIER);
-        ItemMeta meta = closeButton.getItemMeta();
-        if (meta == null) return closeButton;
-        meta.setDisplayName(ChatColor.RED + "Close");
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Close the menu"));
-        closeButton.setItemMeta(meta);
-        return closeButton;
+        BORDER_ITEM = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta borderItemMeta = BORDER_ITEM.getItemMeta();
+        assert borderItemMeta != null;
+        borderItemMeta.setDisplayName(ChatColor.GRAY + "");
+        BORDER_ITEM.setItemMeta(borderItemMeta);
+
+        CLOSE_BUTTON = new ItemStack(Material.BARRIER);
+        ItemMeta closeButtonMeta = CLOSE_BUTTON.getItemMeta();
+        assert closeButtonMeta != null;
+        closeButtonMeta.setDisplayName(ChatColor.RED + "Close");
+        closeButtonMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Close the menu"));
+        CLOSE_BUTTON.setItemMeta(closeButtonMeta);
+
+        FORWARD_BUTTON = new ItemStack(Material.BROWN_STAINED_GLASS_PANE);
+        ItemMeta forwardButtonMeta = FORWARD_BUTTON.getItemMeta();
+        assert forwardButtonMeta != null;
+        forwardButtonMeta.setDisplayName(ChatColor.WHITE + "Next Page");
+        forwardButtonMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Visit the next page"));
+        FORWARD_BUTTON.setItemMeta(forwardButtonMeta);
     }
 
     // creates the visual menu w/ String
@@ -150,12 +155,14 @@ public class GUIUtil {
         return item;
     }
 
+    /**
+     * @param inventory
+     */
     public static void fillInventoryBorders(Inventory inventory) {
-        ItemStack background = borderItem();
         int[] slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48,
                 49, 50, 51, 52, 53};
         for (int slot : slots) {
-            inventory.setItem(slot, background);
+            inventory.setItem(slot, BORDER_ITEM);
         }
     }
 }
