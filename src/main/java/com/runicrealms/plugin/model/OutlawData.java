@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.model;
 
+import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import redis.clients.jedis.Jedis;
@@ -95,7 +96,8 @@ public class OutlawData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(MongoData mongoData, int... slot) {
+        PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("outlaw.enabled", this.outlawEnabled);
         character.set("outlaw.rating", this.outlawRating);

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.database.PlayerMongoData;
+import com.runicrealms.plugin.database.MongoData;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
@@ -48,8 +48,8 @@ public interface SessionDataNested {
     /**
      * Ensure that all session data has a method to save the data in mongo
      *
-     * @param playerMongoData the mongo data of the player
-     * @param slot            an optional argument to represent the character slot (for alt-specific data)
+     * @param mongoData the mongo data of the player or guild
+     * @param slot      an optional argument to represent the character slot (for alt-specific data)
      */
-    PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot);
+    MongoData writeToMongo(MongoData mongoData, int... slot);
 }

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
@@ -219,7 +220,8 @@ public class PlayerSpellData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public MongoData writeToMongo(MongoData mongoData, int... slot) {
+        PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
         spells.set(SpellField.HOT_BAR_ONE.getField(), this.spellHotbarOne);

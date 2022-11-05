@@ -3,6 +3,7 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.SubClass;
+import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
@@ -341,8 +342,9 @@ public class SkillTreeData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public MongoData writeToMongo(MongoData mongoData, int... slot) {
         try {
+            PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
             PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
             PlayerMongoDataSection skillTrees = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + this.position.getValue());
             for (Perk perk : this.perks) {
@@ -353,7 +355,7 @@ public class SkillTreeData implements SessionData {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving skill tree data to mongo!");
             e.printStackTrace();
         }
-        return playerMongoData;
+        return mongoData;
     }
 
 }

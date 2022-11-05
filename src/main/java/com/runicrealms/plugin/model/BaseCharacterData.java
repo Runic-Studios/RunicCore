@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.database.util.DatabaseUtil;
@@ -140,7 +141,8 @@ public class BaseCharacterData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public MongoData writeToMongo(MongoData mongoData, int... slot) {
+        PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("currentHP", this.currentHp);
         character.set("storedHunger", this.storedHunger);

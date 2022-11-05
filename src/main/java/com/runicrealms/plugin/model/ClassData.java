@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import redis.clients.jedis.Jedis;
@@ -120,7 +121,8 @@ public class ClassData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public PlayerMongoData writeToMongo(MongoData mongoData, int... slot) {
+        PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("class.name", this.classType.getName());
         character.set("class.level", this.level);

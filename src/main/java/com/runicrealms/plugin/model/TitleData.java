@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
 import com.runicrealms.plugin.redis.RedisUtil;
@@ -156,12 +157,12 @@ public class TitleData implements SessionData {
     }
 
     @Override
-    public PlayerMongoData writeToMongo(PlayerMongoData playerMongoData, int... slot) {
+    public MongoData writeToMongo(MongoData mongoData, int... slot) {
         try {
-            playerMongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
-            playerMongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
-            playerMongoData.remove("title." + DATA_SECTION_UNLOCKED_TITLES);
-            PlayerMongoDataSection titlesSection = (PlayerMongoDataSection) playerMongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
+            mongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
+            mongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
+            mongoData.remove("title." + DATA_SECTION_UNLOCKED_TITLES);
+            PlayerMongoDataSection titlesSection = (PlayerMongoDataSection) mongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
             for (String title : this.unlockedTitles) {
                 titlesSection.set(title, "true");
             }
@@ -169,6 +170,6 @@ public class TitleData implements SessionData {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving title data to mongo!");
             e.printStackTrace();
         }
-        return playerMongoData;
+        return mongoData;
     }
 }
