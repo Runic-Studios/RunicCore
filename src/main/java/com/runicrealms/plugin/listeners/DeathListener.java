@@ -13,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -22,10 +23,11 @@ import org.bukkit.scoreboard.Score;
 
 public class DeathListener implements Listener {
 
-    @EventHandler
-    public void onRunicDeath(RunicDeathEvent e) {
+    @EventHandler(priority = EventPriority.HIGHEST) // last
+    public void onRunicDeath(RunicDeathEvent event) {
 
-        Player victim = e.getVictim();
+        if (event.isCancelled()) return;
+        Player victim = event.getVictim();
 
         // broadcast the death message
         DamageListener.broadcastDeathMessage(victim);

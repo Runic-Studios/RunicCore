@@ -152,7 +152,7 @@ public class CharacterGuiManager implements Listener {
                 RedisUtil.removeAllFromRedis(jedis, parentKey); // removes all sub-keys
                 PlayerMongoData mongoData = new PlayerMongoData(player.getUniqueId().toString());
                 mongoData.remove("character." + deletingCharacters.get(player.getUniqueId()));
-                // mongoData.save();
+                mongoData.save();
                 RunicCoreAPI.getPlayerData(player.getUniqueId()).removeCharacter(deletingCharacters.get(player.getUniqueId()));
                 deletingCharacters.remove(player.getUniqueId());
                 openSelectGui(player);
