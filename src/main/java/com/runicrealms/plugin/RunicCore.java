@@ -5,6 +5,7 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
+import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
 import com.runicrealms.plugin.commands.player.*;
@@ -66,7 +67,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PartyManager partyManager;
     private static ScoreboardHandler scoreboardHandler;
     private static SpellManager spellManager;
-    private static TabListManager tabListManager;
+    private static TabAPI tabAPI;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
@@ -109,8 +110,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         return spellManager;
     }
 
-    public static TabListManager getTabListManager() {
-        return tabListManager;
+    public static TabAPI getTabAPI() {
+        return tabAPI;
     }
 
     public static MobTagger getMobTagger() {
@@ -165,6 +166,45 @@ public class RunicCore extends JavaPlugin implements Listener {
         return BASE_OUTLAW_RATING;
     }
 
+    private void loadConfig() {
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
+    public void onCoreSaveComplete(MongoSaveEvent event) {
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
+            playerMongoData.save();
+        }
+        event.markPluginSaved("core");
+    }
+
+    /*
+    Prevent memory leaks
+     */
+    @Override
+    public void onDisable() {
+        combatManager = null;
+        instance = null;
+        lootChestManager = null;
+        regenManager = null;
+        partyManager = null;
+        scoreboardHandler = null;
+        spellManager = null;
+        tabAPI = null;
+        mobTagger = null;
+        bossTagger = null;
+        databaseManager = null;
+        partyChannel = null;
+        skillTreeManager = null;
+        statManager = null;
+        runicShopManager = null;
+        playerHungerManager = null;
+        redisManager = null;
+        titleManager = null;
+    }
+
     public void onEnable() {
 
         // Load config defaults
@@ -178,7 +218,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         partyManager = new PartyManager();
         scoreboardHandler = new ScoreboardHandler();
         spellManager = new SpellManager();
-        tabListManager = new TabListManager(this);
+        tabAPI = new TabListManager(this);
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
@@ -232,31 +272,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         }
     }
 
-    /*
-    Prevent memory leaks
-     */
-    @Override
-    public void onDisable() {
-        combatManager = null;
-        instance = null;
-        lootChestManager = null;
-        regenManager = null;
-        partyManager = null;
-        scoreboardHandler = null;
-        spellManager = null;
-        tabListManager = null;
-        mobTagger = null;
-        bossTagger = null;
-        databaseManager = null;
-        partyChannel = null;
-        skillTreeManager = null;
-        statManager = null;
-        runicShopManager = null;
-        playerHungerManager = null;
-        redisManager = null;
-        titleManager = null;
-    }
-
     @EventHandler
     public void onPreShutdownEvent(PreShutdownEvent event) {
         try (Jedis jedis = getRedisManager().getJedisResource()) {
@@ -265,18 +280,22 @@ public class RunicCore extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
-    public void onCoreSaveComplete(MongoSaveEvent event) {
-        for (UUID uuid : event.getPlayersToSave().keySet()) {
-            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
-            playerMongoData.save();
+    private void registerACFCommands() {
+        if (commandManager == null) {
+            Bukkit.getLogger().info(ChatColor.DARK_RED + "ERROR: FAILED TO INITIALIZE ACF COMMANDS");
+            return;
         }
-        event.markPluginSaved("core");
-    }
-
-    private void loadConfig() {
-        getConfig().options().copyDefaults(true);
-        saveConfig();
+        commandManager.registerCommand(new CheckExpCMD());
+        commandManager.registerCommand(new ManaCMD());
+        commandManager.registerCommand(new RunicGiveCMD());
+        commandManager.registerCommand(new SetCMD());
+        commandManager.registerCommand(new TravelCMD());
+        commandManager.registerCommand(new VanishCMD());
+        commandManager.registerCommand(new ResetTreeCMD());
+        commandManager.registerCommand(new PartyCommand());
+        commandManager.registerCommand(new RunicTeleportCMD());
+        commandManager.registerCommand(new RunicBossCMD());
+        commandManager.registerCommand(new HelpCMD());
     }
 
     private void registerEvents() {
@@ -344,24 +363,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ServerListPingListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
-    }
-
-    private void registerACFCommands() {
-        if (commandManager == null) {
-            Bukkit.getLogger().info(ChatColor.DARK_RED + "ERROR: FAILED TO INITIALIZE ACF COMMANDS");
-            return;
-        }
-        commandManager.registerCommand(new CheckExpCMD());
-        commandManager.registerCommand(new ManaCMD());
-        commandManager.registerCommand(new RunicGiveCMD());
-        commandManager.registerCommand(new SetCMD());
-        commandManager.registerCommand(new TravelCMD());
-        commandManager.registerCommand(new VanishCMD());
-        commandManager.registerCommand(new ResetTreeCMD());
-        commandManager.registerCommand(new PartyCommand());
-        commandManager.registerCommand(new RunicTeleportCMD());
-        commandManager.registerCommand(new RunicBossCMD());
-        commandManager.registerCommand(new HelpCMD());
     }
 
     private void registerOldStyleCommands() {

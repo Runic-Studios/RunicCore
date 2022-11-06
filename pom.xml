@@ -218,14 +218,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/../lib/RunicChat-1.16.5.jar</systemPath>
         </dependency>
-        <!-- RunicGuilds -->
-        <dependency>
-            <groupId>com.runicrealms.plugin</groupId>
-            <artifactId>RunicGuilds</artifactId>
-            <version>1.16.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/RunicGuilds-1.16.5.jar</systemPath>
-        </dependency>
         <!-- RunicItems -->
         <dependency>
             <groupId>com.runicrealms.runicitems</groupId>

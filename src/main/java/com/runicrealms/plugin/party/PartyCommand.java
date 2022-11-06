@@ -55,13 +55,6 @@ public class PartyCommand extends BaseCommand {
         });
     }
 
-    @Default
-    @CatchUnknown
-    @Subcommand("help|h")
-    public void onCommandHelp(Player player) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list"));
-    }
-
     @Subcommand("create|c")
     @Conditions("is-player")
     public void onCommandCreate(Player player) {
@@ -74,7 +67,7 @@ public class PartyCommand extends BaseCommand {
         RunicCore.getPartyManager().updatePlayerParty(player, party);
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou created a party! Use &2/party invite &ato invite players"));
-        RunicCore.getTabListManager().setupTab(player);
+        RunicCore.getTabAPI().setupTab(player);
     }
 
     @Subcommand("disband|d|delete")
@@ -92,11 +85,18 @@ public class PartyCommand extends BaseCommand {
         party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
         for (Player member : party.getMembersWithLeader()) {
             RunicCore.getPartyManager().updatePlayerParty(member, null);
-            RunicCore.getTabListManager().setupTab(member);
+            RunicCore.getTabAPI().setupTab(member);
         }
         PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
         Bukkit.getPluginManager().callEvent(partyLeaveEvent);
         RunicCore.getPartyManager().getParties().remove(party);
+    }
+
+    @Default
+    @CatchUnknown
+    @Subcommand("help|h")
+    public void onCommandHelp(Player player) {
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list"));
     }
 
     @Subcommand("invite|add|i|a")
@@ -209,9 +209,9 @@ public class PartyCommand extends BaseCommand {
         //party.getMembers().remove(kicked);
         party.kickMember(kicked, LeaveReason.KICK);
         RunicCore.getPartyManager().updatePlayerParty(kicked, null);
-        RunicCore.getTabListManager().setupTab(kicked);
+        RunicCore.getTabAPI().setupTab(kicked);
         for (Player member : party.getMembersWithLeader()) {
-            RunicCore.getTabListManager().setupTab(member);
+            RunicCore.getTabAPI().setupTab(member);
         }
         party.sendMessageInChannel(kicked.getName() + " has been removed from this party &7Reason: kicked");
         kicked.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou have been kicked from the party!"));
@@ -231,7 +231,7 @@ public class PartyCommand extends BaseCommand {
             Bukkit.getPluginManager().callEvent(partyLeaveEvent);
             for (Player member : party.getMembersWithLeader()) {
                 RunicCore.getPartyManager().updatePlayerParty(member, null);
-                RunicCore.getTabListManager().setupTab(member);
+                RunicCore.getTabAPI().setupTab(member);
             }
         } else {
             party.sendMessageInChannel(player.getName() + " has been removed this party &7Reason: left");
@@ -239,9 +239,9 @@ public class PartyCommand extends BaseCommand {
             Bukkit.getPluginManager().callEvent(partyLeaveEvent);
             party.getMembers().remove(player);
             RunicCore.getPartyManager().updatePlayerParty(player, null);
-            RunicCore.getTabListManager().setupTab(player);
+            RunicCore.getTabAPI().setupTab(player);
             for (Player member : party.getMembersWithLeader()) {
-                RunicCore.getTabListManager().setupTab(member);
+                RunicCore.getTabAPI().setupTab(member);
             }
         }
     }
