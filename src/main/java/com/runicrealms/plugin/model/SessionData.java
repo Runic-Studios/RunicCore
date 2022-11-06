@@ -14,7 +14,14 @@ import java.util.Map;
 public interface SessionData {
 
     /**
-     * @return
+     * Method to return some data from jedis as a map of key-value pairs
+     *
+     * @return a map of key-value pairs
+     */
+    Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot);
+
+    /**
+     * @return a list of jedis fields
      */
     List<String> getFields();
 
@@ -24,13 +31,6 @@ public interface SessionData {
      * @return a map of key-value pairs
      */
     Map<String, String> toMap();
-
-    /**
-     * Method to return some data from jedis as a map of key-value pairs
-     *
-     * @return a map of key-value pairs
-     */
-    Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot);
 
     /**
      * Ensures that all session data has a method to save the data in jedis

@@ -15,7 +15,17 @@ import java.util.Map;
 public interface SessionDataNested {
 
     /**
-     * @return
+     * Method to return some data from jedis as a map of key-value pairs
+     *
+     * @param jedis        the jedis resource
+     * @param nestedObject some nested object to get the data map for
+     * @param slot         an optional character slot for character-specific data
+     * @return a map of key-value pairs
+     */
+    Map<String, String> getDataMapFromJedis(Jedis jedis, Object nestedObject, int... slot);
+
+    /**
+     * @return a list of jedis fields
      */
     List<String> getFields();
 
@@ -26,16 +36,6 @@ public interface SessionDataNested {
      * @return a map of key-value pairs of data on the nested object
      */
     Map<String, String> toMap(Object nestedObject);
-
-    /**
-     * Method to return some data from jedis as a map of key-value pairs
-     *
-     * @param jedis        the jedis resource
-     * @param nestedObject some nested object to get the data map for
-     * @param slot         an optional character slot for character-specific data
-     * @return a map of key-value pairs
-     */
-    Map<String, String> getDataMapFromJedis(Jedis jedis, Object nestedObject, int... slot);
 
     /**
      * Ensures that all session data has a method to save the data in jedis
