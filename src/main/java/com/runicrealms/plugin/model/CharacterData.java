@@ -52,22 +52,20 @@ public class CharacterData {
         this.outlawData = new OutlawData(uuid, slot, jedis);
     }
 
-    /**
-     * Used for the round trip to MongoDB. Saves all the data in the object to the database as nested fields
-     *
-     * @param playerMongoData of the player
-     * @param slot            of the character
-     */
-    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, int slot) {
-        try {
-            this.baseCharacterData.writeToMongo(playerMongoData, slot);
-            this.classData.writeToMongo(playerMongoData, slot);
-            this.professionData.writeToMongo(playerMongoData, slot);
-            this.outlawData.writeToMongo(playerMongoData, slot);
-        } catch (Exception e) {
-            RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
-            e.printStackTrace();
-        }
+    public BaseCharacterData getBaseCharacterInfo() {
+        return baseCharacterData;
+    }
+
+    public ClassData getClassInfo() {
+        return classData;
+    }
+
+    public OutlawData getOutlawInfo() {
+        return outlawData;
+    }
+
+    public ProfessionData getProfessionInfo() {
+        return professionData;
     }
 
     /**
@@ -85,19 +83,21 @@ public class CharacterData {
         jedis.expire(key, RedisUtil.EXPIRE_TIME);
     }
 
-    public BaseCharacterData getBaseCharacterInfo() {
-        return baseCharacterData;
-    }
-
-    public ClassData getClassInfo() {
-        return classData;
-    }
-
-    public ProfessionData getProfessionInfo() {
-        return professionData;
-    }
-
-    public OutlawData getOutlawInfo() {
-        return outlawData;
+    /**
+     * Used for the round trip to MongoDB. Saves all the data in the object to the database as nested fields
+     *
+     * @param playerMongoData of the player
+     * @param slot            of the character
+     */
+    public void writeCharacterDataToMongo(PlayerMongoData playerMongoData, int slot) {
+        try {
+            this.baseCharacterData.writeToMongo(playerMongoData, slot);
+            this.classData.writeToMongo(playerMongoData, slot);
+            this.professionData.writeToMongo(playerMongoData, slot);
+            this.outlawData.writeToMongo(playerMongoData, slot);
+        } catch (Exception e) {
+            RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");
+            e.printStackTrace();
+        }
     }
 }

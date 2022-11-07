@@ -80,24 +80,20 @@ public class BaseCharacterData implements SessionData {
         this.location = DatabaseUtil.loadLocation(fieldsMap.get(CharacterField.LOCATION.getField()));
     }
 
-    public int getSlot() {
-        return slot;
-    }
-
     public int getCurrentHp() {
         return currentHp;
     }
 
-    public int getStoredHunger() {
-        return storedHunger;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public Location getLocation() {
-        return location;
+    @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
     }
 
     @Override
@@ -122,18 +118,6 @@ public class BaseCharacterData implements SessionData {
     }
 
     @Override
-    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(getFields());
-        String[] fieldsToArray = fields.toArray(new String[0]);
-        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
-        for (int i = 0; i < fieldsToArray.length; i++) {
-            fieldsMap.put(fieldsToArray[i], values.get(i));
-        }
-        return fieldsMap;
-    }
-
-    @Override
     public void writeToJedis(Jedis jedis, int... slot) {
         String uuid = String.valueOf(this.uuid);
         String key = uuid + ":character:" + this.slot;
@@ -148,5 +132,21 @@ public class BaseCharacterData implements SessionData {
         character.set("storedHunger", this.storedHunger);
         DatabaseUtil.saveLocation(character, this.location);
         return playerMongoData;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public int getSlot() {
+        return slot;
+    }
+
+    public int getStoredHunger() {
+        return storedHunger;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 }
