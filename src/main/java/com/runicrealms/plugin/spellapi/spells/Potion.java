@@ -34,11 +34,11 @@ public class Potion extends Spell {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onPotionConsume(RunicItemGenericTriggerEvent e) {
-        if (!potionDrinkers.contains(e.getPlayer().getUniqueId())) return;
-        if (!e.getItem().getTemplateId().contains("potion")) return;
-        e.setCancelled(true);
-        e.getPlayer().sendMessage(ChatColor.RED + "Use of potions is on cooldown!");
+    public void onPotionConsume(RunicItemGenericTriggerEvent event) {
+        if (!potionDrinkers.contains(event.getPlayer().getUniqueId())) return;
+        if (!event.getItem().getTemplateId().contains("potion")) return;
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.RED + "Use of potions is on cooldown!");
     }
 }
 

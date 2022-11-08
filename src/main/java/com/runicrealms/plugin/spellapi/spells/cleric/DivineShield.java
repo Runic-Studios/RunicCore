@@ -34,33 +34,33 @@ public class DivineShield extends Spell {
     }
 
     @EventHandler
-    public void onHealingSpell(SpellHealEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
+    public void onHealingSpell(SpellHealEvent event) {
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > (PERCENT * 100)) return;
-        e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 2.0f);
-        shieldedPlayers.add(e.getEntity().getUniqueId());
-        Cone.coneEffect((LivingEntity) e.getEntity(), Particle.REDSTONE, DURATION, 0, 20, Color.WHITE);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> shieldedPlayers.remove(e.getEntity().getUniqueId()), DURATION * 20L);
+        event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 2.0f);
+        shieldedPlayers.add(event.getEntity().getUniqueId());
+        Cone.coneEffect((LivingEntity) event.getEntity(), Particle.REDSTONE, DURATION, 0, 20, Color.WHITE);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> shieldedPlayers.remove(event.getEntity().getUniqueId()), DURATION * 20L);
     }
 
     @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    public void onMobDamage(MobDamageEvent event) {
+        if (!shieldedPlayers.contains(event.getVictim().getUniqueId())) return;
+        event.setAmount((int) (event.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
-        if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!shieldedPlayers.contains(event.getVictim().getUniqueId())) return;
+        event.setAmount((int) (event.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
     @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
-        if (!shieldedPlayers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    public void onSpellDamage(MagicDamageEvent event) {
+        if (!shieldedPlayers.contains(event.getVictim().getUniqueId())) return;
+        event.setAmount((int) (event.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 }
 

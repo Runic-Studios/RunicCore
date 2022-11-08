@@ -4,9 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -19,7 +17,7 @@ import java.util.UUID;
 public class Rescue extends Spell {
 
     private static final double DURATION = 1.5;
-    private static final double LAUNCH_MULT = 1.5;
+    private static final double LAUNCH_MULTIPLIER = 2.0;
     private static final double PERCENT = .15;
     private static final double RADIUS = 1.5;
     private final HashMap<UUID, UUID> hasBeenHit;
@@ -35,14 +33,14 @@ public class Rescue extends Spell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        Location location = pl.getLocation();
+        Location location = player.getLocation();
         Vector look = location.getDirection();
         Vector launchPath = new Vector(look.getX(), 0, look.getZ()).normalize();
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 1.0f);
-        pl.teleport(location.add(0, 0.5, 1));
-        pl.setVelocity(launchPath.multiply(LAUNCH_MULT));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
+        // player.teleport(location.add(0, 0.5, 1));
+        player.setVelocity(launchPath.multiply(LAUNCH_MULTIPLIER));
         long startTime = System.currentTimeMillis();
 
         new BukkitRunnable() {
@@ -54,21 +52,21 @@ public class Rescue extends Spell {
                     //return;
                 }
 
-                pl.getWorld().spawnParticle(Particle.SPELL_INSTANT, pl.getLocation(), 1, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 1, 0, 0, 0, 0);
 
-                for (Entity entity : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                    if (entity.equals(pl)) continue; // skip caster
+                for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+                    if (entity.equals(player)) continue; // skip caster
                     if (hasBeenHit.containsKey(entity.getUniqueId())) continue;
-                    if (isValidAlly(pl, entity)) {
-                        if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
+                    if (isValidAlly(player, entity)) {
+                        if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(player).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
                             this.cancel();
-                            hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+                            hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
                             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
                             entity.getWorld().spawnParticle
                                     (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                             entity.getWorld().spawnParticle
                                     (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                            shieldCasterAndAlly(pl, (Player) entity);
+                            // shieldCasterAndAlly(player, (Player) entity);
                             return;
                         }
                     }
@@ -76,13 +74,7 @@ public class Rescue extends Spell {
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), hasBeenHit::clear, (long) (DURATION * 20L));
-    }
-
-    private void shieldCasterAndAlly(Player caster, Player ally) {
-        double amount = caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * PERCENT;
-        HealUtil.shieldPlayer(amount, caster, caster, false);
-        HealUtil.shieldPlayer(amount, ally, caster, false);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), hasBeenHit::clear, (long) (DURATION * 20L));
     }
 }
 

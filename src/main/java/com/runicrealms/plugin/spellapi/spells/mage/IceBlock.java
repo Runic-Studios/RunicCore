@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -32,14 +31,22 @@ public class IceBlock extends Spell implements MagicDamageSpell {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    public boolean attemptToExecute(Player player) {
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public void executeSpell(Player player, SpellItemType type) {
         // on-use
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
-        Location castLocation = player.getLocation().getBlock().getLocation().add(0.5, 0.5, 0.5);
         addStatusEffect(player, EffectEnum.ROOT, DURATION);
         addStatusEffect(player, EffectEnum.INVULN, DURATION);
         Cone.coneEffect(player, Particle.REDSTONE, DURATION, 0, 20, Color.AQUA);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> player.teleport(castLocation), 2L);
         // after duration
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 2.0f);

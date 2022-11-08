@@ -39,48 +39,6 @@ public class Bolster extends Spell {
         buffed = new HashMap<>();
     }
 
-    @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-
-        Location plLoc = pl.getLocation();
-        Location bannerLoc = plLoc.clone().subtract(0, 1.75, 0);
-        this.warbanner = summonBanner(pl, bannerLoc);
-        if (warbanner == null) return;
-
-        buffed.put(pl.getUniqueId(), bannerLoc);
-        if (RunicCoreAPI.hasParty(pl))
-            for (Player ally : RunicCore.getPartyManager().getPlayerParty(pl).getMembers()) // add allies
-                buffed.put(ally.getUniqueId(), bannerLoc);
-
-        new BukkitRunnable() {
-            int count = 1;
-
-            @Override
-            public void run() {
-                if (count > DURATION) {
-                    this.cancel();
-                    warbanner.remove();
-                    buffed.clear();
-                } else {
-                    count += 1;
-                    createCircle(pl, plLoc);
-                }
-            }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
-    }
-
-    private ArmorStand summonBanner(Player pl, Location loc) {
-        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(loc);
-        if (armorStand == null) return null;
-        if (armorStand.getEquipment() == null) return null;
-        armorStand.setArms(true);
-        armorStand.setMarker(false);
-        armorStand.setCustomNameVisible(false);
-        armorStand.getEquipment().setHelmet(new ItemStack(Material.RED_BANNER));
-        pl.getWorld().playSound(armorStand.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 0.5f);
-        return armorStand;
-    }
-
     private void createCircle(Player pl, Location loc) {
         int particles = 50;
         for (int i = 0; i < particles; i++) {
@@ -94,6 +52,36 @@ public class Bolster extends Spell {
         }
     }
 
+    @Override
+    public void executeSpell(Player player, SpellItemType type) {
+
+        Location plLoc = player.getLocation();
+        Location bannerLoc = plLoc.clone().subtract(0, 1.75, 0);
+        this.warbanner = summonBanner(player, bannerLoc);
+        if (warbanner == null) return;
+
+        buffed.put(player.getUniqueId(), bannerLoc);
+        if (RunicCoreAPI.hasParty(player))
+            for (Player ally : RunicCore.getPartyManager().getPlayerParty(player).getMembers()) // add allies
+                buffed.put(ally.getUniqueId(), bannerLoc);
+
+        new BukkitRunnable() {
+            int count = 1;
+
+            @Override
+            public void run() {
+                if (count > DURATION) {
+                    this.cancel();
+                    warbanner.remove();
+                    buffed.clear();
+                } else {
+                    count += 1;
+                    createCircle(player, plLoc);
+                }
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+    }
+
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
         double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
@@ -101,13 +89,13 @@ public class Bolster extends Spell {
     }
 
     @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
         e.setAmount((int) reducedDamage);
     }
 
     @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
         e.setAmount((int) reducedDamage);
     }
@@ -119,5 +107,17 @@ public class Bolster extends Spell {
         if (dist > RADIUS * RADIUS) return damageAmount;
         victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
         return damageAmount * (1 - PERCENT);
+    }
+
+    private ArmorStand summonBanner(Player pl, Location loc) {
+        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(loc);
+        if (armorStand == null) return null;
+        if (armorStand.getEquipment() == null) return null;
+        armorStand.setArms(true);
+        armorStand.setMarker(false);
+        armorStand.setCustomNameVisible(false);
+        armorStand.getEquipment().setHelmet(new ItemStack(Material.BLUE_BANNER));
+        pl.getWorld().playSound(armorStand.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 0.5f);
+        return armorStand;
     }
 }

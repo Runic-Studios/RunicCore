@@ -5,7 +5,6 @@ import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.artifact.*;
-import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
@@ -15,6 +14,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,26 +50,6 @@ public class SpellManager implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public List<Spell> getSpells() {
-        return this.spellList;
-    }
-
-    public HashMap<UUID, BukkitTask> getInvulnerableEntities() {
-        return invulnerableEntities;
-    }
-
-    public HashMap<UUID, BukkitTask> getRootedEntites() {
-        return rootedEntities;
-    }
-
-    public HashMap<UUID, BukkitTask> getSilencedEntities() {
-        return silencedEntities;
-    }
-
-    public HashMap<UUID, BukkitTask> getStunnedEntities() {
-        return stunnedEntities;
-    }
-
     /**
      * Adds spell to player, spell cooldown map
      *
@@ -94,11 +74,35 @@ public class SpellManager implements Listener {
 
     }
 
-    public boolean isOnCooldown(Player player, String spellName) {
-        if (!this.cooldownMap.containsKey(player.getUniqueId()))
-            return false;
-        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
-        return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
+    public HashMap<UUID, BukkitTask> getInvulnerableEntities() {
+        return invulnerableEntities;
+    }
+
+    public HashMap<UUID, BukkitTask> getRootedEntites() {
+        return rootedEntities;
+    }
+
+    public HashMap<UUID, BukkitTask> getSilencedEntities() {
+        return silencedEntities;
+    }
+
+    public Spell getSpellByName(String name) {
+        Spell foundSpell = null;
+        for (Spell spell : getSpells()) {
+            if (spell.getName().equalsIgnoreCase(name)) {
+                foundSpell = spell;
+                break;
+            }
+        }
+        return foundSpell;
+    }
+
+    public List<Spell> getSpells() {
+        return this.spellList;
+    }
+
+    public HashMap<UUID, BukkitTask> getStunnedEntities() {
+        return stunnedEntities;
     }
 
     private int getUserCooldown(Player player, Spell spell) {
@@ -113,22 +117,66 @@ public class SpellManager implements Listener {
         return ((int) (cooldownRemaining / 1000));
     }
 
-    private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
-        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+    public boolean isOnCooldown(Player player, String spellName) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId()))
+            return false;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
-        playerSpellsOnCooldown.remove(spell);
-        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+        return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
     }
 
-    public Spell getSpellByName(String name) {
-        Spell foundSpell = null;
-        for (Spell spell : getSpells()) {
-            if (spell.getName().equalsIgnoreCase(name)) {
-                foundSpell = spell;
-                break;
-            }
-        }
-        return foundSpell;
+    @EventHandler
+    public void onMobDamage(MobDamageEvent e) {
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(e.getDamager().getUniqueId())
+                || stunnedEntities.containsKey(e.getDamager().getUniqueId())
+                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        if (rootedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (!(rootedEntities.containsKey(event.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(event.getPlayer().getUniqueId()))) return;
+        if (event.getTo() == null) return;
+        Location to = event.getFrom();
+        to.setPitch(event.getTo().getPitch());
+        to.setYaw(event.getTo().getYaw());
+        event.setTo(to);
+    }
+
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
+                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onSpellCast(SpellCastEvent e) {
+        if (silencedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(e.getCaster().getUniqueId())
+                || stunnedEntities.containsKey(e.getCaster().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onSpellDamage(MagicDamageEvent e) {
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
+                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onSpellHeal(SpellHealEvent e) {
+        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
+            e.setCancelled(true);
     }
 
     /**
@@ -190,7 +238,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new IcyAffinity());
         this.spellList.add(new ShadowTouch());
         this.spellList.add(new Shadowmeld());
-        this.spellList.add(new TwistOfFate());
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());
         this.spellList.add(new LastResort());
@@ -236,11 +283,18 @@ public class SpellManager implements Listener {
         this.spellList.add(new Thundershock());
         this.spellList.add(new ThunderousRift());
         this.spellList.add(new Cannonfire());
-//        this.spellList.add(new ScorchedBlade());
+//        this.spellList.add(new ScorchedBlade()); sunken artifact passives
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());
 //        this.spellList.add(new BlazingRings());
 //        this.spellList.add(new FirePulse());
+    }
+
+    private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        playerSpellsOnCooldown.remove(spell);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
 
     /**
@@ -270,57 +324,5 @@ public class SpellManager implements Listener {
                 }
             }
         }.runTaskTimer(this.plugin, 0, 10);
-    }
-
-    @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (silencedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getCaster().getUniqueId())
-                || stunnedEntities.containsKey(e.getCaster().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getDamager().getUniqueId())
-                || stunnedEntities.containsKey(e.getDamager().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpellHeal(SpellHealEvent e) {
-        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent e) {
-        if (rootedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (!(rootedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))) return;
-        if (e.getTo() == null) return;
-        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
     }
 }
