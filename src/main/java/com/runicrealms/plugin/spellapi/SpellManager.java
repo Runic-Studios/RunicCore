@@ -270,6 +270,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new SurvivalInstinct());
         this.spellList.add(new Headshot());
         this.spellList.add(new HoningShot());
+        this.spellList.add(new Conflagration());
         /*
         Items
          */

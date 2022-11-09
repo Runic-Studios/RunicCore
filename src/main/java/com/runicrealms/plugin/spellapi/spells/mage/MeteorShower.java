@@ -10,12 +10,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -25,16 +26,16 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class MeteorShower extends Spell implements MagicDamageSpell {
 
-    private final boolean fireCone;
-    private final boolean applyBurn;
     private static final int AMOUNT = 4;
     private static final double FIREBALL_SPEED = 2;
     private static final int DAMAGE_AMOUNT = 35;
-    private static final double DAMAGE_PER_LEVEL = 0.75;
-    private SmallFireball meteor;
-    private SmallFireball meteorLeft;
-    private SmallFireball meteorRight;
+    private static final double DAMAGE_PER_LEVEL = 0.85;
+    private final boolean fireCone;
+    private final boolean applyBurn;
     private final HashMap<UUID, UUID> hasBeenHit;
+    private LargeFireball meteor;
+    private LargeFireball meteorLeft;
+    private LargeFireball meteorRight;
 
     public MeteorShower() {
         super("Meteor Shower",
@@ -47,21 +48,17 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
         applyBurn = false;
     }
 
-    /**
-     * Overriden method for tier set bonuses
-     *
-     * @param fireCone  2-set bonus to apply a cone of projectiles
-     * @param applyBurn 4-set bonus to apply burn effect
-     */
-    public MeteorShower(boolean fireCone, boolean applyBurn) {
-        super("Meteor Shower",
-                "You launch four projectile meteors" +
-                        "\nthat deal " + DAMAGE_AMOUNT + " magicʔ damage on" +
-                        "\nimpact!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
-        hasBeenHit = new HashMap<>();
-        this.fireCone = fireCone;
-        this.applyBurn = applyBurn;
+    private void createMeteorParticle(LargeFireball fireball) {
+        // more particles
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (fireball.isDead()) {
+                    this.cancel();
+                }
+                fireball.getWorld().spawnParticle(Particle.LAVA, fireball.getLocation(), 1, 0, 0, 0, 0);
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     @Override
@@ -75,7 +72,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
                     this.cancel();
                 } else {
                     count += 1;
-                    meteor = player.launchProjectile(SmallFireball.class);
+                    meteor = player.launchProjectile(LargeFireball.class);
                     createMeteorParticle(meteor);
                     meteor.setIsIncendiary(false);
                     meteor.setYield(0F);
@@ -86,11 +83,15 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
                     if (fireCone) {
                         Vector left = rotateVectorAroundY(velocity, -22.5);
                         Vector right = rotateVectorAroundY(velocity, 22.5);
-                        meteorLeft = player.launchProjectile(SmallFireball.class);
+                        meteorLeft = player.launchProjectile(LargeFireball.class);
+                        meteorLeft.setIsIncendiary(false);
+                        meteorLeft.setYield(0F);
                         meteorLeft.setIsIncendiary(false);
                         meteorLeft.setVelocity(left);
                         meteorLeft.setShooter(player);
-                        meteorRight = player.launchProjectile(SmallFireball.class);
+                        meteorRight = player.launchProjectile(LargeFireball.class);
+                        meteorRight.setIsIncendiary(false);
+                        meteorRight.setYield(0F);
                         meteorRight.setIsIncendiary(false);
                         meteorRight.setVelocity(right);
                         meteorRight.setShooter(player);
@@ -100,34 +101,33 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
         }.runTaskTimer(RunicCore.getInstance(), 0L, 20L);
     }
 
-    private void createMeteorParticle(SmallFireball fireball) {
-        // more particles
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (fireball.isDead()) {
-                    this.cancel();
-                }
-                fireball.getWorld().spawnParticle(Particle.LAVA, fireball.getLocation(), 1, 0, 0, 0, 0);
-            }
-        }.runTaskTimer(plugin, 0, 1);
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onExplosionPrime(ExplosionPrimeEvent event) {
+        if (event.getEntity() instanceof LargeFireball) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onMeteorHit(EntityDamageByEntityEvent e) {
+    public void onMeteorHit(EntityDamageByEntityEvent event) {
 
         // only listen for our fireball
-        if (!e.getDamager().equals(meteor)
-                && !e.getDamager().equals(meteorLeft)
-                && !e.getDamager().equals(meteorRight)) return;
+        if (!event.getDamager().equals(meteor)
+                && !event.getDamager().equals(meteorLeft)
+                && !event.getDamager().equals(meteorRight)) return;
 
-        e.setDamage(0);
-        e.setCancelled(true);
+        event.setDamage(0);
+        event.setCancelled(true);
 
         // grab our variables
         Player player = (Player) meteor.getShooter();
         if (player == null) return;
-        LivingEntity victim = (LivingEntity) e.getEntity();
+        LivingEntity victim = (LivingEntity) event.getEntity();
 
         // prevent concussive hits
         if (hasBeenHit.get(player.getUniqueId()) == victim.getUniqueId()) return;
@@ -146,18 +146,13 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
 
             if (applyBurn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2), victim, player, this);
+                    DamageUtil.damageEntitySpell((DAMAGE_AMOUNT / 2.0), victim, player, this);
                     victim.getWorld().spawnParticle
                             (Particle.LAVA, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
                 }, 20L);
             }
         }
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 
