@@ -13,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
@@ -23,8 +24,8 @@ import java.util.UUID;
 public class Cloak extends Spell {
 
     private static final int DURATION = 5;
-    private final Set<UUID> cloakers;
     private static final HashSet<UUID> markedForEarlyReveal = new HashSet<>();
+    private final Set<UUID> cloakers;
 
     public Cloak() {
         super("Cloak",
@@ -38,13 +39,17 @@ public class Cloak extends Spell {
         cloakers = new HashSet<>();
     }
 
+    public static HashSet<UUID> getMarkedForEarlyReveal() {
+        return markedForEarlyReveal;
+    }
+
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
         // poof!
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-        player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                new Particle.DustOptions(Color.BLACK, 3));
+        player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f,
+                new Particle.DustOptions(Color.BLACK, 1));
 
         PacketPlayOutPlayerInfo packet =
                 new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
@@ -69,8 +74,6 @@ public class Cloak extends Spell {
             public void run() {
                 if (count >= DURATION || markedForEarlyReveal.contains(player.getUniqueId())) {
                     this.cancel();
-                    Predator.getPredators().add(player.getUniqueId());
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Predator.getPredators().remove(player.getUniqueId()), Predator.getDuration() * 20L);
                     cloakers.remove(player.getUniqueId());
                     for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
                         Player loaded = Bukkit.getPlayer(uuid);
@@ -78,8 +81,8 @@ public class Cloak extends Spell {
                         loaded.showPlayer(plugin, player);
                     }
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                            new Particle.DustOptions(Color.BLACK, 3));
+                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f,
+                            new Particle.DustOptions(Color.BLACK, 1));
                     player.sendMessage(ChatColor.GRAY + "You reappeared!");
                     markedForEarlyReveal.remove(player.getUniqueId());
                 } else {
@@ -93,35 +96,35 @@ public class Cloak extends Spell {
      * Player is immune to mob attacks
      */
     @EventHandler
-    public void onDamage(MobDamageEvent e) {
-        if (!(e.getVictim() instanceof Player))
+    public void onDamage(MobDamageEvent event) {
+        if (!(event.getVictim() instanceof Player))
             return;
-        Player pl = (Player) e.getVictim();
-        if (cloakers.contains(pl.getUniqueId()))
-            e.setCancelled(true);
+        Player player = (Player) event.getVictim();
+        if (cloakers.contains(player.getUniqueId()))
+            event.setCancelled(true);
     }
 
-    @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
-        if (!(cloakers.contains(e.getPlayer().getUniqueId())
-                || cloakers.contains(e.getVictim().getUniqueId()))) return;
-        if (cloakers.contains(e.getPlayer().getUniqueId()))
-            markedForEarlyReveal.add(e.getPlayer().getUniqueId());
-        else
-            markedForEarlyReveal.add(e.getVictim().getUniqueId());
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!(cloakers.contains(event.getPlayer().getUniqueId())
+                || cloakers.contains(event.getVictim().getUniqueId()))) return;
+        if (cloakers.contains(event.getPlayer().getUniqueId())) {
+            markedForEarlyReveal.add(event.getPlayer().getUniqueId());
+            Predator.getPredators().add(event.getPlayer().getUniqueId());
+        } else {
+            markedForEarlyReveal.add(event.getVictim().getUniqueId());
+            Predator.getPredators().add(event.getVictim().getUniqueId());
+        }
     }
 
-    @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
-        if (!(cloakers.contains(e.getPlayer().getUniqueId())
-                || cloakers.contains(e.getVictim().getUniqueId()))) return;
-        if (cloakers.contains(e.getPlayer().getUniqueId()))
-            markedForEarlyReveal.add(e.getPlayer().getUniqueId());
-        else
-            markedForEarlyReveal.add(e.getVictim().getUniqueId());
-    }
-
-    public static HashSet<UUID> getMarkedForEarlyReveal() {
-        return markedForEarlyReveal;
+    @EventHandler(priority = EventPriority.LOW)
+    public void onSpellDamage(MagicDamageEvent event) {
+        if (!(cloakers.contains(event.getPlayer().getUniqueId())
+                || cloakers.contains(event.getVictim().getUniqueId()))) return;
+        if (cloakers.contains(event.getPlayer().getUniqueId())) {
+            markedForEarlyReveal.add(event.getPlayer().getUniqueId());
+        } else {
+            markedForEarlyReveal.add(event.getVictim().getUniqueId());
+        }
     }
 }
