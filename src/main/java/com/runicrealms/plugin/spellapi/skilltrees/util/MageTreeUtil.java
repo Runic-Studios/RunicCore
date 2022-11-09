@@ -20,18 +20,18 @@ public class MageTreeUtil {
 
     public static List<Perk> arcanistPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(96, 1, 0, 1, "Shadow Bomb"));
+        perks.add(new PerkSpell(96, 1, 0, 1, "Arcane Bomb"));
         perks.add(new PerkBaseStat(97, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(98, 1, 0, 1, "Foresight"));
+        perks.add(new PerkSpell(98, 1, 0, 1, "Blink"));
         perks.add(new PerkBaseStat(99, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(100, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(101, 1, 0, 1, "Blink"));
+        perks.add(new PerkSpell(101, 1, 0, 1, "Foresight"));
         perks.add(new PerkBaseStat(102, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(103, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(104, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(105, 1, 0, 1, "Arcane Orb"));
         perks.add(new PerkBaseStat(106, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(107, 1, 0, 1, "Shadow Touch"));
+        perks.add(new PerkSpell(107, 1, 0, 1, "Shatter"));
         return perks;
     }
 

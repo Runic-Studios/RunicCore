@@ -29,10 +29,19 @@ public class Hawkeye extends Spell { // implements MagicDamageSpell, WeaponDamag
         this.setIsPassive(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onRangedHit(MagicDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        e.setAmount(hawkeyeDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
+    private int hawkeyeDamage(Player player, Entity en, int originalAmt) {
+
+        int distance = (int) player.getLocation().distanceSquared(en.getLocation());
+        if (distance < DISTANCE * DISTANCE) return originalAmt;
+
+        // particles, sounds
+        if (!isValidEnemy(player, en)) return originalAmt;
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 2.0f);
+        LivingEntity victim = (LivingEntity) en;
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.25f, 2.0f);
+        victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(),
+                5, 0.5F, 0.5F, 0.5F, 0);
+        return (int) (originalAmt + DAMAGE + (DAMAGE_PER_LEVEL * player.getLevel()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -41,19 +50,10 @@ public class Hawkeye extends Spell { // implements MagicDamageSpell, WeaponDamag
         e.setAmount(hawkeyeDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
-    private int hawkeyeDamage(Player pl, Entity en, int originalAmt) {
-
-        int distance = (int) pl.getLocation().distance(en.getLocation());
-        if (distance < DISTANCE) return originalAmt;
-
-        // particles, sounds
-        if (!isValidEnemy(pl, en)) return originalAmt;
-        pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 2.0f);
-        LivingEntity victim = (LivingEntity) en;
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 0.25f, 2.0f);
-        victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(),
-                5, 0.5F, 0.5F, 0.5F, 0);
-        return (int) (originalAmt + DAMAGE + (DAMAGE_PER_LEVEL * pl.getLevel()));
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onRangedHit(MagicDamageEvent e) {
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
+        e.setAmount(hawkeyeDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
 //    @Override

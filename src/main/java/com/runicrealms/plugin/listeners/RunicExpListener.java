@@ -23,6 +23,59 @@ public class RunicExpListener implements Listener {
     private static final double PARTY_BONUS = 15;
     private static final int RANGE = 100;
 
+    /**
+     * Method to determine exp distribution for a given party
+     *
+     * @param party       of player receiving exp
+     * @param player      who triggered event
+     * @param originalExp of event (before bonuses)
+     * @param extraAmt    of party exp
+     * @param mobLv       of mob (if applicable)
+     * @param loc         of mob (if applicable)
+     * @param jedis       the jedis resource
+     */
+    private void distributePartyExp(Party party, Player player, int originalExp, int extraAmt, int mobLv, Location loc, Jedis jedis) {
+
+        // determine how many players to split exp among
+        int nearbyMembers = 0;
+        for (Player member : party.getMembersWithLeader()) {
+            if (player.getLocation().getWorld() != member.getLocation().getWorld()) continue;
+            if (player.getLocation().distanceSquared(member.getLocation()) < RANGE * RANGE) {
+                nearbyMembers += 1;
+            }
+        }
+
+        for (Player member : party.getMembersWithLeader()) {
+            if (player.getLocation().getWorld() != member.getLocation().getWorld()) continue;
+            if (player.getLocation().distanceSquared(member.getLocation()) < RANGE * RANGE) {
+                int memberLv = member.getLevel();
+                if (mobLv > (memberLv + LEVEL_CUTOFF) || mobLv < (memberLv - LEVEL_CUTOFF)) {
+                    PlayerLevelUtil.giveExperience(member, 0, jedis);
+                    HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
+                } else {
+                    RunicExpEvent e = new RunicExpEvent(originalExp, ((originalExp + extraAmt) / nearbyMembers), member, RunicExpEvent.RunicExpSource.PARTY, mobLv, loc);
+                    Bukkit.getPluginManager().callEvent(e);
+                }
+            }
+        }
+
+        if (loc != null) {
+            HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.6, 0);
+            HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&f" + player.getName() + "&7's Party"), 0, 2.3, 0);
+        }
+    }
+
+    /**
+     * Quick check to see if a player is in a party (and not alone in that party)
+     *
+     * @param player to check
+     * @return true if the player is in a party of at least 2 members
+     */
+    private boolean isInParty(Player player) {
+        return RunicCore.getPartyManager().getPlayerParty(player) != null
+                && RunicCore.getPartyManager().getPlayerParty(player).getSize() >= 2;
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST) // executes last
     public void onExperienceGain(RunicExpEvent event) {
 
@@ -74,59 +127,6 @@ public class RunicExpListener implements Listener {
                                 jedis
                         );
             }
-        }
-    }
-
-    /**
-     * Quick check to see if a player is in a party (and not alone in that party)
-     *
-     * @param player to check
-     * @return true if the player is in a party of at least 2 members
-     */
-    private boolean isInParty(Player player) {
-        return RunicCore.getPartyManager().getPlayerParty(player) != null
-                && RunicCore.getPartyManager().getPlayerParty(player).getSize() >= 2;
-    }
-
-    /**
-     * Method to determine exp distribution for a given party
-     *
-     * @param party       of player receiving exp
-     * @param player      who triggered event
-     * @param originalExp of event (before bonuses)
-     * @param extraAmt    of party exp
-     * @param mobLv       of mob (if applicable)
-     * @param loc         of mob (if applicable)
-     * @param jedis       the jedis resource
-     */
-    private void distributePartyExp(Party party, Player player, int originalExp, int extraAmt, int mobLv, Location loc, Jedis jedis) {
-
-        // determine how many players to split exp among
-        int nearbyMembers = 0;
-        for (Player member : party.getMembersWithLeader()) {
-            if (player.getLocation().getWorld() != member.getLocation().getWorld()) continue;
-            if (player.getLocation().distance(member.getLocation()) < RANGE) {
-                nearbyMembers += 1;
-            }
-        }
-
-        for (Player member : party.getMembersWithLeader()) {
-            if (player.getLocation().getWorld() != member.getLocation().getWorld()) continue;
-            if (player.getLocation().distance(member.getLocation()) < RANGE) {
-                int memberLv = member.getLevel();
-                if (mobLv > (memberLv + LEVEL_CUTOFF) || mobLv < (memberLv - LEVEL_CUTOFF)) {
-                    PlayerLevelUtil.giveExperience(member, 0, jedis);
-                    HologramUtil.createStaticHologram(member, loc.clone(), ColorUtil.format("&7+ &c0 &7exp"), 0, 2.9, 0, true);
-                } else {
-                    RunicExpEvent e = new RunicExpEvent(originalExp, ((originalExp + extraAmt) / nearbyMembers), member, RunicExpEvent.RunicExpSource.PARTY, mobLv, loc);
-                    Bukkit.getPluginManager().callEvent(e);
-                }
-            }
-        }
-
-        if (loc != null) {
-            HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&7+ " + ChatColor.WHITE + originalExp + "&a(+" + extraAmt + ") &7exp"), 0, 2.6, 0);
-            HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&f" + player.getName() + "&7's Party"), 0, 2.3, 0);
         }
     }
 }

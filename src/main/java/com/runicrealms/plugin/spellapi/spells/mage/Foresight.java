@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Foresight extends Spell {
 
     private static final int DURATION = 2;
-    private static final double PERCENT_REDUCTION = .75;
+    private static final double PERCENT_REDUCTION = .5;
     private static final HashSet<UUID> doomers = new HashSet<>();
 
     public Foresight() {
@@ -27,14 +27,6 @@ public class Foresight extends Spell {
                         "damage reduction for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
-    }
-
-    public static int getDuration() {
-        return DURATION;
-    }
-
-    public static HashSet<UUID> getDoomers() {
-        return doomers;
     }
 
     @EventHandler(priority = EventPriority.HIGH)

@@ -210,10 +210,9 @@ public class SpellManager implements Listener {
         this.spellList.add(new Reflect());
         this.spellList.add(new PowerShot());
         this.spellList.add(new Smite());
-        this.spellList.add(new ShadowBomb());
+        this.spellList.add(new ArcaneBomb());
         this.spellList.add(new CureScurvy());
         this.spellList.add(new HolyWater());
-        this.spellList.add(new Shadowbolt());
         this.spellList.add(new Seasick());
         this.spellList.add(new Hawkeye());
         this.spellList.add(new Manawell());
@@ -223,7 +222,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new Taunt());
         this.spellList.add(new Leech());
         this.spellList.add(new Frostbite());
-        this.spellList.add(new ManaShield());
         this.spellList.add(new SliceAndDice());
         this.spellList.add(new Cripple());
         this.spellList.add(new Challenger());
@@ -232,11 +230,9 @@ public class SpellManager implements Listener {
         this.spellList.add(new FireBlast());
         this.spellList.add(new Scald());
         this.spellList.add(new FireAura());
-        this.spellList.add(new BlazingSpeed());
         this.spellList.add(new IceBlock());
         this.spellList.add(new ColdTouch());
         this.spellList.add(new IcyAffinity());
-        this.spellList.add(new ShadowTouch());
         this.spellList.add(new Foresight());
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());
@@ -271,6 +267,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Headshot());
         this.spellList.add(new HoningShot());
         this.spellList.add(new Conflagration());
+        this.spellList.add(new Shatter());
         /*
         Items
          */

@@ -39,45 +39,6 @@ public class Purify extends Spell implements HealingSpell {
         this.hasBeenHit = new HashMap<>();
     }
 
-    @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-
-        pl.swingMainHand();
-
-        // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
-
-        // sound effect
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-
-        // particle effect, spell effects
-        Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
-        startTask(pl, new Vector[]{middle});
-    }
-
-    // particle effect
-    private void startTask(Player player, Vector[] vectors) {
-        for (Vector vector : vectors) {
-            new BukkitRunnable() {
-                final Location location = player.getEyeLocation();
-                final Location startLoc = player.getLocation();
-
-                @Override
-                public void run() {
-                    location.add(vector);
-                    // 10 block range before spell dies out naturally
-                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
-                        this.cancel();
-                        player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 15, 0.5f, 0.5f, 0.5f, 0);
-                    }
-                    player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 10, 0, 0, 0, 0);
-                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0.1f, 0.1f, 0.1f, 0, new Particle.DustOptions(Color.YELLOW, 1));
-                    allyCheck(player, location);
-                }
-            }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
-        }
-    }
-
     // checks for allies near the beam, stops multiple healing of the same player
     @SuppressWarnings("deprecation")
     private void allyCheck(Player pl, Location location) {
@@ -131,6 +92,22 @@ public class Purify extends Spell implements HealingSpell {
     }
 
     @Override
+    public void executeSpell(Player pl, SpellItemType type) {
+
+        pl.swingMainHand();
+
+        // heal the caster
+        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
+
+        // sound effect
+        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
+
+        // particle effect, spell effects
+        Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
+        startTask(pl, new Vector[]{middle});
+    }
+
+    @Override
     public int getHeal() {
         return HEAL_AMT;
     }
@@ -138,5 +115,28 @@ public class Purify extends Spell implements HealingSpell {
     @Override
     public double getHealingPerLevel() {
         return HEALING_PER_LEVEL;
+    }
+
+    // particle effect
+    private void startTask(Player player, Vector[] vectors) {
+        for (Vector vector : vectors) {
+            new BukkitRunnable() {
+                final Location location = player.getEyeLocation();
+                final Location startLoc = player.getLocation();
+
+                @Override
+                public void run() {
+                    location.add(vector);
+                    // 10 block range before spell dies out naturally
+                    if (location.getBlock().getType().isSolid() || location.distanceSquared(startLoc) >= RANGE * RANGE) {
+                        this.cancel();
+                        player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 15, 0.5f, 0.5f, 0.5f, 0);
+                    }
+                    player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 10, 0, 0, 0, 0);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0.1f, 0.1f, 0.1f, 0, new Particle.DustOptions(Color.YELLOW, 1));
+                    allyCheck(player, location);
+                }
+            }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
+        }
     }
 }

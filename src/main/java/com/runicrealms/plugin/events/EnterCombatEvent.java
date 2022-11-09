@@ -3,7 +3,6 @@ package com.runicrealms.plugin.events;
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -13,6 +12,7 @@ import org.bukkit.event.HandlerList;
 public class EnterCombatEvent extends Event implements Cancellable {
 
     private static final int PARTY_TAG_RANGE = 100;
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private boolean isCancelled = false;
 
@@ -23,28 +23,6 @@ public class EnterCombatEvent extends Event implements Cancellable {
      */
     public EnterCombatEvent(Player player) {
         this.player = player;
-    }
-
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return this.isCancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean arg0) {
-        this.isCancelled = arg0;
-    }
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @SuppressWarnings("NullableProblems")
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
     }
 
     public static HandlerList getHandlerList() {
@@ -69,9 +47,29 @@ public class EnterCombatEvent extends Event implements Cancellable {
         for (Player member : RunicCore.getPartyManager().getPlayerParty(player).getMembersWithLeader()) {
             if (member == player) continue;
             if (player.getLocation().getWorld() != member.getLocation().getWorld()) continue;
-            if (player.getLocation().distance(member.getLocation()) > PARTY_TAG_RANGE)
+            if (player.getLocation().distanceSquared(member.getLocation()) > PARTY_TAG_RANGE * PARTY_TAG_RANGE)
                 continue; // only tag players in 100 block range
             RunicCore.getCombatManager().addPlayer(member.getUniqueId());
         }
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return this.isCancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean arg0) {
+        this.isCancelled = arg0;
     }
 }

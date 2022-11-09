@@ -42,37 +42,6 @@ public class Rejuvenate extends Spell implements HealingSpell {
         affectedPlayers = new HashMap<>();
     }
 
-    @Override
-    public void executeSpell(Player player, SpellItemType type) {
-        player.swingMainHand();
-        HealUtil.healPlayer(HEAL_AMT, player, player, false, this);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-        Vector middle = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
-        startTask(player, new Vector[]{middle});
-    }
-
-    // particle effect
-    private void startTask(Player player, Vector[] vectors) {
-        for (Vector vector : vectors) {
-            new BukkitRunnable() {
-                final Location location = player.getEyeLocation();
-                final Location startLoc = player.getLocation();
-
-                @Override
-                public void run() {
-                    location.add(vector);
-                    if (location.getBlock().getType().isSolid() || location.distance(startLoc) >= RANGE) {
-                        this.cancel();
-                        player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 15, 0.5f, 0.5f, 0.5f, 0);
-                    }
-                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
-                    player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 10, 0.1f, 0.1f, 0.1f, 0);
-                    allyCheck(player, location);
-                }
-            }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
-        }
-    }
-
     /*
      checks for allies near the beam, stops multiple healing of the same player
      */
@@ -127,6 +96,15 @@ public class Rejuvenate extends Spell implements HealingSpell {
     }
 
     @Override
+    public void executeSpell(Player player, SpellItemType type) {
+        player.swingMainHand();
+        HealUtil.healPlayer(HEAL_AMT, player, player, false, this);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
+        Vector middle = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
+        startTask(player, new Vector[]{middle});
+    }
+
+    @Override
     public int getHeal() {
         return HEAL_AMT;
     }
@@ -148,5 +126,27 @@ public class Rejuvenate extends Spell implements HealingSpell {
         int extraAmt = (int) (e.getAmount() * percent);
         if (extraAmt < 1) extraAmt = 1;
         e.setAmount(e.getAmount() + extraAmt);
+    }
+
+    // particle effect
+    private void startTask(Player player, Vector[] vectors) {
+        for (Vector vector : vectors) {
+            new BukkitRunnable() {
+                final Location location = player.getEyeLocation();
+                final Location startLoc = player.getLocation();
+
+                @Override
+                public void run() {
+                    location.add(vector);
+                    if (location.getBlock().getType().isSolid() || location.distanceSquared(startLoc) >= RANGE * RANGE) {
+                        this.cancel();
+                        player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 15, 0.5f, 0.5f, 0.5f, 0);
+                    }
+                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 10, 0, 0, 0, 0, new Particle.DustOptions(Color.LIME, 1));
+                    player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 10, 0.1f, 0.1f, 0.1f, 0);
+                    allyCheck(player, location);
+                }
+            }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
+        }
     }
 }

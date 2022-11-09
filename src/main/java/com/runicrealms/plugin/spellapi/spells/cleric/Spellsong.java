@@ -19,10 +19,10 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Spellsong extends Spell {
 
-    private final double bonus;
     private static final int DURATION = 6;
     private static final double PERCENT = 40;
     private static final int RADIUS = 10;
+    private final double bonus;
     private final List<UUID> singers;
 
     public Spellsong() {
@@ -37,20 +37,23 @@ public class Spellsong extends Spell {
         this.bonus = 0;
     }
 
-    // spell execute code
-    @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public static double getPERCENT() {
+        return PERCENT;
+    }
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 2.0F);
-        startParticleTask(pl);
+    @Override
+    public void executeSpell(Player player, SpellItemType type) {
+
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 2.0F);
+        startParticleTask(player);
 
         // buff caster
-        singers.add(pl.getUniqueId());
+        singers.add(player.getUniqueId());
 
         // buff all players within 10 blocks
-        if (RunicCore.getPartyManager().getPlayerParty(pl) != null) {
-            for (Player memeber : RunicCore.getPartyManager().getPlayerParty(pl).getMembersWithLeader()) {
-                if (pl.getLocation().distance(memeber.getLocation()) > RADIUS) continue;
+        if (RunicCore.getPartyManager().getPlayerParty(player) != null) {
+            for (Player memeber : RunicCore.getPartyManager().getPlayerParty(player).getMembersWithLeader()) {
+                if (player.getLocation().distanceSquared(memeber.getLocation()) > RADIUS * RADIUS) continue;
                 singers.add(memeber.getUniqueId());
             }
         }
@@ -61,6 +64,23 @@ public class Spellsong extends Spell {
                 singers.clear();
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), DURATION * 20L);
+    }
+
+    @EventHandler
+    public void onSpellHit(MagicDamageEvent e) {
+
+        Player damager = e.getPlayer();
+        if (singers == null) return;
+        if (!singers.contains(damager.getUniqueId())) return;
+
+        double percent = (PERCENT + bonus) / 100;
+        int extraAmt = (int) (e.getAmount() * percent);
+        if (extraAmt < 1) extraAmt = 1;
+        e.setAmount(e.getAmount() + extraAmt);
+        damager.getWorld().playSound(damager.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
+        e.getVictim().getWorld().spawnParticle
+                (Particle.NOTE, e.getVictim().getLocation().add(0, 1.5, 0),
+                        5, 1.0F, 0, 0, 0); // 0.3F
     }
 
     private void startParticleTask(Player pl) {
@@ -81,27 +101,6 @@ public class Spellsong extends Spell {
                         (Particle.NOTE, pl.getEyeLocation(), 15, 0.75F, 0.75F, 0.75F, 0);
             }
         }.runTaskTimer(plugin, 0, 20L);
-    }
-
-    @EventHandler
-    public void onSpellHit(MagicDamageEvent e) {
-
-        Player damager = e.getPlayer();
-        if (singers == null) return;
-        if (!singers.contains(damager.getUniqueId())) return;
-
-        double percent = (PERCENT + bonus) / 100;
-        int extraAmt = (int) (e.getAmount() * percent);
-        if (extraAmt < 1) extraAmt = 1;
-        e.setAmount(e.getAmount() + extraAmt);
-        damager.getWorld().playSound(damager.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
-        e.getVictim().getWorld().spawnParticle
-                (Particle.NOTE, e.getVictim().getLocation().add(0, 1.5, 0),
-                        5, 1.0F, 0, 0, 0); // 0.3F
-    }
-
-    public static double getPERCENT() {
-        return PERCENT;
     }
 }
 
