@@ -33,16 +33,16 @@ public class FireBlast extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        Location blastLoc = pl.getTargetBlock(null, MAX_DIST).getLocation();
-        pl.getWorld().playSound(blastLoc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-        pl.getWorld().spawnParticle(Particle.LAVA, blastLoc, 25, 0.3f, 0.3f, 0.3f, 0);
+        Location blastLoc = player.getTargetBlock(null, MAX_DIST).getLocation();
+        player.getWorld().playSound(blastLoc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
+        player.getWorld().spawnParticle(Particle.LAVA, blastLoc, 25, 0.3f, 0.3f, 0.3f, 0);
 
-        for (Entity en : pl.getWorld().getNearbyEntities(blastLoc, RADIUS, RADIUS, RADIUS)) {
-            if (!isValidEnemy(pl, en)) continue;
+        for (Entity en : player.getWorld().getNearbyEntities(blastLoc, RADIUS, RADIUS, RADIUS)) {
+            if (!isValidEnemy(player, en)) continue;
             LivingEntity le = (LivingEntity) en;
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, this);
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, this);
             en.getWorld().spawnParticle(Particle.FLAME, le.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
             addStatusEffect(en, EffectEnum.SILENCE, STUN_DURATION);
             addStatusEffect(en, EffectEnum.STUN, STUN_DURATION);

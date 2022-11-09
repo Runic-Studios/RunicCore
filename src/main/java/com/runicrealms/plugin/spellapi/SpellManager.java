@@ -237,7 +237,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new ColdTouch());
         this.spellList.add(new IcyAffinity());
         this.spellList.add(new ShadowTouch());
-        this.spellList.add(new Shadowmeld());
+        this.spellList.add(new Foresight());
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());
         this.spellList.add(new LastResort());
@@ -261,13 +261,18 @@ public class SpellManager implements Listener {
         this.spellList.add(new BearTrap());
         this.spellList.add(new WingClip());
         this.spellList.add(new Flare());
-        this.spellList.add(new SummonSentry());
+        this.spellList.add(new Sentry());
         this.spellList.add(new EscapeArtist());
         this.spellList.add(new ArcaneShot());
         this.spellList.add(new Icebrand());
         this.spellList.add(new IceVolley());
         this.spellList.add(new BindingShot());
         this.spellList.add(new SurvivalInstinct());
+        this.spellList.add(new Headshot());
+        this.spellList.add(new HoningShot());
+        /*
+        Items
+         */
         this.spellList.add(new Potion());
         /*
         Artifacts

@@ -32,8 +32,8 @@ public class PowerShot extends Spell implements MagicDamageSpell {
     private static final int DURATION = 6;
     private static final double PERCENT_INCREASE = .25;
     private static final int RADIUS = 3;
-    private final List<Arrow> powerShots;
     private static final HashMap<UUID, UUID> markedEntities = new HashMap<>();
+    private final List<Arrow> powerShots;
 
     public PowerShot() {
         super("Power Shot",
@@ -44,8 +44,19 @@ public class PowerShot extends Spell implements MagicDamageSpell {
                         "For " + DURATION + "s, enemies hit by this spell are afflicted " +
                         "with &aHunter's Mark&7, increasing all damage you " +
                         "deal to them by " + (int) (PERCENT_INCREASE * 100) + "%!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 12, 25);
+                ChatColor.WHITE, ClassEnum.ARCHER, 12, 20);
         powerShots = new ArrayList<>();
+    }
+
+    public static HashMap<UUID, UUID> huntersMarkMap() {
+        return markedEntities;
+    }
+
+    private void applyHuntersMark(Player player, LivingEntity le) {
+        DamageUtil.damageEntitySpell(DAMAGE, le, player, this);
+        markedEntities.put(player.getUniqueId(), le.getUniqueId());
+        Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> markedEntities.remove(player.getUniqueId()), DURATION * 20L);
     }
 
     @Override
@@ -54,6 +65,36 @@ public class PowerShot extends Spell implements MagicDamageSpell {
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
         Vector vec = player.getEyeLocation().getDirection().normalize().multiply(2);
         startTask(player, vec);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
+    private double huntersMarkDamage(Player caster, Entity victim, double eventDamage) {
+        if (!markedEntities.containsKey(caster.getUniqueId())) return eventDamage;
+        if (markedEntities.get(caster.getUniqueId()) != victim.getUniqueId()) return eventDamage;
+        return eventDamage + (eventDamage * PERCENT_INCREASE);
+    }
+
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
+        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
+    }
+
+    @EventHandler
+    public void onSearingArrowHit(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Arrow)) return;
+        Arrow arrow = (Arrow) e.getDamager();
+        if (!(arrow.getShooter() instanceof Player)) return;
+        if (!powerShots.contains(arrow)) return;
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onSpellDamage(MagicDamageEvent e) {
+        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
     }
 
     private void startTask(Player player, Vector vector) {
@@ -81,47 +122,5 @@ public class PowerShot extends Spell implements MagicDamageSpell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
-    }
-
-
-    @EventHandler
-    public void onSearingArrowHit(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Arrow)) return;
-        Arrow arrow = (Arrow) e.getDamager();
-        if (!(arrow.getShooter() instanceof Player)) return;
-        if (!powerShots.contains(arrow)) return;
-        e.setCancelled(true);
-    }
-
-    private void applyHuntersMark(Player pl, LivingEntity le) {
-        DamageUtil.damageEntitySpell(DAMAGE, le, pl, this);
-        markedEntities.put(pl.getUniqueId(), le.getUniqueId());
-        Cone.coneEffect(le, Particle.REDSTONE, DURATION, 0, 20L, Color.GREEN);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> markedEntities.remove(pl.getUniqueId()), DURATION * 20L);
-    }
-
-    @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
-        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
-    }
-
-    @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
-        e.setAmount((int) huntersMarkDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
-    }
-
-    private double huntersMarkDamage(Player caster, Entity victim, double eventDamage) {
-        if (!markedEntities.containsKey(caster.getUniqueId())) return eventDamage;
-        if (markedEntities.get(caster.getUniqueId()) != victim.getUniqueId()) return eventDamage;
-        return eventDamage + (eventDamage * PERCENT_INCREASE);
-    }
-
-    public static HashMap<UUID, UUID> huntersMarkMap() {
-        return markedEntities;
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }

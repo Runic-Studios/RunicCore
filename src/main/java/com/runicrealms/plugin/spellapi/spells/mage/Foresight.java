@@ -14,14 +14,14 @@ import org.bukkit.event.EventPriority;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Shadowmeld extends Spell {
+public class Foresight extends Spell {
 
     private static final int DURATION = 2;
     private static final double PERCENT_REDUCTION = .75;
     private static final HashSet<UUID> doomers = new HashSet<>();
 
-    public Shadowmeld() {
-        super("Shadowmeld",
+    public Foresight() {
+        super("Foresight",
                 "After casting your &aBlink &7spell, " +
                         "you gain " + (int) (PERCENT_REDUCTION * 100) + "% " +
                         "damage reduction for " + DURATION + "s!",
@@ -29,22 +29,12 @@ public class Shadowmeld extends Spell {
         this.setIsPassive(true);
     }
 
-    @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (!doomers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    public static int getDuration() {
+        return DURATION;
     }
 
-    @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
-        if (!doomers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
-    }
-
-    @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
-        if (!doomers.contains(e.getVictim().getUniqueId())) return;
-        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    public static HashSet<UUID> getDoomers() {
+        return doomers;
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -57,12 +47,22 @@ public class Shadowmeld extends Spell {
                 () -> doomers.remove(event.getCaster().getUniqueId()), DURATION * 20L);
     }
 
-    public static int getDuration() {
-        return DURATION;
+    @EventHandler
+    public void onMobDamage(MobDamageEvent e) {
+        if (!doomers.contains(e.getVictim().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 
-    public static HashSet<UUID> getDoomers() {
-        return doomers;
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
+        if (!doomers.contains(e.getVictim().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
+    }
+
+    @EventHandler
+    public void onSpellDamage(MagicDamageEvent e) {
+        if (!doomers.contains(e.getVictim().getUniqueId())) return;
+        e.setAmount((int) (e.getAmount() * (1 - PERCENT_REDUCTION)));
     }
 }
 

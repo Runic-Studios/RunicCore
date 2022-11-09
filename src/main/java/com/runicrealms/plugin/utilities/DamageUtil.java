@@ -3,6 +3,7 @@ package com.runicrealms.plugin.utilities;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.RangedDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -92,6 +93,45 @@ public class DamageUtil {
         }
 
         damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
+        if (!(recipient instanceof Player)) // we use health bars now for PvP
+            HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
+    }
+
+    /**
+     * @param dmgAmt
+     * @param recipient
+     * @param caster
+     * @param isBasicAttack
+     * @param arrow
+     * @param spell
+     */
+    public static void damageEntityRanged(double dmgAmt, LivingEntity recipient, Player caster,
+                                          boolean isBasicAttack, Arrow arrow, Spell... spell) {
+
+        // prevent healing
+        if (dmgAmt < 0)
+            dmgAmt = 0;
+
+        // call an event, apply modifiers if necessary
+        PhysicalDamageEvent event = new RangedDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, arrow, spell);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        dmgAmt = event.getAmount();
+
+        // ignore NPCs
+        if (recipient.hasMetadata("NPC")) return;
+        if (recipient instanceof ArmorStand) return;
+
+        // skip party members
+        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+            if (recipient instanceof Player) {
+                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                    return;
+                }
+            }
+        }
+
+        damageEntityByEntity(dmgAmt, recipient, caster, true);
         if (!(recipient instanceof Player)) // we use health bars now for PvP
             HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
     }

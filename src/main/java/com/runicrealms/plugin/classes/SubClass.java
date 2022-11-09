@@ -17,8 +17,8 @@ public enum SubClass {
      archer
      */
     MARKSMAN("Marksman", ClassEnum.ARCHER, marksmanItem(), "Marksman is a master of single-target damage!"),
-    SCOUT("Scout", ClassEnum.ARCHER, scoutItem(), "Scout weakens enemies with utility!"),
-    WARDEN("Warden", ClassEnum.ARCHER, wardenItem(), "Warden controls the battlefield with crowd control!"),
+    RANGER("Ranger", ClassEnum.ARCHER, rangerItem(), "Ranger controls the battlefield with crowd control!"),
+    SCOUT("Scout", ClassEnum.ARCHER, scoutItem(), "Scout eludes enemies with mobility!"),
     /*
      cleric
      */
@@ -28,9 +28,9 @@ public enum SubClass {
     /*
      mage
      */
+    ARCANIST("Arcanist", ClassEnum.MAGE, arcanistItem(), "Arcanist has utility and buffs to out-maneuver opponents!"),
     CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with crowd control!"),
     PYROMANCER("Pyromancer", ClassEnum.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect damage!"),
-    WARLOCK("Warlock", ClassEnum.MAGE, warlockItem(), "Warlock has utility and buffs to out-maneuver opponents!"),
     /*
      rogue
      */
@@ -43,18 +43,6 @@ public enum SubClass {
     BERSERKER("Berserker", ClassEnum.WARRIOR, berserkerItem(), "Berserker fights ferociously with abilities that cleave enemies!"),
     GUARDIAN("Guardian", ClassEnum.WARRIOR, guardianItem(), "Guardian excels as a tank, defending allies!"),
     INQUISITOR("Inquisitor", ClassEnum.WARRIOR, inquisitorItem(), "Inquisitor uses crowd control to disable enemies!");
-
-    private final String name;
-    private final ClassEnum baseClass;
-    private final ItemStack itemStack;
-    private final String description;
-
-    SubClass(String name, ClassEnum baseClass, ItemStack itemStack, String description) {
-        this.name = name;
-        this.baseClass = baseClass;
-        this.itemStack = itemStack;
-        this.description = description;
-    }
 
     public static final Set<SubClass> ARCHER_SUBCLASSES = new LinkedHashSet<>();
     public static final Set<SubClass> CLERIC_SUBCLASSES = new LinkedHashSet<>();
@@ -86,6 +74,18 @@ public enum SubClass {
         }
     }
 
+    private final String name;
+    private final ClassEnum baseClass;
+    private final ItemStack itemStack;
+    private final String description;
+
+    SubClass(String name, ClassEnum baseClass, ItemStack itemStack, String description) {
+        this.name = name;
+        this.baseClass = baseClass;
+        this.itemStack = itemStack;
+        this.description = description;
+    }
+
     /**
      * Determines the appropriate subclass based on player class and specified position
      *
@@ -109,9 +109,9 @@ public enum SubClass {
                 if (value == 1)
                     subClass = SubClass.MARKSMAN;
                 else if (value == 2)
-                    subClass = SubClass.SCOUT;
+                    subClass = SubClass.RANGER;
                 else
-                    subClass = SubClass.WARDEN;
+                    subClass = SubClass.SCOUT;
                 break;
             case "cleric":
                 if (value == 1)
@@ -123,11 +123,11 @@ public enum SubClass {
                 break;
             case "mage":
                 if (value == 1)
-                    subClass = SubClass.CRYOMANCER;
+                    subClass = SubClass.ARCANIST;
                 else if (value == 2)
-                    subClass = SubClass.PYROMANCER;
+                    subClass = SubClass.CRYOMANCER;
                 else
-                    subClass = SubClass.WARLOCK;
+                    subClass = SubClass.PYROMANCER;
                 break;
             case "rogue":
                 if (value == 1)
@@ -149,22 +149,6 @@ public enum SubClass {
                 return null;
         }
         return subClass;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public ClassEnum getBaseClass() {
-        return this.baseClass;
-    }
-
-    public ItemStack getItemStack() {
-        return this.itemStack;
-    }
-
-    public String getDescription() {
-        return this.description;
     }
 
     /**
@@ -193,7 +177,7 @@ public enum SubClass {
                 "leHR1cmUvNWU2MjFjM2E2MDc2ZjY3OTg1YmZjNzY1NWYzNzViNDhjM2M1ZDg4MzQwZjIxMmNiZjEyMzBhZDRmYjBhZGJlOCJ9fX0=");
     }
 
-    private static ItemStack wardenItem() {
+    private static ItemStack rangerItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3" +
                 "RleHR1cmUvYmViZjgxYmMwN2M1Zjg2NzY1ZmMwZjcxZTUxNmI3YWI3YjgyYWE2MzlkOTRkYjA5MWZkOTJlMDYxYWIzMDVjIn19fQ==");
     }
@@ -223,7 +207,7 @@ public enum SubClass {
                 "leHR1cmUvNDA4MGJiZWZjYTg3ZGMwZjM2NTM2YjY1MDg0MjVjZmM0Yjk1YmE2ZThmNWU2YTQ2ZmY5ZTljYjQ4OGE5ZWQifX19");
     }
 
-    private static ItemStack warlockItem() {
+    private static ItemStack arcanistItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
                 "leHR1cmUvY2NiM2QyMmFlMDAxMjE4NjFlZTY1ZTg1MDJjMzEzNzg0YTI2OGU0MmExMzBlM2Q2N2RlZDNhNjg0OGVhZjk2OCJ9fX0=");
     }
@@ -256,5 +240,21 @@ public enum SubClass {
     private static ItemStack inquisitorItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
                 "leHR1cmUvMjBkOThiNTI0MjQ1MWI4ZjUyNzZmZWE5ODNkM2MyODRhNDZiNGFjOTA0ODBiZDUwODNkNDg3YjlmZmY3NDMyZiJ9fX0=");
+    }
+
+    public ClassEnum getBaseClass() {
+        return this.baseClass;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public ItemStack getItemStack() {
+        return this.itemStack;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

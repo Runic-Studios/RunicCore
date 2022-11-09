@@ -133,6 +133,63 @@ public class SkillTreeData implements SessionData {
     }
 
     /**
+     * Resets the skill trees for given player. ALL THREE skill trees will be wiped from memory / DB,
+     * and spent points will be reset to 0 in DB and memory.
+     *
+     * @param player to reset tree for
+     */
+    public static void resetSkillTrees(Player player) {
+        UUID uuid = player.getUniqueId();
+        /*
+        Wipe the memoized perk data
+         */
+        SkillTreeData first = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + SkillTreePosition.FIRST.getValue());
+        SkillTreeData second = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + SkillTreePosition.SECOND.getValue());
+        SkillTreeData third = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + SkillTreePosition.THIRD.getValue());
+        first.setPerks(first.getSkillTreeBySubClass(first.getSubclass()));
+        second.setPerks(second.getSkillTreeBySubClass(second.getSubclass()));
+        third.setPerks(third.getSkillTreeBySubClass(third.getSubclass()));
+        // --------------------------------------------
+        RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid).resetSpells(); // reset assigned spells in-memory
+        RunicCoreAPI.getPassives(uuid).clear(); // reset passives
+        RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
+        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+            first.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+            second.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+            third.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
+            playerSpellData.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
+        }
+    }
+
+    /**
+     * Skill Trees are nested in redis, so here's a handy method to get the key
+     *
+     * @param uuid              of the player
+     * @param slot              of the character
+     * @param skillTreePosition 1, 2 or 3
+     * @return a string representing the location in jedis
+     */
+    public static String getJedisKey(UUID uuid, int slot, SkillTreePosition skillTreePosition) {
+        return uuid + ":character:" + slot + ":" + PATH_LOCATION + ":" + skillTreePosition.getValue();
+    }
+
+    /**
+     * Loops through currently purchased perks to store passives in memory
+     */
+    public void addPassivesToMap() {
+        if (RunicCoreAPI.getPassives(uuid) == null) return; // player is offline or removed from memory
+        for (Perk perk : perks) {
+            if (perk instanceof PerkBaseStat) continue;
+            if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
+            if (!RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
+            if (perk.getCurrentlyAllocatedPoints() >= perk.getCost())
+                RunicCoreAPI.getPassives(uuid).add(((PerkSpell) perk).getSpellName());
+        }
+    }
+
+    /**
      * Attempts to purchase perk selected from inv click event.
      * Will fail for a variety of reasons, or succeeds, updates currently allocated points, and
      *
@@ -170,138 +227,13 @@ public class SkillTreeData implements SessionData {
         }
     }
 
-    /**
-     * Loops through currently purchased perks to store passives in memory
-     */
-    public void addPassivesToMap() {
-        if (RunicCoreAPI.getPassives(uuid) == null) return; // player is offline or removed from memory
-        for (Perk perk : perks) {
-            if (perk instanceof PerkBaseStat) continue;
-            if (RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
-            if (!RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
-            if (perk.getCurrentlyAllocatedPoints() >= perk.getCost())
-                RunicCoreAPI.getPassives(uuid).add(((PerkSpell) perk).getSpellName());
-        }
-    }
-
-    /**
-     * Resets the skill trees for given player. ALL THREE skill trees will be wiped from memory / DB,
-     * and spent points will be reset to 0 in DB and memory.
-     *
-     * @param player to reset tree for
-     */
-    public static void resetSkillTrees(Player player) {
-        UUID uuid = player.getUniqueId();
+    @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        String key = getJedisKey(uuid, slot[0], position);
         /*
-        Wipe the memoized perk data
+        Get all the values for skill tree in position. Stored as id-pointsAllocated key-value pair
          */
-        SkillTreeData first = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + SkillTreePosition.FIRST.getValue());
-        SkillTreeData second = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + SkillTreePosition.SECOND.getValue());
-        SkillTreeData third = RunicCore.getSkillTreeManager().getPlayerSkillTreeMap().get(uuid + ":" + SkillTreePosition.THIRD.getValue());
-        first.setPerks(first.getSkillTreeBySubClass(first.getSubclass()));
-        second.setPerks(second.getSkillTreeBySubClass(second.getSubclass()));
-        third.setPerks(third.getSkillTreeBySubClass(third.getSubclass()));
-        // --------------------------------------------
-        RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid).resetSpells(); // reset assigned spells in-memory
-        RunicCoreAPI.getPassives(uuid).clear(); // reset passives
-        RunicCore.getStatManager().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            first.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
-            second.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
-            third.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
-            PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().loadPlayerSpellData(uuid, RunicCoreAPI.getCharacterSlot(uuid));
-            playerSpellData.writeToJedis(jedis, RunicCoreAPI.getCharacterSlot(uuid));
-        }
-    }
-
-    /**
-     * Returns the appropriate default perk list for the given subclass, to be populated
-     * later by persistent data from the DB.
-     *
-     * @param subClass the subclass of the player (try SubClassUtil)
-     * @return A default list of perks (no purchased perks)
-     */
-    private List<Perk> getSkillTreeBySubClass(SubClass subClass) throws NullPointerException {
-        switch (subClass) {
-            case MARKSMAN:
-                return ArcherTreeUtil.marksmanPerkList();
-            case SCOUT:
-                return ArcherTreeUtil.scoutPerkList();
-            case WARDEN:
-                return ArcherTreeUtil.wardenPerkList();
-            case BARD:
-                return ClericTreeUtil.bardPerkList();
-            case PALADIN:
-                return ClericTreeUtil.paladinList();
-            case PRIEST:
-                return ClericTreeUtil.priestList();
-            case CRYOMANCER:
-                return MageTreeUtil.cryomancerPerkList();
-            case PYROMANCER:
-                return MageTreeUtil.pyromancerPerkList();
-            case WARLOCK:
-                return MageTreeUtil.warlockPerkList();
-            case ASSASSIN:
-                return RogueTreeUtil.assassinPerkList();
-            case DUELIST:
-                return RogueTreeUtil.duelistPerkList();
-            case PIRATE:
-                return RogueTreeUtil.piratePerkList();
-            case BERSERKER:
-                return WarriorTreeUtil.berserkerPerkList();
-            case GUARDIAN:
-                return WarriorTreeUtil.guardianPerkList();
-            case INQUISITOR:
-                return WarriorTreeUtil.inquisitorPerkList();
-        }
-        return null;
-    }
-
-    /**
-     * Skill Trees are nested in redis, so here's a handy method to get the key
-     *
-     * @param uuid              of the player
-     * @param slot              of the character
-     * @param skillTreePosition 1, 2 or 3
-     * @return a string representing the location in jedis
-     */
-    public static String getJedisKey(UUID uuid, int slot, SkillTreePosition skillTreePosition) {
-        return uuid + ":character:" + slot + ":" + PATH_LOCATION + ":" + skillTreePosition.getValue();
-    }
-
-    public SkillTreePosition getPosition() {
-        return position;
-    }
-
-    public SubClass getSubclass() {
-        return subClass;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public List<Perk> getPerks() {
-        return perks;
-    }
-
-    public void setPerks(List<Perk> perks) {
-        this.perks = perks;
-    }
-
-    /**
-     * Returns specified perk by ID.
-     *
-     * @param perkID ID of perk
-     * @return the Perk object
-     */
-    private Perk getPerk(int perkID) {
-        for (Perk perk : this.perks) {
-            if (perk.getPerkID() == perkID)
-                return perk;
-        }
-        return null;
+        return jedis.hgetAll(key);
     }
 
     @Override
@@ -317,15 +249,6 @@ public class SkillTreeData implements SessionData {
             skillTreeDataMap.put(String.valueOf(perk.getPerkID()), String.valueOf(perk.getCurrentlyAllocatedPoints()));
         }
         return skillTreeDataMap;
-    }
-
-    @Override
-    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
-        String key = getJedisKey(uuid, slot[0], position);
-        /*
-        Get all the values for skill tree in position. Stored as id-pointsAllocated key-value pair
-         */
-        return jedis.hgetAll(key);
     }
 
     /**
@@ -356,6 +279,83 @@ public class SkillTreeData implements SessionData {
             e.printStackTrace();
         }
         return mongoData;
+    }
+
+    /**
+     * Returns specified perk by ID.
+     *
+     * @param perkID ID of perk
+     * @return the Perk object
+     */
+    private Perk getPerk(int perkID) {
+        for (Perk perk : this.perks) {
+            if (perk.getPerkID() == perkID)
+                return perk;
+        }
+        return null;
+    }
+
+    public List<Perk> getPerks() {
+        return perks;
+    }
+
+    public void setPerks(List<Perk> perks) {
+        this.perks = perks;
+    }
+
+    public SkillTreePosition getPosition() {
+        return position;
+    }
+
+    /**
+     * Returns the appropriate default perk list for the given subclass, to be populated
+     * later by persistent data from the DB.
+     *
+     * @param subClass the subclass of the player (try SubClassUtil)
+     * @return A default list of perks (no purchased perks)
+     */
+    private List<Perk> getSkillTreeBySubClass(SubClass subClass) throws NullPointerException {
+        switch (subClass) {
+            case MARKSMAN:
+                return ArcherTreeUtil.marksmanPerkList();
+            case RANGER:
+                return ArcherTreeUtil.rangerPerkList();
+            case SCOUT:
+                return ArcherTreeUtil.scoutPerkList();
+            case BARD:
+                return ClericTreeUtil.bardPerkList();
+            case PALADIN:
+                return ClericTreeUtil.paladinList();
+            case PRIEST:
+                return ClericTreeUtil.priestList();
+            case ARCANIST:
+                return MageTreeUtil.arcanistPerkList();
+            case CRYOMANCER:
+                return MageTreeUtil.cryomancerPerkList();
+            case PYROMANCER:
+                return MageTreeUtil.pyromancerPerkList();
+            case ASSASSIN:
+                return RogueTreeUtil.assassinPerkList();
+            case DUELIST:
+                return RogueTreeUtil.duelistPerkList();
+            case PIRATE:
+                return RogueTreeUtil.piratePerkList();
+            case BERSERKER:
+                return WarriorTreeUtil.berserkerPerkList();
+            case GUARDIAN:
+                return WarriorTreeUtil.guardianPerkList();
+            case INQUISITOR:
+                return WarriorTreeUtil.inquisitorPerkList();
+        }
+        return null;
+    }
+
+    public SubClass getSubclass() {
+        return subClass;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
 }

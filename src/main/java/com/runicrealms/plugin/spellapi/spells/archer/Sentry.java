@@ -21,7 +21,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class SummonSentry extends Spell implements PhysicalDamageSpell {
+public class Sentry extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 3;
     private static final int DURATION = 8;
@@ -30,9 +30,9 @@ public class SummonSentry extends Spell implements PhysicalDamageSpell {
     private static final double DAMAGE_PER_LEVEL = 0.15;
     private Arrow arrow;
 
-    public SummonSentry() {
-        super("Summon Sentry",
-                "You conjure an enchanted " +
+    public Sentry() {
+        super("Sentry",
+                "You build an enchanted " +
                         "crossbow at your location! " +
                         "For " + DURATION + "s, the crossbow fires " +
                         "at all enemies within " + RADIUS + " blocks, " +
@@ -43,19 +43,19 @@ public class SummonSentry extends Spell implements PhysicalDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(pl.getLocation());
+        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(player.getLocation());
         if (armorStand == null) return;
         if (armorStand.getEquipment() == null) return;
-        armorStand.setCustomName(ChatColor.YELLOW + pl.getName() + "'s Turret");
+        armorStand.setCustomName(ChatColor.YELLOW + player.getName() + "'s Turret");
         armorStand.setArms(true);
         armorStand.setRightArmPose(new EulerAngle(ArmorStandAPI.degreesToRadians(285), 0, 0));
         armorStand.getEquipment().setItemInMainHand(new ItemStack(Material.CROSSBOW));
-        pl.getWorld().playSound(armorStand.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
-        pl.getWorld().spawnParticle(Particle.REDSTONE, armorStand.getLocation(),
+        player.getWorld().playSound(armorStand.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
+        player.getWorld().spawnParticle(Particle.REDSTONE, armorStand.getLocation(),
                 10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
-        String name = pl.getName();
+        String name = player.getName();
         Location standLocation = armorStand.getEyeLocation();
 
         new BukkitRunnable() {
@@ -68,20 +68,20 @@ public class SummonSentry extends Spell implements PhysicalDamageSpell {
                     armorStand.remove();
                 } else {
                     count += 1;
-                    pl.getWorld().spawnParticle
+                    player.getWorld().spawnParticle
                             (
                                     Particle.CRIT,
                                     standLocation.clone().add(0, 1, 0),
                                     25, 0.75f, 0.25f, 0.75f, 0
                             );
                     for (Entity en : armorStand.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (!isValidEnemy(pl, en)) continue;
+                        if (!isValidEnemy(player, en)) continue;
                         Location newLocation = standLocation.clone().setDirection(en.getLocation().subtract(standLocation).toVector());
                         armorStand.teleport(newLocation);
                         final Vector direction =
                                 ((LivingEntity) en).getEyeLocation().toVector()
                                         .subtract(standLocation.clone().add(0, 1, 0).toVector());
-                        arrow = pl.getWorld().spawnArrow
+                        arrow = player.getWorld().spawnArrow
                                 (
                                         standLocation.clone().add(0, 1, 0), direction, (float) 2, (float) 0
                                 );
@@ -101,6 +101,11 @@ public class SummonSentry extends Spell implements PhysicalDamageSpell {
         }.runTaskTimer(plugin, 0, 20L);
     }
 
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
     /*
     Deal correct damage when a turret arrow is fired
      */
@@ -110,11 +115,6 @@ public class SummonSentry extends Spell implements PhysicalDamageSpell {
         e.setCancelled(true);
         Player pl = Bukkit.getPlayer(e.getDamager().getMetadata("player").get(0).asString());
         DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, this);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 

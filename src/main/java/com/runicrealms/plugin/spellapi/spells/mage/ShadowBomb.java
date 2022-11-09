@@ -41,6 +41,26 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
     }
 
+    private void damageOverTime(LivingEntity le, Player pl) {
+        Spell spell = this;
+        new BukkitRunnable() {
+            int count = 0;
+
+            @Override
+            public void run() {
+                if (count >= DURATION) {
+                    this.cancel();
+                } else {
+                    count += PERIOD;
+                    le.getWorld().playSound(le.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
+                    le.getWorld().spawnParticle(Particle.REDSTONE, le.getLocation(),
+                            50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GREEN, 1));
+                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, spell);
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD * 20L);
+    }
+
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
@@ -53,6 +73,11 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
         final Vector velocity = pl.getLocation().getDirection().normalize().multiply(1.25);
         thrownPotion.setVelocity(velocity);
         thrownPotion.setShooter(pl);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 
     @EventHandler
@@ -82,34 +107,9 @@ public class ShadowBomb extends Spell implements MagicDamageSpell {
             damageOverTime(le, pl);
             // Doom (passive)
             if (pl == null) continue;
-            if (Shadowmeld.getDoomers().contains(pl.getUniqueId()))
-                addStatusEffect(le, EffectEnum.SILENCE, Shadowmeld.getDuration());
+            if (Foresight.getDoomers().contains(pl.getUniqueId()))
+                addStatusEffect(le, EffectEnum.SILENCE, Foresight.getDuration());
         }
-    }
-
-    private void damageOverTime(LivingEntity le, Player pl) {
-        Spell spell = this;
-        new BukkitRunnable() {
-            int count = 0;
-
-            @Override
-            public void run() {
-                if (count >= DURATION) {
-                    this.cancel();
-                } else {
-                    count += PERIOD;
-                    le.getWorld().playSound(le.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
-                    le.getWorld().spawnParticle(Particle.REDSTONE, le.getLocation(),
-                            50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.GREEN, 1));
-                    DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, spell);
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD * 20L);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 

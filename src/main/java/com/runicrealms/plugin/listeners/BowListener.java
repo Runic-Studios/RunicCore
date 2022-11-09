@@ -31,117 +31,45 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("FieldCanBeLocal")
 public class BowListener implements Listener {
 
-    private static final int ARROW_VELOCITY_MULT = 3;
+    private static final int ARROW_SPEED_MULTIPLIER = 3;
     private static final int BOW_GLOBAL_COOLDOWN = 15; // ticks
 
+    /**
+     * Removes any arrows stuck in bodies
+     */
     @EventHandler
-    public void onDraw(PlayerInteractEvent e) {
-
-        // null check
-        if (e.getItem() == null) return;
-
-        if (e.getHand() != EquipmentSlot.HAND) return;
-
-        // retrieve the weapon type
-        ItemStack artifact = e.getItem();
-        if (e.getPlayer().getInventory().getItemInOffHand().equals(artifact))
-            return; // don't let them fire from offhand
-        WeaponType artifactType = WeaponType.matchType(artifact);
-        double cooldown = e.getPlayer().getCooldown(artifact.getType());
-
-        // only listen for items that can be artifact weapons
-        if (artifactType == null) return;
-
-        // only listen for bows
-        if (!(artifactType.equals(WeaponType.BOW))) return;
-
-        Player player = e.getPlayer();
-
-        // only listen for left clicks
-        if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) return;
-
-        // only apply cooldown if it's not already active
-        if (cooldown != 0) return;
-
-        String className = RunicCoreAPI.getPlayerClass(player);
-        if (className == null) return;
-        if (!className.equals("Archer")) return;
-
-        int reqLv;
-        try {
-            RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
-            reqLv = runicItemWeapon.getLevel();
-        } catch (Exception ex) {
-            reqLv = 0;
-        }
-
-        if (reqLv > player.getLevel()) {
-            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-            e.setCancelled(true);
-            return;
-        }
-
-        if (RunicCoreAPI.isCasting(player)) return;
-
-        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
-
-        // fire a custom arrow
-        final Vector direction = player.getEyeLocation().getDirection().multiply(ARROW_VELOCITY_MULT);
-        Arrow myArrow = player.launchProjectile(Arrow.class);
-
-        myArrow.setVelocity(direction);
-        myArrow.setShooter(player);
-        myArrow.setCustomNameVisible(false);
-        myArrow.setCustomName("autoAttack");
-        myArrow.setBounce(false);
-
-        // remove the arrow
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Location arrowLoc = myArrow.getLocation();
-                player.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
-                if (myArrow.isDead() || myArrow.isOnGround()) {
-                    this.cancel();
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
-
-        // set the cooldown
-        player.setCooldown(artifact.getType(), BOW_GLOBAL_COOLDOWN);
+    public void onArrow(ProjectileHitEvent event) {
+        if (event.getEntity() instanceof Arrow)
+            event.getEntity().remove();
     }
 
-    @EventHandler
-    public void onArrowPickup(PlayerPickupArrowEvent e) {
-        e.setCancelled(true);
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onArrowPickup(PlayerPickupArrowEvent event) {
+        event.setCancelled(true);
     }
 
     /**
      * Bugfix for armor stands
      */
     @EventHandler
-    public void onCollide(ProjectileHitEvent e) {
+    public void onCollide(ProjectileHitEvent event) {
 
         // only listen for arrows
-        if (!(e.getEntity() instanceof Arrow)) return;
+        if (!(event.getEntity() instanceof Arrow)) return;
 
-        Arrow arrow = (Arrow) e.getEntity();
+        Arrow arrow = (Arrow) event.getEntity();
 
         // only listen for arrows shot by a player
         if (!(arrow.getShooter() instanceof Player)) return;
 
-        Entity victim = e.getHitEntity();
-        if (e.getHitEntity() instanceof ArmorStand && e.getHitEntity().getVehicle() != null) {
-            victim = e.getHitEntity().getVehicle();
+        Entity victim = event.getHitEntity();
+        if (event.getHitEntity() instanceof ArmorStand && event.getHitEntity().getVehicle() != null) {
+            victim = event.getHitEntity().getVehicle();
         }
 
         if (victim == null) return;
         // get our entity
         if (!(victim.getType().isAlive())) return;
-
-        // skip NPCs
-        if (victim.hasMetadata("NPC")) return;
 
         Player damager = (Player) arrow.getShooter();
 
@@ -155,19 +83,8 @@ public class BowListener implements Listener {
         }
     }
 
-    /**
-     * Stop mobs from targeting each other.
-     */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onMobTargetMob(EntityTargetEvent e) {
-        if (e.getTarget() == null) return; // has a target
-        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent())
-            return; // target is a mythic mob
-        e.setCancelled(true);
-    }
-
     // method to handle custom damage for bows
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onDamage(EntityDamageByEntityEvent e) {
 
         // only listen for arrows
@@ -241,19 +158,101 @@ public class BowListener implements Listener {
 
             int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
 
-            // spawn the damage indicator if the arrow is an basic attack
+            // spawn the damage indicator if the arrow is a basic attack
             if (arrow.getCustomName() == null) return;
 
             e.setCancelled(true);
 
-            DamageUtil.damageEntityPhysical(randomNum, (LivingEntity) victim, damager, true, true);
+            DamageUtil.damageEntityRanged(randomNum, (LivingEntity) victim, damager, true, arrow);
         }
     }
 
-    // removes any arrows stuck in bodies
     @EventHandler
-    public void onArrow(ProjectileHitEvent e) {
-        if (e.getEntity() instanceof Arrow)
-            e.getEntity().remove();
+    public void onDraw(PlayerInteractEvent event) {
+
+        // null check
+        if (event.getItem() == null) return;
+
+        if (event.getHand() != EquipmentSlot.HAND) return;
+
+        // retrieve the weapon type
+        ItemStack artifact = event.getItem();
+        if (event.getPlayer().getInventory().getItemInOffHand().equals(artifact))
+            return; // don't let them fire from offhand
+        WeaponType artifactType = WeaponType.matchType(artifact);
+        double cooldown = event.getPlayer().getCooldown(artifact.getType());
+
+        // only listen for items that can be artifact weapons
+        if (artifactType == null) return;
+
+        // only listen for bows
+        if (!(artifactType.equals(WeaponType.BOW))) return;
+
+        Player player = event.getPlayer();
+
+        // only listen for left clicks
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+
+        // only apply cooldown if it's not already active
+        if (cooldown != 0) return;
+
+        String className = RunicCoreAPI.getPlayerClass(player);
+        if (className == null) return;
+        if (!className.equals("Archer")) return;
+
+        int reqLv;
+        try {
+            RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+            reqLv = runicItemWeapon.getLevel();
+        } catch (Exception ex) {
+            reqLv = 0;
+        }
+
+        if (reqLv > player.getLevel()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+            event.setCancelled(true);
+            return;
+        }
+
+        if (RunicCoreAPI.isCasting(player)) return;
+
+        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+
+        // fire a custom arrow
+        final Vector direction = player.getEyeLocation().getDirection().multiply(ARROW_SPEED_MULTIPLIER);
+        Arrow myArrow = player.launchProjectile(Arrow.class);
+
+        myArrow.setVelocity(direction);
+        myArrow.setShooter(player);
+        myArrow.setCustomNameVisible(false);
+        myArrow.setCustomName("autoAttack");
+        myArrow.setBounce(false);
+
+        // remove the arrow
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location arrowLoc = myArrow.getLocation();
+                player.getWorld().spawnParticle(Particle.CRIT, arrowLoc, 5, 0, 0, 0, 0);
+                if (myArrow.isDead() || myArrow.isOnGround()) {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
+
+        // set the cooldown
+        player.setCooldown(artifact.getType(), BOW_GLOBAL_COOLDOWN);
+    }
+
+    /**
+     * Stop mobs from targeting each other.
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMobTargetMob(EntityTargetEvent e) {
+        if (e.getTarget() == null) return; // has a target
+        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent())
+            return; // target is a mythic mob
+        e.setCancelled(true);
     }
 }

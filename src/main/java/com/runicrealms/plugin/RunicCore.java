@@ -296,6 +296,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new RunicTeleportCMD());
         commandManager.registerCommand(new RunicBossCMD());
         commandManager.registerCommand(new HelpCMD());
+        commandManager.registerCommand(new SpeedCMD());
     }
 
     private void registerEvents() {

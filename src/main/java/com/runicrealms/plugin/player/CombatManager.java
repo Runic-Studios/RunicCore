@@ -23,9 +23,9 @@ import java.util.UUID;
  */
 public class CombatManager implements Listener {
 
+    private static final double COMBAT_DURATION = 15;
     private final HashMap<UUID, Long> playersInCombat;
     private final HashMap<UUID, Double> shieldedPlayers;
-    private static final double COMBAT_DURATION = 15;
 
     public CombatManager() {
         this.playersInCombat = new HashMap<>();
@@ -34,7 +34,28 @@ public class CombatManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    // todo: this interacts in a weird way with the shield stat.
+    /**
+     * Adds a player to the combat set, sends them a message
+     *
+     * @param uuid of the player to add
+     */
+    public void addPlayer(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        assert player != null;
+        if (!playersInCombat.containsKey(uuid)) {
+            player.sendMessage(ChatColor.RED + "You have entered combat!");
+        }
+        playersInCombat.put(uuid, System.currentTimeMillis());
+    }
+
+    public HashMap<UUID, Long> getPlayersInCombat() {
+        return this.playersInCombat;
+    }
+
+    public HashMap<UUID, Double> getShieldedPlayers() {
+        return this.shieldedPlayers;
+    }
+
     @EventHandler
     public void onMobDamage(MobDamageEvent e) {
         if (e.getVictim() instanceof Player
@@ -46,7 +67,7 @@ public class CombatManager implements Listener {
     }
 
     @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent e) {
         if (e.getVictim() instanceof Player
                 && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
             e.setAmount(shieldDamage((Player) e.getVictim(),
@@ -56,7 +77,7 @@ public class CombatManager implements Listener {
     }
 
     @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent e) {
         if (e.getVictim() instanceof Player
                 && (shieldedPlayers.containsKey((e.getVictim().getUniqueId())))) {
             e.setAmount(shieldDamage((Player) e.getVictim(),
@@ -97,27 +118,5 @@ public class CombatManager implements Listener {
                 }
             }
         }, 0, 20L);
-    }
-
-    public HashMap<UUID, Long> getPlayersInCombat() {
-        return this.playersInCombat;
-    }
-
-    public HashMap<UUID, Double> getShieldedPlayers() {
-        return this.shieldedPlayers;
-    }
-
-    /**
-     * Adds a player to the combat set, sends them a message
-     *
-     * @param uuid of the player to add
-     */
-    public void addPlayer(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        assert player != null;
-        if (!playersInCombat.containsKey(uuid)) {
-            player.sendMessage(ChatColor.RED + "You have entered combat!");
-        }
-        playersInCombat.put(uuid, System.currentTimeMillis());
     }
 }
