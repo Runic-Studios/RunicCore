@@ -22,7 +22,7 @@ import java.util.UUID;
 public class RayOfLight extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE_AMOUNT = 25;
-    private static final double DAMAGE_PER_LEVEL = 2.25;
+    private static final double DAMAGE_PER_LEVEL = 4.0;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
     private static final int RADIUS = 4;
@@ -82,6 +82,11 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, hitEntities::clear, DURATION * 20L);
     }
 
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
     private void spawnSphere(Location loc) {
         for (double i = 0; i <= Math.PI; i += Math.PI / 12) {
             double radius = Math.sin(i);
@@ -95,11 +100,6 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
                 loc.subtract(x, y, z);
             }
         }
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 

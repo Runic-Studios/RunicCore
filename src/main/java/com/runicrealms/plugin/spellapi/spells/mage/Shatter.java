@@ -19,7 +19,7 @@ public class Shatter extends Spell {
         super("Shatter",
                 "Casting your &aArcane Bomb &7spell " +
                         "while you stand within the radius of your &aArcane Orb&7 " +
-                        "empowers it, causing it to silence enemies " +
+                        "empowers it, causing it to stun enemies " +
                         "for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
         this.setIsPassive(true);
@@ -39,7 +39,7 @@ public class Shatter extends Spell {
         double dist = location.distanceSquared(orbLocation);
 
         if (dist <= ArcaneOrb.RADIUS * ArcaneOrb.RADIUS) {
-            addStatusEffect(event.getVictim(), EffectEnum.SILENCE, DURATION);
+            addStatusEffect(event.getVictim(), EffectEnum.STUN, DURATION);
         }
     }
 }

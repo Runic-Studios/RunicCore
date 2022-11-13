@@ -34,7 +34,7 @@ public class ClericTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(48, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(50, 1, 0, 1, "Absolution"));
+        perks.add(new PerkSpell(50, 1, 0, 1, "Manawell"));
         perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(52, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkSpell(53, 1, 0, 1, "Consecration"));
@@ -51,7 +51,7 @@ public class ClericTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(60, 1, 0, 1, "Rejuvenate"));
         perks.add(new PerkBaseStat(61, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(62, 1, 0, 1, "Manawell"));
+        perks.add(new PerkSpell(62, 1, 0, 1, "Absolution"));
         perks.add(new PerkBaseStat(63, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(64, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkSpell(65, 1, 0, 1, "Holy Nova"));

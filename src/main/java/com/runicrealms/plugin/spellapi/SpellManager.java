@@ -237,7 +237,6 @@ public class SpellManager implements Listener {
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());
         this.spellList.add(new LastResort());
-        this.spellList.add(new Rescue());
         this.spellList.add(new Bolster());
         this.spellList.add(new Condemn());
         this.spellList.add(new Subdue());

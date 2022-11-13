@@ -18,12 +18,12 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Smite extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE = 5;
-    private static final double DAMAGE_PER_LEVEL = 1.5;
+    private static final int DAMAGE = 10;
+    private static final double DAMAGE_PER_LEVEL = 2.5;
     private static final int MAX_DIST = 10;
+    private static final double KNOCKBACK_MULT = -2.75;
     private final double BEAM_SPEED = 0.6;
     private final double COLLISION_RADIUS = 1.5;
-    private static final double KNOCKBACK_MULT = -2.75;
 
     public Smite() {
         super("Smite",
@@ -31,6 +31,19 @@ public class Smite extends Spell implements MagicDamageSpell {
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage and launching them back!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 8, 20);
+    }
+
+    private boolean checkForEnemy(Player caster, Location beamLocation) {
+        for (Entity en : caster.getWorld().getNearbyEntities(beamLocation, COLLISION_RADIUS, COLLISION_RADIUS, COLLISION_RADIUS)) {
+            if (!isValidEnemy(caster, en)) continue;
+            caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
+            en.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, en.getLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
+            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, caster, this);
+            Vector force = caster.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
+            en.setVelocity(force);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -56,19 +69,6 @@ public class Smite extends Spell implements MagicDamageSpell {
                     this.cancel();
             }
         }.runTaskTimer(plugin, 0, 1L);
-    }
-
-    private boolean checkForEnemy(Player caster, Location beamLocation) {
-        for (Entity en : caster.getWorld().getNearbyEntities(beamLocation, COLLISION_RADIUS, COLLISION_RADIUS, COLLISION_RADIUS)) {
-            if (!isValidEnemy(caster, en)) continue;
-            caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
-            en.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, en.getLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, caster, this);
-            Vector force = caster.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
-            en.setVelocity(force);
-            return true;
-        }
-        return false;
     }
 
     @Override

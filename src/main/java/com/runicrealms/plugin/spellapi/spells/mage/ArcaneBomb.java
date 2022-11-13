@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -15,18 +15,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Objects;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class ArcaneBomb extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 4;
-    private static final double DAMAGE_PER_LEVEL = .5;
-    private static final int DURATION = 6;
-    private static final int PERIOD = 1;
+    private static final int DAMAGE_AMT = 15;
+    private static final double DAMAGE_PER_LEVEL = 2.5;
+    private static final double DURATION = 2.5;
     private static final int RADIUS = 5;
     private ThrownPotion thrownPotion;
 
@@ -34,30 +31,10 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
         super("Arcane Bomb",
                 "You launch a magical vial of the arcane, " +
                         "dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) magicʔ damage per second for " +
-                        DURATION + "s to enemies within " +
-                        RADIUS + " blocks of the impact!",
+                        + "x&7 lvl) magicʔ damage to enemies within " +
+                        RADIUS + " blocks of the impact and silencing them " +
+                        "for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
-    }
-
-    private void damageOverTime(LivingEntity livingEntity, Player player) {
-        Spell spell = this;
-        new BukkitRunnable() {
-            int count = 0;
-
-            @Override
-            public void run() {
-                if (count >= DURATION) {
-                    this.cancel();
-                } else {
-                    count += PERIOD;
-                    livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
-                    livingEntity.getWorld().spawnParticle(Particle.REDSTONE, livingEntity.getLocation(),
-                            50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 1));
-                    DamageUtil.damageEntitySpell(DAMAGE_AMT, livingEntity, player, spell);
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0L, PERIOD * 20L);
     }
 
     @Override
@@ -102,7 +79,11 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
             if (!(entity instanceof LivingEntity)) continue;
             LivingEntity livingEntity = (LivingEntity) entity;
             if (!isValidEnemy(player, livingEntity)) continue;
-            damageOverTime(livingEntity, player);
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
+            livingEntity.getWorld().spawnParticle(Particle.REDSTONE, livingEntity.getLocation(),
+                    50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 1));
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, livingEntity, player, this);
+            addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
         }
     }
 }

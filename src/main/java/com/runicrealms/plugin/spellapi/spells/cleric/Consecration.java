@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 @SuppressWarnings("FieldCanBeLocal")
 public class Consecration extends Spell implements MagicDamageSpell {
 
-    private static final int DAMAGE_AMT = 5;
+    private static final int DAMAGE_AMT = 12;
     private static final double DAMAGE_PER_LEVEL = 0.25;
     private static final int DURATION = 8;
     private static final int RADIUS = 7;
@@ -29,6 +29,27 @@ public class Consecration extends Spell implements MagicDamageSpell {
                         "blocks and dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage each second!",
                 ChatColor.WHITE, ClassEnum.CLERIC, 15, 20);
+    }
+
+    /**
+     * Creates a ring of particles around the given location, spawned in the player's world, with the given radius
+     *
+     * @param player who summoned the particles
+     * @param loc    around which to build the ring
+     * @param radius of the circle
+     */
+    private void createParticleRing(Player player, Location loc, int radius) {
+        int particles = 50;
+        for (int i = 0; i < particles; i++) {
+            double angle, x, z;
+            angle = 2 * Math.PI * i / particles;
+            x = Math.cos(angle) * (float) radius;
+            z = Math.sin(angle) * (float) radius;
+            loc.add(x, 0, z);
+            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
+            player.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
+            loc.subtract(x, 0, z);
+        }
     }
 
     @Override
@@ -59,27 +80,6 @@ public class Consecration extends Spell implements MagicDamageSpell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
-    }
-
-    /**
-     * Creates a ring of particles around the given location, spawned in the player's world, with the given radius
-     *
-     * @param player who summoned the particles
-     * @param loc    around which to build the ring
-     * @param radius of the circle
-     */
-    private void createParticleRing(Player player, Location loc, int radius) {
-        int particles = 50;
-        for (int i = 0; i < particles; i++) {
-            double angle, x, z;
-            angle = 2 * Math.PI * i / particles;
-            x = Math.cos(angle) * (float) radius;
-            z = Math.sin(angle) * (float) radius;
-            loc.add(x, 0, z);
-            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
-            player.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
-            loc.subtract(x, 0, z);
-        }
     }
 
     @Override
