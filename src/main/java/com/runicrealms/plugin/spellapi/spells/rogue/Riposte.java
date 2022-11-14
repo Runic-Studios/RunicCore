@@ -4,10 +4,10 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -16,58 +16,50 @@ import org.bukkit.event.EventHandler;
 
 import java.util.HashSet;
 
-@SuppressWarnings({"FieldCanBeLocal", "deprecation"})
 public class Riposte extends Spell {
 
-    private static final int DAMAGE_CAP = 50;
-    private static final int DURATION = 2;
-    private static final double PERCENT_DMG = .65;
+    private static final int DURATION = 4;
+    private static final double DURATION_STUN = 2.5;
     private final HashSet<Entity> ripostePlayers;
 
     public Riposte() {
         super("Riposte",
-                "For " + DURATION + "s, you parry and counter " +
-                        "incoming attacks, avoiding the hit and dealing " +
-                        (int) (PERCENT_DMG * 100) + "% magicʔ damage back to your attacker! " +
-                        "Capped at " + DAMAGE_CAP + " against monsters.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 20, 20);
+                "For " + DURATION + "s, you evade and counter " +
+                        "incoming attacks, avoiding all incoming damage. " +
+                        "Any enemy that attacks you during this time is " +
+                        "stunned for " + DURATION_STUN + "s!",
+                ChatColor.WHITE, ClassEnum.ROGUE, 18, 20);
         ripostePlayers = new HashSet<>();
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        ripostePlayers.add(pl);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.5f);
-        Cone.coneEffect(pl, Particle.REDSTONE, DURATION, 0, 20, Color.fromRGB(210, 180, 140));
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> ripostePlayers.remove(pl), DURATION * 20L);
+    public void executeSpell(Player player, SpellItemType type) {
+        ripostePlayers.add(player);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.5f);
+        Cone.coneEffect(player, Particle.REDSTONE, DURATION, 0, 20, Color.fromRGB(210, 180, 140));
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> ripostePlayers.remove(player), DURATION * 20L);
     }
 
     @EventHandler
-    public void onRiposteHit(MagicDamageEvent e) {
-        if (!ripostePlayers.contains(e.getVictim())) return;
-        Player hurtPl = (Player) e.getVictim();
-        double newDamage = e.getAmount() * PERCENT_DMG;
-        e.setCancelled(true);
-        DamageUtil.damageEntitySpell(newDamage, e.getPlayer(), hurtPl, this);
+    public void onMobHit(MobDamageEvent event) {
+        if (!ripostePlayers.contains(event.getVictim())) return;
+        if (!(event.getDamager() instanceof LivingEntity)) return;
+        event.setCancelled(true);
+        addStatusEffect(event.getDamager(), EffectEnum.STUN, DURATION_STUN);
     }
 
     @EventHandler
-    public void onRiposteHit(PhysicalDamageEvent e) {
-        if (!ripostePlayers.contains(e.getVictim())) return;
-        Player hurtPl = (Player) e.getVictim();
-        double newDamage = e.getAmount() * PERCENT_DMG;
-        e.setCancelled(true);
-        DamageUtil.damageEntityPhysical(newDamage, e.getPlayer(), hurtPl, false, e.isRanged());
+    public void onRiposteHit(PhysicalDamageEvent event) {
+        if (!ripostePlayers.contains(event.getVictim())) return;
+        event.setCancelled(true);
+        addStatusEffect(event.getPlayer(), EffectEnum.STUN, DURATION_STUN);
     }
 
     @EventHandler
-    public void onMobHit(MobDamageEvent e) {
-        if (!ripostePlayers.contains(e.getVictim())) return;
-        if (!(e.getDamager() instanceof LivingEntity)) return;
-        Player hurtPl = (Player) e.getVictim();
-        double newDamage = e.getAmount() * PERCENT_DMG;
-        e.setCancelled(true);
-        DamageUtil.damageEntityPhysical(newDamage, (LivingEntity) e.getDamager(), hurtPl, false, false);
+    public void onRiposteHit(MagicDamageEvent event) {
+        if (!ripostePlayers.contains(event.getVictim())) return;
+        event.setCancelled(true);
+        addStatusEffect(event.getPlayer(), EffectEnum.STUN, DURATION_STUN);
     }
 }
 
