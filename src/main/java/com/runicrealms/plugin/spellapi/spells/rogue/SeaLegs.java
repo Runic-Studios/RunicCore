@@ -25,22 +25,10 @@ public class SeaLegs extends Spell {
 
     public SeaLegs() {
         super("Sea Legs",
-                "Damaging an enemy has a " + (int) PERCENT + "% chance " +
+                "Damaging an enemy has a " + PERCENT + "% chance " +
                         "to grant you speed for " + DURATION + "s!",
                 ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
         this.setIsPassive(true);
-    }
-
-    @EventHandler
-    public void onSpeedyHit(MagicDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        getSpeed(e.getPlayer(), e.getVictim());
-    }
-
-    @EventHandler
-    public void onSpeedyHit(PhysicalDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        getSpeed(e.getPlayer(), e.getVictim());
     }
 
     private void getSpeed(Player pl, Entity en) {
@@ -56,6 +44,20 @@ public class SeaLegs extends Spell {
                     25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 3));
             pl.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_MULTIPLIER));
         }
+    }
+
+    @EventHandler
+    public void onSpeedyHit(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        getSpeed(event.getPlayer(), event.getVictim());
+    }
+
+    @EventHandler
+    public void onSpeedyHit(MagicDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        getSpeed(event.getPlayer(), event.getVictim());
     }
 }
 

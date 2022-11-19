@@ -12,12 +12,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Kneebreak extends Spell {
 
     private static final int DURATION = 2;
@@ -32,26 +32,32 @@ public class Kneebreak extends Spell {
         this.setIsPassive(true);
     }
 
-    @EventHandler
-    public void onKneebreakHit(MagicDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        applySlow(e.getPlayer(), e.getVictim());
+    @EventHandler(priority = EventPriority.HIGH) // late
+    public void onKneebreakHit(MagicDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        tryToApplySlow(event.getPlayer(), event.getVictim());
     }
 
-    @EventHandler
-    public void onKneebreakHit(PhysicalDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        applySlow(e.getPlayer(), e.getVictim());
+    @EventHandler(priority = EventPriority.HIGH) // late
+    public void onKneebreakHit(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        tryToApplySlow(event.getPlayer(), event.getVictim());
     }
 
-    private void applySlow(Player pl, Entity en) {
+    /**
+     * @param player
+     * @param en
+     */
+    private void tryToApplySlow(Player player, Entity en) {
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
 
         // particles, sounds
-        if (isValidEnemy(pl, en)) {
+        if (isValidEnemy(player, en)) {
             LivingEntity victim = (LivingEntity) en;
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25f, 1.75f);
             victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getLocation(),

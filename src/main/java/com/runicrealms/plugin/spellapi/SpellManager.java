@@ -155,20 +155,20 @@ public class SpellManager implements Listener {
     }
 
     @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (silencedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getCaster().getUniqueId())
-                || stunnedEntities.containsKey(e.getCaster().getUniqueId()))
-            e.setCancelled(true);
+    public void onSpellCast(SpellCastEvent event) {
+        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (silencedEntities.containsKey(event.getCaster().getUniqueId())
+                || stunnedEntities.containsKey(event.getCaster().getUniqueId()))
+            event.setCancelled(true);
     }
 
     @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
+    public void onSpellDamage(MagicDamageEvent event) {
         if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
+        if (silencedEntities.containsKey(event.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(event.getPlayer().getUniqueId())
+                || invulnerableEntities.containsKey(event.getVictim().getUniqueId()))
+            event.setCancelled(true);
     }
 
     @EventHandler
@@ -207,7 +207,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
         this.spellList.add(new Spellsong());
-        this.spellList.add(new Reflect());
+        this.spellList.add(new Ironhide());
         this.spellList.add(new PowerShot());
         this.spellList.add(new Smite());
         this.spellList.add(new ArcaneBomb());
