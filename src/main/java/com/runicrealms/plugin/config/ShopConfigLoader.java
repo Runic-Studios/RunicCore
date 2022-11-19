@@ -103,21 +103,25 @@ public class ShopConfigLoader {
 
             Set<Integer> npcs = new HashSet<>();
             for (String string : config.getStringList("npcs")) {
-                // Bukkit.getLogger().warning(string + " is npc id");
                 npcs.add(Integer.parseInt(string));
             }
 
-            List<Integer> slotsList = new ArrayList<>();
-            for (String slot : config.getStringList("inventorySlots")) {
-                slotsList.add(Integer.parseInt(slot));
-            }
-            int[] inventorySlots = new int[slotsList.size()];
-            int index = 0;
-            for (final Integer value : slotsList) {
-                inventorySlots[index++] = value;
+            if (!config.getStringList("inventorySlots").isEmpty()) {
+                List<Integer> slotsList = new ArrayList<>();
+                for (String slot : config.getStringList("inventorySlots")) {
+                    slotsList.add(Integer.parseInt(slot));
+                }
+                int[] inventorySlots = new int[slotsList.size()];
+                int index = 0;
+                for (final Integer value : slotsList) {
+                    inventorySlots[index++] = value;
+                }
+
+                return new RunicShopGeneric(size, ChatColor.YELLOW + name, npcs, shopItems, inventorySlots);
+            } else {
+                return new RunicShopGeneric(size, ChatColor.YELLOW + name, npcs, shopItems);
             }
 
-            return new RunicShopGeneric(size, ChatColor.YELLOW + name, npcs, shopItems, inventorySlots);
         } catch (ShopLoadException exception) {
             throw exception;
         } catch (Exception exception) {

@@ -57,16 +57,14 @@ public class RunicItemShopFactory {
     private final ItemStack nazmoraHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-nazmora").generateItem();
 
     public RunicItemShopFactory() {
-        getAlchemistShop();
-        getBagVendor();
-        getBaker();
+        /*
+        UNIQUE
+         */
         getCaptain();
-        // getGeneralStore();
         getMountVendor();
         getRunicMage();
         getTailor();
         initializeInnkeepers();
-        getTutorialShop();
         /*
         PROFESSION TUTORS
          */
