@@ -31,18 +31,6 @@ public class RunicItemShopFactory {
     private final ItemStack greaterManaPotion = RunicItemsAPI.generateItemFromTemplate("greater-potion-mana").generateItem();
     private final ItemStack goldPouch = RunicItemsAPI.generateItemFromTemplate("gold-pouch").generateItem();
     private final ItemStack bread = RunicItemsAPI.generateItemFromTemplate("Bread").generateItem();
-    private final ItemStack beetroot = RunicItemsAPI.generateItemFromTemplate("azanashop-beetroot").generateItem();
-    private final ItemStack carrot = RunicItemsAPI.generateItemFromTemplate("azanashop-carrot").generateItem();
-    private final ItemStack azanaShopArcherBow = RunicItemsAPI.generateItemFromTemplate("azanashop-archer-bow").generateItem();
-    private final ItemStack azanaShopClericMace = RunicItemsAPI.generateItemFromTemplate("azanashop-cleric-mace").generateItem();
-    private final ItemStack azanaShopMageStaff = RunicItemsAPI.generateItemFromTemplate("azanashop-mage-staff").generateItem();
-    private final ItemStack azanaShopRogueSword = RunicItemsAPI.generateItemFromTemplate("azanashop-rogue-sword").generateItem();
-    private final ItemStack azanaShopWarriorAxe = RunicItemsAPI.generateItemFromTemplate("azanashop-warrior-axe").generateItem();
-    private final ItemStack azanaShopArcherBoots = RunicItemsAPI.generateItemFromTemplate("azanashop-archer-boots").generateItem();
-    private final ItemStack azanaShopClericHelmet = RunicItemsAPI.generateItemFromTemplate("azanashop-cleric-helmet").generateItem();
-    private final ItemStack azanaShopMageHelmet = RunicItemsAPI.generateItemFromTemplate("azanashop-mage-helmet").generateItem();
-    private final ItemStack azanaShopRogueBoots = RunicItemsAPI.generateItemFromTemplate("azanashop-rogue-boots").generateItem();
-    private final ItemStack azanaShopWarriorHelmet = RunicItemsAPI.generateItemFromTemplate("azanashop-warrior-helmet").generateItem();
     private final ItemStack thread = RunicItemsAPI.generateItemFromTemplate("Thread").generateItem();
     private final ItemStack brownSteed = RunicItemsAPI.generateItemFromTemplate("brown-steed").generateItem();
     private final ItemStack chestnutMare = RunicItemsAPI.generateItemFromTemplate("chestnut-mare").generateItem();
@@ -73,7 +61,7 @@ public class RunicItemShopFactory {
         getBagVendor();
         getBaker();
         getCaptain();
-        getGeneralStore();
+        // getGeneralStore();
         getMountVendor();
         getRunicMage();
         getTailor();
@@ -298,26 +286,6 @@ public class RunicItemShopFactory {
                         new String[]{"winters-howl", "chillrend", "permafrost", "blade-of-the-betrayer", "frosts-edge"},
                         "frozen-fortress");
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Frozen Fortress Shop", Collections.singletonList(31));
-    }
-
-    public RunicShopGeneric getGeneralStore() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(2, "Coin", beetroot));
-        shopItems.add(new RunicShopItem(3, "Coin", carrot));
-        shopItems.add(new RunicShopItem(10, "Coin", minorHealingPotion));
-        shopItems.add(new RunicShopItem(10, "Coin", minorManaPotion));
-        shopItems.add(new RunicShopItem(12, "Coin", azanaShopArcherBow));
-        shopItems.add(new RunicShopItem(12, "Coin", azanaShopClericMace));
-        shopItems.add(new RunicShopItem(12, "Coin", azanaShopMageStaff));
-        shopItems.add(new RunicShopItem(12, "Coin", azanaShopRogueSword));
-        shopItems.add(new RunicShopItem(12, "Coin", azanaShopWarriorAxe));
-        shopItems.add(new RunicShopItem(9, "Coin", azanaShopArcherBoots));
-        shopItems.add(new RunicShopItem(9, "Coin", azanaShopClericHelmet));
-        shopItems.add(new RunicShopItem(9, "Coin", azanaShopMageHelmet));
-        shopItems.add(new RunicShopItem(9, "Coin", azanaShopRogueBoots));
-        shopItems.add(new RunicShopItem(9, "Coin", azanaShopWarriorHelmet));
-        return new RunicShopGeneric(45, ChatColor.YELLOW + "General Store", Collections.singletonList(102), shopItems,
-                new int[]{0, 1, 2, 3, 9, 10, 11, 12, 13, 18, 19, 20, 21, 22});
     }
 
     public RunicShopGeneric getHunterTutor() {

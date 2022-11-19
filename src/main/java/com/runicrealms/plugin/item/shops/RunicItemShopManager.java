@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.config.ShopConfigLoader;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicnpcs.api.NpcClickEvent;
@@ -24,14 +25,20 @@ import java.util.UUID;
 
 public class RunicItemShopManager implements Listener {
 
-    private static final int LOAD_DELAY = 10;
+    private static final int LOAD_DELAY = 10; // to allow RunicItems to load
     private static final Map<Integer, RunicItemShop> shops = new HashMap<>();
     private static final Map<UUID, Long> clickCooldowns = new HashMap<>();
     private static final Map<UUID, RunicItemShop> inShop = new HashMap<>();
     private static ItemStack blankSlot;
 
+    /**
+     * Loads shops into memory on a delay to allow RunicItems to load
+     */
     public RunicItemShopManager() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), RunicItemShopFactory::new, LOAD_DELAY * 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+            new RunicItemShopFactory();
+            ShopConfigLoader.init(); // load shops from yaml storage
+        }, LOAD_DELAY * 20L);
     }
 
     public static void registerRunicItemShop(RunicItemShop shop) {
@@ -47,35 +54,28 @@ public class RunicItemShopManager implements Listener {
         }
     }
 
-    @EventHandler
-    public void onNpcClick(NpcClickEvent event) {
-        if (clickCooldowns.containsKey(event.getPlayer().getUniqueId())) {
-            if (clickCooldowns.get(event.getPlayer().getUniqueId()) + 2000 > System.currentTimeMillis()) {
-                return;
-            }
-        }
-        clickCooldowns.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
-        if (shops.containsKey(event.getNpc().getId())) {
-            RunicItemShop shop = shops.get(event.getNpc().getId());
-            Inventory inventory = Bukkit.createInventory(null, 9 + shop.getShopSize(), shop.getName());
-            for (int i = 0; i < 9; i++) {
-                if (i != 4) {
-                    inventory.setItem(i, blankSlot);
+    /**
+     * Checks whether the given player has items necessary to buy an item
+     *
+     * @param player to check
+     * @param item   to check
+     * @param needed number of item needed
+     * @return true if player has required items
+     */
+    public static boolean hasItems(Player player, ItemStack item, Integer needed) {
+        if (needed == 0) return true;
+        int amount = 0;
+        for (ItemStack inventoryItem : player.getInventory().getContents()) {
+            if (inventoryItem != null) {
+                if (RunicItemsAPI.isRunicItemSimilar(item, inventoryItem)) {
+                    amount += inventoryItem.getAmount();
+                    if (amount >= needed) {
+                        return true;
+                    }
                 }
             }
-            inventory.setItem(4, shop.getIcon());
-            for (Map.Entry<Integer, RunicShopItem> trade : shop.getContents().entrySet()) {
-                inventory.setItem(trade.getKey() + 9, RunicShopItem.iconWithLore
-                        (
-                                trade.getValue().getShopItem(),
-                                trade.getValue().getPrice(),
-                                trade.getValue().getPriceDisplayString()
-                        ));
-            }
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-            event.getPlayer().openInventory(inventory);
-            inShop.put(event.getPlayer().getUniqueId(), shop);
         }
+        return false;
     }
 
     @EventHandler
@@ -118,33 +118,40 @@ public class RunicItemShopManager implements Listener {
     }
 
     @EventHandler
+    public void onNpcClick(NpcClickEvent event) {
+        if (clickCooldowns.containsKey(event.getPlayer().getUniqueId())) {
+            if (clickCooldowns.get(event.getPlayer().getUniqueId()) + 2000 > System.currentTimeMillis()) {
+                return;
+            }
+        }
+        clickCooldowns.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+        if (shops.containsKey(event.getNpc().getId())) {
+            RunicItemShop shop = shops.get(event.getNpc().getId());
+            Inventory inventory = Bukkit.createInventory(null, 9 + shop.getShopSize(), shop.getName());
+            for (int i = 0; i < 9; i++) {
+                if (i != 4) {
+                    inventory.setItem(i, blankSlot);
+                }
+            }
+            inventory.setItem(4, shop.getIcon());
+            for (Map.Entry<Integer, RunicShopItem> trade : shop.getContents().entrySet()) {
+                inventory.setItem(trade.getKey() + 9, RunicShopItem.iconWithLore
+                        (
+                                trade.getValue().getShopItem(),
+                                trade.getValue().getPrice(),
+                                trade.getValue().getPriceDisplayString()
+                        ));
+            }
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+            event.getPlayer().openInventory(inventory);
+            inShop.put(event.getPlayer().getUniqueId(), shop);
+        }
+    }
+
+    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         clickCooldowns.remove(event.getPlayer().getUniqueId());
         inShop.remove(event.getPlayer().getUniqueId());
-    }
-
-    /**
-     * Checks whether the given player has items necessary to buy an item
-     *
-     * @param player to check
-     * @param item   to check
-     * @param needed number of item needed
-     * @return true if player has required items
-     */
-    public static boolean hasItems(Player player, ItemStack item, Integer needed) {
-        if (needed == 0) return true;
-        int amount = 0;
-        for (ItemStack inventoryItem : player.getInventory().getContents()) {
-            if (inventoryItem != null) {
-                if (RunicItemsAPI.isRunicItemSimilar(item, inventoryItem)) {
-                    amount += inventoryItem.getAmount();
-                    if (amount >= needed) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
 }
