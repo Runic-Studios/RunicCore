@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -9,39 +9,47 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 public class Blink extends Spell {
 
     private static final int MAX_DIST = 8;
+    private final Set<UUID> blinkers;
 
     public Blink() {
         super("Blink",
                 "You teleport forward, up to " +
                         "a distance of " + MAX_DIST + " blocks!",
                 ChatColor.WHITE, ClassEnum.MAGE, 12, 25);
+        blinkers = new HashSet<>();
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        Location loc = pl.getLocation();
+    public void executeSpell(Player player, SpellItemType type) {
+
+        blinkers.add(player.getUniqueId()); // prevent fall damage
+
+        Location loc = player.getLocation();
         Block validFinalBlock = null;
         Block currentBlock;
 
         // make sure the player is blinking to a valid location
-        BlockIterator iter = null;
+        BlockIterator iterator = null;
         try {
-            iter = new BlockIterator(pl, MAX_DIST);
+            iterator = new BlockIterator(player, MAX_DIST);
+        } catch (IllegalStateException e) {
+            player.sendMessage(ChatColor.RED + "You cannot blink here!");
         }
-        catch (IllegalStateException e) {
-            pl.sendMessage(ChatColor.RED + "You cannot blink here!");
-        }
-        while (iter.hasNext()) {
+        while (iterator.hasNext()) {
 
-            currentBlock = iter.next();
+            currentBlock = iterator.next();
             Material currentBlockType = currentBlock.getType();
 
             if (currentBlockType == Material.BARRIER
@@ -53,8 +61,7 @@ public class Blink extends Spell {
                 if (currentBlock.getRelative(BlockFace.UP).getType().isTransparent()) {
                     validFinalBlock = currentBlock;
                 }
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -69,31 +76,31 @@ public class Blink extends Spell {
             teleportLoc.setYaw(loc.getYaw());
 
             // particles, sounds
-            pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation().add(0, 1, 0),
+            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation().add(0, 1, 0),
                     10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
-            pl.getWorld().spawnParticle(Particle.REDSTONE, teleportLoc.add(0, 1, 0),
+            player.getWorld().spawnParticle(Particle.REDSTONE, teleportLoc.add(0, 1, 0),
                     10, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 5));
-            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
 
             // teleport the player to the blink location
-            pl.teleport(teleportLoc);
-            VectorUtil.drawLine(pl, Particle.REDSTONE, Color.FUCHSIA, loc, teleportLoc, 1.0);
-            final Vector velocity = pl.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
-            pl.setVelocity(velocity);
-
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-
-                    if (pl.isOnGround()) {
-                        this.cancel();
-                    } else {
-                        pl.setFallDistance(-8.0F);
-                    }
-                }
-            }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 1L);
+            player.teleport(teleportLoc);
+            VectorUtil.drawLine(player, Particle.REDSTONE, Color.FUCHSIA, loc, teleportLoc, 1.0);
+            final Vector velocity = player.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
+            player.setVelocity(velocity);
         } catch (NullPointerException e) {
-            pl.sendMessage(ChatColor.RED + "Error: blink location invalid!");
+            player.sendMessage(ChatColor.RED + "Error: blink location invalid!");
+        }
+    }
+
+    /**
+     * Disable fall damage for players who are lunging
+     */
+    @EventHandler(priority = EventPriority.LOW)
+    public void onFallDamage(GenericDamageEvent event) {
+        if (!blinkers.contains(event.getVictim().getUniqueId())) return;
+        if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE) {
+            event.setCancelled(true);
+            blinkers.remove(event.getVictim().getUniqueId());
         }
     }
 }

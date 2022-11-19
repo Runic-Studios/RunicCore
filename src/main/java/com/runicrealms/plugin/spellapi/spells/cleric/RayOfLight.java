@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -43,17 +44,17 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
         Spell spell = this;
 
-        Location orbLocation = pl.getTargetBlock(null, MAX_DIST).getLocation();
+        Location orbLocation = player.getTargetBlock(null, MAX_DIST).getLocation();
         while (orbLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
             orbLocation = orbLocation.getBlock().getRelative(BlockFace.DOWN).getLocation(); // ensure location on ground
         orbLocation.add(0, 2, 0); // raise orb up
 
-        pl.getWorld().playSound(orbLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
-        pl.getWorld().spawnParticle(Particle.SPELL_INSTANT, orbLocation, 25, 0.3f, 0.3f, 0.3f, 0);
+        player.getWorld().playSound(orbLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
+        player.getWorld().spawnParticle(Particle.SPELL_INSTANT, orbLocation, 25, 0.3f, 0.3f, 0.3f, 0);
 
         Location finalOrbLocation = orbLocation;
         new BukkitRunnable() {
@@ -65,15 +66,15 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
                     this.cancel();
                 else {
                     count += 1;
-                    spawnSphere(finalOrbLocation);
-                    for (Entity en : pl.getWorld().getNearbyEntities(finalOrbLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!isValidEnemy(pl, en)) continue;
+                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> spawnSphere(finalOrbLocation));
+                    for (Entity en : player.getWorld().getNearbyEntities(finalOrbLocation, RADIUS, RADIUS, RADIUS)) {
+                        if (!isValidEnemy(player, en)) continue;
                         if (hitEntities.contains(en.getUniqueId())) continue;
                         hitEntities.add(en.getUniqueId());
                         LivingEntity le = (LivingEntity) en;
                         le.getWorld().playSound(le.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 0.5f);
-                        VectorUtil.drawLine(pl, Particle.SPELL_INSTANT, Color.WHITE, finalOrbLocation, le.getEyeLocation(), 1.0);
-                        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, pl, spell);
+                        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> VectorUtil.drawLine(player, Particle.SPELL_INSTANT, Color.WHITE, finalOrbLocation, le.getEyeLocation(), 1.0));
+                        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, spell);
                         addStatusEffect(en, EffectEnum.STUN, STUN_DURATION);
                     }
                 }

@@ -81,7 +81,7 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
             if (!isValidEnemy(player, livingEntity)) continue;
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.1F, 2.0F);
             livingEntity.getWorld().spawnParticle(Particle.REDSTONE, livingEntity.getLocation(),
-                    50, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 1));
+                    15, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 1));
             DamageUtil.damageEntitySpell(DAMAGE_AMT, livingEntity, player, this);
             addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
         }

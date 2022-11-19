@@ -34,28 +34,29 @@ public class Consecration extends Spell implements MagicDamageSpell {
     /**
      * Creates a ring of particles around the given location, spawned in the player's world, with the given radius
      *
-     * @param player who summoned the particles
-     * @param loc    around which to build the ring
-     * @param radius of the circle
+     * @param player       who summoned the particles
+     * @param castLocation around which to build the ring
+     * @param radius       of the circle
      */
-    private void createParticleRing(Player player, Location loc, int radius) {
+    private void createParticleRing(Player player, Location castLocation, int radius) {
+        final Location location = castLocation.clone();
         int particles = 50;
         for (int i = 0; i < particles; i++) {
             double angle, x, z;
             angle = 2 * Math.PI * i / particles;
             x = Math.cos(angle) * (float) radius;
             z = Math.sin(angle) * (float) radius;
-            loc.add(x, 0, z);
-            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
-            player.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
-            loc.subtract(x, 0, z);
+            location.add(x, 0, z);
+            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 1, 0, 0, 0, 0);
+            player.getWorld().spawnParticle(Particle.REDSTONE, location, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.WHITE, 1));
+            location.subtract(x, 0, z);
         }
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
-        Location castLocation = player.getLocation();
+        final Location castLocation = player.getLocation();
         Spell spell = this;
 
         new BukkitRunnable() {
@@ -66,9 +67,8 @@ public class Consecration extends Spell implements MagicDamageSpell {
                 if (count > DURATION) {
                     this.cancel();
                 } else {
-                    createParticleRing(player, castLocation, RADIUS);
-                    createParticleRing(player, castLocation, RADIUS - 2);
-                    createParticleRing(player, castLocation, RADIUS - 4);
+                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> createParticleRing(player, castLocation, RADIUS));
+                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> createParticleRing(player, castLocation, RADIUS - 3));
                     player.getWorld().playSound(castLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(isValidEnemy(player, en))) continue;

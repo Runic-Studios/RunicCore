@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class ArcaneOrb extends Spell {
 
     public static final int RADIUS = 12;
@@ -40,7 +39,7 @@ public class ArcaneOrb extends Spell {
         return arcaneOrbMap;
     }
 
-    private void createCircle(Player pl, Location loc) {
+    private void createCircle(Player player, Location loc) {
         int particles = 50;
         for (int i = 0; i < particles; i++) {
             double angle, x, z;
@@ -48,20 +47,20 @@ public class ArcaneOrb extends Spell {
             x = Math.cos(angle) * (float) ArcaneOrb.RADIUS;
             z = Math.sin(angle) * (float) ArcaneOrb.RADIUS;
             loc.add(x, 0, z);
-            pl.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0,
+            player.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0,
                     new Particle.DustOptions(Color.FUCHSIA, 1));
             loc.subtract(x, 0, z);
         }
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        Location loc = pl.getLocation().clone().add(0, 2, 0);
+        Location loc = player.getLocation().clone().add(0, 2, 0);
         Location circleLoc = loc.clone().subtract(0, 2, 0);
-        arcaneOrbMap.put(pl.getUniqueId(), circleLoc);
-        if (RunicCoreAPI.hasParty(pl)) {
-            for (Player ally : RunicCore.getPartyManager().getPlayerParty(pl).getMembers()) // add allies
+        arcaneOrbMap.put(player.getUniqueId(), circleLoc);
+        if (RunicCoreAPI.hasParty(player)) {
+            for (Player ally : RunicCore.getPartyManager().getPlayerParty(player).getMembers()) // add allies
                 arcaneOrbMap.put(ally.getUniqueId(), circleLoc);
         }
         new BukkitRunnable() {
@@ -71,12 +70,11 @@ public class ArcaneOrb extends Spell {
             public void run() {
                 if (count > DURATION) {
                     this.cancel();
-                    //buffed.remove(pl.getUniqueId());
-                    arcaneOrbMap.clear();
+                    arcaneOrbMap.remove(player.getUniqueId());
                 } else {
                     count += 1;
                     spawnSphere(loc);
-                    createCircle(pl, circleLoc);
+                    createCircle(player, circleLoc);
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);

@@ -186,7 +186,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Fireball());
         this.spellList.add(new Frostbolt());
         this.spellList.add(new Sprint());
-        this.spellList.add(new Parry());
+        this.spellList.add(new Disengage());
         this.spellList.add(new Blink());
         this.spellList.add(new MeteorShower());
         this.spellList.add(new Windstride());
@@ -318,13 +318,13 @@ public class SpellManager implements Listener {
                             if (getUserCooldown(player, spell) <= 0)
                                 removeCooldown(player, spell); // insurance
                             else
-                                cdString.add(ChatColor.RED + spell.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
+                                cdString.add(ChatColor.DARK_RED + spell.getName() + ChatColor.DARK_RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
                         }
 
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.DARK_RED + String.join(ChatColor.YELLOW + " ", cdString)));
                     }
                 }
             }
-        }.runTaskTimer(this.plugin, 0, 10);
+        }.runTaskTimerAsynchronously(this.plugin, 0, 10L);
     }
 }

@@ -6,16 +6,11 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Objects;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Whirlwind extends Spell implements MagicDamageSpell {
@@ -36,34 +31,54 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
+        final Spell spell = this;
 
-        // begin effect
         BukkitRunnable whirlwind = new BukkitRunnable() {
             @Override
             public void run() {
-                spawnCyclone(pl);
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> spawnCycloneParticle(player));
+
+                for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), RADIUS, RADIUS, RADIUS)) {
+                    if (!(entity instanceof LivingEntity)) continue;
+                    LivingEntity livingEntity = (LivingEntity) entity;
+                    if (!isValidEnemy(player, entity)) continue;
+                    DamageUtil.damageEntitySpell(DAMAGE_AMT, livingEntity, player, spell);
+                }
             }
         };
         whirlwind.runTaskTimer(RunicCore.getInstance(), 0, 20);
-
-        // cancel effect
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                whirlwind.cancel();
-            }
-        }.runTaskLater(RunicCore.getInstance(), DURATION * 20);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), whirlwind::cancel, DURATION * 20L);
     }
 
-    private void spawnCyclone(Player pl) {
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
 
-        Location loc = pl.getLocation();
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
+    /**
+     * @param player
+     * @param location
+     * @param x
+     * @param z
+     */
+    private void spawnCloud(Player player, Location location, double x, double z) {
+        location.add(x, 0, z);
+        player.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 0);
+        location.subtract(x, 0, z);
+    }
 
-        Location location1 = pl.getEyeLocation();
-        Location location2 = pl.getEyeLocation().add(0, 1, 0);
-        Location location3 = pl.getEyeLocation().subtract(0, 1, 0);
+    /**
+     * @param player
+     */
+    private void spawnCycloneParticle(Player player) {
+
+        Location location = player.getLocation();
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
+
+        Location location1 = player.getEyeLocation();
+        Location location2 = player.getEyeLocation().add(0, 1, 0);
+        Location location3 = player.getEyeLocation().subtract(0, 1, 0);
         int particles = 50;
         float radius = RADIUS;
 
@@ -72,27 +87,9 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
             angle = 2 * Math.PI * i / particles;
             x = Math.cos(angle) * radius;
             z = Math.sin(angle) * radius;
-            spawnCloud(pl, location1, x, z);
-            spawnCloud(pl, location2, x, z);
-            spawnCloud(pl, location3, x, z);
+            spawnCloud(player, location1, x, z);
+            spawnCloud(player, location2, x, z);
+            spawnCloud(player, location3, x, z);
         }
-
-        for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (!(en instanceof LivingEntity)) continue;
-            LivingEntity le = (LivingEntity) en;
-            if (!isValidEnemy(pl, en)) continue;
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
-        }
-    }
-
-    private void spawnCloud(Player pl, Location location, double x, double z) {
-        location.add(x, 0, z);
-        pl.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 0);
-        location.subtract(x, 0, z);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }

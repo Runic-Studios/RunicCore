@@ -17,7 +17,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Harpoon extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE_AMT = 100;
@@ -25,7 +24,7 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
     private static final int DURATION = 3;
     private static final double TRIDENT_SPEED = 1.25;
     private Trident trident;
-    
+
     public Harpoon() {
         super("Harpoon",
                 "You launch a projectile harpoon of the sea! Upon hitting an enemy, " +
@@ -58,6 +57,11 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
                         10, 0, 0, 0, 0, new Particle.DustOptions(Color.TEAL, 1));
             }
         }.runTaskTimer(plugin, 0, 1);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 
     @EventHandler
@@ -103,11 +107,6 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
                 }
             }.runTaskLater(RunicCore.getInstance(), 4L);
         }
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 

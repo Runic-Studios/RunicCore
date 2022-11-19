@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -15,6 +16,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,72 +29,36 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StaffListener implements Listener {
 
     private static final int STAFF_COOLDOWN = 15; // ticks (0.75s)
-    private static final int MAX_DIST = 8;
+    private static final int MAX_DIST = 9;
     private static final double BEAM_SIZE = 1.5;
-    private static final double PARTICLE_SPACE = 1.75;
-
-    @EventHandler
-    public void onStaffAttack(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_AIR
-                || event.getAction() == Action.RIGHT_CLICK_BLOCK) return; // only listen for left clicks
-        if (event.getItem() == null) return;
-
-        // retrieve the weapon type
-        ItemStack weapon = event.getItem();
-        Material artifactType = weapon.getType();
-        double cooldown = event.getPlayer().getCooldown(weapon.getType());
-
-        if (artifactType == Material.AIR) return;
-        if (event.getHand() != EquipmentSlot.HAND) return;
-        if (artifactType != Material.WOODEN_HOE) return;
-        if (cooldown != 0) return;
-
-        // cancel the event, run custom mechanics
-        event.setCancelled(true);
-        Player player = event.getPlayer();
-
-        // check for mage
-        String className = RunicCoreAPI.getPlayerClass(player);
-        if (className == null) return;
-        if (!className.equals("Mage")) return;
-        if (RunicCoreAPI.isCasting(player)) return;
-
-        staffAttack(player, weapon);
-    }
+    private static final double BEAM_SPEED = 3;
 
     /**
-     * Function to begin staff attack
+     * Creates the runnable which manages the staff particle and nearby entity checking
      *
-     * @param player    who initiated attack
-     * @param itemStack to be passed down to damage function
+     * @param player    who attacked
+     * @param itemStack their staff weapon
      */
-    private void staffAttack(Player player, ItemStack itemStack) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.4f, 2.0F);
-        Location first = player.getEyeLocation();
-        Location second = player.getTargetBlock(null, MAX_DIST).getLocation();
+    private void createStaffRunnable(Player player, ItemStack itemStack) {
 
-        double distance = first.distance(second);
-        Vector v1 = first.toVector();
-        Vector v2 = second.toVector();
-        Vector vector = v2.clone().subtract(v1).normalize().multiply(PARTICLE_SPACE);
-        Location vectorLocation;
-        outerLabel:
-        for (double length = 0; length < distance; v1.add(vector)) {
-            player.getWorld().spawnParticle(Particle.SPELL_WITCH,
-                    new Location(player.getWorld(), v1.getX(), v1.getY(), v1.getZ()), 1, 0, 0, 0, 0);
-            vectorLocation = v1.toLocation(player.getWorld());
-            for (Entity en : player.getWorld().getNearbyEntities(vectorLocation, BEAM_SIZE, BEAM_SIZE, BEAM_SIZE)) {
-                if (en.equals(player)) continue;
-                EnemyVerifyEvent event = new EnemyVerifyEvent(player, en);
-                Bukkit.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) continue;
-                damageStaff(player, (LivingEntity) en, itemStack);
-                break outerLabel;
+        Vector vector = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
+
+        new BukkitRunnable() {
+            final Location location = player.getEyeLocation();
+            final Location startLoc = player.getLocation();
+
+            @Override
+            public void run() {
+                location.add(vector);
+                if (location.getBlock().getType().isSolid() || location.distanceSquared(startLoc) >= MAX_DIST * MAX_DIST) {
+                    this.cancel();
+                    Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> tryToHitEnemy(player, location, itemStack));
+                }
+                player.getWorld().spawnParticle(Particle.SPELL_WITCH, location, 3, 0.1f, 0.2f, 0.1f, 0);
+                if (tryToHitEnemy(player, location, itemStack))
+                    this.cancel();
             }
-            length += PARTICLE_SPACE;
-        }
-
-        player.setCooldown(itemStack.getType(), STAFF_COOLDOWN);
+        }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
     }
 
     /**
@@ -134,5 +100,64 @@ public class StaffListener implements Listener {
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+    }
+
+    @EventHandler
+    public void onStaffAttack(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR
+                || event.getAction() == Action.RIGHT_CLICK_BLOCK) return; // only listen for left clicks
+        if (event.getItem() == null) return;
+
+        // retrieve the weapon type
+        ItemStack weapon = event.getItem();
+        Material artifactType = weapon.getType();
+        double cooldown = event.getPlayer().getCooldown(weapon.getType());
+
+        if (artifactType == Material.AIR) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (artifactType != Material.WOODEN_HOE) return;
+        if (cooldown != 0) return;
+
+        // cancel the event, run custom mechanics
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+
+        // check for mage
+        String className = RunicCoreAPI.getPlayerClass(player);
+        if (className == null) return;
+        if (!className.equals("Mage")) return;
+        if (RunicCoreAPI.isCasting(player)) return;
+
+        staffAttack(player, weapon);
+    }
+
+    /**
+     * Function to begin staff attack
+     *
+     * @param player    who initiated attack
+     * @param itemStack to be passed down to damage function
+     */
+    private void staffAttack(Player player, ItemStack itemStack) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.4f, 2.0F);
+        createStaffRunnable(player, itemStack);
+        player.setCooldown(itemStack.getType(), STAFF_COOLDOWN);
+    }
+
+    /**
+     * @param player    who cast the beam
+     * @param location  current location of the beam
+     * @param itemStack the weapon used (for damage)
+     * @return true if the beam has hit an enemy
+     */
+    private boolean tryToHitEnemy(Player player, Location location, ItemStack itemStack) {
+        for (Entity en : player.getWorld().getNearbyEntities(location, BEAM_SIZE, BEAM_SIZE, BEAM_SIZE)) {
+            if (en.equals(player)) continue;
+            EnemyVerifyEvent event = new EnemyVerifyEvent(player, en);
+            Bukkit.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) continue;
+            damageStaff(player, (LivingEntity) en, itemStack);
+            return true;
+        }
+        return false;
     }
 }

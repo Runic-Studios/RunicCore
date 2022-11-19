@@ -6,10 +6,7 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -42,20 +39,21 @@ public class Conflagration extends Spell implements MagicDamageSpell {
     /**
      * Creates a ring of particles around the given location, spawned in the player's world, with the given radius
      *
-     * @param player who summoned the particles
-     * @param loc    around which to build the ring
-     * @param radius of the circle
+     * @param player       who summoned the particles
+     * @param castLocation around which to build the ring
+     * @param radius       of the circle
      */
-    private void createParticleRing(Player player, Location loc, int radius) {
+    private void createParticleRing(Player player, Location castLocation, int radius) {
+        final Location location = castLocation.clone();
         int particles = 50;
         for (int i = 0; i < particles; i++) {
             double angle, x, z;
             angle = 2 * Math.PI * i / particles;
             x = Math.cos(angle) * (float) radius;
             z = Math.sin(angle) * (float) radius;
-            loc.add(x, 0, z);
-            player.getWorld().spawnParticle(Particle.FLAME, loc, 1, 0, 0, 0, 0);
-            loc.subtract(x, 0, z);
+            location.add(x, 0, z);
+            player.getWorld().spawnParticle(Particle.FLAME, location, 1, 0, 0, 0, 0);
+            location.subtract(x, 0, z);
         }
     }
 
@@ -92,9 +90,8 @@ public class Conflagration extends Spell implements MagicDamageSpell {
                     this.cancel();
                     return;
                 }
-                createParticleRing(caster, location, RADIUS);
-                createParticleRing(caster, location, RADIUS - 1);
-                createParticleRing(caster, location, RADIUS - 2);
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> createParticleRing(caster, location, RADIUS));
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> createParticleRing(caster, location, RADIUS - 2));
                 for (Entity entity : caster.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                     if (!isValidEnemy(caster, entity)) continue;
                     DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, caster, spell);
