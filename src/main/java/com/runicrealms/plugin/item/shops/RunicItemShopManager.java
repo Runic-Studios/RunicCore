@@ -36,7 +36,7 @@ public class RunicItemShopManager implements Listener {
      */
     public RunicItemShopManager() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-            new RunicItemShopFactory();
+            new RunicItemShopHelper();
             ShopConfigLoader.init(); // load shops from yaml storage
         }, LOAD_DELAY * 20L);
     }

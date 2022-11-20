@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;
@@ -31,7 +30,7 @@ public class RunicShopItem {
         this.price = price;
         this.currencyTemplateID = currencyTemplateID;
         this.shopItem = shopItem;
-        this.priceDisplayString = CurrencyUtil.goldCoin().getItemMeta().getDisplayName();
+        this.priceDisplayString = getRunicItemCurrency().getItemMeta().getDisplayName();
         this.runicItemRunnable = runDefaultBuy();
     }
 
@@ -63,7 +62,7 @@ public class RunicShopItem {
         this.price = price;
         this.currencyTemplateID = currencyTemplateID;
         this.shopItem = shopItem;
-        this.priceDisplayString = CurrencyUtil.goldCoin().getItemMeta().getDisplayName();
+        this.priceDisplayString = getRunicItemCurrency().getItemMeta().getDisplayName();
         this.runicItemRunnable = runicItemRunnable;
     }
 
@@ -82,49 +81,6 @@ public class RunicShopItem {
         this.shopItem = shopItem;
         this.priceDisplayString = priceDisplayString;
         this.runicItemRunnable = runicItemRunnable;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    /**
-     * Method to match a string to a runic item
-     *
-     * @return RunicItem w/ template ID matching string name
-     */
-    public ItemStack getRunicItemCurrency() {
-        return RunicItemsAPI.generateItemFromTemplate(currencyTemplateID).generateItem();
-    }
-
-    public ItemStack getShopItem() {
-        return shopItem;
-    }
-
-    public String getPriceDisplayString() {
-        return priceDisplayString;
-    }
-
-    /*
-    MAKE SURE somewhere that there is space in the player's inventory.
-     */
-    public void runBuy(Player player) {
-        runicItemRunnable.run(player);
-    }
-
-    private RunicItemRunnable runDefaultBuy() {
-        return player -> {
-            // attempt to give player item (does not drop on floor)
-            RunicItemsAPI.addItem(player.getInventory(), shopItem, true);
-        };
-    }
-
-    public boolean removePayment() {
-        return removePayment;
-    }
-
-    public void setRemovePayment(boolean removePayment) {
-        this.removePayment = removePayment;
     }
 
     /**
@@ -155,5 +111,48 @@ public class RunicShopItem {
             iconWithLore.setItemMeta(meta);
         }
         return iconWithLore;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public String getPriceDisplayString() {
+        return priceDisplayString;
+    }
+
+    /**
+     * Method to match a string to a runic item
+     *
+     * @return RunicItem w/ template ID matching string name
+     */
+    public ItemStack getRunicItemCurrency() {
+        return RunicItemsAPI.generateItemFromTemplate(currencyTemplateID).generateGUIItem();
+    }
+
+    public ItemStack getShopItem() {
+        return shopItem;
+    }
+
+    public boolean removePayment() {
+        return removePayment;
+    }
+
+    /*
+    MAKE SURE somewhere that there is space in the player's inventory.
+     */
+    public void runBuy(Player player) {
+        runicItemRunnable.run(player);
+    }
+
+    private RunicItemRunnable runDefaultBuy() {
+        return player -> {
+            // attempt to give player item (does not drop on floor)
+            RunicItemsAPI.addItem(player.getInventory(), shopItem, true);
+        };
+    }
+
+    public void setRemovePayment(boolean removePayment) {
+        this.removePayment = removePayment;
     }
 }

@@ -18,28 +18,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 /**
- * Factory class to create generic runic shops for the server
+ * Helper class to create runic item shops with custom purchase runnables
  */
-public class RunicItemShopFactory {
+public class RunicItemShopHelper {
 
-    private final ItemStack bottle = RunicItemsAPI.generateItemFromTemplate("Bottle").generateItem();
-    private final ItemStack minorHealingPotion = RunicItemsAPI.generateItemFromTemplate("minor-potion-healing").generateItem();
-    private final ItemStack minorManaPotion = RunicItemsAPI.generateItemFromTemplate("minor-potion-mana").generateItem();
-    private final ItemStack majorHealingPotion = RunicItemsAPI.generateItemFromTemplate("major-potion-healing").generateItem();
-    private final ItemStack majorManaPotion = RunicItemsAPI.generateItemFromTemplate("major-potion-mana").generateItem();
-    private final ItemStack greaterHealingPotion = RunicItemsAPI.generateItemFromTemplate("greater-potion-healing").generateItem();
-    private final ItemStack greaterManaPotion = RunicItemsAPI.generateItemFromTemplate("greater-potion-mana").generateItem();
-    private final ItemStack goldPouch = RunicItemsAPI.generateItemFromTemplate("gold-pouch").generateItem();
-    private final ItemStack bread = RunicItemsAPI.generateItemFromTemplate("Bread").generateItem();
-    private final ItemStack thread = RunicItemsAPI.generateItemFromTemplate("Thread").generateItem();
-    private final ItemStack brownSteed = RunicItemsAPI.generateItemFromTemplate("brown-steed").generateItem();
-    private final ItemStack chestnutMare = RunicItemsAPI.generateItemFromTemplate("chestnut-mare").generateItem();
-    private final ItemStack grayStallion = RunicItemsAPI.generateItemFromTemplate("gray-stallion").generateItem();
-    private final ItemStack tutorialArcherChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-archer-chestplate").generateItem();
-    private final ItemStack tutorialClericChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-cleric-chestplate").generateItem();
-    private final ItemStack tutorialMageChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-mage-chestplate").generateItem();
-    private final ItemStack tutorialRogueChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-rogue-chestplate").generateItem();
-    private final ItemStack tutorialWarriorChestplate = RunicItemsAPI.generateItemFromTemplate("tutorial-warrior-chestplate").generateItem();
     /*
     INNKEEPERS
      */
@@ -56,14 +38,12 @@ public class RunicItemShopFactory {
     private final ItemStack naheenHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-naheen").generateItem();
     private final ItemStack nazmoraHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-nazmora").generateItem();
 
-    public RunicItemShopFactory() {
+    public RunicItemShopHelper() {
         /*
         UNIQUE
          */
         getCaptain();
-        getMountVendor();
         getRunicMage();
-        getTailor();
         initializeInnkeepers();
         /*
         PROFESSION TUTORS
@@ -73,15 +53,6 @@ public class RunicItemShopFactory {
         getEnchanterTutor();
         getHunterTutor();
         getJewelerTutor();
-        /*
-        DUNGEON SHOPS
-         */
-        getCaveShop();
-        getCavernShop();
-        getKeepShop();
-        getLibraryShop();
-        getCryptsShop();
-        getFortressShop();
         /*
         GATEKEEPERS
          */
@@ -130,35 +101,11 @@ public class RunicItemShopFactory {
         return wagonItem;
     }
 
-    public RunicShopGeneric getAlchemistShop() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(2, "Coin", bottle));
-        shopItems.add(new RunicShopItem(8, "Coin", minorHealingPotion));
-        shopItems.add(new RunicShopItem(8, "Coin", minorManaPotion));
-        shopItems.add(new RunicShopItem(16, "Coin", majorHealingPotion));
-        shopItems.add(new RunicShopItem(16, "Coin", majorManaPotion));
-        shopItems.add(new RunicShopItem(24, "Coin", greaterHealingPotion));
-        shopItems.add(new RunicShopItem(24, "Coin", greaterManaPotion));
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist", Arrays.asList(599, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111), shopItems);
-    }
-
     public RunicShopGeneric getAlchemistTutor() {
         LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
             add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.ALCHEMIST, Material.GLASS_BOTTLE), runProfessionTutorBuy(Profession.ALCHEMIST)));
         }};
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist Tutor", Collections.singletonList(225), shopItems);
-    }
-
-    public RunicShopGeneric getBagVendor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(128, "Coin", goldPouch));
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Bag Vendor", Arrays.asList(179, 181, 182, 183, 185, 186, 187, 189, 190, 192, 194), shopItems);
-    }
-
-    public RunicShopGeneric getBaker() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(6, "Coin", bread));
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Baker", Arrays.asList(115, 116, 118, 119, 120, 121, 124, 125, 126), shopItems);
     }
 
     public RunicShopGeneric getBlacksmithTutor() {
@@ -202,35 +149,14 @@ public class RunicItemShopFactory {
     }
 
     /*
-    DUNGEON SHOPS
+    GATEKEEPERS
      */
-    public RunicShopGeneric getCaveShop() {
-        RunicDungeonShop caveShop = new RunicDungeonShop
-                (
-                        1,
-                        2,
-                        DungeonLocation.SEBATHS_CAVE.getCurrencyTemplateId(),
-                        new String[]{"sanguine-longbow", "crimson-maul", "bloodmoon", "scarlet-rapier", "corruption"},
-                        "sebaths-cave");
-        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sebath's Cave Shop", Collections.singletonList(32));
-    }
 
     public Set<RunicShopGeneric> getCavernGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(517, "SilverKey", 1, DungeonLocation.CRYSTAL_CAVERN, 1);
         gateKeepers.add(first);
         return gateKeepers;
-    }
-
-    public RunicShopGeneric getCavernShop() {
-        RunicDungeonShop caveShop = new RunicDungeonShop
-                (
-                        1,
-                        0,
-                        DungeonLocation.CRYSTAL_CAVERN.getCurrencyTemplateId(),
-                        null,
-                        "crystal-cavern");
-        return caveShop.buildRunicShopGeneric(36, ChatColor.YELLOW + "Crystal Cavern Shop", Collections.singletonList(52));
     }
 
     public Set<RunicShopGeneric> getCryptsGatekeepers() {
@@ -275,17 +201,6 @@ public class RunicItemShopFactory {
         return gateKeepers;
     }
 
-    public RunicShopGeneric getFortressShop() {
-        RunicDungeonShop caveShop = new RunicDungeonShop
-                (
-                        2,
-                        2,
-                        DungeonLocation.FROZEN_FORTRESS.getCurrencyTemplateId(),
-                        new String[]{"winters-howl", "chillrend", "permafrost", "blade-of-the-betrayer", "frosts-edge"},
-                        "frozen-fortress");
-        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Frozen Fortress Shop", Collections.singletonList(31));
-    }
-
     public RunicShopGeneric getHunterTutor() {
         LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
             add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.HUNTER, Material.LEATHER), runProfessionTutorBuy(Profession.HUNTER)));
@@ -313,17 +228,6 @@ public class RunicItemShopFactory {
         return gateKeepers;
     }
 
-    public RunicShopGeneric getKeepShop() {
-        RunicDungeonShop caveShop = new RunicDungeonShop
-                (
-                        2,
-                        2,
-                        DungeonLocation.JORUNDRS_KEEP.getCurrencyTemplateId(),
-                        new String[]{"runeforged-piercer", "runeforged-crusher", "runeforged-scepter", "lost-runeblade", "jorundrs-wrath"},
-                        "jorundr-keep");
-        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Jorundr's Keep Shop", Collections.singletonList(33));
-    }
-
     public Set<RunicShopGeneric> getLibraryGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(519, "SilverKey", 1, DungeonLocation.SUNKEN_LIBRARY, 1);
@@ -335,45 +239,10 @@ public class RunicItemShopFactory {
         return gateKeepers;
     }
 
-    public RunicShopGeneric getLibraryShop() {
-        RunicDungeonShop caveShop = new RunicDungeonShop
-                (
-                        2,
-                        2,
-                        DungeonLocation.SUNKEN_LIBRARY.getCurrencyTemplateId(),
-                        new String[]{"skeletal-shortbow", "bonecleaver", "ancient-arcane-rod", "wolfspine", "deathbringer"},
-                        "sunken-library");
-        return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Sunken Library Shop", Collections.singletonList(34));
-    }
-
-    public RunicShopGeneric getMountVendor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(2000, "Coin", brownSteed));
-        shopItems.add(new RunicShopItem(2000, "Coin", chestnutMare));
-        shopItems.add(new RunicShopItem(2000, "Coin", grayStallion));
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Mount Vendor", Arrays.asList(510, 239, 243, 257, 535, 534, 274, 508, 280, 284, 317), shopItems);
-    }
-
     public RunicShopGeneric getRunicMage() {
         LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
         shopItems.add(new RunicShopItem(0, "Coin", resetSkillTreesIcon(), "Based on Level", runRunicMageBuy()));
         return new RunicShopGeneric(9, ChatColor.LIGHT_PURPLE + "Runic Mage", Arrays.asList(131, 133, 134, 135, 136, 138, 139, 140, 141), shopItems);
-    }
-
-    public RunicShopGeneric getTailor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(6, "Coin", thread));
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Tailor", Arrays.asList(233, 237, 247, 259, 283, 509, 314), shopItems);
-    }
-
-    public RunicShopGeneric getTutorialShop() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        shopItems.add(new RunicShopItem(1, "tutorial-metal", tutorialArcherChestplate, "Scrap of Metal"));
-        shopItems.add(new RunicShopItem(1, "tutorial-flower", tutorialClericChestplate, "Cornflower"));
-        shopItems.add(new RunicShopItem(1, "tutorial-feather", tutorialMageChestplate, "Seagull Feather"));
-        shopItems.add(new RunicShopItem(1, "tutorial-leather", tutorialRogueChestplate, "Horsehide"));
-        shopItems.add(new RunicShopItem(1, "tutorial-shell", tutorialWarriorChestplate, "Sea Turtle Shell"));
-        return new RunicShopGeneric(45, ChatColor.YELLOW + "Redbrand Armorer", Collections.singletonList(646), shopItems);
     }
 
     public void initializeInnkeepers() {
