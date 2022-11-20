@@ -22,5 +22,5 @@ public interface ConfigAPI {
      * @param folder   the subfolder in the plugin directory
      * @return a FileConfiguration object
      */
-    FileConfiguration getYamlConfigFile(String fileName, File folder);
+    FileConfiguration getYamlConfigFromFile(String fileName, File folder);
 }

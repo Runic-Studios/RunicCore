@@ -26,7 +26,7 @@ public class ShopConfigLoader {
             if (shopFile.isDirectory()) continue; // ignore subdirectories
             try {
                 // noinspection unused
-                RunicShopGeneric ignored = loadShop(RunicCore.getConfigAPI().getYamlConfigFile(shopFile.getName(), shopsFolder)); // adds to in-memory cache here
+                RunicShopGeneric ignored = loadShop(RunicCore.getConfigAPI().getYamlConfigFromFile(shopFile.getName(), shopsFolder)); // adds to in-memory cache here
             } catch (ShopLoadException exception) {
                 exception.addMessage("Error loading shop for file: " + shopFile.getName());
                 exception.displayToConsole();

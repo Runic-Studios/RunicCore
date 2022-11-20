@@ -23,7 +23,7 @@ public class ConfigManager implements ConfigAPI {
     }
 
     @Override
-    public FileConfiguration getYamlConfigFile(String fileName, File folder) {
+    public FileConfiguration getYamlConfigFromFile(String fileName, File folder) {
         FileConfiguration config;
         File file;
         file = new File(folder, fileName);
