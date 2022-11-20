@@ -5,10 +5,12 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
+import com.runicrealms.plugin.api.ConfigAPI;
 import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
 import com.runicrealms.plugin.commands.player.*;
+import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
@@ -51,6 +53,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitWorker;
 import redis.clients.jedis.Jedis;
 
 import java.io.File;
@@ -68,6 +71,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ScoreboardHandler scoreboardHandler;
     private static SpellManager spellManager;
     private static TabAPI tabAPI;
+    private static ConfigAPI configAPI;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
@@ -112,6 +116,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static TabAPI getTabAPI() {
         return tabAPI;
+    }
+
+    public static ConfigAPI getConfigAPI() {
+        return configAPI;
     }
 
     public static MobTagger getMobTagger() {
@@ -172,7 +180,17 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
-    public void onCoreSaveComplete(MongoSaveEvent event) {
+    public void onCoreSaveComplete(MongoSaveEvent event) throws InterruptedException {
+
+        /*
+        Make all current async workers join the main thread and properly shut down
+         */
+        for (BukkitWorker bukkitWorker : Bukkit.getScheduler().getActiveWorkers()) {
+            if (bukkitWorker.getOwner().equals(RunicCore.getInstance())) {
+                bukkitWorker.getThread().join();
+            }
+        }
+
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
             for (UUID uuid : event.getPlayersToSave().keySet()) {
                 PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
@@ -195,6 +213,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         scoreboardHandler = null;
         spellManager = null;
         tabAPI = null;
+        configAPI = null;
         mobTagger = null;
         bossTagger = null;
         databaseManager = null;
@@ -221,6 +240,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         scoreboardHandler = new ScoreboardHandler();
         spellManager = new SpellManager();
         tabAPI = new TabListManager(this);
+        configAPI = new ConfigManager();
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();

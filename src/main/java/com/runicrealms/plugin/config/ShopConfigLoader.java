@@ -5,11 +5,9 @@ import com.runicrealms.plugin.exception.ShopLoadException;
 import com.runicrealms.plugin.item.shops.RunicShopGeneric;
 import com.runicrealms.plugin.item.shops.RunicShopItem;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
@@ -23,58 +21,18 @@ public class ShopConfigLoader {
     Static block to load our shop list into memory from file storage on startup
      */
     static {
-        File shopsFolder = getSubFolder(RunicCore.getInstance().getDataFolder(), "shops");
+        File shopsFolder = RunicCore.getConfigAPI().getSubFolder(RunicCore.getInstance().getDataFolder(), "shops");
         for (File shopFile : shopsFolder.listFiles()) {
             if (shopFile.isDirectory()) continue; // ignore subdirectories
             try {
                 // noinspection unused
-                RunicShopGeneric ignored = loadShop(getYamlConfigFile(shopFile.getName(), shopsFolder)); // adds to in-memory cache here
+                RunicShopGeneric ignored = loadShop(RunicCore.getConfigAPI().getYamlConfigFile(shopFile.getName(), shopsFolder)); // adds to in-memory cache here
             } catch (ShopLoadException exception) {
                 exception.addMessage("Error loading shop for file: " + shopFile.getName());
                 exception.displayToConsole();
                 exception.displayToOnlinePlayers();
             }
         }
-    }
-
-    /**
-     * Loads a YamlConfiguration from a File object
-     *
-     * @param fileName name of the file
-     * @param folder   the subfolder in the plugin directory
-     * @return a FileConfiguration object
-     */
-    public static FileConfiguration getYamlConfigFile(String fileName, File folder) {
-        FileConfiguration config;
-        File file;
-        file = new File(folder, fileName);
-        config = new YamlConfiguration();
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            config.load(file);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        return config;
-    }
-
-    /**
-     * Gets a subdirectory
-     *
-     * @param folder    the parent folder of the intended subdirectory
-     * @param subfolder the string name of the subdirectory
-     * @return the subdirectory if found, else null
-     */
-    public static File getSubFolder(File folder, String subfolder) {
-        assert folder != null; // main folder
-        for (File file : folder.listFiles()) {
-            if (file.getName().equalsIgnoreCase(subfolder)) {
-                return file;
-            }
-        }
-        return null;
     }
 
     /**
@@ -142,9 +100,6 @@ public class ShopConfigLoader {
         try {
             int price = section.getInt("price");
             String currencyId = section.getString("currency");
-            Bukkit.getLogger().warning(price + " is price");
-            Bukkit.getLogger().warning(currencyId + " is id of currency");
-            Bukkit.getLogger().warning(runicItemId + " is runic item id");
             return new RunicShopItem(price, currencyId, RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem());
         } catch (Exception exception) {
             exception.printStackTrace();
