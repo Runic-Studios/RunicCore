@@ -252,21 +252,17 @@ public class SpellManager implements Listener {
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());
-        this.spellList.add(new KillShot());
         this.spellList.add(new BearTrap());
         this.spellList.add(new WingClip());
-        this.spellList.add(new Flare());
         this.spellList.add(new Sentry());
         this.spellList.add(new EscapeArtist());
-        this.spellList.add(new ArcaneShot());
-        this.spellList.add(new Icebrand());
-        this.spellList.add(new IceVolley());
-        this.spellList.add(new BindingShot());
+        this.spellList.add(new NetShot());
         this.spellList.add(new SurvivalInstinct());
         this.spellList.add(new Headshot());
         this.spellList.add(new HoningShot());
         this.spellList.add(new Conflagration());
         this.spellList.add(new Shatter());
+        this.spellList.add(new TippedArrows());
         /*
         Items
          */

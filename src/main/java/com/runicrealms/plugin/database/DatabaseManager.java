@@ -41,14 +41,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class DatabaseManager implements Listener {
 
-    private MongoClient mongoClient;
-    private MongoDatabase playersDB;
-    private MongoCollection<Document> guildDocuments;
-    private MongoCollection<Document> shopDocuments;
     private final Map<UUID, ShutdownSaveWrapper> playersToSave; // for redis-mongo saving
     private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string) (stores last 30 days)
     private final ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
+    private MongoClient mongoClient;
+    private MongoDatabase playersDB;
+    private MongoCollection<Document> guildDocuments;
+    private MongoCollection<Document> shopDocuments;
 
     public DatabaseManager() {
 
@@ -85,73 +85,29 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * IMPORTANT: performs all necessary data cleanup after player is loaded
-     */
-    @EventHandler
-    public void onCharacterLoaded(CharacterLoadedEvent event) {
-        event.getCharacterSelectEvent().close(); // close all jedis resources
-        RunicCore.getDatabaseManager().getPlayerDataMap().remove(event.getPlayer().getUniqueId()); // remove intermediary data objects
-    }
-
-    /**
-     * Call our custom character quit event
-     */
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        if (loadedCharacterMap.get(event.getPlayer().getUniqueId()) == null) return;
-        CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent
-                (
-                        event.getPlayer(),
-                        loadedCharacterMap.get(event.getPlayer().getUniqueId()).first
-                );
-        Bukkit.getPluginManager().callEvent(characterQuitEvent);
-    }
-
-    /**
-     * Synchronously call an event when the player has finished saving their quit data.
-     * Allows player to log back in
-     */
-    @EventHandler(priority = EventPriority.HIGHEST) // last thing that runs
-    public void onCharacterQuitFinished(CharacterQuitEvent event) {
-        loadedCharacterMap.remove(event.getPlayer().getUniqueId());
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> {
-                    CharacterHasQuitEvent characterHasQuitEvent = new CharacterHasQuitEvent(event.getPlayer(), event);
-                    Bukkit.getPluginManager().callEvent(characterHasQuitEvent); // inform plugins that character has finished data save!
-                }, 1L);
-    }
-
-    /**
-     * Saves all character-related core data (class, professions, etc.) on server shutdown
-     * for EACH alt the player has used during the runtime of this server.
-     * Works even if the player is now entirely offline
-     */
-    @EventHandler
-    public void onDatabaseSave(MongoSaveEvent event) {
-        for (UUID uuid : event.getPlayersToSave().keySet()) {
-            for (int characterSlot : event.getPlayersToSave().get(uuid).getCharactersToSave()) {
-                // Bukkit.broadcastMessage("SAVING EVENT SLOT IS " + characterSlot);
-                PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
-                playerMongoData.set("last_login", LocalDate.now());
-                saveCharacter(uuid, playerMongoData, characterSlot, event.getJedis());
-                // playerMongoData.save();
-            }
-        }
-    }
-
-    /**
-     * WARNING: should only be called AFTER checking if the document is in the collection using 'isInCollection'
+     * Attempts to populate the document for a new character slot with default values
      *
-     * @param uuid of the player to lookup
-     * @return the document (if found, older than 30 days) or null
+     * @param player    who created a new character
+     * @param className the name of the class
+     * @param slot      the slot of the character
      */
-    public Document retrieveDocumentFromCollection(UUID uuid) {
-        Document document = playersDB.getCollection("player_data").find
-                (Filters.eq("player_uuid", uuid.toString())).limit(1).first();
-        if (document != null) {
-            this.playerDocumentMap.put(String.valueOf(uuid), document);
-        }
-        return document;
+    public CharacterData addNewCharacter(Player player, String className, Integer slot, Jedis jedis) {
+        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
+        MongoDataSection mongoDataSection = playerMongoData.getSection("character." + slot);
+        mongoDataSection.set("class.name", className);
+        mongoDataSection.set("class.level", 0);
+        mongoDataSection.set("class.exp", 0);
+        mongoDataSection.set("prof.name", "None");
+        mongoDataSection.set("prof.level", 0);
+        mongoDataSection.set("prof.exp", 0);
+        mongoDataSection.set("currentHp", HealthUtils.getBaseHealth());
+        mongoDataSection.set("maxMana", RegenManager.getBaseMana());
+        mongoDataSection.set("storedHunger", 20);
+        mongoDataSection.set("outlaw.enabled", false);
+        mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
+        DatabaseUtil.saveLocation(playerMongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
+        playerMongoData.save();
+        return new CharacterData(player.getUniqueId(), slot, playerMongoData, jedis);
     }
 
     /**
@@ -180,30 +136,40 @@ public class DatabaseManager implements Listener {
         return newDataFile;
     }
 
-    /**
-     * Attempts to populate the document for a new character slot with default values
-     *
-     * @param player    who created a new character
-     * @param className the name of the class
-     * @param slot      the slot of the character
-     */
-    public CharacterData addNewCharacter(Player player, String className, Integer slot, Jedis jedis) {
-        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection mongoDataSection = playerMongoData.getSection("character." + slot);
-        mongoDataSection.set("class.name", className);
-        mongoDataSection.set("class.level", 0);
-        mongoDataSection.set("class.exp", 0);
-        mongoDataSection.set("prof.name", "None");
-        mongoDataSection.set("prof.level", 0);
-        mongoDataSection.set("prof.exp", 0);
-        mongoDataSection.set("currentHp", HealthUtils.getBaseHealth());
-        mongoDataSection.set("maxMana", RegenManager.getBaseMana());
-        mongoDataSection.set("storedHunger", 20);
-        mongoDataSection.set("outlaw.enabled", false);
-        mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        DatabaseUtil.saveLocation(playerMongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
-        playerMongoData.save();
-        return new CharacterData(player.getUniqueId(), slot, playerMongoData, jedis);
+    public MongoCollection<Document> getGuildData() {
+        return guildDocuments;
+    }
+
+    public ConcurrentHashMap.KeySetView<UUID, Pair<Integer, ClassEnum>> getLoadedCharacters() {
+        return loadedCharacterMap.keySet();
+    }
+
+    public ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> getLoadedCharactersMap() {
+        return loadedCharacterMap;
+    }
+
+    public MongoClient getMongoClient() {
+        return mongoClient;
+    }
+
+    public Map<UUID, PlayerData> getPlayerDataMap() {
+        return playerDataMap;
+    }
+
+    public HashMap<String, Document> getPlayerDocumentMap() {
+        return playerDocumentMap;
+    }
+
+    public MongoDatabase getPlayersDB() {
+        return playersDB;
+    }
+
+    public Map<UUID, ShutdownSaveWrapper> getPlayersToSave() {
+        return playersToSave;
+    }
+
+    public MongoCollection<Document> getShopData() {
+        return shopDocuments;
     }
 
     /**
@@ -255,6 +221,74 @@ public class DatabaseManager implements Listener {
     }
 
     /**
+     * IMPORTANT: performs all necessary data cleanup after player is loaded
+     */
+    @EventHandler
+    public void onCharacterLoaded(CharacterLoadedEvent event) {
+        event.getCharacterSelectEvent().close(); // close all jedis resources
+        RunicCore.getDatabaseManager().getPlayerDataMap().remove(event.getPlayer().getUniqueId()); // remove intermediary data objects
+    }
+
+    /**
+     * Synchronously call an event when the player has finished saving their quit data.
+     * Allows player to log back in
+     */
+    @EventHandler(priority = EventPriority.HIGHEST) // last thing that runs
+    public void onCharacterQuitFinished(CharacterQuitEvent event) {
+        loadedCharacterMap.remove(event.getPlayer().getUniqueId());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> {
+                    CharacterHasQuitEvent characterHasQuitEvent = new CharacterHasQuitEvent(event.getPlayer(), event);
+                    Bukkit.getPluginManager().callEvent(characterHasQuitEvent); // inform plugins that character has finished data save!
+                }, 1L);
+    }
+
+    /**
+     * Saves all character-related core data (class, professions, etc.) on server shutdown
+     * for EACH alt the player has used during the runtime of this server.
+     * Works even if the player is now entirely offline
+     */
+    @EventHandler
+    public void onDatabaseSave(MongoSaveEvent event) {
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            for (int characterSlot : event.getPlayersToSave().get(uuid).getCharactersToSave()) {
+                PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
+                playerMongoData.set("last_login", LocalDate.now());
+                saveCharacter(uuid, playerMongoData, characterSlot, event.getJedis());
+            }
+        }
+    }
+
+    /**
+     * Call our custom character quit event
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if (loadedCharacterMap.get(event.getPlayer().getUniqueId()) == null) return;
+        CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent
+                (
+                        event.getPlayer(),
+                        loadedCharacterMap.get(event.getPlayer().getUniqueId()).first
+                );
+        Bukkit.getPluginManager().callEvent(characterQuitEvent);
+    }
+
+    /**
+     * WARNING: should only be called AFTER checking if the document is in the collection using 'isInCollection'
+     *
+     * @param uuid of the player to lookup
+     * @return the document (if found, older than 30 days) or null
+     */
+    public Document retrieveDocumentFromCollection(UUID uuid) {
+        Document document = playersDB.getCollection("player_data").find
+                (Filters.eq("player_uuid", uuid.toString())).limit(1).first();
+        if (document != null) {
+            this.playerDocumentMap.put(String.valueOf(uuid), document);
+        }
+        return document;
+    }
+
+    /**
      * Method to build a CharacterData object for the given uuid, then writes that data to mongo
      *
      * @param uuid            of the player to save
@@ -286,41 +320,5 @@ public class DatabaseManager implements Listener {
      */
     public void updateDocument(UUID uuid, Document document) {
         playerDocumentMap.put(uuid.toString(), document);
-    }
-
-    public MongoClient getMongoClient() {
-        return mongoClient;
-    }
-
-    public MongoDatabase getPlayersDB() {
-        return playersDB;
-    }
-
-    public MongoCollection<Document> getGuildData() {
-        return guildDocuments;
-    }
-
-    public MongoCollection<Document> getShopData() {
-        return shopDocuments;
-    }
-
-    public Map<UUID, ShutdownSaveWrapper> getPlayersToSave() {
-        return playersToSave;
-    }
-
-    public HashMap<String, Document> getPlayerDocumentMap() {
-        return playerDocumentMap;
-    }
-
-    public ConcurrentHashMap.KeySetView<UUID, Pair<Integer, ClassEnum>> getLoadedCharacters() {
-        return loadedCharacterMap.keySet();
-    }
-
-    public ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> getLoadedCharactersMap() {
-        return loadedCharacterMap;
-    }
-
-    public Map<UUID, PlayerData> getPlayerDataMap() {
-        return playerDataMap;
     }
 }

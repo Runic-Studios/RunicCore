@@ -173,11 +173,13 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
     public void onCoreSaveComplete(MongoSaveEvent event) {
-        for (UUID uuid : event.getPlayersToSave().keySet()) {
-            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
-            playerMongoData.save();
-        }
-        event.markPluginSaved("core");
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            for (UUID uuid : event.getPlayersToSave().keySet()) {
+                PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
+                playerMongoData.save();
+            }
+            event.markPluginSaved("core");
+        });
     }
 
     /*

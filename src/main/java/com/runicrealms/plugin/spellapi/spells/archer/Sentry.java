@@ -48,7 +48,7 @@ public class Sentry extends Spell implements PhysicalDamageSpell {
         ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(player.getLocation());
         if (armorStand == null) return;
         if (armorStand.getEquipment() == null) return;
-        armorStand.setCustomName(ChatColor.YELLOW + player.getName() + "'s Turret");
+        armorStand.setCustomName(ChatColor.YELLOW + player.getName() + "'s Sentry");
         armorStand.setArms(true);
         armorStand.setRightArmPose(new EulerAngle(ArmorStandAPI.degreesToRadians(285), 0, 0));
         armorStand.getEquipment().setItemInMainHand(new ItemStack(Material.CROSSBOW));
