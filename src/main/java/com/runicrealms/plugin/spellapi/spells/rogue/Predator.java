@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -34,7 +34,7 @@ public class Predator extends Spell {
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!predators.contains(event.getPlayer().getUniqueId())) return;
         predators.remove(event.getPlayer().getUniqueId());
-        addStatusEffect(event.getVictim(), EffectEnum.STUN, DURATION);
+        addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION);
     }
 }
 

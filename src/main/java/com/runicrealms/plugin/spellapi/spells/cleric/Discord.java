@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -32,13 +32,11 @@ public class Discord extends Spell implements MagicDamageSpell {
                 ChatColor.WHITE, ClassEnum.CLERIC, 20, 20);
     }
 
-    @Override
-    public void executeSpell(Player player, SpellItemType type) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DELAY * 20, 2));
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
-        Cone.coneEffect(player, Particle.NOTE, DELAY, 0, 20, Color.GREEN);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(player), DELAY * 20L);
+    private void causeDiscord(Player caster, LivingEntity victim) {
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.2F);
+        VectorUtil.drawLine(caster, Particle.CRIT_MAGIC, Color.WHITE, caster.getEyeLocation(), victim.getEyeLocation(), 1);
     }
 
     private void discord(Player player) {
@@ -47,16 +45,18 @@ public class Discord extends Spell implements MagicDamageSpell {
         for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!(isValidEnemy(player, en))) continue;
             causeDiscord(player, (LivingEntity) en);
-            addStatusEffect(en, EffectEnum.STUN, DURATION);
+            addStatusEffect(en, RunicStatusEffect.STUN, DURATION);
             DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, this);
         }
     }
 
-    private void causeDiscord(Player caster, LivingEntity victim) {
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 1.0F);
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.6F);
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.2F);
-        VectorUtil.drawLine(caster, Particle.CRIT_MAGIC, Color.WHITE, caster.getEyeLocation(), victim.getEyeLocation(), 1);
+    @Override
+    public void executeSpell(Player player, SpellItemType type) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DELAY * 20, 2));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
+        Cone.coneEffect(player, Particle.NOTE, DELAY, 0, 20, Color.GREEN);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> discord(player), DELAY * 20L);
     }
 
     @Override

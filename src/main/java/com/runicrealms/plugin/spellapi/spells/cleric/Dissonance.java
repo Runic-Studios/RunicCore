@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -59,7 +59,7 @@ public class Dissonance extends Spell {
                     slot = rand.nextInt(10); // make sure it doesn't pick their current slot
                 ((Player) en).getInventory().setHeldItemSlot(slot);
             } else
-                addStatusEffect(en, EffectEnum.SILENCE, DURATION);
+                addStatusEffect(en, RunicStatusEffect.SILENCE, DURATION);
         }
     }
 }

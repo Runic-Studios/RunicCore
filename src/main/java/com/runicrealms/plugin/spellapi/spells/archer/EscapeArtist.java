@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.*;
@@ -47,9 +47,9 @@ public class EscapeArtist extends Spell {
                         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
                         Cone.coneEffect(player, Particle.VILLAGER_HAPPY, 1, 0, 20L, Color.WHITE);
                         escapeArtists.add(player.getUniqueId());
-                        RunicCore.getSpellManager().getRootedEntites().remove(player.getUniqueId());
-                        RunicCore.getSpellManager().getRootedEntites().remove(player.getUniqueId());
-                        RunicCore.getSpellManager().getRootedEntites().remove(player.getUniqueId());
+                        removeStatusEffect(player, RunicStatusEffect.ROOT);
+                        removeStatusEffect(player, RunicStatusEffect.SILENCE);
+                        removeStatusEffect(player, RunicStatusEffect.STUN);
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> escapeArtists.remove(player.getUniqueId()), COOLDOWN * 20L);
                     }
                 }

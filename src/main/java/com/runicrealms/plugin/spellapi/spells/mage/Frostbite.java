@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -68,7 +68,7 @@ public class Frostbite extends Spell {
                         if (isRooted(en)) continue;
                         LivingEntity victim = (LivingEntity) en;
                         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
-                        addStatusEffect(victim, EffectEnum.ROOT, (DURATION + 2) - count); // root for remaining duration
+                        addStatusEffect(victim, RunicStatusEffect.ROOT, (DURATION + 2) - count); // root for remaining duration
                     }
                 }
             }

@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -44,8 +44,8 @@ public class FireBlast extends Spell implements MagicDamageSpell {
             LivingEntity le = (LivingEntity) en;
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, this);
             en.getWorld().spawnParticle(Particle.FLAME, le.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
-            addStatusEffect(en, EffectEnum.SILENCE, STUN_DURATION);
-            addStatusEffect(en, EffectEnum.STUN, STUN_DURATION);
+            addStatusEffect(en, RunicStatusEffect.SILENCE, STUN_DURATION);
+            addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION);
         }
     }
 

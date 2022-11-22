@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -30,18 +30,6 @@ public class Subdue extends Spell {
         this.setIsPassive(true);
     }
 
-    @EventHandler
-    public void onSilencingHit(MagicDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        applySilence(e.getPlayer(), e.getVictim());
-    }
-
-    @EventHandler
-    public void onSilencingHit(PhysicalDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        applySilence(e.getPlayer(), e.getVictim());
-    }
-
     private void applySilence(Player pl, Entity en) {
 
         Random rand = new Random();
@@ -54,8 +42,20 @@ public class Subdue extends Spell {
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.25f, 1.75f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                     new Particle.DustOptions(Color.BLACK, 1));
-            addStatusEffect(victim, EffectEnum.SILENCE, DURATION);
+            addStatusEffect(victim, RunicStatusEffect.SILENCE, DURATION);
         }
+    }
+
+    @EventHandler
+    public void onSilencingHit(PhysicalDamageEvent e) {
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
+        applySilence(e.getPlayer(), e.getVictim());
+    }
+
+    @EventHandler
+    public void onSilencingHit(MagicDamageEvent e) {
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
+        applySilence(e.getPlayer(), e.getVictim());
     }
 }
 

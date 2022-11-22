@@ -4,7 +4,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -45,21 +45,21 @@ public class Riposte extends Spell {
         if (!ripostePlayers.contains(event.getVictim())) return;
         if (!(event.getDamager() instanceof LivingEntity)) return;
         event.setCancelled(true);
-        addStatusEffect(event.getDamager(), EffectEnum.STUN, DURATION_STUN);
+        addStatusEffect(event.getDamager(), RunicStatusEffect.STUN, DURATION_STUN);
     }
 
     @EventHandler
     public void onRiposteHit(PhysicalDamageEvent event) {
         if (!ripostePlayers.contains(event.getVictim())) return;
         event.setCancelled(true);
-        addStatusEffect(event.getPlayer(), EffectEnum.STUN, DURATION_STUN);
+        addStatusEffect(event.getPlayer(), RunicStatusEffect.STUN, DURATION_STUN);
     }
 
     @EventHandler
     public void onRiposteHit(MagicDamageEvent event) {
         if (!ripostePlayers.contains(event.getVictim())) return;
         event.setCancelled(true);
-        addStatusEffect(event.getPlayer(), EffectEnum.STUN, DURATION_STUN);
+        addStatusEffect(event.getPlayer(), RunicStatusEffect.STUN, DURATION_STUN);
     }
 }
 

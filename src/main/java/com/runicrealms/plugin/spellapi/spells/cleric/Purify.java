@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -41,23 +41,23 @@ public class Purify extends Spell implements HealingSpell {
 
     // checks for allies near the beam, stops multiple healing of the same player
     @SuppressWarnings("deprecation")
-    private void allyCheck(Player pl, Location location) {
-        for (Entity e : pl.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-            if (isValidAlly(pl, e)) {
+    private void allyCheck(Player player, Location location) {
+        for (Entity e : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
+            if (isValidAlly(player, e)) {
                 // a bunch of fancy checks to make sure one player can't be spam healed by the same effect
                 // multiple times
                 Player ally = (Player) e;
                 if (hasBeenHit.containsKey(ally.getUniqueId())) {
                     List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                    if (uuids.contains(pl.getUniqueId())) {
+                    if (uuids.contains(player.getUniqueId())) {
                         break;
                     } else {
-                        uuids.add(pl.getUniqueId());
+                        uuids.add(player.getUniqueId());
                         hasBeenHit.put(ally.getUniqueId(), uuids);
                     }
                 } else {
                     List<UUID> uuids = new ArrayList<>();
-                    uuids.add(pl.getUniqueId());
+                    uuids.add(player.getUniqueId());
                     hasBeenHit.put(ally.getUniqueId(), uuids);
                 }
 
@@ -66,24 +66,21 @@ public class Purify extends Spell implements HealingSpell {
                     @Override
                     public void run() {
                         List<UUID> uuids = hasBeenHit.get(ally.getUniqueId());
-                        uuids.remove(pl.getUniqueId());
+                        uuids.remove(player.getUniqueId());
                         hasBeenHit.put(ally.getUniqueId(), uuids);
                     }
                 }.runTaskLater(RunicCore.getInstance(), (SUCCESSIVE_COOLDOWN * 20));
 
                 if (ally.getHealth() == ally.getMaxHealth()) {
                     ally.sendMessage(
-                            ChatColor.WHITE + pl.getName()
+                            ChatColor.WHITE + player.getName()
                                     + ChatColor.GRAY + " tried to heal you, but you are at full health.");
-                    ally.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                    ally.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                 } else {
-                    HealUtil.healPlayer(HEAL_AMT, ally, pl, false, this);
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-                    if (RunicCoreAPI.isSilenced(ally)) {
-                        RunicCore.getSpellManager().getSilencedEntities().get(ally.getUniqueId()).cancel(); // fixes bugs
-                        RunicCore.getSpellManager().getSilencedEntities().remove(ally.getUniqueId());
-                    }
+                    HealUtil.healPlayer(HEAL_AMT, ally, player, false, this);
+                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+                    removeStatusEffect(ally, RunicStatusEffect.SILENCE);
                     // stop the beam if it hits a player
                     break;
                 }

@@ -5,7 +5,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -62,7 +62,7 @@ public class Judgment extends Spell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
-        addStatusEffect(player, EffectEnum.ROOT, BUBBLE_DURATION);
+        addStatusEffect(player, RunicStatusEffect.ROOT, BUBBLE_DURATION);
         judgmentLocationMap.put(player, player.getLocation());
 
         // Begin spell event

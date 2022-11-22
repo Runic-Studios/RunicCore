@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -44,8 +44,8 @@ public class IceBlock extends Spell implements MagicDamageSpell {
     public void executeSpell(Player player, SpellItemType type) {
         // on-use
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
-        addStatusEffect(player, EffectEnum.ROOT, DURATION);
-        addStatusEffect(player, EffectEnum.INVULN, DURATION);
+        addStatusEffect(player, RunicStatusEffect.ROOT, DURATION);
+        addStatusEffect(player, RunicStatusEffect.INVULNERABILITY, DURATION);
         Cone.coneEffect(player, Particle.REDSTONE, DURATION, 0, 20, Color.AQUA);
         // after duration
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {

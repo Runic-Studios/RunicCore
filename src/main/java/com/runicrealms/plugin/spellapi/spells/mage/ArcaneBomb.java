@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -83,7 +83,7 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
             livingEntity.getWorld().spawnParticle(Particle.REDSTONE, livingEntity.getLocation(),
                     15, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.FUCHSIA, 1));
             DamageUtil.damageEntitySpell(DAMAGE_AMT, livingEntity, player, this);
-            addStatusEffect(livingEntity, EffectEnum.SILENCE, DURATION);
+            addStatusEffect(livingEntity, RunicStatusEffect.SILENCE, DURATION);
         }
     }
 }

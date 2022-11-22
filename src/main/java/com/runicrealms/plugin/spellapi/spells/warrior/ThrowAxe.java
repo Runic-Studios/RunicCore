@@ -2,8 +2,8 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -89,7 +89,7 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                     if (isValidEnemy(pl, entity)) {
                         if (hasBeenHit.get(pl.getUniqueId()) == entity.getUniqueId()) continue;
                         hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                        addStatusEffect(entity, EffectEnum.SILENCE, DURATION);
+                        addStatusEffect(entity, RunicStatusEffect.SILENCE, DURATION);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

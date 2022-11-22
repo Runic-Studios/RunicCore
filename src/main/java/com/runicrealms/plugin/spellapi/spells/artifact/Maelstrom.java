@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.artifact;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.item.event.RunicArtifactOnHitEvent;
@@ -32,19 +32,6 @@ public class Maelstrom extends Spell implements ArtifactSpell {
         this.setIsPassive(false);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        if (!(e instanceof RunicArtifactOnHitEvent)) return;
-        RunicArtifactOnHitEvent onHitEvent = (RunicArtifactOnHitEvent) e;
-        if (isOnCooldown(e.getPlayer())) return;
-        double roll = ThreadLocalRandom.current().nextDouble();
-        if (roll > getChance()) return;
-        int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
-        createMaelstrom(e.getPlayer(), onHitEvent.getVictim(), damage);
-        e.setArtifactSpellToCast(this);
-    }
-
     /**
      * Create a maelstrom effect at the location of the victim
      *
@@ -62,7 +49,7 @@ public class Maelstrom extends Spell implements ArtifactSpell {
             livingEntity.getWorld().spawnParticle(Particle.CRIT_MAGIC, livingEntity.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
             DamageUtil.damageEntitySpell(damage, livingEntity, player);
             if (!(livingEntity instanceof Player)) // doesn't stun players
-                addStatusEffect(livingEntity, EffectEnum.STUN, DURATION);
+                addStatusEffect(livingEntity, RunicStatusEffect.STUN, DURATION);
         }
     }
 
@@ -74,6 +61,19 @@ public class Maelstrom extends Spell implements ArtifactSpell {
     @Override
     public double getChance() {
         return CHANCE;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
+        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        if (!(e instanceof RunicArtifactOnHitEvent)) return;
+        RunicArtifactOnHitEvent onHitEvent = (RunicArtifactOnHitEvent) e;
+        if (isOnCooldown(e.getPlayer())) return;
+        double roll = ThreadLocalRandom.current().nextDouble();
+        if (roll > getChance()) return;
+        int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
+        createMaelstrom(e.getPlayer(), onHitEvent.getVictim(), damage);
+        e.setArtifactSpellToCast(this);
     }
 }
 

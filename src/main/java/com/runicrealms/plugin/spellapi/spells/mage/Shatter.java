@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -39,7 +39,7 @@ public class Shatter extends Spell {
         double dist = location.distanceSquared(orbLocation);
 
         if (dist <= ArcaneOrb.RADIUS * ArcaneOrb.RADIUS) {
-            addStatusEffect(event.getVictim(), EffectEnum.STUN, DURATION);
+            addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION);
         }
     }
 }

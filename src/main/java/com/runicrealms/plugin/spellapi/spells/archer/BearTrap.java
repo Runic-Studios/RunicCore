@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.ChatColor;
@@ -32,18 +32,6 @@ public class BearTrap extends Spell {
         ensnareMap = new HashMap<>();
     }
 
-    @EventHandler
-    public void onRangedHit(MagicDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
-    }
-
-    @EventHandler
-    public void onRangedHit(PhysicalDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
-    }
-
     private void applyRoot(Player damager, LivingEntity victim) {
         if (PowerShot.huntersMarkMap().get(damager.getUniqueId()) == null) {
             ensnareMap.remove(damager.getUniqueId()); // reset count if hunters mark wears off
@@ -61,9 +49,21 @@ public class BearTrap extends Spell {
         } else {
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
             Cone.coneEffect(victim, Particle.CRIT, DURATION, 0, 20L, Color.WHITE);
-            addStatusEffect(victim, EffectEnum.ROOT, DURATION);
+            addStatusEffect(victim, RunicStatusEffect.ROOT, DURATION);
             ensnareMap.remove(damager.getUniqueId());
         }
+    }
+
+    @EventHandler
+    public void onRangedHit(PhysicalDamageEvent e) {
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
+        applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
+    }
+
+    @EventHandler
+    public void onRangedHit(MagicDamageEvent e) {
+        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
+        applyRoot(e.getPlayer(), (LivingEntity) e.getVictim());
     }
 }
 

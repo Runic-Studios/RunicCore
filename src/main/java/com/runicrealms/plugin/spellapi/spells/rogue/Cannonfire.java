@@ -2,8 +2,8 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -54,6 +54,17 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
         firePellets(player, new Location[]{left, middle, right}, vector);
     }
 
+    private void explode(Entity victim, Player shooter, Spell spell, Entity pellet) {
+        hasBeenHit.put(shooter.getUniqueId(), victim.getUniqueId()); // prevent concussive hits
+        pellet.remove();
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 1.0f);
+        victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
+        DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) victim, shooter, false, false, spell);
+        addStatusEffect(victim, RunicStatusEffect.SILENCE, DURATION);
+        Vector force = shooter.getLocation().toVector().subtract(victim.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
+        victim.setVelocity(force);
+    }
+
     private void firePellets(Player player, Location[] pelletLocations, Vector vector) {
         for (Location location : pelletLocations) {
             Entity pellet = FloatingItemUtil.spawnFloatingItem(location, MATERIAL, 50, vector, 0);
@@ -85,17 +96,6 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), hasBeenHit::clear, DURATION * 20L);
         }
-    }
-
-    private void explode(Entity victim, Player shooter, Spell spell, Entity pellet) {
-        hasBeenHit.put(shooter.getUniqueId(), victim.getUniqueId()); // prevent concussive hits
-        pellet.remove();
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 1.0f);
-        victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
-        DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) victim, shooter, false, false, spell);
-        addStatusEffect(victim, EffectEnum.SILENCE, DURATION);
-        Vector force = shooter.getLocation().toVector().subtract(victim.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
-        victim.setVelocity(force);
     }
 
     @Override

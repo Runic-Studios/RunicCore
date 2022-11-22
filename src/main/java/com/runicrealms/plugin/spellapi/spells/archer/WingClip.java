@@ -3,7 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -46,7 +46,7 @@ public class WingClip extends Spell {
         if (!(wingClippers.contains(event.getPlayer().getUniqueId()))) return;
         wingClippers.remove(event.getPlayer().getUniqueId());
         Entity en = event.getVictim();
-        addStatusEffect(en, EffectEnum.ROOT, DURATION);
+        addStatusEffect(en, RunicStatusEffect.ROOT, DURATION);
         en.getWorld().spawnParticle(Particle.REDSTONE, en.getLocation(), 15, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.fromRGB(210, 180, 140), 3));
     }
