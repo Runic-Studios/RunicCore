@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import java.util.HashMap;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class BearTrap extends Spell {
 
     private static final double DURATION = 4;

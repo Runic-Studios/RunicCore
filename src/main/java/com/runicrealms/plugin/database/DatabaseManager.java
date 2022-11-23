@@ -136,7 +136,7 @@ public class DatabaseManager implements Listener {
         return newDataFile;
     }
 
-    public MongoCollection<Document> getGuildData() {
+    public MongoCollection<Document> getGuildDocuments() {
         return guildDocuments;
     }
 

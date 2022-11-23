@@ -11,20 +11,20 @@ import java.util.Set;
 
 public class GuildMongoData implements MongoData {
 
-    private Document document;
     private final String prefix;
     private final Set<MongoSetUpdate> setUpdates;
     private final Set<MongoUnsetUpdate> unsetUpdates;
+    private Document document;
 
     public GuildMongoData(String prefix) {
         this.prefix = prefix;
         this.setUpdates = new HashSet<>();
         this.unsetUpdates = new HashSet<>();
-        this.document = RunicCore.getDatabaseManager().getGuildData().find(
+        this.document = RunicCore.getDatabaseManager().getGuildDocuments().find(
                 (Filters.eq("prefix", prefix))).first();
         if (this.document == null) {
             this.document = new Document("prefix", this.prefix);
-            RunicCore.getDatabaseManager().getGuildData().insertOne(this.document);
+            RunicCore.getDatabaseManager().getGuildDocuments().insertOne(this.document);
         }
     }
 
@@ -71,7 +71,7 @@ public class GuildMongoData implements MongoData {
 
     @Override
     public void refresh() {
-        this.document = RunicCore.getDatabaseManager().getGuildData().find(
+        this.document = RunicCore.getDatabaseManager().getGuildDocuments().find(
                 (Filters.eq("prefix", prefix))).first();
     }
 
@@ -82,7 +82,7 @@ public class GuildMongoData implements MongoData {
             for (MongoUnsetUpdate update : this.unsetUpdates) {
                 updates.append(update.getKey(), "");
             }
-            RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$unset", updates));
+            RunicCore.getDatabaseManager().getGuildDocuments().updateOne(new Document("prefix", this.prefix), new Document("$unset", updates));
             this.unsetUpdates.clear();
         }
         if (this.setUpdates.size() > 0) {
@@ -90,7 +90,7 @@ public class GuildMongoData implements MongoData {
             for (MongoSetUpdate update : this.setUpdates) {
                 updates.append(update.getKey(), update.getValue());
             }
-            RunicCore.getDatabaseManager().getGuildData().updateOne(new Document("prefix", this.prefix), new Document("$set", updates));
+            RunicCore.getDatabaseManager().getGuildDocuments().updateOne(new Document("prefix", this.prefix), new Document("$set", updates));
             this.setUpdates.clear();
         }
         this.refresh();
