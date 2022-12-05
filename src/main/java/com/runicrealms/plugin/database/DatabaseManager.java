@@ -5,7 +5,6 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
-import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
@@ -13,12 +12,8 @@ import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
-import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
-import com.runicrealms.plugin.player.RegenManager;
-import com.runicrealms.plugin.player.utilities.HealthUtils;
-import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -73,7 +68,7 @@ public class DatabaseManager implements Listener {
         try {
             mongoClient = MongoClients.create(mongoClientSettings);
             playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
-            FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseUtil.LAST_LOGIN_DATE_FILTER);
+            FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseHelper.LAST_LOGIN_DATE_FILTER);
             for (Document document : player_data_last_30_days) {
                 playerDocumentMap.put(String.valueOf(document.get("player_uuid")), document);
             }
@@ -82,32 +77,6 @@ public class DatabaseManager implements Listener {
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Database connection failed!");
         }
-    }
-
-    /**
-     * Attempts to populate the document for a new character slot with default values
-     *
-     * @param player    who created a new character
-     * @param className the name of the class
-     * @param slot      the slot of the character
-     */
-    public CharacterData addNewCharacter(Player player, String className, Integer slot, Jedis jedis) {
-        PlayerMongoData playerMongoData = new PlayerMongoData(player.getUniqueId().toString());
-        MongoDataSection mongoDataSection = playerMongoData.getSection("character." + slot);
-        mongoDataSection.set("class.name", className);
-        mongoDataSection.set("class.level", 0);
-        mongoDataSection.set("class.exp", 0);
-        mongoDataSection.set("prof.name", "None");
-        mongoDataSection.set("prof.level", 0);
-        mongoDataSection.set("prof.exp", 0);
-        mongoDataSection.set("currentHp", HealthUtils.getBaseHealth());
-        mongoDataSection.set("maxMana", RegenManager.getBaseMana());
-        mongoDataSection.set("storedHunger", 20);
-        mongoDataSection.set("outlaw.enabled", false);
-        mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        DatabaseUtil.saveLocation(playerMongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
-        playerMongoData.save();
-        return new CharacterData(player.getUniqueId(), slot, playerMongoData, jedis);
     }
 
     /**
@@ -183,21 +152,6 @@ public class DatabaseManager implements Listener {
     public boolean isInCollection(UUID uuid) {
         return playersDB.getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null;
-    }
-
-    /**
-     * Creates a CharacterData object. Tries to build it from session storage (Redis) first,
-     * then falls back to Mongo
-     *
-     * @param uuid of player who is attempting to load their data
-     * @param slot the slot of the character
-     */
-    public CharacterData loadCharacterData(UUID uuid, Integer slot, Jedis jedis) {
-        // Step 1: check if character data is cached in redis
-        CharacterData characterData = RunicCore.getRedisManager().checkRedisForCharacterData(uuid, slot, jedis);
-        if (characterData != null) return characterData;
-        // Step 2: check mongo documents
-        return new CharacterData(uuid, slot, new PlayerMongoData(uuid.toString()), jedis);
     }
 
     /**
