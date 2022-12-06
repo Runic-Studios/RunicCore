@@ -84,21 +84,20 @@ public class PlayerJoinListener implements Listener {
     }
 
     /**
-     * Setup for new players
+     * Loads values on login from the CharacterData object once they select a character from select screen
      */
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onFirstLoad(CharacterSelectEvent event) {
-        if (event.getPlayer().hasPlayedBefore()) return;
-        Player player = event.getPlayer();
-        // broadcast new player welcome message
-        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
-                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
-        // heal player
-        HealthUtils.setPlayerMaxHealth(player);
-        player.setHealthScale(HealthUtils.getHeartAmount());
-        int playerHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        player.setHealth(playerHealth);
-        player.setFoodLevel(20);
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onJoin(CharacterSelectEvent event) {
+        if (!event.getPlayer().hasPlayedBefore()) {
+            setupNewPlayer(event.getPlayer());
+        }
+        Location location = event.getCharacterData().getBaseCharacterInfo().getLocation();
+        // Teleport player and setup data sync
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+            event.getPlayer().teleport(location);
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                    () -> buildCharacterFromEvent(event.getPlayer(), event), 1L); // run 1 tick late so that player stats load
+        });
     }
 
     /**
@@ -129,17 +128,6 @@ public class PlayerJoinListener implements Listener {
     }
 
     /**
-     * Loads values on login from the CharacterData object once they select a character from select screen
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onJoin(CharacterSelectEvent event) {
-        Location location = event.getCharacterData().getBaseCharacterInfo().getLocation();
-        event.getPlayer().teleport(location);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> buildCharacterFromEvent(event.getPlayer(), event), 1L); // run 1 tick late so that player stats load
-    }
-
-    /**
      * Allows donator ranks to enter a full server
      */
     @EventHandler
@@ -160,5 +148,17 @@ public class PlayerJoinListener implements Listener {
                                 "\nTry again in a moment");
             }
         }
+    }
+
+    private void setupNewPlayer(Player player) {
+        // broadcast new player welcome message
+        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
+                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
+        // heal player
+        HealthUtils.setPlayerMaxHealth(player);
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        int playerHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        player.setHealth(playerHealth);
+        player.setFoodLevel(20);
     }
 }

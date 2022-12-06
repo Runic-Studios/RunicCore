@@ -3,7 +3,7 @@ package com.runicrealms.plugin.database;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.model.CharacterData;
+import com.runicrealms.plugin.model.WriteCallback;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
@@ -12,11 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import redis.clients.jedis.Jedis;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 /**
  * This class provides useful methods for data reading and writing
@@ -141,28 +139,6 @@ public class DatabaseHelper {
             Bukkit.getLogger().info(ChatColor.RED + "Save location method encountered an exception!");
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Creates a CharacterData object. Tries to build it from session storage (Redis) first,
-     * then falls back to Mongo
-     *
-     * @param uuid of player who is attempting to load their data
-     * @param slot the slot of the character
-     */
-    public static void loadCharacterData(UUID uuid, Integer slot, Jedis jedis, final ReadCallback callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            // Step 1: check if character data is cached in redis
-            CharacterData characterDataRedis = RunicCore.getRedisManager().checkRedisForCharacterData(uuid, slot, jedis);
-            if (characterDataRedis != null) {
-                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> callback.onQueryComplete(characterDataRedis));
-            }
-            // Step 2: check mongo documents
-            else {
-                CharacterData characterDataMongo = new CharacterData(uuid, slot, new PlayerMongoData(uuid.toString()), jedis);
-                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> callback.onQueryComplete(characterDataMongo));
-            }
-        });
     }
 
 }

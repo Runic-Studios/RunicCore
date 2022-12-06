@@ -196,7 +196,7 @@ public class CharacterGuiManager implements Listener {
             } else {
                 classMenu.remove(player.getUniqueId());
                 player.closeInventory();
-                Integer slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
+                int slot = eventSlot < 9 ? eventSlot - 1 : eventSlot - 5;
                 markCharacterForSave(player, slot);
                 /*
                 Don't try-with-resources here. We need jedis to stay open for other events.
@@ -204,15 +204,34 @@ public class CharacterGuiManager implements Listener {
                  */
                 Jedis jedis = RunicCoreAPI.getNewJedisResource();
                 // Async request a data lookup in redis / mongo and build data object then load and run event sync
-                DatabaseHelper.loadCharacterData(player.getUniqueId(), slot, jedis, characterData -> {
-                    RunicCore.getDatabaseManager().getLoadedCharactersMap().put(player.getUniqueId(), Pair.pair(slot, characterData.getClassInfo().getClassType())); // now we always know which character is playing
-                    CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent(player, characterData, jedis);
-                    Bukkit.getPluginManager().callEvent(characterSelectEvent);
-                });
+                loadCharacterData(player, slot, jedis);
             }
         } else if (currentItem.getType() == CharacterSelectUtil.CHARACTER_CREATE_ITEM.getType()) {
             openAddCharacterInventory(player);
         }
+    }
+
+    /**
+     * Creates a CharacterData object. Tries to build it from session storage (Redis) first,
+     * then falls back to Mongo
+     *
+     * @param player player who is attempting to load their data
+     * @param slot   the slot of the character
+     * @param jedis  the jedis resource
+     */
+    private void loadCharacterData(Player player, Integer slot, Jedis jedis) {
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            UUID uuid = player.getUniqueId();
+            // Step 1: check if character data is cached in redis
+            CharacterData characterData = RunicCore.getRedisManager().checkRedisForCharacterData(uuid, slot, jedis);
+            // Step 2: check mongo documents
+            if (characterData == null) {
+                characterData = new CharacterData(uuid, slot, new PlayerMongoData(uuid.toString()), jedis);
+            }
+            RunicCore.getDatabaseManager().getLoadedCharactersMap().put(uuid, Pair.pair(slot, characterData.getClassInfo().getClassType())); // now we always know which character is playing
+            CharacterSelectEvent characterSelectEvent = new CharacterSelectEvent(player, characterData, jedis);
+            Bukkit.getPluginManager().callEvent(characterSelectEvent);
+        });
     }
 
     /**
