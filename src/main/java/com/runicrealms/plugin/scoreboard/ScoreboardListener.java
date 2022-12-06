@@ -19,11 +19,14 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ScoreboardListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onPlayerJoin(CharacterSelectEvent e) {
+    /**
+     * Updates health and scoreboard on armor equip
+     * This NEEDS to be delayed by at least several ticks, or it won't update correctly
+     */
+    @EventHandler
+    public void onArmorEquip(ArmorEquipEvent e) {
         Player player = e.getPlayer();
-        RunicCore.getScoreboardHandler().setupScoreboard(player);
-        NametagUtil.updateNametag(player);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 5L);
     }
 
     /**
@@ -36,21 +39,6 @@ public class ScoreboardListener implements Listener {
         Player player = event.getPlayer();
         RunicCore.getScoreboardHandler().updatePlayerInfo(event.getPlayer(), event.getPlayer().getScoreboard());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
-    }
-
-    @EventHandler
-    public void onProfessionChange(ProfessionChangeEvent e) {
-        RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
-    }
-
-    /**
-     * Updates health and scoreboard on armor equip
-     * This NEEDS to be delayed by at least several ticks, or it won't update correctly
-     */
-    @EventHandler
-    public void onArmorEquip(ArmorEquipEvent e) {
-        Player player = e.getPlayer();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 5L);
     }
 
     /**
@@ -75,6 +63,20 @@ public class ScoreboardListener implements Listener {
     public void onOffhandSwap(PlayerSwapHandItemsEvent e) {
         Player player = e.getPlayer();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onPlayerJoin(CharacterSelectEvent event) {
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+            RunicCore.getScoreboardHandler().setupScoreboard(player);
+            NametagUtil.updateNametag(player);
+        }); // setup sync since the event is run async
+    }
+
+    @EventHandler
+    public void onProfessionChange(ProfessionChangeEvent e) {
+        RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
     }
 
 }

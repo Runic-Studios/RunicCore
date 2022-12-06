@@ -445,6 +445,9 @@ public class RunicCoreAPI {
      * @return boolean value whether passive found
      */
     public static boolean hasPassive(UUID uuid, String passive) {
+        if (RunicCore.getSkillTreeManager().getPlayerPassiveMap().get(uuid) == null) {
+            return false; // player not setup yet from async select event
+        }
         return RunicCore.getSkillTreeManager().getPlayerPassiveMap().get(uuid).contains(passive);
     }
 

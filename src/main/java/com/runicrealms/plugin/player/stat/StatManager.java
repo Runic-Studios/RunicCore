@@ -8,6 +8,7 @@ import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.runicitems.Stat;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,21 +26,8 @@ public class StatManager implements Listener {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    // Fire as HIGHEST so that runic items loads cached stats first for base stat tree grab, and SkillTreeManager loads skill trees
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLoad(CharacterSelectEvent event) {
-        StatContainer statContainer = new StatContainer(event.getPlayer());
-        UUID uuid = event.getPlayer().getUniqueId();
-        playerStatMap.put(event.getPlayer().getUniqueId(), statContainer);
-        int slot = event.getCharacterData().getBaseCharacterInfo().getSlot();
-        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST, event.getJedis());
-        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND, event.getJedis());
-        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD, event.getJedis());
-    }
-
-    @EventHandler
-    public void onQuit(CharacterQuitEvent e) {
-        playerStatMap.remove(e.getPlayer().getUniqueId());
+    public StatContainer getPlayerStatContainer(UUID uuid) {
+        return playerStatMap.get(uuid);
     }
 
     /**
@@ -60,7 +48,23 @@ public class StatManager implements Listener {
         }
     }
 
-    public StatContainer getPlayerStatContainer(UUID uuid) {
-        return playerStatMap.get(uuid);
+    // Fire as HIGHEST so that runic items loads cached stats first for base stat tree grab, and SkillTreeManager loads skill trees
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onLoad(CharacterSelectEvent event) {
+        StatContainer statContainer = new StatContainer(event.getPlayer());
+        UUID uuid = event.getPlayer().getUniqueId();
+        playerStatMap.put(event.getPlayer().getUniqueId(), statContainer);
+        int slot = event.getCharacterData().getBaseCharacterInfo().getSlot();
+        // run event sync (might be able to change this event to async)
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+            grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST, event.getJedis());
+            grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND, event.getJedis());
+            grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD, event.getJedis());
+        });
+    }
+
+    @EventHandler
+    public void onQuit(CharacterQuitEvent e) {
+        playerStatMap.remove(e.getPlayer().getUniqueId());
     }
 }
