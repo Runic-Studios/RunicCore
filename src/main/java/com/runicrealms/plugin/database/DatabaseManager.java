@@ -219,12 +219,12 @@ public class DatabaseManager implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         if (loadedCharacterMap.get(event.getPlayer().getUniqueId()) == null) return;
-        CharacterQuitEvent characterQuitEvent = new CharacterQuitEvent
-                (
-                        event.getPlayer(),
-                        loadedCharacterMap.get(event.getPlayer().getUniqueId()).first
-                );
-        Bukkit.getPluginManager().callEvent(characterQuitEvent);
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                () -> Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
+                        (
+                                event.getPlayer(),
+                                loadedCharacterMap.get(event.getPlayer().getUniqueId()).first
+                        )));
     }
 
     /**

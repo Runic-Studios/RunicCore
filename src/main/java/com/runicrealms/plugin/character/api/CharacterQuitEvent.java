@@ -7,41 +7,43 @@ import org.bukkit.event.HandlerList;
 import redis.clients.jedis.Jedis;
 
 /**
- * A custom event which is called when a player disconnects after selecting a character
+ * A custom ASYNC event which is called when a player disconnects after selecting a character
  *
  * @author Skyfallin
  */
 public class CharacterQuitEvent extends Event {
 
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final int slot;
     private final Jedis jedis;
 
-    private static final HandlerList handlers = new HandlerList();
-
     /**
-     * @param player
-     * @param slot
+     * @param player who quit
+     * @param slot   of the character
      */
     public CharacterQuitEvent(final Player player, final int slot) {
+        super(true);
         this.player = player;
         this.slot = slot;
         this.jedis = RunicCoreAPI.getNewJedisResource();
     }
 
-    /**
-     * @param player
-     * @param slot
-     * @param jedis
-     */
-    public CharacterQuitEvent(final Player player, final int slot, final Jedis jedis) {
-        this.player = player;
-        this.slot = slot;
-        this.jedis = jedis;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public void close() {
         this.jedis.close();
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public Jedis getJedis() {
+        return this.jedis;
     }
 
     public Player getPlayer() {
@@ -50,19 +52,6 @@ public class CharacterQuitEvent extends Event {
 
     public int getSlot() {
         return this.slot;
-    }
-
-    public Jedis getJedis() {
-        return this.jedis;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
 }
