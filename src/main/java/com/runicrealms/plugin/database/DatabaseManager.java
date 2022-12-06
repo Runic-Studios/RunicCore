@@ -13,7 +13,6 @@ import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
-import com.runicrealms.plugin.database.util.DatabaseUtil;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.plugin.player.RegenManager;
@@ -73,7 +72,7 @@ public class DatabaseManager implements Listener {
         try {
             mongoClient = MongoClients.create(mongoClientSettings);
             playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
-            FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseUtil.LAST_LOGIN_DATE_FILTER);
+            FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseHelper.LAST_LOGIN_DATE_FILTER);
             for (Document document : player_data_last_30_days) {
                 playerDocumentMap.put(String.valueOf(document.get("player_uuid")), document);
             }
@@ -105,7 +104,7 @@ public class DatabaseManager implements Listener {
         mongoDataSection.set("storedHunger", 20);
         mongoDataSection.set("outlaw.enabled", false);
         mongoDataSection.set("outlaw.rating", RunicCore.getBaseOutlawRating());
-        DatabaseUtil.saveLocation(playerMongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
+        DatabaseHelper.saveLocation(playerMongoData.getCharacter(slot), CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK)); // tutorial
         playerMongoData.save();
         return new CharacterData(player.getUniqueId(), slot, playerMongoData, jedis);
     }

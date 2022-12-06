@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.CityLocation;
+import com.runicrealms.plugin.database.DatabaseHelper;
 import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.database.util.DatabaseUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -58,7 +58,7 @@ public class BaseCharacterData implements SessionData {
         this.storedHunger = character.get("storedHunger", Integer.class) != null ? character.get("storedHunger", Integer.class) : 20;
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
-            this.location = DatabaseUtil.loadLocation(player, character);
+            this.location = DatabaseHelper.loadLocationFromSerializedString(character);
         } else {
             this.location = CityLocation.TUTORIAL.getLocation(); // oops!
         }
@@ -77,7 +77,7 @@ public class BaseCharacterData implements SessionData {
         this.slot = Integer.parseInt(fieldsMap.get(CharacterField.SLOT.getField()));
         this.currentHp = Integer.parseInt(fieldsMap.get(CharacterField.CURRENT_HEALTH.getField()));
         this.storedHunger = Integer.parseInt(fieldsMap.get(CharacterField.STORED_HUNGER.getField()));
-        this.location = DatabaseUtil.loadLocation(fieldsMap.get(CharacterField.LOCATION.getField()));
+        this.location = DatabaseHelper.loadLocationFromSerializedString(fieldsMap.get(CharacterField.LOCATION.getField()));
     }
 
     public int getCurrentHp() {
@@ -113,7 +113,7 @@ public class BaseCharacterData implements SessionData {
             put("currentHp", String.valueOf(currentHp));
             put("storedHunger", String.valueOf(storedHunger));
             put("playerUuid", String.valueOf(uuid));
-            put("location", DatabaseUtil.serializeLocation(location));
+            put("location", DatabaseHelper.serializeLocation(location));
         }};
     }
 
@@ -130,7 +130,7 @@ public class BaseCharacterData implements SessionData {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
         character.set("currentHP", this.currentHp);
         character.set("storedHunger", this.storedHunger);
-        DatabaseUtil.saveLocation(character, this.location);
+        DatabaseHelper.saveLocation(character, this.location);
         return playerMongoData;
     }
 
