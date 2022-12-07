@@ -17,6 +17,7 @@ import java.util.UUID;
  */
 public class MongoSaveEvent extends Event implements Cancellable {
 
+    private static final HandlerList handlers = new HandlerList();
     private final PreShutdownEvent preShutdownEvent;
     private final Jedis jedis; // the jedis resource to read from
     /*
@@ -26,8 +27,8 @@ public class MongoSaveEvent extends Event implements Cancellable {
     private boolean isCancelled;
 
     /**
-     * @param preShutdownEvent
-     * @param jedis
+     * @param preShutdownEvent the associated pre shutdown event that triggered a mongo save
+     * @param jedis            the jedis resource
      */
     public MongoSaveEvent(PreShutdownEvent preShutdownEvent, Jedis jedis) {
         this.preShutdownEvent = preShutdownEvent;
@@ -36,11 +37,14 @@ public class MongoSaveEvent extends Event implements Cancellable {
         this.isCancelled = false;
     }
 
-    /**
-     * @param key
-     */
-    public void markPluginSaved(String key) {
-        this.preShutdownEvent.markPluginSaved(key);
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public Jedis getJedis() {
@@ -61,15 +65,10 @@ public class MongoSaveEvent extends Event implements Cancellable {
         this.isCancelled = arg0;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
-    @SuppressWarnings("NullableProblems")
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+    /**
+     * @param key of the plugin matching its id in the RunicRestart config (i.e. "core")
+     */
+    public void markPluginSaved(String key) {
+        this.preShutdownEvent.markPluginSaved(key);
     }
 }

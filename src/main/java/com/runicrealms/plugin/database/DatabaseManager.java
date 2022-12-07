@@ -14,6 +14,7 @@ import com.runicrealms.plugin.classes.ClassEnum;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.PlayerData;
+import com.runicrealms.runicrestart.RunicRestart;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -214,17 +215,29 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * Call our custom character quit event
+     * Call our custom character quit event, sync or async depending on context
      */
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         if (loadedCharacterMap.get(event.getPlayer().getUniqueId()) == null) return;
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                () -> Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
-                        (
-                                event.getPlayer(),
-                                loadedCharacterMap.get(event.getPlayer().getUniqueId()).first
-                        )));
+        boolean isAsync = !RunicRestart.getAPI().isShuttingDown();
+        if (isAsync) {
+            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                    () -> Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
+                            (
+                                    event.getPlayer(),
+                                    loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
+                                    true
+                            )));
+        } else {
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
+                    () -> Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
+                            (
+                                    event.getPlayer(),
+                                    loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
+                                    false
+                            )));
+        }
     }
 
     /**

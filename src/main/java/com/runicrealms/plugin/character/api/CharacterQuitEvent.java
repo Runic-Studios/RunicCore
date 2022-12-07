@@ -22,8 +22,8 @@ public class CharacterQuitEvent extends Event {
      * @param player who quit
      * @param slot   of the character
      */
-    public CharacterQuitEvent(final Player player, final int slot) {
-        super(true);
+    public CharacterQuitEvent(final Player player, final int slot, boolean isAsync) {
+        super(isAsync);
         this.player = player;
         this.slot = slot;
         this.jedis = RunicCoreAPI.getNewJedisResource();
