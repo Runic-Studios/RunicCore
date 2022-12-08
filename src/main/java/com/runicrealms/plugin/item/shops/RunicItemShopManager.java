@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.NpcClickEvent;
 import com.runicrealms.plugin.config.ShopConfigLoader;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicnpcs.api.NpcClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

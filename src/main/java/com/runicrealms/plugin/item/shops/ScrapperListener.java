@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.NpcClickEvent;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import com.runicrealms.runicnpcs.api.NpcClickEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -17,6 +17,15 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 public class ScrapperListener implements Listener {
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onNpcClick(NpcClickEvent event) {
+        if (!ItemScrapper.SCRAPPER_NPC_IDS.contains(event.getNpc().getId())) return;
+        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+        ItemScrapper itemScrapper = new ItemScrapper(event.getPlayer());
+        RunicCore.getRunicShopManager().getPlayersInShops().put(event.getPlayer().getUniqueId(), itemScrapper);
+        event.getPlayer().openInventory(itemScrapper.getInventoryHolder().getInventory());
+    }
 
     /**
      * Handles logic for the shop menus
@@ -74,14 +83,5 @@ public class ScrapperListener implements Listener {
             }
             RunicCore.getRunicShopManager().getPlayersInShops().remove(player.getUniqueId());
         }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onNpcClick(NpcClickEvent e) {
-        if (!ItemScrapper.SCRAPPER_NPC_IDS.contains(e.getNpc().getId())) return;
-        e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-        ItemScrapper itemScrapper = new ItemScrapper(e.getPlayer());
-        RunicCore.getRunicShopManager().getPlayersInShops().put(e.getPlayer().getUniqueId(), itemScrapper);
-        e.getPlayer().openInventory(itemScrapper.getInventoryHolder().getInventory());
     }
 }
