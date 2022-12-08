@@ -6,11 +6,6 @@ import org.bukkit.inventory.ItemStack;
 public interface LootTableAPI {
 
     /**
-     * @return the loot/drop table for the epic tier
-     */
-    WeightedRandomBag<ItemStack> getLootTableIV();
-
-    /**
      * @return the loot/drop table for the common tier
      */
     WeightedRandomBag<ItemStack> getLootTableTierI();
@@ -24,4 +19,9 @@ public interface LootTableAPI {
      * @return the loot/drop table for the rare tier
      */
     WeightedRandomBag<ItemStack> getLootTableTierIII();
+
+    /**
+     * @return the loot/drop table for the epic tier
+     */
+    WeightedRandomBag<ItemStack> getLootTableTierIV();
 }

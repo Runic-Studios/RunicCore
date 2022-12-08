@@ -77,7 +77,7 @@ public class LootChestInventory implements InventoryHolder {
                     chestItem = RunicCore.getLootTableAPI().getLootTableTierIII().getRandom();
                     break;
                 case TIER_IV:
-                    chestItem = RunicCore.getLootTableAPI().getLootTableIV().getRandom();
+                    chestItem = RunicCore.getLootTableAPI().getLootTableTierIV().getRandom();
                     break;
                 default:
                     chestItem = RunicCore.getLootTableAPI().getLootTableTierI().getRandom();

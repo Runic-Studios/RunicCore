@@ -231,11 +231,6 @@ public class LootTableManager implements LootTableAPI {
     }
 
     @Override
-    public WeightedRandomBag<ItemStack> getLootTableIV() {
-        return LOOT_TABLE_TIER_IV;
-    }
-
-    @Override
     public WeightedRandomBag<ItemStack> getLootTableTierI() {
         return LOOT_TABLE_TIER_I;
     }
@@ -248,5 +243,10 @@ public class LootTableManager implements LootTableAPI {
     @Override
     public WeightedRandomBag<ItemStack> getLootTableTierIII() {
         return LOOT_TABLE_TIER_III;
+    }
+
+    @Override
+    public WeightedRandomBag<ItemStack> getLootTableTierIV() {
+        return LOOT_TABLE_TIER_IV;
     }
 }
