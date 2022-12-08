@@ -4,14 +4,9 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.RunicProfessions;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.professions.event.GatheringLevelChangeEvent;
-import com.runicrealms.plugin.professions.gathering.GatheringSkill;
-import com.runicrealms.plugin.professions.model.GatheringData;
-import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -83,44 +78,6 @@ public class SetCMD extends BaseCommand {
             writeClassDataToRedis(player, formattedStr, jedis);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    // set gatheringlevel [player] [skill] [level]
-
-    @Subcommand("gatheringlevel")
-    @Syntax("<player> <skill> <level>")
-    @CommandCompletion("@online @gatheringSkills @nothing")
-    @Conditions("is-console-or-op")
-    public void onCommandGatheringLevel(CommandSender commandSender, String[] args) {
-        if (args.length != 3) {
-            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments. Usage: set gatheringlevel [player] [skill] [level]");
-            return;
-        }
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null) return;
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            GatheringData gatheringData = RunicProfessions.getProfManager().loadGatheringData(player.getUniqueId(), jedis);
-            GatheringSkill gatheringSkill = GatheringSkill.getFromIdentifier(args[1]);
-            if (gatheringSkill == null) return;
-            int oldLevel = gatheringData.getGatheringLevel(gatheringSkill);
-            int newLevel = Integer.parseInt(args[2]);
-            gatheringData.setGatheringLevel(gatheringSkill, newLevel);
-            // ----------------------
-            // IMPORTANT: You can't set the exp to 0 here. It must be the expected experience at the profession level!
-            int expAtLevel = ProfExpUtil.calculateTotalExperience(newLevel);
-            // ----------------------
-            gatheringData.setGatheringExp(gatheringSkill, expAtLevel);
-            // call a level change event to notify redis
-            GatheringLevelChangeEvent gatheringLevelChangeEvent = new GatheringLevelChangeEvent
-                    (
-                            player,
-                            gatheringData,
-                            gatheringSkill,
-                            oldLevel,
-                            newLevel
-                    );
-            Bukkit.getPluginManager().callEvent(gatheringLevelChangeEvent);
         }
     }
 

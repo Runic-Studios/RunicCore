@@ -630,15 +630,6 @@ public class RunicCoreAPI {
         return false;
     }
 
-    /**
-     * Used so that other plugins can trigger a scoreboard update
-     *
-     * @param player the player to update
-     */
-    public static void updatePlayerScoreboard(Player player) {
-        RunicCore.getScoreboardHandler().updatePlayerInfo(player, player.getScoreboard());
-    }
-
     public static class CombatAPI {
         public static void giveCombatExp(Player player, int exp) {
             try (Jedis jedis = RunicCore.getRedisManager().getJedisResource()) {

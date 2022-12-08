@@ -5,7 +5,6 @@ import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
-import com.runicrealms.plugin.professions.event.ProfessionChangeEvent;
 import com.runicrealms.plugin.utilities.NametagUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,8 +23,8 @@ public class ScoreboardListener implements Listener {
      * This NEEDS to be delayed by at least several ticks, or it won't update correctly
      */
     @EventHandler
-    public void onArmorEquip(ArmorEquipEvent e) {
-        Player player = e.getPlayer();
+    public void onArmorEquip(ArmorEquipEvent event) {
+        Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 5L);
     }
 
@@ -37,7 +36,7 @@ public class ScoreboardListener implements Listener {
         if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
         Player player = event.getPlayer();
-        RunicCore.getScoreboardHandler().updatePlayerInfo(event.getPlayer(), event.getPlayer().getScoreboard());
+        RunicCore.getScoreboardAPI().updatePlayerInfo(event.getPlayer(), event.getPlayer().getScoreboard());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
     }
 
@@ -45,13 +44,13 @@ public class ScoreboardListener implements Listener {
      * Updates health and scoreboard on offhand equip
      */
     @EventHandler
-    public void onOffhandEquip(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
-        Player player = (Player) e.getWhoClicked();
-        if (e.getCurrentItem() == null) return;
-        if (e.getClickedInventory() == null) return;
-        if (e.getSlot() != 40) return;
-        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
+    public void onOffhandEquip(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        Player player = (Player) event.getWhoClicked();
+        if (event.getCurrentItem() == null) return;
+        if (event.getClickedInventory() == null) return;
+        if (event.getSlot() != 40) return;
+        if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
         }
     }
@@ -60,8 +59,8 @@ public class ScoreboardListener implements Listener {
      * Updates health and scoreboard on off-hand swap
      */
     @EventHandler
-    public void onOffhandSwap(PlayerSwapHandItemsEvent e) {
-        Player player = e.getPlayer();
+    public void onOffhandSwap(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
     }
 
@@ -69,14 +68,9 @@ public class ScoreboardListener implements Listener {
     public void onPlayerJoin(CharacterSelectEvent event) {
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-            RunicCore.getScoreboardHandler().setupScoreboard(player);
+            RunicCore.getScoreboardAPI().setupScoreboard(player);
             NametagUtil.updateNametag(player);
         }); // setup sync since the event is run async
-    }
-
-    @EventHandler
-    public void onProfessionChange(ProfessionChangeEvent e) {
-        RunicCore.getScoreboardHandler().updatePlayerInfo(e.getPlayer(), e.getPlayer().getScoreboard());
     }
 
 }

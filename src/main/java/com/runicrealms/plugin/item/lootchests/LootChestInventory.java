@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.lootchests;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,14 +15,13 @@ import java.util.Random;
 
 public class LootChestInventory implements InventoryHolder {
 
+    private static final Random random = new Random();
+    private static final int CHEST_SIZE = 27;
     private final int minItems;
     private final int maxItems;
     private final Inventory inventory;
     private final LootChestTier lootChestTier;
     private final Player player;
-
-    private static final Random random = new Random();
-    private static final int CHEST_SIZE = 27;
 
     public LootChestInventory(Player player, LootChestTier lootChestTier) {
         this.player = player;
@@ -30,28 +30,6 @@ public class LootChestInventory implements InventoryHolder {
         this.maxItems = lootChestTier.getMaximumItems();
         this.inventory = Bukkit.createInventory(this, CHEST_SIZE, ColorUtil.format(chestTitle()));
         openMenu();
-    }
-
-    public int getMinItems() {
-        return minItems;
-    }
-
-    public int getMaxItems() {
-        return maxItems;
-    }
-
-    @NotNull
-    @Override
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public LootChestTier getLootChestRarity() {
-        return lootChestTier;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     /**
@@ -93,20 +71,42 @@ public class LootChestInventory implements InventoryHolder {
             // fill inventory
             switch (lootChestTier) {
                 case TIER_II:
-                    chestItem = ChestLootTableUtil.lootTableTierII().getRandom();
+                    chestItem = LootTableManager.lootTableTierII().getRandom();
                     break;
                 case TIER_III:
-                    chestItem = ChestLootTableUtil.lootTableTierIII().getRandom();
+                    chestItem = LootTableManager.lootTableTierIII().getRandom();
                     break;
                 case TIER_IV:
-                    chestItem = ChestLootTableUtil.lootTableTierIV().getRandom();
+                    chestItem = LootTableManager.lootTableTierIV().getRandom();
                     break;
                 default:
-                    chestItem = ChestLootTableUtil.lootTableTierI().getRandom();
+                    chestItem = RunicCore.getLootTableAPI().getLootTableTierI().getRandom();
                     break;
             }
             this.inventory.setItem(slot, chestItem);
         }
+    }
+
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public LootChestTier getLootChestRarity() {
+        return lootChestTier;
+    }
+
+    public int getMaxItems() {
+        return maxItems;
+    }
+
+    public int getMinItems() {
+        return minItems;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     /**

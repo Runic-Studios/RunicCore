@@ -6,10 +6,15 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.ConfigAPI;
+import com.runicrealms.plugin.api.LootTableAPI;
+import com.runicrealms.plugin.api.ScoreboardAPI;
 import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
-import com.runicrealms.plugin.commands.player.*;
+import com.runicrealms.plugin.commands.player.HelpCMD;
+import com.runicrealms.plugin.commands.player.MapLink;
+import com.runicrealms.plugin.commands.player.RunicVoteCMD;
+import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -17,6 +22,7 @@ import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
+import com.runicrealms.plugin.item.lootchests.LootTableManager;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
@@ -68,10 +74,11 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static LootChestManager lootChestManager;
     private static RegenManager regenManager;
     private static PartyManager partyManager;
-    private static ScoreboardHandler scoreboardHandler;
+    private static ScoreboardAPI scoreboardAPI;
     private static SpellManager spellManager;
     private static TabAPI tabAPI;
     private static ConfigAPI configAPI;
+    private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
@@ -106,8 +113,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         return partyManager;
     }
 
-    public static ScoreboardHandler getScoreboardHandler() {
-        return scoreboardHandler;
+    public static ScoreboardAPI getScoreboardAPI() {
+        return scoreboardAPI;
     }
 
     public static SpellManager getSpellManager() {
@@ -120,6 +127,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static ConfigAPI getConfigAPI() {
         return configAPI;
+    }
+
+    public static LootTableAPI getLootTableAPI() {
+        return lootTableAPI;
     }
 
     public static MobTagger getMobTagger() {
@@ -210,10 +221,11 @@ public class RunicCore extends JavaPlugin implements Listener {
         lootChestManager = null;
         regenManager = null;
         partyManager = null;
-        scoreboardHandler = null;
+        scoreboardAPI = null;
         spellManager = null;
         tabAPI = null;
         configAPI = null;
+        lootTableAPI = null;
         mobTagger = null;
         bossTagger = null;
         databaseManager = null;
@@ -237,10 +249,11 @@ public class RunicCore extends JavaPlugin implements Listener {
         lootChestManager = new LootChestManager();
         regenManager = new RegenManager();
         partyManager = new PartyManager();
-        scoreboardHandler = new ScoreboardHandler();
+        scoreboardAPI = new ScoreboardHandler();
         spellManager = new SpellManager();
         tabAPI = new TabListManager(this);
         configAPI = new ConfigManager();
+        lootTableAPI = new LootTableManager();
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
@@ -307,7 +320,6 @@ public class RunicCore extends JavaPlugin implements Listener {
             Bukkit.getLogger().info(ChatColor.DARK_RED + "ERROR: FAILED TO INITIALIZE ACF COMMANDS");
             return;
         }
-        commandManager.registerCommand(new CheckExpCMD());
         commandManager.registerCommand(new ManaCMD());
         commandManager.registerCommand(new RunicGiveCMD());
         commandManager.registerCommand(new SetCMD());

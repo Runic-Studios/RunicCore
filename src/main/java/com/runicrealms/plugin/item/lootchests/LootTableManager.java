@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.item.lootchests;
 
-import com.runicrealms.plugin.professions.utilities.GatheringUtil;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -10,61 +12,51 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * A util to retrieve weighted loot tables for each tier of loot chest.
  */
-public class ChestLootTableUtil {
+public class LootTableManager implements LootTableAPI {
 
-    public static WeightedRandomBag<ItemStack> lootTableTierI() {
+    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_I;
 
-        // create a loot table object
-        WeightedRandomBag<ItemStack> commonLootTable = new WeightedRandomBag<>();
+    static {
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            // create a loot table object
+            LOOT_TABLE_TIER_I = new WeightedRandomBag<>();
 
-        // armor and weapons
-        LootChestTier common = LootChestTier.TIER_I;
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(common.getMinLootLevel(), common.getMaxLootLevel(), 1).generateItem();
+            // armor and weapons
+            LootChestTier common = LootChestTier.TIER_I;
+            ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(common.getMinLootLevel(), common.getMaxLootLevel(), 1).generateItem();
 
-        ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 6 + 1)); // bound is not inclusive, so we add 1
-        ItemStack bread = runicItem("Bread", 2, 4);
+            ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 6 + 1)); // bound is not inclusive, so we add 1
+            ItemStack bread = runicItem("Bread", 2, 4);
 
-        // materials
-        ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
-        ItemStack oakWood = runicItem("OakWood", 3, 5);
-        ItemStack thread = runicItem("Thread", 3, 5);
-        ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
-        ItemStack bottle = runicItem("Bottle", 2, 3);
-        ItemStack salmon = runicItem("Salmon", 2, 3);
+            // materials
+            ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
+            ItemStack oakWood = runicItem("OakWood", 3, 5);
+            ItemStack thread = runicItem("Thread", 3, 5);
+            ItemStack animalHide = runicItem("AnimalHide", 3, 5);
+            ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
+            ItemStack bottle = runicItem("Bottle", 2, 3);
+            ItemStack salmon = runicItem("Salmon", 2, 3);
 
-        // gathering tools (tier 1)
-        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_APPRENTICE_ITEMSTACK;
-        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_APPRENTICE_ITEMSTACK;
-        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_APPRENTICE_ITEMSTACK;
-        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_APPRENTICE_ITEMSTACK;
+            // potions
+            ItemStack healthPotion = runicItem("minor-potion-healing", 1, 1);
+            ItemStack manaPotion = runicItem("minor-potion-mana", 1, 1);
 
-        // potions
-        ItemStack healthPotion = runicItem("minor-potion-healing", 1, 1);
-        ItemStack manaPotion = runicItem("minor-potion-mana", 1, 1);
+            // add entries to table
+            LOOT_TABLE_TIER_I.addEntry(randomArmorOrWeaponInLevelRange, 70.0);
+            LOOT_TABLE_TIER_I.addEntry(coin, 50.0);
+            LOOT_TABLE_TIER_I.addEntry(bread, 50.0);
 
-        // add entries to table
-        commonLootTable.addEntry(randomArmorOrWeaponInLevelRange, 70.0);
-        commonLootTable.addEntry(coin, 50.0);
-        commonLootTable.addEntry(bread, 50.0);
+            LOOT_TABLE_TIER_I.addEntry(spruceWood, 8.0);
+            LOOT_TABLE_TIER_I.addEntry(oakWood, 8.0);
+            LOOT_TABLE_TIER_I.addEntry(thread, 8.0);
+            LOOT_TABLE_TIER_I.addEntry(animalHide, 8.0);
+            LOOT_TABLE_TIER_I.addEntry(uncutRuby, 8.0);
+            LOOT_TABLE_TIER_I.addEntry(bottle, 16.0);
+            LOOT_TABLE_TIER_I.addEntry(salmon, 8.0);
 
-        commonLootTable.addEntry(spruceWood, 8.0);
-        commonLootTable.addEntry(oakWood, 8.0);
-        commonLootTable.addEntry(thread, 8.0);
-        commonLootTable.addEntry(animalHide, 8.0);
-        commonLootTable.addEntry(uncutRuby, 8.0);
-        commonLootTable.addEntry(bottle, 16.0);
-        commonLootTable.addEntry(salmon, 8.0);
-
-        commonLootTable.addEntry(gatheringAxe, 4.0);
-        commonLootTable.addEntry(gatheringHoe, 4.0);
-        commonLootTable.addEntry(gatheringPick, 4.0);
-        commonLootTable.addEntry(gatheringRod, 6.0);
-
-        commonLootTable.addEntry(healthPotion, 20.0);
-        commonLootTable.addEntry(manaPotion, 20.0);
-
-        return commonLootTable;
+            LOOT_TABLE_TIER_I.addEntry(healthPotion, 20.0);
+            LOOT_TABLE_TIER_I.addEntry(manaPotion, 20.0);
+        }, 10 * 20L);
     }
 
     public static WeightedRandomBag<ItemStack> lootTableTierII() {
@@ -93,10 +85,10 @@ public class ChestLootTableUtil {
         ItemStack cod = runicItem("Cod", 2, 3);
 
         // gathering tools (tier 2)
-        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_ADEPT_ITEMSTACK;
-        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_ADEPT_ITEMSTACK;
-        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_ADEPT_ITEMSTACK;
-        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_ADEPT_ITEMSTACK;
+//        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_ADEPT_ITEMSTACK;
+//        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_ADEPT_ITEMSTACK;
+//        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_ADEPT_ITEMSTACK;
+//        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_ADEPT_ITEMSTACK;
 
         // potions
         ItemStack healthPotion = runicItem("major-potion-healing", 1, 1);
@@ -117,10 +109,10 @@ public class ChestLootTableUtil {
         uncommonLootTable.addEntry(bottle, 16.0);
         uncommonLootTable.addEntry(cod, 8.0);
 
-        uncommonLootTable.addEntry(gatheringAxe, 3.0);
-        uncommonLootTable.addEntry(gatheringHoe, 3.0);
-        uncommonLootTable.addEntry(gatheringPick, 3.0);
-        uncommonLootTable.addEntry(gatheringRod, 5.0);
+//        uncommonLootTable.addEntry(gatheringAxe, 3.0);
+//        uncommonLootTable.addEntry(gatheringHoe, 3.0);
+//        uncommonLootTable.addEntry(gatheringPick, 3.0);
+//        uncommonLootTable.addEntry(gatheringRod, 5.0);
 
         uncommonLootTable.addEntry(healthPotion, 25.0);
         uncommonLootTable.addEntry(manaPotion, 25.0);
@@ -155,10 +147,10 @@ public class ChestLootTableUtil {
         ItemStack tropical = runicItem("Tropical", 2, 3);
 
         // gathering tools (tier 3)
-        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_REFINED_ITEMSTACK;
-        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_REFINED_ITEMSTACK;
-        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_REFINED_ITEMSTACK;
-        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_REFINED_ITEMSTACK;
+//        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_REFINED_ITEMSTACK;
+//        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_REFINED_ITEMSTACK;
+//        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_REFINED_ITEMSTACK;
+//        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_REFINED_ITEMSTACK;
 
         // potions
         ItemStack healthPotion = runicItem("major-potion-healing", 1, 1);
@@ -179,10 +171,10 @@ public class ChestLootTableUtil {
         rareLootTable.addEntry(bottle, 16.0);
         rareLootTable.addEntry(tropical, 8.0);
 
-        rareLootTable.addEntry(gatheringAxe, 2.0);
-        rareLootTable.addEntry(gatheringHoe, 2.0);
-        rareLootTable.addEntry(gatheringPick, 2.0);
-        rareLootTable.addEntry(gatheringRod, 4.0);
+//        rareLootTable.addEntry(gatheringAxe, 2.0);
+//        rareLootTable.addEntry(gatheringHoe, 2.0);
+//        rareLootTable.addEntry(gatheringPick, 2.0);
+//        rareLootTable.addEntry(gatheringRod, 4.0);
 
         rareLootTable.addEntry(healthPotion, 30.0);
         rareLootTable.addEntry(manaPotion, 30.0);
@@ -219,10 +211,10 @@ public class ChestLootTableUtil {
         ItemStack pufferfish = runicItem("Pufferfish", 2, 3);
 
         // gathering tools (tier 4)
-        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_MASTER_ITEMSTACK;
-        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_MASTER_ITEMSTACK;
-        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_MASTER_ITEMSTACK;
-        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_MASTER_ITEMSTACK;
+//        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_MASTER_ITEMSTACK;
+//        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_MASTER_ITEMSTACK;
+//        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_MASTER_ITEMSTACK;
+//        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_MASTER_ITEMSTACK;
 
         // potions
         ItemStack healthPotion = runicItem("greater-potion-healing", 1, 1);
@@ -246,10 +238,10 @@ public class ChestLootTableUtil {
         epicLootTable.addEntry(bottle, 16.0);
         epicLootTable.addEntry(pufferfish, 8.0);
 
-        epicLootTable.addEntry(gatheringAxe, 2.0);
-        epicLootTable.addEntry(gatheringHoe, 2.0);
-        epicLootTable.addEntry(gatheringPick, 2.0);
-        epicLootTable.addEntry(gatheringRod, 4.0);
+//        epicLootTable.addEntry(gatheringAxe, 2.0);
+//        epicLootTable.addEntry(gatheringHoe, 2.0);
+//        epicLootTable.addEntry(gatheringPick, 2.0);
+//        epicLootTable.addEntry(gatheringRod, 4.0);
 
         epicLootTable.addEntry(healthPotion, 30.0);
         epicLootTable.addEntry(manaPotion, 30.0);
@@ -267,5 +259,10 @@ public class ChestLootTableUtil {
      */
     private static ItemStack runicItem(String templateId, int minStackSize, int maxStackSize) {
         return RunicItemsAPI.generateItemFromTemplate(templateId, (ThreadLocalRandom.current().nextInt(minStackSize, maxStackSize + 1))).generateItem();
+    }
+
+    @Override
+    public WeightedRandomBag<ItemStack> getLootTableTierI() {
+        return LOOT_TABLE_TIER_I;
     }
 }

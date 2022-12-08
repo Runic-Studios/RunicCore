@@ -2,6 +2,7 @@ package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.api.ScoreboardAPI;
 import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.ProfessionData;
 import org.bukkit.Bukkit;
@@ -14,7 +15,7 @@ import redis.clients.jedis.Jedis;
 import java.util.Map;
 import java.util.UUID;
 
-public class ScoreboardHandler {
+public class ScoreboardHandler implements ScoreboardAPI {
 
     // basic info
     private static final String CLASS_TEAM_STRING = "c";
@@ -30,6 +31,10 @@ public class ScoreboardHandler {
     private static final String HEALTH_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.RED;
     private static final String MANA_TEAM_STRING = "m";
     private static final String MANA_ENTRY_STRING = ChatColor.BLACK + "" + ChatColor.AQUA;
+    private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
+    private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
+    private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
+    private static final String OUTLAW_DISABLED_STRING = ChatColor.YELLOW + "Outlaw: " + ChatColor.GREEN + "OFF";
 
     /**
      * Create running task to update health / mana display
@@ -44,29 +49,106 @@ public class ScoreboardHandler {
         }, 100L, 4L);
     }
 
+    private String healthAsString(final Player player) {
+        int currentHealth = (int) player.getHealth();
+        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §e/ " + ChatColor.RED + maxHealth + " (Health)";
+    }
+
+    private String manaAsString(final Player player) {
+        int mana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
+        int maxMana = RunicCoreAPI.calculateMaxMana(player);
+        return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
+    }
+
+    private String playerClass(final Player player) {
+        String className = RunicCoreAPI.getPlayerClass(player);
+        int currentLevel = player.getLevel();
+        String display;
+        if (className == null) {
+            display = NO_CLASS_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + className;
+            if (currentLevel != 0) {
+                display = ChatColor.GREEN + className + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
+            }
+        }
+        return display;
+    }
+
     /**
-     * Set the scoreboard for the given player if they do not yet have one
+     * Update the scoreboard info on the player's current guild data
      *
-     * @param player to receive scoreboard
+     * @param player to update
+     * @param jedis  the jedis resource
+     * @return a string with their guild info
      */
-    public void setupScoreboard(final Player player) {
-        assert Bukkit.getScoreboardManager() != null;
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = scoreboard.registerNewObjective("ServerName", "", ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        // setup basic fields
-        Score blankSpaceSeven = obj.getScore("§1");
-        blankSpaceSeven.setScore(9);
-        Score characterInfo = obj.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + player.getName());
-        characterInfo.setScore(8);
-        setupPlayerInfo(player, scoreboard, obj);
-        updatePlayerInfo(player, scoreboard);
-        Score blankSpaceTwo = obj.getScore("§2");
-        blankSpaceTwo.setScore(3);
-        // setup combat fields using teams to avoid flickering
-        setupPlayerCombatInfo(player, scoreboard, obj);
-        updatePlayerCombatInfo(player, scoreboard);
-        player.setScoreboard(scoreboard);
+    private String playerGuild(final Player player, Jedis jedis) {
+        String display;
+        if (!jedis.exists(player.getUniqueId() + ":guild")) {
+            display = NO_GUILD_STRING;
+        } else {
+            String guild = jedis.get(player.getUniqueId() + ":guild");
+            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
+        }
+        return display;
+    }
+
+    private String playerOutlaw(final Player player, final Jedis jedis) {
+        String display;
+        if (RunicCoreAPI.getRedisCharacterValue
+                (
+                        player.getUniqueId(),
+                        "outlaw",
+                        RunicCoreAPI.getCharacterSlot(player.getUniqueId()),
+                        jedis
+                ) == null) {
+            display = OUTLAW_DISABLED_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
+        }
+        return display;
+    }
+
+    /**
+     * Update the scoreboard info on the player's current profession data
+     *
+     * @param player to update
+     * @param jedis  the jedis resource
+     * @return a string with their profession info
+     */
+    private String playerProf(final Player player, Jedis jedis) {
+        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
+        String profName = professionFields.get(CharacterField.PROF_NAME.getField());
+        int currentLevel = Integer.parseInt(professionFields.get(CharacterField.PROF_LEVEL.getField()));
+        String display;
+        if (profName == null) {
+            display = NO_PROF_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + profName;
+            if (currentLevel != 0) {
+                display = ChatColor.GREEN + profName + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
+            }
+        }
+        return display;
+    }
+
+    /**
+     * Initial setup for player combat info using scoreboard teams to prevent flickering
+     * Some string manipulation because scoreboard teams can't go beyond 16 chars
+     *
+     * @param player     who owns the scoreboard
+     * @param scoreboard the scoreboard of the player
+     * @param obj        the main scoreboard objective defined in 'setupScoreboard'
+     */
+    private void setupPlayerCombatInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
+        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+        Team playerHealth = scoreboard.registerNewTeam(playerNameSubString + HEALTH_TEAM_STRING);
+        playerHealth.addEntry(HEALTH_ENTRY_STRING);
+        obj.getScore(HEALTH_ENTRY_STRING).setScore(2);
+        Team playerMana = scoreboard.registerNewTeam(playerNameSubString + MANA_TEAM_STRING);
+        playerMana.addEntry(MANA_ENTRY_STRING);
+        obj.getScore(MANA_ENTRY_STRING).setScore(1);
     }
 
     /**
@@ -94,6 +176,27 @@ public class ScoreboardHandler {
         obj.getScore(OUTLAW_ENTRY_STRING).setScore(4);
     }
 
+    @Override
+    public void setupScoreboard(final Player player) {
+        assert Bukkit.getScoreboardManager() != null;
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective obj = scoreboard.registerNewObjective("ServerName", "", ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "     Runic Realms     ");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        // setup basic fields
+        Score blankSpaceSeven = obj.getScore("§1");
+        blankSpaceSeven.setScore(9);
+        Score characterInfo = obj.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + player.getName());
+        characterInfo.setScore(8);
+        setupPlayerInfo(player, scoreboard, obj);
+        updatePlayerInfo(player, scoreboard);
+        Score blankSpaceTwo = obj.getScore("§2");
+        blankSpaceTwo.setScore(3);
+        // setup combat fields using teams to avoid flickering
+        setupPlayerCombatInfo(player, scoreboard, obj);
+        updatePlayerCombatInfo(player, scoreboard);
+        player.setScoreboard(scoreboard);
+    }
+
     /**
      * Method used to keep scoreboard accurate during level-up, profession change, etc.
      * Some string manipulation because scoreboard teams can't go beyond 16 chars
@@ -101,6 +204,7 @@ public class ScoreboardHandler {
      * @param player     who owns the scoreboard
      * @param scoreboard the scoreboard of the player
      */
+    @Override
     public void updatePlayerInfo(final Player player, final Scoreboard scoreboard) {
         try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
             String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
@@ -121,22 +225,9 @@ public class ScoreboardHandler {
         }
     }
 
-    /**
-     * Initial setup for player combat info using scoreboard teams to prevent flickering
-     * Some string manipulation because scoreboard teams can't go beyond 16 chars
-     *
-     * @param player     who owns the scoreboard
-     * @param scoreboard the scoreboard of the player
-     * @param obj        the main scoreboard objective defined in 'setupScoreboard'
-     */
-    private void setupPlayerCombatInfo(final Player player, final Scoreboard scoreboard, final Objective obj) {
-        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
-        Team playerHealth = scoreboard.registerNewTeam(playerNameSubString + HEALTH_TEAM_STRING);
-        playerHealth.addEntry(HEALTH_ENTRY_STRING);
-        obj.getScore(HEALTH_ENTRY_STRING).setScore(2);
-        Team playerMana = scoreboard.registerNewTeam(playerNameSubString + MANA_TEAM_STRING);
-        playerMana.addEntry(MANA_ENTRY_STRING);
-        obj.getScore(MANA_ENTRY_STRING).setScore(1);
+    @Override
+    public void updatePlayerScoreboard(Player player) {
+        this.updatePlayerInfo(player, player.getScoreboard());
     }
 
     /**
@@ -158,97 +249,5 @@ public class ScoreboardHandler {
         } catch (NullPointerException e) {
             // wrapped in try-catch in-case scoreboard can't set up in time
         }
-    }
-
-    private String healthAsString(final Player player) {
-        int currentHealth = (int) player.getHealth();
-        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        return ChatColor.DARK_RED + "❤ " + ChatColor.RED + currentHealth + " §e/ " + ChatColor.RED + maxHealth + " (Health)";
-    }
-
-    private String manaAsString(final Player player) {
-        int mana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
-        int maxMana = RunicCoreAPI.calculateMaxMana(player);
-        return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
-    }
-
-    private static final String NO_CLASS_STRING = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + "None";
-
-    private String playerClass(final Player player) {
-        String className = RunicCoreAPI.getPlayerClass(player);
-        int currentLevel = player.getLevel();
-        String display;
-        if (className == null) {
-            display = NO_CLASS_STRING;
-        } else {
-            display = ChatColor.YELLOW + "Class: " + ChatColor.GREEN + className;
-            if (currentLevel != 0) {
-                display = ChatColor.GREEN + className + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
-            }
-        }
-        return display;
-    }
-
-    private static final String NO_PROF_STRING = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + "None";
-
-    /**
-     * Update the scoreboard info on the player's current profession data
-     *
-     * @param player to update
-     * @param jedis  the jedis resource
-     * @return a string with their profession info
-     */
-    private String playerProf(final Player player, Jedis jedis) {
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
-        String profName = professionFields.get(CharacterField.PROF_NAME.getField());
-        int currentLevel = Integer.parseInt(professionFields.get(CharacterField.PROF_LEVEL.getField()));
-        String display;
-        if (profName == null) {
-            display = NO_PROF_STRING;
-        } else {
-            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + profName;
-            if (currentLevel != 0) {
-                display = ChatColor.GREEN + profName + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
-            }
-        }
-        return display;
-    }
-
-    private static final String NO_GUILD_STRING = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + "None";
-
-    /**
-     * Update the scoreboard info on the player's current guild data
-     *
-     * @param player to update
-     * @param jedis  the jedis resource
-     * @return a string with their guild info
-     */
-    private String playerGuild(final Player player, Jedis jedis) {
-        String display;
-        if (!jedis.exists(player.getUniqueId() + ":guild")) {
-            display = NO_GUILD_STRING;
-        } else {
-            String guild = jedis.get(player.getUniqueId() + ":guild");
-            display = ChatColor.YELLOW + "Guild: " + ChatColor.GREEN + guild;
-        }
-        return display;
-    }
-
-    private static final String OUTLAW_DISABLED_STRING = ChatColor.YELLOW + "Outlaw: " + ChatColor.GREEN + "OFF";
-
-    private String playerOutlaw(final Player player, final Jedis jedis) {
-        String display;
-        if (RunicCoreAPI.getRedisCharacterValue
-                (
-                        player.getUniqueId(),
-                        "outlaw",
-                        RunicCoreAPI.getCharacterSlot(player.getUniqueId()),
-                        jedis
-                ) == null) {
-            display = OUTLAW_DISABLED_STRING;
-        } else {
-            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
-        }
-        return display;
     }
 }

@@ -4,14 +4,12 @@ import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.TravelLocation;
 import com.runicrealms.plugin.TravelType;
-import com.runicrealms.plugin.professions.Profession;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -46,14 +44,6 @@ public class RunicItemShopHelper {
         getRunicMage();
         initializeInnkeepers();
         /*
-        PROFESSION TUTORS
-         */
-        getAlchemistTutor();
-        getBlacksmithTutor();
-        getEnchanterTutor();
-        getHunterTutor();
-        getJewelerTutor();
-        /*
         GATEKEEPERS
          */
         getCaveGatekeepers();
@@ -74,23 +64,6 @@ public class RunicItemShopHelper {
         return infoItem;
     }
 
-    private static ItemStack professionTutorIcon(Profession profession, Material material) {
-        ItemStack infoItem = new ItemStack(material);
-        ItemMeta meta = infoItem.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "LEARN PROFESSION - " + profession.getName());
-        List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Learn this profession!");
-        lore.add("");
-        lore.addAll(ChatUtils.formattedText("&e" + profession.getDescription()));
-        lore.add("");
-        lore.addAll(ChatUtils.formattedText("&cWarning: This will RESET your current profession!"));
-        meta.setLore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        infoItem.setItemMeta(meta);
-        return infoItem;
-    }
-
     private ItemStack boatItem(TravelType travelType, TravelLocation travelLocation) {
         ItemStack wagonItem = new ItemStack(travelType.getMaterial());
         ItemMeta meta = wagonItem.getItemMeta();
@@ -99,20 +72,6 @@ public class RunicItemShopHelper {
         meta.setLore(Arrays.asList("", ChatColor.GRAY + "Quickly travel to this destination!"));
         wagonItem.setItemMeta(meta);
         return wagonItem;
-    }
-
-    public RunicShopGeneric getAlchemistTutor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
-            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.ALCHEMIST, Material.GLASS_BOTTLE), runProfessionTutorBuy(Profession.ALCHEMIST)));
-        }};
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Alchemist Tutor", Collections.singletonList(225), shopItems);
-    }
-
-    public RunicShopGeneric getBlacksmithTutor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
-            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.BLACKSMITH, Material.IRON_CHESTPLATE), runProfessionTutorBuy(Profession.BLACKSMITH)));
-        }};
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Blacksmith Tutor", Collections.singletonList(226), shopItems);
     }
 
     public RunicShopGeneric getCaptain() {
@@ -181,13 +140,6 @@ public class RunicItemShopHelper {
         return caveShop.buildRunicShopGeneric(45, ChatColor.YELLOW + "Crypts of Dera Shop", Collections.singletonList(35));
     }
 
-    public RunicShopGeneric getEnchanterTutor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
-            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.ENCHANTER, Material.PURPLE_DYE), runProfessionTutorBuy(Profession.ENCHANTER)));
-        }};
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Enchanter Tutor", Collections.singletonList(228), shopItems);
-    }
-
     public Set<RunicShopGeneric> getFortressGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(537, "FrozenHeart", 1, DungeonLocation.FROZEN_FORTRESS, 0);
@@ -201,24 +153,10 @@ public class RunicItemShopHelper {
         return gateKeepers;
     }
 
-    public RunicShopGeneric getHunterTutor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
-            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.HUNTER, Material.LEATHER), runProfessionTutorBuy(Profession.HUNTER)));
-        }};
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Hunter Tutor", Collections.singletonList(222), shopItems);
-    }
-
     public RunicShopGeneric getInnkeeper(String identifier, ItemStack hearthstone, int innkeeperId) {
         LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
         shopItems.add(new RunicShopItem(0, "Coin", hearthstone, runHearthstoneChange(identifier)));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Innkeeper", Collections.singletonList(innkeeperId), shopItems);
-    }
-
-    public RunicShopGeneric getJewelerTutor() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<RunicShopItem>() {{
-            add(new RunicShopItem(0, "Coin", professionTutorIcon(Profession.JEWELER, Material.REDSTONE), runProfessionTutorBuy(Profession.JEWELER)));
-        }};
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Jeweler Tutor", Collections.singletonList(230), shopItems);
     }
 
     public Set<RunicShopGeneric> getJorundrsKeepGatekeepers() {
@@ -270,10 +208,6 @@ public class RunicItemShopHelper {
             player.sendMessage(ChatColor.AQUA + "You have changed your hearthstone location to " + CityLocation.getFromIdentifier(location).getDisplay() + "!");
             player.getInventory().setItem(8, CityLocation.getFromIdentifier(location).getItemStack());
         };
-    }
-
-    private RunicItemRunnable runProfessionTutorBuy(Profession profession) {
-        return player -> Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "setprof " + player.getName() + " " + profession.getName() + " true");
     }
 
     private RunicItemRunnable runRunicMageBuy() {

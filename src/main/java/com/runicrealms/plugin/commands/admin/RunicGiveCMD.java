@@ -6,31 +6,15 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.RunicExpEvent;
-import com.runicrealms.plugin.professions.gathering.GatheringSkill;
-import com.runicrealms.plugin.professions.utilities.ProfExpUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import redis.clients.jedis.Jedis;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @CommandAlias("runicgive")
 public class RunicGiveCMD extends BaseCommand {
-
-    public RunicGiveCMD() {
-        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("gatheringSkills", context -> {
-            Set<String> gatheringSkills = new HashSet<>();
-            for (GatheringSkill gatheringSkill : GatheringSkill.values())
-                gatheringSkills.add(gatheringSkill.getIdentifier());
-            return gatheringSkills;
-        });
-    }
 
     // runicgive exp [player] [amount] [x] [y] [z] [mobLevel]
     // runicgive exp [player] [amount] [uuidOfMob] [mobLevel]
@@ -82,40 +66,4 @@ public class RunicGiveCMD extends BaseCommand {
         }
     }
 
-    // runicgive profexp [player] [amount]
-
-    @Subcommand("profexp")
-    @Conditions("is-console-or-op")
-    public void onCommandProfExp(CommandSender commandSender, String[] args) {
-        if (args.length < 1) {
-            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments.");
-            return;
-        }
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null) return;
-        int exp = Integer.parseInt(args[1]);
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            ProfExpUtil.giveCraftingExperience(player, exp, jedis);
-        }
-    }
-
-    // runicgive gatheringexp [player] [skill] [amount]
-
-    @Subcommand("gatheringexp")
-    @CommandCompletion("@players @gatheringSkills")
-    @Conditions("is-console-or-op")
-    public void onCommandGatheringExp(CommandSender commandSender, String[] args) {
-        if (args.length != 3) {
-            commandSender.sendMessage(ChatColor.RED + "Error, incorrect number of arguments.");
-            commandSender.sendMessage(ChatColor.YELLOW + "Format: runicgive gatheringexp [player] [skill] [amount]");
-            return;
-        }
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null) return;
-        GatheringSkill gatheringSkill = GatheringSkill.getFromIdentifier(args[1]);
-        if (gatheringSkill == null) return;
-        // skip all other calculations for quest exp
-        int exp = Integer.parseInt(args[2]);
-        ProfExpUtil.giveGatheringExperience(player, gatheringSkill, exp);
-    }
 }
