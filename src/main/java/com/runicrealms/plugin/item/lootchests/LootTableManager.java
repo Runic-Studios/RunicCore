@@ -15,54 +15,64 @@ import java.util.concurrent.ThreadLocalRandom;
 public class LootTableManager implements LootTableAPI {
 
     private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_I;
+    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_II;
+    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_III;
+    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_IV;
+
 
     static {
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            // create a loot table object
-            LOOT_TABLE_TIER_I = new WeightedRandomBag<>();
-
-            // armor and weapons
-            LootChestTier common = LootChestTier.TIER_I;
-            ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(common.getMinLootLevel(), common.getMaxLootLevel(), 1).generateItem();
-
-            ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 6 + 1)); // bound is not inclusive, so we add 1
-            ItemStack bread = runicItem("Bread", 2, 4);
-
-            // materials
-            ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
-            ItemStack oakWood = runicItem("OakWood", 3, 5);
-            ItemStack thread = runicItem("Thread", 3, 5);
-            ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-            ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
-            ItemStack bottle = runicItem("Bottle", 2, 3);
-            ItemStack salmon = runicItem("Salmon", 2, 3);
-
-            // potions
-            ItemStack healthPotion = runicItem("minor-potion-healing", 1, 1);
-            ItemStack manaPotion = runicItem("minor-potion-mana", 1, 1);
-
-            // add entries to table
-            LOOT_TABLE_TIER_I.addEntry(randomArmorOrWeaponInLevelRange, 70.0);
-            LOOT_TABLE_TIER_I.addEntry(coin, 50.0);
-            LOOT_TABLE_TIER_I.addEntry(bread, 50.0);
-
-            LOOT_TABLE_TIER_I.addEntry(spruceWood, 8.0);
-            LOOT_TABLE_TIER_I.addEntry(oakWood, 8.0);
-            LOOT_TABLE_TIER_I.addEntry(thread, 8.0);
-            LOOT_TABLE_TIER_I.addEntry(animalHide, 8.0);
-            LOOT_TABLE_TIER_I.addEntry(uncutRuby, 8.0);
-            LOOT_TABLE_TIER_I.addEntry(bottle, 16.0);
-            LOOT_TABLE_TIER_I.addEntry(salmon, 8.0);
-
-            LOOT_TABLE_TIER_I.addEntry(healthPotion, 20.0);
-            LOOT_TABLE_TIER_I.addEntry(manaPotion, 20.0);
+            setupCommonLootTable();
+            setupUncommonLootTable();
+            setupRareLootTable();
+            setupEpicLootTable();
         }, 10 * 20L);
     }
 
-    public static WeightedRandomBag<ItemStack> lootTableTierII() {
-
+    private static void setupCommonLootTable() {
         // create a loot table object
-        WeightedRandomBag<ItemStack> uncommonLootTable = new WeightedRandomBag<>();
+        LOOT_TABLE_TIER_I = new WeightedRandomBag<>();
+
+        // armor and weapons
+        LootChestTier common = LootChestTier.TIER_I;
+        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(common.getMinLootLevel(), common.getMaxLootLevel(), 1).generateItem();
+
+        ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 6 + 1)); // bound is not inclusive, so we add 1
+        ItemStack bread = runicItem("Bread", 2, 4);
+
+        // materials
+        ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
+        ItemStack oakWood = runicItem("OakWood", 3, 5);
+        ItemStack thread = runicItem("Thread", 3, 5);
+        ItemStack animalHide = runicItem("AnimalHide", 3, 5);
+        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
+        ItemStack bottle = runicItem("Bottle", 2, 3);
+        ItemStack salmon = runicItem("Salmon", 2, 3);
+
+        // potions
+        ItemStack healthPotion = runicItem("minor-potion-healing", 1, 1);
+        ItemStack manaPotion = runicItem("minor-potion-mana", 1, 1);
+
+        // add entries to table
+        LOOT_TABLE_TIER_I.addEntry(randomArmorOrWeaponInLevelRange, 70.0);
+        LOOT_TABLE_TIER_I.addEntry(coin, 50.0);
+        LOOT_TABLE_TIER_I.addEntry(bread, 50.0);
+
+        LOOT_TABLE_TIER_I.addEntry(spruceWood, 8.0);
+        LOOT_TABLE_TIER_I.addEntry(oakWood, 8.0);
+        LOOT_TABLE_TIER_I.addEntry(thread, 8.0);
+        LOOT_TABLE_TIER_I.addEntry(animalHide, 8.0);
+        LOOT_TABLE_TIER_I.addEntry(uncutRuby, 8.0);
+        LOOT_TABLE_TIER_I.addEntry(bottle, 16.0);
+        LOOT_TABLE_TIER_I.addEntry(salmon, 8.0);
+
+        LOOT_TABLE_TIER_I.addEntry(healthPotion, 20.0);
+        LOOT_TABLE_TIER_I.addEntry(manaPotion, 20.0);
+    }
+
+    private static void setupUncommonLootTable() {
+        // create a loot table object
+        LOOT_TABLE_TIER_II = new WeightedRandomBag<>();
 
         // armor and weapons
         LootChestTier uncommon = LootChestTier.TIER_II;
@@ -84,46 +94,32 @@ public class LootTableManager implements LootTableAPI {
         ItemStack bottle = runicItem("Bottle", 3, 5);
         ItemStack cod = runicItem("Cod", 2, 3);
 
-        // gathering tools (tier 2)
-//        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_ADEPT_ITEMSTACK;
-//        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_ADEPT_ITEMSTACK;
-//        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_ADEPT_ITEMSTACK;
-//        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_ADEPT_ITEMSTACK;
-
         // potions
         ItemStack healthPotion = runicItem("major-potion-healing", 1, 1);
         ItemStack manaPotion = runicItem("major-potion-mana", 1, 1);
 
         // add entries to table
-        uncommonLootTable.addEntry(randomArmorOrWeaponInLevelRange, 50.0);
+        LOOT_TABLE_TIER_II.addEntry(randomArmorOrWeaponInLevelRange, 50.0);
 
-        uncommonLootTable.addEntry(coin, 50.0);
-        uncommonLootTable.addEntry(bread, 35.0);
+        LOOT_TABLE_TIER_II.addEntry(coin, 50.0);
+        LOOT_TABLE_TIER_II.addEntry(bread, 35.0);
 
-        uncommonLootTable.addEntry(spruceWood, 8.0);
-        uncommonLootTable.addEntry(oakWood, 8.0);
-        uncommonLootTable.addEntry(thread, 8.0);
-        uncommonLootTable.addEntry(animalHide, 8.0);
-        uncommonLootTable.addEntry(uncutRuby, 8.0);
-        uncommonLootTable.addEntry(uncutSapphire, 8.0);
-        uncommonLootTable.addEntry(bottle, 16.0);
-        uncommonLootTable.addEntry(cod, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(spruceWood, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(oakWood, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(thread, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(animalHide, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(uncutRuby, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(uncutSapphire, 8.0);
+        LOOT_TABLE_TIER_II.addEntry(bottle, 16.0);
+        LOOT_TABLE_TIER_II.addEntry(cod, 8.0);
 
-//        uncommonLootTable.addEntry(gatheringAxe, 3.0);
-//        uncommonLootTable.addEntry(gatheringHoe, 3.0);
-//        uncommonLootTable.addEntry(gatheringPick, 3.0);
-//        uncommonLootTable.addEntry(gatheringRod, 5.0);
-
-        uncommonLootTable.addEntry(healthPotion, 25.0);
-        uncommonLootTable.addEntry(manaPotion, 25.0);
-
-        return uncommonLootTable;
+        LOOT_TABLE_TIER_II.addEntry(healthPotion, 25.0);
+        LOOT_TABLE_TIER_II.addEntry(manaPotion, 25.0);
     }
 
-    public static WeightedRandomBag<ItemStack> lootTableTierIII() {
-
+    private static void setupRareLootTable() {
         // create a loot table object
-        WeightedRandomBag<ItemStack> rareLootTable = new WeightedRandomBag<>();
+        LOOT_TABLE_TIER_III = new WeightedRandomBag<>();
 
         // armor and weapons
         LootChestTier rare = LootChestTier.TIER_III;
@@ -146,46 +142,32 @@ public class LootTableManager implements LootTableAPI {
         ItemStack bottle = runicItem("Bottle", 3, 5);
         ItemStack tropical = runicItem("Tropical", 2, 3);
 
-        // gathering tools (tier 3)
-//        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_REFINED_ITEMSTACK;
-//        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_REFINED_ITEMSTACK;
-//        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_REFINED_ITEMSTACK;
-//        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_REFINED_ITEMSTACK;
-
         // potions
         ItemStack healthPotion = runicItem("major-potion-healing", 1, 1);
         ItemStack manaPotion = runicItem("major-potion-mana", 1, 1);
 
         // add entries to table
-        rareLootTable.addEntry(randomArmorOrWeaponInLevelRange, 50.0);
-        rareLootTable.addEntry(coin, 50.0);
-        rareLootTable.addEntry(bread, 35.0);
+        LOOT_TABLE_TIER_III.addEntry(randomArmorOrWeaponInLevelRange, 50.0);
+        LOOT_TABLE_TIER_III.addEntry(coin, 50.0);
+        LOOT_TABLE_TIER_III.addEntry(bread, 35.0);
 
-        rareLootTable.addEntry(spruceWood, 8.0);
-        rareLootTable.addEntry(oakWood, 8.0);
-        rareLootTable.addEntry(thread, 8.0);
-        rareLootTable.addEntry(animalHide, 8.0);
-        rareLootTable.addEntry(uncutRuby, 8.0);
-        rareLootTable.addEntry(uncutSapphire, 8.0);
-        rareLootTable.addEntry(uncutOpal, 8.0);
-        rareLootTable.addEntry(bottle, 16.0);
-        rareLootTable.addEntry(tropical, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(spruceWood, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(oakWood, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(thread, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(animalHide, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(uncutRuby, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(uncutSapphire, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(uncutOpal, 8.0);
+        LOOT_TABLE_TIER_III.addEntry(bottle, 16.0);
+        LOOT_TABLE_TIER_III.addEntry(tropical, 8.0);
 
-//        rareLootTable.addEntry(gatheringAxe, 2.0);
-//        rareLootTable.addEntry(gatheringHoe, 2.0);
-//        rareLootTable.addEntry(gatheringPick, 2.0);
-//        rareLootTable.addEntry(gatheringRod, 4.0);
-
-        rareLootTable.addEntry(healthPotion, 30.0);
-        rareLootTable.addEntry(manaPotion, 30.0);
-
-        return rareLootTable;
+        LOOT_TABLE_TIER_III.addEntry(healthPotion, 30.0);
+        LOOT_TABLE_TIER_III.addEntry(manaPotion, 30.0);
     }
 
-    public static WeightedRandomBag<ItemStack> lootTableTierIV() {
-
+    private static void setupEpicLootTable() {
         // create a loot table object
-        WeightedRandomBag<ItemStack> epicLootTable = new WeightedRandomBag<>();
+        LOOT_TABLE_TIER_IV = new WeightedRandomBag<>();
 
         // armor and weapons
         LootChestTier epic = LootChestTier.TIER_IV;
@@ -210,43 +192,30 @@ public class LootTableManager implements LootTableAPI {
         ItemStack bottle = runicItem("Bottle", 3, 5);
         ItemStack pufferfish = runicItem("Pufferfish", 2, 3);
 
-        // gathering tools (tier 4)
-//        ItemStack gatheringAxe = GatheringUtil.GATHERING_AXE_MASTER_ITEMSTACK;
-//        ItemStack gatheringHoe = GatheringUtil.GATHERING_HOE_MASTER_ITEMSTACK;
-//        ItemStack gatheringPick = GatheringUtil.GATHERING_PICKAXE_MASTER_ITEMSTACK;
-//        ItemStack gatheringRod = GatheringUtil.GATHERING_ROD_MASTER_ITEMSTACK;
-
         // potions
         ItemStack healthPotion = runicItem("greater-potion-healing", 1, 1);
         ItemStack manaPotion = runicItem("greater-potion-mana", 1, 1);
 
         // add entries to table
-        epicLootTable.addEntry(randomArmorOrWeaponInLevelRange, 30.0);
-        epicLootTable.addEntry(coin, 50.0);
-        epicLootTable.addEntry(bread, 35.0);
+        LOOT_TABLE_TIER_IV.addEntry(randomArmorOrWeaponInLevelRange, 30.0);
+        LOOT_TABLE_TIER_IV.addEntry(coin, 50.0);
+        LOOT_TABLE_TIER_IV.addEntry(bread, 35.0);
 
-        epicLootTable.addEntry(spruceWood, 8.0);
-        epicLootTable.addEntry(oakWood, 8.0);
-        epicLootTable.addEntry(thread, 8.0);
-        epicLootTable.addEntry(animalHide, 8.0);
-        epicLootTable.addEntry(uncutRuby, 8.0);
-        epicLootTable.addEntry(uncutSapphire, 8.0);
-        epicLootTable.addEntry(uncutOpal, 8.0);
-        epicLootTable.addEntry(uncutEmerald, 8.0);
-        epicLootTable.addEntry(uncutDiamond, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(spruceWood, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(oakWood, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(thread, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(animalHide, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(uncutRuby, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(uncutSapphire, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(uncutOpal, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(uncutEmerald, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(uncutDiamond, 8.0);
 
-        epicLootTable.addEntry(bottle, 16.0);
-        epicLootTable.addEntry(pufferfish, 8.0);
+        LOOT_TABLE_TIER_IV.addEntry(bottle, 16.0);
+        LOOT_TABLE_TIER_IV.addEntry(pufferfish, 8.0);
 
-//        epicLootTable.addEntry(gatheringAxe, 2.0);
-//        epicLootTable.addEntry(gatheringHoe, 2.0);
-//        epicLootTable.addEntry(gatheringPick, 2.0);
-//        epicLootTable.addEntry(gatheringRod, 4.0);
-
-        epicLootTable.addEntry(healthPotion, 30.0);
-        epicLootTable.addEntry(manaPotion, 30.0);
-
-        return epicLootTable;
+        LOOT_TABLE_TIER_IV.addEntry(healthPotion, 30.0);
+        LOOT_TABLE_TIER_IV.addEntry(manaPotion, 30.0);
     }
 
     /**
@@ -262,7 +231,22 @@ public class LootTableManager implements LootTableAPI {
     }
 
     @Override
+    public WeightedRandomBag<ItemStack> getLootTableIV() {
+        return LOOT_TABLE_TIER_IV;
+    }
+
+    @Override
     public WeightedRandomBag<ItemStack> getLootTableTierI() {
         return LOOT_TABLE_TIER_I;
+    }
+
+    @Override
+    public WeightedRandomBag<ItemStack> getLootTableTierII() {
+        return LOOT_TABLE_TIER_II;
+    }
+
+    @Override
+    public WeightedRandomBag<ItemStack> getLootTableTierIII() {
+        return LOOT_TABLE_TIER_III;
     }
 }
