@@ -2,6 +2,7 @@ package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -36,7 +37,7 @@ public class ScoreboardListener implements Listener {
         if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
         Player player = event.getPlayer();
-        RunicCore.getScoreboardAPI().updatePlayerInfo(event.getPlayer(), event.getPlayer().getScoreboard());
+        RunicCore.getScoreboardAPI().updatePlayerScoreboard(player);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> HealthUtils.setPlayerMaxHealth(player), 1L);
     }
 
@@ -71,6 +72,11 @@ public class ScoreboardListener implements Listener {
             RunicCore.getScoreboardAPI().setupScoreboard(player);
             NametagUtil.updateNametag(player);
         }); // setup sync since the event is run async
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
+    public void onScoreboardUpdate(ScoreboardUpdateEvent event) {
+        RunicCore.getScoreboardAPI().updatePlayerInfo(event.getPlayer(), event);
     }
 
 }

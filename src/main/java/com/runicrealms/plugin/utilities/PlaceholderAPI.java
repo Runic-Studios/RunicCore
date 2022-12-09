@@ -28,7 +28,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.ClassData;
-import com.runicrealms.plugin.model.ProfessionData;
 import com.runicrealms.plugin.model.TitleData;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -45,11 +44,6 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         return "core";
     }
 
-    @Override
-    public boolean persist() {
-        return true;
-    }
-
     @NotNull
     @Override
     public String getAuthor() {
@@ -63,6 +57,11 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean persist() {
+        return true;
+    }
+
+    @Override
     public String onPlaceholderRequest(Player player, @NotNull String arg) {
 
         if (player == null) return null;
@@ -71,7 +70,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         TitleData titleData = RunicCore.getTitleManager().loadTitleData(player.getUniqueId());
         try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
             Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.FIELDS, jedis);
-            Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
+//            Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
             switch (lowerArg) {
                 case "class":
                     return classFields.get(CharacterField.CLASS_TYPE.getField());
@@ -80,9 +79,9 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                 case "level":
                     return player.getLevel() + "";
                 case "prof":
-                    return professionFields.get(CharacterField.PROF_NAME.getField());
+                    return "";
                 case "prof_level":
-                    return professionFields.get(CharacterField.PROF_LEVEL.getField());
+                    return "";
                 case "prefix":
                     return titleData.getPrefix();
                 case "prefix_formatted":

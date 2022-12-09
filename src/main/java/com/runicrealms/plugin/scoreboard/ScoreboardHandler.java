@@ -3,8 +3,7 @@ package com.runicrealms.plugin.scoreboard;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.api.ScoreboardAPI;
-import com.runicrealms.plugin.model.CharacterField;
-import com.runicrealms.plugin.model.ProfessionData;
+import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -12,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 import redis.clients.jedis.Jedis;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class ScoreboardHandler implements ScoreboardAPI {
@@ -113,21 +111,17 @@ public class ScoreboardHandler implements ScoreboardAPI {
     /**
      * Update the scoreboard info on the player's current profession data
      *
-     * @param player to update
-     * @param jedis  the jedis resource
-     * @return a string with their profession info
+     * @param profession of the player
+     * @param level      of the player's profession
      */
-    private String playerProf(final Player player, Jedis jedis) {
-        Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
-        String profName = professionFields.get(CharacterField.PROF_NAME.getField());
-        int currentLevel = Integer.parseInt(professionFields.get(CharacterField.PROF_LEVEL.getField()));
+    private String playerProf(final String profession, final int level) {
         String display;
-        if (profName == null) {
+        if (profession.equalsIgnoreCase("")) {
             display = NO_PROF_STRING;
         } else {
-            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + profName;
-            if (currentLevel != 0) {
-                display = ChatColor.GREEN + profName + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + currentLevel;
+            display = ChatColor.YELLOW + "Prof: " + ChatColor.GREEN + profession;
+            if (level != 0) {
+                display = ChatColor.GREEN + profession + ChatColor.YELLOW + " lv. " + ChatColor.GREEN + level;
             }
         }
         return display;
@@ -188,46 +182,44 @@ public class ScoreboardHandler implements ScoreboardAPI {
         Score characterInfo = obj.getScore(ChatColor.YELLOW + "" + ChatColor.BOLD + player.getName());
         characterInfo.setScore(8);
         setupPlayerInfo(player, scoreboard, obj);
-        updatePlayerInfo(player, scoreboard);
+        // updatePlayerInfo(player, scoreboard);
         Score blankSpaceTwo = obj.getScore("§2");
         blankSpaceTwo.setScore(3);
         // setup combat fields using teams to avoid flickering
         setupPlayerCombatInfo(player, scoreboard, obj);
         updatePlayerCombatInfo(player, scoreboard);
         player.setScoreboard(scoreboard);
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new ScoreboardUpdateEvent(player, scoreboard)));
     }
 
     /**
      * Method used to keep scoreboard accurate during level-up, profession change, etc.
      * Some string manipulation because scoreboard teams can't go beyond 16 chars
      *
-     * @param player     who owns the scoreboard
-     * @param scoreboard the scoreboard of the player
+     * @param player who owns the scoreboard
+     * @param event  the scoreboard update event that was triggered async
      */
     @Override
-    public void updatePlayerInfo(final Player player, final Scoreboard scoreboard) {
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
-            Team playerClass = scoreboard.getTeam(playerNameSubString + CLASS_TEAM_STRING);
-            assert playerClass != null;
-            playerClass.setPrefix(playerClass(player));
-            Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
-            assert playerProf != null;
-            playerProf.setPrefix(playerProf(player, jedis));
-            Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
-            assert playerGuild != null;
-            playerGuild.setPrefix(playerGuild(player, jedis));
-            Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
-            assert playerOutlaw != null;
-            playerOutlaw.setPrefix(playerOutlaw(player, jedis));
-        } catch (NullPointerException e) {
-            // wrapped in try-catch in-case scoreboard can't set up in time (also closes jedis resource)
-        }
+    public void updatePlayerInfo(final Player player, final ScoreboardUpdateEvent event) {
+        Scoreboard scoreboard = event.getScoreboard();
+        String playerNameSubString = player.getName().length() > 16 ? player.getName().substring(0, 16) : player.getName();
+        Team playerClass = scoreboard.getTeam(playerNameSubString + CLASS_TEAM_STRING);
+        assert playerClass != null;
+        playerClass.setPrefix(playerClass(player));
+        Team playerProf = scoreboard.getTeam(playerNameSubString + PROF_TEAM_STRING);
+        assert playerProf != null;
+        playerProf.setPrefix(playerProf(event.getProfession(), event.getProfessionLevel()));
+        Team playerGuild = scoreboard.getTeam(playerNameSubString + GUILD_TEAM_STRING);
+        assert playerGuild != null;
+        playerGuild.setPrefix(playerGuild(player, event.getJedis()));
+        Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
+        assert playerOutlaw != null;
+        playerOutlaw.setPrefix(playerOutlaw(player, event.getJedis()));
     }
 
     @Override
     public void updatePlayerScoreboard(Player player) {
-        this.updatePlayerInfo(player, player.getScoreboard());
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new ScoreboardUpdateEvent(player, player.getScoreboard())));
     }
 
     /**

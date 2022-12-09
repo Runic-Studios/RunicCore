@@ -18,7 +18,6 @@ public class CharacterData {
 
     private final BaseCharacterData baseCharacterData;
     private final ClassData classData;
-    private final ProfessionData professionData;
     private final OutlawData outlawData;
 
     /**
@@ -33,7 +32,6 @@ public class CharacterData {
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot);
         this.baseCharacterData = new BaseCharacterData(uuid, slot, character);
         this.classData = new ClassData(uuid, character);
-        this.professionData = new ProfessionData(uuid, character);
         this.outlawData = new OutlawData(uuid, character);
         writeCharacterDataToJedis(jedis);
     }
@@ -48,7 +46,6 @@ public class CharacterData {
     public CharacterData(UUID uuid, int slot, Jedis jedis) {
         this.baseCharacterData = new BaseCharacterData(uuid, slot, jedis);
         this.classData = new ClassData(uuid, slot, jedis);
-        this.professionData = new ProfessionData(uuid, slot, jedis);
         this.outlawData = new OutlawData(uuid, slot, jedis);
     }
 
@@ -64,10 +61,6 @@ public class CharacterData {
         return outlawData;
     }
 
-    public ProfessionData getProfessionInfo() {
-        return professionData;
-    }
-
     /**
      * Stores data in jedis/redis for caching session data
      *
@@ -76,7 +69,6 @@ public class CharacterData {
     public void writeCharacterDataToJedis(Jedis jedis) {
         this.baseCharacterData.writeToJedis(jedis, this.baseCharacterData.getSlot());
         this.classData.writeToJedis(jedis, this.baseCharacterData.getSlot());
-        this.professionData.writeToJedis(jedis, this.baseCharacterData.getSlot());
         this.outlawData.writeToJedis(jedis, this.baseCharacterData.getSlot());
         String uuid = String.valueOf(baseCharacterData.getUuid());
         String key = uuid + ":character:" + baseCharacterData.getSlot();
@@ -93,7 +85,6 @@ public class CharacterData {
         try {
             this.baseCharacterData.writeToMongo(playerMongoData, slot);
             this.classData.writeToMongo(playerMongoData, slot);
-            this.professionData.writeToMongo(playerMongoData, slot);
             this.outlawData.writeToMongo(playerMongoData, slot);
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem writing character data to mongo!");

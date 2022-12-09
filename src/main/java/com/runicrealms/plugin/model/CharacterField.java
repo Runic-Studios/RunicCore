@@ -12,19 +12,12 @@ public enum CharacterField {
     CLASS_LEVEL("level"),
     OUTLAW_ENABLED("outlawEnabled"),
     OUTLAW_RATING("outlawRating"),
-    PROF_NAME("profName"),
-    PROF_EXP("profExp"),
-    PROF_LEVEL("profLevel"),
     GUILD("guild");
 
     private final String field;
 
     CharacterField(String field) {
         this.field = field;
-    }
-
-    public String getField() {
-        return field;
     }
 
     /**
@@ -39,5 +32,9 @@ public enum CharacterField {
                 return characterField;
         }
         return null;
+    }
+
+    public String getField() {
+        return field;
     }
 }
