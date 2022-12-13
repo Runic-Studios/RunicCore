@@ -103,7 +103,10 @@ public class PlayerLevelUtil {
 
         // save player hp, restore hp.food
         player.sendMessage("\n");
-        ChatUtils.sendCenteredMessage(player, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
+        if (classLv != MAX_LEVEL)
+            ChatUtils.sendCenteredMessage(player, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
+        else
+            ChatUtils.sendCenteredMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
         int gainedHealth = calculateHealthAtLevel(classLv, className) - calculateHealthAtLevel(classLv - 1, className);
         ChatUtils.sendCenteredMessage(player,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + gainedHealth + "❤ "
