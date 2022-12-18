@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.player.utilities;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.GearScanner;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 /**
  * This class controls the changing of the player's health,
  * as well as the way their hearts are displayed.
+ *
  * @author Skyfallin_
  */
 public class HealthUtils {
@@ -18,7 +19,7 @@ public class HealthUtils {
     public static void setPlayerMaxHealth(Player player) {
 
         // grab the player's new info
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
 
         // for new players
         if (className == null) {

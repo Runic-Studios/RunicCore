@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -31,7 +31,7 @@ public class Grapple extends Spell {
                 "You fire a grappling hook which pulls " +
                         "you to your target location, up to a max " +
                         "of " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 14, 25);
+                ChatColor.WHITE, CharacterClass.ARCHER, 14, 25);
     }
 
     @Override

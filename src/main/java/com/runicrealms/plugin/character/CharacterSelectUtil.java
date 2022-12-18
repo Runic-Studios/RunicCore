@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.character;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -29,7 +29,7 @@ public class CharacterSelectUtil {
     public static final ItemStack GO_BACK_ITEM;
     public static final ItemStack CONFIRM_DELETION_ITEM;
     public static final ItemStack EXIT_GAME_ITEM;
-    private static final Map<ClassEnum, ItemStack> CLASS_ICONS = new HashMap<>();
+    private static final Map<CharacterClass, ItemStack> CLASS_ICONS = new HashMap<>();
 
     static {
 
@@ -104,7 +104,7 @@ public class CharacterSelectUtil {
         });
         archerMeta.setLore(archerLore);
         archerItem.setItemMeta(archerMeta);
-        CLASS_ICONS.put(ClassEnum.ARCHER, archerItem);
+        CLASS_ICONS.put(CharacterClass.ARCHER, archerItem);
 
         ItemStack clericItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.cleric.material")), 1, CLERIC_ITEM_DURABILITY);
         ItemMeta clericMeta = clericItem.getItemMeta();
@@ -138,7 +138,7 @@ public class CharacterSelectUtil {
         });
         clericMeta.setLore(clericLore);
         clericItem.setItemMeta(clericMeta);
-        CLASS_ICONS.put(ClassEnum.CLERIC, clericItem);
+        CLASS_ICONS.put(CharacterClass.CLERIC, clericItem);
 
         ItemStack mageItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.mage.material")), 1, MAGE_ITEM_DURABILITY);
         ItemMeta mageMeta = mageItem.getItemMeta();
@@ -170,7 +170,7 @@ public class CharacterSelectUtil {
         });
         mageMeta.setLore(mageLore);
         mageItem.setItemMeta(mageMeta);
-        CLASS_ICONS.put(ClassEnum.MAGE, mageItem);
+        CLASS_ICONS.put(CharacterClass.MAGE, mageItem);
 
         ItemStack rogueItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.rogue.material")), 1, ROGUE_ITEM_DURABILITY);
         ItemMeta rogueMeta = rogueItem.getItemMeta();
@@ -202,7 +202,7 @@ public class CharacterSelectUtil {
         });
         rogueMeta.setLore(rogueLore);
         rogueItem.setItemMeta(rogueMeta);
-        CLASS_ICONS.put(ClassEnum.ROGUE, rogueItem);
+        CLASS_ICONS.put(CharacterClass.ROGUE, rogueItem);
 
         ItemStack warriorItem = new ItemStack(Material.getMaterial(RunicCore.getInstance().getConfig().getString("class-icons.warrior.material")), 1, WARRIOR_ITEM_DURABILITY);
         ItemMeta warriorMeta = warriorItem.getItemMeta();
@@ -235,7 +235,7 @@ public class CharacterSelectUtil {
         });
         warriorMeta.setLore(warriorLore);
         warriorItem.setItemMeta(warriorMeta);
-        CLASS_ICONS.put(ClassEnum.WARRIOR, warriorItem);
+        CLASS_ICONS.put(CharacterClass.WARRIOR, warriorItem);
 
         EXIT_GAME_ITEM = new ItemStack(Material.OAK_DOOR, 1);
         ItemMeta exitGameItemMeta = EXIT_GAME_ITEM.getItemMeta();
@@ -248,7 +248,7 @@ public class CharacterSelectUtil {
 
     }
 
-    public static Map<ClassEnum, ItemStack> getClassIcons() {
+    public static Map<CharacterClass, ItemStack> getClassIcons() {
         return CLASS_ICONS;
     }
 }

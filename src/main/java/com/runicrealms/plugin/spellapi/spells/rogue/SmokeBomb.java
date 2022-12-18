@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -39,7 +39,7 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
                         "x&7 lvl) magicʔ damage, slows and " +
                         "blinds enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 8, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 8, 15);
         this.frostBomb = false;
     }
 
@@ -49,7 +49,7 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
                         "that deals " + DAMAGE_AMT + " magicʔ damage, slows and " +
                         "blinds enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 6, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 6, 15);
         this.frostBomb = frostBomb;
     }
 

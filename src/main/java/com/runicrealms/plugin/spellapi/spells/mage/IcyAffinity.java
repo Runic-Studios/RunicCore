@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -18,7 +18,7 @@ public class IcyAffinity extends Spell {
         super("Icy Affinity",
                 "Your &aIceblock &7spell now restores✸ " +
                         (int) (PERCENT * 100) + "% of your health!",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+                ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 

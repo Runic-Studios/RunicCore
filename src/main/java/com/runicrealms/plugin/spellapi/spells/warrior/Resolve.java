@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -23,7 +23,7 @@ public class Resolve extends Spell {
                 "While below " + (int) PERCENT_HP + "% health, you " +
                         "receive a " + (int) PERCENT_DMG + "% damage reduction " +
                         "buff!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 0, 0);
         this.setIsPassive(true);
     }
 

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
@@ -30,7 +30,7 @@ public class Improvisation extends Spell {
                         "to grant yourself and nearby allies within " + RADIUS + " " +
                         "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% physical⚔ damage buff " +
                         "for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
+                ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
         this.setIsPassive(true);
         buffedPlayers = new HashSet<>();
     }

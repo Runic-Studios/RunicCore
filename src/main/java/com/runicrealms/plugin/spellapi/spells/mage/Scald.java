@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -23,7 +23,7 @@ public class Scald extends Spell {
                 "Your &aFireball &7spell now deals " +
                         (int) (DAMAGE_PERCENT * 100) + "% magicʔ damage to enemies within " +
                         RADIUS + " blocks!",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+                ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 

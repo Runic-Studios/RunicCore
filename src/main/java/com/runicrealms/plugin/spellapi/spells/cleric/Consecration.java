@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -29,7 +29,7 @@ public class Consecration extends Spell implements MagicDamageSpell {
                         "for " + DURATION + "s, slowing enemies within " + RADIUS + " " +
                         "blocks and dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage each second!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 15, 20);
+                ChatColor.WHITE, CharacterClass.CLERIC, 15, 20);
     }
 
     @Override

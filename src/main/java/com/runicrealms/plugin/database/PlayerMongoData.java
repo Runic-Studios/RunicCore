@@ -9,14 +9,13 @@ import org.bson.Document;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 public class PlayerMongoData implements MongoData {
 
-    private Document document;
     private final String uuid;
     private final Set<MongoSetUpdate> setUpdates;
     private final Set<MongoUnsetUpdate> unsetUpdates;
+    private Document document;
 
     /**
      * Build a reference to the in-memory document of the player and a wrapper for document updates
@@ -28,19 +27,23 @@ public class PlayerMongoData implements MongoData {
         this.setUpdates = new HashSet<>();
         this.unsetUpdates = new HashSet<>();
         try {
-            if (RunicCore.getDatabaseManager().getPlayerDocumentMap().get(uuid) != null) {
-                this.document = RunicCore.getDatabaseManager().getPlayerDocumentMap().get(uuid);
+            if (RunicCore.getDataAPI().getPlayerDocumentMap().get(uuid) != null) {
+                this.document = RunicCore.getDataAPI().getPlayerDocumentMap().get(uuid);
                 // Bukkit.broadcastMessage("loading mongo document from last 30 days");
-            } else if (RunicCore.getDatabaseManager().isInCollection(UUID.fromString(uuid))) {
-                this.document = RunicCore.getDatabaseManager().retrieveDocumentFromCollection(UUID.fromString(uuid));
+            } else if (RunicCore.getDataAPI().isInCollection(uuid)) {
+                this.document = RunicCore.getDataAPI().retrieveDocumentFromCollection(uuid);
                 // Bukkit.broadcastMessage("loading mongo document from collection");
             } else {
-                this.document = RunicCore.getDatabaseManager().addNewDocument(uuid);
+                this.document = RunicCore.getDataAPI().addNewDocument(uuid);
                 // Bukkit.broadcastMessage("building new mongo document");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public PlayerMongoDataSection getCharacter(int slot) {
+        return new PlayerMongoDataSection(this, "character." + slot);
     }
 
     @Override
@@ -86,14 +89,14 @@ public class PlayerMongoData implements MongoData {
 
     @Override
     public void refresh() {
-        MongoDatabase mongoDatabase = RunicCore.getDatabaseManager().getPlayersDB();
+        MongoDatabase mongoDatabase = RunicCore.getDataAPI().getMongoDatabase();
         this.document = mongoDatabase.getCollection("player_data").find(Filters.eq("player_uuid", this.uuid)).first();
-        RunicCore.getDatabaseManager().getPlayerDocumentMap().put(this.uuid, this.document);
+        RunicCore.getDataAPI().getPlayerDocumentMap().put(this.uuid, this.document);
     }
 
     @Override
     public void save() {
-        MongoDatabase mongoDatabase = RunicCore.getDatabaseManager().getPlayersDB();
+        MongoDatabase mongoDatabase = RunicCore.getDataAPI().getMongoDatabase();
         if (this.unsetUpdates.size() > 0) {
             BasicDBObject updates = new BasicDBObject();
             for (MongoUnsetUpdate update : this.unsetUpdates) {
@@ -151,10 +154,6 @@ public class PlayerMongoData implements MongoData {
     @Override
     public String getIdentifier() {
         return this.uuid;
-    }
-
-    public PlayerMongoDataSection getCharacter(int slot) {
-        return new PlayerMongoDataSection(this, "character." + slot);
     }
 
 }

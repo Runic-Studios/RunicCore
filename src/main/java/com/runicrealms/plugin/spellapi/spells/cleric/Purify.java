@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -35,7 +35,7 @@ public class Purify extends Spell implements HealingSpell {
                         "restoring✦ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) health to yourself and " +
                         "all allies it passes through and removing silences!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
+                ChatColor.WHITE, CharacterClass.CLERIC, 12, 25);
         this.hasBeenHit = new HashMap<>();
     }
 

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -15,7 +15,7 @@ public class Absolution extends Spell {
     public Absolution() {
         super("Absolution",
                 "Your &aRejuvenate &7spell is now &aPurify &7and removes silences!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+                ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 
@@ -25,7 +25,7 @@ public class Absolution extends Spell {
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Rejuvenate)) return;
         event.setCancelled(true);
-        SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellManager().getSpellByName("Purify"));
+        SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellAPI().getSpell("Purify"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())
             spellCastEvent.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);

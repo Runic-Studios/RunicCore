@@ -6,13 +6,16 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.CharacterAPI;
+import com.runicrealms.plugin.api.DataAPI;
 import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import com.runicrealms.plugin.model.CharacterData;
+import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.PlayerData;
 import com.runicrealms.runicrestart.RunicRestart;
 import org.bson.Document;
@@ -35,14 +38,14 @@ import java.util.concurrent.TimeUnit;
  * The singleton database manager responsible for creating the connection to mongo and loading documents
  * into memory for lookup
  */
-public class DatabaseManager implements Listener {
+public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
 
     private final Map<UUID, ShutdownSaveWrapper> playersToSave; // for redis-mongo saving
     private final HashMap<String, Document> playerDocumentMap; // keyed by uuid (as string) (stores last 30 days)
-    private final ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> loadedCharacterMap;
+    private final ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> loadedCharacterMap;
     private final Map<UUID, PlayerData> playerDataMap;
     private MongoClient mongoClient;
-    private MongoDatabase playersDB;
+    private MongoDatabase mongoDatabase;
     private MongoCollection<Document> guildDocuments;
     private MongoCollection<Document> shopDocuments;
 
@@ -68,91 +71,70 @@ public class DatabaseManager implements Listener {
         // create a client (keep it open / alive)
         try {
             mongoClient = MongoClients.create(mongoClientSettings);
-            playersDB = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
-            FindIterable<Document> player_data_last_30_days = playersDB.getCollection("player_data").find(DatabaseHelper.LAST_LOGIN_DATE_FILTER);
+            mongoDatabase = mongoClient.getDatabase(RunicCore.getInstance().getConfig().getString("database"));
+            FindIterable<Document> player_data_last_30_days = mongoDatabase.getCollection("player_data").find(DatabaseHelper.LAST_LOGIN_DATE_FILTER);
             for (Document document : player_data_last_30_days) {
                 playerDocumentMap.put(String.valueOf(document.get("player_uuid")), document);
             }
-            guildDocuments = playersDB.getCollection("guild_data");
-            shopDocuments = playersDB.getCollection("shop_data");
+            guildDocuments = mongoDatabase.getCollection("guild_data");
+            shopDocuments = mongoDatabase.getCollection("shop_data");
         } catch (Exception e) {
             RunicCore.getInstance().getLogger().info("[ERROR]: Database connection failed!");
         }
     }
 
-    /**
-     * Adds a new mongo document (new players) and puts it into the lookup map in memory
-     *
-     * @param uuid of the player to add, string
-     * @return the newly-added document
-     */
+    @Override
     public Document addNewDocument(String uuid) {
         Document newDataFile = new Document("player_uuid", uuid).append("guild", "None").append("last_login", LocalDate.now());
-        playersDB.getCollection("player_data").insertOne(newDataFile);
+        mongoDatabase.getCollection("player_data").insertOne(newDataFile);
         playerDocumentMap.put(uuid, newDataFile);
         return newDataFile;
     }
 
-    /**
-     * Adds a new mongo document (new players) and puts it into the lookup map in memory
-     *
-     * @param uuid of the player to add
-     * @return the newly-added document
-     */
-    public Document addNewDocument(UUID uuid) {
-        Document newDataFile = new Document("player_uuid", uuid.toString()).append("guild", "None").append("last_login", LocalDate.now());
-        playersDB.getCollection("player_data").insertOne(newDataFile);
-        playerDocumentMap.put(uuid.toString(), newDataFile);
-        return newDataFile;
+    @Override
+    public CharacterData checkRedisForCharacterData(UUID uuid, Integer slot, Jedis jedis) {
+        String key = uuid + ":character:" + slot;
+        if (jedis.exists(key)) {
+            jedis.expire(key, RunicCore.getRedisAPI().getExpireTime());
+            return new CharacterData(uuid, slot, jedis);
+        }
+        return null;
     }
 
+    @Override
     public MongoCollection<Document> getGuildDocuments() {
         return guildDocuments;
     }
 
-    public ConcurrentHashMap.KeySetView<UUID, Pair<Integer, ClassEnum>> getLoadedCharacters() {
-        return loadedCharacterMap.keySet();
+    @Override
+    public MongoDatabase getMongoDatabase() {
+        return mongoDatabase;
     }
 
-    public ConcurrentHashMap<UUID, Pair<Integer, ClassEnum>> getLoadedCharactersMap() {
-        return loadedCharacterMap;
+    @Override
+    public PlayerData getPlayerData(UUID uuid) {
+        return playerDataMap.get(uuid);
     }
 
-    public MongoClient getMongoClient() {
-        return mongoClient;
-    }
-
+    @Override
     public Map<UUID, PlayerData> getPlayerDataMap() {
         return playerDataMap;
     }
 
+    @Override
     public HashMap<String, Document> getPlayerDocumentMap() {
         return playerDocumentMap;
     }
 
-    public MongoDatabase getPlayersDB() {
-        return playersDB;
-    }
-
+    @Override
     public Map<UUID, ShutdownSaveWrapper> getPlayersToSave() {
         return playersToSave;
     }
 
-    public MongoCollection<Document> getShopData() {
-        return shopDocuments;
-    }
-
-    /**
-     * Checks the entire player_data collection for the given document.
-     * (For use if player has not been loaded into data structure for last 30 days).
-     * I believe there is a way to optimize this by just returning the cursor using limit()
-     *
-     * @param uuid of the player to lookup
-     * @return true if the player is in the collection
-     */
-    public boolean isInCollection(UUID uuid) {
-        return playersDB.getCollection("player_data").find
-                (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null;
+    @Override
+    public boolean isInCollection(String uuid) {
+        return mongoDatabase.getCollection("player_data").find
+                (Filters.eq("player_uuid", uuid)).limit(1).first() != null;
     }
 
     /**
@@ -161,18 +143,78 @@ public class DatabaseManager implements Listener {
      * @param player who joined
      * @return a PlayerData object
      */
+    @Override
     public PlayerData loadPlayerData(Player player, Jedis jedis) {
         // Step 1: check mongo documents loaded in memory (last 30 days)
         UUID uuid = player.getUniqueId();
-        if (RunicCore.getDatabaseManager().getPlayerDocumentMap().containsKey(uuid.toString()))
+        if (playerDocumentMap.containsKey(uuid.toString()))
             return new PlayerData(player, new PlayerMongoData(uuid.toString()), jedis);
         // Step 2: check entire mongo collection
-        if (RunicCore.getDatabaseManager().getPlayersDB().getCollection("player_data").find
+        if (mongoDatabase.getCollection("player_data").find
                 (Filters.eq("player_uuid", uuid.toString())).limit(1).first() != null)
             return new PlayerData(player, new PlayerMongoData(uuid.toString()), jedis);
         // Step 3: if no data is found, we create some data, add it to mongo, then store a reference in memory
-        RunicCore.getDatabaseManager().addNewDocument(uuid);
+        this.addNewDocument(uuid.toString());
         return new PlayerData(player, new PlayerMongoData(uuid.toString()), jedis);
+    }
+
+    @Override
+    public Document retrieveDocumentFromCollection(String uuid) {
+        Document document = mongoDatabase.getCollection("player_data").find(Filters.eq("player_uuid", uuid)).limit(1).first();
+        if (document != null) {
+            this.playerDocumentMap.put(uuid, document);
+        }
+        return document;
+    }
+
+    @Override
+    public int getCharacterSlot(UUID uuid) {
+        Pair<Integer, CharacterClass> slotAndClass = loadedCharacterMap.get(uuid);
+        if (slotAndClass != null) {
+            return loadedCharacterMap.get(uuid).first;
+        }
+        return -1;
+    }
+
+    @Override
+    public ConcurrentHashMap.KeySetView<UUID, Pair<Integer, CharacterClass>> getLoadedCharacters() {
+        return loadedCharacterMap.keySet();
+    }
+
+    @Override
+    public String getPlayerClass(Player player) {
+        return loadedCharacterMap.get(player.getUniqueId()).second.getName();
+    }
+
+    @Override
+    public String getPlayerClass(UUID uuid) {
+        return loadedCharacterMap.get(uuid).second.getName();
+    }
+
+    @Override
+    public String getPlayerClass(UUID uuid, int slot, Jedis jedis) {
+        // If player class is not cached, player is offline
+        if (jedis.exists(RunicCore.getRedisAPI().getCharacterKey(uuid, slot)))
+            return jedis.get(RunicCore.getRedisAPI().getCharacterKey(uuid, slot) + ":" + CharacterField.CLASS_TYPE.getField());
+        else
+            return null;
+    }
+
+    @Override
+    public boolean hasSelectedCharacter(Player player) {
+        return loadedCharacterMap.containsKey(player.getUniqueId());
+    }
+
+    public ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> getLoadedCharactersMap() {
+        return loadedCharacterMap;
+    }
+
+    public MongoClient getMongoClient() {
+        return mongoClient;
+    }
+
+    public MongoCollection<Document> getShopData() {
+        return shopDocuments;
     }
 
     /**
@@ -181,7 +223,7 @@ public class DatabaseManager implements Listener {
     @EventHandler
     public void onCharacterLoaded(CharacterLoadedEvent event) {
         event.getCharacterSelectEvent().close(); // close all jedis resources
-        RunicCore.getDatabaseManager().getPlayerDataMap().remove(event.getPlayer().getUniqueId()); // remove intermediary data objects
+        playerDataMap.remove(event.getPlayer().getUniqueId()); // remove intermediary data objects
     }
 
     /**
@@ -241,21 +283,6 @@ public class DatabaseManager implements Listener {
     }
 
     /**
-     * WARNING: should only be called AFTER checking if the document is in the collection using 'isInCollection'
-     *
-     * @param uuid of the player to lookup
-     * @return the document (if found, older than 30 days) or null
-     */
-    public Document retrieveDocumentFromCollection(UUID uuid) {
-        Document document = playersDB.getCollection("player_data").find
-                (Filters.eq("player_uuid", uuid.toString())).limit(1).first();
-        if (document != null) {
-            this.playerDocumentMap.put(String.valueOf(uuid), document);
-        }
-        return document;
-    }
-
-    /**
      * Method to build a CharacterData object for the given uuid, then writes that data to mongo
      *
      * @param uuid            of the player to save
@@ -269,12 +296,12 @@ public class DatabaseManager implements Listener {
             // Bukkit.broadcastMessage(ChatColor.AQUA + "redis character data found, saving to mongo");
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
-                RunicCore.getRedisManager().updateBaseCharacterInfo(player, slot, jedis); // ensure jedis is up-to-date if player is online
+                RunicCore.getRedisAPI().updateBaseCharacterInfo(player, slot, jedis); // ensure jedis is up-to-date if player is online
             }
             characterData = new CharacterData(uuid, slot, jedis); // build a data object
             characterData.writeCharacterDataToMongo(playerMongoData, slot);
         } else {
-            // log error
+            Bukkit.getLogger().warning("ERROR: There was an error saving character data!");
         }
     }
 

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -24,7 +24,7 @@ public class Windstride extends Spell {
                 "For " + BUFF_DURATION + "s, you grant a massive " +
                         "speed boost to yourself and all " +
                         "allies within " + RADIUS + " blocks!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 20, 15);
+                ChatColor.WHITE, CharacterClass.CLERIC, 20, 15);
     }
 
     @Override

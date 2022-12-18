@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -54,41 +53,14 @@ public class LootChestManager {
     }
 
     /**
-     * Respawns chest based upon their respawn time left
+     * Returns a map of the chests which are on cooldown for the given uuid, along with their remaining CD time
+     *
+     * @param uuid of the player to check
+     * @return a set of chests on cooldown
      */
-    private void regenChests() {
-        for (UUID uuid : playerChestCooldownMap.keySet()) {
-            if (playerChestCooldownMap.get(uuid) == null) continue;
-            for (LootChest lootChest : playerChestCooldownMap.get(uuid).keySet()) {
-                if ((System.currentTimeMillis() - playerChestCooldownMap.get(uuid).get(lootChest))
-                        < lootChest.getLootChestRarity().getRespawnTimeSeconds() * 1000L)
-                    continue; // chest not finished CD
-                playerChestCooldownMap.get(uuid).remove(lootChest);
-            }
-        }
-    }
-
-    /**
-     * Generates particles based on the loot chest color for all players who have not looted the chest
-     */
-    private void particleTask() {
-        for (LootChest lootChest : lootChests) {
-            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk()))
-                continue;
-            Location location = lootChest.getLocation();
-            if (location.getBlock().getType() != Material.CHEST) continue;
-            for (UUID loaded : RunicCoreAPI.getLoadedCharacters()) {
-                Player online = Bukkit.getPlayer(loaded);
-                if (online == null) continue;
-                if (playerChestCooldownMap.containsKey(loaded)) {
-                    Map<LootChest, Long> chestsOnCooldown = playerChestCooldownMap.get(online.getUniqueId());
-                    if (chestsOnCooldown.containsKey(lootChest))
-                        continue; // only display particles to players who are not on cooldown
-                }
-                online.spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
-                        10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
-            }
-        }
+    public Map<LootChest, Long> getChestsOnCDForUuid(UUID uuid) {
+        playerChestCooldownMap.putIfAbsent(uuid, new HashMap<>());
+        return playerChestCooldownMap.get(uuid);
     }
 
     /**
@@ -124,17 +96,6 @@ public class LootChestManager {
     }
 
     /**
-     * Returns a map of the chests which are on cooldown for the given uuid, along with their remaining CD time
-     *
-     * @param uuid of the player to check
-     * @return a set of chests on cooldown
-     */
-    public Map<LootChest, Long> getChestsOnCDForUuid(UUID uuid) {
-        playerChestCooldownMap.putIfAbsent(uuid, new HashMap<>());
-        return playerChestCooldownMap.get(uuid);
-    }
-
-    /**
      * Checks whether there is a loot chest at target location.
      *
      * @param location of loot chest
@@ -142,6 +103,44 @@ public class LootChestManager {
      */
     public boolean isLootChest(Location location) {
         return RunicCore.getLootChestManager().getLootChest(location) != null; // chest doesn't match saved chest locations
+    }
+
+    /**
+     * Generates particles based on the loot chest color for all players who have not looted the chest
+     */
+    private void particleTask() {
+        for (LootChest lootChest : lootChests) {
+            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk()))
+                continue;
+            Location location = lootChest.getLocation();
+            if (location.getBlock().getType() != Material.CHEST) continue;
+            for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+                Player online = Bukkit.getPlayer(loaded);
+                if (online == null) continue;
+                if (playerChestCooldownMap.containsKey(loaded)) {
+                    Map<LootChest, Long> chestsOnCooldown = playerChestCooldownMap.get(online.getUniqueId());
+                    if (chestsOnCooldown.containsKey(lootChest))
+                        continue; // only display particles to players who are not on cooldown
+                }
+                online.spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
+                        10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
+            }
+        }
+    }
+
+    /**
+     * Respawns chest based upon their respawn time left
+     */
+    private void regenChests() {
+        for (UUID uuid : playerChestCooldownMap.keySet()) {
+            if (playerChestCooldownMap.get(uuid) == null) continue;
+            for (LootChest lootChest : playerChestCooldownMap.get(uuid).keySet()) {
+                if ((System.currentTimeMillis() - playerChestCooldownMap.get(uuid).get(lootChest))
+                        < lootChest.getLootChestRarity().getRespawnTimeSeconds() * 1000L)
+                    continue; // chest not finished CD
+                playerChestCooldownMap.get(uuid).remove(lootChest);
+            }
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -26,7 +26,7 @@ public class RighteousBlade extends Spell implements HealingSpell {
                         "to heal✦ yourself and allies within " + RADIUS + " blocks " +
                         "for (" + HEAL_AMOUNT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) health!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+                ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 

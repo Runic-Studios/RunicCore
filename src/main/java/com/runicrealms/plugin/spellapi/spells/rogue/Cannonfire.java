@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -36,7 +36,7 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
                         "On hit, each fragment will deal " +
                         "(" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) physical⚔ damage, " +
                         "silences the target for " + DURATION + "s, and launches them back!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 7, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 7, 15);
         this.hasBeenHit = new HashMap<>();
     }
 

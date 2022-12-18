@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -44,7 +44,7 @@ public class PowerShot extends Spell implements MagicDamageSpell {
                         "For " + DURATION + "s, enemies hit by this spell are afflicted " +
                         "with &aHunter's Mark&7, increasing all damage you " +
                         "deal to them by " + (int) (PERCENT_INCREASE * 100) + "%!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 12, 20);
+                ChatColor.WHITE, CharacterClass.ARCHER, 12, 20);
         powerShots = new ArrayList<>();
     }
 

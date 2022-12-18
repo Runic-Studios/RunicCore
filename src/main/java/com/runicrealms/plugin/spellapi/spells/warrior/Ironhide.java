@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -36,7 +36,7 @@ public class Ironhide extends Spell implements MagicDamageSpell {
                         "enchantment! Enemies who strike " +
                         "you suffer (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) magicʔ damage! You are slowed slightly for the duration.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 16, 20);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 16, 20);
     }
 
     /**

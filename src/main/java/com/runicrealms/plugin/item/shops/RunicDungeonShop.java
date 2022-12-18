@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ public class RunicDungeonShop {
     private final String dungeonCurrencyTemplateId;
     private final String[] artifactTemplateIdList;
     private final String armorTemplateIdPrefix;
-    private static final String[] armorClassPrefixList = ClassEnum.getClassNames();
+    private static final String[] armorClassPrefixList = CharacterClass.getClassNames();
     private static final String[] armorTypes = new String[]{"helm", "chest", "leggings", "boots"};
 
     /**

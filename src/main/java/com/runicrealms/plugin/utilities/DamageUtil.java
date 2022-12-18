@@ -36,15 +36,10 @@ public class DamageUtil {
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
 
-        // todo: this needs to go inside spell, because this is wrong
-        // ignore NPCs
-        if (recipient.hasMetadata("NPC")) return;
-        //if (recipient instanceof ArmorStand) return;
-
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }
@@ -84,9 +79,9 @@ public class DamageUtil {
         if (recipient instanceof ArmorStand) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }
@@ -123,9 +118,9 @@ public class DamageUtil {
         if (recipient instanceof ArmorStand) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }
@@ -198,9 +193,9 @@ public class DamageUtil {
         if (recipient == caster) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }

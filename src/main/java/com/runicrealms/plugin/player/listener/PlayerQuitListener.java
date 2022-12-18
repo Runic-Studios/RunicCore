@@ -2,7 +2,6 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
-import com.runicrealms.plugin.redis.RedisUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,10 +13,9 @@ public class PlayerQuitListener implements Listener {
     public static final String DATA_SAVING_KEY = "isSavingData";
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent e) {
-        Player player = e.getPlayer();
-        e.setQuitMessage("");
-        player.setWalkSpeed(0.2f);
+    public void onCharacterHasQuit(CharacterHasQuitEvent event) {
+        event.getCharacterQuitEvent().getJedis().del(event.getPlayer().getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY);
+        event.getCharacterQuitEvent().close(); // close all jedis resources
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
@@ -27,8 +25,9 @@ public class PlayerQuitListener implements Listener {
     }
 
     @EventHandler
-    public void onCharacterHasQuit(CharacterHasQuitEvent event) {
-        RedisUtil.removeFromRedis(event.getCharacterQuitEvent().getJedis(), event.getPlayer().getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY);
-        event.getCharacterQuitEvent().close(); // close all jedis resources
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        event.setQuitMessage("");
+        player.setWalkSpeed(0.2f);
     }
 }

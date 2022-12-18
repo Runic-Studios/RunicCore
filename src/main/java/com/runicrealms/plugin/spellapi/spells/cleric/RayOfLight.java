@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -39,7 +39,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
                         "damage to enemies within " + RADIUS + " blocks, " +
                         "stunning them for " + STUN_DURATION + "s! " +
                         "Enemies cannot be hit more than once.",
-                ChatColor.WHITE, ClassEnum.CLERIC, 20, 15);
+                ChatColor.WHITE, CharacterClass.CLERIC, 20, 15);
         hitEntities = new HashSet<>();
     }
 

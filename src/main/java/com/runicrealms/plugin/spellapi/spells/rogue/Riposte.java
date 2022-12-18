@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -28,7 +28,7 @@ public class Riposte extends Spell {
                         "incoming attacks, avoiding all incoming damage. " +
                         "Any enemy that attacks you during this time is " +
                         "stunned for " + DURATION_STUN + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 18, 20);
+                ChatColor.WHITE, CharacterClass.ROGUE, 18, 20);
         ripostePlayers = new HashSet<>();
     }
 

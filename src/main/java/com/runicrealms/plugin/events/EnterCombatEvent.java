@@ -33,7 +33,7 @@ public class EnterCombatEvent extends Event implements Cancellable {
      * Both the player AND their party are tagged in combat
      */
     public static void tagPlayerAndPartyInCombat(Player player) {
-        RunicCore.getCombatManager().addPlayer(player.getUniqueId());
+        RunicCore.getCombatAPI().enterCombat(player.getUniqueId());
         tagPlayerPartyInCombat(player);
     }
 
@@ -43,13 +43,13 @@ public class EnterCombatEvent extends Event implements Cancellable {
      * @param player the player who initiated the combat tag
      */
     private static void tagPlayerPartyInCombat(Player player) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) return;
-        for (Player member : RunicCore.getPartyManager().getPlayerParty(player).getMembersWithLeader()) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) return;
+        for (Player member : RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembersWithLeader()) {
             if (member == player) continue;
             if (player.getLocation().getWorld() != member.getLocation().getWorld()) continue;
             if (player.getLocation().distanceSquared(member.getLocation()) > PARTY_TAG_RANGE * PARTY_TAG_RANGE)
                 continue; // only tag players in 100 block range
-            RunicCore.getCombatManager().addPlayer(member.getUniqueId());
+            RunicCore.getCombatAPI().enterCombat(member.getUniqueId());
         }
     }
 

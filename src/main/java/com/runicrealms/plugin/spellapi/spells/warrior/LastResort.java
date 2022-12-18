@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -30,7 +30,7 @@ public class LastResort extends Spell {
                         (int) (PERCENT * 100) + "% health, blasting back enemies within " +
                         RADIUS + " blocks! Last Resort cannot occur " +
                         "more than once every " + COOLDOWN + "s.",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+                ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.resorters = new HashSet<>();
         this.setIsPassive(true);
     }

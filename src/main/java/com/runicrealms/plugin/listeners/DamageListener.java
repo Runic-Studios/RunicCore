@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.model.OutlawData;
@@ -32,6 +32,142 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Skyfallin_
  */
 public class DamageListener implements Listener {
+
+    public static boolean matchClass(Player player, boolean sendMessage) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        if (className == null) return false;
+        switch (mainHand.getType()) {
+            case BOW:
+                if (!className.equals("Archer")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_SHOVEL:
+                if (!className.equals("Cleric")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_HOE:
+                if (!className.equals("Mage")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_SWORD:
+                if (!className.equals("Rogue")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            case WOODEN_AXE:
+                if (!className.equals("Warrior")) {
+                    if (sendMessage) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            default:
+                return true;
+        }
+    }
+
+    private static String weaponMessage(String className) {
+        String s = "";
+        switch (className) {
+            case "Archer":
+                s = (ChatColor.RED + "Archers can only wield bows.");
+                break;
+            case "Cleric":
+                s = (ChatColor.RED + "Clerics can only wield maces.");
+                break;
+            case "Mage":
+                s = (ChatColor.RED + "Mages can only wield staves.");
+                break;
+            case "Rogue":
+                s = (ChatColor.RED + "Rogues can only wield swords.");
+                break;
+            case "Warrior":
+                s = (ChatColor.RED + "Warriors can only wield axes.");
+                break;
+        }
+        return s;
+    }
+
+    public static void applySlainMechanics(Entity damager, Player victim) {
+
+        // if the player was killed by an arrow, set damager to its shooter
+        if (damager instanceof Arrow) {
+            Arrow arrow = (Arrow) damager;
+            if (arrow.getShooter() instanceof Player) {
+                damager = (Player) arrow.getShooter();
+            }
+        }
+
+        // call custom death event
+        RunicDeathEvent event = new RunicDeathEvent(victim, damager);
+        Bukkit.getPluginManager().callEvent(event);
+
+        // update the scoreboard
+        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
+            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
+            Score score = o.getScore(victim);
+            score.setScore((int) victim.getHealth());
+        }
+
+        // broadcast the death message
+        broadcastSlainDeathMessage(damager, victim);
+    }
+
+    /**
+     * @param damager
+     * @param victim
+     */
+    private static void broadcastSlainDeathMessage(Entity damager, Player victim) {
+        String nameVic = victim.getName();
+        if (damager instanceof Player) {
+            String damagerName = damager.getName();
+            // if both players are outlaws, amend the death message to display their rating
+            boolean damagerIsOutlaw = OutlawData.getOutlawDataMap().get(damager.getUniqueId());
+            boolean victimIsOutlaw = OutlawData.getOutlawDataMap().get(victim.getUniqueId());
+            if (damagerIsOutlaw && victimIsOutlaw) {
+                damagerName = ChatColor.WHITE + damagerName; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
+                nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
+                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + damagerName);
+            }
+        }
+    }
+
+    /**
+     * A generic death message for general purposes
+     *
+     * @param victim who died
+     */
+    public static void broadcastDeathMessage(Player victim) {
+        String nameVic = victim.getName();
+        Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent e) {
@@ -155,88 +291,6 @@ public class DamageListener implements Listener {
         applySlainMechanics(e.getDamager(), ((Player) victim));
     }
 
-    public static boolean matchClass(Player player, boolean sendMessage) {
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        String className = RunicCoreAPI.getPlayerClass(player);
-        if (className == null) return false;
-        switch (mainHand.getType()) {
-            case BOW:
-                if (!className.equals("Archer")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_SHOVEL:
-                if (!className.equals("Cleric")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_HOE:
-                if (!className.equals("Mage")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_SWORD:
-                if (!className.equals("Rogue")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            case WOODEN_AXE:
-                if (!className.equals("Warrior")) {
-                    if (sendMessage) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        player.sendMessage(weaponMessage(className));
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            default:
-                return true;
-        }
-    }
-
-    private static String weaponMessage(String className) {
-        String s = "";
-        switch (className) {
-            case "Archer":
-                s = (ChatColor.RED + "Archers can only wield bows.");
-                break;
-            case "Cleric":
-                s = (ChatColor.RED + "Clerics can only wield maces.");
-                break;
-            case "Mage":
-                s = (ChatColor.RED + "Mages can only wield staves.");
-                break;
-            case "Rogue":
-                s = (ChatColor.RED + "Rogues can only wield swords.");
-                break;
-            case "Warrior":
-                s = (ChatColor.RED + "Warriors can only wield axes.");
-                break;
-        }
-        return s;
-    }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent e) {
 
@@ -260,59 +314,5 @@ public class DamageListener implements Listener {
         // call custom death event
         RunicDeathEvent event = new RunicDeathEvent(victim);
         Bukkit.getPluginManager().callEvent(event);
-    }
-
-    public static void applySlainMechanics(Entity damager, Player victim) {
-
-        // if the player was killed by an arrow, set damager to its shooter
-        if (damager instanceof Arrow) {
-            Arrow arrow = (Arrow) damager;
-            if (arrow.getShooter() instanceof Player) {
-                damager = (Player) arrow.getShooter();
-            }
-        }
-
-        // call custom death event
-        RunicDeathEvent event = new RunicDeathEvent(victim, damager);
-        Bukkit.getPluginManager().callEvent(event);
-
-        // update the scoreboard
-        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
-            Score score = o.getScore(victim);
-            score.setScore((int) victim.getHealth());
-        }
-
-        // broadcast the death message
-        broadcastSlainDeathMessage(damager, victim);
-    }
-
-    /**
-     * @param damager
-     * @param victim
-     */
-    private static void broadcastSlainDeathMessage(Entity damager, Player victim) {
-        String nameVic = victim.getName();
-        if (damager instanceof Player) {
-            String damagerName = damager.getName();
-            // if both players are outlaws, amend the death message to display their rating
-            boolean damagerIsOutlaw = OutlawData.getOutlawDataMap().get(damager.getUniqueId());
-            boolean victimIsOutlaw = OutlawData.getOutlawDataMap().get(victim.getUniqueId());
-            if (damagerIsOutlaw && victimIsOutlaw) {
-                damagerName = ChatColor.WHITE + damagerName; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
-                nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
-                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + damagerName);
-            }
-        }
-    }
-
-    /**
-     * A generic death message for general purposes
-     *
-     * @param victim who died
-     */
-    public static void broadcastDeathMessage(Player victim) {
-        String nameVic = victim.getName();
-        Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
     }
 }

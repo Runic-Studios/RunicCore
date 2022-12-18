@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -29,7 +29,7 @@ public class Discord extends Spell implements MagicDamageSpell {
                         "After, enemies within " + RADIUS + " blocks are stunned for " +
                         DURATION + "s and suffer (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 20, 20);
+                ChatColor.WHITE, CharacterClass.CLERIC, 20, 20);
     }
 
     private void causeDiscord(Player caster, LivingEntity victim) {

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -27,7 +27,7 @@ public class IceBlock extends Spell implements MagicDamageSpell {
                         "After, the ice block explodes, dealing (" + DAMAGE_AMT +
                         " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage " +
                         "to enemies within " + RADIUS + " blocks!",
-                ChatColor.WHITE, ClassEnum.MAGE, 18, 20);
+                ChatColor.WHITE, CharacterClass.MAGE, 18, 20);
     }
 
     @Override

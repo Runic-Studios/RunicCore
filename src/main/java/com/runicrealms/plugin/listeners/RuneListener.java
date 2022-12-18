@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemGeneric;
 import org.bukkit.GameMode;
@@ -31,8 +31,8 @@ public class RuneListener implements Listener {
      * Give new players the rune
      */
     @EventHandler
-    public void onCharacterLoad(CharacterSelectEvent e) {
-        Player pl = e.getPlayer();
+    public void onCharacterLoad(CharacterSelectEvent event) {
+        Player pl = event.getPlayer();
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
         new BukkitRunnable() {
             @Override
@@ -48,11 +48,11 @@ public class RuneListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // event runs LAST, not first
-    public void onInventoryClick(InventoryClickEvent e) {
+    public void onInventoryClick(InventoryClickEvent event) {
 
-        if (e.isCancelled()) return;
-        Player pl = (Player) e.getWhoClicked();
-        int itemSlot = e.getSlot();
+        if (event.isCancelled()) return;
+        Player pl = (Player) event.getWhoClicked();
+        int itemSlot = event.getSlot();
         if (itemSlot != 0) return;
 
         // don't trigger if there's no item in the slot to avoid null issues
@@ -66,16 +66,16 @@ public class RuneListener implements Listener {
         if (pl.getGameMode() != GameMode.SURVIVAL) return;
 
         // only listen for a player inventory
-        if (e.getClickedInventory() == null) return;
-        if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
+        if (event.getClickedInventory() == null) return;
+        if (event.getClickedInventory().getType() != InventoryType.PLAYER) return;
 
-        e.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler
-    public void onRuneUse(PlayerInteractEvent e) {
+    public void onRuneUse(PlayerInteractEvent event) {
 
-        Player player = e.getPlayer();
+        Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
@@ -88,9 +88,9 @@ public class RuneListener implements Listener {
         if (rune == null) return;
 
         // annoying 1.9 feature which makes the event run twice, once for each hand
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
-        player.openInventory(RunicCoreAPI.runeGUI(player).getInventory());
+        player.openInventory(new RuneGUI(player).getInventory());
     }
 }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
@@ -30,7 +30,7 @@ public class SliceAndDice extends Spell {
                         "for (&f" + DAMAGE_AMT + " + " + PERCENT + "x " +
                         "their missing health&7) as physical⚔ damage! " +
                         "Capped at " + DAMAGE_CAP + " against monsters.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 15, 30);
+                ChatColor.WHITE, CharacterClass.ROGUE, 15, 30);
     }
 
     @Override

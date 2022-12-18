@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -19,7 +19,7 @@ public class ColdTouch extends Spell {
         super("Cold Touch",
                 "Your &aFireball &7spell is now &aFrostbolt&7, " +
                         "slowing its target!",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+                ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 
@@ -29,7 +29,7 @@ public class ColdTouch extends Spell {
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Fireball)) return;
         event.setCancelled(true);
-        SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellManager().getSpellByName("Frostbolt"));
+        SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellAPI().getSpell("Frostbolt"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())
             spellCastEvent.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);

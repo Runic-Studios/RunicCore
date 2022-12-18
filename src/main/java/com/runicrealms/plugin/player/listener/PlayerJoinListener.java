@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.model.CharacterData;
@@ -119,9 +118,9 @@ public class PlayerJoinListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 2));
         // build database file synchronously (if it doesn't exist)
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-                PlayerData playerData = RunicCore.getDatabaseManager().loadPlayerData(player, jedis);
-                RunicCore.getDatabaseManager().getPlayerDataMap().put(player.getUniqueId(), playerData);
+            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                PlayerData playerData = RunicCore.getDataAPI().loadPlayerData(player, jedis);
+                RunicCore.getDataAPI().getPlayerDataMap().put(player.getUniqueId(), playerData);
                 ResourcePackManager.openPackForPlayer(player); // prompt resource pack (triggers character select screen)
             }
         }, 1L);
@@ -141,7 +140,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
             if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                         "You recently played and your data is saving!" +

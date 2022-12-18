@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.api.ScoreboardAPI;
 import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
+import com.runicrealms.plugin.player.listener.ManaListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -39,7 +39,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
      */
     public ScoreboardHandler() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
                 updatePlayerCombatInfo(player, player.getScoreboard());
@@ -55,12 +55,12 @@ public class ScoreboardHandler implements ScoreboardAPI {
 
     private String manaAsString(final Player player) {
         int mana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
-        int maxMana = RunicCoreAPI.calculateMaxMana(player);
+        int maxMana = ManaListener.calculateMaxMana(player);
         return ChatColor.DARK_AQUA + "✸ " + mana + " §e/ " + ChatColor.DARK_AQUA + maxMana + " (Mana)";
     }
 
     private String playerClass(final Player player) {
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         int currentLevel = player.getLevel();
         String display;
         if (className == null) {
@@ -93,19 +93,20 @@ public class ScoreboardHandler implements ScoreboardAPI {
     }
 
     private String playerOutlaw(final Player player, final Jedis jedis) {
-        String display;
-        if (RunicCoreAPI.getRedisCharacterValue
-                (
-                        player.getUniqueId(),
-                        "outlaw",
-                        RunicCoreAPI.getCharacterSlot(player.getUniqueId()),
-                        jedis
-                ) == null) {
-            display = OUTLAW_DISABLED_STRING;
-        } else {
-            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
-        }
-        return display;
+        return OUTLAW_DISABLED_STRING;
+//        String display;
+//        if (RunicCore.getRedisAPI().getRedisCharacterValue
+//                (
+//                        player.getUniqueId(),
+//                        "outlaw",
+//                        RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId()),
+//                        jedis
+//                ) == null) {
+//            display = OUTLAW_DISABLED_STRING;
+//        } else {
+//            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
+//        }
+//        return display;
     }
 
     /**

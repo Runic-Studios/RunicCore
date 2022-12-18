@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.commands.admin;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -18,6 +17,10 @@ import java.util.UUID;
 public class BoostCMD implements CommandExecutor {
 
     private static double COMBAT_EXPERIENCE_BOOST = 0;
+
+    public static double getCombatExperienceBoost() {
+        return COMBAT_EXPERIENCE_BOOST;
+    }
 
     /**
      * it needs to generate the name and stats of the item and choose from a list of durabilities. (prob 0 or 1 rn)
@@ -36,7 +39,7 @@ public class BoostCMD implements CommandExecutor {
 
         COMBAT_EXPERIENCE_BOOST = percent;
         ClassUtil.launchFirework(pl, Color.FUCHSIA);
-        for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null) continue;
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
@@ -60,9 +63,5 @@ public class BoostCMD implements CommandExecutor {
             }
         }.runTaskLaterAsynchronously(RunicCore.getInstance(), 20L * duration);
         return true;
-    }
-
-    public static double getCombatExperienceBoost() {
-        return COMBAT_EXPERIENCE_BOOST;
     }
 }

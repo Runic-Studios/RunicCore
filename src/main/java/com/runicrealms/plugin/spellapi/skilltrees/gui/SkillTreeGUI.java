@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
@@ -25,10 +25,10 @@ import java.util.List;
 public class SkillTreeGUI implements InventoryHolder {
 
     private static final int INFO_ITEM_POSITION = 4;
+    private static final int[] PERK_SLOTS = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
     private final Inventory inventory;
     private final Player player;
     private final SkillTreeData skillTreeData;
-    private static final int[] PERK_SLOTS = new int[]{10, 28, 46, 48, 30, 12, 14, 32, 50, 52, 34, 16};
 
     public SkillTreeGUI(Player player, SkillTreeData skillTreeData) {
         this.inventory = Bukkit.createInventory(this, 54,
@@ -36,61 +36,6 @@ public class SkillTreeGUI implements InventoryHolder {
         this.player = player;
         this.skillTreeData = skillTreeData;
         openMenu();
-    }
-
-    @NotNull
-    @Override
-    public Inventory getInventory() {
-        return this.inventory;
-    }
-
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    public SkillTreeData getSkillTree() {
-        return this.skillTreeData;
-    }
-
-    /**
-     * Opens the inventory associated w/ this GUI, ordering perks
-     */
-    private void openMenu() {
-
-        this.inventory.clear();
-        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
-        this.inventory.setItem(INFO_ITEM_POSITION, infoItem());
-        int i = 0;
-
-        for (Perk perk : skillTreeData.getPerks()) {
-            ItemStack item = buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase");
-            this.inventory.setItem(PERK_SLOTS[i++], item);
-        }
-
-        int[] downArrowSlots = new int[]{19, 23, 37, 41};
-        int[] upArrowSlots = new int[]{21, 25, 39, 43};
-        int[] rightArrowSlots = new int[]{13, 47, 51};
-
-        for (int downArrowSlot : downArrowSlots) {
-            this.inventory.setItem(downArrowSlot, arrow(Material.RED_STAINED_GLASS_PANE));
-        }
-        for (int upArrowSlot : upArrowSlots) {
-            this.inventory.setItem(upArrowSlot, arrow(Material.GREEN_STAINED_GLASS_PANE));
-        }
-        for (int rightArrowSlot : rightArrowSlots) {
-            this.inventory.setItem(rightArrowSlot, arrow(Material.BROWN_STAINED_GLASS_PANE));
-        }
-    }
-
-    public ItemStack infoItem() {
-        ItemStack infoItem = new ItemStack(skillTreeData.getSubclass().getItemStack());
-        ItemMeta meta = infoItem.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubclass().getName() + " Tree Info");
-        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()));
-        meta.setLore(ChatUtils.formattedText(lore));
-        infoItem.setItemMeta(meta);
-        return infoItem;
     }
 
     /**
@@ -124,7 +69,7 @@ public class SkillTreeGUI implements InventoryHolder {
                                     "\n\n&eCharacter Stat &7" + ((PerkBaseStat) perk).getStat().getDescription()))
             );
         } else {
-            Spell spell = RunicCoreAPI.getSpell(((PerkSpell) perk).getSpellName());
+            Spell spell = RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName());
             if (spell == null) {
                 meta.setDisplayName(ChatColor.RED + "Error");
                 perkItem.setItemMeta(meta);
@@ -174,5 +119,60 @@ public class SkillTreeGUI implements InventoryHolder {
 
     public static int getInfoItemPosition() {
         return INFO_ITEM_POSITION;
+    }
+
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return this.inventory;
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public SkillTreeData getSkillTree() {
+        return this.skillTreeData;
+    }
+
+    public ItemStack infoItem() {
+        ItemStack infoItem = new ItemStack(skillTreeData.getSubclass().getItemStack());
+        ItemMeta meta = infoItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubclass().getName() + " Tree Info");
+        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId(), RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId()));
+        meta.setLore(ChatUtils.formattedText(lore));
+        infoItem.setItemMeta(meta);
+        return infoItem;
+    }
+
+    /**
+     * Opens the inventory associated w/ this GUI, ordering perks
+     */
+    private void openMenu() {
+
+        this.inventory.clear();
+        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
+        this.inventory.setItem(INFO_ITEM_POSITION, infoItem());
+        int i = 0;
+
+        for (Perk perk : skillTreeData.getPerks()) {
+            ItemStack item = buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase");
+            this.inventory.setItem(PERK_SLOTS[i++], item);
+        }
+
+        int[] downArrowSlots = new int[]{19, 23, 37, 41};
+        int[] upArrowSlots = new int[]{21, 25, 39, 43};
+        int[] rightArrowSlots = new int[]{13, 47, 51};
+
+        for (int downArrowSlot : downArrowSlots) {
+            this.inventory.setItem(downArrowSlot, arrow(Material.RED_STAINED_GLASS_PANE));
+        }
+        for (int upArrowSlot : upArrowSlots) {
+            this.inventory.setItem(upArrowSlot, arrow(Material.GREEN_STAINED_GLASS_PANE));
+        }
+        for (int rightArrowSlot : rightArrowSlots) {
+            this.inventory.setItem(rightArrowSlot, arrow(Material.BROWN_STAINED_GLASS_PANE));
+        }
     }
 }

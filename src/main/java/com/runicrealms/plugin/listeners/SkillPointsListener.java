@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.model.CharacterData;
 import com.runicrealms.plugin.model.SkillTreeData;
@@ -25,12 +24,12 @@ public class SkillPointsListener implements Listener {
 
     public SkillPointsListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
-                int slot = RunicCoreAPI.getCharacterSlot(uuid);
+                int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
                 if (slot == 0) continue;
-                int pointsToSpend = RunicCoreAPI.getAvailableSkillPoints
+                int pointsToSpend = RunicCore.getSkillTreeAPI().getAvailableSkillPoints
                         (
                                 uuid,
                                 slot
@@ -43,7 +42,7 @@ public class SkillPointsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLevel(PlayerLevelChangeEvent event) {
-        if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+        if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
         if (event.getNewLevel() > SKILL_TREE_UNLOCK_LEVEL) return;
         Player player = event.getPlayer();

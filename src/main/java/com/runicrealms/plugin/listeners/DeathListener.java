@@ -3,9 +3,9 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
@@ -22,59 +22,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
 public class DeathListener implements Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST) // last
-    public void onRunicDeath(RunicDeathEvent event) {
-
-        if (event.isCancelled()) return;
-        Player victim = event.getVictim();
-
-        // broadcast the death message
-        DamageListener.broadcastDeathMessage(victim);
-
-        // update the scoreboard
-        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
-            Score score = o.getScore(victim);
-            score.setScore((int) victim.getHealth());
-        }
-
-        // reset health, food, mana
-        victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        victim.setFoodLevel(20);
-        RunicCoreAPI.calculateMaxMana(victim);
-
-        // particles, sounds
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                new Particle.DustOptions(Color.RED, 3));
-
-        // teleport them to their hearthstone location, or the front of the dungeon
-        tryDropItems(victim);
-
-        // check dungeon
-        DungeonLocation dungeonLocation = RunicCoreAPI.getDungeonFromLocation(victim.getLocation());
-        if (dungeonLocation == null) {
-            victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
-            victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
-            victim.sendMessage(ChatColor.RED + "Any soulbound, quest, and untradeable items have been returned also.");
-        } else {
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-                victim.teleport(dungeonLocation.getLocation());
-                victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
-            });
-        }
-
-        // particles, sounds
-        victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
-
-        // flag leave combat for PvP and other things
-        LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(victim);
-        Bukkit.getPluginManager().callEvent(leaveCombatEvent);
-    }
 
     /**
      * This method controls the dropping of items.
@@ -96,5 +43,58 @@ public class DeathListener implements Listener {
             player.getInventory().remove(itemStack);
             player.getWorld().dropItem(player.getLocation(), itemStack);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // last
+    public void onRunicDeath(RunicDeathEvent event) {
+
+        if (event.isCancelled()) return;
+        Player victim = event.getVictim();
+
+        // broadcast the death message
+        DamageListener.broadcastDeathMessage(victim);
+
+        // update the scoreboard
+        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
+            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
+            Score score = o.getScore(victim);
+            score.setScore((int) victim.getHealth());
+        }
+
+        // reset health, food, mana
+        victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        victim.setFoodLevel(20);
+        ManaListener.calculateMaxMana(victim);
+
+        // Particles, sounds
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
+        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
+        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
+                new Particle.DustOptions(Color.RED, 3));
+
+        // Teleport them to their hearthstone location, or the front of the dungeon
+        tryDropItems(victim);
+
+        // Check for dungeon
+        DungeonLocation dungeonLocation = RunicCore.getRegionAPI().getDungeonFromLocation(victim.getLocation());
+        if (dungeonLocation == null) {
+            victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+            victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
+            victim.sendMessage(ChatColor.RED + "Any soulbound, quest, and untradeable items have been returned also.");
+        } else {
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                victim.teleport(dungeonLocation.getLocation());
+                victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
+            });
+        }
+
+        // particles, sounds
+        victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
+        victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
+        victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
+
+        // flag leave combat for PvP and other things
+        LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(victim);
+        Bukkit.getPluginManager().callEvent(leaveCombatEvent);
     }
 }

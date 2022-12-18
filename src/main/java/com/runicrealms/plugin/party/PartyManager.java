@@ -1,41 +1,56 @@
 package com.runicrealms.plugin.party;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.PartyAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class PartyManager implements Listener {
+public class PartyManager implements Listener, PartyAPI {
 
     private final Set<Party> parties;
-    private final Map<Player, Party> playerParties;
+    private final Map<UUID, Party> playerParties;
 
     public PartyManager() {
         this.parties = new HashSet<>();
         this.playerParties = new HashMap<>();
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    public boolean canJoinParty(Player player) {
-        return this.getPlayerParty(player) == null;// && RunicCore.getGroupManager().getPlayerGroup(player) == null;
+    @Override
+    public boolean canJoinParty(UUID uuid) {
+        return this.getParty(uuid) == null;
     }
 
+    @Override
     public Set<Party> getParties() {
         return this.parties;
     }
 
-    public Party getPlayerParty(Player player) {
-        if (this.playerParties.containsKey(player)) {
-            return this.playerParties.get(player);
+    public Party getParty(UUID uuid) {
+        if (this.playerParties.containsKey(uuid)) {
+            return this.playerParties.get(uuid);
         }
         return null;
     }
 
+    @Override
+    public boolean hasParty(UUID uuid) {
+        return this.playerParties.containsKey(uuid);
+    }
+
+    @Override
+    public boolean isPartyMember(UUID first, Player second) {
+        if (!RunicCore.getPartyAPI().hasParty(first)) return false;
+        if (!RunicCore.getPartyAPI().hasParty(second.getUniqueId())) return false;
+        return RunicCore.getPartyAPI().getParty(first).hasMember(second);
+    }
+
+    @Override
     public boolean memberHasInvite(Player player) {
         for (Party party : this.parties) {
             if (party.getInvite(player) != null) {
@@ -45,18 +60,27 @@ public class PartyManager implements Listener {
         return false;
     }
 
+    @Override
+    public void updatePlayerParty(UUID uuid, Party party) {
+        if (party == null) {
+            this.playerParties.remove(uuid);
+        } else {
+            this.playerParties.put(uuid, party);
+        }
+    }
+
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        if (this.playerParties.containsKey(event.getPlayer())) {
-            Party party = this.playerParties.get(event.getPlayer());
+        if (this.playerParties.containsKey(event.getPlayer().getUniqueId())) {
+            Party party = this.playerParties.get(event.getPlayer().getUniqueId());
             if (party.getLeader() == event.getPlayer()) {
                 party.sendMessageInChannel("This party has been disbanded &7Reason: leader disconnected");
                 for (Player member : party.getMembers()) {
-                    RunicCore.getPartyManager().updatePlayerParty(member, null);
+                    updatePlayerParty(member.getUniqueId(), null);
                     RunicCore.getTabAPI().setupTab(member);
                 }
-                RunicCore.getPartyManager().updatePlayerParty(party.getLeader(), null);
-                RunicCore.getPartyManager().getParties().remove(party);
+                RunicCore.getPartyAPI().updatePlayerParty(party.getLeader().getUniqueId(), null);
+                RunicCore.getPartyAPI().getParties().remove(party);
             } else {
                 party.getMembers().remove(event.getPlayer());
                 party.sendMessageInChannel(event.getPlayer().getName() + " has been removed from the party &7Reason: disconnected");
@@ -64,7 +88,7 @@ public class PartyManager implements Listener {
                     RunicCore.getTabAPI().setupTab(member);
                 }
             }
-            this.playerParties.remove(event.getPlayer());
+            this.playerParties.remove(event.getPlayer().getUniqueId());
         }
         for (Party party : this.parties) {
             Party.Invite invite = party.getInvite(event.getPlayer());
@@ -72,14 +96,6 @@ public class PartyManager implements Listener {
                 invite.inviteAccepted();
                 party.getInvites().remove(invite);
             }
-        }
-    }
-
-    public void updatePlayerParty(Player player, Party party) {
-        if (party == null) {
-            this.playerParties.remove(player);
-        } else {
-            this.playerParties.put(player, party);
         }
     }
 

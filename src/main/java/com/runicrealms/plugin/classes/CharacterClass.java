@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.classes;
 
-public enum ClassEnum {
+public enum CharacterClass {
 
     ANY("any"),
     ARCHER("Archer"),
@@ -11,12 +11,8 @@ public enum ClassEnum {
 
     private final String name;
 
-    ClassEnum(String name) {
+    CharacterClass(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     /**
@@ -25,8 +21,8 @@ public enum ClassEnum {
      * @param name of class
      * @return enum of class
      */
-    public static ClassEnum getFromName(String name) {
-        for (ClassEnum classType : ClassEnum.values()) {
+    public static CharacterClass getFromName(String name) {
+        for (CharacterClass classType : CharacterClass.values()) {
             if (classType.getName().equalsIgnoreCase(name)) {
                 return classType;
             }
@@ -35,19 +31,23 @@ public enum ClassEnum {
     }
 
     /**
-     * Grab an array of the classnames to iterate over (skips the 'any' type)
+     * Grab an array of the class names to iterate over (skips the 'any' type)
      *
      * @return an array of Strings containing the LOWERCASE class names
      */
     public static String[] getClassNames() {
-        String[] classNames = new String[ClassEnum.values().length - 1]; // exclude 'any'
+        String[] classNames = new String[CharacterClass.values().length - 1]; // exclude 'any'
         int i = 0;
-        for (ClassEnum classEnum : ClassEnum.values()) {
-            if (classEnum == ANY) continue;
-            classNames[i] = classEnum.getName().toLowerCase();
+        for (CharacterClass characterClass : CharacterClass.values()) {
+            if (characterClass == ANY) continue;
+            classNames[i] = characterClass.getName().toLowerCase();
             i++;
         }
         return classNames;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
 }

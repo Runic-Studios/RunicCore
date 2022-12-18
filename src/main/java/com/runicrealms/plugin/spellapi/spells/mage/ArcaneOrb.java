@@ -1,8 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -32,7 +31,7 @@ public class ArcaneOrb extends Spell {
                         "receive a " + (int) PERCENT + "% bonus to all spellʔ " +
                         "damage dealt by standing within " + RADIUS + " blocks " +
                         "of the orb!",
-                ChatColor.WHITE, ClassEnum.MAGE, 40, 30);
+                ChatColor.WHITE, CharacterClass.MAGE, 40, 30);
     }
 
     public static HashMap<UUID, Location> getArcaneOrbMap() {
@@ -59,8 +58,8 @@ public class ArcaneOrb extends Spell {
         Location loc = player.getLocation().clone().add(0, 2, 0);
         Location circleLoc = loc.clone().subtract(0, 2, 0);
         arcaneOrbMap.put(player.getUniqueId(), circleLoc);
-        if (RunicCoreAPI.hasParty(player)) {
-            for (Player ally : RunicCore.getPartyManager().getPlayerParty(player).getMembers()) // add allies
+        if (RunicCore.getPartyAPI().hasParty(player.getUniqueId())) {
+            for (Player ally : RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembers()) // add allies
                 arcaneOrbMap.put(ally.getUniqueId(), circleLoc);
         }
         new BukkitRunnable() {

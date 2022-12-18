@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -22,7 +22,7 @@ public class Thundershock extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "runeforged-crusher";
 
     public Thundershock() {
-        super("Thundershock", "", ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+        super("Thundershock", "", ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -27,7 +27,7 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
                         "fury of the winds, summoning a cyclone around you that damages " +
                         "enemies within " + (double) RADIUS + " blocks for (" +
                         DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 20, 25);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 20, 25);
     }
 
     @Override

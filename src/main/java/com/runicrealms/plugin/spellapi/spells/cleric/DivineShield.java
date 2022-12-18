@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -28,7 +28,7 @@ public class DivineShield extends Spell {
                         "chance to grant a divine shield to your allies, " +
                         "granting them " + (int) (PERCENT_REDUCTION * 100) + "% damage " +
                         "reduction for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+                ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
         shieldedPlayers = new HashSet<>();
     }

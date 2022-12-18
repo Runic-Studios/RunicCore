@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.classes;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
@@ -103,7 +103,9 @@ public class SelectClass {
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setLevel(0);
         player.setExp(0);
-        ClassData classData = new ClassData(player.getUniqueId(), ClassEnum.getFromName(className), 0, 0);
-        RunicCoreAPI.setRedisValues(player, classData.toMap(), jedis);
+        ClassData classData = new ClassData(player.getUniqueId(), CharacterClass.getFromName(className), 0, 0);
+        int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        String key = RunicCore.getRedisAPI().getCharacterKey(player.getUniqueId(), slot);
+        jedis.hmset(key, classData.toMap());
     }
 }

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -32,7 +32,7 @@ public class Spellsong extends Spell {
                         "For " + DURATION + "s, the buff increases the " +
                         "magicʔ damage of you and your allies " +
                         "by " + (int) PERCENT + "%!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 15, 15);
+                ChatColor.WHITE, CharacterClass.CLERIC, 15, 15);
         singers = new ArrayList<>();
         this.bonus = 0;
     }
@@ -51,8 +51,8 @@ public class Spellsong extends Spell {
         singers.add(player.getUniqueId());
 
         // buff all players within 10 blocks
-        if (RunicCore.getPartyManager().getPlayerParty(player) != null) {
-            for (Player memeber : RunicCore.getPartyManager().getPlayerParty(player).getMembersWithLeader()) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) != null) {
+            for (Player memeber : RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembersWithLeader()) {
                 if (player.getLocation().distanceSquared(memeber.getLocation()) > RADIUS * RADIUS) continue;
                 singers.add(memeber.getUniqueId());
             }

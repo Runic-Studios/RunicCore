@@ -2,7 +2,6 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -49,41 +48,8 @@ public class BowListener implements Listener {
     }
 
     /**
-     * Bugfix for armor stands
+     * Method to handle custom damage for bows
      */
-    @EventHandler
-    public void onCollide(ProjectileHitEvent event) {
-
-        // only listen for arrows
-        if (!(event.getEntity() instanceof Arrow)) return;
-
-        Arrow arrow = (Arrow) event.getEntity();
-
-        // only listen for arrows shot by a player
-        if (!(arrow.getShooter() instanceof Player)) return;
-
-        Entity victim = event.getHitEntity();
-        if (event.getHitEntity() instanceof ArmorStand && event.getHitEntity().getVehicle() != null) {
-            victim = event.getHitEntity().getVehicle();
-        }
-
-        if (victim == null) return;
-        // get our entity
-        if (!(victim.getType().isAlive())) return;
-
-        Player damager = (Player) arrow.getShooter();
-
-        // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(damager) != null) {
-            if (victim instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) victim)) {
-                    return;
-                }
-            }
-        }
-    }
-
-    // method to handle custom damage for bows
     @EventHandler(priority = EventPriority.NORMAL)
     public void onDamage(EntityDamageByEntityEvent e) {
 
@@ -128,9 +94,9 @@ public class BowListener implements Listener {
             Player damager = (Player) arrow.getShooter();
 
             // skip party members
-            if (RunicCore.getPartyManager().getPlayerParty(damager) != null) {
+            if (RunicCore.getPartyAPI().getParty(damager.getUniqueId()) != null) {
                 if (victim instanceof Player) {
-                    if (RunicCore.getPartyManager().getPlayerParty(damager).hasMember((Player) victim)) {
+                    if (RunicCore.getPartyAPI().getParty(damager.getUniqueId()).hasMember((Player) victim)) {
                         return;
                     }
                 }
@@ -196,7 +162,7 @@ public class BowListener implements Listener {
         // only apply cooldown if it's not already active
         if (cooldown != 0) return;
 
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         if (className == null) return;
         if (!className.equals("Archer")) return;
 
@@ -215,7 +181,7 @@ public class BowListener implements Listener {
             return;
         }
 
-        if (RunicCoreAPI.isCasting(player)) return;
+        if (RunicCore.getSpellAPI().isCasting(player)) return;
 
         player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
 

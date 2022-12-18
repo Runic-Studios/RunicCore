@@ -2,8 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.ArmorStandAPI;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -35,7 +34,7 @@ public class Bolster extends Spell {
                         "Yourself and allies who stand within " + RADIUS + " blocks of " +
                         "the banner are bolstered, receiving a " + (int) (PERCENT * 100) +
                         "% damage reduction buff!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 15, 20);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 15, 20);
         buffed = new HashMap<>();
     }
 
@@ -48,8 +47,8 @@ public class Bolster extends Spell {
         if (armorStand == null) return;
 
         buffed.put(player.getUniqueId(), bannerLoc);
-        if (RunicCoreAPI.hasParty(player))
-            for (Player ally : RunicCore.getPartyManager().getPlayerParty(player).getMembers()) // add allies
+        if (RunicCore.getPartyAPI().hasParty(player.getUniqueId()))
+            for (Player ally : RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembers()) // add allies
                 buffed.put(ally.getUniqueId(), bannerLoc);
 
         new BukkitRunnable() {

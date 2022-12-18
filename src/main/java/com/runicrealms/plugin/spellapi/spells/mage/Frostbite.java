@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -25,7 +25,7 @@ public class Frostbite extends Spell {
                         "your target location for " + DURATION +
                         "s, rooting enemies caught " +
                         "in the frost!",
-                ChatColor.WHITE, ClassEnum.MAGE, 15, 30);
+                ChatColor.WHITE, CharacterClass.MAGE, 15, 30);
     }
 
     private void createCircle(Player player, Location loc) {

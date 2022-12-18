@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -30,7 +30,7 @@ public class Smite extends Spell implements MagicDamageSpell {
                 "You launch a ripple of magic, colliding with the first enemy hit, " +
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage and launching them back!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 8, 20);
+                ChatColor.WHITE, CharacterClass.CLERIC, 8, 20);
     }
 
     private boolean checkForEnemy(Player caster, Location beamLocation) {

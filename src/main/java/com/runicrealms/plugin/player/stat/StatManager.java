@@ -1,9 +1,10 @@
 package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
@@ -17,7 +18,7 @@ import redis.clients.jedis.Jedis;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class StatManager implements Listener {
+public class StatManager implements Listener, StatAPI {
 
     private final HashMap<UUID, StatContainer> playerStatMap;
 
@@ -26,8 +27,64 @@ public class StatManager implements Listener {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
+    @Override
+    public int getPlayerDexterity(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getDexterity() + GearScanner.getItemDexterity(uuid);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int getPlayerIntelligence(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getIntelligence() + GearScanner.getItemIntelligence(uuid);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
     public StatContainer getPlayerStatContainer(UUID uuid) {
         return playerStatMap.get(uuid);
+    }
+
+    @Override
+    public int getPlayerStrength(UUID uuid) {
+        if (playerStatMap.get(uuid) == null) return 0;
+        try {
+            return playerStatMap.get(uuid).getStrength() + GearScanner.getItemStrength(uuid);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int getPlayerVitality(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getVitality() + GearScanner.getItemVitality(uuid);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int getPlayerWisdom(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getWisdom() + GearScanner.getItemWisdom(uuid);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     /**
@@ -37,8 +94,8 @@ public class StatManager implements Listener {
      * @param treePosition which subtree are we loading? (1,2,3)
      */
     private void grabBaseStatsFromTree(UUID uuid, int slot, SkillTreePosition treePosition, Jedis jedis) {
-        if (RunicCoreAPI.getSkillTree(uuid, slot, treePosition, jedis) == null) return;
-        for (Perk perk : RunicCoreAPI.getSkillTree(uuid, slot, treePosition, jedis).getPerks()) {
+        if (RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, treePosition) == null) return;
+        for (Perk perk : RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, treePosition, jedis).getPerks()) {
             if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
             if (!(perk instanceof PerkBaseStat)) continue;
             PerkBaseStat perkBaseStat = (PerkBaseStat) perk;

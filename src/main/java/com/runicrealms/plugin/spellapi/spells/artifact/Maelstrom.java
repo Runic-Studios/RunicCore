@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -28,7 +28,7 @@ public class Maelstrom extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "runeforged-scepter";
 
     public Maelstrom() {
-        super("Maelstrom", "", ChatColor.WHITE, ClassEnum.MAGE, 30, 0);
+        super("Maelstrom", "", ChatColor.WHITE, CharacterClass.MAGE, 30, 0);
         this.setIsPassive(false);
     }
 
@@ -64,16 +64,16 @@ public class Maelstrom extends Spell implements ArtifactSpell {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        if (!(e instanceof RunicArtifactOnHitEvent)) return;
-        RunicArtifactOnHitEvent onHitEvent = (RunicArtifactOnHitEvent) e;
-        if (isOnCooldown(e.getPlayer())) return;
+    public void onArtifactUse(RunicItemArtifactTriggerEvent event) {
+        if (!event.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        if (!(event instanceof RunicArtifactOnHitEvent)) return;
+        RunicArtifactOnHitEvent onHitEvent = (RunicArtifactOnHitEvent) event;
+        if (isOnCooldown(event.getPlayer())) return;
         double roll = ThreadLocalRandom.current().nextDouble();
         if (roll > getChance()) return;
-        int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
-        createMaelstrom(e.getPlayer(), onHitEvent.getVictim(), damage);
-        e.setArtifactSpellToCast(this);
+        int damage = (int) ((event.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCore.getStatAPI().getPlayerStrength(event.getPlayer().getUniqueId()));
+        createMaelstrom(event.getPlayer(), onHitEvent.getVictim(), damage);
+        event.setArtifactSpellToCast(this);
     }
 }
 

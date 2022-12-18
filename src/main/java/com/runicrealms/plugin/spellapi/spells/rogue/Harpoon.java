@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -31,7 +31,7 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
                         "the trident deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) physical⚔ damage and pulls its target towards you, slowing them for " + DURATION + "s! " +
                         "If an ally is hit, you are instead teleported to their location.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 18, 35);
+                ChatColor.WHITE, CharacterClass.ROGUE, 18, 35);
     }
 
     @Override

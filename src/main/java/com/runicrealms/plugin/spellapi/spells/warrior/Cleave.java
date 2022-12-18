@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -23,7 +23,7 @@ public class Cleave extends Spell {
                         "your basic weapon⚔ attacks cleave enemies within " + RADIUS + " " +
                         "blocks for " + (int) (PERCENT * 100) + "% damage! Max " + MAX_TARGETS +
                         " additional targets.",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+                ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 

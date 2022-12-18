@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -27,7 +27,7 @@ public class Blink extends Spell {
         super("Blink",
                 "You teleport forward, up to " +
                         "a distance of " + MAX_DIST + " blocks!",
-                ChatColor.WHITE, ClassEnum.MAGE, 12, 25);
+                ChatColor.WHITE, CharacterClass.MAGE, 12, 25);
         blinkers = new HashSet<>();
     }
 

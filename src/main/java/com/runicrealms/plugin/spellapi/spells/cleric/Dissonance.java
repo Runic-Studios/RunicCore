@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -26,7 +26,7 @@ public class Dissonance extends Spell {
                 "Damaging an enemy player has a " + (int) PERCENT + "% chance " +
                         "to swap their held item to a random hotbar slot! " +
                         "Against monsters, the effect silences for " + DURATION + "s instead.",
-                ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+                ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 

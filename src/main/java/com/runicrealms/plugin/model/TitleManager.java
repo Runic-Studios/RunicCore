@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -24,25 +23,23 @@ public class TitleManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    @EventHandler
-    public void onCharacterSelect(CharacterSelectEvent event) {
-        loadTitleData(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler
-    public void onCharacterQuit(CharacterQuitEvent event) {
-        TitleData titleData = loadTitleData(event.getPlayer().getUniqueId());
-        titleData.writeToJedis(event.getJedis());
-    }
-
-    @EventHandler
-    public void onMongoSave(MongoSaveEvent event) {
-        TitleData titleData;
-        for (UUID uuid : event.getPlayersToSave().keySet()) {
-            titleData = loadTitleData(uuid);
-            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
-            titleData.writeToMongo(playerMongoData);
+    /**
+     * Checks redis to see if the currently selected character's title data is cached.
+     * And if it is, returns the Title object
+     *
+     * @param uuid  of player to check
+     * @param jedis the jedis resource
+     * @return a TitleData object if it is found in redis
+     */
+    public TitleData checkRedisForTitleData(UUID uuid, Jedis jedis) {
+        if (jedis.exists(uuid.toString() + ":" + TitleData.DATA_SECTION_PREFIX)) {
+            return new TitleData(uuid, jedis);
         }
+        return null;
+    }
+
+    public Map<UUID, TitleData> getTitleDataMap() {
+        return titleDataMap;
     }
 
     /**
@@ -59,7 +56,7 @@ public class TitleManager implements Listener {
             return titleData;
         }
         // Step 2: check if title data is cached in redis
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
             return loadTitleData(uuid, jedis);
         }
     }
@@ -79,22 +76,24 @@ public class TitleManager implements Listener {
         return new TitleData(uuid, playerMongoData, jedis);
     }
 
-    /**
-     * Checks redis to see if the currently selected character's title data is cached.
-     * And if it is, returns the Title object
-     *
-     * @param uuid  of player to check
-     * @param jedis the jedis resource
-     * @return a TitleData object if it is found in redis
-     */
-    public TitleData checkRedisForTitleData(UUID uuid, Jedis jedis) {
-        if (jedis.exists(uuid.toString() + ":" + TitleData.DATA_SECTION_PREFIX)) {
-            return new TitleData(uuid, jedis);
-        }
-        return null;
+    @EventHandler
+    public void onCharacterQuit(CharacterQuitEvent event) {
+        TitleData titleData = loadTitleData(event.getPlayer().getUniqueId());
+        titleData.writeToJedis(event.getJedis());
     }
 
-    public Map<UUID, TitleData> getTitleDataMap() {
-        return titleDataMap;
+    @EventHandler
+    public void onCharacterSelect(CharacterSelectEvent event) {
+        loadTitleData(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onMongoSave(MongoSaveEvent event) {
+        TitleData titleData;
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            titleData = loadTitleData(uuid);
+            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
+            titleData.writeToMongo(playerMongoData);
+        }
     }
 }

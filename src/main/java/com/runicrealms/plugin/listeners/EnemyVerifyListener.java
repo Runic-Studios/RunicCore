@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.entity.*;
@@ -53,7 +53,7 @@ public class EnemyVerifyListener implements Listener {
         if (!(victim instanceof Player)) return;
 
         // skip party members
-        if (RunicCoreAPI.isPartyMember(caster, (Player) victim))
+        if (RunicCore.getPartyAPI().isPartyMember(caster.getUniqueId(), (Player) victim))
             event.setCancelled(true);
     }
 }

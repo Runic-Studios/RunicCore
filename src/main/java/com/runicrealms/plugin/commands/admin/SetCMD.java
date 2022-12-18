@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.Bukkit;
@@ -27,7 +26,7 @@ public class SetCMD extends BaseCommand {
     public SetCMD() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("online", context -> {
             Set<String> onlinePlayers = new HashSet<>();
-            for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
                 onlinePlayers.add(player.getName());
@@ -63,7 +62,7 @@ public class SetCMD extends BaseCommand {
             player = Bukkit.getPlayer(args[0]);
             classString = args[1].toLowerCase();
         }
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
             if (!(classString.equals("archer")
                     || classString.equals("cleric")
                     || classString.equals("mage")
@@ -137,10 +136,12 @@ public class SetCMD extends BaseCommand {
         player = Bukkit.getPlayer(args[0]);
         level = Integer.parseInt(args[1]);
         if (player == null) return;
+        UUID uuid = player.getUniqueId();
+        int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         player.setLevel(0);
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_EXP.getField(), String.valueOf(0), jedis);
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            jedis.set(RunicCore.getRedisAPI().getCharacterKey(uuid, slot) + ":" + CharacterField.CLASS_EXP.getField(), String.valueOf(0));
             PlayerLevelUtil.giveExperience(player, expAtLevel, jedis);
         }
     }

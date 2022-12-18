@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -35,7 +35,7 @@ public class FireAura extends Spell implements MagicDamageSpell {
                         "firestorm, damaging enemies within " + RADIUS + " blocks " +
                         "every " + PERIOD + "s for (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, ClassEnum.MAGE, 12, 25);
+                ChatColor.WHITE, CharacterClass.MAGE, 12, 25);
     }
 
     public static int getDuration() {

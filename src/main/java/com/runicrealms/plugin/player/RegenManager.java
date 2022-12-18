@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
@@ -42,61 +41,6 @@ public class RegenManager implements Listener {
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), this::regenMana, 0, REGEN_PERIOD * 20L);
     }
 
-    /**
-     * Task to regen health with appropriate modifiers
-     */
-    private void regenHealth() {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            if (!RunicCoreAPI.getLoadedCharacters().contains(online.getUniqueId())) continue;
-            int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
-            if (!RunicCoreAPI.isInCombat(online)) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    HealthRegenEvent event = new HealthRegenEvent(online, regenAmount * OOC_MULTIPLIER);
-                    Bukkit.getPluginManager().callEvent(event);
-                });
-            } else {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                    HealthRegenEvent event = new HealthRegenEvent(online, regenAmount);
-                    Bukkit.getPluginManager().callEvent(event);
-                });
-            }
-        }
-    }
-
-    /**
-     * Periodic task to regenerate mana for all online players
-     */
-    private void regenMana() {
-        for (UUID loaded : RunicCore.getDatabaseManager().getLoadedCharacters()) {
-            Player online = Bukkit.getPlayer(loaded);
-            if (online == null) continue;
-
-            int mana;
-
-            if (currentPlayerManaValues.containsKey(online.getUniqueId()))
-                mana = currentPlayerManaValues.get(online.getUniqueId());
-            else
-                mana = (int) (getBaseMana() + getManaPerLv(online));
-
-            int maxMana = RunicCoreAPI.calculateMaxMana(online);
-            if (mana >= maxMana) continue;
-
-            int regenAmt = MANA_REGEN_AMT;
-            if (RunicCore.getCombatManager().getPlayersInCombat().get(online.getUniqueId()) == null)
-                regenAmt *= 5; // players regen a lot out of combat
-
-            ManaRegenEvent event = new ManaRegenEvent(online, regenAmt);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                currentPlayerManaValues.put(online.getUniqueId(), Math.min(mana + event.getAmount(), maxMana));
-            }
-        }
-    }
-
-    public HashMap<UUID, Integer> getCurrentManaList() {
-        return currentPlayerManaValues;
-    }
-
     public static int getBaseMana() {
         return BASE_MANA;
     }
@@ -106,13 +50,30 @@ public class RegenManager implements Listener {
     }
 
     /**
+     * Adds mana to the current pool for the given player. Cannot add above max mana pool
+     *
+     * @param player to receive mana
+     * @param amount of mana to receive
+     */
+    public void addMana(Player player, int amount) {
+        int mana = currentPlayerManaValues.get(player.getUniqueId());
+        int maxMana = ManaListener.calculateMaxMana(player);
+        if (mana < maxMana)
+            currentPlayerManaValues.put(player.getUniqueId(), Math.min(mana + amount, maxMana));
+    }
+
+    public HashMap<UUID, Integer> getCurrentManaList() {
+        return currentPlayerManaValues;
+    }
+
+    /**
      * Determines the amount of mana to award per level to the given player based on class
      *
      * @param player to calculate mana for
      * @return the mana per level
      */
     public double getManaPerLv(Player player) {
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         if (className.equals("")) return 0;
         switch (className.toLowerCase()) {
             case "archer":
@@ -130,16 +91,56 @@ public class RegenManager implements Listener {
     }
 
     /**
-     * Adds mana to the current pool for the given player. Cannot add above max mana pool
-     *
-     * @param player to receive mana
-     * @param amount of mana to receive
+     * Task to regen health with appropriate modifiers
      */
-    public void addMana(Player player, int amount) {
-        int mana = currentPlayerManaValues.get(player.getUniqueId());
-        int maxMana = ManaListener.calculateMaxMana(player);
-        if (mana < maxMana)
-            currentPlayerManaValues.put(player.getUniqueId(), Math.min(mana + amount, maxMana));
+    private void regenHealth() {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(online.getUniqueId())) continue;
+            int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
+            if (!RunicCore.getCombatAPI().isInCombat(online.getUniqueId())) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                    HealthRegenEvent event = new HealthRegenEvent(online, regenAmount * OOC_MULTIPLIER);
+                    Bukkit.getPluginManager().callEvent(event);
+                });
+            } else {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                    HealthRegenEvent event = new HealthRegenEvent(online, regenAmount);
+                    Bukkit.getPluginManager().callEvent(event);
+                });
+            }
+        }
+    }
+
+    /**
+     * Periodic task to regenerate mana for all online players
+     */
+    private void regenMana() {
+        for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            Player online = Bukkit.getPlayer(loaded);
+            if (online == null) continue;
+
+            int mana;
+
+            if (currentPlayerManaValues.containsKey(online.getUniqueId()))
+                mana = currentPlayerManaValues.get(online.getUniqueId());
+            else
+                mana = (int) (getBaseMana() + getManaPerLv(online));
+
+            int maxMana = ManaListener.calculateMaxMana(online);
+            if (mana >= maxMana) continue;
+
+            int regenAmt = MANA_REGEN_AMT;
+
+            // Add multiplier for players out of combat
+            if (!RunicCore.getCombatAPI().isInCombat(online.getUniqueId()))
+                regenAmt *= OOC_MULTIPLIER;
+
+            ManaRegenEvent event = new ManaRegenEvent(online, regenAmt);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                currentPlayerManaValues.put(online.getUniqueId(), Math.min(mana + event.getAmount(), maxMana));
+            }
+        }
     }
 
     /**

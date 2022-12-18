@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.api.ArmorStandAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -39,7 +39,7 @@ public class Sentry extends Spell implements PhysicalDamageSpell {
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) physical⚔ damage and slowing them for " +
                         POTION_DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 30, 75);
+                ChatColor.WHITE, CharacterClass.ARCHER, 30, 75);
     }
 
     @Override

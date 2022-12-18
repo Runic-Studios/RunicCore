@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -35,7 +35,7 @@ public class CureScurvy extends Spell {
                         "blindness, slows, silences, and stuns! After, " +
                         "you gain a " + (int) (PERCENT * 100) + "% damage " +
                         "reduction buff for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 15, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 15, 15);
         damageReductionPlayers = new HashSet<>();
     }
 

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -26,7 +26,7 @@ public class BearTrap extends Spell {
         super("Bear Trap",
                 "Damaging an enemy afflicted by &aHunter's Mark " +
                         "&73 times roots them for " + (int) DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
+                ChatColor.WHITE, CharacterClass.ARCHER, 0, 0);
         this.setIsPassive(true);
         ensnareMap = new HashMap<>();
     }

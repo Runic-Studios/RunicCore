@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.scoreboard;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
@@ -34,7 +33,7 @@ public class ScoreboardListener implements Listener {
      */
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent event) {
-        if (!RunicCoreAPI.getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+        if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
         Player player = event.getPlayer();
         RunicCore.getScoreboardAPI().updatePlayerScoreboard(player);

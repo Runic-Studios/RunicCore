@@ -1,7 +1,7 @@
 //package com.runicrealms.plugin.spellapi.spells.artifact;
 //
 //import com.runicrealms.plugin.RunicCore;
-//import com.runicrealms.plugin.classes.ClassEnum;
+//import com.runicrealms.plugin.classes.CharacterClass;
 //import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 //import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 //import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -22,7 +22,7 @@
 //    private static final String ARTIFACT_ID = "wolfspine";
 //
 //    public ScorchedBlade() {
-//        super("Scorched Blade", "", ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
+//        super("Scorched Blade", "", ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
 //        this.setIsPassive(true);
 //    }
 //

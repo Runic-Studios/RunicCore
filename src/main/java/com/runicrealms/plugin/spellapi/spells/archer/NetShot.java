@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -36,7 +36,7 @@ public class NetShot extends Spell implements PhysicalDamageSpell {
                         + "x&7 lvl) physical⚔ damage to its " +
                         "primary target and slowing all enemies within " +
                         RADIUS + " blocks for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 16, 25);
+                ChatColor.WHITE, CharacterClass.ARCHER, 16, 25);
     }
 
     @Override

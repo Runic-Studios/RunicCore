@@ -1,9 +1,8 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.api.event.AllyVerifyEvent;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -16,10 +15,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.UUID;
@@ -31,12 +26,12 @@ public abstract class Spell implements ISpell, Listener {
     private final String name;
     private final String description;
     private final ChatColor color;
-    private final ClassEnum reqClass;
+    private final CharacterClass reqClass;
     protected RunicCore plugin = RunicCore.getInstance();
     private boolean isPassive = false;
 
     public Spell(String name, String description, ChatColor color,
-                 ClassEnum reqClass, double cooldown, int manaCost) {
+                 CharacterClass reqClass, double cooldown, int manaCost) {
         this.name = name;
         this.description = description;
         this.color = color;
@@ -55,54 +50,7 @@ public abstract class Spell implements ISpell, Listener {
      */
     @Override
     public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs) {
-        if (runicStatusEffect == RunicStatusEffect.SILENCE) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
-            RunicCore.getSpellManager().getSilencedEntities().put(entity.getUniqueId(), task);
-        } else if (runicStatusEffect == RunicStatusEffect.STUN) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "stunned!");
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
-            RunicCore.getSpellManager().getStunnedEntities().put(entity.getUniqueId(), task);
-            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
-            }
-        } else if (runicStatusEffect == RunicStatusEffect.ROOT) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "rooted!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getRootedEntites().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
-            RunicCore.getSpellManager().getRootedEntites().put(entity.getUniqueId(), task);
-            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
-            }
-        } else if (runicStatusEffect == RunicStatusEffect.INVULNERABILITY) {
-            entity.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.DARK_GREEN + ChatColor.BOLD + "invulnerable!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getInvulnerableEntities().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
-            RunicCore.getSpellManager().getInvulnerableEntities().put(entity.getUniqueId(), task);
-        }
+        RunicCore.getSpellAPI().addStatusEffect(entity, runicStatusEffect, durationInSecs);
     }
 
     @Override
@@ -112,7 +60,8 @@ public abstract class Spell implements ISpell, Listener {
         UUID uuid = player.getUniqueId();
 
         // verify class
-        boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase(RunicCoreAPI.getPlayerClass(uuid));
+        boolean canCast = this.getReqClass() == CharacterClass.ANY
+                || this.getReqClass().toString().equalsIgnoreCase(RunicCore.getCharacterAPI().getPlayerClass(uuid));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
@@ -126,7 +75,7 @@ public abstract class Spell implements ISpell, Listener {
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
         RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
-        RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
+        RunicCore.getSpellAPI().addCooldown(player, this, this.getCooldown());
         this.executeSpell(player, type);
     }
 
@@ -156,38 +105,38 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public ClassEnum getReqClass() {
+    public CharacterClass getReqClass() {
         return reqClass;
     }
 
     @Override
     public boolean hasPassive(UUID uuid, String passive) {
-        return RunicCoreAPI.hasPassive(uuid, passive);
+        return RunicCore.getSkillTreeAPI().hasPassiveFromSkillTree(uuid, passive);
     }
 
     @Override
     public boolean isInvulnerable(Entity entity) {
-        return RunicCore.getSpellManager().getInvulnerableEntities().containsKey(entity.getUniqueId());
+        return RunicCore.getSpellAPI().isInvulnerable(entity);
     }
 
     @Override
     public boolean isOnCooldown(Player player) {
-        return RunicCore.getSpellManager().isOnCooldown(player, this.getName());
+        return RunicCore.getSpellAPI().isOnCooldown(player, this.getName());
     }
 
     @Override
     public boolean isRooted(Entity entity) {
-        return RunicCore.getSpellManager().getRootedEntites().containsKey(entity.getUniqueId());
+        return RunicCore.getSpellAPI().isRooted(entity);
     }
 
     @Override
     public boolean isSilenced(Entity entity) {
-        return RunicCore.getSpellManager().getSilencedEntities().containsKey(entity.getUniqueId());
+        return RunicCore.getSpellAPI().isSilenced(entity);
     }
 
     @Override
     public boolean isStunned(Entity entity) {
-        return RunicCore.getSpellManager().getStunnedEntities().containsKey(entity.getUniqueId());
+        return RunicCore.getSpellAPI().isStunned(entity);
     }
 
     @Override
@@ -215,28 +164,7 @@ public abstract class Spell implements ISpell, Listener {
 
     @Override
     public boolean removeStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect) {
-        if (runicStatusEffect == RunicStatusEffect.SILENCE) {
-            if (!RunicCore.getSpellManager().getSilencedEntities().containsKey(entity.getUniqueId())) return false;
-            RunicCore.getSpellManager().getSilencedEntities().get(entity.getUniqueId()).cancel(); // cancel the async removal task
-            RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId());
-            return true;
-        } else if (runicStatusEffect == RunicStatusEffect.STUN) {
-            if (!RunicCore.getSpellManager().getStunnedEntities().containsKey(entity.getUniqueId())) return false;
-            RunicCore.getSpellManager().getStunnedEntities().get(entity.getUniqueId()).cancel();
-            RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId());
-            return true;
-        } else if (runicStatusEffect == RunicStatusEffect.ROOT) {
-            if (!RunicCore.getSpellManager().getRootedEntites().containsKey(entity.getUniqueId())) return false;
-            RunicCore.getSpellManager().getRootedEntites().get(entity.getUniqueId()).cancel();
-            RunicCore.getSpellManager().getRootedEntites().remove(entity.getUniqueId());
-            return true;
-        } else if (runicStatusEffect == RunicStatusEffect.INVULNERABILITY) {
-            if (!RunicCore.getSpellManager().getInvulnerableEntities().containsKey(entity.getUniqueId())) return false;
-            RunicCore.getSpellManager().getInvulnerableEntities().get(entity.getUniqueId()).cancel();
-            RunicCore.getSpellManager().getInvulnerableEntities().remove(entity.getUniqueId());
-            return true;
-        }
-        return false;
+        return RunicCore.getSpellAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
     }
 
     public boolean attemptToExecute(Player player) {

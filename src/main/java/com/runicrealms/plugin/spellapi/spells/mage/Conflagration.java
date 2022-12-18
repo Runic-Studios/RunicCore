@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -33,7 +33,7 @@ public class Conflagration extends Spell implements MagicDamageSpell {
                         "of flame that deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to enemies every " + PERIOD + "s. " +
                         "The conflagration lasts " + DURATION + "s.",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+                ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
 

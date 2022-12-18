@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -34,7 +34,7 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
                         + "x&7 lvl) magicʔ damage to enemies within " +
                         RADIUS + " blocks of the impact and silencing them " +
                         "for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
+                ChatColor.WHITE, CharacterClass.MAGE, 10, 25);
     }
 
     @Override

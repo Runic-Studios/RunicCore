@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -34,7 +34,7 @@ public class Cripple extends Spell {
                         "blocks, disorienting them and " +
                         "reducing their damage by " + (int) PERCENT + "% " +
                         "for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
+                ChatColor.WHITE, CharacterClass.ROGUE, 15, 20);
         crippledEntities = new HashSet<>();
     }
 

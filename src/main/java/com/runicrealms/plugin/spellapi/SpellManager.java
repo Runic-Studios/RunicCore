@@ -1,7 +1,10 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.events.*;
+import com.runicrealms.plugin.model.PlayerSpellData;
+import com.runicrealms.plugin.spellapi.spells.Consumable;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.artifact.*;
@@ -9,16 +12,22 @@ import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -28,7 +37,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpellManager implements Listener {
+public class SpellManager implements Listener, SpellAPI {
 
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
@@ -50,15 +59,8 @@ public class SpellManager implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    /**
-     * Adds spell to player, spell cooldown map
-     *
-     * @param player       to add cooldown to
-     * @param spell        to apply cooldown to
-     * @param cooldownTime of spell
-     */
+    @Override
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
-
         if (this.cooldownMap.containsKey(player.getUniqueId())) {
             ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
@@ -68,17 +70,173 @@ public class SpellManager implements Listener {
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
-
         plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
                 () -> removeCooldown(player, spell), (long) cooldownTime * 20);
+    }
 
+    @Override
+    public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs) {
+        if (runicStatusEffect == RunicStatusEffect.SILENCE) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
+            BukkitTask task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    silencedEntities.remove(entity.getUniqueId());
+                }
+            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
+            silencedEntities.put(entity.getUniqueId(), task);
+        } else if (runicStatusEffect == RunicStatusEffect.STUN) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "stunned!");
+            BukkitTask task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    stunnedEntities.remove(entity.getUniqueId());
+                }
+            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
+            stunnedEntities.put(entity.getUniqueId(), task);
+            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old-fashioned way for mobs
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
+            }
+        } else if (runicStatusEffect == RunicStatusEffect.ROOT) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "rooted!");
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
+            BukkitTask task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    rootedEntities.remove(entity.getUniqueId());
+                }
+            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
+            rootedEntities.put(entity.getUniqueId(), task);
+            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old-fashioned way for mobs
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
+            }
+        } else if (runicStatusEffect == RunicStatusEffect.INVULNERABILITY) {
+            entity.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.DARK_GREEN + ChatColor.BOLD + "invulnerable!");
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
+            BukkitTask task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    invulnerableEntities.remove(entity.getUniqueId());
+                }
+            }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
+            invulnerableEntities.put(entity.getUniqueId(), task);
+        }
+    }
+
+    @Override
+    public Spell getPlayerSpell(Player player, int number) {
+        Spell spellToCast = null;
+        UUID uuid = player.getUniqueId();
+        try {
+            PlayerSpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellMap().get(uuid);
+            switch (number) {
+                case 1:
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellHotbarOne());
+                    if (playerSpellData.getSpellHotbarOne().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                    break;
+                case 2:
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellLeftClick());
+                    if (playerSpellData.getSpellLeftClick().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                    break;
+                case 3:
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellRightClick());
+                    if (playerSpellData.getSpellRightClick().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                    break;
+                case 4:
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellSwapHands());
+                    if (playerSpellData.getSpellSwapHands().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                    break;
+            }
+        } catch (NullPointerException e) {
+            // haha sky is lazy
+        }
+        return spellToCast;
+    }
+
+    @Override
+    public Spell getSpell(String name) {
+        return this.getSpellByName(name);
+    }
+
+    @Override
+    public boolean isCasting(Player player) {
+        return SpellUseListener.getCasters().containsKey(player.getUniqueId());
+    }
+
+    @Override
+    public boolean isInvulnerable(Entity entity) {
+        return invulnerableEntities.containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean isOnCooldown(Player player, String spellName) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId()))
+            return false;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
+    }
+
+    @Override
+    public boolean isRooted(Entity entity) {
+        return rootedEntities.containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean isSilenced(Entity entity) {
+        return silencedEntities.containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean isStunned(Entity entity) {
+        return stunnedEntities.containsKey(entity.getUniqueId());
+    }
+
+    @Override
+    public boolean removeStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
+        if (statusEffect == RunicStatusEffect.INVULNERABILITY) {
+            if (!invulnerableEntities.containsKey(uuid)) return false;
+            invulnerableEntities.get(uuid).cancel(); // cancel the async removal task
+            invulnerableEntities.remove(uuid);
+            return true;
+        } else if (statusEffect == RunicStatusEffect.ROOT) {
+            if (!rootedEntities.containsKey(uuid)) return false;
+            rootedEntities.get(uuid).cancel(); // cancel the async removal task
+            rootedEntities.remove(uuid);
+            return true;
+        } else if (statusEffect == RunicStatusEffect.SILENCE) {
+            if (!silencedEntities.containsKey(uuid)) return false;
+            silencedEntities.get(uuid).cancel(); // cancel the async removal task
+            silencedEntities.remove(uuid);
+            return true;
+        } else if (statusEffect == RunicStatusEffect.STUN) {
+            if (!stunnedEntities.containsKey(uuid)) return false;
+            stunnedEntities.get(uuid).cancel(); // cancel the async removal task
+            stunnedEntities.remove(uuid);
+            return true;
+        }
+        return false;
     }
 
     public HashMap<UUID, BukkitTask> getInvulnerableEntities() {
         return invulnerableEntities;
     }
 
-    public HashMap<UUID, BukkitTask> getRootedEntites() {
+    public HashMap<UUID, BukkitTask> getRootedEntities() {
         return rootedEntities;
     }
 
@@ -101,10 +259,6 @@ public class SpellManager implements Listener {
         return this.spellList;
     }
 
-    public HashMap<UUID, BukkitTask> getStunnedEntities() {
-        return stunnedEntities;
-    }
-
     private int getUserCooldown(Player player, Spell spell) {
         double cooldownRemaining = 0;
 
@@ -117,20 +271,13 @@ public class SpellManager implements Listener {
         return ((int) (cooldownRemaining / 1000));
     }
 
-    public boolean isOnCooldown(Player player, String spellName) {
-        if (!this.cooldownMap.containsKey(player.getUniqueId()))
-            return false;
-        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
-        return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
-    }
-
     @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
+    public void onMobDamage(MobDamageEvent event) {
         if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getDamager().getUniqueId())
-                || stunnedEntities.containsKey(e.getDamager().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
+        if (silencedEntities.containsKey(event.getDamager().getUniqueId())
+                || stunnedEntities.containsKey(event.getDamager().getUniqueId())
+                || invulnerableEntities.containsKey(event.getVictim().getUniqueId()))
+            event.setCancelled(true);
     }
 
     @EventHandler
@@ -281,6 +428,7 @@ public class SpellManager implements Listener {
         this.spellList.add(new Thundershock());
         this.spellList.add(new ThunderousRift());
         this.spellList.add(new Cannonfire());
+        this.spellList.add(new Consumable());
 //        this.spellList.add(new ScorchedBlade()); sunken artifact passives
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());

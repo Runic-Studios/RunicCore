@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -33,6 +32,48 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
+    /**
+     * @param player
+     * @return
+     */
+    public static int getCostFromLevel(Player player) {
+        if (player.getLevel() == PlayerLevelUtil.getMaxLevel()) {
+            return 1000;
+        } else if (player.getLevel() < PlayerLevelUtil.getMaxLevel() && player.getLevel() > 29) {
+            return 250;
+        } else {
+            return 0;
+        }
+    }
+
+    public static String getCostStringFromLevel(Player player) {
+        if (player.getLevel() >= 30) {
+            return ChatColor.GOLD + "" + ChatColor.BOLD + getCostFromLevel(player) + "c";
+        } else {
+            return ChatColor.GREEN + "" + ChatColor.BOLD + "FREE";
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // executes FIRST
+    public void onChat(ChatChannelMessageEvent event) {
+        if (!chatters.contains(event.getMessageSender().getUniqueId())) return;
+        event.setCancelled(true);
+        Player player = event.getMessageSender();
+        if (event.getChatMessage().toLowerCase().contains("yes") && RunicCore.getShopAPI().hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+                ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
+                SkillTreeData.resetSkillTrees(player);
+            });
+        } else if (event.getChatMessage().toLowerCase().contains("yes") && !RunicCore.getShopAPI().hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "You don't have enough gold!");
+        } else {
+            player.sendMessage(ChatColor.GRAY + "You ended the conversation.");
+        }
+        chatters.remove(player.getUniqueId());
+    }
+
     @Default
     @CatchUnknown
     @Conditions("is-console-or-op")
@@ -58,48 +99,6 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
             }
         } catch (Exception e) {
             Bukkit.getLogger().info(ChatColor.RED + "Player not found!");
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST) // executes FIRST
-    public void onChat(ChatChannelMessageEvent event) {
-        if (!chatters.contains(event.getMessageSender().getUniqueId())) return;
-        event.setCancelled(true);
-        Player player = event.getMessageSender();
-        if (event.getChatMessage().toLowerCase().contains("yes") && RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
-                SkillTreeData.resetSkillTrees(player);
-            });
-        } else if (event.getChatMessage().toLowerCase().contains("yes") && !RunicCoreAPI.hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "You don't have enough gold!");
-        } else {
-            player.sendMessage(ChatColor.GRAY + "You ended the conversation.");
-        }
-        chatters.remove(player.getUniqueId());
-    }
-
-    /**
-     * @param player
-     * @return
-     */
-    public static int getCostFromLevel(Player player) {
-        if (player.getLevel() == PlayerLevelUtil.getMaxLevel()) {
-            return 1000;
-        } else if (player.getLevel() < PlayerLevelUtil.getMaxLevel() && player.getLevel() > 29) {
-            return 250;
-        } else {
-            return 0;
-        }
-    }
-
-    public static String getCostStringFromLevel(Player player) {
-        if (player.getLevel() >= 30) {
-            return ChatColor.GOLD + "" + ChatColor.BOLD + getCostFromLevel(player) + "c";
-        } else {
-            return ChatColor.GREEN + "" + ChatColor.BOLD + "FREE";
         }
     }
 }

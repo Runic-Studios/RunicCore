@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
@@ -21,7 +21,7 @@ public class Rift extends Spell {
                 "You summon a portal of punishing magic, " +
                         "drawing in all enemies within " + RADIUS + " blocks " +
                         "for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 25, 20);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 25, 20);
     }
 
     @Override

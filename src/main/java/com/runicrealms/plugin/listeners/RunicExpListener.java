@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.commands.admin.BoostCMD;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.party.Party;
@@ -16,6 +15,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import redis.clients.jedis.Jedis;
+
+import java.util.UUID;
 
 public class RunicExpListener implements Listener {
 
@@ -68,12 +69,12 @@ public class RunicExpListener implements Listener {
     /**
      * Quick check to see if a player is in a party (and not alone in that party)
      *
-     * @param player to check
+     * @param uuid of player to check
      * @return true if the player is in a party of at least 2 members
      */
-    private boolean isInParty(Player player) {
-        return RunicCore.getPartyManager().getPlayerParty(player) != null
-                && RunicCore.getPartyManager().getPlayerParty(player).getSize() >= 2;
+    private boolean isInPartyOfMinSizeTwo(UUID uuid) {
+        return RunicCore.getPartyAPI().hasParty(uuid)
+                && RunicCore.getPartyAPI().getParty(uuid).getSize() >= 2;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // executes last
@@ -81,7 +82,7 @@ public class RunicExpListener implements Listener {
 
         Player player = event.getPlayer();
 
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
             // quests and other don't get exp modifiers, so skip calculations
             if (event.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST
                     || event.getRunicExpSource() == RunicExpEvent.RunicExpSource.OTHER
@@ -95,7 +96,7 @@ public class RunicExpListener implements Listener {
             int boost = (int) boostPercent * event.getOriginalAmount();
             event.setFinalAmount(event.getFinalAmount() + boost);
 
-            if (!isInParty(player)) {
+            if (!isInPartyOfMinSizeTwo(player.getUniqueId())) {
                 if (event.getLocation() != null) { // world mobs
                     Location loc = event.getLocation();
                     int plLv = player.getLevel();
@@ -118,7 +119,7 @@ public class RunicExpListener implements Listener {
                 // Use final amount in this case, so we have Outlaw bonus's included in party bonus.
                 distributePartyExp
                         (
-                                RunicCore.getPartyManager().getPlayerParty(player),
+                                RunicCore.getPartyAPI().getParty(player.getUniqueId()),
                                 player,
                                 event.getFinalAmount(),
                                 extraAmt,

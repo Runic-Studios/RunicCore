@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -28,7 +28,7 @@ public class Kneebreak extends Spell {
         super("Kneebreak",
                 "Damaging an enemy has a " + PERCENT + "% chance " +
                         "to slow them for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
+                ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 

@@ -1,8 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -35,7 +34,7 @@ public class Cloak extends Spell {
                         "immune to damage from monsters! " +
                         "Dealing damage or taking damage from " +
                         "players ends the effect early.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 30, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 30, 15);
         cloakers = new HashSet<>();
     }
 
@@ -56,7 +55,7 @@ public class Cloak extends Spell {
                         ((CraftPlayer) player).getHandle());
 
         // hide the player, prevent them from disappearing in tab
-        for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
             Player loaded = Bukkit.getPlayer(uuid);
             if (loaded == null) continue;
             loaded.hidePlayer(plugin, player);
@@ -75,7 +74,7 @@ public class Cloak extends Spell {
                 if (count >= DURATION || markedForEarlyReveal.contains(player.getUniqueId())) {
                     this.cancel();
                     cloakers.remove(player.getUniqueId());
-                    for (UUID uuid : RunicCoreAPI.getLoadedCharacters()) {
+                    for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
                         Player loaded = Bukkit.getPlayer(uuid);
                         if (loaded == null) continue;
                         loaded.showPlayer(plugin, player);

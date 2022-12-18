@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -20,7 +20,7 @@ public class BloodyShot extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "sanguine-longbow";
 
     public BloodyShot() {
-        super("Bloody Shot", "", ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
+        super("Bloody Shot", "", ChatColor.WHITE, CharacterClass.ARCHER, 0, 0);
         this.setIsPassive(true);
     }
 

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -38,7 +38,7 @@ public class Disengage extends Spell implements PhysicalDamageSpell {
                         "shooting a flurry of five arrows in front " +
                         "of you, each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) physical⚔ damage!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 8, 15);
+                ChatColor.WHITE, CharacterClass.ARCHER, 8, 15);
         casters = new HashSet<>();
         parryArrows = new ArrayList<>();
         hasBeenHit = new HashSet<>();

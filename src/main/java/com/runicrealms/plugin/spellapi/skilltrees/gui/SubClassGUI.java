@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.utilities.ChatUtils;
@@ -8,6 +8,7 @@ import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -57,15 +58,16 @@ public class SubClassGUI implements InventoryHolder {
      * @return an ItemStack icon
      */
     private ItemStack subClassItem(SkillTreePosition position) {
-        SubClass subClass = SubClass.determineSubClass(player.getUniqueId(), RunicCoreAPI.getCharacterSlot(player.getUniqueId()), position);
-        String displayName = subClass.getName();
-        ItemStack subClassItem = subClass.getItemStack();
+        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClass(player.getUniqueId()), position);
+        String displayName = subClass != null ? subClass.getName() : "";
+        ItemStack subClassItem = subClass != null ? subClass.getItemStack() : new ItemStack(Material.STONE);
         ItemMeta meta = subClassItem.getItemMeta();
         if (meta == null) return subClassItem;
+        String description = subClass != null ? subClass.getDescription() : "";
         meta.setDisplayName(ChatColor.GREEN + displayName);
         String lore = ChatColor.GRAY + "Open the skill tree for the " +
                 ChatColor.GREEN + displayName +
-                ChatColor.GRAY + " class! " + subClass.getDescription();
+                ChatColor.GRAY + " class! " + description;
         meta.setLore(ChatUtils.formattedText(lore));
         subClassItem.setItemMeta(meta);
         return subClassItem;

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -26,7 +26,7 @@ public class Subdue extends Spell {
         super("Subdue",
                 "Damaging an enemy has a " + (int) PERCENT + "% chance " +
                         "to silence them for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 0, 0);
         this.setIsPassive(true);
     }
 

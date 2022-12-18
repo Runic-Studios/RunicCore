@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -34,7 +34,7 @@ public class Sprint extends Spell implements MagicDamageSpell {
                         "massive boost of speed! Your next melee attack against " +
                         "an enemy deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 10, 10);
+                ChatColor.WHITE, CharacterClass.ROGUE, 10, 10);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -25,7 +25,7 @@ public class Hawkeye extends Spell { // implements MagicDamageSpell, WeaponDamag
                 "Damaging an enemy from " + DISTANCE + " blocks " +
                         "away or farther deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) additional damage!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
+                ChatColor.WHITE, CharacterClass.ARCHER, 0, 0);
         this.setIsPassive(true);
     }
 

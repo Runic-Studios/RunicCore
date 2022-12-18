@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -18,7 +18,7 @@ public class AdrenalineRush extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "scarlet-rapier";
 
     public AdrenalineRush() {
-        super("Adrenaline Rush", "", ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
+        super("Adrenaline Rush", "", ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 

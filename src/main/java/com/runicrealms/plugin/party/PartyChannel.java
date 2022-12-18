@@ -14,12 +14,12 @@ import java.util.HashSet;
 
 public class PartyChannel extends ChatChannel {
 
-    @Override
-    public String getPrefix() {
+    public String getConsolePrefix() {
         return "&a[Party] &r";
     }
 
-    public String getConsolePrefix() {
+    @Override
+    public String getPrefix() {
         return "&a[Party] &r";
     }
 
@@ -30,8 +30,8 @@ public class PartyChannel extends ChatChannel {
 
     @Override
     public Collection<Player> getRecipients(Player player) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) != null) {
-            return RunicCore.getPartyManager().getPlayerParty(player).getMembersWithLeader();
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) != null) {
+            return RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembersWithLeader();
         } else {
             player.sendMessage(ChatColor.RED + "You must be in a party to use party chat!");
         }

@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -13,13 +12,13 @@ import java.util.*;
  *
  */
 public class TitleData implements SessionData {
-    private static final String DATA_SECTION_UNLOCKED_TITLES = "unlockedTitles";
     public static final String DATA_SECTION_PREFIX = "prefix";
     public static final String DATA_SECTION_SUFFIX = "suffix";
+    private static final String DATA_SECTION_UNLOCKED_TITLES = "unlockedTitles";
     private final UUID uuid;
+    private final Set<String> unlockedTitles;
     private String prefix;
     private String suffix;
-    private final Set<String> unlockedTitles;
 
     /**
      * Build the player's title data from mongo if it exists. Otherwise, generate blank values.
@@ -52,8 +51,75 @@ public class TitleData implements SessionData {
         RunicCore.getTitleManager().getTitleDataMap().put(uuid, this);
     }
 
-    public UUID getUuid() {
-        return uuid;
+    /**
+     * Builds our in-memory list of unlocked titles from the jedis resource, using the list index method
+     *
+     * @param jedis the jedis resource
+     * @see <a href="https://redis.io/commands/lindex/">redis.io</a>
+     */
+    @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+
+        Map<String, String> fieldsMap = new HashMap<>();
+        final String key = this.uuid + ":" + DATA_SECTION_UNLOCKED_TITLES;
+        Set<String> unlockedTitles = new HashSet<>();
+        for (int i = 0; i < jedis.llen(key); i++) {
+            unlockedTitles.add(jedis.lindex(key, i));
+        }
+
+        int i = 0;
+        for (String title : unlockedTitles) {
+            fieldsMap.put(title, i + "");
+            i++;
+        }
+        return fieldsMap;
+    }
+
+    @Override
+    public List<String> getFields() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> toMap() {
+        return null;
+    }
+
+    /**
+     * Saves the current prefix and suffix to jedis, and keeps track of a list of all unlocked titles
+     * Slot param is not used, since this account-wide data
+     *
+     * @param jedis the jedis resource
+     */
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String uuid = String.valueOf(this.uuid);
+        jedis.set(uuid + ":" + DATA_SECTION_PREFIX, this.prefix);
+        jedis.set(uuid + ":" + DATA_SECTION_SUFFIX, this.suffix);
+        jedis.expire(uuid + ":" + DATA_SECTION_PREFIX, RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(uuid + ":" + DATA_SECTION_SUFFIX, RunicCore.getRedisAPI().getExpireTime());
+        jedis.del(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES); // reset keys
+        for (String unlockedTitle : this.unlockedTitles) {
+            jedis.lpush(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, unlockedTitle);
+        }
+        jedis.expire(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, RunicCore.getRedisAPI().getExpireTime());
+    }
+
+    @Override
+    public MongoData writeToMongo(MongoData mongoData, int... slot) {
+        try {
+            mongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
+            mongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
+            mongoData.remove("title." + DATA_SECTION_UNLOCKED_TITLES);
+            PlayerMongoDataSection titlesSection = (PlayerMongoDataSection) mongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
+            for (String title : this.unlockedTitles) {
+                titlesSection.set(title, "true");
+            }
+        } catch (Exception e) {
+            RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving title data to mongo!");
+            e.printStackTrace();
+        }
+        return mongoData;
     }
 
     public String getPrefix() {
@@ -86,10 +152,6 @@ public class TitleData implements SessionData {
         return unlockedTitles;
     }
 
-    private void unlockTitle(String title) {
-        this.unlockedTitles.add(title);
-    }
-
     /**
      * @param playerMongoData
      * @return
@@ -102,74 +164,11 @@ public class TitleData implements SessionData {
         return new HashSet<>();
     }
 
-    @Override
-    public List<String> getFields() {
-        return null;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    @Override
-    public Map<String, String> toMap() {
-        return null;
-    }
-
-    /**
-     * Builds our in-memory list of unlocked titles from the jedis resource, using the list index method
-     *
-     * @param jedis the jedis resource
-     * @see <a href="https://redis.io/commands/lindex/">redis.io</a>
-     */
-    @Override
-    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
-
-        Map<String, String> fieldsMap = new HashMap<>();
-        final String key = this.uuid + ":" + DATA_SECTION_UNLOCKED_TITLES;
-        Set<String> unlockedTitles = new HashSet<>();
-        for (int i = 0; i < jedis.llen(key); i++) {
-            unlockedTitles.add(jedis.lindex(key, i));
-        }
-
-        int i = 0;
-        for (String title : unlockedTitles) {
-            fieldsMap.put(title, i + "");
-            i++;
-        }
-        return fieldsMap;
-    }
-
-    /**
-     * Saves the current prefix and suffix to jedis, and keeps track of a list of all unlocked titles
-     * Slot param is not used, since this account-wide data
-     *
-     * @param jedis the jedis resource
-     */
-    @Override
-    public void writeToJedis(Jedis jedis, int... slot) {
-        String uuid = String.valueOf(this.uuid);
-        jedis.set(uuid + ":" + DATA_SECTION_PREFIX, this.prefix);
-        jedis.set(uuid + ":" + DATA_SECTION_SUFFIX, this.suffix);
-        jedis.expire(uuid + ":" + DATA_SECTION_PREFIX, RedisUtil.EXPIRE_TIME);
-        jedis.expire(uuid + ":" + DATA_SECTION_SUFFIX, RedisUtil.EXPIRE_TIME);
-        jedis.del(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES); // reset keys
-        for (String unlockedTitle : this.unlockedTitles) {
-            jedis.lpush(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, unlockedTitle);
-        }
-        jedis.expire(uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, RedisUtil.EXPIRE_TIME);
-    }
-
-    @Override
-    public MongoData writeToMongo(MongoData mongoData, int... slot) {
-        try {
-            mongoData.set("title." + DATA_SECTION_PREFIX, this.prefix);
-            mongoData.set("title." + DATA_SECTION_SUFFIX, this.suffix);
-            mongoData.remove("title." + DATA_SECTION_UNLOCKED_TITLES);
-            PlayerMongoDataSection titlesSection = (PlayerMongoDataSection) mongoData.getSection("title." + DATA_SECTION_UNLOCKED_TITLES);
-            for (String title : this.unlockedTitles) {
-                titlesSection.set(title, "true");
-            }
-        } catch (Exception e) {
-            RunicCore.getInstance().getLogger().info("[ERROR]: There was a problem saving title data to mongo!");
-            e.printStackTrace();
-        }
-        return mongoData;
+    private void unlockTitle(String title) {
+        this.unlockedTitles.add(title);
     }
 }

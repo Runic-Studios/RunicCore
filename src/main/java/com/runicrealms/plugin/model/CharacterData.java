@@ -3,7 +3,6 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
@@ -72,7 +71,7 @@ public class CharacterData {
         this.outlawData.writeToJedis(jedis, this.baseCharacterData.getSlot());
         String uuid = String.valueOf(baseCharacterData.getUuid());
         String key = uuid + ":character:" + baseCharacterData.getSlot();
-        jedis.expire(key, RedisUtil.EXPIRE_TIME);
+        jedis.expire(key, RunicCore.getRedisAPI().getExpireTime());
     }
 
     /**

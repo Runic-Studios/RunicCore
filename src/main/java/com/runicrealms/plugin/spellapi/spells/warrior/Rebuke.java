@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -32,7 +32,7 @@ public class Rebuke extends Spell implements PhysicalDamageSpell {
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) physical⚔ damage, launching them into the " +
                         "air, and slowing them for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 10, 20);
     }
 
     @Override

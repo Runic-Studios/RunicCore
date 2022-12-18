@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import io.lumine.xikage.mythicmobs.MythicMobs;
@@ -18,7 +18,7 @@ public class Taunt extends Spell {
                 "Your basic weapon⚔ attacks passively " +
                         "generate threat against monsters, " +
                         "causing them to attack you!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 0, 0);
         this.setIsPassive(true);
     }
 

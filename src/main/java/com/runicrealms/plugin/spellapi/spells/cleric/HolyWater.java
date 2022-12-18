@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -38,7 +38,7 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
                         HEALING_PER_LEVEL + "x&7 lvl) health! " +
                         "Against enemies, the vial deals (" + DAMAGE + " + &f" +
                         DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 10, 20);
+                ChatColor.WHITE, CharacterClass.CLERIC, 10, 20);
     }
 
     @Override

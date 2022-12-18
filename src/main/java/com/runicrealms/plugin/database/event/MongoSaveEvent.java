@@ -33,7 +33,7 @@ public class MongoSaveEvent extends Event implements Cancellable {
     public MongoSaveEvent(PreShutdownEvent preShutdownEvent, Jedis jedis) {
         this.preShutdownEvent = preShutdownEvent;
         this.jedis = jedis;
-        this.playersToSave = RunicCore.getDatabaseManager().getPlayersToSave();
+        this.playersToSave = RunicCore.getDataAPI().getPlayersToSave();
         this.isCancelled = false;
     }
 

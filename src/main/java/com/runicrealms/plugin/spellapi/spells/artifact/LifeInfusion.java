@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
@@ -20,7 +20,7 @@ public class LifeInfusion extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "crimson-maul";
 
     public LifeInfusion() {
-        super("Life Infusion", "", ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+        super("Life Infusion", "", ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
@@ -22,7 +22,7 @@ public class Manawell extends Spell {
         super("Manawell",
                 "Spending mana has a " + (int) PERCENT + "% chance " +
                         "to refund the cost to you and your allies!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+                ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 
@@ -37,12 +37,12 @@ public class Manawell extends Spell {
 
         event.getCaster().getWorld().playSound(event.getCaster().getLocation(), Sound.ENTITY_WITCH_DRINK, 0.25f, 2f);
         event.getCaster().playSound(event.getCaster().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.25f, 1);
-        if (RunicCore.getPartyManager().getPlayerParty(event.getCaster()) == null) {
+        if (RunicCore.getPartyAPI().getParty(event.getCaster().getUniqueId()) == null) {
             restoreMana(event.getCaster(), event.getSpell().getManaCost());
             return;
         }
 
-        Set<Player> allies = RunicCore.getPartyManager().getPlayerParty(event.getCaster()).getMembersWithLeader();
+        Set<Player> allies = RunicCore.getPartyAPI().getParty(event.getCaster().getUniqueId()).getMembersWithLeader();
         for (Player ally : allies) {
             if (isValidAlly(event.getCaster(), ally)) {
                 if (!event.getCaster().getWorld().equals(ally.getWorld())) continue;

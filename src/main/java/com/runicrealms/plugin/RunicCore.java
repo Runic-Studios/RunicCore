@@ -5,10 +5,7 @@ import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
-import com.runicrealms.plugin.api.ConfigAPI;
-import com.runicrealms.plugin.api.LootTableAPI;
-import com.runicrealms.plugin.api.ScoreboardAPI;
-import com.runicrealms.plugin.api.TabAPI;
+import com.runicrealms.plugin.api.*;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
 import com.runicrealms.plugin.commands.player.HelpCMD;
@@ -19,7 +16,6 @@ import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
-import com.runicrealms.plugin.item.TeleportScrollListener;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
 import com.runicrealms.plugin.item.lootchests.LootChestManager;
 import com.runicrealms.plugin.item.lootchests.LootTableManager;
@@ -49,6 +45,7 @@ import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
+import com.runicrealms.plugin.utilities.RegionHelper;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -70,35 +67,38 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static final int BASE_OUTLAW_RATING = 1500;
 
     private static RunicCore instance;
-    private static CombatManager combatManager;
+    private static CombatAPI combatAPI;
     private static LootChestManager lootChestManager;
     private static RegenManager regenManager;
-    private static PartyManager partyManager;
+    private static PartyAPI partyAPI;
     private static ScoreboardAPI scoreboardAPI;
-    private static SpellManager spellManager;
+    private static SpellAPI spellAPI;
     private static TabAPI tabAPI;
     private static ConfigAPI configAPI;
     private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
-    private static DatabaseManager databaseManager;
+    private static CharacterAPI characterAPI;
+    private static DataAPI dataAPI;
+    private static RegionAPI regionAPI;
     private static PartyChannel partyChannel;
     private static PaperCommandManager commandManager;
-    private static SkillTreeManager skillTreeManager;
-    private static StatManager statManager;
+    private static SkillTreeAPI skillTreeAPI;
+    private static StatAPI statAPI;
     private static RunicShopManager runicShopManager;
     private static PlayerHungerManager playerHungerManager;
-    private static RedisManager redisManager;
+    private static RedisAPI redisAPI;
     private static TitleManager titleManager;
+    private static ShopAPI shopAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
         return instance;
     }
 
-    public static CombatManager getCombatManager() {
-        return combatManager;
+    public static CombatAPI getCombatAPI() {
+        return combatAPI;
     }
 
     public static RegenManager getRegenManager() {
@@ -109,16 +109,16 @@ public class RunicCore extends JavaPlugin implements Listener {
         return lootChestManager;
     }
 
-    public static PartyManager getPartyManager() {
-        return partyManager;
+    public static PartyAPI getPartyAPI() {
+        return partyAPI;
     }
 
     public static ScoreboardAPI getScoreboardAPI() {
         return scoreboardAPI;
     }
 
-    public static SpellManager getSpellManager() {
-        return spellManager;
+    public static SpellAPI getSpellAPI() {
+        return spellAPI;
     }
 
     public static TabAPI getTabAPI() {
@@ -145,24 +145,36 @@ public class RunicCore extends JavaPlugin implements Listener {
         return protocolManager;
     }
 
-    public static DatabaseManager getDatabaseManager() {
-        return databaseManager;
+    public static CharacterAPI getCharacterAPI() {
+        return characterAPI;
+    }
+
+    public static DataAPI getDataAPI() {
+        return dataAPI;
+    }
+
+    public static ShopAPI getShopAPI() {
+        return shopAPI;
+    }
+
+    public static RegionAPI getRegionAPI() {
+        return regionAPI;
     }
 
     public static PartyChannel getPartyChatChannel() {
         return partyChannel;
     }
 
-    public static SkillTreeManager getSkillTreeManager() {
-        return skillTreeManager;
+    public static SkillTreeAPI getSkillTreeAPI() {
+        return skillTreeAPI;
     }
 
     public static PaperCommandManager getCommandManager() {
         return commandManager;
     }
 
-    public static StatManager getStatManager() {
-        return statManager;
+    public static StatAPI getStatAPI() {
+        return statAPI;
     }
 
     public static RunicShopManager getRunicShopManager() {
@@ -173,8 +185,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         return playerHungerManager;
     }
 
-    public static RedisManager getRedisManager() {
-        return redisManager;
+    public static RedisAPI getRedisAPI() {
+        return redisAPI;
     }
 
     public static TitleManager getTitleManager() {
@@ -216,26 +228,29 @@ public class RunicCore extends JavaPlugin implements Listener {
      */
     @Override
     public void onDisable() {
-        combatManager = null;
+        combatAPI = null;
         instance = null;
         lootChestManager = null;
         regenManager = null;
-        partyManager = null;
+        partyAPI = null;
         scoreboardAPI = null;
-        spellManager = null;
+        spellAPI = null;
         tabAPI = null;
         configAPI = null;
         lootTableAPI = null;
         mobTagger = null;
         bossTagger = null;
-        databaseManager = null;
+        characterAPI = null;
+        dataAPI = null;
+        regionAPI = null;
         partyChannel = null;
-        skillTreeManager = null;
-        statManager = null;
+        skillTreeAPI = null;
+        statAPI = null;
         runicShopManager = null;
         playerHungerManager = null;
-        redisManager = null;
+        redisAPI = null;
         titleManager = null;
+        shopAPI = null;
     }
 
     public void onEnable() {
@@ -245,25 +260,29 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // instantiate everything we need
         instance = this;
-        combatManager = new CombatManager();
+        combatAPI = new CombatManager();
         lootChestManager = new LootChestManager();
         regenManager = new RegenManager();
-        partyManager = new PartyManager();
+        partyAPI = new PartyManager();
         scoreboardAPI = new ScoreboardHandler();
-        spellManager = new SpellManager();
+        spellAPI = new SpellManager();
         tabAPI = new TabListManager(this);
         configAPI = new ConfigManager();
         lootTableAPI = new LootTableManager();
+        regionAPI = new RegionHelper();
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
-        databaseManager = new DatabaseManager();
-        skillTreeManager = new SkillTreeManager();
-        statManager = new StatManager();
+        DatabaseManager databaseManager = new DatabaseManager();
+        characterAPI = databaseManager;
+        dataAPI = databaseManager;
+        skillTreeAPI = new SkillTreeManager();
+        statAPI = new StatManager();
         runicShopManager = new RunicShopManager();
         playerHungerManager = new PlayerHungerManager();
-        redisManager = new RedisManager();
+        redisAPI = new RedisManager();
         titleManager = new TitleManager();
+        shopAPI = new RunicItemShopManager();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
@@ -309,7 +328,7 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPreShutdownEvent(PreShutdownEvent event) {
-        try (Jedis jedis = getRedisManager().getJedisResource()) {
+        try (Jedis jedis = redisAPI.getNewJedisResource()) {
             MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(event, jedis);
             Bukkit.getPluginManager().callEvent(mongoSaveEvent);
         }
@@ -371,7 +390,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new HerbFallDamageListener(), this);
         pm.registerEvents(new RunicExpListener(), this);
-        pm.registerEvents(new RunicItemShopManager(), this);
         pm.registerEvents(new EnemyVerifyListener(), this);
         pm.registerEvents(new AllyVerifyListener(), this);
         pm.registerEvents(new SkillTreeGUIListener(), this);
@@ -382,14 +400,12 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CreatureSpawnListener(), this);
         pm.registerEvents(new StatListener(), this);
         pm.registerEvents(new RuneListener(), this);
-        pm.registerEvents(new TeleportScrollListener(), this);
         pm.registerEvents(new SpellScalingListener(), this);
         pm.registerEvents(new EnvironmentDamageListener(), this);
         pm.registerEvents(new GenericDamageListener(), this);
         pm.registerEvents(new SkillPointsListener(), this);
         pm.registerEvents(new MobCleanupListener(), this);
         pm.registerEvents(new DeathListener(), this);
-        pm.registerEvents(partyManager, this);
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
         pm.registerEvents(new ArtifactSpellListener(), this);

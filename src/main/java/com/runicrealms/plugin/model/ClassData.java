@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
@@ -15,7 +15,7 @@ public class ClassData implements SessionData {
         add(CharacterField.CLASS_LEVEL.getField());
     }};
     private final UUID uuid;
-    private final ClassEnum classType;
+    private final CharacterClass classType;
     private final int level;
     private final int exp;
 
@@ -27,7 +27,7 @@ public class ClassData implements SessionData {
      * @param level     the level of the character
      * @param exp       the exp of the character
      */
-    public ClassData(UUID uuid, ClassEnum classType, int level, int exp) {
+    public ClassData(UUID uuid, CharacterClass classType, int level, int exp) {
         this.uuid = uuid;
         this.classType = classType;
         this.level = level;
@@ -49,7 +49,7 @@ public class ClassData implements SessionData {
             fieldsMap.put(fieldsToArray[i], values.get(i));
         }
         this.uuid = uuid;
-        this.classType = ClassEnum.getFromName(fieldsMap.get(CharacterField.CLASS_TYPE.getField()));
+        this.classType = CharacterClass.getFromName(fieldsMap.get(CharacterField.CLASS_TYPE.getField()));
         this.exp = Integer.parseInt(fieldsMap.get(CharacterField.CLASS_EXP.getField()));
         this.level = Integer.parseInt(fieldsMap.get(CharacterField.CLASS_LEVEL.getField()));
     }
@@ -61,7 +61,7 @@ public class ClassData implements SessionData {
      */
     public ClassData(UUID uuid, PlayerMongoDataSection character) {
         this.uuid = uuid;
-        this.classType = ClassEnum.getFromName(character.get("class.name", String.class));
+        this.classType = CharacterClass.getFromName(character.get("class.name", String.class));
         this.exp = character.get("class.exp", Integer.class);
         this.level = character.get("class.level", Integer.class);
     }
@@ -70,7 +70,7 @@ public class ClassData implements SessionData {
         return this.uuid;
     }
 
-    public ClassEnum getClassType() {
+    public CharacterClass getClassType() {
         return this.classType;
     }
 

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -41,7 +41,7 @@ public class HoningShot extends Spell implements PhysicalDamageSpell {
                         "location will be hit by an unavoidable arrow, dealing " +
                         "(" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl)" + " physical⚔ damage!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 18, 35);
+                ChatColor.WHITE, CharacterClass.ARCHER, 18, 35);
         honingPlayers = new HashSet<>();
     }
 

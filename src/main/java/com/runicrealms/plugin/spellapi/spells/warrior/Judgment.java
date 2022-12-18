@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -42,7 +42,7 @@ public class Judgment extends Spell {
                         "Allies within the barrier gain " + (int) (PERCENT_REDUCTION * 100) + "% damage " +
                         "reduction from all sources! During this time, you are rooted. " +
                         "Sneak to cancel the spell early.",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 60, 35);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 60, 35);
         judgmentLocationMap = new HashMap<>();
     }
 

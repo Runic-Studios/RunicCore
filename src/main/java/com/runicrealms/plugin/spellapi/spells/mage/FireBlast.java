@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -29,7 +29,7 @@ public class FireBlast extends Spell implements MagicDamageSpell {
                         "your target location that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to enemies within " + RADIUS + " blocks and " +
                         "stuns them for " + STUN_DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.MAGE, 12, 30);
+                ChatColor.WHITE, CharacterClass.MAGE, 12, 30);
     }
 
     @Override

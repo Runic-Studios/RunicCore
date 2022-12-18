@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -15,6 +15,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class RuneGUI implements InventoryHolder {
+
+    public static final ItemStack SPELL_EDITOR_BUTTON;
+
+    static {
+        SPELL_EDITOR_BUTTON = new ItemStack(Material.NETHER_WART);
+        ItemMeta meta = SPELL_EDITOR_BUTTON.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Open Spell Editor");
+        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spells! " +
+                "Set spells to be executed by different key combos!"));
+        SPELL_EDITOR_BUTTON.setItemMeta(meta);
+    }
 
     private final Inventory inventory;
     private final Player player;
@@ -51,23 +63,11 @@ public class RuneGUI implements InventoryHolder {
         if (meta == null) return skillTreeButton;
         meta.setDisplayName(ChatColor.GREEN + "Open Skill Trees");
         String lore = ChatColor.GRAY + "Open the skill trees for the " +
-                ChatColor.GREEN + RunicCoreAPI.getPlayerClass(player) +
+                ChatColor.GREEN + RunicCore.getCharacterAPI().getPlayerClass(player) +
                 ChatColor.GRAY + " class! Earn skill points by leveling-up " +
                 "and spend them on unique and powerful perks!";
         meta.setLore(ChatUtils.formattedText(lore));
         skillTreeButton.setItemMeta(meta);
         return skillTreeButton;
-    }
-
-    public static final ItemStack SPELL_EDITOR_BUTTON;
-
-    static {
-        SPELL_EDITOR_BUTTON = new ItemStack(Material.NETHER_WART);
-        ItemMeta meta = SPELL_EDITOR_BUTTON.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Open Spell Editor");
-        meta.setLore(ChatUtils.formattedText(ChatColor.GRAY + "Configure your active spells! " +
-                "Set spells to be executed by different key combos!"));
-        SPELL_EDITOR_BUTTON.setItemMeta(meta);
     }
 }

@@ -40,9 +40,9 @@ public class RunicGiveCMD extends BaseCommand {
         }
 
         // if the player doesn't have a party, or they're in by themselves, give them regular exp.
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null
-                || RunicCore.getPartyManager().getPlayerParty(player) != null
-                && RunicCore.getPartyManager().getPlayerParty(player).getSize() < 2) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null
+                || RunicCore.getPartyAPI().getParty(player.getUniqueId()) != null
+                && RunicCore.getPartyAPI().getParty(player.getUniqueId()).getSize() < 2) {
             if (args.length != 6) {
                 RunicExpEvent e = new RunicExpEvent(exp, exp, player, RunicExpEvent.RunicExpSource.DUNGEON, 0, null);
                 Bukkit.getPluginManager().callEvent(e);

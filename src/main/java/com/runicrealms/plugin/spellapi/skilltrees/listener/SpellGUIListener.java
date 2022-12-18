@@ -67,7 +67,7 @@ public class SpellGUIListener implements Listener {
      */
     private void updateSpellInSlot(UUID uuid, SpellGUI spellGUI, String spellName) {
         String spell = ChatColor.stripColor(spellName);
-        PlayerSpellData playerSpellData = RunicCore.getSkillTreeManager().getPlayerSpellMap().get(uuid);
+        PlayerSpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellMap().get(uuid);
         switch (spellGUI.getSpellField()) {
             case HOT_BAR_ONE:
                 playerSpellData.setSpellHotbarOne(spell);

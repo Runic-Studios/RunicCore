@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -37,7 +37,7 @@ public class HolyNova extends Spell implements MagicDamageSpell, HealingSpell {
                         "and push them back! The rings restore✸ " +
                         "(" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) health to allies!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 12, 25);
+                ChatColor.WHITE, CharacterClass.CLERIC, 12, 25);
     }
 
     @Override

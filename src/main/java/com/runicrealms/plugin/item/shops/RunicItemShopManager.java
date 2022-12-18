@@ -2,6 +2,7 @@ package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.NpcClickEvent;
+import com.runicrealms.plugin.api.ShopAPI;
 import com.runicrealms.plugin.config.ShopConfigLoader;
 import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -23,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RunicItemShopManager implements Listener {
+public class RunicItemShopManager implements Listener, ShopAPI {
 
     private static final int LOAD_DELAY = 10; // to allow RunicItems to load
     private static final Map<Integer, RunicItemShop> shops = new HashMap<>();
@@ -35,13 +36,32 @@ public class RunicItemShopManager implements Listener {
      * Loads shops into memory on a delay to allow RunicItems to load
      */
     public RunicItemShopManager() {
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
             new RunicItemShopHelper();
             ShopConfigLoader.init(); // load shops from yaml storage
         }, LOAD_DELAY * 20L);
     }
 
-    public static void registerRunicItemShop(RunicItemShop shop) {
+    @Override
+    public boolean hasItems(Player player, ItemStack itemStack, int needed) {
+        if (needed == 0) return true;
+        int amount = 0;
+        for (ItemStack inventoryItem : player.getInventory().getContents()) {
+            if (inventoryItem != null) {
+                if (RunicItemsAPI.isRunicItemSimilar(itemStack, inventoryItem)) {
+                    amount += inventoryItem.getAmount();
+                    if (amount >= needed) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void registerRunicItemShop(RunicItemShop shop) {
         for (Integer npc : shop.getRunicNpcIds()) {
             shops.put(npc, shop);
         }
@@ -52,30 +72,6 @@ public class RunicItemShopManager implements Listener {
             meta.setDisplayName(" ");
             blankSlot.setItemMeta(meta);
         }
-    }
-
-    /**
-     * Checks whether the given player has items necessary to buy an item
-     *
-     * @param player to check
-     * @param item   to check
-     * @param needed number of item needed
-     * @return true if player has required items
-     */
-    public static boolean hasItems(Player player, ItemStack item, Integer needed) {
-        if (needed == 0) return true;
-        int amount = 0;
-        for (ItemStack inventoryItem : player.getInventory().getContents()) {
-            if (inventoryItem != null) {
-                if (RunicItemsAPI.isRunicItemSimilar(item, inventoryItem)) {
-                    amount += inventoryItem.getAmount();
-                    if (amount >= needed) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     @EventHandler

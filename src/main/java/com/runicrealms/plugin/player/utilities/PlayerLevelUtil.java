@@ -1,15 +1,11 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.model.CharacterField;
-import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
-
-import java.util.Map;
 
 public class PlayerLevelUtil {
 
@@ -57,29 +53,28 @@ public class PlayerLevelUtil {
      * @param jedis     the jedis resource
      */
     public static void giveExperience(Player player, int expGained, Jedis jedis) {
+        int currentLevel = player.getLevel();
+        if (currentLevel >= MAX_LEVEL) return;
 
-        Map<String, String> fieldValues = RunicCoreAPI.getRedisValues(player, ClassData.FIELDS, jedis);
-        int currentLv = player.getLevel();
-        int currentExp = Integer.parseInt(fieldValues.get(CharacterField.CLASS_EXP.getField()));
-
-        if (currentLv >= MAX_LEVEL) return;
-
+        int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        String key = RunicCore.getRedisAPI().getCharacterKey(player.getUniqueId(), slot);
+        int currentExp = Integer.parseInt(jedis.get(key + ":" + CharacterField.CLASS_EXP.getField()));
         currentExp = currentExp + expGained;
-        RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_EXP.getField(), String.valueOf(currentExp), jedis);
+        jedis.set(key + ":" + CharacterField.CLASS_EXP.getField(), String.valueOf(currentExp));
 
-        if (calculateExpectedLv(currentExp) != currentLv) {
+        if (calculateExpectedLv(currentExp) != currentLevel) {
             player.sendMessage("\n");
             sendLevelMessage(player, calculateExpectedLv(currentExp));
             player.sendMessage("\n");
             player.setLevel(calculateExpectedLv(currentExp));
-            currentLv = calculateExpectedLv(currentExp);
-            RunicCoreAPI.setRedisValue(player, CharacterField.CLASS_LEVEL.getField(), String.valueOf(currentLv), jedis);
+            currentLevel = calculateExpectedLv(currentExp);
+            jedis.set(key + ":" + CharacterField.CLASS_LEVEL.getField(), String.valueOf(currentLevel));
         }
 
-        int totalExpAtLevel = calculateTotalExp(currentLv);
-        int totalExpToLevel = calculateTotalExp(currentLv + 1);
+        int totalExpAtLevel = calculateTotalExp(currentLevel);
+        int totalExpToLevel = calculateTotalExp(currentLevel + 1);
         double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
-        if (currentLv == MAX_LEVEL) {
+        if (currentLevel == MAX_LEVEL) {
             player.setExp(0);
         }
         if (proportion < 0) {
@@ -95,7 +90,7 @@ public class PlayerLevelUtil {
      * @param classLv the level they reached
      */
     private static void sendLevelMessage(Player player, int classLv) {
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         if (className == null) return;
         player.sendTitle(
                 ChatColor.GREEN + "Level Up!",

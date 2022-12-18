@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.character.api;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -26,7 +26,7 @@ public class CharacterQuitEvent extends Event {
         super(isAsync);
         this.player = player;
         this.slot = slot;
-        this.jedis = RunicCoreAPI.getNewJedisResource();
+        this.jedis = RunicCore.getRedisAPI().getNewJedisResource();
     }
 
     public static HandlerList getHandlerList() {

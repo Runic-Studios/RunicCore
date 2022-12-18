@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -32,7 +32,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
                 "You launch four projectile meteors " +
                         "that deal (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage on impact!",
-                ChatColor.WHITE, ClassEnum.MAGE, 10, 25);
+                ChatColor.WHITE, CharacterClass.MAGE, 10, 25);
     }
 
     @Override

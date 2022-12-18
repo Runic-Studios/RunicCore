@@ -1,11 +1,10 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.MongoDataSection;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.PlayerMongoDataSection;
-import com.runicrealms.plugin.redis.RedisUtil;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -26,12 +25,11 @@ public class PlayerSpellData implements SessionData {
     public static final String DEFAULT_MAGE = "Fireball";
     public static final String DEFAULT_ROGUE = "Sprint";
     public static final String DEFAULT_WARRIOR = "Slam";
-
+    private final UUID uuid;
     private String spellHotbarOne;
     private String spellLeftClick;
     private String spellRightClick;
     private String spellSwapHands;
-    private final UUID uuid;
 
     /**
      * Constructs a spell wrapper for the given player with specified spells, which can be left blank.
@@ -73,9 +71,9 @@ public class PlayerSpellData implements SessionData {
             this.spellSwapHands = "";
         }
         // call each skill tree and populate passives
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
+        RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, SkillTreePosition.FIRST).addPassivesToMap();
+        RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, SkillTreePosition.SECOND).addPassivesToMap();
+        RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, SkillTreePosition.THIRD).addPassivesToMap();
         writeToJedis(jedis, slot);
     }
 
@@ -94,19 +92,9 @@ public class PlayerSpellData implements SessionData {
         this.spellRightClick = fieldsMap.get(SpellField.RIGHT_CLICK.getField());
         this.spellSwapHands = fieldsMap.get(SpellField.SWAP_HANDS.getField());
         // call each skill tree and populate passives
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
-        RunicCoreAPI.getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
-    }
-
-    /**
-     * Reset the spells to their defaults
-     */
-    public void resetSpells() {
-        this.spellHotbarOne = determineDefaultSpell(this.uuid);
-        this.spellLeftClick = "";
-        this.spellRightClick = "";
-        this.spellSwapHands = "";
+        RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, SkillTreePosition.FIRST, jedis).addPassivesToMap();
+        RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, SkillTreePosition.SECOND, jedis).addPassivesToMap();
+        RunicCore.getSkillTreeAPI().getSkillTree(uuid, slot, SkillTreePosition.THIRD, jedis).addPassivesToMap();
     }
 
     /**
@@ -116,7 +104,7 @@ public class PlayerSpellData implements SessionData {
      * @return a string corresponding to the spell name of the starter spell
      */
     public static String determineDefaultSpell(UUID uuid) {
-        switch (RunicCoreAPI.getPlayerClass(uuid)) {
+        switch (RunicCore.getCharacterAPI().getPlayerClass(uuid)) {
             case "Archer":
                 return DEFAULT_ARCHER;
             case "Cleric":
@@ -143,8 +131,56 @@ public class PlayerSpellData implements SessionData {
         return uuid + ":character:" + slot + ":" + SkillTreeData.PATH_LOCATION + ":" + SkillTreeData.SPELLS_LOCATION;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    @Override
+    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        List<String> fields = new ArrayList<>(getFields());
+        String[] fieldsToArray = fields.toArray(new String[0]);
+        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
+        for (int i = 0; i < fieldsToArray.length; i++) {
+            fieldsMap.put(fieldsToArray[i], values.get(i));
+        }
+        return fieldsMap;
+    }
+
+    @Override
+    public List<String> getFields() {
+        return FIELDS;
+    }
+
+    @Override
+    public Map<String, String> toMap() {
+        return new HashMap<String, String>() {{
+            put(SpellField.HOT_BAR_ONE.getField(), spellHotbarOne);
+            put(SpellField.LEFT_CLICK.getField(), spellLeftClick);
+            put(SpellField.RIGHT_CLICK.getField(), spellRightClick);
+            put(SpellField.SWAP_HANDS.getField(), spellSwapHands);
+        }};
+    }
+
+    /**
+     * Adds the object into session storage in jedis
+     *
+     * @param jedis the jedis resource
+     * @param slot  the character slot
+     */
+    @Override
+    public void writeToJedis(Jedis jedis, int... slot) {
+        String key = getJedisKey(uuid, slot[0]);
+        jedis.hmset(key, this.toMap());
+        jedis.expire(key, RunicCore.getRedisAPI().getExpireTime());
+    }
+
+    @Override
+    public MongoData writeToMongo(MongoData mongoData, int... slot) {
+        PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
+        PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
+        PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
+        spells.set(SpellField.HOT_BAR_ONE.getField(), this.spellHotbarOne);
+        spells.set(SpellField.LEFT_CLICK.getField(), this.spellLeftClick);
+        spells.set(SpellField.RIGHT_CLICK.getField(), this.spellRightClick);
+        spells.set(SpellField.SWAP_HANDS.getField(), this.spellSwapHands);
+        return playerMongoData;
     }
 
     public String getSpellHotbarOne() {
@@ -179,55 +215,17 @@ public class PlayerSpellData implements SessionData {
         this.spellSwapHands = spellSwapHands;
     }
 
-    @Override
-    public List<String> getFields() {
-        return FIELDS;
-    }
-
-    @Override
-    public Map<String, String> toMap() {
-        return new HashMap<String, String>() {{
-            put(SpellField.HOT_BAR_ONE.getField(), spellHotbarOne);
-            put(SpellField.LEFT_CLICK.getField(), spellLeftClick);
-            put(SpellField.RIGHT_CLICK.getField(), spellRightClick);
-            put(SpellField.SWAP_HANDS.getField(), spellSwapHands);
-        }};
-    }
-
-    @Override
-    public Map<String, String> getDataMapFromJedis(Jedis jedis, int... slot) {
-        Map<String, String> fieldsMap = new HashMap<>();
-        List<String> fields = new ArrayList<>(getFields());
-        String[] fieldsToArray = fields.toArray(new String[0]);
-        List<String> values = jedis.hmget(uuid + ":character:" + slot[0], fieldsToArray);
-        for (int i = 0; i < fieldsToArray.length; i++) {
-            fieldsMap.put(fieldsToArray[i], values.get(i));
-        }
-        return fieldsMap;
+    public UUID getUuid() {
+        return uuid;
     }
 
     /**
-     * Adds the object into session storage in jedis
-     *
-     * @param jedis the jedis resource
-     * @param slot  the character slot
+     * Reset the spells to their defaults
      */
-    @Override
-    public void writeToJedis(Jedis jedis, int... slot) {
-        String key = getJedisKey(uuid, slot[0]);
-        jedis.hmset(key, this.toMap());
-        jedis.expire(key, RedisUtil.EXPIRE_TIME);
-    }
-
-    @Override
-    public MongoData writeToMongo(MongoData mongoData, int... slot) {
-        PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
-        PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        PlayerMongoDataSection spells = (PlayerMongoDataSection) character.getSection(SkillTreeData.PATH_LOCATION + "." + SkillTreeData.SPELLS_LOCATION);
-        spells.set(SpellField.HOT_BAR_ONE.getField(), this.spellHotbarOne);
-        spells.set(SpellField.LEFT_CLICK.getField(), this.spellLeftClick);
-        spells.set(SpellField.RIGHT_CLICK.getField(), this.spellRightClick);
-        spells.set(SpellField.SWAP_HANDS.getField(), this.spellSwapHands);
-        return playerMongoData;
+    public void resetSpells() {
+        this.spellHotbarOne = determineDefaultSpell(this.uuid);
+        this.spellLeftClick = "";
+        this.spellRightClick = "";
+        this.spellSwapHands = "";
     }
 }

@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -33,7 +33,7 @@ public class Enrage extends Spell implements MagicDamageSpell {
                         "you gain an immense boost of speed " +
                         "and your weapon⚔ attacks deal (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) extra magicʔ damage for " + BUFF_DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 12, 25);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 12, 25);
     }
 
     @Override

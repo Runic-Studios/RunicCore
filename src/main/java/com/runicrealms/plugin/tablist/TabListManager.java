@@ -125,11 +125,11 @@ public class TabListManager implements Listener, TabAPI {
      */
     private void updatePartyColumn(Player player) {
         TableTabList tab = (TableTabList) tabbed.getTabList(player);
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) {
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [0]", 0, Skins.getDot(ChatColor.GREEN)));
         } else {
-            Party party = RunicCore.getPartyManager().getPlayerParty(player);
+            Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
             tab.set(2, 0, new TextTabItem
                     (ChatColor.GREEN + "" + ChatColor.BOLD + "  Party [" + party.getSize() + "]", 0, Skins.getDot(ChatColor.GREEN)));
             int k = 0;

@@ -1,8 +1,7 @@
 package com.runicrealms.plugin.classes;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.util.ItemUtils;
-import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import org.bukkit.inventory.ItemStack;
 import redis.clients.jedis.Jedis;
@@ -16,33 +15,33 @@ public enum SubClass {
     /*
      archer
      */
-    MARKSMAN("Marksman", ClassEnum.ARCHER, marksmanItem(), "Marksman is a master of single-target damage!"),
-    RANGER("Ranger", ClassEnum.ARCHER, rangerItem(), "Ranger controls the battlefield with crowd control!"),
-    SCOUT("Scout", ClassEnum.ARCHER, scoutItem(), "Scout eludes enemies with mobility!"),
+    MARKSMAN("Marksman", CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of single-target damage!"),
+    RANGER("Ranger", CharacterClass.ARCHER, rangerItem(), "Ranger controls the battlefield with crowd control!"),
+    SCOUT("Scout", CharacterClass.ARCHER, scoutItem(), "Scout eludes enemies with mobility!"),
     /*
      cleric
      */
-    BARD("Bard", ClassEnum.CLERIC, bardItem(), "Bard controls the flow of battle with ally buffs and enemy debuffs!"),
-    PALADIN("Paladin", ClassEnum.CLERIC, paladinItem(), "Paladin is a hybrid fighter and healer!"),
-    PRIEST("Priest", ClassEnum.CLERIC, priestItem(), "Priest heals allies and keeps them strong!"),
+    BARD("Bard", CharacterClass.CLERIC, bardItem(), "Bard controls the flow of battle with ally buffs and enemy debuffs!"),
+    PALADIN("Paladin", CharacterClass.CLERIC, paladinItem(), "Paladin is a hybrid fighter and healer!"),
+    PRIEST("Priest", CharacterClass.CLERIC, priestItem(), "Priest heals allies and keeps them strong!"),
     /*
      mage
      */
-    ARCANIST("Arcanist", ClassEnum.MAGE, arcanistItem(), "Arcanist has utility and buffs to out-maneuver opponents!"),
-    CRYOMANCER("Cryomancer", ClassEnum.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with crowd control!"),
-    PYROMANCER("Pyromancer", ClassEnum.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect damage!"),
+    ARCANIST("Arcanist", CharacterClass.MAGE, arcanistItem(), "Arcanist has utility and buffs to out-maneuver opponents!"),
+    CRYOMANCER("Cryomancer", CharacterClass.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with crowd control!"),
+    PYROMANCER("Pyromancer", CharacterClass.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect damage!"),
     /*
      rogue
      */
-    ASSASSIN("Assassin", ClassEnum.ROGUE, assassinItem(), "Assassin emerges from the shadows to quickly burst an opponent!"),
-    DUELIST("Duelist", ClassEnum.ROGUE, duelistItem(), "Duelist is an excellent fighter against a single opponent!"),
-    PIRATE("Pirate", ClassEnum.ROGUE, pirateItem(), "Pirate uses projectiles to control the battle!"),
+    ASSASSIN("Assassin", CharacterClass.ROGUE, assassinItem(), "Assassin emerges from the shadows to quickly burst an opponent!"),
+    DUELIST("Duelist", CharacterClass.ROGUE, duelistItem(), "Duelist is an excellent fighter against a single opponent!"),
+    PIRATE("Pirate", CharacterClass.ROGUE, pirateItem(), "Pirate uses projectiles to control the battle!"),
     /*
     warrior
      */
-    BERSERKER("Berserker", ClassEnum.WARRIOR, berserkerItem(), "Berserker fights ferociously with abilities that cleave enemies!"),
-    GUARDIAN("Guardian", ClassEnum.WARRIOR, guardianItem(), "Guardian excels as a tank, defending allies!"),
-    INQUISITOR("Inquisitor", ClassEnum.WARRIOR, inquisitorItem(), "Inquisitor uses crowd control to disable enemies!");
+    BERSERKER("Berserker", CharacterClass.WARRIOR, berserkerItem(), "Berserker fights ferociously with abilities that cleave enemies!"),
+    GUARDIAN("Guardian", CharacterClass.WARRIOR, guardianItem(), "Guardian excels as a tank, defending allies!"),
+    INQUISITOR("Inquisitor", CharacterClass.WARRIOR, inquisitorItem(), "Inquisitor uses crowd control to disable enemies!");
 
     public static final Set<SubClass> ARCHER_SUBCLASSES = new LinkedHashSet<>();
     public static final Set<SubClass> CLERIC_SUBCLASSES = new LinkedHashSet<>();
@@ -75,11 +74,11 @@ public enum SubClass {
     }
 
     private final String name;
-    private final ClassEnum baseClass;
+    private final CharacterClass baseClass;
     private final ItemStack itemStack;
     private final String description;
 
-    SubClass(String name, ClassEnum baseClass, ItemStack itemStack, String description) {
+    SubClass(String name, CharacterClass baseClass, ItemStack itemStack, String description) {
         this.name = name;
         this.baseClass = baseClass;
         this.itemStack = itemStack;
@@ -89,21 +88,13 @@ public enum SubClass {
     /**
      * Determines the appropriate subclass based on player class and specified position
      *
-     * @param uuid          of the player
-     * @param position      (which sub-class? 1, 2, or 3)
-     * @param characterSlot
+     * @param position (which sub-class? 1, 2, or 3)
+     * @return the SubClass enum, or null if not found
      */
-    public static SubClass determineSubClass(UUID uuid, int characterSlot, SkillTreePosition position) {
+    public static SubClass determineSubClass(String playerClass, SkillTreePosition position) {
         SubClass subClass;
         int value = position.getValue();
-        String playerClass;
-        if (RunicCoreAPI.getPlayerClass(uuid) == null) { // player probably offline
-            try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-                playerClass = RunicCoreAPI.getRedisCharacterValue(uuid, CharacterField.CLASS_TYPE.getField(), characterSlot, jedis);
-            }
-        } else {
-            playerClass = RunicCoreAPI.getPlayerClass(uuid);
-        }
+
         switch (playerClass.toLowerCase()) {
             case "archer":
                 if (value == 1)
@@ -152,18 +143,17 @@ public enum SubClass {
     }
 
     /**
-     * Returns the enum value of a sub-class string
+     * Overloaded method for use when player is offline (uses redis)
      *
-     * @param name of sub-class
-     * @return enum of sub-class
+     * @param uuid          of the player to check
+     * @param characterSlot of the character to check
+     * @param position      of the skill tree (1, 2, etc.)
+     * @param jedis         the jedis resource
+     * @return their subclass, or null (bad!)
      */
-    public static SubClass getFromName(String name) {
-        for (SubClass subClassType : SubClass.values()) {
-            if (subClassType.getName().equalsIgnoreCase(name)) {
-                return subClassType;
-            }
-        }
-        return null;
+    public static SubClass determineSubClass(UUID uuid, int characterSlot, SkillTreePosition position, Jedis jedis) {
+        String playerClass = RunicCore.getCharacterAPI().getPlayerClass(uuid, characterSlot, jedis);
+        return determineSubClass(playerClass, position);
     }
 
     private static ItemStack marksmanItem() {
@@ -242,7 +232,7 @@ public enum SubClass {
                 "leHR1cmUvMjBkOThiNTI0MjQ1MWI4ZjUyNzZmZWE5ODNkM2MyODRhNDZiNGFjOTA0ODBiZDUwODNkNDg3YjlmZmY3NDMyZiJ9fX0=");
     }
 
-    public ClassEnum getBaseClass() {
+    public CharacterClass getBaseClass() {
         return this.baseClass;
     }
 

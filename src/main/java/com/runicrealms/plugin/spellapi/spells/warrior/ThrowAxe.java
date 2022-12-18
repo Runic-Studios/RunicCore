@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -36,22 +36,22 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                         "x&7 lvl) physical⚔ damage to the first enemy " +
                         "hit and silencing it, preventing it " +
                         "from dealing damage for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 10, 20);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = false;
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        ItemStack artifact = pl.getInventory().getItemInMainHand();
+        ItemStack artifact = player.getInventory().getItemInMainHand();
         Material artifactType = artifact.getType();
         int durability = ((Damageable) Objects.requireNonNull(artifact.getItemMeta())).getDamage();
 
-        Vector path = pl.getEyeLocation().getDirection().normalize().multiply(1.5);
+        Vector path = player.getEyeLocation().getDirection().normalize().multiply(1.5);
 
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 1.0f);
-        Entity projectile = FloatingItemUtil.spawnFloatingItem(pl.getEyeLocation(), artifactType, 50, path, durability);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 1.0f);
+        Entity projectile = FloatingItemUtil.spawnFloatingItem(player.getEyeLocation(), artifactType, 50, path, durability);
 
         Spell spell = this;
         new BukkitRunnable() {
@@ -71,14 +71,14 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
 
                 for (Entity entity : projectile.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
                     if (canHitAllies) {
-                        if (entity.equals(pl)) continue;
-                        if (isValidAlly(pl, entity)) {
-                            if (entity instanceof Player && RunicCore.getPartyManager().getPlayerParty(pl).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
-                                hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+                        if (entity.equals(player)) continue;
+                        if (isValidAlly(player, entity)) {
+                            if (entity instanceof Player && RunicCore.getPartyAPI().getParty(player.getUniqueId()).hasMember((Player) entity)) { // normal ally check allows for non-party spells, so this prevents axe trolling
+                                hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
                                 entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.2f);
                                 entity.getWorld().spawnParticle
                                         (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                                entity.teleport(pl);
+                                entity.teleport(player);
                                 entity.getWorld().spawnParticle
                                         (Particle.SPELL_INSTANT, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
                                 projectile.remove();
@@ -86,14 +86,14 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                             }
                         }
                     }
-                    if (isValidEnemy(pl, entity)) {
-                        if (hasBeenHit.get(pl.getUniqueId()) == entity.getUniqueId()) continue;
-                        hasBeenHit.put(pl.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
+                    if (isValidEnemy(player, entity)) {
+                        if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
+                        hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
                         addStatusEffect(entity, RunicStatusEffect.SILENCE, DURATION);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                        DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) entity, pl, false, false, spell);
+                        DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) entity, player, false, false, spell);
                         projectile.remove();
                     }
                 }

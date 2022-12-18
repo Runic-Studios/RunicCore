@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.RangedDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
@@ -16,7 +16,7 @@ public class Headshot extends Spell {
     public Headshot() {
         super("Headshot",
                 "Damaging an enemy with a headshot deals " + (int) (PERCENT * 100) + "% damage!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
+                ChatColor.WHITE, CharacterClass.ARCHER, 0, 0);
         this.setIsPassive(true);
     }
 

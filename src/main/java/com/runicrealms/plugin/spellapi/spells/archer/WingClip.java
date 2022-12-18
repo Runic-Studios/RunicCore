@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
@@ -25,7 +25,7 @@ public class WingClip extends Spell {
                 "After casting your &aGrapple &7spell, " +
                         "your first ranged basic attack will " +
                         "root its enemy for " + DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
+                ChatColor.WHITE, CharacterClass.ARCHER, 0, 0);
         this.setIsPassive(true);
         wingClippers = new HashSet<>();
     }

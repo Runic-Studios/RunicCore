@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
@@ -27,7 +27,7 @@ public class SoulLink extends Spell {
                         "of yourself and all affected allies, averaging " +
                         "the current health of all allies and setting the " +
                         "current health of each to the average!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 60, 40);
+                ChatColor.WHITE, CharacterClass.CLERIC, 60, 40);
         affectedAllies = new HashSet<>();
     }
 

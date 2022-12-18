@@ -25,16 +25,10 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.model.CharacterField;
-import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.TitleData;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import redis.clients.jedis.Jedis;
-
-import java.util.Map;
 
 public class PlaceholderAPI extends PlaceholderExpansion {
 
@@ -68,37 +62,34 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         String lowerArg = arg.toLowerCase();
 
         TitleData titleData = RunicCore.getTitleManager().loadTitleData(player.getUniqueId());
-        try (Jedis jedis = RunicCoreAPI.getNewJedisResource()) {
-            Map<String, String> classFields = RunicCoreAPI.getRedisValues(player, ClassData.FIELDS, jedis);
-//            Map<String, String> professionFields = RunicCoreAPI.getRedisValues(player, ProfessionData.FIELDS, jedis);
-            switch (lowerArg) {
-                case "class":
-                    return classFields.get(CharacterField.CLASS_TYPE.getField());
-                case "class_prefix":
-                    return classFields.get(CharacterField.CLASS_TYPE.getField()).substring(0, 2);
-                case "level":
-                    return player.getLevel() + "";
-                case "prof":
-                    return "";
-                case "prof_level":
-                    return "";
-                case "prefix":
-                    return titleData.getPrefix();
-                case "prefix_formatted":
-                    if (!titleData.getPrefix().equals("")) {
-                        return "[" + titleData.getPrefix() + "] ";
-                    }
-                    return "";
-                case "suffix":
-                    return titleData.getSuffix();
-                case "suffix_formatted":
-                    if (!titleData.getSuffix().equals("")) {
-                        return "[" + titleData.getSuffix() + "] ";
-                    }
-                    return "";
-                default:
-                    return "";
-            }
+
+        switch (lowerArg) {
+            case "class":
+                return RunicCore.getCharacterAPI().getPlayerClass(player);
+            case "class_prefix":
+                return RunicCore.getCharacterAPI().getPlayerClass(player).substring(0, 2);
+            case "level":
+                return player.getLevel() + "";
+            case "prof":
+                return "";
+            case "prof_level":
+                return "";
+            case "prefix":
+                return titleData.getPrefix();
+            case "prefix_formatted":
+                if (!titleData.getPrefix().equals("")) {
+                    return "[" + titleData.getPrefix() + "] ";
+                }
+                return "";
+            case "suffix":
+                return titleData.getSuffix();
+            case "suffix_formatted":
+                if (!titleData.getSuffix().equals("")) {
+                    return "[" + titleData.getSuffix() + "] ";
+                }
+                return "";
+            default:
+                return "";
         }
     }
 }

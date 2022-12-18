@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -123,10 +122,10 @@ public class StaffListener implements Listener {
         Player player = event.getPlayer();
 
         // check for mage
-        String className = RunicCoreAPI.getPlayerClass(player);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         if (className == null) return;
         if (!className.equals("Mage")) return;
-        if (RunicCoreAPI.isCasting(player)) return;
+        if (RunicCore.getSpellAPI().isCasting(player)) return;
 
         staffAttack(player, weapon);
     }
