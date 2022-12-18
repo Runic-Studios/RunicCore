@@ -31,7 +31,7 @@ public interface RedisAPI {
      * @param jedis     the jedis resource
      * @return a list of nested keys
      */
-    List<String> getNestedJedisKeys(String parentKey, Jedis jedis);
+    List<String> getNestedKeys(String parentKey, Jedis jedis);
 
     /**
      * Opens a new jedis resource which MUST BE CLOSED

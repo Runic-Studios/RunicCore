@@ -50,7 +50,7 @@ public class RedisManager implements Listener, RedisAPI {
     }
 
     @Override
-    public List<String> getNestedJedisKeys(String parentKey, Jedis jedis) {
+    public List<String> getNestedKeys(String parentKey, Jedis jedis) {
         List<String> nestedKeys = new ArrayList<>();
         String subKeyPath = parentKey + ":*"; // grab all sub-keys
         ScanParams scanParams = new ScanParams().count(100).match(subKeyPath);
