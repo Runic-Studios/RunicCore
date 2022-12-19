@@ -56,8 +56,15 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <artifactSet>
                                 <includes>
+                                    <!-- Shade Jedis Driver -->
                                     <include>redis.clients:jedis</include>
+                                    <!-- Shade Apache Commons -->
                                     <include>org.apache.commons</include>
+                                    <!-- Shade MongoDB Driver -->
+                                    <include>org.mongodb:mongodb-driver-sync</include>
+                                    <include>org.mongodb:bson</include>
+                                    <include>org.mongodb:mongo-java-driver</include>
+                                    <include>org.mongodb:mongodb-driver-core</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -167,6 +174,8 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
             <version>4.6.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         <!-- Jedis / Redis -->
         <dependency>

@@ -55,7 +55,8 @@ public class SkillTreeData implements SessionData {
     public SkillTreeData(UUID uuid, int slot, SkillTreePosition position, PlayerMongoDataSection character, Jedis jedis) {
         this.uuid = uuid;
         this.position = position;
-        this.subClass = SubClass.determineSubClass(uuid, slot, position, jedis);
+        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClass(uuid), position);
+        this.subClass = subClass != null ? subClass : SubClass.determineSubClass(uuid, slot, position, jedis);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks for skill tree in position
         if (!character.has(PATH_LOCATION + "." + position.getValue())) return; // DB not populated
         MongoDataSection perkSection = character.getSection(PATH_LOCATION + "." + position.getValue());

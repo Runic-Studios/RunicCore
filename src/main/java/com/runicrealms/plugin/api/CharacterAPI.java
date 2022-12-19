@@ -50,11 +50,4 @@ public interface CharacterAPI {
      */
     String getPlayerClass(UUID uuid, int slot, Jedis jedis);
 
-    /**
-     * @param player
-     * @return
-     */
-    boolean hasSelectedCharacter(Player player);
-
-
 }

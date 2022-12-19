@@ -58,7 +58,7 @@ public class PlayerLevelUtil {
 
         int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
         String key = RunicCore.getRedisAPI().getCharacterKey(player.getUniqueId(), slot);
-        int currentExp = Integer.parseInt(jedis.get(key + ":" + CharacterField.CLASS_EXP.getField()));
+        int currentExp = Integer.parseInt(jedis.hmget(key, CharacterField.CLASS_EXP.getField()).get(0));
         currentExp = currentExp + expGained;
         jedis.set(key + ":" + CharacterField.CLASS_EXP.getField(), String.valueOf(currentExp));
 

@@ -194,15 +194,11 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
     @Override
     public String getPlayerClass(UUID uuid, int slot, Jedis jedis) {
         // If player class is not cached, player is offline
-        if (jedis.exists(RunicCore.getRedisAPI().getCharacterKey(uuid, slot)))
-            return jedis.get(RunicCore.getRedisAPI().getCharacterKey(uuid, slot) + ":" + CharacterField.CLASS_TYPE.getField());
+        String key = RunicCore.getRedisAPI().getCharacterKey(uuid, slot);
+        if (jedis.exists(key))
+            return jedis.hmget(key, CharacterField.CLASS_TYPE.getField()).get(0);
         else
             return null;
-    }
-
-    @Override
-    public boolean hasSelectedCharacter(Player player) {
-        return loadedCharacterMap.containsKey(player.getUniqueId());
     }
 
     public ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> getLoadedCharactersMap() {
