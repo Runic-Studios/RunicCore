@@ -218,7 +218,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
      */
     @EventHandler
     public void onCharacterLoaded(CharacterLoadedEvent event) {
-        event.getCharacterSelectEvent().close(); // close all jedis resources
         playerDataMap.remove(event.getPlayer().getUniqueId()); // remove intermediary data objects
     }
 

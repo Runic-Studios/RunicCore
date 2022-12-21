@@ -143,8 +143,8 @@ public class PlayerJoinListener implements Listener {
         try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
             if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                        "You recently played and your data is saving!" +
-                                "\nTry again in a moment");
+                        ChatColor.GREEN + "You recently played and your data is saving!" +
+                                "\n" + ChatColor.GREEN + "Try again in a moment");
             }
         }
     }

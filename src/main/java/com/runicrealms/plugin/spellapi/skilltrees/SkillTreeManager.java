@@ -211,7 +211,9 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
     @EventHandler
     public void onCharacterQuit(CharacterQuitEvent event) {
-        saveSkillTreesToJedis(event.getPlayer().getUniqueId(), event.getSlot(), event.getJedis());
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            saveSkillTreesToJedis(event.getPlayer().getUniqueId(), event.getSlot(), jedis);
+        }
         removeDataFromMemory(event.getPlayer().getUniqueId());
     }
 

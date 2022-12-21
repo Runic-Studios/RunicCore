@@ -119,7 +119,9 @@ public class RedisManager implements Listener, RedisAPI {
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs last
     public void onCharacterQuit(CharacterQuitEvent event) {
-        if (!updateBaseCharacterInfo(event.getPlayer(), event.getSlot(), event.getJedis())) // todo: this ain't right
-            Bukkit.getLogger().info(ChatColor.RED + "There was an error updating redis values on logout.");
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            if (!updateBaseCharacterInfo(event.getPlayer(), event.getSlot(), jedis))
+                Bukkit.getLogger().info(ChatColor.RED + "There was an error updating redis values on logout.");
+        }
     }
 }

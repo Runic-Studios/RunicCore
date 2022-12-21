@@ -79,7 +79,9 @@ public class TitleManager implements Listener {
     @EventHandler
     public void onCharacterQuit(CharacterQuitEvent event) {
         TitleData titleData = loadTitleData(event.getPlayer().getUniqueId());
-        titleData.writeToJedis(event.getJedis());
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            titleData.writeToJedis(jedis);
+        }
     }
 
     @EventHandler

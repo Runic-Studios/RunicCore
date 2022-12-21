@@ -114,14 +114,16 @@ public class StatManager implements Listener, StatAPI {
         int slot = event.getCharacterData().getBaseCharacterInfo().getSlot();
         // run event sync (might be able to change this event to async)
         Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-            grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST, event.getJedis());
-            grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND, event.getJedis());
-            grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD, event.getJedis());
+            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST, jedis);
+                grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND, jedis);
+                grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD, jedis);
+            }
         });
     }
 
     @EventHandler
-    public void onQuit(CharacterQuitEvent e) {
-        playerStatMap.remove(e.getPlayer().getUniqueId());
+    public void onQuit(CharacterQuitEvent event) {
+        playerStatMap.remove(event.getPlayer().getUniqueId());
     }
 }

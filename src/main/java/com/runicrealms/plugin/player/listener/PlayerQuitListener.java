@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.player.listener;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import org.bukkit.entity.Player;
@@ -7,21 +8,30 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import redis.clients.jedis.Jedis;
 
 public class PlayerQuitListener implements Listener {
 
     public static final String DATA_SAVING_KEY = "isSavingData";
+    /*
+    Player is prevented from joining network while data is saving,
+    or for a max of 30 seconds
+     */
+    private static final int DATA_LOCKOUT_TIMEOUT = 30;
 
     @EventHandler
     public void onCharacterHasQuit(CharacterHasQuitEvent event) {
-        event.getCharacterQuitEvent().getJedis().del(event.getPlayer().getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY);
-        event.getCharacterQuitEvent().close(); // close all jedis resources
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            jedis.del(event.getPlayer().getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onCharacterQuit(CharacterQuitEvent event) {
-        event.getJedis().set(event.getPlayer().getUniqueId() + ":" + DATA_SAVING_KEY, "true");
-        event.getJedis().expire(event.getPlayer().getUniqueId() + ":" + DATA_SAVING_KEY, 30);
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            jedis.set(event.getPlayer().getUniqueId() + ":" + DATA_SAVING_KEY, "true");
+            jedis.expire(event.getPlayer().getUniqueId() + ":" + DATA_SAVING_KEY, DATA_LOCKOUT_TIMEOUT);
+        }
     }
 
     @EventHandler
