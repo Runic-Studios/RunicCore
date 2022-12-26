@@ -59,13 +59,13 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         if (!chatters.contains(event.getMessageSender().getUniqueId())) return;
         event.setCancelled(true);
         Player player = event.getMessageSender();
-        if (event.getChatMessage().toLowerCase().contains("yes") && RunicCore.getShopAPI().hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
+        if (event.getChatMessage().toLowerCase().contains("yes") && RunicCore.getShopAPI().hasItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
                 ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
                 SkillTreeData.resetSkillTrees(player);
             });
-        } else if (event.getChatMessage().toLowerCase().contains("yes") && !RunicCore.getShopAPI().hasItems(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
+        } else if (event.getChatMessage().toLowerCase().contains("yes") && !RunicCore.getShopAPI().hasItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You don't have enough gold!");
         } else {

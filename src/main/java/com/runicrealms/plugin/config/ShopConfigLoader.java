@@ -98,9 +98,11 @@ public class ShopConfigLoader {
      */
     public static RunicShopItem loadShopItem(ConfigurationSection section, String runicItemId) throws ShopLoadException {
         try {
-            int price = section.getInt("price");
-            String currencyId = section.getString("currency");
-            return new RunicShopItem(price, currencyId, RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem());
+            Map<String, Integer> requiredItems = new HashMap<>();
+            for (String key : section.getKeys(false)) {
+                requiredItems.put(key, section.getInt(key));
+            }
+            return new RunicShopItem(requiredItems, RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem());
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new ShopLoadException("item initialization syntax error for " + runicItemId).setErrorMessage(exception.getMessage());

@@ -6,7 +6,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * There is a missing design pattern here for handling more complex shops. Somebody should yell at me later.
@@ -50,30 +52,27 @@ public class RunicDungeonShop {
      * @return a RunicShopGeneric
      */
     public RunicShopGeneric buildRunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds) {
-        String priceDisplay = RunicItemsAPI.generateItemFromTemplate(dungeonCurrencyTemplateId).generateItem().getItemMeta().getDisplayName();
         LinkedHashSet<RunicShopItem> dungeonShopItems = new LinkedHashSet<>();
         if (artifactTemplateIdList != null) {
             for (String artifactTemplateId : artifactTemplateIdList) {
                 ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(artifactTemplateId).generateItem();
-                dungeonShopItems.add(new RunicShopItem
-                        (
-                                this.dungeonArtifactPrice,
-                                this.dungeonCurrencyTemplateId,
-                                itemStack,
-                                priceDisplay
-                        ));
+                Map<String, Integer> requiredItems = new HashMap<String, Integer>() {{
+                    put(dungeonCurrencyTemplateId, dungeonArtifactPrice);
+                }};
+                dungeonShopItems.add(new RunicShopItem(requiredItems, itemStack));
             }
         }
         for (String armorClassPrefix : armorClassPrefixList) {
             for (String armorType : armorTypes) {
                 String templateId = armorTemplateIdPrefix + "-" + armorClassPrefix + "-" + armorType; // sebaths-cave-archer-helm
                 ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(templateId).generateItem();
+                Map<String, Integer> requiredItems = new HashMap<String, Integer>() {{
+                    put(dungeonCurrencyTemplateId, dungeonArmorPrice);
+                }};
                 dungeonShopItems.add(new RunicShopItem
                         (
-                                this.dungeonArmorPrice,
-                                this.dungeonCurrencyTemplateId,
-                                itemStack,
-                                priceDisplay
+                                requiredItems,
+                                itemStack
                         ));
             }
         }
