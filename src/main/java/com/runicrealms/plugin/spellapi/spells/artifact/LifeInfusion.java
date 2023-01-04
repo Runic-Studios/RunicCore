@@ -35,24 +35,24 @@ public class LifeInfusion extends Spell implements ArtifactSpell {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        if (!(e instanceof RunicArtifactOnKillEvent)) return;
-        RunicArtifactOnKillEvent onKillEvent = (RunicArtifactOnKillEvent) e;
+    public void onArtifactUse(RunicItemArtifactTriggerEvent event) {
+        if (!event.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        if (!(event instanceof RunicArtifactOnKillEvent)) return;
+        RunicArtifactOnKillEvent onKillEvent = (RunicArtifactOnKillEvent) event;
         if (onKillEvent.getVictim() == null) return;
         if (!(onKillEvent.getVictim() instanceof LivingEntity)) return;
         onKillEvent.getVictim().getWorld().spawnParticle
                 (
                         Particle.REDSTONE,
                         onKillEvent.getVictim().getLocation(),
-                        15,
+                        5,
                         0.25f,
                         0.25f,
                         0.25f,
                         0,
                         new Particle.DustOptions(Color.RED, 3)
                 );
-        HealUtil.healPlayer(HEAL_AMOUNT, e.getPlayer(), e.getPlayer(), false);
+        HealUtil.healPlayer(HEAL_AMOUNT, event.getPlayer(), event.getPlayer(), false);
     }
 }
 
