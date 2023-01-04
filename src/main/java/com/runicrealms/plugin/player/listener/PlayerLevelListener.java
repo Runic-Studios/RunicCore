@@ -2,7 +2,6 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.Pair;
-import com.runicrealms.plugin.model.CharacterField;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.NametagUtil;
@@ -14,9 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
-import redis.clients.jedis.Jedis;
-
-import java.util.UUID;
 
 /**
  * Handles all the logic for when a player levels-up their primary class (archer, mage, etc.)
@@ -94,6 +90,9 @@ public class PlayerLevelListener implements Listener {
         }
     }
 
+    /**
+     * Handles basic logic for when a player's level changes. Data-specific logic is handled in PlayerLevelUtil
+     */
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent event) {
 
@@ -102,13 +101,6 @@ public class PlayerLevelListener implements Listener {
 
         Player player = event.getPlayer();
         if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
-        UUID uuid = player.getUniqueId();
-
-        // update player's level in redis
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) { // try-with-resources to close the resource for us
-            jedis.set(RunicCore.getRedisAPI().getCharacterKey(uuid, slot) + ":" + CharacterField.CLASS_LEVEL.getField(), String.valueOf(player.getLevel()));
-        }
 
         // grab the player's new info
         String className = RunicCore.getCharacterAPI().getPlayerClass(player);
