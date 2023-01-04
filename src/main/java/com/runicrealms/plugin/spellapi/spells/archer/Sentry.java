@@ -14,20 +14,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Sentry extends Spell implements PhysicalDamageSpell {
-
-    private static final int DAMAGE = 3;
+    private static final int DAMAGE = 25;
     private static final int DURATION = 8;
-    private static final int POTION_DURATION = 3;
-    private static final int RADIUS = 10;
-    private static final double DAMAGE_PER_LEVEL = 0.15;
+    private static final int RADIUS = 8;
+    private static final double DAMAGE_PER_LEVEL = 1.15;
     private Arrow arrow;
 
     public Sentry() {
@@ -37,8 +32,7 @@ public class Sentry extends Spell implements PhysicalDamageSpell {
                         "For " + DURATION + "s, the crossbow fires " +
                         "at all enemies within " + RADIUS + " blocks, " +
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) physical⚔ damage and slowing them for " +
-                        POTION_DURATION + "s!",
+                        "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, CharacterClass.ARCHER, 30, 75);
     }
 
@@ -85,16 +79,12 @@ public class Sentry extends Spell implements PhysicalDamageSpell {
                                 (
                                         standLocation.clone().add(0, 1, 0), direction, (float) 2, (float) 0
                                 );
+                        EntityTrail.entityTrail(arrow, Particle.SPELL_WITCH);
                         // DON'T set the shooter here so the DamageListener class won't take over, use meta instead
                         arrow.setMetadata("player", new FixedMetadataValue(plugin, name));
                         arrow.setCustomNameVisible(false);
                         arrow.setCustomName("autoAttack");
                         arrow.setBounce(false);
-                        EntityTrail.entityTrail(arrow, Particle.SPELL_WITCH);
-                        ((LivingEntity) en).addPotionEffect
-                                (
-                                        new PotionEffect(PotionEffectType.SLOW, POTION_DURATION * 20, 2)
-                                );
                     }
                 }
             }
@@ -110,11 +100,11 @@ public class Sentry extends Spell implements PhysicalDamageSpell {
     Deal correct damage when a turret arrow is fired
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onCustomArrowHit(EntityDamageByEntityEvent e) {
-        if (!e.getDamager().hasMetadata("player")) return;
-        e.setCancelled(true);
-        Player pl = Bukkit.getPlayer(e.getDamager().getMetadata("player").get(0).asString());
-        DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) e.getEntity(), pl, false, true, this);
+    public void onCustomArrowHit(EntityDamageByEntityEvent event) {
+        if (!event.getDamager().hasMetadata("player")) return;
+        event.setCancelled(true);
+        Player caster = Bukkit.getPlayer(event.getDamager().getMetadata("player").get(0).asString());
+        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) event.getEntity(), caster, this);
     }
 }
 

@@ -355,7 +355,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Harpoon());
         this.spellList.add(new Spellsong());
         this.spellList.add(new Ironhide());
-        this.spellList.add(new PowerShot());
+        this.spellList.add(new RunicArrow());
         this.spellList.add(new Smite());
         this.spellList.add(new ArcaneBomb());
         this.spellList.add(new CureScurvy());

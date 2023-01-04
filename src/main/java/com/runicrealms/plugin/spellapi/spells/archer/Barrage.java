@@ -33,7 +33,7 @@ public class Barrage extends Spell implements PhysicalDamageSpell {
         super("Barrage",
                 "You rapid-fire a volley of five arrows, " +
                         "each dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) physical⚔ damage to enemies hit!",
+                        "x&7 lvl) physical⚔ damage on-hit!",
                 ChatColor.WHITE, CharacterClass.ARCHER, 6, 10);
         this.bArrows = new HashMap<>();
     }
@@ -79,6 +79,11 @@ public class Barrage extends Spell implements PhysicalDamageSpell {
         }.runTaskTimer(RunicCore.getInstance(), 0, 3L);
     }
 
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
     // deal bonus damage if arrow is a barrage arrow
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onArrowDamage(EntityDamageByEntityEvent e) {
@@ -110,10 +115,5 @@ public class Barrage extends Spell implements PhysicalDamageSpell {
                 DamageUtil.damageEntityPhysical(DAMAGE, le, pl, false, true, this);
             }
         }
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }

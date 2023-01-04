@@ -32,11 +32,11 @@ public class BearTrap extends Spell {
     }
 
     private void applyRoot(Player damager, LivingEntity victim) {
-        if (PowerShot.huntersMarkMap().get(damager.getUniqueId()) == null) {
+        if (RunicArrow.huntersMarkMap().get(damager.getUniqueId()) == null) {
             ensnareMap.remove(damager.getUniqueId()); // reset count if hunters mark wears off
             return;
         }
-        if (!PowerShot.huntersMarkMap().get(damager.getUniqueId()).equals(victim.getUniqueId())) return;
+        if (!RunicArrow.huntersMarkMap().get(damager.getUniqueId()).equals(victim.getUniqueId())) return;
         if (ensnareMap.get(damager.getUniqueId()) == null) {
             HashMap<UUID, Integer> victimCountMap = new HashMap<>();
             victimCountMap.put(victim.getUniqueId(), 1);
