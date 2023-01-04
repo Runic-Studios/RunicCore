@@ -51,13 +51,13 @@ public class LootChestInventory implements InventoryHolder {
     }
 
     /**
-     *
+     * Fills the chest inventory with items from the drop table
      */
     private void fillInventory() {
-        int numOfItems = random.nextInt(maxItems - minItems) + minItems;
-        ItemStack chestItem;
+        int numberOfItems = random.nextInt(maxItems - minItems) + minItems;
+        ChestItem chestItem;
         List<Integer> used = new ArrayList<>();
-        for (int i = 0; i < numOfItems; i++) {
+        for (int i = 0; i < numberOfItems; i++) {
 
             // prevent items overriding the same slot
             int slot = random.nextInt(26);
@@ -83,7 +83,8 @@ public class LootChestInventory implements InventoryHolder {
                     chestItem = RunicCore.getLootTableAPI().getLootTableTierI().getRandom();
                     break;
             }
-            this.inventory.setItem(slot, chestItem);
+            ItemStack itemStack = RunicCore.getLootTableAPI().generateItemStack(chestItem, lootChestTier);
+            this.inventory.setItem(slot, itemStack);
         }
     }
 
@@ -91,18 +92,6 @@ public class LootChestInventory implements InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
-    }
-
-    public LootChestTier getLootChestRarity() {
-        return lootChestTier;
-    }
-
-    public int getMaxItems() {
-        return maxItems;
-    }
-
-    public int getMinItems() {
-        return minItems;
     }
 
     public Player getPlayer() {

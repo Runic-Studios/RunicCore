@@ -2,7 +2,6 @@ package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.LootTableAPI;
-import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -14,10 +13,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class LootTableManager implements LootTableAPI {
 
-    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_I;
-    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_II;
-    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_III;
-    private static WeightedRandomBag<ItemStack> LOOT_TABLE_TIER_IV;
+    private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_I;
+    private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_II;
+    private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_III;
+    private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_IV;
 
 
     static {
@@ -34,24 +33,23 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_I = new WeightedRandomBag<>();
 
         // armor and weapons
-        LootChestTier common = LootChestTier.TIER_I;
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(common.getMinLootLevel(), common.getMaxLootLevel(), 1).generateItem();
+        ChestItem randomArmorOrWeaponInLevelRange = new ChestItem();
 
-        ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 6 + 1)); // bound is not inclusive, so we add 1
-        ItemStack bread = runicItem("Bread", 2, 4);
+        ChestItem coin = new ChestItem("Coin", 3, 6);
+        ChestItem bread = new ChestItem("Bread", 2, 4);
 
         // materials
-        ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
-        ItemStack oakWood = runicItem("OakWood", 3, 5);
-        ItemStack thread = runicItem("Thread", 3, 5);
-        ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
-        ItemStack bottle = runicItem("Bottle", 2, 3);
-        ItemStack salmon = runicItem("Salmon", 2, 3);
+        ChestItem spruceWood = new ChestItem("SpruceWood", 3, 5);
+        ChestItem oakWood = new ChestItem("OakWood", 3, 5);
+        ChestItem thread = new ChestItem("Thread", 3, 5);
+        ChestItem animalHide = new ChestItem("AnimalHide", 3, 5);
+        ChestItem uncutRuby = new ChestItem("uncut-ruby", 2, 3);
+        ChestItem bottle = new ChestItem("Bottle", 2, 3);
+        ChestItem salmon = new ChestItem("Salmon", 2, 3);
 
         // potions
-        ItemStack healthPotion = runicItem("minor-potion-healing", 1, 1);
-        ItemStack manaPotion = runicItem("minor-potion-mana", 1, 1);
+        ChestItem healthPotion = new ChestItem("minor-potion-healing", 1, 1);
+        ChestItem manaPotion = new ChestItem("minor-potion-mana", 1, 1);
 
         // add entries to table
         LOOT_TABLE_TIER_I.addEntry(randomArmorOrWeaponInLevelRange, 70.0);
@@ -75,28 +73,27 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_II = new WeightedRandomBag<>();
 
         // armor and weapons
-        LootChestTier uncommon = LootChestTier.TIER_II;
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(uncommon.getMinLootLevel(), uncommon.getMaxLootLevel(), 1).generateItem();
+        ChestItem randomArmorOrWeaponInLevelRange = new ChestItem();
 
         // currency
-        ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(4, 8 + 1)); // bound is not inclusive, so we add 1
+        ChestItem coin = new ChestItem("Coin", 4, 8);
 
         // food
-        ItemStack bread = runicItem("Bread", 2, 4);
+        ChestItem bread = new ChestItem("Bread", 2, 4);
 
         // materials
-        ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
-        ItemStack oakWood = runicItem("OakWood", 3, 5);
-        ItemStack thread = runicItem("Thread", 3, 5);
-        ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
-        ItemStack uncutSapphire = runicItem("uncut-sapphire", 2, 3);
-        ItemStack bottle = runicItem("Bottle", 3, 5);
-        ItemStack cod = runicItem("Cod", 2, 3);
+        ChestItem spruceWood = new ChestItem("SpruceWood", 3, 5);
+        ChestItem oakWood = new ChestItem("OakWood", 3, 5);
+        ChestItem thread = new ChestItem("Thread", 3, 5);
+        ChestItem animalHide = new ChestItem("AnimalHide", 3, 5);
+        ChestItem uncutRuby = new ChestItem("uncut-ruby", 2, 3);
+        ChestItem uncutSapphire = new ChestItem("uncut-sapphire", 2, 3);
+        ChestItem bottle = new ChestItem("Bottle", 3, 5);
+        ChestItem cod = new ChestItem("Cod", 2, 3);
 
         // potions
-        ItemStack healthPotion = runicItem("major-potion-healing", 1, 1);
-        ItemStack manaPotion = runicItem("major-potion-mana", 1, 1);
+        ChestItem healthPotion = new ChestItem("major-potion-healing", 1, 1);
+        ChestItem manaPotion = new ChestItem("major-potion-mana", 1, 1);
 
         // add entries to table
         LOOT_TABLE_TIER_II.addEntry(randomArmorOrWeaponInLevelRange, 50.0);
@@ -122,29 +119,28 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_III = new WeightedRandomBag<>();
 
         // armor and weapons
-        LootChestTier rare = LootChestTier.TIER_III;
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(rare.getMinLootLevel(), rare.getMaxLootLevel(), 1).generateItem();
+        ChestItem randomArmorOrWeaponInLevelRange = new ChestItem();
 
         // currency
-        ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(5, 10 + 1)); // bound is not inclusive, so we add 1
+        ChestItem coin = new ChestItem("Coin", 5, 10);
 
         // food
-        ItemStack bread = runicItem("Bread", 2, 4);
+        ChestItem bread = new ChestItem("Bread", 2, 4);
 
         // crafting materials
-        ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
-        ItemStack oakWood = runicItem("OakWood", 3, 5);
-        ItemStack thread = runicItem("Thread", 3, 5);
-        ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
-        ItemStack uncutSapphire = runicItem("uncut-sapphire", 2, 3);
-        ItemStack uncutOpal = runicItem("uncut-opal", 2, 3);
-        ItemStack bottle = runicItem("Bottle", 3, 5);
-        ItemStack tropical = runicItem("Tropical", 2, 3);
+        ChestItem spruceWood = new ChestItem("SpruceWood", 3, 5);
+        ChestItem oakWood = new ChestItem("OakWood", 3, 5);
+        ChestItem thread = new ChestItem("Thread", 3, 5);
+        ChestItem animalHide = new ChestItem("AnimalHide", 3, 5);
+        ChestItem uncutRuby = new ChestItem("uncut-ruby", 2, 3);
+        ChestItem uncutSapphire = new ChestItem("uncut-sapphire", 2, 3);
+        ChestItem uncutOpal = new ChestItem("uncut-opal", 2, 3);
+        ChestItem bottle = new ChestItem("Bottle", 3, 5);
+        ChestItem tropical = new ChestItem("Tropical", 2, 3);
 
         // potions
-        ItemStack healthPotion = runicItem("major-potion-healing", 1, 1);
-        ItemStack manaPotion = runicItem("major-potion-mana", 1, 1);
+        ChestItem healthPotion = new ChestItem("major-potion-healing", 1, 1);
+        ChestItem manaPotion = new ChestItem("major-potion-mana", 1, 1);
 
         // add entries to table
         LOOT_TABLE_TIER_III.addEntry(randomArmorOrWeaponInLevelRange, 50.0);
@@ -170,31 +166,30 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_IV = new WeightedRandomBag<>();
 
         // armor and weapons
-        LootChestTier epic = LootChestTier.TIER_IV;
-        ItemStack randomArmorOrWeaponInLevelRange = RunicItemsAPI.generateItemInRange(epic.getMinLootLevel(), epic.getMaxLootLevel(), 1).generateItem();
+        ChestItem randomArmorOrWeaponInLevelRange = new ChestItem();
 
         // currency
-        ItemStack coin = CurrencyUtil.goldCoin(ThreadLocalRandom.current().nextInt(5, 10 + 1)); // bound is not inclusive, so we add 1
+        ChestItem coin = new ChestItem("Coin", 6, 12);
 
         // food
-        ItemStack bread = runicItem("Bread", 2, 4);
+        ChestItem bread = new ChestItem("Bread", 2, 4);
 
         // materials
-        ItemStack spruceWood = runicItem("SpruceWood", 3, 5);
-        ItemStack oakWood = runicItem("OakWood", 3, 5);
-        ItemStack thread = runicItem("Thread", 3, 5);
-        ItemStack animalHide = runicItem("AnimalHide", 3, 5);
-        ItemStack uncutRuby = runicItem("uncut-ruby", 2, 3);
-        ItemStack uncutSapphire = runicItem("uncut-sapphire", 2, 3);
-        ItemStack uncutOpal = runicItem("uncut-opal", 2, 3);
-        ItemStack uncutEmerald = runicItem("uncut-emerald", 2, 3);
-        ItemStack uncutDiamond = runicItem("uncut-diamond", 2, 3);
-        ItemStack bottle = runicItem("Bottle", 3, 5);
-        ItemStack pufferfish = runicItem("Pufferfish", 2, 3);
+        ChestItem spruceWood = new ChestItem("SpruceWood", 3, 5);
+        ChestItem oakWood = new ChestItem("OakWood", 3, 5);
+        ChestItem thread = new ChestItem("Thread", 3, 5);
+        ChestItem animalHide = new ChestItem("AnimalHide", 3, 5);
+        ChestItem uncutRuby = new ChestItem("uncut-ruby", 2, 3);
+        ChestItem uncutSapphire = new ChestItem("uncut-sapphire", 2, 3);
+        ChestItem uncutOpal = new ChestItem("uncut-opal", 2, 3);
+        ChestItem uncutEmerald = new ChestItem("uncut-emerald", 2, 3);
+        ChestItem uncutDiamond = new ChestItem("uncut-diamond", 2, 3);
+        ChestItem bottle = new ChestItem("Bottle", 3, 5);
+        ChestItem pufferfish = new ChestItem("Pufferfish", 2, 3);
 
         // potions
-        ItemStack healthPotion = runicItem("greater-potion-healing", 1, 1);
-        ItemStack manaPotion = runicItem("greater-potion-mana", 1, 1);
+        ChestItem healthPotion = new ChestItem("greater-potion-healing", 1, 1);
+        ChestItem manaPotion = new ChestItem("greater-potion-mana", 1, 1);
 
         // add entries to table
         LOOT_TABLE_TIER_IV.addEntry(randomArmorOrWeaponInLevelRange, 30.0);
@@ -218,35 +213,34 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_IV.addEntry(manaPotion, 30.0);
     }
 
-    /**
-     * Creates an item stack which is a current runic item
-     *
-     * @param templateId   the id of the runic item
-     * @param minStackSize min stack size of item
-     * @param maxStackSize max stack size of item
-     * @return item stack
-     */
-    private static ItemStack runicItem(String templateId, int minStackSize, int maxStackSize) {
-        return RunicItemsAPI.generateItemFromTemplate(templateId, (ThreadLocalRandom.current().nextInt(minStackSize, maxStackSize + 1))).generateItem();
+    @Override
+    public ItemStack generateItemStack(ChestItem chestItem, LootChestTier lootChestTier) {
+        if (chestItem.isScriptItem())
+            return RunicItemsAPI.generateItemInRange(lootChestTier.getMinLootLevel(), lootChestTier.getMaxLootLevel(), 1).generateItem();
+        String templateID = chestItem.getTemplateID();
+        int minStackSize = chestItem.getMin();
+        int maxStackSize = chestItem.getMax();
+        // Bound is not inclusive, so we add 1
+        return RunicItemsAPI.generateItemFromTemplate(templateID, (ThreadLocalRandom.current().nextInt(minStackSize, maxStackSize + 1))).generateItem();
     }
 
     @Override
-    public WeightedRandomBag<ItemStack> getLootTableTierI() {
+    public WeightedRandomBag<ChestItem> getLootTableTierI() {
         return LOOT_TABLE_TIER_I;
     }
 
     @Override
-    public WeightedRandomBag<ItemStack> getLootTableTierII() {
+    public WeightedRandomBag<ChestItem> getLootTableTierII() {
         return LOOT_TABLE_TIER_II;
     }
 
     @Override
-    public WeightedRandomBag<ItemStack> getLootTableTierIII() {
+    public WeightedRandomBag<ChestItem> getLootTableTierIII() {
         return LOOT_TABLE_TIER_III;
     }
 
     @Override
-    public WeightedRandomBag<ItemStack> getLootTableTierIV() {
+    public WeightedRandomBag<ChestItem> getLootTableTierIV() {
         return LOOT_TABLE_TIER_IV;
     }
 }
