@@ -36,7 +36,7 @@ public class Rejuvenate extends Spell implements HealingSpell {
                         "restoring✦ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) health to yourself and all allies it passes through! " +
                         "Affected allies receive an additional " + (int) PERCENT + "% health " +
-                        "from your healing✦ spells for " + DURATION + "s! ",
+                        "from your healing✦ spells for " + DURATION + "s!",
                 ChatColor.WHITE, CharacterClass.CLERIC, 12, 25);
         hasBeenHit = new HashMap<>();
         affectedPlayers = new HashMap<>();

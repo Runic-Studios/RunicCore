@@ -38,7 +38,7 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
                         HEALING_PER_LEVEL + "x&7 lvl) health! " +
                         "Against enemies, the vial deals (" + DAMAGE + " + &f" +
                         DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, CharacterClass.CLERIC, 10, 20);
+                ChatColor.WHITE, CharacterClass.CLERIC, 10, 15);
     }
 
     @Override
@@ -52,6 +52,21 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
         final Vector velocity = pl.getLocation().getDirection().normalize().multiply(POTION_SPEED_MULT);
         thrownPotion.setVelocity(velocity);
         thrownPotion.setShooter(pl);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
+    @Override
+    public int getHeal() {
+        return HEAL_AMT;
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
     }
 
     @EventHandler
@@ -81,21 +96,6 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
             if (isValidEnemy(pl, en))
                 DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, this);
         }
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
-    }
-
-    @Override
-    public int getHeal() {
-        return HEAL_AMT;
-    }
-
-    @Override
-    public double getHealingPerLevel() {
-        return HEALING_PER_LEVEL;
     }
 }
 

@@ -29,7 +29,7 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
 
     public ArcaneBomb() {
         super("Arcane Bomb",
-                "You launch a magical vial of the arcane, " +
+                "You launch a magical vial of arcane power, " +
                         "dealing (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to enemies within " +
                         RADIUS + " blocks of the impact and silencing them " +

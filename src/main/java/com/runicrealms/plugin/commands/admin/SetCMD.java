@@ -13,9 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.runicrealms.plugin.classes.SelectClass.setPlayerClass;
 import static com.runicrealms.plugin.classes.SelectClass.writeClassDataToRedis;
@@ -138,10 +136,13 @@ public class SetCMD extends BaseCommand {
         if (player == null) return;
         UUID uuid = player.getUniqueId();
         int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+        String key = RunicCore.getRedisAPI().getCharacterKey(player.getUniqueId(), slot);
         int expAtLevel = PlayerLevelUtil.calculateTotalExp(level) + 1;
         player.setLevel(0);
         try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
-            jedis.set(RunicCore.getRedisAPI().getCharacterKey(uuid, slot) + ":" + CharacterField.CLASS_EXP.getField(), String.valueOf(0));
+            Map<String, String> map = new HashMap<>();
+            map.put(CharacterField.CLASS_EXP.getField(), String.valueOf(0));
+            jedis.hmset(key, map);
             PlayerLevelUtil.giveExperience(player, expAtLevel, jedis);
         }
     }

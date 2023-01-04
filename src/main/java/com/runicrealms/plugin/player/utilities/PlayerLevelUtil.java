@@ -7,6 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PlayerLevelUtil {
 
     private static final int MAX_LEVEL = 60;
@@ -55,12 +58,14 @@ public class PlayerLevelUtil {
     public static void giveExperience(Player player, int expGained, Jedis jedis) {
         int currentLevel = player.getLevel();
         if (currentLevel >= MAX_LEVEL) return;
-
         int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
         String key = RunicCore.getRedisAPI().getCharacterKey(player.getUniqueId(), slot);
         int currentExp = Integer.parseInt(jedis.hmget(key, CharacterField.CLASS_EXP.getField()).get(0));
         currentExp = currentExp + expGained;
-        jedis.set(key + ":" + CharacterField.CLASS_EXP.getField(), String.valueOf(currentExp));
+
+        Map<String, String> map = new HashMap<>();
+        map.put(CharacterField.CLASS_EXP.getField(), String.valueOf(currentExp));
+        jedis.hmset(key, map);
 
         if (calculateExpectedLv(currentExp) != currentLevel) {
             player.sendMessage("\n");
@@ -68,7 +73,9 @@ public class PlayerLevelUtil {
             player.sendMessage("\n");
             player.setLevel(calculateExpectedLv(currentExp));
             currentLevel = calculateExpectedLv(currentExp);
-            jedis.set(key + ":" + CharacterField.CLASS_LEVEL.getField(), String.valueOf(currentLevel));
+            map = new HashMap<>();
+            map.put(CharacterField.CLASS_LEVEL.getField(), String.valueOf(currentLevel));
+            jedis.hmset(key, map);
         }
 
         int totalExpAtLevel = calculateTotalExp(currentLevel);
