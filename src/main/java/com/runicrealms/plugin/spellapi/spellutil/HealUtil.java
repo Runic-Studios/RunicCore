@@ -57,7 +57,7 @@ public class HealUtil {
             HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0, 1.5, 0), healAmt, event.isCritical());
         }
         recipient.playSound(recipient.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 0.5f);
-        recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 3, 0.35F, 0.35F, 0.35F, 0, 0);
+        recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 3, 0.35F, 0.35F, 0.35F, 0);
 
         // call a new health regen event to communicate with all the other events that depend on this.
         Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, healAmt, EntityRegainHealthEvent.RegainReason.CUSTOM));

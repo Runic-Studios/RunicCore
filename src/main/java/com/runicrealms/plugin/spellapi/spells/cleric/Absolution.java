@@ -19,12 +19,13 @@ public class Absolution extends Spell {
         this.setIsPassive(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH) // fires LAST, but before use listener 
+    @EventHandler(priority = EventPriority.NORMAL) // fires normal priority, but before use listener
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Rejuvenate)) return;
         event.setCancelled(true);
+        if (RunicCore.getSpellAPI().isOnCooldown(event.getCaster(), "Purify")) return;
         SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellAPI().getSpell("Purify"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())

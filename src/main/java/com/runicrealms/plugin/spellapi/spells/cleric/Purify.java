@@ -89,19 +89,19 @@ public class Purify extends Spell implements HealingSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        pl.swingMainHand();
+        player.swingMainHand();
 
         // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
+        HealUtil.healPlayer(HEAL_AMT, player, player, false, this);
 
         // sound effect
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
 
         // particle effect, spell effects
-        Vector middle = pl.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
-        startTask(pl, new Vector[]{middle});
+        Vector middle = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
+        startTask(player, new Vector[]{middle});
     }
 
     @Override
