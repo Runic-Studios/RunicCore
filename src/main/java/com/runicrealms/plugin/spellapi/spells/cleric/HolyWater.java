@@ -22,9 +22,9 @@ import java.util.Objects;
 
 public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
 
-    private static final int DAMAGE = 6;
+    private static final int DAMAGE = 12;
     private static final int HEAL_AMT = 20;
-    private static final int DAMAGE_PER_LEVEL = 1;
+    private static final double DAMAGE_PER_LEVEL = 1.25;
     private static final int RADIUS = 5;
     private static final double HEALING_PER_LEVEL = 1.25;
     private static final double POTION_SPEED_MULT = 1.25;
@@ -42,16 +42,16 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         Objects.requireNonNull(meta).setColor(Color.AQUA);
         item.setItemMeta(meta);
-        thrownPotion = pl.launchProjectile(ThrownPotion.class);
+        thrownPotion = player.launchProjectile(ThrownPotion.class);
         thrownPotion.setItem(item);
-        final Vector velocity = pl.getLocation().getDirection().normalize().multiply(POTION_SPEED_MULT);
+        final Vector velocity = player.getLocation().getDirection().normalize().multiply(POTION_SPEED_MULT);
         thrownPotion.setVelocity(velocity);
-        thrownPotion.setShooter(pl);
+        thrownPotion.setShooter(player);
     }
 
     @Override
@@ -70,18 +70,18 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
     }
 
     @EventHandler
-    public void onPotionBreak(PotionSplashEvent e) {
+    public void onPotionBreak(PotionSplashEvent event) {
 
         // only listen for our potion
-        if (!(e.getPotion().equals(this.thrownPotion))) return;
-        if (!(e.getPotion().getShooter() instanceof Player)) return;
+        if (!(event.getPotion().equals(this.thrownPotion))) return;
+        if (!(event.getPotion().getShooter() instanceof Player)) return;
 
-        e.setCancelled(true);
+        event.setCancelled(true);
 
-        ThrownPotion expiredBomb = e.getPotion();
+        ThrownPotion expiredBomb = event.getPotion();
         Location loc = expiredBomb.getLocation();
-        Player pl = (Player) e.getPotion().getShooter();
-        if (pl == null) return;
+        Player player = (Player) event.getPotion().getShooter();
+        if (player == null) return;
 
         expiredBomb.getWorld().playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F);
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 0.5F);
@@ -91,10 +91,10 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
                 50, 1f, 1f, 1f, new Particle.DustOptions(Color.WHITE, 10));
 
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (isValidAlly(pl, en))
-                HealUtil.healPlayer(HEAL_AMT, (Player) en, pl, false, this);
-            if (isValidEnemy(pl, en))
-                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), pl, this);
+            if (isValidAlly(player, en))
+                HealUtil.healPlayer(HEAL_AMT, (Player) en, player, false, this);
+            if (isValidEnemy(player, en))
+                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), player, this);
         }
     }
 }

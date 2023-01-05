@@ -21,11 +21,11 @@ import java.util.UUID;
 @SuppressWarnings("FieldCanBeLocal")
 public class Cannonfire extends Spell implements PhysicalDamageSpell {
 
-    private static final int DAMAGE_AMT = 5;
+    private static final int DAMAGE_AMT = 15;
     private static final int DURATION = 2;
     private static final int PELLET_SPEED = 1;
     private static final int TOTAL_PELLETS = 5;
-    private static final double DAMAGE_PER_LEVEL = 1.25;
+    private static final double DAMAGE_PER_LEVEL = 2.0;
     private static final double KNOCKBACK_MULT = -2.75;
     private static final Material MATERIAL = Material.FIREWORK_STAR;
     private final HashMap<UUID, UUID> hasBeenHit;
@@ -34,8 +34,8 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
         super("Cannonfire",
                 "You fire a flurry of " + TOTAL_PELLETS + " shrapnel fragments! " +
                         "On hit, each fragment will deal " +
-                        "(" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) physical⚔ damage, " +
-                        "silences the target for " + DURATION + "s, and launches them back!",
+                        "(" + DAMAGE_AMT + " + &f" + (int) DAMAGE_PER_LEVEL + "x&7 lvl) physical⚔ damage, " +
+                        "silence the target for " + DURATION + "s, and launch them back!",
                 ChatColor.WHITE, CharacterClass.ROGUE, 7, 15);
         this.hasBeenHit = new HashMap<>();
     }

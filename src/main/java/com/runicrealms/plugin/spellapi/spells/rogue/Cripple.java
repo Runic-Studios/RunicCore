@@ -5,8 +5,10 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -20,47 +22,54 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class Cripple extends Spell {
+public class Cripple extends Spell implements PhysicalDamageSpell {
 
+    private static final int DAMAGE = 25;
+    private static final double DAMAGE_PER_LEVEL = 2.5;
     private static final int DURATION = 3;
-    private static final double PERCENT = 65;
-    private static final int RADIUS = 3;
+    private static final double PERCENT = 40;
+    private static final int RADIUS = 2;
     private final Set<UUID> crippledEntities;
 
     public Cripple() {
         super("Cripple",
                 "You cripple enemies within " + RADIUS + " " +
-                        "blocks, disorienting them and " +
-                        "reducing their damage by " + (int) PERCENT + "% " +
+                        "blocks, dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) physical⚔ " +
+                        "damage to them reducing their damage by " + (int) PERCENT + "% " +
                         "for " + DURATION + " seconds!",
-                ChatColor.WHITE, CharacterClass.ROGUE, 15, 20);
+                ChatColor.WHITE, CharacterClass.ROGUE, 12, 20);
         crippledEntities = new HashSet<>();
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
         // spell variables, vectors
-        pl.swingMainHand();
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
+        player.swingMainHand();
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
 
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!(en instanceof LivingEntity)) continue;
-            if (!isValidEnemy(pl, en)) continue;
-            en.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) en).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-            crippledEntities.add(en.getUniqueId());
-            en.sendMessage(ChatColor.RED + "You have been crippled!");
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
-                crippledEntities.remove(en.getUniqueId());
-                en.sendMessage(ChatColor.GREEN + "You are no longer crippled!");
+        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!(entity instanceof LivingEntity)) continue;
+            if (!isValidEnemy(player, entity)) continue;
+            entity.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) entity).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
+            DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) entity, player, false, false, this);
+            crippledEntities.add(entity.getUniqueId());
+            entity.sendMessage(ChatColor.RED + "You have been crippled!");
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+                crippledEntities.remove(entity.getUniqueId());
+                entity.sendMessage(ChatColor.GREEN + "You are no longer crippled!");
             }, DURATION * 20L);
         }
     }
 
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
     @EventHandler
-    public void onSpellDamage(MagicDamageEvent e) {
-        if (!crippledEntities.contains(e.getPlayer().getUniqueId())) return;
+    public void onMobDamage(MobDamageEvent e) {
+        if (!crippledEntities.contains(e.getDamager().getUniqueId())) return;
         double percent = PERCENT / 100;
         double reduced = e.getAmount() * percent;
         e.setAmount((int) (e.getAmount() - reduced));
@@ -75,8 +84,8 @@ public class Cripple extends Spell {
     }
 
     @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (!crippledEntities.contains(e.getDamager().getUniqueId())) return;
+    public void onSpellDamage(MagicDamageEvent e) {
+        if (!crippledEntities.contains(e.getPlayer().getUniqueId())) return;
         double percent = PERCENT / 100;
         double reduced = e.getAmount() * percent;
         e.setAmount((int) (e.getAmount() - reduced));
