@@ -30,24 +30,24 @@ public class ArcherTreeUtil {
         return perks;
     }
 
-    public static List<Perk> rangerPerkList() {
+    public static List<Perk> spellshotPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(24, 1, 0, 1, "Net Shot"));
+        perks.add(new PerkSpell(24, 1, 0, 1, "Runic Arrow"));
         perks.add(new PerkBaseStat(25, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(26, 1, 0, 1, "Tipped Arrows"));
+        perks.add(new PerkSpell(26, 1, 0, 1, "Shadowmeld"));
         perks.add(new PerkBaseStat(27, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(28, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(29, 1, 0, 1, "Bear Trap"));
+        perks.add(new PerkSpell(29, 1, 0, 1, "Stormshot"));
         perks.add(new PerkBaseStat(30, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(31, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(33, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(32, 1, 0, 1, "Shadowmeld"));
+        perks.add(new PerkSpell(32, 1, 0, 1, "Sentry"));
         perks.add(new PerkBaseStat(34, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(35, 1, 0, 1, "Survival Instinct"));
+        perks.add(new PerkSpell(35, 1, 0, 1, "Siphon"));
         return perks;
     }
 
-    public static List<Perk> scoutPerkList() {
+    public static List<Perk> wardenPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(12, 1, 0, 1, "Grapple"));
         perks.add(new PerkBaseStat(13, 1, 0, 5, Stat.STRENGTH));

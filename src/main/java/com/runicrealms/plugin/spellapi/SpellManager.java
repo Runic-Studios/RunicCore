@@ -399,7 +399,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());
-        this.spellList.add(new BearTrap());
         this.spellList.add(new WingClip());
         this.spellList.add(new Sentry());
         this.spellList.add(new EscapeArtist());

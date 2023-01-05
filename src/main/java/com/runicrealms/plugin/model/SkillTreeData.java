@@ -294,13 +294,13 @@ public class SkillTreeData implements SessionData {
         switch (subClass) {
             case MARKSMAN:
                 return ArcherTreeUtil.marksmanPerkList();
-            case RANGER:
-                return ArcherTreeUtil.rangerPerkList();
-            case SCOUT:
-                return ArcherTreeUtil.scoutPerkList();
+            case SPELLSHOT:
+                return ArcherTreeUtil.spellshotPerkList();
+            case WARDEN:
+                return ArcherTreeUtil.wardenPerkList();
             case BARD:
                 return ClericTreeUtil.bardPerkList();
-            case PALADIN:
+            case CULTIST:
                 return ClericTreeUtil.paladinList();
             case PRIEST:
                 return ClericTreeUtil.priestList();
@@ -320,7 +320,7 @@ public class SkillTreeData implements SessionData {
                 return WarriorTreeUtil.berserkerPerkList();
             case GUARDIAN:
                 return WarriorTreeUtil.guardianPerkList();
-            case INQUISITOR:
+            case PALADIN:
                 return WarriorTreeUtil.inquisitorPerkList();
         }
         return null;
