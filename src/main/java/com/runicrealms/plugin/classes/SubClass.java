@@ -183,8 +183,7 @@ public enum SubClass {
     }
 
     private static ItemStack cryomancerItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvYWIxZWUyMjM5ODllMmQ5NzgzNzVjZGMzMmFjNzk4YjJiOGUwYTYzYmQ3OGFjNmFiZDQ3MGY5MWQ3ZTVmYTM3NCJ9fX0=");
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE2OGIzYjg4MGU4MGVmY2JmY2M3MDQ3YWE3MGMxNjViNTM3MjFkNTM4ZWRiNmNiYWQ1YzM2MDhlOGQzMTFmZSJ9fX0=");
     }
 
     private static ItemStack pyromancerItem() {
