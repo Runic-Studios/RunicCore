@@ -16,9 +16,7 @@ import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
-import com.runicrealms.plugin.item.lootchests.LootChestListener;
-import com.runicrealms.plugin.item.lootchests.LootChestManager;
-import com.runicrealms.plugin.item.lootchests.LootTableManager;
+import com.runicrealms.plugin.item.lootchests.*;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
@@ -412,6 +410,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new StatsGUIListener(), this);
         pm.registerEvents(new HealthBarListener(), this);
         pm.registerEvents(new ServerListPingListener(), this);
+        pm.registerEvents(new BossChestListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

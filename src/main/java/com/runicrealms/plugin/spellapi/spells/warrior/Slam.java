@@ -17,12 +17,12 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("FieldCanBeLocal")
 public class Slam extends Spell implements PhysicalDamageSpell {
 
-    private final boolean ignite;
     private static final double KNOCKUP_AMT = 0.2;
     private static final int DAMAGE_AMT = 15;
     private static final double DAMAGE_PER_LEVEL = 1.25;
     private static final double HEIGHT = 1.2;
     private static final int RADIUS = 3;
+    private final boolean ignite;
 
     public Slam() {
         super("Slam",
@@ -36,18 +36,18 @@ public class Slam extends Spell implements PhysicalDamageSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
         // sounds, particles
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
 
         // apply effects
-        final Vector velocity = pl.getVelocity().setY(HEIGHT);
-        Vector directionVector = pl.getLocation().getDirection();
+        final Vector velocity = player.getVelocity().setY(HEIGHT);
+        Vector directionVector = player.getLocation().getDirection();
         directionVector.setY(0);
         directionVector.normalize();
 
-        float pitch = pl.getEyeLocation().getPitch();
+        float pitch = player.getEyeLocation().getPitch();
         if (pitch > 0.0F) {
             pitch = -pitch;
         }
@@ -57,47 +57,52 @@ public class Slam extends Spell implements PhysicalDamageSpell {
         velocity.add(directionVector);
         velocity.multiply(new Vector(0.6D, 0.8D, 0.6D));
 
-        pl.setVelocity(velocity);
+        player.setVelocity(velocity);
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                pl.setVelocity(new Vector
-                        (pl.getLocation().getDirection().getX(), -10.0,
-                                pl.getLocation().getDirection().getZ()).multiply(2).normalize());
-                pl.setFallDistance(-512.0F);
-                BukkitTask jumpTask = startSlamTask(pl);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), jumpTask::cancel, 100L); // insurance
+                player.setVelocity(new Vector
+                        (player.getLocation().getDirection().getX(), -10.0,
+                                player.getLocation().getDirection().getZ()).multiply(2).normalize());
+                player.setFallDistance(-512.0F);
+                BukkitTask jumpTask = startSlamTask(player);
+                Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), jumpTask::cancel, 100L); // insurance
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
 
-    private BukkitTask startSlamTask(Player pl) {
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
+    private BukkitTask startSlamTask(Player player) {
         Spell spell = this;
         return new BukkitRunnable() {
             @Override
             public void run() {
 
-                if (pl.isOnGround() || pl.getFallDistance() == 1) { //  || pl.getFallDistance() == 1
+                if (player.isOnGround() || player.getFallDistance() == 1) { //  || pl.getFallDistance() == 1
 
                     this.cancel();
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
                             25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
-                    for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (isValidEnemy(pl, en)) {
-                            DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) en, pl, false, false, spell);
-                            Vector force = (pl.getLocation().toVector().subtract
+                    for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+                        if (isValidEnemy(player, en)) {
+                            DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) en, player, false, false, spell);
+                            Vector force = (player.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             en.setVelocity(force.normalize());
                             if (ignite) {
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, spell);
+                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, spell);
                                     en.getWorld().spawnParticle
                                             (Particle.LAVA, ((LivingEntity) en).getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
                                 }, 20L);
                             }
                         }
@@ -105,10 +110,5 @@ public class Slam extends Spell implements PhysicalDamageSpell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }

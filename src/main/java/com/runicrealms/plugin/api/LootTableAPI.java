@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.item.lootchests.BossChestTier;
 import com.runicrealms.plugin.item.lootchests.ChestItem;
 import com.runicrealms.plugin.item.lootchests.LootChestTier;
 import com.runicrealms.plugin.item.lootchests.WeightedRandomBag;
@@ -11,9 +12,22 @@ public interface LootTableAPI {
      * Generates a runic item ItemStack from the chest item wrapper
      *
      * @param chestItem     the info to create the ItemStack (templateID, stack size)
+     * @param bossChestTier tier of the boss chest (Sebath's cave, Sunken Library, etc.)
+     */
+    ItemStack generateItemStack(ChestItem chestItem, BossChestTier bossChestTier);
+
+    /**
+     * Generates a runic item ItemStack from the chest item wrapper
+     *
+     * @param chestItem     the info to create the ItemStack (templateID, stack size)
      * @param lootChestTier tier of the loot chest (common, rare, etc.)
      */
     ItemStack generateItemStack(ChestItem chestItem, LootChestTier lootChestTier);
+
+    /**
+     * @return the loot/drop table for sebath's cave
+     */
+    WeightedRandomBag<ChestItem> getLootTableSebaths();
 
     /**
      * @return the loot/drop table for the common tier

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandAlias("runicboss")
 public class RunicBossCMD extends BaseCommand {
 
-    private static final int CHEST_DURATION = 30; // seconds
+    private static final int CHEST_DURATION = 45; // seconds
 
     public RunicBossCMD() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("dungeons", context -> {
@@ -35,6 +35,22 @@ public class RunicBossCMD extends BaseCommand {
             }
             return dungeons;
         });
+    }
+
+    /**
+     * Empties the chest inventory and removes the chest
+     *
+     * @param uuid          of the boss that was slayed
+     * @param chestLocation location of the chest
+     */
+    private void despawnChest(UUID uuid, Location chestLocation) {
+        assert chestLocation.getWorld() != null;
+        chestLocation.getBlock().setType(Material.AIR);
+        chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
+        chestLocation.getWorld().spawnParticle(Particle.REDSTONE, chestLocation,
+                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
+        RunicCore.getBossTagger().getActiveBossLootChests().remove(uuid); // remove boss chest from memory
+        RunicCore.getBossTagger().getBossLooters(uuid).clear(); // clear looters list
     }
 
     @Default
@@ -71,7 +87,7 @@ public class RunicBossCMD extends BaseCommand {
         blockData.setFacing(dungeonLocation.getChestBlockFace());
         BlockState state = block.getState();
         state.setBlockData(blockData);
-        ((Chest) state).setCustomName(BossChest.getBossChestName());
+        ((Chest) state).setCustomName(ChatColor.GOLD + "" + ChatColor.BOLD + dungeonLocation.getDisplay() + " Spoils");
         state.update();
         chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         chestLocation.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, chestLocation, 25, 0.5f, 0.5f, 0.5f, 0);
@@ -99,23 +115,5 @@ public class RunicBossCMD extends BaseCommand {
             Bukkit.getScheduler().cancelTask(hologramTask);
             hologram.delete();
         }, CHEST_DURATION * 20L);
-    }
-
-    /**
-     * Empties the chest inventory and removes the chest
-     *
-     * @param uuid          of the boss that was slayed
-     * @param chestLocation location of the chest
-     */
-    private void despawnChest(UUID uuid, Location chestLocation) {
-        assert chestLocation.getWorld() != null;
-        BlockState blockState = chestLocation.getBlock().getState();
-        ((Chest) blockState).getBlockInventory().clear();
-        chestLocation.getBlock().setType(Material.AIR);
-        chestLocation.getWorld().playSound(chestLocation, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
-        chestLocation.getWorld().spawnParticle(Particle.REDSTONE, chestLocation,
-                25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
-        RunicCore.getBossTagger().getActiveBossLootChests().remove(uuid); // remove boss chest from memory
-        RunicCore.getBossTagger().getBossLooters(uuid).clear(); // clear looters list
     }
 }

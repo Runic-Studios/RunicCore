@@ -1,7 +1,10 @@
 package com.runicrealms.plugin.item.lootchests;
 
+import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -12,22 +15,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class LootChestInventory implements InventoryHolder {
-
+public class BossChestInventory implements InventoryHolder {
     private static final Random random = new Random();
     private static final int CHEST_SIZE = 27;
     private final int minItems;
     private final int maxItems;
     private final Inventory inventory;
-    private final LootChestTier lootChestTier;
     private final Player player;
+    private final DungeonLocation dungeonLocation;
 
-    public LootChestInventory(Player player, LootChestTier lootChestTier) {
+    /**
+     * @param player          who opened the boss chest
+     * @param dungeonLocation the dungeon of the chest
+     */
+    public BossChestInventory(Player player, DungeonLocation dungeonLocation) {
         this.player = player;
-        this.lootChestTier = lootChestTier;
-        this.minItems = lootChestTier.getMinimumItems();
-        this.maxItems = lootChestTier.getMaximumItems();
-        this.inventory = Bukkit.createInventory(this, CHEST_SIZE, lootChestTier.getTitle());
+        this.dungeonLocation = dungeonLocation;
+        this.minItems = 3;
+        this.maxItems = 6;
+        this.inventory = Bukkit.createInventory(this, CHEST_SIZE, ChatColor.GOLD + "" + ChatColor.BOLD + dungeonLocation.getDisplay() + " Spoils");
         setupChestInventory();
     }
 
@@ -38,6 +44,7 @@ public class LootChestInventory implements InventoryHolder {
         int numberOfItems = random.nextInt(maxItems - minItems) + minItems;
         ChestItem chestItem;
         List<Integer> used = new ArrayList<>();
+        BossChestTier bossChestTier = dungeonLocation.getBossChestTier();
         for (int i = 0; i < numberOfItems; i++) {
 
             // prevent items overriding the same slot
@@ -50,23 +57,16 @@ public class LootChestInventory implements InventoryHolder {
             }
 
             // fill inventory
-            switch (lootChestTier) {
-                case TIER_II:
-                    chestItem = RunicCore.getLootTableAPI().getLootTableTierII().getRandom();
-                    break;
-                case TIER_III:
-                    chestItem = RunicCore.getLootTableAPI().getLootTableTierIII().getRandom();
-                    break;
-                case TIER_IV:
-                    chestItem = RunicCore.getLootTableAPI().getLootTableTierIV().getRandom();
-                    break;
+            switch (bossChestTier) {
                 default:
-                    chestItem = RunicCore.getLootTableAPI().getLootTableTierI().getRandom();
+                    chestItem = RunicCore.getLootTableAPI().getLootTableSebaths().getRandom(); // todo: add boss chest drops for all 6
                     break;
             }
-            ItemStack itemStack = RunicCore.getLootTableAPI().generateItemStack(chestItem, lootChestTier);
+            ItemStack itemStack = RunicCore.getLootTableAPI().generateItemStack(chestItem, bossChestTier);
             this.inventory.setItem(slot, itemStack);
         }
+        // Add a dungeon token to every inventory
+        this.inventory.setItem(this.getInventory().firstEmpty(), RunicItemsAPI.generateItemFromTemplate(dungeonLocation.getCurrencyTemplateId()).generateItem());
     }
 
     @NotNull

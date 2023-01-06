@@ -13,10 +13,18 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class LootTableManager implements LootTableAPI {
 
+    /*
+    Loot Chests
+     */
     private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_I;
     private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_II;
     private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_III;
     private static WeightedRandomBag<ChestItem> LOOT_TABLE_TIER_IV;
+
+    /*
+    Dungeons
+     */
+    private static WeightedRandomBag<ChestItem> SEBATHS_CAVE;
 
 
     static {
@@ -25,6 +33,7 @@ public class LootTableManager implements LootTableAPI {
             setupUncommonLootTable();
             setupRareLootTable();
             setupEpicLootTable();
+            setupSebathsCaveLootTable();
         }, 10 * 20L);
     }
 
@@ -213,6 +222,55 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_IV.addEntry(manaPotion, 30.0);
     }
 
+    private static void setupSebathsCaveLootTable() {
+        // Build base drop table form tier 1 chest
+        SEBATHS_CAVE = new WeightedRandomBag<>(LOOT_TABLE_TIER_I);
+
+        // Armor
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-archer-helm", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-archer-chest", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-archer-leggings", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-archer-boots", 1, 1), 100);
+
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-cleric-helm", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-cleric-chest", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-cleric-leggings", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-cleric-boots", 1, 1), 100);
+
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-mage-helm", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-mage-chest", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-mage-leggings", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-mage-boots", 1, 1), 100);
+
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-rogue-helm", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-rogue-chest", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-rogue-leggings", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-rogue-boots", 1, 1), 100);
+
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-warrior-helm", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-warrior-chest", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-warrior-leggings", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("sebaths-cave-warrior-boots", 1, 1), 100);
+
+        // Weapons
+        SEBATHS_CAVE.addEntry(new ChestItem("sanguine-longbow", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("crimson-maul", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("bloodmoon", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("scarlet-rapier", 1, 1), 100);
+        SEBATHS_CAVE.addEntry(new ChestItem("corruption", 1, 1), 100);
+    }
+
+    @Override
+    public ItemStack generateItemStack(ChestItem chestItem, BossChestTier bossChestTier) {
+        if (chestItem.isScriptItem())
+            return RunicItemsAPI.generateItemInRange(bossChestTier.getMinLootLevel(), bossChestTier.getMaxLootLevel(), 1).generateItem();
+        String templateID = chestItem.getTemplateID();
+        int minStackSize = chestItem.getMin();
+        int maxStackSize = chestItem.getMax();
+        // Bound is not inclusive, so we add 1
+        return RunicItemsAPI.generateItemFromTemplate(templateID, (ThreadLocalRandom.current().nextInt(minStackSize, maxStackSize + 1))).generateItem();
+    }
+
     @Override
     public ItemStack generateItemStack(ChestItem chestItem, LootChestTier lootChestTier) {
         if (chestItem.isScriptItem())
@@ -222,6 +280,11 @@ public class LootTableManager implements LootTableAPI {
         int maxStackSize = chestItem.getMax();
         // Bound is not inclusive, so we add 1
         return RunicItemsAPI.generateItemFromTemplate(templateID, (ThreadLocalRandom.current().nextInt(minStackSize, maxStackSize + 1))).generateItem();
+    }
+
+    @Override
+    public WeightedRandomBag<ChestItem> getLootTableSebaths() {
+        return SEBATHS_CAVE;
     }
 
     @Override

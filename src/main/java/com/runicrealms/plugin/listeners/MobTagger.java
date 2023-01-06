@@ -3,6 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.item.lootchests.BossTagger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -36,35 +37,6 @@ public class MobTagger implements Listener {
     }
 
     /**
-     * This method runs every second, async, and checks to see if the current time - long
-     * has passed the TAG_TIME to remove mob tags. Players get 10 seconds to tag mobs,
-     * and if the mob dies, that players has 10 seconds of priority over the loot.
-     */
-    private void removeTags() {
-        for (UUID playerId : taggedTimers.keySet()) {
-            long startTime = taggedTimers.get(playerId);
-            if (System.currentTimeMillis() - startTime >= TAG_TIME * 1000) {
-                taggedTimers.remove(playerId);
-                taggedMobs.remove(playerId);
-            }
-        }
-        removePriority();
-    }
-
-    /**
-     * Removes pickup restrictions on an item
-     */
-    private void removePriority() {
-        for (ItemStack itemStack : priorityTimers.keySet()) {
-            long startTime = priorityTimers.get(itemStack);
-            if (System.currentTimeMillis() - startTime >= PRIORITY_DURATION * 1000) {
-                priorityTimers.remove(itemStack);
-                priorityItems.remove(itemStack);
-            }
-        }
-    }
-
-    /**
      * This method drops an item in the world with priority to the player who tagged the mob
      *
      * @param player    who tagged the mob
@@ -79,11 +51,12 @@ public class MobTagger implements Listener {
         player.getWorld().dropItem(location, itemStack);
     }
 
-    /**
-     * Checks whether a mob is tagged.
-     */
-    public boolean isTagged(UUID mobID) {
-        return taggedMobs.containsValue(mobID);
+    public ConcurrentHashMap<ItemStack, HashSet<UUID>> getPriorityItems() {
+        return priorityItems;
+    }
+
+    public ConcurrentHashMap<ItemStack, Long> getPriorityTimers() {
+        return priorityTimers;
     }
 
     /**
@@ -98,12 +71,11 @@ public class MobTagger implements Listener {
         return null;
     }
 
-    public ConcurrentHashMap<ItemStack, HashSet<UUID>> getPriorityItems() {
-        return priorityItems;
-    }
-
-    public ConcurrentHashMap<ItemStack, Long> getPriorityTimers() {
-        return priorityTimers;
+    /**
+     * Checks whether a mob is tagged.
+     */
+    public boolean isTagged(UUID mobID) {
+        return taggedMobs.containsValue(mobID);
     }
 
     /**
@@ -126,6 +98,35 @@ public class MobTagger implements Listener {
     @EventHandler
     public void onSpellDamage(MagicDamageEvent e) {
         tagMob(e.getPlayer(), e.getVictim());
+    }
+
+    /**
+     * Removes pickup restrictions on an item
+     */
+    private void removePriority() {
+        for (ItemStack itemStack : priorityTimers.keySet()) {
+            long startTime = priorityTimers.get(itemStack);
+            if (System.currentTimeMillis() - startTime >= PRIORITY_DURATION * 1000) {
+                priorityTimers.remove(itemStack);
+                priorityItems.remove(itemStack);
+            }
+        }
+    }
+
+    /**
+     * This method runs every second, async, and checks to see if the current time - long
+     * has passed the TAG_TIME to remove mob tags. Players get 10 seconds to tag mobs,
+     * and if the mob dies, that players has 10 seconds of priority over the loot.
+     */
+    private void removeTags() {
+        for (UUID playerId : taggedTimers.keySet()) {
+            long startTime = taggedTimers.get(playerId);
+            if (System.currentTimeMillis() - startTime >= TAG_TIME * 1000) {
+                taggedTimers.remove(playerId);
+                taggedMobs.remove(playerId);
+            }
+        }
+        removePriority();
     }
 
     /**

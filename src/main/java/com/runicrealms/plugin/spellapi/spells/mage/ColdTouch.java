@@ -23,12 +23,13 @@ public class ColdTouch extends Spell {
         this.setIsPassive(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Fireball)) return;
         event.setCancelled(true);
+        if (RunicCore.getSpellAPI().isOnCooldown(event.getCaster(), "Frostbolt")) return;
         SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellAPI().getSpell("Frostbolt"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())
