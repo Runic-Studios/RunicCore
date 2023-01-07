@@ -1,20 +1,24 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
 import org.bukkit.block.data.Bisected;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class WildGrowth extends Spell implements HealingSpell {
 
     private static final int DURATION = 4;
-    private static final int HEAL_AMT = 40;
     private static final int RADIUS = 8;
+    private static final double HEAL_AMT = 40.0;
     private static final double HEALING_PER_LEVEL = 1.2;
 
     public WildGrowth() {
@@ -23,7 +27,7 @@ public class WildGrowth extends Spell implements HealingSpell {
                         "it grows over the next " + DURATION + "s. " +
                         "Upon reaching maturity, the flower pops, " +
                         "healing✦ your allies within " + RADIUS + " blocks for (" +
-                        HEAL_AMT + " + &f" + HEALING_PER_LEVEL + "x&7 lvl) health over " + DURATION + "s!",
+                        (int) HEAL_AMT + " + &f" + HEALING_PER_LEVEL + "x&7 lvl) health over " + DURATION + "s!",
                 ChatColor.WHITE, CharacterClass.ARCHER, 20, 30);
     }
 
@@ -41,6 +45,7 @@ public class WildGrowth extends Spell implements HealingSpell {
     }
 
     private void createHealingRunnable(Player player, Location location) {
+        Spell spell = this;
         new BukkitRunnable() {
             int count = 0;
 
@@ -51,15 +56,20 @@ public class WildGrowth extends Spell implements HealingSpell {
                 } else {
                     count += 1;
                     createCircle(player, location, RADIUS, Particle.VILLAGER_HAPPY);
+                    for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
+                        if (!isValidAlly(player, entity)) continue;
+                        Player playerEntity = (Player) entity;
+                        HealUtil.healPlayer(HEAL_AMT / DURATION, playerEntity, player, false, spell);
+                    }
                 }
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Location location = player.getLocation();
-        spawnFlower(location);
+        spawnFlower(player, location);
         new BukkitRunnable() {
             int count = 0;
 
@@ -81,7 +91,7 @@ public class WildGrowth extends Spell implements HealingSpell {
 
     @Override
     public int getHeal() {
-        return HEAL_AMT;
+        return (int) HEAL_AMT;
     }
 
     @Override
@@ -94,10 +104,14 @@ public class WildGrowth extends Spell implements HealingSpell {
      *
      * @param location to spawn the block
      */
-    private void spawnFlower(Location location) {
+    private void spawnFlower(Player player, Location location) {
         Material oldMaterial = location.getBlock().getType();
         location.getBlock().setType(Material.DANDELION, false);
+        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.getBlock().getLocation().add(0.5, 2.5, 0.5));
+        hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.YELLOW + "Wild Growth");
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            hologram.clearLines();
+            hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GREEN + "Wild Growth");
             location.getBlock().setType(Material.SUNFLOWER, false);
             Bisected blockData = (Bisected) location.getBlock().getBlockData();
             blockData.setHalf(Bisected.Half.BOTTOM);
@@ -108,6 +122,7 @@ public class WildGrowth extends Spell implements HealingSpell {
             higher.getBlock().setType(Material.SUNFLOWER, false);
             location.clone().add(0, 1, 0).getBlock().setBlockData(blockData, false);
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+                hologram.delete();
                 location.getBlock().setType(oldMaterial);
                 higher.getBlock().setType(oldMaterialHigher);
             }, DURATION * 20L);

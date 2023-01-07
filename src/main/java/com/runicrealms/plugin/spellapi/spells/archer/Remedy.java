@@ -35,7 +35,7 @@ public class Remedy extends Spell implements HealingSpell {
         super("Remedy",
                 "You and allies within " + RADIUS +
                         " blocks are cleansed of slow effects and healed✦ for (" +
-                        (int) HEAL_AMT + " + &f" + HEALING_PER_LEVEL + "x&7 lvl) health over " + DURATION + "s!",
+                        (int) HEAL_AMT + " + &f" + (int) HEALING_PER_LEVEL + "x&7 lvl) health over " + DURATION + "s!",
                 ChatColor.WHITE, CharacterClass.ARCHER, 8, 20);
     }
 

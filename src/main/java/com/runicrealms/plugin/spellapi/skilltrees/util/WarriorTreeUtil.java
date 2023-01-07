@@ -47,20 +47,20 @@ public class WarriorTreeUtil {
         return perks;
     }
 
-    public static List<Perk> inquisitorPerkList() {
+    public static List<Perk> paladinPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(168, 1, 0, 1, "Throw Axe"));
+        perks.add(new PerkSpell(168, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(169, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(170, 1, 0, 1, "Condemn"));
-        perks.add(new PerkBaseStat(171, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkSpell(170, 1, 0, 1, "Consecration"));
+        perks.add(new PerkBaseStat(171, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(172, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(173, 1, 0, 1, "Rebuke"));
-        perks.add(new PerkBaseStat(174, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkSpell(173, 1, 0, 1, "Rescue"));
+        perks.add(new PerkBaseStat(174, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(175, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(177, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(176, 1, 0, 1, "Rift"));
+        perks.add(new PerkBaseStat(177, 1, 0, 5, Stat.WISDOM));
+        perks.add(new PerkSpell(176, 1, 0, 1, "?"));
         perks.add(new PerkBaseStat(178, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(179, 1, 0, 1, "Subdue"));
+        perks.add(new PerkSpell(179, 1, 0, 1, "Blessed Blade"));
         return perks;
     }
 }

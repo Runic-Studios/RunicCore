@@ -301,9 +301,9 @@ public class SkillTreeData implements SessionData {
             case BARD:
                 return ClericTreeUtil.bardPerkList();
             case CULTIST:
-                return ClericTreeUtil.paladinList();
+                return ClericTreeUtil.cultistPerkList();
             case PRIEST:
-                return ClericTreeUtil.priestList();
+                return ClericTreeUtil.priestPerkList();
             case ARCANIST:
                 return MageTreeUtil.arcanistPerkList();
             case CRYOMANCER:
@@ -321,7 +321,7 @@ public class SkillTreeData implements SessionData {
             case GUARDIAN:
                 return WarriorTreeUtil.guardianPerkList();
             case PALADIN:
-                return WarriorTreeUtil.inquisitorPerkList();
+                return WarriorTreeUtil.paladinPerkList();
         }
         return null;
     }
