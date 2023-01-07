@@ -7,10 +7,12 @@ import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.HashMap;
@@ -87,12 +89,12 @@ public class BossTagger implements Listener {
         bossLooters.put(event.getEntity().getUniqueId(), looters);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // runs late
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         trackBossDamage(event.getPlayer(), event.getVictim(), event.getAmount());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST) // runs late
     public void onSpellDamage(MagicDamageEvent event) {
         trackBossDamage(event.getPlayer(), event.getVictim(), event.getAmount());
     }
@@ -110,14 +112,15 @@ public class BossTagger implements Listener {
         if (bossLooters.get(entity.getUniqueId()).contains(player.getUniqueId())) return;
         UUID playerId = player.getUniqueId();
         UUID bossId = entity.getUniqueId();
-        int maxHP = (int) ((LivingEntity) entity).getMaxHealth();
-        double threshold = maxHP * DAMAGE_PERCENT;
+        LivingEntity livingEntity = (LivingEntity) entity;
+        double threshold = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * DAMAGE_PERCENT;
         if (!bossFighters.get(bossId).containsKey(playerId))
             bossFighters.get(bossId).put(playerId, 0);
         int currentDamageToBossFromPlayer = bossFighters.get(bossId).get(playerId);
         bossFighters.get(bossId).put(playerId, currentDamageToBossFromPlayer + eventAmount);
         currentDamageToBossFromPlayer = bossFighters.get(entity.getUniqueId()).get(playerId);
-        if (currentDamageToBossFromPlayer >= threshold)
+        if (currentDamageToBossFromPlayer >= threshold) {
             bossLooters.get(entity.getUniqueId()).add(playerId);
+        }
     }
 }

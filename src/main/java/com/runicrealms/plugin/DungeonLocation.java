@@ -45,14 +45,14 @@ public enum DungeonLocation {
                     "crypts",
                     "Crypts of Dera",
                     "HeadOfThePharaoh",
-                    BossChestTier.SEBATHS_CAVE
+                    BossChestTier.CRYPTS_OF_DERA
             ),
     FROZEN_FORTRESS
             (
                     "fortress",
                     "Frozen Fortress",
                     "HeadOfEldrid",
-                    BossChestTier.SEBATHS_CAVE
+                    BossChestTier.FROZEN_FORTRESS
             );
 
     private final String identifier;

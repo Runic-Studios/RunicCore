@@ -16,7 +16,7 @@ public class WeightedRandomBag<T> {
 
     public WeightedRandomBag(WeightedRandomBag<T> weightedRandomBag) {
         for (Entry entry : weightedRandomBag.entries) {
-            addEntry(entry.object, entry.accumulatedWeight);
+            addEntry(entry.object, entry.weight);
         }
     }
 
@@ -24,6 +24,7 @@ public class WeightedRandomBag<T> {
         accumulatedWeight += weight;
         Entry e = new Entry();
         e.object = object;
+        e.weight = weight;
         e.accumulatedWeight = accumulatedWeight;
         entries.add(e);
     }
@@ -40,6 +41,7 @@ public class WeightedRandomBag<T> {
     }
 
     private class Entry {
+        double weight;
         double accumulatedWeight;
         T object;
     }

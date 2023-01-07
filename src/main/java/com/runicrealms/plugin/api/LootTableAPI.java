@@ -25,9 +25,34 @@ public interface LootTableAPI {
     ItemStack generateItemStack(ChestItem chestItem, LootChestTier lootChestTier);
 
     /**
+     * @return the loot/drop table for Crypts of Dera
+     */
+    WeightedRandomBag<ChestItem> getLootTableCryptsOfDera();
+
+    /**
+     * @return the loot/drop table for Crystal Cavern
+     */
+    WeightedRandomBag<ChestItem> getLootTableCrystalCavern();
+
+    /**
+     * @return the loot/drop table for Frozen Fortress
+     */
+    WeightedRandomBag<ChestItem> getLootTableFrozenFortress();
+
+    /**
+     * @return the loot/drop table for Jorundr's cave
+     */
+    WeightedRandomBag<ChestItem> getLootTableJorundrsKeep();
+
+    /**
      * @return the loot/drop table for sebath's cave
      */
-    WeightedRandomBag<ChestItem> getLootTableSebaths();
+    WeightedRandomBag<ChestItem> getLootTableSebathsCave();
+
+    /**
+     * @return the loot/drop table for jorundr's cave
+     */
+    WeightedRandomBag<ChestItem> getLootTableSunkenLibrary();
 
     /**
      * @return the loot/drop table for the common tier

@@ -9,12 +9,16 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LootChestManager {
 
     private final HashSet<LootChest> lootChests;
-    private final HashMap<UUID, Map<LootChest, Long>> playerChestCooldownMap; // maps player to which chests they have looted
+    private final ConcurrentHashMap<UUID, Map<LootChest, Long>> playerChestCooldownMap; // maps player to which chests they have looted
     private final File chests = new File(Bukkit.getServer().getPluginManager().getPlugin("RunicCore").getDataFolder(),
             "chests.yml");
     private final FileConfiguration chestConfig = YamlConfiguration.loadConfiguration(chests);
@@ -23,7 +27,7 @@ public class LootChestManager {
     public LootChestManager() {
 
         lootChests = new HashSet<>();
-        playerChestCooldownMap = new HashMap<>();
+        playerChestCooldownMap = new ConcurrentHashMap<>();
         if (locations == null) return;
 
         /*
@@ -59,7 +63,7 @@ public class LootChestManager {
      * @return a set of chests on cooldown
      */
     public Map<LootChest, Long> getChestsOnCDForUuid(UUID uuid) {
-        playerChestCooldownMap.putIfAbsent(uuid, new HashMap<>());
+        playerChestCooldownMap.putIfAbsent(uuid, new ConcurrentHashMap<>());
         return playerChestCooldownMap.get(uuid);
     }
 
