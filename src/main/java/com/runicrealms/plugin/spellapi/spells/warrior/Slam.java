@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -10,9 +11,15 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Slam extends Spell implements PhysicalDamageSpell {
@@ -23,6 +30,7 @@ public class Slam extends Spell implements PhysicalDamageSpell {
     private static final double HEIGHT = 1.2;
     private static final int RADIUS = 3;
     private final boolean ignite;
+    private final Map<UUID, BukkitTask> slamTasks = new HashMap<>();
 
     public Slam() {
         super("Slam",
@@ -65,9 +73,8 @@ public class Slam extends Spell implements PhysicalDamageSpell {
                 player.setVelocity(new Vector
                         (player.getLocation().getDirection().getX(), -10.0,
                                 player.getLocation().getDirection().getZ()).multiply(2).normalize());
-                player.setFallDistance(-512.0F);
-                BukkitTask jumpTask = startSlamTask(player);
-                Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), jumpTask::cancel, 100L); // insurance
+                slamTasks.put(player.getUniqueId(), startSlamTask(player));
+                Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> slamTasks.get(player.getUniqueId()).cancel(), 100L); // insurance
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
@@ -75,6 +82,18 @@ public class Slam extends Spell implements PhysicalDamageSpell {
     @Override
     public double getDamagePerLevel() {
         return DAMAGE_PER_LEVEL;
+    }
+
+    /**
+     * Disable fall damage for players who are lunging
+     */
+    @EventHandler(priority = EventPriority.LOW)
+    public void onFallDamage(GenericDamageEvent event) {
+        if (!slamTasks.containsKey(event.getVictim().getUniqueId())) return;
+        if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE) {
+            event.setCancelled(true);
+            slamTasks.remove(event.getVictim().getUniqueId());
+        }
     }
 
     private BukkitTask startSlamTask(Player player) {
