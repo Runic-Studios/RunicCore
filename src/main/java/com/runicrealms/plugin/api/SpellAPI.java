@@ -94,6 +94,24 @@ public interface SpellAPI {
     boolean isStunned(Entity entity);
 
     /**
+     * Reduces the cooldown of the given spell for the player by the duration (CDR)
+     *
+     * @param player   who cast the spell
+     * @param spell    the spell to reduce CD for
+     * @param duration the duration to reduce the CD (in seconds, so 0.5 for half sec)
+     */
+    void reduceCooldown(Player player, Spell spell, double duration);
+
+    /**
+     * Reduces the cooldown of the given spell for the player by the duration (CDR)
+     *
+     * @param player   who cast the spell
+     * @param spell    the name of the spell to reduce CD for
+     * @param duration the duration to reduce the CD (in seconds, so 0.5 for half sec)
+     */
+    void reduceCooldown(Player player, String spell, double duration);
+
+    /**
      * Removes the custom status effect (root, stun, etc.) from the specified player
      *
      * @param uuid         of the player to remove

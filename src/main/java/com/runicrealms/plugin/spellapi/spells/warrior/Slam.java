@@ -44,6 +44,16 @@ public class Slam extends Spell implements PhysicalDamageSpell {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    public boolean attemptToExecute(Player player) {
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public void executeSpell(Player player, SpellItemType type) {
 
         // sounds, particles
@@ -66,6 +76,7 @@ public class Slam extends Spell implements PhysicalDamageSpell {
         velocity.multiply(new Vector(0.6D, 0.8D, 0.6D));
 
         player.setVelocity(velocity);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> slamTasks.get(player.getUniqueId()).cancel(), 120L); // insurance
 
         new BukkitRunnable() {
             @Override
@@ -74,7 +85,6 @@ public class Slam extends Spell implements PhysicalDamageSpell {
                         (player.getLocation().getDirection().getX(), -10.0,
                                 player.getLocation().getDirection().getZ()).multiply(2).normalize());
                 slamTasks.put(player.getUniqueId(), startSlamTask(player));
-                Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> slamTasks.get(player.getUniqueId()).cancel(), 100L); // insurance
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
@@ -102,7 +112,7 @@ public class Slam extends Spell implements PhysicalDamageSpell {
             @Override
             public void run() {
 
-                if (player.isOnGround() || player.getFallDistance() == 1) { //  || pl.getFallDistance() == 1
+                if (player.isOnGround() || player.getFallDistance() == 1) {
 
                     this.cancel();
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);

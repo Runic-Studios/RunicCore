@@ -31,10 +31,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpellManager implements Listener, SpellAPI {
@@ -70,8 +67,6 @@ public class SpellManager implements Listener, SpellAPI {
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
-        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
-                () -> removeCooldown(player, spell), (long) cooldownTime * 20);
     }
 
     @Override
@@ -207,6 +202,27 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
+    public void reduceCooldown(Player player, Spell spell, double duration) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        if (!playerSpellsOnCooldown.containsKey(spell)) return;
+        long durationToReduce = (long) duration * 1000;
+        playerSpellsOnCooldown.put(spell, playerSpellsOnCooldown.get(spell) - durationToReduce);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void reduceCooldown(Player player, String spell, double duration) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
+        if (!spellOptional.isPresent()) return;
+        long durationToReduce = (long) (duration * 1000);
+        playerSpellsOnCooldown.put(spellOptional.get(), playerSpellsOnCooldown.get(spellOptional.get()) - durationToReduce);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
     public boolean removeStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
         if (statusEffect == RunicStatusEffect.INVULNERABILITY) {
             if (!invulnerableEntities.containsKey(uuid)) return false;
@@ -293,12 +309,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
+        if (silencedEntities.containsKey(event.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(event.getPlayer().getUniqueId())
+                || invulnerableEntities.containsKey(event.getVictim().getUniqueId()))
+            event.setCancelled(true);
     }
 
     @EventHandler
@@ -319,11 +335,11 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @EventHandler
-    public void onSpellHeal(SpellHealEvent e) {
+    public void onSpellHeal(SpellHealEvent event) {
         if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
+        if (silencedEntities.containsKey(event.getPlayer().getUniqueId())
+                || stunnedEntities.containsKey(event.getPlayer().getUniqueId()))
+            event.setCancelled(true);
     }
 
     /**
@@ -409,6 +425,9 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Conflagration());
         this.spellList.add(new Shatter());
         this.spellList.add(new TippedArrows());
+        this.spellList.add(new Remedy());
+        this.spellList.add(new WildGrowth());
+        this.spellList.add(new GiftsOfTheWoad());
         /*
         Items
          */
@@ -459,7 +478,7 @@ public class SpellManager implements Listener, SpellAPI {
 
                         for (Spell spell : spells.keySet()) {
                             if (getUserCooldown(player, spell) <= 0)
-                                removeCooldown(player, spell); // insurance
+                                removeCooldown(player, spell);
                             else
                                 cdString.add(ChatColor.DARK_RED + spell.getName() + ChatColor.DARK_RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
                         }
@@ -468,6 +487,6 @@ public class SpellManager implements Listener, SpellAPI {
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(this.plugin, 0, 10L);
+        }.runTaskTimerAsynchronously(this.plugin, 0, 5L); // every 0.25s
     }
 }

@@ -49,18 +49,18 @@ public class ArcherTreeUtil {
 
     public static List<Perk> wardenPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(12, 1, 0, 1, "Grapple"));
-        perks.add(new PerkBaseStat(13, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(14, 1, 0, 1, "Wing Clip"));
-        perks.add(new PerkBaseStat(15, 1, 0, 3, Stat.DEXTERITY));
-        perks.add(new PerkBaseStat(16, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(17, 1, 0, 1, "Disengage"));
-        perks.add(new PerkBaseStat(18, 1, 0, 3, Stat.DEXTERITY));
-        perks.add(new PerkBaseStat(19, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkBaseStat(21, 1, 0, 5, Stat.DEXTERITY));
-        perks.add(new PerkSpell(20, 1, 0, 1, "Effigy"));
-        perks.add(new PerkBaseStat(22, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(23, 1, 0, 1, "Escape Artist"));
+        perks.add(new PerkSpell(12, 1, 0, 1, "Remedy"));
+        perks.add(new PerkBaseStat(13, 1, 0, 5, Stat.WISDOM));
+        perks.add(new PerkSpell(14, 1, 0, 1, "Ambush"));
+        perks.add(new PerkBaseStat(15, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(16, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(17, 1, 0, 1, "Net Trap"));
+        perks.add(new PerkBaseStat(18, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(19, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkBaseStat(21, 1, 0, 5, Stat.STRENGTH));
+        perks.add(new PerkSpell(20, 1, 0, 1, "Wild Growth"));
+        perks.add(new PerkBaseStat(22, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(23, 1, 0, 1, "Gifts of the Woad"));
         return perks;
     }
 }
