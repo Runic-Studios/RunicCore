@@ -2,6 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
+import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -133,7 +134,7 @@ public class BowListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onDraw(PlayerInteractEvent event) {
 
         // null check
@@ -185,7 +186,7 @@ public class BowListener implements Listener {
 
         player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
 
-        // fire a custom arrow
+        // Fire a custom arrow
         final Vector direction = player.getEyeLocation().getDirection().multiply(ARROW_SPEED_MULTIPLIER);
         Arrow myArrow = player.launchProjectile(Arrow.class);
 
@@ -195,7 +196,7 @@ public class BowListener implements Listener {
         myArrow.setCustomName("autoAttack");
         myArrow.setBounce(false);
 
-        // remove the arrow
+        // Remove the arrow
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -207,18 +208,21 @@ public class BowListener implements Listener {
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-        // set the cooldown
+        // Set the cooldown
         player.setCooldown(artifact.getType(), BOW_GLOBAL_COOLDOWN);
+
+        // Call custom event
+        Bukkit.getPluginManager().callEvent(new RunicBowEvent(player, myArrow));
     }
 
     /**
      * Stop mobs from targeting each other.
      */
     @EventHandler(priority = EventPriority.HIGH)
-    public void onMobTargetMob(EntityTargetEvent e) {
-        if (e.getTarget() == null) return; // has a target
-        if (!MythicMobs.inst().getMobManager().getActiveMob(e.getTarget().getUniqueId()).isPresent())
+    public void onMobTargetMob(EntityTargetEvent event) {
+        if (event.getTarget() == null) return; // has a target
+        if (!MythicMobs.inst().getMobManager().getActiveMob(event.getTarget().getUniqueId()).isPresent())
             return; // target is a mythic mob
-        e.setCancelled(true);
+        event.setCancelled(true);
     }
 }
