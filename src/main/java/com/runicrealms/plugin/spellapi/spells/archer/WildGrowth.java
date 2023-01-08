@@ -108,7 +108,7 @@ public class WildGrowth extends Spell implements HealingSpell {
         Material oldMaterial = location.getBlock().getType();
         location.getBlock().setType(Material.DANDELION, false);
         Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.getBlock().getLocation().add(0.5, 2.5, 0.5));
-        hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GRAY + "Sapling");
+        hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GRAY + "Seedling");
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             hologram.clearLines();
             hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.GREEN + "Wild Growth");

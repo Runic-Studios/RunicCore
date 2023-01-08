@@ -21,8 +21,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class HoningShot extends Spell implements PhysicalDamageSpell {
+public class HomingShot extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 20;
     private static final int DURATION = 6;
@@ -31,8 +30,8 @@ public class HoningShot extends Spell implements PhysicalDamageSpell {
     private static final double DAMAGE_PER_LEVEL = 2.75;
     private final Set<ProjectileSource> honingPlayers;
 
-    public HoningShot() {
-        super("Honing Shot",
+    public HomingShot() {
+        super("Homing Shot",
                 "You aim down your sights, massively slowing yourself for " +
                         DURATION + "s, or until your next shot. " +
                         "You aim at a location within " + MAX_DIST + " blocks, and the " +

@@ -32,6 +32,7 @@ public class Ambush extends Spell {
     private static final double DAMAGE_PER_LEVEL = 1.0;
     private static final String AMBUSH_ARROW_KEY = "ambush";
     private final Set<UUID> ambushPlayers = new HashSet<>();
+    private final Set<UUID> cooldownPlayers = new HashSet<>();
     private final Set<UUID> successfulPlayers = new HashSet<>();
     private final Map<UUID, BukkitTask> sneakMap = new HashMap<>();
 
@@ -73,9 +74,9 @@ public class Ambush extends Spell {
         ambushPlayers.remove(event.getPlayer().getUniqueId());
         event.getArrow().setMetadata(AMBUSH_ARROW_KEY, new FixedMetadataValue(plugin, event.getPlayer().getUniqueId()));
         EntityTrail.entityTrail(event.getArrow(), Particle.SMOKE_NORMAL);
+        cooldownPlayers.add(event.getPlayer().getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> cooldownPlayers.remove(event.getPlayer().getUniqueId()), COOLDOWN * 20L);
     }
-
-    // todo: cooldown?
 
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
@@ -86,6 +87,7 @@ public class Ambush extends Spell {
     @EventHandler
     public void onToggleSneak(PlayerToggleSneakEvent event) {
         if (ambushPlayers.contains(event.getPlayer().getUniqueId())) return;
+        if (cooldownPlayers.contains(event.getPlayer().getUniqueId())) return;
         if (event.isSneaking()) {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
