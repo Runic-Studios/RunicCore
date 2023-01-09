@@ -70,6 +70,8 @@ public class Ambush extends Spell {
 
     @EventHandler(priority = EventPriority.LOW) // early
     public void onRunicBow(RunicBowEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!ambushPlayers.contains(event.getPlayer().getUniqueId())) return;
         ambushPlayers.remove(event.getPlayer().getUniqueId());
         event.getArrow().setMetadata(AMBUSH_ARROW_KEY, new FixedMetadataValue(plugin, event.getPlayer().getUniqueId()));
@@ -80,12 +82,16 @@ public class Ambush extends Spell {
 
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (ambushPlayers.contains(event.getCaster().getUniqueId())) return;
         sneakMap.get(event.getCaster().getUniqueId()).cancel();
     }
 
     @EventHandler
     public void onToggleSneak(PlayerToggleSneakEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (ambushPlayers.contains(event.getPlayer().getUniqueId())) return;
         if (cooldownPlayers.contains(event.getPlayer().getUniqueId())) return;
         if (event.isSneaking()) {

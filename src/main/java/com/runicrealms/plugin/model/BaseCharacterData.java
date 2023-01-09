@@ -128,8 +128,8 @@ public class BaseCharacterData implements SessionData {
     public MongoData writeToMongo(MongoData mongoData, int... slot) {
         PlayerMongoData playerMongoData = (PlayerMongoData) mongoData;
         PlayerMongoDataSection character = playerMongoData.getCharacter(slot[0]);
-        character.set("currentHP", this.currentHp);
-        character.set("storedHunger", this.storedHunger);
+        character.set(CharacterField.CURRENT_HEALTH.getField(), this.currentHp);
+        character.set(CharacterField.STORED_HUNGER.getField(), this.storedHunger);
         DatabaseHelper.saveLocation(character, this.location);
         return playerMongoData;
     }
