@@ -161,7 +161,7 @@ public class PlayerMenuListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         if (event.getClickedInventory() == null) return;
         if (event.getClickedInventory().getType() != InventoryType.CRAFTING) return;
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         if (event.getClickedInventory().equals(event.getView().getBottomInventory())) return;
         if (!PLAYER_CRAFTING_SLOTS.contains(event.getSlot())) return;
         event.setCancelled(true);
@@ -195,7 +195,7 @@ public class PlayerMenuListener implements Listener {
     public void onInventoryDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
         if (!event.getInventory().getType().equals(InventoryType.CRAFTING)) return;
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         if (event.getInventory().equals(event.getView().getBottomInventory())) return;
         if (event.getInventorySlots().contains(1) || event.getInventorySlots().contains(2)
                 || event.getInventorySlots().contains(3) || event.getInventorySlots().contains(4)) {

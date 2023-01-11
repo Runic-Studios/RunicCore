@@ -124,7 +124,7 @@ public class HearthstoneListener implements Listener {
         int itemSlot = e.getSlot();
         // if it's the 8th slot in a player's inventory, run the stuff
         if (itemSlot != 8) return;
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         if (e.getClickedInventory() == null) return;
         if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
         e.setCancelled(true);

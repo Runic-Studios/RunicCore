@@ -33,7 +33,7 @@ public class RuneListener implements Listener {
     @EventHandler
     public void onCharacterLoad(CharacterSelectEvent event) {
         Player pl = event.getPlayer();
-        if (pl.getGameMode() != GameMode.SURVIVAL) return;
+        if (pl.getGameMode() == GameMode.CREATIVE) return;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -63,7 +63,7 @@ public class RuneListener implements Listener {
         if (meta == null) return;
 
         // only activate in survival mode to save builders the headache
-        if (pl.getGameMode() != GameMode.SURVIVAL) return;
+        if (pl.getGameMode() == GameMode.CREATIVE) return;
 
         // only listen for a player inventory
         if (event.getClickedInventory() == null) return;

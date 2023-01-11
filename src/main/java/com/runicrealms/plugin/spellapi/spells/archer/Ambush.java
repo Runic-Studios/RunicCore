@@ -82,6 +82,7 @@ public class Ambush extends Spell {
 
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
+        if (!sneakMap.containsKey(event.getCaster().getUniqueId())) return;
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (ambushPlayers.contains(event.getCaster().getUniqueId())) return;
@@ -104,7 +105,8 @@ public class Ambush extends Spell {
             }, WARMUP * 20L);
             sneakMap.put(event.getPlayer().getUniqueId(), bukkitTask);
         } else {
-            sneakMap.get(event.getPlayer().getUniqueId()).cancel();
+            if (sneakMap.containsKey(event.getPlayer().getUniqueId()))
+                sneakMap.get(event.getPlayer().getUniqueId()).cancel();
         }
     }
 }

@@ -31,7 +31,7 @@ public class RunicDamage implements CommandExecutor {
                 return true;
             if (pl == null)
                 return true;
-            if (pl.getGameMode() != GameMode.SURVIVAL)
+            if (pl.getGameMode() == GameMode.CREATIVE)
                 return true;
 
             MobDamageEvent e = new MobDamageEvent(amount, caster, pl, false);
