@@ -28,7 +28,6 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class BowListener implements Listener {
 
     private static final int ARROW_SPEED_MULTIPLIER = 3;
@@ -52,38 +51,37 @@ public class BowListener implements Listener {
      * Method to handle custom damage for bows
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onDamage(EntityDamageByEntityEvent e) {
-
+    public void onDamage(EntityDamageByEntityEvent event) {
         // only listen for arrows
-        if (!(e.getDamager() instanceof Arrow)) return;
+        if (!(event.getDamager() instanceof Arrow)) return;
 
-        Arrow arrow = (Arrow) e.getDamager();
+        Arrow arrow = (Arrow) event.getDamager();
         if (!(arrow.getShooter() instanceof LivingEntity)) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
+        if (!(event.getEntity() instanceof LivingEntity)) return;
         Entity shooter = (Entity) arrow.getShooter();
 
         // only listen for arrows NOT shot by a player
         if (!(arrow.getShooter() instanceof Player)) {
             // mobs
-            e.setCancelled(true);
-            double dmgAmt = e.getDamage();
+            event.setCancelled(true);
+            double dmgAmt = event.getDamage();
             if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(shooter).getUniqueId())) {
-                if (MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId()))
+                if (MythicMobs.inst().getMobManager().isActiveMob(event.getEntity().getUniqueId()))
                     return; // don't let mobs shoot each other
                 ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
                 dmgAmt = mm.getDamage();
             }
-            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), e.getEntity(), false);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
-                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
-                        (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
+            MobDamageEvent mobDamageEvent = new MobDamageEvent((int) Math.ceil(dmgAmt), event.getDamager(), event.getEntity(), false);
+            Bukkit.getPluginManager().callEvent(mobDamageEvent);
+            if (!mobDamageEvent.isCancelled())
+                DamageUtil.damageEntityMob(Math.ceil(mobDamageEvent.getAmount()),
+                        (LivingEntity) mobDamageEvent.getVictim(), event.getDamager(), mobDamageEvent.shouldApplyMechanics());
         } else {
 
             // bugfix for armor stands
-            Entity victim = e.getEntity();
-            if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
-                victim = e.getEntity().getVehicle();
+            Entity victim = event.getEntity();
+            if (event.getEntity() instanceof ArmorStand && event.getEntity().getVehicle() != null) {
+                victim = event.getEntity().getVehicle();
             }
 
             // get our entity
@@ -105,7 +103,7 @@ public class BowListener implements Listener {
 
             // player can't damage themselves
             if (victim == damager) {
-                e.setCancelled(true);
+                event.setCancelled(true);
                 return;
             }
 
@@ -128,21 +126,21 @@ public class BowListener implements Listener {
             // spawn the damage indicator if the arrow is a basic attack
             if (arrow.getCustomName() == null) return;
 
-            e.setCancelled(true);
+            event.setCancelled(true);
 
             DamageUtil.damageEntityRanged(randomNum, (LivingEntity) victim, damager, true, arrow);
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDraw(PlayerInteractEvent event) {
-
-        // null check
         if (event.getItem() == null) return;
-
         if (event.getHand() != EquipmentSlot.HAND) return;
-
-        // retrieve the weapon type
+        if (event.getPlayer().getCooldown(Material.BOW) != 0) {
+            event.setCancelled(true);
+            return;
+        }
+        // Retrieve the weapon type
         ItemStack artifact = event.getItem();
         if (event.getPlayer().getInventory().getItemInOffHand().equals(artifact))
             return; // don't let them fire from offhand
@@ -157,8 +155,9 @@ public class BowListener implements Listener {
 
         Player player = event.getPlayer();
 
-        // only listen for left clicks
+        // only listen for right clicks
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+        if (event.getAction() == Action.PHYSICAL) return;
 
         // only apply cooldown if it's not already active
         if (cooldown != 0) return;
@@ -175,19 +174,20 @@ public class BowListener implements Listener {
             reqLv = 0;
         }
 
+        event.setCancelled(true);
+
         if (reqLv > player.getLevel()) {
             player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-            event.setCancelled(true);
             return;
         }
 
         if (RunicCore.getSpellAPI().isCasting(player)) return;
 
-        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.25f, 1);
 
         // Fire a custom arrow
-        final Vector direction = player.getEyeLocation().getDirection().multiply(ARROW_SPEED_MULTIPLIER);
+        final Vector direction = player.getLocation().getDirection().multiply(ARROW_SPEED_MULTIPLIER);
         Arrow myArrow = player.launchProjectile(Arrow.class);
 
         myArrow.setVelocity(direction);
