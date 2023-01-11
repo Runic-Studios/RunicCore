@@ -12,15 +12,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Whirlwind extends Spell implements MagicDamageSpell {
-
     private static final int DAMAGE_AMT = 4;
     private static final double DAMAGE_PER_LEVEL = .25;
     private static final int DURATION = 10;
     private static final float RADIUS = 2f;
 
-    // constructor
     public Whirlwind() {
         super("Whirlwind",
                 "For " + DURATION + " seconds, you unleash the " +
@@ -56,30 +53,18 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
         return DAMAGE_PER_LEVEL;
     }
 
-    /**
-     * @param player
-     * @param location
-     * @param x
-     * @param z
-     */
     private void spawnCloud(Player player, Location location, double x, double z) {
         location.add(x, 0, z);
         player.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 0);
         location.subtract(x, 0, z);
     }
 
-    /**
-     * @param player
-     */
     private void spawnCycloneParticle(Player player) {
-
-        Location location = player.getLocation();
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
-
         Location location1 = player.getEyeLocation();
         Location location2 = player.getEyeLocation().add(0, 1, 0);
         Location location3 = player.getEyeLocation().subtract(0, 1, 0);
-        int particles = 50;
+        int particles = 15;
         float radius = RADIUS;
 
         for (int i = 0; i < particles; i++) {
