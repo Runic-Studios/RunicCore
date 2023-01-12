@@ -87,6 +87,7 @@ public class StatListener implements Listener {
 
     @EventHandler
     public void onSpellHealing(SpellHealEvent event) {
+        if (event.getSpell() == null) return; // potions, other effects
         UUID uuid = event.getPlayer().getUniqueId();
         double healAmountBonusPercent = Stat.getSpellHealingMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
         event.setAmount((int) (event.getAmount() + Math.ceil(event.getAmount() * healAmountBonusPercent)));
