@@ -33,7 +33,7 @@ public class RunicArrow extends Spell implements MagicDamageSpell {
 
     public RunicArrow() {
         super("Runic Arrow",
-                "You launch an enchanted arrow which " +
+                "You launch an enchanted arrow that " +
                         "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl)" + " magicʔ damage on-hit to " +
                         "all enemies within " + RADIUS + " blocks!",

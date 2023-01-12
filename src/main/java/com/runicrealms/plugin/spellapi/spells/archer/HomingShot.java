@@ -35,7 +35,7 @@ public class HomingShot extends Spell implements PhysicalDamageSpell {
         super("Homing Shot",
                 "You aim down your sights, massively slowing yourself for " +
                         DURATION + "s, or until your next shot. " +
-                        "You aim at a location within " + MAX_DIST + " blocks, and the " +
+                        "You aim at a block within " + MAX_DIST + " blocks, and the " +
                         "closest enemy within " + RADIUS +
                         " blocks of your target " +
                         "location will be hit by an unavoidable arrow, dealing " +

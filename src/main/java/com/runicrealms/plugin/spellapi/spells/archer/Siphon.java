@@ -4,10 +4,10 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 
-public class Shadowmeld extends Spell {
+public class Siphon extends Spell {
 
-    public Shadowmeld() {
-        super("Shadowmeld",
+    public Siphon() {
+        super("Siphon",
                 "?",
                 ChatColor.WHITE, CharacterClass.ARCHER, 0, 0);
         this.setIsPassive(true);

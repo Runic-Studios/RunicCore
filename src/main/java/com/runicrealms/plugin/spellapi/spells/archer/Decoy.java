@@ -55,7 +55,6 @@ public class Decoy extends Spell {
         for (Block block : decoyStructure.getBlocks().keySet()) {
             if (event.getHitBlock().equals(block)) {
                 Location location = decoyStructure.getLocation();
-//                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
                 decoyMap.remove(player.getUniqueId());
                 decoyStructure.destroy();
                 player.teleport(location);
@@ -100,12 +99,6 @@ public class Decoy extends Spell {
             Block helmetBlock = location.add(0, 1, 0).getBlock();
             blocks.put(helmetBlock, helmetBlock.getType());
             helmetBlock.setType(Material.JACK_O_LANTERN, false);
-//            Block firstArm = location.add(-1, -1, 0).getBlock();
-//            blocks.put(firstArm, firstArm.getType());
-//            firstArm.setType(Material.OAK_FENCE, false);
-//            Block secondArm = location.add(2, 0, 0).getBlock();
-//            blocks.put(secondArm, secondArm.getType());
-//            secondArm.setType(Material.OAK_FENCE, false);
             this.bukkitTask = Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), this::destroy, DURATION * 20L);
         }
 
