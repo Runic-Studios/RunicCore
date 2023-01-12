@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class RunicExpListener implements Listener {
 
-    private static final int LEVEL_CUTOFF = 5;
+    private static final int LEVEL_CUTOFF = 8;
     private static final double PARTY_BONUS = 15;
     private static final int RANGE = 100;
 

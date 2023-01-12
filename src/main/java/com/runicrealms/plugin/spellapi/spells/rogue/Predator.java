@@ -30,6 +30,7 @@ public class Predator extends Spell {
 
     @EventHandler(priority = EventPriority.HIGH) // runs last
     public void onPredatorHit(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!predators.contains(event.getPlayer().getUniqueId())) return;
