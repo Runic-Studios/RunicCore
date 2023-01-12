@@ -36,7 +36,7 @@ public class BowListener implements Listener {
     /**
      * Removes any arrows stuck in bodies
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH) // late
     public void onArrow(ProjectileHitEvent event) {
         if (event.getEntity() instanceof Arrow)
             event.getEntity().remove();

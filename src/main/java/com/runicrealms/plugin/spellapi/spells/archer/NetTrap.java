@@ -98,7 +98,7 @@ public class NetTrap extends Spell {
         if (livingEntity instanceof Player) {
             Player player = (Player) livingEntity;
             Location higher = player.getLocation().add(0, 2, 0);
-            player.getWorld().spawnParticle(Particle.CRIT, higher, 15, 0.25f, 0.25f, 0.25f);
+            player.getWorld().spawnParticle(Particle.CRIT, higher, 15, 0.25f, 0.25f, 0.25f, 0);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 1.0f);
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.25f, 1.0f);
             player.teleport(higher);

@@ -60,6 +60,7 @@ public class Ambush extends Spell {
     public void onRangedPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (!event.isRanged()) return;
+        if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!successfulPlayers.contains(event.getPlayer().getUniqueId())) return;
         successfulPlayers.remove(event.getPlayer().getUniqueId());

@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -25,8 +26,8 @@ public class HomingShot extends Spell implements PhysicalDamageSpell {
 
     private static final int DAMAGE = 20;
     private static final int DURATION = 6;
-    private static final int MAX_DIST = 40;
-    private static final int RADIUS = 4;
+    private static final int MAX_DIST = 50;
+    private static final int RADIUS = 5;
     private static final double DAMAGE_PER_LEVEL = 2.75;
     private final Set<ProjectileSource> honingPlayers;
 
@@ -66,8 +67,10 @@ public class HomingShot extends Spell implements PhysicalDamageSpell {
         player.removePotionEffect(PotionEffectType.SLOW);
         for (Entity entity : player.getWorld().getNearbyEntities(targetLocation, RADIUS, RADIUS, RADIUS)) {
             if (!isValidEnemy(player, entity)) continue;
+            entity.getWorld().spawnParticle(Particle.FLAME, entity.getLocation(), 15, 0.25f, 0.25f, 0.25f, 0);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.25f, 1.0f);
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 0.2f);
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.2f);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 1.0f);
             DamageUtil.damageEntityPhysical(DAMAGE, (LivingEntity) entity, player, false, true, this);
             return;
         }

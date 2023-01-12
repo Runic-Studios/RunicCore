@@ -425,6 +425,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new NetTrap());
         this.spellList.add(new WildGrowth());
         this.spellList.add(new GiftsOfTheWoad());
+        this.spellList.add(new Decoy());
         /*
         Items
          */

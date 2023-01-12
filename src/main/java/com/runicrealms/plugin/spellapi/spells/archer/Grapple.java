@@ -28,17 +28,17 @@ public class Grapple extends Spell {
 
     public Grapple() {
         super("Grapple",
-                "You fire a grappling hook which pulls " +
+                "You fire a grappling hook that pulls " +
                         "you to your target location, up to a max " +
                         "of " + (int) HOOK_LENGTH + " blocks!",
                 ChatColor.WHITE, CharacterClass.ARCHER, 14, 25);
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1);
-        startTask(pl);
+    public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1);
+        startTask(player);
     }
 
     // handles the vector

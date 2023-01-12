@@ -119,7 +119,6 @@ public class RunicItemShopManager implements Listener, ShopAPI {
             String displayName = runicShopItem.getShopItem().getItemMeta() != null ? runicShopItem.getShopItem().getItemMeta().getDisplayName() : "Item";
             player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
         }
-        player.closeInventory();
         runicShopItem.runBuy(player);
     }
 
