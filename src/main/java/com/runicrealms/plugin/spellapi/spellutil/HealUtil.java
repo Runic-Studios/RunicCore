@@ -4,10 +4,13 @@ import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+
+import java.util.Arrays;
 
 public class HealUtil {
 
@@ -49,20 +52,21 @@ public class HealUtil {
                 }
             }
 
-            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0, 1.5, 0), difference, event.isCritical());
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.GREEN;
+            HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), chatColor + "+" + (int) difference + " ❤✦");
 
         } else {
 
             recipient.setHealth(newHP);
-            HologramUtil.createHealHologram(recipient, recipient.getLocation().add(0, 1.5, 0), healAmt, event.isCritical());
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.GREEN;
+            HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), chatColor + "+" + (int) healAmt + " ❤✦");
         }
         recipient.playSound(recipient.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 0.5f);
         recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 3, 0.35F, 0.35F, 0.35F, 0);
 
-        // call a new health regen event to communicate with all the other events that depend on this.
+        // Call a new health regen event
         Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, healAmt, EntityRegainHealthEvent.RegainReason.CUSTOM));
     }
-
 }
 
 

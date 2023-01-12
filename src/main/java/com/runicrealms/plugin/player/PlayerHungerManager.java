@@ -71,7 +71,7 @@ public class PlayerHungerManager implements Listener {
 
     private void restoreHunger(Player player) {
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-        player.sendMessage(ChatColor.GREEN + "You feel safe within the city! Your hunger has been restored.");
+        player.sendMessage(ChatColor.GREEN + "You feel rested within the city! Your hunger has been restored.");
         player.setFoodLevel(20);
     }
 

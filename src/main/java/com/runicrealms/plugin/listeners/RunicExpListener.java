@@ -135,8 +135,6 @@ public class RunicExpListener implements Listener {
                     }
                     createExpHologram(player, loc, ColorUtil.format("&7+ " + expColor + event.getFinalAmount() + " &7exp"), 2.5f);
                     createExpHologram(player, loc, ColorUtil.format("&f" + player.getName()), 2.25f);
-//                    HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&7+ " + expColor + event.getFinalAmount() + " &7exp"), 0, 2.5, 0);
-//                    HologramUtil.createStaticHologram(player, loc.clone(), ColorUtil.format("&f" + player.getName()), 0, 2.25, 0);
                 }
                 PlayerLevelUtil.giveExperience(event.getPlayer(), event.getFinalAmount(), jedis);
 
