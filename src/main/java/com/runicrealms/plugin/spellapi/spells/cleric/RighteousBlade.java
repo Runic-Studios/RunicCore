@@ -22,30 +22,12 @@ public class RighteousBlade extends Spell implements HealingSpell {
 
     public RighteousBlade() {
         super("Righteous Blade",
-                "Your melee weapon⚔ attacks have a " + (int) PERCENT + "% chance " +
+                "Your basic attacks have a " + (int) PERCENT + "% chance " +
                         "to heal✦ yourself and allies within " + RADIUS + " blocks " +
                         "for (" + HEAL_AMOUNT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) health!",
                 ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
-    }
-
-    @EventHandler
-    public void onHealingHit(PhysicalDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        if (!e.isBasicAttack()) return;
-        healAllies(e.getPlayer());
-    }
-
-    private void healAllies(Player pl) {
-        Random rand = new Random();
-        int roll = rand.nextInt(100) + 1;
-        if (roll > PERCENT) return;
-        HealUtil.healPlayer(HEAL_AMOUNT, pl, pl, false, this);
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!isValidAlly(pl, en)) continue;
-            HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, pl, false, this);
-        }
     }
 
     @Override
@@ -56,6 +38,24 @@ public class RighteousBlade extends Spell implements HealingSpell {
     @Override
     public double getHealingPerLevel() {
         return HEALING_PER_LEVEL;
+    }
+
+    private void healAllies(Player player) {
+        Random rand = new Random();
+        int roll = rand.nextInt(100) + 1;
+        if (roll > PERCENT) return;
+        HealUtil.healPlayer(HEAL_AMOUNT, player, player, false, this);
+        for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!isValidAlly(player, en)) continue;
+            HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, player, false, this);
+        }
+    }
+
+    @EventHandler
+    public void onHealingHit(PhysicalDamageEvent event) {
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!event.isBasicAttack()) return;
+        healAllies(event.getPlayer());
     }
 }
 

@@ -19,7 +19,7 @@ public class Challenger extends Spell {
 
     public Challenger() {
         super("Challenger",
-                "Your weapon⚔ attacks also deal " + (int) (HEALTH_MULT * 100) +
+                "Your basic attacks also deal " + (int) (HEALTH_MULT * 100) +
                         "% of your enemy's max health! Capped at " + DAMAGE_CAP +
                         " versus monsters.",
                 ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);

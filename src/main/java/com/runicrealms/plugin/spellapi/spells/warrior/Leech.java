@@ -23,7 +23,7 @@ public class Leech extends Spell implements HealingSpell {
 
     public Leech() {
         super("Leech",
-                "For " + BUFF_DURATION + " seconds, your weapon⚔ " +
+                "For " + BUFF_DURATION + " seconds, your basic " +
                         "attacks restore✸ (" + HEAL_AMT + " + &f" + HEALING_PER_LEVEL +
                         "x&7 lvl) of your health!",
                 ChatColor.WHITE, CharacterClass.WARRIOR, 20, 35);
@@ -47,6 +47,16 @@ public class Leech extends Spell implements HealingSpell {
         }, BUFF_DURATION * 20L);
     }
 
+    @Override
+    public int getHeal() {
+        return HEAL_AMT;
+    }
+
+    @Override
+    public double getHealingPerLevel() {
+        return HEALING_PER_LEVEL;
+    }
+
     /*
      * Activate on-hit effects
      */
@@ -56,16 +66,6 @@ public class Leech extends Spell implements HealingSpell {
         if (e.isCancelled()) return;
         Player pl = e.getPlayer();
         HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
-    }
-
-    @Override
-    public int getHeal() {
-        return HEAL_AMT;
-    }
-
-    @Override
-    public double getHealingPerLevel() {
-        return HEALING_PER_LEVEL;
     }
 }
 

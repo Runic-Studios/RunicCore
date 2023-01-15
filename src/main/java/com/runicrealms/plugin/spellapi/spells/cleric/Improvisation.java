@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Improvisation extends Spell {
 
     private static final int DURATION = 2;
@@ -26,7 +25,7 @@ public class Improvisation extends Spell {
 
     public Improvisation() {
         super("Improvisation",
-                "Your melee weapon⚔ attacks have a " + PERCENT + "% chance " +
+                "Your basic attacks have a " + PERCENT + "% chance " +
                         "to grant yourself and nearby allies within " + RADIUS + " " +
                         "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% physical⚔ damage buff " +
                         "for " + DURATION + "s!",
@@ -35,42 +34,42 @@ public class Improvisation extends Spell {
         buffedPlayers = new HashSet<>();
     }
 
-    @EventHandler
-    public void onWeaponHit(PhysicalDamageEvent e) {
-        Player player = e.getPlayer();
-        if (hasPassive(player.getUniqueId(), this.getName()) && e.isBasicAttack())
-            attemptToBuffAllies(player);
-        if (buffedPlayers.contains(player.getUniqueId())) {
-            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
-            e.getVictim().getWorld().spawnParticle
-                    (Particle.NOTE, e.getVictim().getLocation().add(0, 1.5, 0),
-                            5, 1.0F, 0, 0, 0);
-            e.setAmount((int) (e.getAmount() + (e.getAmount() * PERCENT_DAMAGE)));
-        }
-    }
-
-    private void attemptToBuffAllies(Player pl) {
+    private void attemptToBuffAllies(Player player) {
 
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
 
-        buffPlayer(pl);
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!(isValidAlly(pl, en))) continue;
-            buffPlayer((Player) en);
+        buffPlayer(player);
+        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!(isValidAlly(player, entity))) continue;
+            buffPlayer((Player) entity);
         }
     }
 
-    private void buffPlayer(Player pl) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.5F, 0.5F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.5F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.3F);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.1F);
-        pl.getWorld().spawnParticle
-                (Particle.NOTE, pl.getEyeLocation(), 15, 0.75F, 0.75F, 0.75F, 0);
-        buffedPlayers.add(pl.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> buffedPlayers.remove(pl.getUniqueId()), DURATION * 20L);
+    private void buffPlayer(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.5F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.5F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.3F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.1F);
+        player.getWorld().spawnParticle
+                (Particle.NOTE, player.getEyeLocation(), 15, 0.75F, 0.75F, 0.75F, 0);
+        buffedPlayers.add(player.getUniqueId());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> buffedPlayers.remove(player.getUniqueId()), DURATION * 20L);
+    }
+
+    @EventHandler
+    public void onWeaponHit(PhysicalDamageEvent event) {
+        Player player = event.getPlayer();
+        if (hasPassive(player.getUniqueId(), this.getName()) && event.isBasicAttack())
+            attemptToBuffAllies(player);
+        if (buffedPlayers.contains(player.getUniqueId())) {
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
+            event.getVictim().getWorld().spawnParticle
+                    (Particle.NOTE, event.getVictim().getLocation().add(0, 1.5, 0),
+                            5, 1.0F, 0, 0, 0);
+            event.setAmount((int) (event.getAmount() + (event.getAmount() * PERCENT_DAMAGE)));
+        }
     }
 }
 

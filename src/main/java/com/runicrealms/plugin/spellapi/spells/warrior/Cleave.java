@@ -20,7 +20,7 @@ public class Cleave extends Spell {
     public Cleave() {
         super("Cleave",
                 "While your &aEnrage &7spell is active, " +
-                        "your basic weapon⚔ attacks cleave enemies within " + RADIUS + " " +
+                        "your basic attacks cleave enemies within " + RADIUS + " " +
                         "blocks for " + (int) (PERCENT * 100) + "% damage! Max " + MAX_TARGETS +
                         " additional targets.",
                 ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
@@ -28,20 +28,20 @@ public class Cleave extends Spell {
     }
 
     @EventHandler
-    public void onPhysicalDamage(PhysicalDamageEvent e) {
-        if (!hasPassive(e.getPlayer().getUniqueId(), this.getName())) return;
-        if (!Enrage.getRagers().contains(e.getPlayer().getUniqueId())) return;
-        if (!e.isBasicAttack()) return; // only listen for basic attacks
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!Enrage.getRagers().contains(event.getPlayer().getUniqueId())) return;
+        if (!event.isBasicAttack()) return; // only listen for basic attacks
         // aoe
         int targetsHit = 0;
-        Player pl = e.getPlayer();
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!isValidEnemy(pl, en)) continue;
-            if (en.equals(e.getVictim())) continue;
+        Player player = event.getPlayer();
+        for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!isValidEnemy(player, en)) continue;
+            if (en.equals(event.getVictim())) continue;
             if (targetsHit > MAX_TARGETS) return;
             targetsHit++;
-            pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.5f, 1.0f);
-            DamageUtil.damageEntityPhysical(e.getAmount() * PERCENT, (LivingEntity) en, pl, false, false);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.5f, 1.0f);
+            DamageUtil.damageEntityPhysical(event.getAmount() * PERCENT, (LivingEntity) en, player, false, false);
         }
     }
 }

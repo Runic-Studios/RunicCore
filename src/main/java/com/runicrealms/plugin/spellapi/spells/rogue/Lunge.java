@@ -29,7 +29,7 @@ public class Lunge extends Spell {
     public Lunge() {
         super("Lunge",
                 "You lunge forward into the air! " +
-                        "Your next weapon⚔ attack within " + DURATION + "s deals " +
+                        "Your next basic attack within " + DURATION + "s deals " +
                         (int) (PERCENT * 100) + "% damage!",
                 ChatColor.WHITE, CharacterClass.ROGUE, 8, 15);
     }
