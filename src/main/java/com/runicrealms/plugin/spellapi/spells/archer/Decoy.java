@@ -37,7 +37,6 @@ public class Decoy extends Spell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
-        player.getWorld().playSound(location, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
         DecoyStructure decoyStructure = new DecoyStructure(player, location);
         decoyStructure.erectStructure();
         decoyMap.put(player.getUniqueId(), decoyStructure);
@@ -83,6 +82,9 @@ public class Decoy extends Spell {
         }
 
         private void destroy() {
+            player.getWorld().playSound(location, Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+            player.getWorld().playSound(location, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
+            player.getWorld().spawnParticle(Particle.CLOUD, location, 5, 0.5f, 0.5f, 0.5f, 0);
             this.bukkitTask.cancel();
             this.hologram.delete();
             for (Block block : blocks.keySet()) {
@@ -91,6 +93,8 @@ public class Decoy extends Spell {
         }
 
         private void erectStructure() {
+            player.getWorld().playSound(this.location, Sound.ENTITY_VILLAGER_YES, 0.5f, 1.0f);
+            player.getWorld().playSound(location, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
             blocks.put(location.getBlock(), location.getBlock().getType());
             location.getBlock().setType(Material.OAK_FENCE, false);
             Block chestBlock = location.add(0, 1, 0).getBlock();
@@ -99,6 +103,7 @@ public class Decoy extends Spell {
             Block helmetBlock = location.add(0, 1, 0).getBlock();
             blocks.put(helmetBlock, helmetBlock.getType());
             helmetBlock.setType(Material.JACK_O_LANTERN, false);
+            player.getWorld().spawnParticle(Particle.CLOUD, location, 5, 0.5f, 0.5f, 0.5f, 0);
             this.bukkitTask = Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), this::destroy, DURATION * 20L);
         }
 

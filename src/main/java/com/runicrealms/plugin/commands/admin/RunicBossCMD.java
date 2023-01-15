@@ -68,7 +68,7 @@ public class RunicBossCMD extends BaseCommand {
             return;
         }
         spawnChest(uuid, dungeonLocation);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(),
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
                 () -> despawnChest(uuid, dungeonLocation.getChestLocation()), CHEST_DURATION * 20L);
     }
 

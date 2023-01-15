@@ -7,6 +7,7 @@ import com.runicrealms.plugin.database.PlayerMongoData;
 import com.runicrealms.plugin.database.event.MongoSaveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import redis.clients.jedis.Jedis;
 
@@ -89,7 +90,7 @@ public class TitleManager implements Listener {
         loadTitleData(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onMongoSave(MongoSaveEvent event) {
         TitleData titleData;
         for (UUID uuid : event.getPlayersToSave().keySet()) {

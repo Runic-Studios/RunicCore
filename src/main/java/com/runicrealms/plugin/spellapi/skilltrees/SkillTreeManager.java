@@ -252,13 +252,13 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
      * for EACH alt the player has used during the runtime of this server.
      * Works even if the player is now entirely offline
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onDatabaseSave(MongoSaveEvent event) {
         for (UUID uuid : event.getPlayersToSave().keySet()) {
             for (int characterSlot : event.getPlayersToSave().get(uuid).getCharactersToSave()) {
                 PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
                 PlayerMongoDataSection character = playerMongoData.getCharacter(characterSlot);
-                saveSpellsAndSkillTreesToMongo(uuid, characterSlot, event.getJedis(), playerMongoData, character);
+                saveSpellsAndSkillTreesToMongo(uuid, characterSlot, RunicCore.getRedisAPI().getNewJedisResource(), playerMongoData, character);
             }
         }
     }

@@ -10,7 +10,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
-import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -108,7 +107,6 @@ public class NetTrap extends Spell {
             caster.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.25f, 1.0f);
             mobsMap.computeIfAbsent(caster.getUniqueId(), k -> new HashSet<>());
             mobsMap.get(caster.getUniqueId()).add(livingEntity.getUniqueId());
-            Cone.coneEffect(livingEntity, Particle.FIREWORKS_SPARK, STUN_DURATION, 0, 30L, Color.WHITE);
         }
     }
 }

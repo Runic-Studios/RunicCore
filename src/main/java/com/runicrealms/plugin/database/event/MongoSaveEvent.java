@@ -6,33 +6,31 @@ import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * This custom event is called when the server attempts to write to Mongo.
+ * This custom ASYNC event is called when the server attempts to write to Mongo.
  * Listen for this event to save all player-related session data at the same time.
  */
 public class MongoSaveEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
     private final PreShutdownEvent preShutdownEvent;
-    private final Jedis jedis; // the jedis resource to read from
     /*
-    A collection of all players to save and the slot (or slots) of the character(s) to save. This includes players who are not currently online!
+    A collection of all players to save and the slot (or slots) of the character(s) to save.
+    This includes players who are not currently online!
      */
     private final Map<UUID, ShutdownSaveWrapper> playersToSave;
     private boolean isCancelled;
 
     /**
      * @param preShutdownEvent the associated pre shutdown event that triggered a mongo save
-     * @param jedis            the jedis resource
      */
-    public MongoSaveEvent(PreShutdownEvent preShutdownEvent, Jedis jedis) {
+    public MongoSaveEvent(PreShutdownEvent preShutdownEvent) {
+        super(true);
         this.preShutdownEvent = preShutdownEvent;
-        this.jedis = jedis;
         this.playersToSave = RunicCore.getDataAPI().getPlayersToSave();
         this.isCancelled = false;
     }
@@ -45,10 +43,6 @@ public class MongoSaveEvent extends Event implements Cancellable {
     @Override
     public HandlerList getHandlers() {
         return handlers;
-    }
-
-    public Jedis getJedis() {
-        return this.jedis;
     }
 
     public Map<UUID, ShutdownSaveWrapper> getPlayersToSave() {

@@ -117,7 +117,7 @@ public class Sentry extends Spell implements MagicDamageSpell {
             this.hologram = HologramsAPI.createHologram
                     (
                             RunicCore.getInstance(),
-                            player.getLocation().getBlock().getLocation().clone().add(0.5, 2.0, 0.5)
+                            player.getLocation().getBlock().getLocation().clone().add(0.5f, 2.5f, 0.5f)
                     );
             this.location = player.getLocation();
             hologram.appendTextLine(ChatColor.WHITE + player.getName() + "'s " + ChatColor.YELLOW + "Sentry");

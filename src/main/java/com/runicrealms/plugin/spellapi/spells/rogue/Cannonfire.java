@@ -49,8 +49,6 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
         Location left = player.getEyeLocation().clone().add(1, 0, 0);
         Location middle = player.getEyeLocation();
         Location right = player.getEyeLocation().clone().add(-1, 0, 0);
-//        Location bottomLeft = player.getEyeLocation().clone().add(-0.5, -1, 0);
-//        Location bottomRight = player.getEyeLocation().clone().add(0.5, -1, 0);
         firePellets(player, new Location[]{left, middle, right}, vector);
     }
 

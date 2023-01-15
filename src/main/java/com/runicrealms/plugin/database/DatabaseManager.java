@@ -240,13 +240,13 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
      * for EACH alt the player has used during the runtime of this server.
      * Works even if the player is now entirely offline
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onDatabaseSave(MongoSaveEvent event) {
         for (UUID uuid : event.getPlayersToSave().keySet()) {
             for (int characterSlot : event.getPlayersToSave().get(uuid).getCharactersToSave()) {
                 PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
                 playerMongoData.set("last_login", LocalDate.now());
-                saveCharacter(uuid, playerMongoData, characterSlot, event.getJedis());
+                saveCharacter(uuid, playerMongoData, characterSlot, RunicCore.getRedisAPI().getNewJedisResource());
             }
         }
     }
@@ -267,13 +267,12 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
                                     true
                             )));
         } else {
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
-                    () -> Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
-                            (
-                                    event.getPlayer(),
-                                    loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
-                                    false
-                            )));
+            Bukkit.getPluginManager().callEvent(new CharacterQuitEvent
+                    (
+                            event.getPlayer(),
+                            loadedCharacterMap.get(event.getPlayer().getUniqueId()).first,
+                            false
+                    ));
         }
     }
 

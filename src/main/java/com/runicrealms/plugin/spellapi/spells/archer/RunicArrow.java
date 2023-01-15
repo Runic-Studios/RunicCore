@@ -69,7 +69,7 @@ public class RunicArrow extends Spell implements MagicDamageSpell {
         powerShot.setShooter(player);
         powerShots.add(powerShot);
         Spell spell = this;
-        EntityTrail.entityTrail(powerShot, Particle.CRIT_MAGIC);
+        EntityTrail.entityTrail(powerShot, Particle.SPELL_WITCH);
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -54,8 +54,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitWorker;
-import redis.clients.jedis.Jedis;
 
 import java.io.File;
 import java.util.UUID;
@@ -201,24 +199,15 @@ public class RunicCore extends JavaPlugin implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last thing to run
-    public void onCoreSaveComplete(MongoSaveEvent event) throws InterruptedException {
-
-        /*
-        Make all current async workers join the main thread and properly shut down
-         */
-        for (BukkitWorker bukkitWorker : Bukkit.getScheduler().getActiveWorkers()) {
-            if (bukkitWorker.getOwner().equals(RunicCore.getInstance())) {
-                bukkitWorker.getThread().join();
-            }
+    public void onCoreSaveComplete(MongoSaveEvent event) throws IllegalThreadStateException {
+        for (UUID uuid : event.getPlayersToSave().keySet()) {
+            PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
+            playerMongoData.save();
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : event.getPlayersToSave().keySet()) {
-                PlayerMongoData playerMongoData = event.getPlayersToSave().get(uuid).getPlayerMongoData();
-                playerMongoData.save();
-            }
-            event.markPluginSaved("core");
-        });
+        Bukkit.getScheduler().cancelTasks(RunicCore.getInstance()); // Cancel all async tasks properly
+        event.markPluginSaved("core");
+
     }
 
     /*
@@ -326,10 +315,8 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPreShutdownEvent(PreShutdownEvent event) {
-        try (Jedis jedis = redisAPI.getNewJedisResource()) {
-            MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(event, jedis);
-            Bukkit.getPluginManager().callEvent(mongoSaveEvent);
-        }
+        MongoSaveEvent mongoSaveEvent = new MongoSaveEvent(event);
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> Bukkit.getPluginManager().callEvent(mongoSaveEvent));
     }
 
     private void registerACFCommands() {
@@ -349,6 +336,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new HelpCMD());
         commandManager.registerCommand(new SpeedCMD());
         commandManager.registerCommand(new GameModeCMD());
+        commandManager.registerCommand(new ArmorStandCMD());
     }
 
     private void registerEvents() {
