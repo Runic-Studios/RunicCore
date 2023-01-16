@@ -161,6 +161,9 @@ public class SkillTreeGUI implements InventoryHolder {
     private void openMenu() {
 
         this.inventory.clear();
+        for (int i = 0; i < 9; i++) {
+            this.inventory.setItem(i, GUIUtil.BORDER_ITEM);
+        }
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(INFO_ITEM_POSITION, infoItem());
         int i = 0;
