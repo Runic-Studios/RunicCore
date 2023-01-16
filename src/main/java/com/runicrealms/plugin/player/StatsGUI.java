@@ -43,6 +43,22 @@ public class StatsGUI implements InventoryHolder {
         openMenu();
     }
 
+    public static Material getStatMaterial(Stat stat) {
+        switch (stat) {
+            case DEXTERITY:
+                return Material.QUARTZ;
+            case INTELLIGENCE:
+                return Material.LAPIS_LAZULI;
+            case STRENGTH:
+                return Material.REDSTONE;
+            case VITALITY:
+                return Material.DIAMOND;
+            case WISDOM:
+                return Material.EMERALD;
+        }
+        return Material.STONE;
+    }
+
     private ItemStack dexterityMenuItem() {
         double moveSpeedPercent = (Stat.getMovementSpeedMult() * 100) * dexterity;
         if (moveSpeedPercent > Stat.getMovementSpeedCap())
@@ -50,7 +66,7 @@ public class StatsGUI implements InventoryHolder {
         double critChancePercent = (Stat.getCriticalChance() * 100) * dexterity;
         String critChanceString = critChancePercent > 0 ? DECIMAL_FORMAT.format(critChancePercent) : "0";
         String moveSpeedString = moveSpeedPercent > 0 ? DECIMAL_FORMAT.format(moveSpeedPercent) : "0";
-        return GUIUtil.dispItem(Material.QUARTZ, ChatColor.YELLOW + "Dexterity" + Stat.DEXTERITY.getIcon() + ": " + dexterity, new String[]
+        return GUIUtil.dispItem(getStatMaterial(Stat.DEXTERITY), ChatColor.YELLOW + "Dexterity" + Stat.DEXTERITY.getIcon() + ": " + dexterity, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
@@ -93,7 +109,7 @@ public class StatsGUI implements InventoryHolder {
         double spellDamagePercent = (Stat.getMagicDmgMult() * 100) * intelligence;
         String manaRegenString = manaRegenPercent > 0 ? DECIMAL_FORMAT.format(manaRegenPercent) : "0";
         String spellDamageString = manaRegenPercent > 0 ? DECIMAL_FORMAT.format(spellDamagePercent) : "0";
-        return GUIUtil.dispItem(Material.LAPIS_LAZULI, ChatColor.YELLOW + "Intelligence" + Stat.INTELLIGENCE.getIcon() + ": " + intelligence, new String[]
+        return GUIUtil.dispItem(getStatMaterial(Stat.INTELLIGENCE), ChatColor.YELLOW + "Intelligence" + Stat.INTELLIGENCE.getIcon() + ": " + intelligence, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
@@ -151,7 +167,7 @@ public class StatsGUI implements InventoryHolder {
     private ItemStack strengthMenuItem() {
         double physicalDamagePercent = (Stat.getPhysicalDmgMult() * 100) * strength;
         String physicalDamageString = physicalDamagePercent > 0 ? DECIMAL_FORMAT.format(physicalDamagePercent) : "0";
-        return GUIUtil.dispItem(Material.REDSTONE, ChatColor.YELLOW + "Strength" + Stat.STRENGTH.getIcon() + ": " + strength, new String[]
+        return GUIUtil.dispItem(getStatMaterial(Stat.STRENGTH), ChatColor.YELLOW + "Strength" + Stat.STRENGTH.getIcon() + ": " + strength, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
@@ -166,7 +182,7 @@ public class StatsGUI implements InventoryHolder {
         double healthRegenPercent = (Stat.getHealthRegenMult() * 100) * vitality;
         String defenseString = defensePercent > 0 ? DECIMAL_FORMAT.format(defensePercent) : "0";
         String healthRegenString = healthRegenPercent > 0 ? DECIMAL_FORMAT.format(healthRegenPercent) : "0";
-        return GUIUtil.dispItem(Material.DIAMOND, ChatColor.YELLOW + "Vitality" + Stat.VITALITY.getIcon() + ": " + vitality, new String[]
+        return GUIUtil.dispItem(getStatMaterial(Stat.VITALITY), ChatColor.YELLOW + "Vitality" + Stat.VITALITY.getIcon() + ": " + vitality, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
@@ -180,7 +196,7 @@ public class StatsGUI implements InventoryHolder {
         double spellHealingPercent = (Stat.getSpellHealingMult() * 100) * wisdom;
         String maxManaString = maxManaPercent > 0 ? DECIMAL_FORMAT.format(maxManaPercent) : "0";
         String spellHealingString = spellHealingPercent > 0 ? DECIMAL_FORMAT.format(spellHealingPercent) : "0";
-        return GUIUtil.dispItem(Material.EMERALD, ChatColor.YELLOW + "Wisdom" + Stat.WISDOM.getIcon() + ": " + wisdom, new String[]
+        return GUIUtil.dispItem(getStatMaterial(Stat.WISDOM), ChatColor.YELLOW + "Wisdom" + Stat.WISDOM.getIcon() + ": " + wisdom, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",

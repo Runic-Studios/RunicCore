@@ -174,8 +174,6 @@ public class LootTableManager implements LootTableAPI {
         ChestItem uncutRuby = new ChestItem("uncut-ruby", 3, 8);
         ChestItem uncutSapphire = new ChestItem("uncut-sapphire", 3, 8);
         ChestItem uncutOpal = new ChestItem("uncut-opal", 3, 8);
-        ChestItem goldOre = new ChestItem("gold-ore", 3, 8);
-        ChestItem ironOre = new ChestItem("iron-ore", 3, 8);
         ChestItem bottle = new ChestItem("Bottle", 3, 5);
         ChestItem tropical = new ChestItem("Tropical", 2, 3);
         ChestItem valerian = new ChestItem("Valerian", 2, 3);
@@ -201,8 +199,6 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_III.addEntry(uncutRuby, 8.0);
         LOOT_TABLE_TIER_III.addEntry(uncutSapphire, 8.0);
         LOOT_TABLE_TIER_III.addEntry(uncutOpal, 8.0);
-        LOOT_TABLE_TIER_III.addEntry(goldOre, 8.0);
-        LOOT_TABLE_TIER_III.addEntry(ironOre, 8.0);
         LOOT_TABLE_TIER_III.addEntry(bottle, 16.0);
         LOOT_TABLE_TIER_III.addEntry(tropical, 8.0);
         LOOT_TABLE_TIER_III.addEntry(valerian, 8.0);
@@ -239,8 +235,6 @@ public class LootTableManager implements LootTableAPI {
         ChestItem uncutOpal = new ChestItem("uncut-opal", 3, 8);
         ChestItem uncutEmerald = new ChestItem("uncut-emerald", 3, 8);
         ChestItem uncutDiamond = new ChestItem("uncut-diamond", 3, 8);
-        ChestItem goldOre = new ChestItem("gold-ore", 3, 8);
-        ChestItem ironOre = new ChestItem("iron-ore", 3, 8);
         ChestItem bottle = new ChestItem("Bottle", 3, 5);
         ChestItem pufferfish = new ChestItem("Pufferfish", 2, 3);
         ChestItem boswellia = new ChestItem("Boswellia", 2, 3);
@@ -264,8 +258,6 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_IV.addEntry(uncutOpal, 8.0);
         LOOT_TABLE_TIER_IV.addEntry(uncutEmerald, 8.0);
         LOOT_TABLE_TIER_IV.addEntry(uncutDiamond, 8.0);
-        LOOT_TABLE_TIER_IV.addEntry(goldOre, 8.0);
-        LOOT_TABLE_TIER_IV.addEntry(ironOre, 8.0);
         LOOT_TABLE_TIER_IV.addEntry(boswellia, 8.0);
         LOOT_TABLE_TIER_IV.addEntry(arugula, 8.0);
 

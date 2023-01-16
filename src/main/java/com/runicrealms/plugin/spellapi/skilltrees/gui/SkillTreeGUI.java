@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.SkillTreeData;
+import com.runicrealms.plugin.player.StatsGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -45,7 +46,15 @@ public class SkillTreeGUI implements InventoryHolder {
      * @return ItemStack for use in inventory
      */
     public static ItemStack buildPerkItem(Perk perk, boolean displayPoints, String description) {
-        ItemStack perkItem = new ItemStack(Material.PAPER);
+        // todo: async
+        Material material;
+        if (perk instanceof PerkBaseStat) {
+            material = StatsGUI.getStatMaterial(((PerkBaseStat) perk).getStat());
+        } else {
+            Spell spell = RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName());
+            material = spell.isPassive() ? Material.PAPER : Material.NETHER_WART;
+        }
+        ItemStack perkItem = new ItemStack(material);
         ItemMeta meta = perkItem.getItemMeta();
         assert meta != null;
         if (perk instanceof PerkBaseStat) {
