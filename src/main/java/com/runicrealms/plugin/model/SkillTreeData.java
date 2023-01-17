@@ -294,8 +294,8 @@ public class SkillTreeData implements SessionData {
         switch (subClass) {
             case MARKSMAN:
                 return ArcherTreeUtil.marksmanPerkList();
-            case SPELLSHOT:
-                return ArcherTreeUtil.spellshotPerkList();
+            case STORMSHOT:
+                return ArcherTreeUtil.stormshotPerkList();
             case WARDEN:
                 return ArcherTreeUtil.wardenPerkList();
             case BARD:

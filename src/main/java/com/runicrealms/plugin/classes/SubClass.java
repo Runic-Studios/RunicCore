@@ -16,7 +16,7 @@ public enum SubClass {
      Archer
      */
     MARKSMAN("Marksman", CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of single-target &cphysical⚔ &7damage and long-range attacks!"),
-    SPELLSHOT("Spellshot", CharacterClass.ARCHER, spellshotItem(), "Spellshot is a master of runic &3magicʔ&7, slinging area-of-effect spells!"),
+    STORMSHOT("Stormshot", CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of runic &3magicʔ&7, slinging area-of-effect spells!"),
     WARDEN("Warden", CharacterClass.ARCHER, wardenItem(), "Warden is keeper of the forest, &ahealing✦ &7allies through the power of nature!"),
     /*
      Cleric
@@ -100,7 +100,7 @@ public enum SubClass {
                 if (value == 1)
                     subClass = SubClass.MARKSMAN;
                 else if (value == 2)
-                    subClass = SubClass.SPELLSHOT;
+                    subClass = SubClass.STORMSHOT;
                 else
                     subClass = SubClass.WARDEN;
                 break;
@@ -160,7 +160,7 @@ public enum SubClass {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ0ZGE3Zjc0Mzg1MTliZTIwMmU1OGM5MWYyOWI4NjllYmQ5ZGUyZWZiMWJiZjQ0NWY3NDVkOWZiMTIyODcifX19");
     }
 
-    private static ItemStack spellshotItem() {
+    private static ItemStack stormshotItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUwMzIzNzczYzBkYTViNDE3NzE4NTAwYTQ0OGFlM2RiZjg3ZDQ5YWMwNjhjZDUzZjAxNTAyZjRjMDMxNjE1MyJ9fX0=");
     }
 

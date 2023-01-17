@@ -41,6 +41,9 @@ public class Sentry extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
+        player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
         SentryCrossbow sentryCrossbow = new SentryCrossbow(player);
         sentryCrossbow.summonCrossbow();
         player.getWorld().playSound(sentryCrossbow.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);

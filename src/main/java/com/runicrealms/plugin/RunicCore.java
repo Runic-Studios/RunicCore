@@ -8,10 +8,7 @@ import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.*;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.commands.admin.*;
-import com.runicrealms.plugin.commands.player.HelpCMD;
-import com.runicrealms.plugin.commands.player.MapLink;
-import com.runicrealms.plugin.commands.player.RunicVoteCMD;
-import com.runicrealms.plugin.commands.player.SpawnCMD;
+import com.runicrealms.plugin.commands.player.*;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.database.PlayerMongoData;
@@ -337,6 +334,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new SpeedCMD());
         commandManager.registerCommand(new GameModeCMD());
         commandManager.registerCommand(new ArmorStandCMD());
+        commandManager.registerCommand(new ExpCMD());
     }
 
     private void registerEvents() {

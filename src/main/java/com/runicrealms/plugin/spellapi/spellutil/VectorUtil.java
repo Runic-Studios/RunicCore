@@ -20,9 +20,16 @@ public class VectorUtil {
         return newVector;
     }
 
-
-    public static Vector drawLine(Player player, Particle particle, Color color,
-                                  Location point1, Location point2, double space) {
+    /**
+     * @param player
+     * @param particle
+     * @param color
+     * @param point1
+     * @param point2
+     * @param space
+     * @return
+     */
+    public static Vector drawLine(Player player, Particle particle, Color color, Location point1, Location point2, double space, int count) {
         double distance = point1.distance(point2);
         Vector p1 = point1.toVector();
         Vector p2 = point2.toVector();
@@ -31,11 +38,31 @@ public class VectorUtil {
             if (particle == Particle.REDSTONE) {
                 player.getWorld().spawnParticle(particle,
                         new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
-                        25, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
+                        count, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
             } else {
                 player.getWorld().spawnParticle(particle,
                         new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
-                        25, 0, 0, 0, 0);
+                        count, 0, 0, 0, 0);
+            }
+            length += space;
+        }
+        return vector;
+    }
+
+    public static Vector drawLine(Player player, Particle particle, Color color, Location point1, Location point2, double space, int count, float offset) {
+        double distance = point1.distance(point2);
+        Vector p1 = point1.toVector();
+        Vector p2 = point2.toVector();
+        Vector vector = p2.clone().subtract(p1).normalize().multiply(space);
+        for (double length = 0; length < distance; p1.add(vector)) {
+            if (particle == Particle.REDSTONE) {
+                player.getWorld().spawnParticle(particle,
+                        new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
+                        count, 0, offset, 0, 0, new Particle.DustOptions(color, 1));
+            } else {
+                player.getWorld().spawnParticle(particle,
+                        new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()),
+                        count, 0, offset, 0, 0);
             }
             length += space;
         }

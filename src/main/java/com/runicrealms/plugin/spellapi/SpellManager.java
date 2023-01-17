@@ -376,7 +376,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new CureScurvy());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Seasick());
-        this.spellList.add(new Hawkeye());
+        this.spellList.add(new HomingArrow());
         this.spellList.add(new Manawell());
         this.spellList.add(new SeaLegs());
         this.spellList.add(new Predator());
@@ -416,7 +416,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Consecration());
         this.spellList.add(new Sentry());
         this.spellList.add(new Headshot());
-        this.spellList.add(new HomingShot());
+        this.spellList.add(new AimedShot());
         this.spellList.add(new Conflagration());
         this.spellList.add(new Shatter());
         this.spellList.add(new Remedy());
@@ -426,7 +426,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new GiftsOfTheWoad());
         this.spellList.add(new Decoy());
         this.spellList.add(new Shadowmeld());
-        this.spellList.add(new Stormshot());
+        this.spellList.add(new Stormborn());
         this.spellList.add(new Siphon());
         /*
         Items

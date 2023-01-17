@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Stormshot extends Spell implements MagicDamageSpell {
+public class Stormborn extends Spell implements MagicDamageSpell {
 
     private static final int DAMAGE = 20;
     private static final int DURATION = 7;
@@ -33,8 +33,8 @@ public class Stormshot extends Spell implements MagicDamageSpell {
     private final Set<UUID> stormPlayers = new HashSet<>();
     private final HashMap<UUID, UUID> hasBeenHit = new HashMap<>();
 
-    public Stormshot() {
-        super("Stormshot",
+    public Stormborn() {
+        super("Stormborn",
                 "You channel the storm for " + DURATION + "s! " +
                         "While the storm persists, each basic attack you fire " +
                         "will instead launch 3 empowered arrows in a cone! " +

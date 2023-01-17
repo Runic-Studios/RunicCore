@@ -84,7 +84,7 @@ public class Blink extends Spell {
 
             // teleport the player to the blink location
             player.teleport(teleportLoc);
-            VectorUtil.drawLine(player, Particle.REDSTONE, Color.FUCHSIA, loc, teleportLoc, 1.0);
+            VectorUtil.drawLine(player, Particle.REDSTONE, Color.FUCHSIA, loc, teleportLoc, 1.0D, 25);
             final Vector velocity = player.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
             player.setVelocity(velocity);
         } catch (NullPointerException e) {
