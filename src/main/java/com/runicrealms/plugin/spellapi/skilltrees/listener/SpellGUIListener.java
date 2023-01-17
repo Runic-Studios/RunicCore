@@ -20,37 +20,37 @@ import java.util.UUID;
 public class SpellGUIListener implements Listener {
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
+    public void onInventoryClick(InventoryClickEvent event) {
 
         /*
         Preliminary checks
          */
-        if (e.getClickedInventory() == null) return;
-        if (!(e.getView().getTopInventory().getHolder() instanceof SpellGUI)) return;
-        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
-            e.setCancelled(true);
+        if (event.getClickedInventory() == null) return;
+        if (!(event.getView().getTopInventory().getHolder() instanceof SpellGUI)) return;
+        if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            event.setCancelled(true);
             return;
         }
-        SpellGUI spellGUI = (SpellGUI) e.getClickedInventory().getHolder();
-        if (!e.getWhoClicked().equals(spellGUI.getPlayer())) {
-            e.setCancelled(true);
-            e.getWhoClicked().closeInventory();
+        SpellGUI spellGUI = (SpellGUI) event.getClickedInventory().getHolder();
+        if (!event.getWhoClicked().equals(spellGUI.getPlayer())) {
+            event.setCancelled(true);
+            event.getWhoClicked().closeInventory();
             return;
         }
-        Player player = (Player) e.getWhoClicked();
-        if (e.getCurrentItem() == null) return;
-        if (spellGUI.getInventory().getItem(e.getRawSlot()) == null) return;
+        Player player = (Player) event.getWhoClicked();
+        if (event.getCurrentItem() == null) return;
+        if (spellGUI.getInventory().getItem(event.getRawSlot()) == null) return;
 
-        ItemStack item = e.getCurrentItem();
+        ItemStack item = event.getCurrentItem();
         Material material = item.getType();
 
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-        e.setCancelled(true);
+        event.setCancelled(true);
 
         if (material == GUIUtil.BACK_BUTTON.getType())
             player.openInventory(new SpellEditorGUI(player).getInventory());
-        else if (material == Material.PAPER) {
-            String spellName = spellGUI.getInventory().getItem(e.getRawSlot()).getItemMeta().getDisplayName();
+        else if (material == Material.NETHER_WART) {
+            String spellName = spellGUI.getInventory().getItem(event.getRawSlot()).getItemMeta().getDisplayName();
             updateSpellInSlot(player.getUniqueId(), spellGUI, spellName);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
             player.sendMessage(ChatColor.LIGHT_PURPLE + "You've set the spell in this slot to " + spellName + ChatColor.LIGHT_PURPLE + "!");

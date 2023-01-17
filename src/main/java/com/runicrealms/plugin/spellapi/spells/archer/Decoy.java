@@ -27,7 +27,7 @@ public class Decoy extends Spell {
 
     public Decoy() {
         super("Decoy",
-                "You create a decoy of yourself at your target location" +
+                "You create a decoy of yourself at your target location " +
                         "within " + MAX_DIST + " blocks! The decoy lasts for 18s. " +
                         "At any point, you can shoot the decoy to instantly teleport to its location, " +
                         "destroying the decoy in the process!",
