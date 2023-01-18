@@ -10,7 +10,7 @@ import java.util.List;
 public class ChatUtils {
 
     private final static int CENTER_PX = 154;
-    private static final int LINE_LENGTH = 25;
+    private static final int LINE_LENGTH = 28;
 
     public static List<String> formattedText(String text) {
         return Arrays.asList(ChatPaginator.wordWrap(ColorUtil.format(text), LINE_LENGTH));

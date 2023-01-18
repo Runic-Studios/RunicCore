@@ -398,6 +398,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new HealthBarListener(), this);
         pm.registerEvents(new ServerListPingListener(), this);
         pm.registerEvents(new BossChestListener(), this);
+        pm.registerEvents(new ExpBoostListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

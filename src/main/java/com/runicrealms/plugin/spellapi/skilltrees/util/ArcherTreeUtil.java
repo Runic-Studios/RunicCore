@@ -32,18 +32,18 @@ public class ArcherTreeUtil {
 
     public static List<Perk> stormshotPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(24, 1, 0, 1, "Runic Arrow"));
+        perks.add(new PerkSpell(24, 1, 0, 1, "Thunder Arrow"));
         perks.add(new PerkBaseStat(25, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(26, 1, 0, 1, "Shadowmeld"));
+        perks.add(new PerkSpell(26, 1, 0, 1, "Charged"));
         perks.add(new PerkBaseStat(27, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(28, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(29, 1, 0, 1, "Stormborn"));
+        perks.add(new PerkSpell(29, 1, 0, 1, "Fade"));
         perks.add(new PerkBaseStat(30, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(31, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(33, 1, 0, 5, Stat.DEXTERITY));
-        perks.add(new PerkSpell(32, 1, 0, 1, "Sentry"));
+        perks.add(new PerkSpell(32, 1, 0, 1, "Surge"));
         perks.add(new PerkBaseStat(34, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(35, 1, 0, 1, "Siphon"));
+        perks.add(new PerkSpell(35, 1, 0, 1, "Stormborn"));
         return perks;
     }
 

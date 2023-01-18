@@ -92,21 +92,20 @@ public class ScoreboardHandler implements ScoreboardAPI {
         return display;
     }
 
-    private String playerOutlaw(final Player player, final Jedis jedis) {
-        return OUTLAW_DISABLED_STRING;
-//        String display;
-//        if (RunicCore.getRedisAPI().getRedisCharacterValue
-//                (
-//                        player.getUniqueId(),
-//                        "outlaw",
-//                        RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId()),
-//                        jedis
-//                ) == null) {
-//            display = OUTLAW_DISABLED_STRING;
-//        } else {
-//            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
-//        }
-//        return display;
+    /**
+     * Update the scoreboard info on the player's current outlaw status
+     *
+     * @param isOutlaw whether the player is an outlaw
+     * @return a formatted string to display their outlaw status
+     */
+    private String playerOutlaw(boolean isOutlaw) {
+        String display;
+        if (!isOutlaw) {
+            display = OUTLAW_DISABLED_STRING;
+        } else {
+            display = ChatColor.YELLOW + "Outlaw: " + ChatColor.RED + "ON";
+        }
+        return display;
     }
 
     /**
@@ -215,7 +214,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
         playerGuild.setPrefix(playerGuild(player, event.getJedis()));
         Team playerOutlaw = scoreboard.getTeam(playerNameSubString + OUTLAW_TEAM_STRING);
         assert playerOutlaw != null;
-        playerOutlaw.setPrefix(playerOutlaw(player, event.getJedis()));
+        playerOutlaw.setPrefix(playerOutlaw(event.isOutlaw()));
     }
 
     @Override

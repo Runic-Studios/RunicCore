@@ -24,7 +24,7 @@ public class HomingArrow extends Spell {
 
     private static final int DURATION = 10; // seconds
     private static final int MAX_DIST = 25;
-    private static final double RAY_SIZE = 2.5D;
+    private static final double RAY_SIZE = 3.5D;
     private final Set<ProjectileSource> homingPlayers;
 
     public HomingArrow() {

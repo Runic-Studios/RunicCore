@@ -9,37 +9,31 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a player gains experience from any source.
- * This gets called in our ClassExpCMD
+ *
  * @author Skyfallin
  */
 public class RunicExpEvent extends Event implements Cancellable {
 
-    public enum RunicExpSource {
-        DUNGEON,
-        MOB,
-        OTHER, // custom
-        PARTY, // exp from party kill
-        QUEST
-    }
-
+    private static final HandlerList handlers = new HandlerList();
     private final int originalAmount;
-    private int finalAmount;
     private final Player player;
     private final RunicExpSource runicExpSource;
     private final int mobLevel;
     private final Location location;
+    private int finalAmount;
     private boolean isCancelled;
 
     /**
      * Give a player experience through our custom calculators.
-     * @param originalAmount original exp of event (cannot be modified)
-     * @param finalAmount the exp the player will receive (with bonuses and modifiers)
-     * @param player to receive experience
+     *
+     * @param originalAmount original exp of event (cannot be modified) (all modifiers work off this amount and are additive)
+     * @param finalAmount    the exp the player will receive (with bonuses and modifiers)
+     * @param player         to receive experience
      * @param runicExpSource source of experience
-     * @param mobLevel used to cap experience against low/high-level mobs
-     * @param location of mob, used to spawn exp holograms
+     * @param mobLevel       used to cap experience against low/high-level mobs
+     * @param location       of mob, used to spawn exp holograms
      */
-    public RunicExpEvent(int originalAmount, int finalAmount, Player player, RunicExpSource runicExpSource, int mobLevel, @Nullable Location location) {
+    public RunicExpEvent(final int originalAmount, int finalAmount, Player player, RunicExpSource runicExpSource, int mobLevel, @Nullable Location location) {
         this.originalAmount = originalAmount;
         this.finalAmount = finalAmount;
         this.player = player;
@@ -49,8 +43,8 @@ public class RunicExpEvent extends Event implements Cancellable {
         this.isCancelled = false;
     }
 
-    public int getOriginalAmount() {
-        return originalAmount;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public int getFinalAmount() {
@@ -61,21 +55,31 @@ public class RunicExpEvent extends Event implements Cancellable {
         this.finalAmount = finalAmount;
     }
 
-    public Player getPlayer() {
-        return this.player;
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
-    public RunicExpSource getRunicExpSource() {
-        return this.runicExpSource;
+    @Nullable
+    public Location getLocation() {
+        return this.location;
     }
 
     public int getMobLevel() {
         return mobLevel;
     }
 
-    @Nullable
-    public Location getLocation() {
-        return this.location;
+    public int getOriginalAmount() {
+        return originalAmount;
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public RunicExpSource getRunicExpSource() {
+        return this.runicExpSource;
     }
 
     @Override
@@ -88,15 +92,11 @@ public class RunicExpEvent extends Event implements Cancellable {
         this.isCancelled = arg0;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
-    @SuppressWarnings("NullableProblems")
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public enum RunicExpSource {
+        DUNGEON,
+        MOB,
+        OTHER, // custom
+        PARTY, // exp from party kill
+        QUEST
     }
 }

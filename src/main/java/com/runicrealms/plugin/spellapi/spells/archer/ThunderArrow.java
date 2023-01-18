@@ -23,16 +23,14 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class RunicArrow extends Spell implements MagicDamageSpell {
-
+public class ThunderArrow extends Spell implements MagicDamageSpell {
     private static final int DAMAGE = 15;
     private static final double DAMAGE_PER_LEVEL = 2.5;
     private static final int RADIUS = 3;
     private final List<Arrow> powerShots;
 
-    public RunicArrow() {
-        super("Runic Arrow",
+    public ThunderArrow() {
+        super("Thunder Arrow",
                 "You launch an enchanted arrow that " +
                         "deals (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl)" + " magicʔ damage on-hit to " +
@@ -69,7 +67,7 @@ public class RunicArrow extends Spell implements MagicDamageSpell {
         powerShot.setShooter(player);
         powerShots.add(powerShot);
         Spell spell = this;
-        EntityTrail.entityTrail(powerShot, Particle.SPELL_WITCH);
+        EntityTrail.entityTrail(powerShot, Particle.CRIT_MAGIC);
         new BukkitRunnable() {
             @Override
             public void run() {

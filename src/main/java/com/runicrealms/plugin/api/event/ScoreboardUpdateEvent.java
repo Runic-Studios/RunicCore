@@ -20,6 +20,7 @@ public class ScoreboardUpdateEvent extends Event {
     private final Jedis jedis;
     private String profession;
     private int professionLevel;
+    private boolean isOutlaw;
 
     /**
      * @param player     whose scoreboard will update
@@ -32,32 +33,33 @@ public class ScoreboardUpdateEvent extends Event {
         this.jedis = RunicCore.getRedisAPI().getNewJedisResource();
         this.profession = "";
         this.professionLevel = 0;
+        this.isOutlaw = false;
     }
 
-    /**
-     * @param profession      string to set
-     * @param professionLevel level of profession
-     */
-    public ScoreboardUpdateEvent(final Player player, final Scoreboard scoreboard, String profession, int professionLevel) {
-        super(true);
-        this.player = player;
-        this.scoreboard = scoreboard;
-        this.jedis = RunicCore.getRedisAPI().getNewJedisResource();
-        this.profession = profession;
-        this.professionLevel = professionLevel;
-    }
-
-    /**
-     * @param jedis a preexisting jedis resource
-     */
-    public ScoreboardUpdateEvent(final Player player, final Scoreboard scoreboard, Jedis jedis) {
-        super(true);
-        this.player = player;
-        this.scoreboard = scoreboard;
-        this.jedis = jedis;
-        this.profession = "";
-        this.professionLevel = 0;
-    }
+//    /**
+//     * @param profession      string to set
+//     * @param professionLevel level of profession
+//     */
+//    public ScoreboardUpdateEvent(final Player player, final Scoreboard scoreboard, String profession, int professionLevel) {
+//        super(true);
+//        this.player = player;
+//        this.scoreboard = scoreboard;
+//        this.jedis = RunicCore.getRedisAPI().getNewJedisResource();
+//        this.profession = profession;
+//        this.professionLevel = professionLevel;
+//    }
+//
+//    /**
+//     * @param jedis a preexisting jedis resource
+//     */
+//    public ScoreboardUpdateEvent(final Player player, final Scoreboard scoreboard, Jedis jedis) {
+//        super(true);
+//        this.player = player;
+//        this.scoreboard = scoreboard;
+//        this.jedis = jedis;
+//        this.profession = "";
+//        this.professionLevel = 0;
+//    }
 
     public static HandlerList getHandlerList() {
         return handlers;
@@ -98,5 +100,13 @@ public class ScoreboardUpdateEvent extends Event {
 
     public Scoreboard getScoreboard() {
         return this.scoreboard;
+    }
+ 
+    public boolean isOutlaw() {
+        return isOutlaw;
+    }
+
+    public void setOutlaw(boolean outlaw) {
+        isOutlaw = outlaw;
     }
 }

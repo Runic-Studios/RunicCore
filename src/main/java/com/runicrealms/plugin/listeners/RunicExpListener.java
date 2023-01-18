@@ -3,7 +3,6 @@ package com.runicrealms.plugin.listeners;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.commands.admin.BoostCMD;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.party.Party;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
@@ -43,8 +42,8 @@ public class RunicExpListener implements Listener {
     /**
      * @param players a set of players to display the hologram to
      */
-    private void createExpHologram(Set<Player> players, Location location, String lineToDisplay, float height) {
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.clone().add(0, height, 0));
+    private void createExpHologram(Set<Player> players, Location location, String lineToDisplay) {
+        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.clone().add(0, (float) 2.25, 0));
         hologram.getVisibilityManager().setVisibleByDefault(false);
         hologram.appendTextLine(lineToDisplay);
         for (Player player : players) {
@@ -91,7 +90,7 @@ public class RunicExpListener implements Listener {
         }
 
 
-        createExpHologram(party.getMembersWithLeader(), location, ColorUtil.format("&f" + player.getName() + "&7's Party"), 2.25f);
+        createExpHologram(party.getMembersWithLeader(), location, ColorUtil.format("&f" + player.getName() + "&7's Party"));
     }
 
     /**
@@ -105,24 +104,23 @@ public class RunicExpListener implements Listener {
                 && RunicCore.getPartyAPI().getParty(uuid).getSize() >= 2;
     }
 
+    /**
+     * This code finally dishes out experience once all modifiers have been applied.
+     * Also applies logic for party bonus
+     */
     @EventHandler(priority = EventPriority.HIGHEST) // executes last
     public void onExperienceGain(RunicExpEvent event) {
 
         Player player = event.getPlayer();
 
         try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
-            // quests and other don't get exp modifiers, so skip calculations
+            // quests and other sources don't get exp modifiers, so skip calculations
             if (event.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST
                     || event.getRunicExpSource() == RunicExpEvent.RunicExpSource.OTHER
                     || event.getRunicExpSource() == RunicExpEvent.RunicExpSource.PARTY) {
                 PlayerLevelUtil.giveExperience(event.getPlayer(), event.getFinalAmount(), jedis);
                 return;
             }
-
-            // calculate global exp modifier (if applicable)
-            double boostPercent = BoostCMD.getCombatExperienceBoost() / 100;
-            int boost = (int) boostPercent * event.getOriginalAmount();
-            event.setFinalAmount(event.getFinalAmount() + boost);
 
             if (!isInPartyOfMinSizeTwo(player.getUniqueId())) {
                 if (event.getLocation() != null) { // world mobs

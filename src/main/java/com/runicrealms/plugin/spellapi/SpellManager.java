@@ -370,7 +370,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Harpoon());
         this.spellList.add(new Spellsong());
         this.spellList.add(new Ironhide());
-        this.spellList.add(new RunicArrow());
+        this.spellList.add(new ThunderArrow());
         this.spellList.add(new Smite());
         this.spellList.add(new ArcaneBomb());
         this.spellList.add(new CureScurvy());
@@ -414,7 +414,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());
-        this.spellList.add(new Sentry());
         this.spellList.add(new Headshot());
         this.spellList.add(new AimedShot());
         this.spellList.add(new Conflagration());
@@ -425,7 +424,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new WildGrowth());
         this.spellList.add(new GiftsOfTheWoad());
         this.spellList.add(new Decoy());
-        this.spellList.add(new Shadowmeld());
+        this.spellList.add(new Fade());
         this.spellList.add(new Stormborn());
         this.spellList.add(new Siphon());
         /*
