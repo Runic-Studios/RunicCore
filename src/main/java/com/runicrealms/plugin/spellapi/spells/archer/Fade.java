@@ -49,16 +49,16 @@ public class Fade extends Spell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         new BukkitRunnable() {
-            int count = 2;
+            int count = 1;
 
             @Override
             public void run() {
                 if (count >= DURATION)
                     this.cancel();
                 if (count % 2 == 0) // count is even
-                    disappear(player);
-                else
                     reappear(player);
+                else
+                    disappear(player);
                 count += PERIOD;
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, PERIOD * 20L);

@@ -5,7 +5,6 @@ import com.runicrealms.plugin.listeners.RunicExpListener;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -66,8 +65,8 @@ public class PartyExpPayload {
                 PlayerLevelUtil.giveExperience(member, 0, jedis);
                 RunicExpListener.createExpHologram(member, location, Collections.singletonList(ColorUtil.format("&7+ &c0 &7exp")), 2.5f);
             } else {
-                String eventExp = ColorUtil.format("&7+ " + ChatColor.WHITE + event.getOriginalAmount() + ")");
-                String partyExp = ColorUtil.format("&a+" + extraAmt + " party &7exp");
+                String eventExp = ColorUtil.format("&7+ &f" + event.getOriginalAmount() + " &7exp");
+                String partyExp = ColorUtil.format("&a+ " + extraAmt + " &f" + player.getName() + "&7's Party exp");
                 String otherExp = ColorUtil.format("&7+" + leftOverExp + " &8other &7exp");
                 RunicExpListener.createExpHologram
                         (
@@ -88,13 +87,6 @@ public class PartyExpPayload {
                 Bukkit.getPluginManager().callEvent(nestedEvent);
             }
         }
-
-        RunicExpListener.createExpHologram
-                (
-                        party.getMembersWithLeader(),
-                        location,
-                        Collections.singletonList(ColorUtil.format("&f" + player.getName() + "&7's Party"))
-                );
     }
 
     /**

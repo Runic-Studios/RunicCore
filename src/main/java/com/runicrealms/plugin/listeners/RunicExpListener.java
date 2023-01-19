@@ -18,13 +18,12 @@ import redis.clients.jedis.Jedis;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class RunicExpListener implements Listener {
 
     public static final int LEVEL_CUTOFF = 8;
-    public static final double PARTY_BONUS = 15;
+    public static final double PARTY_BONUS = 0.15;
 
     /**
      * @param player         player to show hologram to
@@ -37,19 +36,6 @@ public class RunicExpListener implements Listener {
         hologram.getVisibilityManager().setVisibleByDefault(false);
         linesToDisplay.forEach(hologram::appendTextLine);
         hologram.getVisibilityManager().showTo(player);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), hologram::delete, 40L); // 2s
-    }
-
-    /**
-     * @param players a set of players to display the hologram to
-     */
-    public static void createExpHologram(Set<Player> players, Location location, List<String> linesToDisplay) {
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.clone().add(0, (float) 2.25, 0));
-        hologram.getVisibilityManager().setVisibleByDefault(false);
-        linesToDisplay.forEach(hologram::appendTextLine);
-        for (Player player : players) {
-            hologram.getVisibilityManager().showTo(player);
-        }
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), hologram::delete, 40L); // 2s
     }
 
@@ -90,7 +76,7 @@ public class RunicExpListener implements Listener {
                         event.setFinalAmount(0);
                         expColor = ChatColor.RED;
                     }
-                    Bukkit.broadcastMessage("does this run");
+
                     createExpHologram(player, loc, Collections.singletonList(ColorUtil.format("&7+ " + expColor + event.getFinalAmount() + " &7exp")), 2.5f);
                     createExpHologram(player, loc, Collections.singletonList(ColorUtil.format("&f" + player.getName())), 2.25f);
                 }
@@ -98,8 +84,7 @@ public class RunicExpListener implements Listener {
 
                 // Player has valid party
             } else {
-                double partyPercent = PARTY_BONUS / 100;
-                int extraAmt = (int) (event.getOriginalAmount() * partyPercent);
+                int extraAmt = (int) (event.getOriginalAmount() * PARTY_BONUS);
                 if (extraAmt < 1)
                     extraAmt = 1;
                 event.setFinalAmount(event.getFinalAmount() + extraAmt);
