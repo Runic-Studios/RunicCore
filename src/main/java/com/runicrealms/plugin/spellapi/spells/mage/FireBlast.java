@@ -44,8 +44,8 @@ public class FireBlast extends Spell implements MagicDamageSpell {
             LivingEntity le = (LivingEntity) en;
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, this);
             en.getWorld().spawnParticle(Particle.FLAME, le.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
-            addStatusEffect(en, RunicStatusEffect.SILENCE, STUN_DURATION);
-            addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION);
+            addStatusEffect(en, RunicStatusEffect.SILENCE, STUN_DURATION, true);
+            addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION, true);
         }
     }
 

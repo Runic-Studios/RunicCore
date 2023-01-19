@@ -59,7 +59,7 @@ public class Dissonance extends Spell {
                     slot = rand.nextInt(10); // make sure it doesn't pick their current slot
                 ((Player) en).getInventory().setHeldItemSlot(slot);
             } else
-                addStatusEffect(en, RunicStatusEffect.SILENCE, DURATION);
+                addStatusEffect(en, RunicStatusEffect.SILENCE, DURATION, true);
         }
     }
 }

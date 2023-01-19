@@ -68,7 +68,7 @@ public class Frostbite extends Spell {
                         if (isRooted(en)) continue;
                         LivingEntity victim = (LivingEntity) en;
                         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
-                        addStatusEffect(victim, RunicStatusEffect.ROOT, (DURATION + 2) - count); // root for remaining duration
+                        addStatusEffect(victim, RunicStatusEffect.ROOT, (DURATION + 2) - count, true); // root for remaining duration
                     }
                 }
             }

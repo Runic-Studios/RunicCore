@@ -7,10 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -67,7 +64,7 @@ public class ThunderArrow extends Spell implements MagicDamageSpell {
         powerShot.setShooter(player);
         powerShots.add(powerShot);
         Spell spell = this;
-        EntityTrail.entityTrail(powerShot, Particle.CRIT_MAGIC);
+        EntityTrail.entityTrail(powerShot, Color.BLUE);
         new BukkitRunnable() {
             @Override
             public void run() {

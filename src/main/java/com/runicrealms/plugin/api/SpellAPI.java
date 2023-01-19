@@ -25,7 +25,7 @@ public interface SpellAPI {
      * @param runicStatusEffect which status effect to add
      * @param durationInSecs    (in seconds) of effect
      */
-    void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs);
+    void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage);
 
     /**
      * Gets the spell in the associated 'slot' from player spell wrapper.

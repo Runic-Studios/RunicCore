@@ -45,7 +45,7 @@ public class Discord extends Spell implements MagicDamageSpell {
         for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!(isValidEnemy(player, en))) continue;
             causeDiscord(player, (LivingEntity) en);
-            addStatusEffect(en, RunicStatusEffect.STUN, DURATION);
+            addStatusEffect(en, RunicStatusEffect.STUN, DURATION, true);
             DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, this);
         }
     }

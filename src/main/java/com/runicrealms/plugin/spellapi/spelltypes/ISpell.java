@@ -15,8 +15,9 @@ public interface ISpell {
      * @param entity            to add effect to
      * @param runicStatusEffect the type of custom runic effect
      * @param duration          of the effect (in seconds)
+     * @param displayMessage    whether to inform player of status effect
      */
-    void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double duration);
+    void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double duration, boolean displayMessage);
 
     /**
      * Casts the actual spell effect

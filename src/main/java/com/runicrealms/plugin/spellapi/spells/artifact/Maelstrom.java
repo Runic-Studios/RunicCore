@@ -49,7 +49,7 @@ public class Maelstrom extends Spell implements ArtifactSpell {
             livingEntity.getWorld().spawnParticle(Particle.CRIT_MAGIC, livingEntity.getLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
             DamageUtil.damageEntitySpell(damage, livingEntity, player);
             if (!(livingEntity instanceof Player)) // doesn't stun players
-                addStatusEffect(livingEntity, RunicStatusEffect.STUN, DURATION);
+                addStatusEffect(livingEntity, RunicStatusEffect.STUN, DURATION, true);
         }
     }
 

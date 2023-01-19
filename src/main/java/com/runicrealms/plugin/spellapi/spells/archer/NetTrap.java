@@ -100,7 +100,7 @@ public class NetTrap extends Spell {
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 1.0f);
         livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.25f, 1.0f);
         livingEntity.teleport(higher);
-        addStatusEffect(livingEntity, RunicStatusEffect.STUN, STUN_DURATION);
+        addStatusEffect(livingEntity, RunicStatusEffect.STUN, STUN_DURATION, true);
         if (!(livingEntity instanceof Player)) {
             weakenedMobs.add(livingEntity.getUniqueId());
             livingEntity.setGlowing(true);

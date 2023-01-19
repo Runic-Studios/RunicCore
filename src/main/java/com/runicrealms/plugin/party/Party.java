@@ -34,13 +34,12 @@ public class Party {
     }
 
     /**
-     * Method called when a player accepts an invite to a party.
+     * Method called when a player accepts an invitation to a party.
      *
      * @param player who accepted invite
      * @return whether player joined party
      */
     public boolean acceptMemberInvite(Player player) {
-        this.members.add(player);
         Invite playerInvite = null;
         for (Invite invite : this.invites) {
             if (invite.getPlayer() == player) {
@@ -53,7 +52,10 @@ public class Party {
             this.invites.remove(playerInvite);
             PartyJoinEvent partyJoinEvent = new PartyJoinEvent(this, player);
             Bukkit.getPluginManager().callEvent(partyJoinEvent);
-            return true;
+            if (!partyJoinEvent.isCancelled()) {
+                this.members.add(player);
+                return true;
+            }
         }
         return false;
     }

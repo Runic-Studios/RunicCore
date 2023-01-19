@@ -166,9 +166,11 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player has not invited you to their party!"));
             return;
         }
-        party.acceptMemberInvite(player);
-        party.sendMessageInChannel(player.getName() + " has joined the party");
-        RunicCore.getPartyAPI().updatePlayerParty(player.getUniqueId(), party);
+        boolean joinedParty = party.acceptMemberInvite(player);
+        if (joinedParty) {
+            party.sendMessageInChannel(player.getName() + " has joined the party");
+            RunicCore.getPartyAPI().updatePlayerParty(player.getUniqueId(), party);
+        }
     }
 
     @Subcommand("kick|k")

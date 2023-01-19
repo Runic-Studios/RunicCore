@@ -14,8 +14,7 @@ public class ExpBoostListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onExpGain(RunicExpEvent event) {
         if (event.isCancelled()) return;
-        if (event.getRunicExpSource() != RunicExpEvent.RunicExpSource.MOB
-                && event.getRunicExpSource() != RunicExpEvent.RunicExpSource.PARTY) return; // only mobs or party kills
+        if (event.getRunicExpSource() != RunicExpEvent.RunicExpSource.MOB) return; // only mobs
         double boostPercent = BoostCMD.getCombatExperienceBoost() / 100;
         int boost = (int) boostPercent * event.getOriginalAmount();
         event.setFinalAmount(event.getFinalAmount() + boost);

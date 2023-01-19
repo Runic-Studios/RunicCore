@@ -44,8 +44,9 @@ public class IceBlock extends Spell implements MagicDamageSpell {
     public void executeSpell(Player player, SpellItemType type) {
         // on-use
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2.0f);
-        addStatusEffect(player, RunicStatusEffect.ROOT, DURATION);
-        addStatusEffect(player, RunicStatusEffect.INVULNERABILITY, DURATION);
+        addStatusEffect(player, RunicStatusEffect.ROOT, DURATION, true);
+        addStatusEffect(player, RunicStatusEffect.INVULNERABILITY, DURATION, true);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
         Cone.coneEffect(player, Particle.REDSTONE, DURATION, 0, 20, Color.AQUA);
         // after duration
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {

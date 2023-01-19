@@ -41,16 +41,9 @@ public abstract class Spell implements ISpell, Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    /**
-     * Add a custom status effect to an entity.
-     *
-     * @param entity            to be silenced
-     * @param runicStatusEffect which status effect to add
-     * @param durationInSecs    (in seconds) of effect
-     */
     @Override
-    public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs) {
-        RunicCore.getSpellAPI().addStatusEffect(entity, runicStatusEffect, durationInSecs);
+    public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
+        RunicCore.getSpellAPI().addStatusEffect(entity, runicStatusEffect, durationInSecs, displayMessage);
     }
 
     @Override

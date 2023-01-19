@@ -35,7 +35,7 @@ public class Predator extends Spell {
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!predators.contains(event.getPlayer().getUniqueId())) return;
         predators.remove(event.getPlayer().getUniqueId());
-        addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION);
+        addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION, true);
     }
 }
 

@@ -75,7 +75,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
                         le.getWorld().playSound(le.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 0.5f);
                         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> VectorUtil.drawLine(player, Particle.SPELL_INSTANT, Color.WHITE, finalOrbLocation, le.getEyeLocation(), 1.0, 25));
                         DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, spell);
-                        addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION);
+                        addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION, true);
                     }
                 }
             }

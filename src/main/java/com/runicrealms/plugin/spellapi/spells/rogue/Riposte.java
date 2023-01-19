@@ -45,21 +45,21 @@ public class Riposte extends Spell {
         if (!ripostePlayers.contains(event.getVictim())) return;
         if (!(event.getDamager() instanceof LivingEntity)) return;
         event.setCancelled(true);
-        addStatusEffect(event.getDamager(), RunicStatusEffect.STUN, DURATION_STUN);
+        addStatusEffect(event.getDamager(), RunicStatusEffect.STUN, DURATION_STUN, true);
     }
 
     @EventHandler
     public void onRiposteHit(PhysicalDamageEvent event) {
         if (!ripostePlayers.contains(event.getVictim())) return;
         event.setCancelled(true);
-        addStatusEffect(event.getPlayer(), RunicStatusEffect.STUN, DURATION_STUN);
+        addStatusEffect(event.getPlayer(), RunicStatusEffect.STUN, DURATION_STUN, true);
     }
 
     @EventHandler
     public void onRiposteHit(MagicDamageEvent event) {
         if (!ripostePlayers.contains(event.getVictim())) return;
         event.setCancelled(true);
-        addStatusEffect(event.getPlayer(), RunicStatusEffect.STUN, DURATION_STUN);
+        addStatusEffect(event.getPlayer(), RunicStatusEffect.STUN, DURATION_STUN, true);
     }
 }
 

@@ -70,10 +70,12 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs) {
+    public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
         if (runicStatusEffect == RunicStatusEffect.SILENCE) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
+            if (displayMessage) {
+                entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
+            }
             BukkitTask task = new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -82,7 +84,8 @@ public class SpellManager implements Listener, SpellAPI {
             }.runTaskLaterAsynchronously(plugin, (long) (durationInSecs * 20L));
             silencedEntities.put(entity.getUniqueId(), task);
         } else if (runicStatusEffect == RunicStatusEffect.STUN) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "stunned!");
+            if (displayMessage)
+                entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "stunned!");
             BukkitTask task = new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -95,7 +98,8 @@ public class SpellManager implements Listener, SpellAPI {
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
             }
         } else if (runicStatusEffect == RunicStatusEffect.ROOT) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "rooted!");
+            if (displayMessage)
+                entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "rooted!");
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
             BukkitTask task = new BukkitRunnable() {
                 @Override
@@ -109,8 +113,8 @@ public class SpellManager implements Listener, SpellAPI {
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
             }
         } else if (runicStatusEffect == RunicStatusEffect.INVULNERABILITY) {
-            entity.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.DARK_GREEN + ChatColor.BOLD + "invulnerable!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
+            if (displayMessage)
+                entity.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.DARK_GREEN + ChatColor.BOLD + "invulnerable!");
             BukkitTask task = new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -426,7 +430,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Decoy());
         this.spellList.add(new Fade());
         this.spellList.add(new Stormborn());
-        this.spellList.add(new Siphon());
+        this.spellList.add(new Charged());
+        this.spellList.add(new Surge());
         /*
         Items
          */

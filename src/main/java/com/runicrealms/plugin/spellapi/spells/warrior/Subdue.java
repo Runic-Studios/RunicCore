@@ -42,7 +42,7 @@ public class Subdue extends Spell {
             victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.25f, 1.75f);
             pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
                     new Particle.DustOptions(Color.BLACK, 1));
-            addStatusEffect(victim, RunicStatusEffect.SILENCE, DURATION);
+            addStatusEffect(victim, RunicStatusEffect.SILENCE, DURATION, true);
         }
     }
 

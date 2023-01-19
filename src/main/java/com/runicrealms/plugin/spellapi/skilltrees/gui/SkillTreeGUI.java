@@ -46,13 +46,14 @@ public class SkillTreeGUI implements InventoryHolder {
      * @return ItemStack for use in inventory
      */
     public static ItemStack buildPerkItem(Perk perk, boolean displayPoints, String description) {
-        // todo: async
         Material material;
         if (perk instanceof PerkBaseStat) {
             material = StatsGUI.getStatMaterial(((PerkBaseStat) perk).getStat());
-        } else {
+        } else if (perk instanceof PerkSpell) {
             Spell spell = RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName());
             material = spell.isPassive() ? Material.PAPER : Material.NETHER_WART;
+        } else {
+            material = Material.STONE;
         }
         ItemStack perkItem = new ItemStack(material);
         ItemMeta meta = perkItem.getItemMeta();
@@ -166,12 +167,14 @@ public class SkillTreeGUI implements InventoryHolder {
         }
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(INFO_ITEM_POSITION, infoItem());
-        int i = 0;
 
-        for (Perk perk : skillTreeData.getPerks()) {
-            ItemStack item = buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase");
-            this.inventory.setItem(PERK_SLOTS[i++], item);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            int i = 0;
+            for (Perk perk : skillTreeData.getPerks()) {
+                ItemStack item = buildPerkItem(perk, true, ChatColor.AQUA + "» Click to purchase");
+                this.inventory.setItem(PERK_SLOTS[i++], item);
+            }
+        });
 
         int[] downArrowSlots = new int[]{19, 23, 37, 41};
         int[] upArrowSlots = new int[]{21, 25, 39, 43};

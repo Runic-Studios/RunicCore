@@ -39,7 +39,7 @@ public class Shatter extends Spell {
         double dist = location.distanceSquared(orbLocation);
 
         if (dist <= ArcaneOrb.RADIUS * ArcaneOrb.RADIUS) {
-            addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION);
+            addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION, true);
         }
     }
 }

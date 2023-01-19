@@ -62,7 +62,7 @@ public class Judgment extends Spell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
-        addStatusEffect(player, RunicStatusEffect.ROOT, BUBBLE_DURATION);
+        addStatusEffect(player, RunicStatusEffect.ROOT, BUBBLE_DURATION, true);
         judgmentLocationMap.put(player, player.getLocation());
 
         // Begin spell event
