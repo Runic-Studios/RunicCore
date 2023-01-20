@@ -50,4 +50,12 @@ public interface CharacterAPI {
      */
     String getPlayerClass(UUID uuid, int slot, Jedis jedis);
 
+    /**
+     * Gets the player's character class (archer, cleric, etc.)
+     * Similar to other methods but returns the enum value instead of just the string name
+     *
+     * @return the character class enum
+     */
+    CharacterClass getPlayerClassValue(UUID uuid);
+
 }

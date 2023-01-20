@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.database.MongoData;
 import com.runicrealms.plugin.database.MongoDataSection;
@@ -39,7 +40,9 @@ public class SkillTreeData implements SessionData {
      */
     public SkillTreeData(UUID uuid, SkillTreePosition position) {
         this.position = position;
-        this.subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClass(uuid), position);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(uuid);
+        CharacterClass characterClass = CharacterClass.getFromName(className);
+        this.subClass = SubClass.determineSubClass(characterClass, position);
         this.uuid = uuid;
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
     }
@@ -55,7 +58,7 @@ public class SkillTreeData implements SessionData {
     public SkillTreeData(UUID uuid, int slot, SkillTreePosition position, PlayerMongoDataSection character, Jedis jedis) {
         this.uuid = uuid;
         this.position = position;
-        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClass(uuid), position);
+        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClassValue(uuid), position);
         this.subClass = subClass != null ? subClass : SubClass.determineSubClass(uuid, slot, position, jedis);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks for skill tree in position
         if (!character.has(PATH_LOCATION + "." + position.getValue())) return; // DB not populated
@@ -300,10 +303,10 @@ public class SkillTreeData implements SessionData {
                 return ArcherTreeUtil.wardenPerkList();
             case BARD:
                 return ClericTreeUtil.bardPerkList();
-            case CULTIST:
-                return ClericTreeUtil.cultistPerkList();
-            case PRIEST:
-                return ClericTreeUtil.priestPerkList();
+            case HERETIC:
+                return ClericTreeUtil.hereticPerkList();
+            case LIGHTBRINGER:
+                return ClericTreeUtil.lightbringerPerkList();
             case ARCANIST:
                 return MageTreeUtil.arcanistPerkList();
             case CRYOMANCER:
@@ -312,10 +315,10 @@ public class SkillTreeData implements SessionData {
                 return MageTreeUtil.pyromancerPerkList();
             case ASSASSIN:
                 return RogueTreeUtil.assassinPerkList();
+            case CORSAIR:
+                return RogueTreeUtil.corsairPerkList();
             case DUELIST:
                 return RogueTreeUtil.duelistPerkList();
-            case PIRATE:
-                return RogueTreeUtil.piratePerkList();
             case BERSERKER:
                 return WarriorTreeUtil.berserkerPerkList();
             case GUARDIAN:

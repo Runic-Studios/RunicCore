@@ -43,6 +43,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
         hitEntities = new HashSet<>();
     }
 
+    // todo:             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.5f, 1.0f);
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 

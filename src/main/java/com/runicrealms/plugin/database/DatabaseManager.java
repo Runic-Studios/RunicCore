@@ -201,6 +201,12 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
             return null;
     }
 
+    @Override
+    public CharacterClass getPlayerClassValue(UUID uuid) {
+        String className = getPlayerClass(uuid);
+        return CharacterClass.getFromName(className);
+    }
+
     public ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> getLoadedCharactersMap() {
         return loadedCharacterMap;
     }

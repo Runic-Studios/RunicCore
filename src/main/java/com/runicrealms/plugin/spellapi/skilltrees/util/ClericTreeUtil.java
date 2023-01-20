@@ -30,11 +30,11 @@ public class ClericTreeUtil {
         return perks;
     }
 
-    public static List<Perk> cultistPerkList() {
+    public static List<Perk> hereticPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(48, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(50, 1, 0, 1, "Manawell"));
+        perks.add(new PerkSpell(50, 1, 0, 1, "HolyFire"));
         perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(52, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkSpell(53, 1, 0, 1, "Consecration"));
@@ -47,20 +47,20 @@ public class ClericTreeUtil {
         return perks;
     }
 
-    public static List<Perk> priestPerkList() {
+    public static List<Perk> lightbringerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(60, 1, 0, 1, "Rejuvenate"));
+        perks.add(new PerkSpell(60, 1, 0, 1, "Smite"));
         perks.add(new PerkBaseStat(61, 1, 0, 5, Stat.WISDOM));
-        perks.add(new PerkSpell(62, 1, 0, 1, "Absolution"));
+        perks.add(new PerkSpell(62, 1, 0, 1, "Lightwell"));
         perks.add(new PerkBaseStat(63, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(64, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkSpell(65, 1, 0, 1, "Holy Nova"));
         perks.add(new PerkBaseStat(66, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(67, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(68, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(69, 1, 0, 1, "Soul Link"));
+        perks.add(new PerkSpell(69, 1, 0, 1, "Ray of Light"));
         perks.add(new PerkBaseStat(70, 1, 0, 3, Stat.WISDOM));
-        perks.add(new PerkSpell(71, 1, 0, 1, "Divine Shield"));
+        perks.add(new PerkSpell(71, 1, 0, 1, "Holy Fire"));
         return perks;
     }
 }

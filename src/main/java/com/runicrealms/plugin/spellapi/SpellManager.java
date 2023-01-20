@@ -381,7 +381,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new HolyWater());
         this.spellList.add(new Seasick());
         this.spellList.add(new HomingArrow());
-        this.spellList.add(new Manawell());
+        this.spellList.add(new HolyFire());
         this.spellList.add(new SeaLegs());
         this.spellList.add(new Predator());
         this.spellList.add(new Resolve());
@@ -408,13 +408,12 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Subdue());
         this.spellList.add(new Rebuke());
         this.spellList.add(new Rift());
-        this.spellList.add(new SoulLink());
         this.spellList.add(new DivineShield());
         this.spellList.add(new Improvisation());
         this.spellList.add(new Discord());
         this.spellList.add(new RayOfLight());
         this.spellList.add(new Dissonance());
-        this.spellList.add(new Absolution());
+        this.spellList.add(new Lightwell());
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());

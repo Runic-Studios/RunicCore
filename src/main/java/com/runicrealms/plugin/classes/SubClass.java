@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 
 import java.util.LinkedHashSet;
@@ -15,33 +16,33 @@ public enum SubClass {
     /*
      Archer
      */
-    MARKSMAN("Marksman", CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of single-target &cphysical⚔ &7damage and long-range attacks!"),
-    STORMSHOT("Stormshot", CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of runic &3magicʔ&7, slinging area-of-effect spells!"),
-    WARDEN("Warden", CharacterClass.ARCHER, wardenItem(), "Warden is keeper of the forest, &ahealing✦ &7allies through the power of nature!"),
+    MARKSMAN("Marksman", 1, CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of single-target &cphysical⚔ &7damage and long-range attacks!"),
+    STORMSHOT("Stormshot", 2, CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of lightning &3magicʔ&7, slinging area-of-effect spells!"),
+    WARDEN("Warden", 3, CharacterClass.ARCHER, wardenItem(), "Warden is the keeper of the forest, &ahealing✦ &7allies through the power of nature!"),
     /*
      Cleric
      */
-    BARD("Bard", CharacterClass.CLERIC, bardItem(), "Bard controls the flow of battle with &aally buffs &7and &aenemy debuffs&7!"),
-    CULTIST("Cultist", CharacterClass.CLERIC, cultistItem(), "Cultist uses dark &3magicʔ &7to bring death to their enemies!"),
-    PRIEST("Priest", CharacterClass.CLERIC, priestItem(), "Priest &aheals✦ &7allies and keeps them strong!"),
+    BARD("Bard", 1, CharacterClass.CLERIC, bardItem(), "Bard is a hybrid &3magicalʔ &7and &cphysical⚔ &7fighter who controls the flow of battle with &aally buffs &7and &aenemy debuffs&7!"),
+    HERETIC("Heretic", 2, CharacterClass.CLERIC, hereticItem(), "Heretic uses dark &3magicʔ &7to bring death to their enemies!"),
+    LIGHTBRINGER("Lightbringer", 3, CharacterClass.CLERIC, lightbringerItem(), "Lightbringer blasts enemies with light to &aheal✦ &7allies and keep them strong!"),
     /*
      Mage
      */
-    ARCANIST("Arcanist", CharacterClass.MAGE, arcanistItem(), "Arcanist has &abuffs &7to empower &3magicalʔ &7allies!"),
-    CRYOMANCER("Cryomancer", CharacterClass.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with &fcrowd control&7!"),
-    PYROMANCER("Pyromancer", CharacterClass.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect &3magicʔ &7damage!"),
+    ARCANIST("Arcanist", 1, CharacterClass.MAGE, arcanistItem(), "Arcanist has &abuffs &7to empower &3magicalʔ &7allies!"),
+    CRYOMANCER("Cryomancer", 2, CharacterClass.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with &fcrowd control&7!"),
+    PYROMANCER("Pyromancer", 3, CharacterClass.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect &3magicʔ &7damage!"),
     /*
      Rogue
      */
-    ASSASSIN("Assassin", CharacterClass.ROGUE, assassinItem(), "Assassin emerges from the &8shadows &7to quickly burst an opponent with &cphysical⚔ &7strikes!"),
-    DUELIST("Duelist", CharacterClass.ROGUE, duelistItem(), "Duelist is an excellent &cphysical⚔ &7fighter against a single opponent!"),
-    PIRATE("Pirate", CharacterClass.ROGUE, pirateItem(), "Pirate uses &cphysical⚔ &7projectiles to control the battle!"),
+    ASSASSIN("Assassin", 1, CharacterClass.ROGUE, assassinItem(), "Assassin emerges from the &8shadows &7to quickly burst an opponent with &cphysical⚔ &7strikes!"),
+    CORSAIR("Corsair", 2, CharacterClass.ROGUE, corsairItem(), "Corsair uses &cphysical⚔ &7projectiles to control the flow of battle!"),
+    DUELIST("Duelist", 3, CharacterClass.ROGUE, duelistItem(), "Duelist is an excellent &cphysical⚔ &7fighter against a single opponent!"),
     /*
     Warrior
      */
-    BERSERKER("Berserker", CharacterClass.WARRIOR, berserkerItem(), "Berserker fights ferociously with &cphysical⚔ &7attacks that cleave enemies!"),
-    GUARDIAN("Guardian", CharacterClass.WARRIOR, guardianItem(), "Guardian excels as a &ftank&7, defending allies from harm!"),
-    PALADIN("Paladin", CharacterClass.WARRIOR, paladinItem(), "Paladin is a hybrid &3magicalʔ &7fighter and &ahealer✦&7!");
+    BERSERKER("Berserker", 1, CharacterClass.WARRIOR, berserkerItem(), "Berserker fights ferociously with &cphysical⚔ &7attacks that cleave enemies!"),
+    GUARDIAN("Guardian", 2, CharacterClass.WARRIOR, guardianItem(), "Guardian excels as a &ftank&7, defending allies from harm!"),
+    PALADIN("Paladin", 3, CharacterClass.WARRIOR, paladinItem(), "Paladin is a hybrid &3magicalʔ &7fighter and &ahealer✦&7!");
 
     public static final Set<SubClass> ARCHER_SUBCLASSES = new LinkedHashSet<>();
     public static final Set<SubClass> CLERIC_SUBCLASSES = new LinkedHashSet<>();
@@ -51,7 +52,7 @@ public enum SubClass {
 
     static {
         for (SubClass subClass : SubClass.values()) {
-            switch (subClass.getBaseClass()) {
+            switch (subClass.getCharacterClass()) {
                 case ANY:
                     break;
                 case ARCHER:
@@ -74,13 +75,22 @@ public enum SubClass {
     }
 
     private final String name;
-    private final CharacterClass baseClass;
+    private final int position;
+    private final CharacterClass characterClass;
     private final ItemStack itemStack;
     private final String description;
 
-    SubClass(String name, CharacterClass baseClass, ItemStack itemStack, String description) {
+    /**
+     * @param name           of the subclass
+     * @param position       of the subclass (is this the first? fourth? it's alphabetical)
+     * @param characterClass the base class
+     * @param itemStack      the head item for ui
+     * @param description    of the subclass
+     */
+    SubClass(String name, int position, CharacterClass characterClass, ItemStack itemStack, String description) {
         this.name = name;
-        this.baseClass = baseClass;
+        this.position = position;
+        this.characterClass = characterClass;
         this.itemStack = itemStack;
         this.description = description;
     }
@@ -91,55 +101,14 @@ public enum SubClass {
      * @param position (which sub-class? 1, 2, or 3)
      * @return the SubClass enum, or null if not found
      */
-    public static SubClass determineSubClass(String playerClass, SkillTreePosition position) {
-        SubClass subClass;
-        int value = position.getValue();
-
-        switch (playerClass.toLowerCase()) {
-            case "archer":
-                if (value == 1)
-                    subClass = SubClass.MARKSMAN;
-                else if (value == 2)
-                    subClass = SubClass.STORMSHOT;
-                else
-                    subClass = SubClass.WARDEN;
-                break;
-            case "cleric":
-                if (value == 1)
-                    subClass = SubClass.BARD;
-                else if (value == 2)
-                    subClass = SubClass.CULTIST;
-                else
-                    subClass = SubClass.PRIEST;
-                break;
-            case "mage":
-                if (value == 1)
-                    subClass = SubClass.ARCANIST;
-                else if (value == 2)
-                    subClass = SubClass.CRYOMANCER;
-                else
-                    subClass = SubClass.PYROMANCER;
-                break;
-            case "rogue":
-                if (value == 1)
-                    subClass = SubClass.ASSASSIN;
-                else if (value == 2)
-                    subClass = SubClass.DUELIST;
-                else
-                    subClass = SubClass.PIRATE;
-                break;
-            case "warrior":
-                if (value == 1)
-                    subClass = SubClass.BERSERKER;
-                else if (value == 2)
-                    subClass = SubClass.GUARDIAN;
-                else
-                    subClass = SubClass.PALADIN;
-                break;
-            default:
-                return null;
+    @Nullable
+    public static SubClass determineSubClass(CharacterClass characterClass, SkillTreePosition position) {
+        for (SubClass subClass : SubClass.values()) {
+            if (subClass.getCharacterClass() != characterClass) continue;
+            if (subClass.getPosition() == position.getValue())
+                return subClass;
         }
-        return subClass;
+        return null;
     }
 
     /**
@@ -152,8 +121,9 @@ public enum SubClass {
      * @return their subclass, or null (bad!)
      */
     public static SubClass determineSubClass(UUID uuid, int characterSlot, SkillTreePosition position, Jedis jedis) {
-        String playerClass = RunicCore.getCharacterAPI().getPlayerClass(uuid, characterSlot, jedis);
-        return determineSubClass(playerClass, position);
+        String className = RunicCore.getCharacterAPI().getPlayerClass(uuid, characterSlot, jedis);
+        CharacterClass characterClass = CharacterClass.getFromName(className);
+        return determineSubClass(characterClass, position);
     }
 
     private static ItemStack marksmanItem() {
@@ -161,7 +131,7 @@ public enum SubClass {
     }
 
     private static ItemStack stormshotItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUwMzIzNzczYzBkYTViNDE3NzE4NTAwYTQ0OGFlM2RiZjg3ZDQ5YWMwNjhjZDUzZjAxNTAyZjRjMDMxNjE1MyJ9fX0=");
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmViMTBjYjg3NTNkYTgwMDMwMzIwYmUyMzg5MWExM2ZmYzI4MmQ4NWU2ZDJiNzg2YmNlZjRlYmYyMzFhZDJlYSJ9fX0=");
     }
 
     private static ItemStack wardenItem() {
@@ -173,13 +143,12 @@ public enum SubClass {
                 "RleHR1cmUvZWM1NmY4Zjk2ZDE0MWUyYWI0MmE1ODkzMjZjNmFiZjYzNTc4NmZhMmM4NzA5ZWZkNDZmZGYyOWY3YTJjOTI3NCJ9fX0=");
     }
 
-    private static ItemStack cultistItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDE0MWYyYmIzYzQ5ODAzOGUxZmNlY2EyYmIyYzVlMzg2NzI0MjAzMDJiMTVmMDljOGZjNTUyYmViMjhjYjk5In19fQ==");
+    private static ItemStack hereticItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE5ZWQ0MjNkNTc1MDk0Mzc1YmU4OWI3ZDJmOTAwODE0NDZmZmI2YzhkMjQ0YTExOWE3NmE4OGJmNGNiNDA2NCJ9fX0=");
     }
 
-    private static ItemStack priestItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvNWRhNDgzNDljMDEwNDkyNTU2NzgzOWM4ZWQ5MTIwNjg4MzgwMzQ5MTE4YjUyNDNiMjU3OGExNjg3MmEzZmVmMyJ9fX0=");
+    private static ItemStack lightbringerItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2EyNDM1ZDI3YWZlZGM1YTZjNDAwMzEwYzhkYmFhZDZjZjYwMmMwZDdmYWRlNGExNzVjZWU2NjllY2NmNTUwNyJ9fX0=");
     }
 
     private static ItemStack cryomancerItem() {
@@ -206,7 +175,7 @@ public enum SubClass {
                 "leHR1cmUvYmIxNzliNTY0ODc2MGRiNjY1NTg1YTMwZWM4YjFiZThjM2QyNTFjYTMwNzUwNjA1OTJhYzU1YmI5ZDg1M2U4In19fQ==");
     }
 
-    private static ItemStack pirateItem() {
+    private static ItemStack corsairItem() {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
                 "leHR1cmUvOTg4MGE1YjM2OTcyZWFmNTY2M2Y5Y2ExYjBiZDAwZWE4YzRmMDU1ZmM2ZTJhOWU3YTIyMDZlYzM5OTA5ZGVhMSJ9fX0=");
     }
@@ -226,8 +195,8 @@ public enum SubClass {
                 "leHR1cmUvZWY2M2FhOWEzZjk4MzIzNTNmZDc4ZmU2OTc5NjM5YzcwOWMxMDU2YzdhODExNjNkMjllZjk0ZDA5OTI1YzMifX19");
     }
 
-    public CharacterClass getBaseClass() {
-        return this.baseClass;
+    public CharacterClass getCharacterClass() {
+        return this.characterClass;
     }
 
     public String getDescription() {
@@ -240,5 +209,9 @@ public enum SubClass {
 
     public String getName() {
         return this.name;
+    }
+
+    public int getPosition() {
+        return position;
     }
 }

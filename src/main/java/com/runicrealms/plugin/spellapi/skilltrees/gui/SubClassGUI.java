@@ -16,6 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SubClassGUI implements InventoryHolder {
 
     private final Inventory inventory;
@@ -58,17 +61,20 @@ public class SubClassGUI implements InventoryHolder {
      * @return an ItemStack icon
      */
     private ItemStack subClassItem(SkillTreePosition position) {
-        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClass(player.getUniqueId()), position);
+        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClassValue(player.getUniqueId()), position);
         String displayName = subClass != null ? subClass.getName() : "";
         ItemStack subClassItem = subClass != null ? subClass.getItemStack() : new ItemStack(Material.STONE);
         ItemMeta meta = subClassItem.getItemMeta();
         if (meta == null) return subClassItem;
         String description = subClass != null ? subClass.getDescription() : "";
         meta.setDisplayName(ChatColor.GREEN + displayName);
-        String lore = ChatColor.GRAY + "Open the skill tree for the " +
-                ChatColor.GREEN + displayName +
-                ChatColor.GRAY + " class! " + description;
-        meta.setLore(ChatUtils.formattedText(lore));
+        String title = "&7Open the skill tree for the &a" + displayName + "&7 class!";
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.addAll(ChatUtils.formattedText(title));
+        lore.add("");
+        lore.addAll(ChatUtils.formattedText(ChatColor.GRAY + description));
+        meta.setLore(lore);
         subClassItem.setItemMeta(meta);
         return subClassItem;
     }

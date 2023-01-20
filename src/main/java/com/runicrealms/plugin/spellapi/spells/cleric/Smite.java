@@ -4,71 +4,52 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
+import org.bukkit.util.RayTraceResult;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Smite extends Spell implements MagicDamageSpell {
-
-    private static final int DAMAGE = 10;
-    private static final double DAMAGE_PER_LEVEL = 2.5;
+    private static final int DAMAGE = 20;
+    private static final double DAMAGE_PER_LEVEL = 0.4;
     private static final int MAX_DIST = 10;
-    private static final double KNOCKBACK_MULT = -2.75;
-    private final double BEAM_SPEED = 0.6;
-    private final double COLLISION_RADIUS = 1.5;
+    private final double BEAM_WIDTH = 1.5;
 
     public Smite() {
         super("Smite",
-                "You launch a ripple of magic, colliding with the first enemy hit, " +
+                "You launch a ripple of magic, " +
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) magicʔ damage and launching them back!",
-                ChatColor.WHITE, CharacterClass.CLERIC, 8, 20);
-    }
-
-    private boolean checkForEnemy(Player caster, Location beamLocation) {
-        for (Entity en : caster.getWorld().getNearbyEntities(beamLocation, COLLISION_RADIUS, COLLISION_RADIUS, COLLISION_RADIUS)) {
-            if (!isValidEnemy(caster, en)) continue;
-            caster.getWorld().playSound(en.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
-            en.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, en.getLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) en, caster, this);
-            Vector force = caster.getLocation().toVector().subtract(en.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
-            en.setVelocity(force);
-            return true;
-        }
-        return false;
+                        + "x&7 lvl) magicʔ damage to the first enemy hit!",
+                ChatColor.WHITE, CharacterClass.CLERIC, 8, 15);
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
-        Location location = player.getLocation();
-        Vector direction = location.getDirection().normalize().multiply(BEAM_SPEED);
-        Location startLocation = player.getEyeLocation();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
+        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
+                (
+                        player.getLocation(),
+                        player.getLocation().getDirection(),
+                        MAX_DIST,
+                        BEAM_WIDTH,
+                        entity -> isValidEnemy(player, entity)
+                );
 
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                startLocation.add(direction);
-                if (startLocation.distanceSquared(location) >= (MAX_DIST * MAX_DIST)) {
-                    this.cancel();
-                    player.getWorld().playSound(startLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
-                    player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, startLocation, 15, 0.5f, 0.5f, 0.5f, 0);
-                }
-                player.getWorld().spawnParticle(Particle.CLOUD, startLocation, 15, 0, 0, 0, 0);
-                if (checkForEnemy(player, startLocation))
-                    this.cancel();
-            }
-        }.runTaskTimer(plugin, 0, 1L);
+        if (rayTraceResult == null) {
+            Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            VectorUtil.drawLine(player, Particle.CLOUD, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.25f);
+            player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, location, 8, 0.5f, 0.5f, 0.5f, 0);
+        } else if (rayTraceResult.getHitEntity() != null) {
+            LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
+            VectorUtil.drawLine(player, Particle.CLOUD, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.25f);
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
+            livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.5f, 0.5f, 0.5f, 0);
+            DamageUtil.damageEntitySpell(DAMAGE, livingEntity, player, this);
+        }
     }
 
     @Override

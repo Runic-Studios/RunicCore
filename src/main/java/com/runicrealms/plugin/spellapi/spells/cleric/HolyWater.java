@@ -13,12 +13,15 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
 
@@ -28,7 +31,7 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
     private static final int RADIUS = 5;
     private static final double HEALING_PER_LEVEL = 1.25;
     private static final double POTION_SPEED_MULT = 1.25;
-    private ThrownPotion thrownPotion;
+    private static Set<ThrownPotion> thrownPotionSet;
 
     public HolyWater() {
         super("Holy Water",
@@ -39,6 +42,11 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
                         "Against enemies, the vial deals (" + DAMAGE + " + &f" +
                         DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
                 ChatColor.WHITE, CharacterClass.CLERIC, 10, 15);
+        thrownPotionSet = new HashSet<>();
+    }
+
+    public static Set<ThrownPotion> getThrownPotionSet() {
+        return thrownPotionSet;
     }
 
     @Override
@@ -47,11 +55,13 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         Objects.requireNonNull(meta).setColor(Color.AQUA);
         item.setItemMeta(meta);
-        thrownPotion = player.launchProjectile(ThrownPotion.class);
+        ThrownPotion thrownPotion = player.launchProjectile(ThrownPotion.class);
+        thrownPotionSet.add(thrownPotion);
         thrownPotion.setItem(item);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(POTION_SPEED_MULT);
         thrownPotion.setVelocity(velocity);
         thrownPotion.setShooter(player);
+
     }
 
     @Override
@@ -69,13 +79,14 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
         return HEALING_PER_LEVEL;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPotionBreak(PotionSplashEvent event) {
 
         // only listen for our potion
-        if (!(event.getPotion().equals(this.thrownPotion))) return;
+        if (!thrownPotionSet.contains(event.getPotion())) return;
         if (!(event.getPotion().getShooter() instanceof Player)) return;
 
+        thrownPotionSet.remove(event.getPotion());
         event.setCancelled(true);
 
         ThrownPotion expiredBomb = event.getPotion();
