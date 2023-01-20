@@ -20,6 +20,15 @@ import java.util.*;
  */
 public class RunicItemShopHelper {
 
+    private static final Map<String, Integer> SILVER_KEY_MAP = new HashMap<String, Integer>() {{
+        put("SilverKey", 1);
+    }};
+    private static final Map<String, Integer> GOLD_KEY_MAP = new HashMap<String, Integer>() {{
+        put("GoldKey", 1);
+    }};
+    private static final Map<String, Integer> ETHEREAL_KEY_MAP = new HashMap<String, Integer>() {{
+        put("EtherealKey", 1);
+    }};
     /*
     INNKEEPERS
      */
@@ -41,6 +50,7 @@ public class RunicItemShopHelper {
         UNIQUE
          */
         getCaptain();
+        getNazmoraCaptain();
         getRunicMage();
         initializeInnkeepers();
         /*
@@ -64,6 +74,18 @@ public class RunicItemShopHelper {
         return infoItem;
     }
 
+    /**
+     * Shorthand to create simple price maps for 1 item with 1 cost
+     *
+     * @param item templateID of price item
+     * @return a map to pass to constructor
+     */
+    static Map<String, Integer> createReqItemMap(String item) {
+        return new HashMap<String, Integer>() {{
+            put(item, 1);
+        }};
+    }
+
     private ItemStack boatItem(TravelType travelType, TravelLocation travelLocation) {
         ItemStack wagonItem = new ItemStack(travelType.getMaterial());
         ItemMeta meta = wagonItem.getItemMeta();
@@ -73,7 +95,7 @@ public class RunicItemShopHelper {
         wagonItem.setItemMeta(meta);
         return wagonItem;
     }
-
+    
     public RunicShopGeneric getCaptain() {
         Map<String, Integer> coin = new HashMap<String, Integer>() {{
             put("Coin", 120);
@@ -97,19 +119,8 @@ public class RunicItemShopHelper {
                                 boatItem(TravelType.BOAT, TravelLocation.CRIMSON_CHAPEL),
                                 runBoatBuy(TravelLocation.CRIMSON_CHAPEL))
                 );
-        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(376, 328, 329, 330, 325, 336, 327), shopItems);
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(376, 328, 329, 330, 336, 327, 497), shopItems);
     }
-
-    private static final Map<String, Integer> SILVER_KEY_MAP = new HashMap<String, Integer>() {{
-        put("SilverKey", 1);
-    }};
-    private static final Map<String, Integer> GOLD_KEY_MAP = new HashMap<String, Integer>() {{
-        put("GoldKey", 1);
-    }};
-
-    private static final Map<String, Integer> ETHEREAL_KEY_MAP = new HashMap<String, Integer>() {{
-        put("EtherealKey", 1);
-    }};
 
     public Set<RunicShopGeneric> getCaveGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
@@ -181,18 +192,6 @@ public class RunicItemShopHelper {
         return gateKeepers;
     }
 
-    /**
-     * Shorthand to create simple price maps for 1 item with 1 cost
-     *
-     * @param item templateID of price item
-     * @return a map to pass to constructor
-     */
-    static Map<String, Integer> createReqItemMap(String item) {
-        return new HashMap<String, Integer>() {{
-            put(item, 1);
-        }};
-    }
-
     public Set<RunicShopGeneric> getLibraryGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(519, SILVER_KEY_MAP, DungeonLocation.SUNKEN_LIBRARY, 1);
@@ -202,6 +201,26 @@ public class RunicItemShopHelper {
         gateKeepers.add(second);
         gateKeepers.add(third);
         return gateKeepers;
+    }
+
+    public RunicShopGeneric getNazmoraCaptain() {
+        Map<String, Integer> free = new HashMap<String, Integer>() {{
+            put("Coin", 0);
+        }};
+        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        shopItems.add
+                (
+                        new RunicShopItem(free,
+                                boatItem(TravelType.BOAT, TravelLocation.NAZMORA),
+                                runBoatBuy(TravelLocation.NAZMORA))
+                );
+        shopItems.add
+                (
+                        new RunicShopItem(free,
+                                boatItem(TravelType.BOAT, TravelLocation.ORC_OUTPOST),
+                                runBoatBuy(TravelLocation.ORC_OUTPOST))
+                );
+        return new RunicShopGeneric(9, ChatColor.YELLOW + "Captain", Arrays.asList(325, 531), shopItems);
     }
 
     public RunicShopGeneric getRunicMage() {

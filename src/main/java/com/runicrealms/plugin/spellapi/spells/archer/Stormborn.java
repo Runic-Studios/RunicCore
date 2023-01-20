@@ -45,6 +45,7 @@ public class Stormborn extends Spell {
             Arrow arrow = player.launchProjectile(Arrow.class);
 //            arrow.
             // todo: don't let multiple arrows hit
+            // todo: does it scale properly?
             arrow.setVelocity(vector);
             arrow.setShooter(player);
             arrow.setCustomNameVisible(false);
@@ -76,7 +77,7 @@ public class Stormborn extends Spell {
         event.setCancelled(true);
         event.getArrow().remove();
         Player player = event.getPlayer();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 0.5f, 0.75f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 0.25f, 0.75f);
         Vector middle = player.getEyeLocation().getDirection().normalize().multiply(2);
         Vector leftMid = rotateVectorAroundY(middle, -10);
         Vector rightMid = rotateVectorAroundY(middle, 10);

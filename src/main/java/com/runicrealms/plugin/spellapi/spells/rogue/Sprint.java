@@ -29,7 +29,7 @@ public class Sprint extends Spell implements MagicDamageSpell {
 
     public Sprint() {
         super("Sprint",
-                "For " + DURATION + " seconds, you gain a " +
+                "For " + DURATION + "s, you gain a " +
                         "massive boost of speed! While the speed persists, your first melee attack against " +
                         "an enemy deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) magicʔ damage!",

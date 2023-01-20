@@ -20,6 +20,7 @@ public enum TravelLocation {
     ZENYTH("zenyth", "Zenyth", new Location(Bukkit.getWorld("Alterra"), 1583.5, 34, -196.5, 270, 0)),
     NAHEEN("naheen", "Naheen", new Location(Bukkit.getWorld("Alterra"), 1861.5, 39, 154.5, 315, 0)),
     NAZMORA("nazmora", "Naz'mora", new Location(Bukkit.getWorld("Alterra"), 2608.5, 33, 998.5, 0, 0)),
+    ORC_OUTPOST("orc_outpost", "Orc Outpost", new Location(Bukkit.getWorld("Alterra"), 2409.5, 26, 1720.5, 0, 0)),
     FROSTS_END("frosts_end", "Frost's End", new Location(Bukkit.getWorld("Alterra"), 1116.5, 33, 2576.5, 90, 0)),
     /*
     Conquest Points
@@ -36,18 +37,6 @@ public enum TravelLocation {
         this.identifier = identifier;
         this.display = display;
         this.location = location;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public String getDisplay() {
-        return display;
-    }
-
-    public Location getLocation() {
-        return location;
     }
 
     public static TravelLocation getFromIdentifier(String identifier) {
@@ -85,5 +74,17 @@ public enum TravelLocation {
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 }
