@@ -98,9 +98,6 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 0.5F);
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_BOTTLE_THROW, 0.5F, 1.0F);
 
-        expiredBomb.getWorld().spawnParticle(Particle.REDSTONE, loc,
-                50, 1f, 1f, 1f, new Particle.DustOptions(Color.WHITE, 10));
-
         for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
             if (isValidAlly(player, en))
                 HealUtil.healPlayer(HEAL_AMT, (Player) en, player, false, this);

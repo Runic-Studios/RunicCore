@@ -5,6 +5,7 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -64,11 +65,11 @@ public class Lightwell extends Spell implements HealingSpell {
                 if (count > DURATION)
                     this.cancel();
 
-                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 0.5f);
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
-                player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, RADIUS, RADIUS, RADIUS, 0);
-//                player.getWorld().spawnParticle(Particle.REDSTONE, location,
-//                        25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
+                Circle.createParticleCircle(player, location, RADIUS, Particle.SPELL_INSTANT, Color.WHITE);
+                player.getWorld().playSound(location, Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 0.5f);
+                player.getWorld().playSound(location, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
+                player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, 0.75f, 0.75f, 0.75f, 0);
+
                 for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                     if (isValidAlly(player, entity)) {
                         if (entity.equals(player)) continue; // does not heal self

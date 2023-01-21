@@ -13,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
@@ -22,12 +23,12 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
     private static final int DURATION = 3;
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 8;
+    private static final int MAX_DURATION = 4; // how long until the beam just ends
     private static final int RADIUS = 3;
     private static final int TRAIL_SPEED = 2;
-    private static final double BEAM_WIDTH = 2.0D;
+    private static final double BEAM_WIDTH = 1.0D;
     private static final double DAMAGE_PER_LEVEL = 0.75;
-    private static final double KNOCKBACK = 0.35;
-    // todo: max duration
+    private static final double KNOCKBACK = 2.0;
 
     public RayOfLight() {
         super("Ray of Light",
@@ -86,27 +87,34 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
     }
 
     /**
-     * @param player
-     * @param location
+     * Spawns a falling beam of light from the sky that explodes upon hitting the ground
+     *
+     * @param player   who cast the spell
+     * @param location to end the trail
      */
     private void lightBlast(Player player, Location location) {
 
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
         VectorUtil.drawLine(player, Particle.SPELL_INSTANT, Color.WHITE, location, trailLoc[0].clone().subtract(0, 20, 0), 1.0D, 5);
 
-        new BukkitRunnable() {
+        BukkitTask bukkitTask = new BukkitRunnable() {
             @Override
             public void run() {
                 if (trailLoc[0].clone().subtract(0, 2, 0).getBlock().getType() != Material.AIR) { // block is on ground
                     this.cancel();
                     Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> explode(player, trailLoc[0]));
                 }
+
                 // spawn trail
-                player.getWorld().playSound(trailLoc[0], Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
-                player.getWorld().spawnParticle(Particle.REDSTONE, trailLoc[0], 8, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 3));
+                player.getWorld().playSound(trailLoc[0], Sound.BLOCK_NOTE_BLOCK_CHIME, 0.5f, 2.0f);
+                player.getWorld().playSound(trailLoc[0], Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.0f);
+                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, trailLoc[0], 25, 0.75f, 0.75f, 0.75f, 0);
                 trailLoc[0] = trailLoc[0].subtract(0, TRAIL_SPEED, 0);
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 3L);
+
+        // So the beam doesn't last forever
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), bukkitTask::cancel, MAX_DURATION * 20L);
     }
 
 }
