@@ -355,7 +355,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Sprint());
         this.spellList.add(new Blink());
         this.spellList.add(new MeteorShower());
-        this.spellList.add(new Windstride());
+        this.spellList.add(new Accelerando());
         this.spellList.add(new Rejuvenate());
         this.spellList.add(new Enrage());
         this.spellList.add(new Judgment());

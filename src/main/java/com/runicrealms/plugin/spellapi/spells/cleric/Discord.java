@@ -16,7 +16,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Discord extends Spell implements MagicDamageSpell {
-
     private static final int DELAY = 2;
     private static final int DAMAGE_AMT = 20;
     private static final double DAMAGE_PER_LEVEL = 2.5;
@@ -29,7 +28,7 @@ public class Discord extends Spell implements MagicDamageSpell {
                         "After, enemies within " + RADIUS + " blocks are stunned for " +
                         DURATION + "s and suffer (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, CharacterClass.CLERIC, 20, 20);
+                ChatColor.WHITE, CharacterClass.CLERIC, 15, 20);
     }
 
     private void causeDiscord(Player caster, LivingEntity victim) {

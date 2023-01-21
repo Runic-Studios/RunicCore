@@ -20,7 +20,7 @@ public class ClericTreeUtil {
         perks.add(new PerkSpell(38, 1, 0, 1, "Improvisation"));
         perks.add(new PerkBaseStat(39, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(40, 1, 0, 3, Stat.WISDOM));
-        perks.add(new PerkSpell(41, 1, 0, 1, "Windstride"));
+        perks.add(new PerkSpell(41, 1, 0, 1, "Accelerando"));
         perks.add(new PerkBaseStat(42, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(43, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(44, 1, 0, 5, Stat.STRENGTH));
