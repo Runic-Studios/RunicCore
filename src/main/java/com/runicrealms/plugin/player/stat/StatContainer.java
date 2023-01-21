@@ -1,104 +1,93 @@
 package com.runicrealms.plugin.player.stat;
 
+import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class StatContainer {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * A thread-safe implementation of a container to hold the player's stats, which can be changed by:
+ * - Items
+ * - Skill Trees
+ * - Spells
+ */
+public class StatContainer {
     private final Player player;
-    private int dexterity;
-    private int intelligence;
-    private int strength;
-    private int vitality;
-    private int wisdom;
+    private Map<Stat, AtomicInteger> statMap = new HashMap<>();
 
     public StatContainer(Player player) {
         this.player = player;
     }
 
-    public StatContainer(Player player, int dexterity, int intelligence, int strength, int vitality, int wisdom) {
-        this.player = player;
-        this.dexterity = dexterity;
-        this.intelligence = intelligence;
-        this.strength = strength;
-        this.vitality = vitality;
-        this.wisdom = wisdom;
+    /**
+     * Decreases the given stat for player
+     *
+     * @param stat  to change value for
+     * @param value the value to decrease the given stat by (parameter value should be positive)
+     */
+    public void decreaseStat(Stat stat, int value) {
+        statMap.get(stat).getAndAdd(-value);
+        // Call custom event for listeners
+        StatChangeEvent statChangeEvent = new StatChangeEvent(this.player, this);
+        Bukkit.getPluginManager().callEvent(statChangeEvent);
+    }
+
+    /**
+     * Returns the bonus value for the given stat from all armor pieces (including offhand) the player is wearing
+     *
+     * @param stat to check
+     * @return added item bonus for stat
+     */
+    public int getItemStatBonus(Stat stat) {
+        if (RunicItemsAPI.getAddedPlayerStats(player.getUniqueId()).getAddedStats().get(stat) != null)
+            return RunicItemsAPI.getAddedPlayerStats(player.getUniqueId()).getAddedStats().get(stat);
+        else
+            return 0;
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public int getDexterity() {
-        return dexterity;
+    /**
+     * Returns the current value of the stat for the player. Includes the cached, changeable values (combat skills)
+     * And grabs the cached stat values from armor
+     *
+     * @param stat to check
+     * @return the value for stat
+     */
+    public int getStat(Stat stat) {
+        if (statMap.containsKey(stat))
+            return statMap.get(stat).get() + getItemStatBonus(stat);
+        else
+            return getItemStatBonus(stat);
     }
 
-    public void setDexterity(int dexterity) {
-        this.dexterity = dexterity;
-    }
-
-    public int getIntelligence() {
-        return intelligence;
-    }
-
-    public void setIntelligence(int intelligence) {
-        this.intelligence = intelligence;
-    }
-
-    public int getStrength() {
-        return strength;
-    }
-
-    public void setStrength(int strength) {
-        this.strength = strength;
-    }
-
-    public int getVitality() {
-        return vitality;
-    }
-
-    public void setVitality(int vitality) {
-        this.vitality = vitality;
-    }
-
-    public int getWisdom() {
-        return wisdom;
-    }
-
-    public void setWisdom(int wisdom) {
-        this.wisdom = wisdom;
-    }
-
+    /**
+     * Increases the given stat for player
+     *
+     * @param stat  to change value for
+     * @param value the value to decrease the given stat by (parameter value should be positive)
+     */
     public void increaseStat(Stat stat, int value) {
-        switch (stat) {
-            case DEXTERITY:
-                dexterity += value;
-                break;
-            case INTELLIGENCE:
-                intelligence += value;
-                break;
-            case STRENGTH:
-                strength += value;
-                break;
-            case VITALITY:
-                vitality += value;
-                break;
-            case WISDOM:
-                wisdom += value;
-                break;
-        }
-        // call custom event for listeners
+        if (!statMap.containsKey(stat))
+            statMap.put(stat, new AtomicInteger(value));
+        else
+            statMap.get(stat).getAndAdd(value);
+        // Call custom event for listeners
         StatChangeEvent statChangeEvent = new StatChangeEvent(this.player, this);
         Bukkit.getPluginManager().callEvent(statChangeEvent);
     }
 
+    /**
+     * Resets all in-memory stat values for the player to 0
+     */
     public void resetValues() {
-        this.dexterity = 0;
-        this.intelligence = 0;
-        this.strength = 0;
-        this.vitality = 0;
-        this.wisdom = 0;
+        this.statMap = new HashMap<>();
         // call custom event for listeners
         StatChangeEvent statChangeEvent = new StatChangeEvent(this.player, this);
         Bukkit.getPluginManager().callEvent(statChangeEvent);

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.GearScanner;
+import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -34,7 +34,7 @@ public class HealthUtils {
         double hpPerLevel = PlayerLevelUtil.determineHealthLvByClass(className);
         double coefficient = PlayerLevelUtil.getHealthLevelCoefficient();
 
-        int total = (int) (BASE_HEALTH + (coefficient * Math.pow(classLevel, 2)) + (hpPerLevel * classLevel) + GearScanner.getItemHealth(player.getUniqueId()));
+        int total = (int) (BASE_HEALTH + (coefficient * Math.pow(classLevel, 2)) + (hpPerLevel * classLevel) + RunicItemsAPI.getAddedPlayerStats(player.getUniqueId()).getAddedHealth());
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(total);
         player.setHealthScale(HEART_AMOUNT);

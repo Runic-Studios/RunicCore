@@ -37,7 +37,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
                         "8 blocks! Enemies within " + RADIUS + " blocks of the impact take (" +
                         DAMAGE + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage are " +
                         "knocked away, and are silenced for " + DURATION + "s!",
-                ChatColor.WHITE, CharacterClass.CLERIC, 1, 40); // todo:
+                ChatColor.WHITE, CharacterClass.CLERIC, 20, 40);
     }
 
     @Override

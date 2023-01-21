@@ -21,9 +21,9 @@ import java.util.*;
 
 public class Surge extends Spell implements MagicDamageSpell {
     private static final int DAMAGE = 30;
-    private static final int DURATION = 3;
-    private static final double DURATION_FALL = 3.0;
-    private static final int RADIUS = 2;
+    private static final double DURATION = 3;
+    private static final double DURATION_FALL = 2.5;
+    private static final int RADIUS = 1;
     private static final double DAMAGE_PER_LEVEL = 1.5;
     private static final double DELAY = 0.75;
     private static final double LAUNCH_MULTIPLIER = 1.75;
@@ -63,7 +63,7 @@ public class Surge extends Spell implements MagicDamageSpell {
 
                 for (Location location : trailSpots) {
                     player.getWorld().spawnParticle(Particle.REDSTONE, location,
-                            25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(14, 32, 50), 1));
+                            1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 2));
                     for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                         if (!isValidEnemy(player, entity)) continue;
                         DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, player, spell);
@@ -82,9 +82,10 @@ public class Surge extends Spell implements MagicDamageSpell {
         // Forward jump
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.8f);
-        Vector directionVector = player.getLocation().getDirection();
-        directionVector.normalize().multiply(SPEED_MULTIPLIER);
-        player.setVelocity(directionVector);
+        Vector unitVector = new Vector(player.getLocation().getDirection().getX(), 0, player.getLocation().getDirection().getZ());
+        unitVector = unitVector.normalize();
+        player.setVelocity(unitVector.multiply(SPEED_MULTIPLIER));
+        player.setVelocity(unitVector);
         surgeTasks.put(player.getUniqueId(), surgeTask);
 
         // Delayed upward momentum
@@ -95,10 +96,11 @@ public class Surge extends Spell implements MagicDamageSpell {
             Vector launchPath = new Vector(look.getX(), VERTICAL_POWER, look.getZ()).normalize();
 
             // particles, sounds
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true));
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 2.0F);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1.2f);
-            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
-                    25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
+            player.getWorld().spawnParticle(Particle.REDSTONE, location,
+                    1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 2));
 
             player.setVelocity(launchPath.multiply(LAUNCH_MULTIPLIER));
         }, (long) (DELAY * 20L));

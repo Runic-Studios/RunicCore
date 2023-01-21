@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
-import com.runicrealms.plugin.item.GearScanner;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
@@ -31,7 +30,7 @@ public class StatManager implements Listener, StatAPI {
     public int getPlayerDexterity(UUID uuid) {
         if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
         try {
-            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getDexterity() + GearScanner.getItemDexterity(uuid);
+            return playerStatMap.get(uuid).getStat(Stat.DEXTERITY);
         } catch (NullPointerException e) {
             e.printStackTrace();
             return 0;
@@ -42,7 +41,7 @@ public class StatManager implements Listener, StatAPI {
     public int getPlayerIntelligence(UUID uuid) {
         if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
         try {
-            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getIntelligence() + GearScanner.getItemIntelligence(uuid);
+            return playerStatMap.get(uuid).getStat(Stat.INTELLIGENCE);
         } catch (NullPointerException e) {
             e.printStackTrace();
             return 0;
@@ -58,7 +57,7 @@ public class StatManager implements Listener, StatAPI {
     public int getPlayerStrength(UUID uuid) {
         if (playerStatMap.get(uuid) == null) return 0;
         try {
-            return playerStatMap.get(uuid).getStrength() + GearScanner.getItemStrength(uuid);
+            return playerStatMap.get(uuid).getStat(Stat.STRENGTH);
         } catch (NullPointerException e) {
             e.printStackTrace();
             return 0;
@@ -69,7 +68,7 @@ public class StatManager implements Listener, StatAPI {
     public int getPlayerVitality(UUID uuid) {
         if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
         try {
-            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getVitality() + GearScanner.getItemVitality(uuid);
+            return playerStatMap.get(uuid).getStat(Stat.VITALITY);
         } catch (NullPointerException e) {
             e.printStackTrace();
             return 0;
@@ -80,7 +79,7 @@ public class StatManager implements Listener, StatAPI {
     public int getPlayerWisdom(UUID uuid) {
         if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
         try {
-            return RunicCore.getStatAPI().getPlayerStatContainer(uuid).getWisdom() + GearScanner.getItemWisdom(uuid);
+            return playerStatMap.get(uuid).getStat(Stat.WISDOM);
         } catch (NullPointerException e) {
             e.printStackTrace();
             return 0;
@@ -105,7 +104,10 @@ public class StatManager implements Listener, StatAPI {
         }
     }
 
-    // Fire as HIGHEST so that runic items loads cached stats first for base stat tree grab, and SkillTreeManager loads skill trees
+    /**
+     * Fire as HIGHEST so that runic items loads cached stats
+     * first for base stat tree grab, and SkillTreeManager loads skill trees
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLoad(CharacterSelectEvent event) {
         StatContainer statContainer = new StatContainer(event.getPlayer());

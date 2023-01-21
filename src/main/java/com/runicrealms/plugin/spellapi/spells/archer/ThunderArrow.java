@@ -64,7 +64,7 @@ public class ThunderArrow extends Spell implements MagicDamageSpell {
         powerShot.setShooter(player);
         powerShots.add(powerShot);
         Spell spell = this;
-        EntityTrail.entityTrail(powerShot, Color.BLUE);
+        EntityTrail.entityTrail(powerShot, Color.fromRGB(0, 71, 72));
         new BukkitRunnable() {
             @Override
             public void run() {
