@@ -9,79 +9,75 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.UUID;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class RayOfLight extends Spell implements MagicDamageSpell {
-
-    private static final int DAMAGE_AMOUNT = 25;
-    private static final double DAMAGE_PER_LEVEL = 4.0;
-    private static final int DURATION = 5;
-    private static final int MAX_DIST = 10;
-    private static final int RADIUS = 4;
-    private static final int STUN_DURATION = 2;
-    private final HashSet<UUID> hitEntities;
+    private static final int DAMAGE = 50;
+    private static final int DURATION = 3;
+    private static final int HEIGHT = 8;
+    private static final int MAX_DIST = 8;
+    private static final int RADIUS = 3;
+    private static final int TRAIL_SPEED = 2;
+    private static final double BEAM_WIDTH = 2.0D;
+    private static final double DAMAGE_PER_LEVEL = 0.75;
+    private static final double KNOCKBACK = 0.35;
+    // todo: max duration
 
     public RayOfLight() {
         super("Ray of Light",
-                "You summon an orb of holy magic at " +
-                        "your target location that persists for " + DURATION +
-                        "s and deals (" + DAMAGE_AMOUNT + " + &f" +
-                        DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ " +
-                        "damage to enemies within " + RADIUS + " blocks, " +
-                        "stunning them for " + STUN_DURATION + "s! " +
-                        "Enemies cannot be hit more than once.",
-                ChatColor.WHITE, CharacterClass.CLERIC, 20, 15);
-        hitEntities = new HashSet<>();
+                "You call forth a ray of holy light that falls " +
+                        "from the sky at your target enemy or location within " +
+                        "8 blocks! Enemies within " + RADIUS + " blocks of the impact take (" +
+                        DAMAGE + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage are " +
+                        "knocked away, and are silenced for " + DURATION + "s!",
+                ChatColor.WHITE, CharacterClass.CLERIC, 1, 40); // todo:
     }
 
-    // todo:             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.5f, 1.0f);
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
-        Spell spell = this;
+        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
+                (
+                        player.getLocation(),
+                        player.getLocation().getDirection(),
+                        MAX_DIST,
+                        BEAM_WIDTH,
+                        entity -> isValidEnemy(player, entity)
+                );
 
-        Location orbLocation = player.getTargetBlock(null, MAX_DIST).getLocation();
-        while (orbLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
-            orbLocation = orbLocation.getBlock().getRelative(BlockFace.DOWN).getLocation(); // ensure location on ground
-        orbLocation.add(0, 2, 0); // raise orb up
+        Location location;
+        if (rayTraceResult == null) {
+            location = player.getTargetBlock(null, MAX_DIST).getLocation();
+        } else if (rayTraceResult.getHitEntity() != null) {
+            location = rayTraceResult.getHitEntity().getLocation();
+        } else if (rayTraceResult.getHitBlock() != null) {
+            location = rayTraceResult.getHitBlock().getLocation();
+        } else {
+            location = player.getTargetBlock(null, MAX_DIST).getLocation();
+        }
 
-        player.getWorld().playSound(orbLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
-        player.getWorld().spawnParticle(Particle.SPELL_INSTANT, orbLocation, 25, 0.3f, 0.3f, 0.3f, 0);
+        lightBlast(player, location);
+    }
 
-        Location finalOrbLocation = orbLocation;
-        new BukkitRunnable() {
-            int count = 1;
+    private void explode(Player player, Location location) {
+        player.getWorld().spigot().strikeLightningEffect(location, true);
+        player.getWorld().playSound(location, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5F, 1.0F);
+        player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location.add(0, 1, 0), 15, 0.25f, 0, 0.25f, 0);
+        for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
+            // Knock away
+            Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-KNOCKBACK).setY(0.3);
+            entity.setVelocity(force);
+            DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) entity), player, this);
+            addStatusEffect(entity, RunicStatusEffect.SILENCE, DURATION, true);
 
-            @Override
-            public void run() {
-                if (count > DURATION)
-                    this.cancel();
-                else {
-                    count += 1;
-                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> spawnSphere(finalOrbLocation));
-                    for (Entity en : player.getWorld().getNearbyEntities(finalOrbLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!isValidEnemy(player, en)) continue;
-                        if (hitEntities.contains(en.getUniqueId())) continue;
-                        hitEntities.add(en.getUniqueId());
-                        LivingEntity le = (LivingEntity) en;
-                        le.getWorld().playSound(le.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 0.5f);
-                        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> VectorUtil.drawLine(player, Particle.SPELL_INSTANT, Color.WHITE, finalOrbLocation, le.getEyeLocation(), 1.0, 25));
-                        DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, spell);
-                        addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION, true);
-                    }
-                }
-            }
-        }.runTaskTimer(plugin, 0, 20L);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, hitEntities::clear, DURATION * 20L);
+        }
     }
 
     @Override
@@ -89,19 +85,29 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
         return DAMAGE_PER_LEVEL;
     }
 
-    private void spawnSphere(Location loc) {
-        for (double i = 0; i <= Math.PI; i += Math.PI / 12) {
-            double radius = Math.sin(i);
-            double y = Math.cos(i);
-            for (double a = 0; a < Math.PI * 2; a += Math.PI / 12) {
-                double x = .9 * Math.cos(a) * radius;
-                double z = .9 * Math.sin(a) * radius;
-                loc.add(x, y, z);
-                Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0,
-                        new Particle.DustOptions(Color.WHITE, 1));
-                loc.subtract(x, y, z);
+    /**
+     * @param player
+     * @param location
+     */
+    private void lightBlast(Player player, Location location) {
+
+        final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
+        VectorUtil.drawLine(player, Particle.SPELL_INSTANT, Color.WHITE, location, trailLoc[0].clone().subtract(0, 20, 0), 1.0D, 5);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (trailLoc[0].clone().subtract(0, 2, 0).getBlock().getType() != Material.AIR) { // block is on ground
+                    this.cancel();
+                    Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> explode(player, trailLoc[0]));
+                }
+                // spawn trail
+                player.getWorld().playSound(trailLoc[0], Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
+                player.getWorld().spawnParticle(Particle.REDSTONE, trailLoc[0], 8, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 3));
+                trailLoc[0] = trailLoc[0].subtract(0, TRAIL_SPEED, 0);
             }
-        }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 3L);
     }
+
 }
 

@@ -45,9 +45,9 @@ public class Smite extends Spell implements MagicDamageSpell {
             player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, location, 8, 0.5f, 0.5f, 0.5f, 0);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            VectorUtil.drawLine(player, Particle.CLOUD, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.25f);
+            VectorUtil.drawLine(player, Particle.CLOUD, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.75D, 1, 0.15f);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
-            livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.5f, 0.5f, 0.5f, 0);
+            livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
             DamageUtil.damageEntitySpell(DAMAGE, livingEntity, player, this);
         }
     }

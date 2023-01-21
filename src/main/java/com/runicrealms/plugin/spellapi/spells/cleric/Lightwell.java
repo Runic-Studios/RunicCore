@@ -66,9 +66,9 @@ public class Lightwell extends Spell implements HealingSpell {
 
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 0.5f);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.5f);
-                player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, 1.0f, 1.25f, 1.0f, 0);
-                player.getWorld().spawnParticle(Particle.REDSTONE, location,
-                        25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
+                player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, RADIUS, RADIUS, RADIUS, 0);
+//                player.getWorld().spawnParticle(Particle.REDSTONE, location,
+//                        25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.WHITE, 20));
                 for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                     if (isValidAlly(player, entity)) {
                         if (entity.equals(player)) continue; // does not heal self
