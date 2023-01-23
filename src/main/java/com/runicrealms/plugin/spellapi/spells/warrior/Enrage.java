@@ -65,7 +65,7 @@ public class Enrage extends Spell implements PhysicalDamageSpell {
         player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, CHANNEL_DURATION * 20, 2));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
-        new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(Particle.REDSTONE, player.getLocation(), Color.RED);
+        new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.RED);
         // After the player has channeled the spell
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> enrage(player), CHANNEL_DURATION * 20L);
     }

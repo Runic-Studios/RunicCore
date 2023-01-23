@@ -5,6 +5,7 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -28,20 +29,6 @@ public class Frostbite extends Spell {
                 ChatColor.WHITE, CharacterClass.MAGE, 15, 30);
     }
 
-    private void createCircle(Player player, Location loc) {
-        int particles = 50;
-        for (int i = 0; i < particles; i++) {
-            double angle, x, z;
-            angle = 2 * Math.PI * i / particles;
-            x = Math.cos(angle) * (float) RADIUS;
-            z = Math.sin(angle) * (float) RADIUS;
-            loc.add(x, 0, z);
-            player.getWorld().spawnParticle(Particle.CLOUD, loc, 5, 0, 0, 0, 0);
-            player.getWorld().spawnParticle(Particle.REDSTONE, loc, 5, 0, 0, 0, 0, new Particle.DustOptions(Color.AQUA, 1));
-            loc.subtract(x, 0, z);
-        }
-    }
-
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
@@ -61,7 +48,11 @@ public class Frostbite extends Spell {
                     this.cancel();
                 } else {
                     count += 1;
-                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> createCircle(player, finalTargetBlockLocation));
+                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                            () -> {
+                                new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.CLOUD, finalTargetBlockLocation);
+                                new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.REDSTONE, finalTargetBlockLocation, Color.AQUA);
+                            });
                     player.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(finalTargetBlockLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(isValidEnemy(player, en))) continue;

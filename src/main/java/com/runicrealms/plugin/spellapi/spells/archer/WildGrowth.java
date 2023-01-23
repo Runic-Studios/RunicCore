@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import org.bukkit.*;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.entity.Entity;
@@ -15,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class WildGrowth extends Spell implements HealingSpell {
-
     private static final int DURATION = 4;
     private static final int RADIUS = 8;
     private static final double HEAL_AMT = 40.0;
@@ -31,19 +31,6 @@ public class WildGrowth extends Spell implements HealingSpell {
                 ChatColor.WHITE, CharacterClass.ARCHER, 20, 30);
     }
 
-    private void createCircle(Player player, Location loc, int radius, Particle particle) {
-        int particles = 50;
-        for (int i = 0; i < particles; i++) {
-            double angle, x, z;
-            angle = 2 * Math.PI * i / particles;
-            x = Math.cos(angle) * (float) radius;
-            z = Math.sin(angle) * (float) radius;
-            loc.add(x, 0, z);
-            player.getWorld().spawnParticle(particle, loc, 1, 0, 0, 0, 0);
-            loc.subtract(x, 0, z);
-        }
-    }
-
     private void createHealingRunnable(Player player, Location location) {
         Spell spell = this;
         new BukkitRunnable() {
@@ -55,7 +42,7 @@ public class WildGrowth extends Spell implements HealingSpell {
                     this.cancel();
                 } else {
                     count += 1;
-                    createCircle(player, location, RADIUS, Particle.VILLAGER_HAPPY);
+                    new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.VILLAGER_HAPPY, location, Color.GREEN);
                     for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                         if (!isValidAlly(player, entity)) continue;
                         Player playerEntity = (Player) entity;
@@ -83,7 +70,7 @@ public class WildGrowth extends Spell implements HealingSpell {
                 } else {
                     count += 1;
                     player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_HARP, 0.5f, 1.0f);
-                    createCircle(player, location, RADIUS - DURATION + count, Particle.CRIT);
+                    new HorizontalCircleFrame(RADIUS - DURATION + count, false).playParticle(player, Particle.CRIT, location, Color.GREEN);
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);

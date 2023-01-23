@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
-public class Improvisation extends Spell {
+public class Encore extends Spell {
 
     private static final int DURATION = 2;
     private static final int PERCENT = 10;
@@ -23,8 +23,8 @@ public class Improvisation extends Spell {
     private static final double PERCENT_DAMAGE = .45;
     private final HashSet<UUID> buffedPlayers;
 
-    public Improvisation() {
-        super("Improvisation",
+    public Encore() {
+        super("Encore",
                 "Your basic attacks have a " + PERCENT + "% chance " +
                         "to grant yourself and nearby allies within " + RADIUS + " " +
                         "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% physical⚔ damage buff " +

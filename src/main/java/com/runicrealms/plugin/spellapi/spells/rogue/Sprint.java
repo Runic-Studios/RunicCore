@@ -6,7 +6,7 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.HorizCircleFrame;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -40,8 +40,8 @@ public class Sprint extends Spell implements MagicDamageSpell {
     public void executeSpell(Player player, SpellItemType type) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_AMPLIFIER));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
-        new HorizCircleFrame(1).playParticle(Particle.TOTEM, player.getLocation(), Color.FUCHSIA);
-        new HorizCircleFrame(1).playParticle(Particle.TOTEM, player.getEyeLocation(), Color.FUCHSIA);
+        new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getLocation(), Color.FUCHSIA);
+        new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getEyeLocation(), Color.FUCHSIA);
         BukkitTask sprintDamageTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> sprintTasks.remove(player.getUniqueId()), DURATION * 20L);
         sprintTasks.put(player.getUniqueId(), sprintDamageTask);
     }

@@ -369,10 +369,9 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Blizzard());
         this.spellList.add(new Frostbite());
         this.spellList.add(new ThrowAxe());
-        this.spellList.add(new ArcaneOrb());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
-        this.spellList.add(new Spellsong());
+        this.spellList.add(new Warsong());
         this.spellList.add(new Ironhide());
         this.spellList.add(new ThunderArrow());
         this.spellList.add(new Smite());
@@ -409,10 +408,10 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Rebuke());
         this.spellList.add(new Rift());
         this.spellList.add(new DivineShield());
-        this.spellList.add(new Improvisation());
+        this.spellList.add(new Encore());
         this.spellList.add(new Discord());
         this.spellList.add(new RayOfLight());
-        this.spellList.add(new Dissonance());
+        this.spellList.add(new Disband());
         this.spellList.add(new Lightwell());
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
@@ -420,7 +419,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Headshot());
         this.spellList.add(new AimedShot());
         this.spellList.add(new Conflagration());
-        this.spellList.add(new Shatter());
         this.spellList.add(new Remedy());
         this.spellList.add(new Ambush());
         this.spellList.add(new NetTrap());
