@@ -1,8 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -12,64 +15,54 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 import java.util.HashSet;
-import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
-public class Encore extends Spell {
-
+public class Encore extends Spell implements MagicDamageSpell {
+    private static final int COOLDOWN = 5;
+    private static final int DAMAGE = 10;
     private static final int DURATION = 2;
-    private static final int PERCENT = 10;
-    private static final int RADIUS = 10;
-    private static final double PERCENT_DAMAGE = .45;
-    private final HashSet<UUID> buffedPlayers;
+    private static final int RADIUS = 4;
+    private static final double DAMAGE_PER_LEVEL = 1.0D;
+    private final Set<UUID> encoreCooldowns = new HashSet<>();
 
     public Encore() {
         super("Encore",
-                "Your basic attacks have a " + PERCENT + "% chance " +
-                        "to grant yourself and nearby allies within " + RADIUS + " " +
-                        "blocks a " + (int) (PERCENT_DAMAGE * 100) + "% physical⚔ damage buff " +
-                        "for " + DURATION + "s!",
+                "Every " + COOLDOWN + "s, your next basic attack " +
+                        "deals an extra (" + DAMAGE + " + &f" + (int) DAMAGE_PER_LEVEL
+                        + "x&7 lvl) magicʔ damage! " +
+                        "It also reduces the active spell cooldowns of all allies " +
+                        "within " + RADIUS + " blocks by " + DURATION + "s!",
                 ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
         this.setIsPassive(true);
-        buffedPlayers = new HashSet<>();
     }
 
-    private void attemptToBuffAllies(Player player) {
-
-        Random rand = new Random();
-        int roll = rand.nextInt(100) + 1;
-        if (roll > PERCENT) return;
-
-        buffPlayer(player);
-        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!(isValidAlly(player, entity))) continue;
-            buffPlayer((Player) entity);
-        }
-    }
-
-    private void buffPlayer(Player player) {
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.5F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.5F);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.3F);
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 0.5F, 0.1F);
-        player.getWorld().spawnParticle
-                (Particle.NOTE, player.getEyeLocation(), 15, 0.75F, 0.75F, 0.75F, 0);
-        buffedPlayers.add(player.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> buffedPlayers.remove(player.getUniqueId()), DURATION * 20L);
-    }
 
     @EventHandler
     public void onWeaponHit(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!event.isBasicAttack()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (encoreCooldowns.contains(event.getPlayer().getUniqueId())) return;
         Player player = event.getPlayer();
-        if (hasPassive(player.getUniqueId(), this.getName()) && event.isBasicAttack())
-            attemptToBuffAllies(player);
-        if (buffedPlayers.contains(player.getUniqueId())) {
-            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.25F, 1.0F);
-            event.getVictim().getWorld().spawnParticle
-                    (Particle.NOTE, event.getVictim().getLocation().add(0, 1.5, 0),
-                            5, 1.0F, 0, 0, 0);
-            event.setAmount((int) (event.getAmount() + (event.getAmount() * PERCENT_DAMAGE)));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 0.25F, 1.0F);
+        event.getVictim().getWorld().spawnParticle
+                (Particle.NOTE, event.getVictim().getLocation().add(0, 1.5, 0),
+                        5, 1.0F, 0, 0, 0);
+        DamageUtil.damageEntitySpell(DAMAGE, event.getVictim(), player, this);
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), RADIUS, RADIUS, RADIUS, target -> isValidAlly(player, target))) {
+            Player ally = (Player) entity;
+            for (Spell spell : RunicCore.getSpellAPI().getSpellsOnCooldown(ally.getUniqueId())) {
+                RunicCore.getSpellAPI().reduceCooldown(ally, spell, DURATION);
+            }
         }
+        encoreCooldowns.add(player.getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> encoreCooldowns.remove(player.getUniqueId()), COOLDOWN * 20L);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 }
 

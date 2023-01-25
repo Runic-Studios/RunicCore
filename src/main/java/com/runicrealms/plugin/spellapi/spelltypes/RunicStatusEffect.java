@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 public enum RunicStatusEffect {
+    DISARM(false),
     INVULNERABILITY(true),
     ROOT(false),
     SILENCE(false),

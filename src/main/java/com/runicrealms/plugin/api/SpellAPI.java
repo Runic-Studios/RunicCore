@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface SpellAPI {
 
@@ -43,6 +44,12 @@ public interface SpellAPI {
      * @return the spell object
      */
     Spell getSpell(String name);
+
+    /**
+     * @param uuid
+     * @return
+     */
+    ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid);
 
     /**
      * Determine whether the player is in casting mode to cancel certain interactions.

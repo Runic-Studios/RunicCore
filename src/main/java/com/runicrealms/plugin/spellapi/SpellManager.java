@@ -38,6 +38,7 @@ public class SpellManager implements Listener, SpellAPI {
 
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
+    private final HashMap<UUID, BukkitTask> disarmedEntities;
     private final HashMap<UUID, BukkitTask> invulnerableEntities;
     private final HashMap<UUID, BukkitTask> rootedEntities;
     private final HashMap<UUID, BukkitTask> silencedEntities;
@@ -47,6 +48,7 @@ public class SpellManager implements Listener, SpellAPI {
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldownMap = new ConcurrentHashMap<>();
+        this.disarmedEntities = new HashMap<>();
         this.invulnerableEntities = new HashMap<>();
         this.rootedEntities = new HashMap<>();
         this.silencedEntities = new HashMap<>();
@@ -71,6 +73,9 @@ public class SpellManager implements Listener, SpellAPI {
 
     @Override
     public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
+        if (runicStatusEffect == RunicStatusEffect.DISARM) {
+            handleDisarm(entity, durationInSecs, displayMessage);
+        }
         if (runicStatusEffect == RunicStatusEffect.SILENCE) {
             if (displayMessage) {
                 entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
@@ -125,6 +130,20 @@ public class SpellManager implements Listener, SpellAPI {
         }
     }
 
+    private void handleDisarm(Entity entity, double durationInSecs, boolean displayMessage) {
+        if (displayMessage) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "disarmed!");
+            entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f); // todo: tool break sound?
+        }
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                disarmedEntities.remove(entity.getUniqueId());
+            }
+        }.runTaskLaterAsynchronously(plugin, (long) durationInSecs * 20L);
+        disarmedEntities.put(entity.getUniqueId(), task);
+    }
+
     @Override
     public Spell getPlayerSpell(Player player, int number) {
         Spell spellToCast = null;
@@ -170,6 +189,11 @@ public class SpellManager implements Listener, SpellAPI {
     @Override
     public Spell getSpell(String name) {
         return this.getSpellByName(name);
+    }
+
+    @Override
+    public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid) {
+        return cooldownMap.get(uuid).keySet();
     }
 
     @Override
@@ -314,6 +338,10 @@ public class SpellManager implements Listener, SpellAPI {
 
     @EventHandler
     public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isBasicAttack() && disarmedEntities.containsKey(event.getPlayer().getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
         if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
         if (silencedEntities.containsKey(event.getPlayer().getUniqueId())
                 || stunnedEntities.containsKey(event.getPlayer().getUniqueId())

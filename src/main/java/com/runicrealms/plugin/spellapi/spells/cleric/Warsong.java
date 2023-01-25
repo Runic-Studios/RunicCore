@@ -39,12 +39,8 @@ public class Warsong extends Spell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 2.0F);
         startParticleTask(player);
-
-        // buff caster
-//        buffedPlayers.add(player.getUniqueId());
 
         // Buff all players within 10 blocks
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), RADIUS, RADIUS, RADIUS, target -> isValidAlly(player, target))) {

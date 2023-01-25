@@ -106,7 +106,7 @@ public class NetTrap extends Spell {
             livingEntity.setGlowing(true);
             // Mobs don't have a PlayerMoveEvent, so we keep teleporting them
             BukkitTask mobTeleportTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(),
-                    () -> livingEntity.teleport(higher), 0, 5L);
+                    () -> livingEntity.teleport(higher), 0, 10L);
             Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
                 livingEntity.setGlowing(false);
                 mobTeleportTask.cancel();

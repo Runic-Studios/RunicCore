@@ -11,9 +11,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Accelerando extends Spell {
-    private static final int DURATION_I = 5;
+    private static final int DURATION_I = 3;
     private static final int DURATION_II = 3;
-    private static final int DURATION_III = 2;
+    private static final int DURATION_III = 1;
     private static final int RADIUS = 10;
 
     public Accelerando() {
