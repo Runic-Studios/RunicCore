@@ -24,6 +24,7 @@ public class Disband extends Spell {
                 "Damaging the same enemy " + ATTACKS_TO_TRIGGER + " times with basic attacks " +
                         "within " + THRESHOLD + "s causes you to disarm the enemy for " + DURATION + "s! " +
                         "Disarmed enemies are unable to deal damage with basic attacks. " +
+                        "Damaging a different enemy during this time resets the counter. " +
                         "This effect cannot occur more than once every " + COOLDOWN + "s. ",
                 ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
@@ -65,12 +66,8 @@ public class Disband extends Spell {
                     () -> bardsMap.remove(uuid), THRESHOLD * 20L);
         }
 
-        public UUID getUuid() {
-            return uuid;
-        }
-
-        public UUID getTrackedUuid() {
-            return trackedUuid;
+        public BukkitTask getBukkitTask() {
+            return bukkitTask;
         }
 
         public int getStacks() {
@@ -81,8 +78,12 @@ public class Disband extends Spell {
             this.stacks = stacks;
         }
 
-        public BukkitTask getBukkitTask() {
-            return bukkitTask;
+        public UUID getTrackedUuid() {
+            return trackedUuid;
+        }
+
+        public UUID getUuid() {
+            return uuid;
         }
     }
 

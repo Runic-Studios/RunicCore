@@ -32,12 +32,12 @@ public class HologramUtil {
         if (xDif == 0) {
             xDif = 0.5;
         }
-        double yDif = (randInt() - 10) / 10D;
+        double yDif = (randInt() - 5) / 5D; // todo: 5
         double zDif = -0.5 + (int) (Math.random() * ((0.5 - (-0.5)) + 1));
         if (zDif == 0) {
             zDif = 0.5;
         }
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.add(xDif, yDif, zDif).subtract(0, 1, 0));
+        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), location.add(xDif, yDif, zDif));
         hologram.appendTextLine(lineToDisplay);
         if (players == null) {
             hologram.getVisibilityManager().setVisibleByDefault(true);

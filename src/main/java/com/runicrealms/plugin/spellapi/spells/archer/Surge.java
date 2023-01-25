@@ -23,12 +23,13 @@ public class Surge extends Spell implements MagicDamageSpell {
     private static final int DAMAGE = 30;
     private static final double DURATION = 3;
     private static final double DURATION_FALL = 2.5;
-    private static final int RADIUS = 1;
+    private static final int RADIUS = 2;
     private static final double DAMAGE_PER_LEVEL = 1.5;
     private static final double DELAY = 0.75;
     private static final double LAUNCH_MULTIPLIER = 1.75;
     private static final double SPEED_MULTIPLIER = 3.0;
     private static final double VERTICAL_POWER = 0.5;
+    private final Set<UUID> damagedEntitiesSet = new HashSet<>();
     private final Map<UUID, BukkitTask> surgeTasks = new HashMap<>();
 
     public Surge() {
@@ -37,8 +38,8 @@ public class Surge extends Spell implements MagicDamageSpell {
                         "of lightning behind you! Enemies who step in the trail " +
                         "take " + "(" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) magicʔ damage per second! " +
-                        "The trail lasts for " + DURATION + "s.",
-                ChatColor.WHITE, CharacterClass.ARCHER, 3, 0); // todo
+                        "The trail lasts for " + (int) DURATION + "s.",
+                ChatColor.WHITE, CharacterClass.ARCHER, 20, 50);
     }
 
     @Override
@@ -54,23 +55,42 @@ public class Surge extends Spell implements MagicDamageSpell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Spell spell = this;
-        // Damage trail
+
+        // Particle trail
         Set<Location> trailSpots = new HashSet<>();
         BukkitTask trailTask = new BukkitRunnable() {
             @Override
             public void run() {
                 trailSpots.add(player.getLocation());
-
                 for (Location location : trailSpots) {
                     player.getWorld().spawnParticle(Particle.REDSTONE, location,
-                            1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 2));
-                    for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-                        if (!isValidEnemy(player, entity)) continue;
-                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, player, spell);
-                    }
+                            1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 3));
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 5L);
+
+        // Damage task
+        new BukkitRunnable() {
+            int count = 1;
+
+            @Override
+            public void run() {
+                if (count > DURATION) {
+                    this.cancel();
+                } else {
+                    count += 1;
+                    damagedEntitiesSet.clear();
+                    for (Location location : trailSpots) {
+                        for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
+                            if (!damagedEntitiesSet.contains(entity.getUniqueId())) { // Prevent concussive hits
+                                DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, player, spell);
+                                damagedEntitiesSet.add(entity.getUniqueId());
+                            }
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
 
         // Fall damage immunity
         BukkitTask surgeTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
@@ -100,7 +120,7 @@ public class Surge extends Spell implements MagicDamageSpell {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 2.0F);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1.2f);
             player.getWorld().spawnParticle(Particle.REDSTONE, location,
-                    1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 2));
+                    1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(0, 71, 72), 3));
 
             player.setVelocity(launchPath.multiply(LAUNCH_MULTIPLIER));
         }, (long) (DELAY * 20L));
@@ -120,5 +140,18 @@ public class Surge extends Spell implements MagicDamageSpell {
         if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
+
+//    /**
+//     * Prevents an abuse where surge can be stacked in the same location to get ridiculous damage
+//     */
+//    @EventHandler(priority = EventPriority.LOWEST)
+//    public void onMagicDamage(MagicDamageEvent event) {
+//        if (event.isCancelled()) return;
+//        if (event.getSpell() == null) return;
+//        if (event.getSpell() != this) return;
+//        if (damagedEntitiesSet.contains(event.getVictim().getUniqueId())) {
+//            event.setCancelled(true);
+//        }
+//    }
 }
 
