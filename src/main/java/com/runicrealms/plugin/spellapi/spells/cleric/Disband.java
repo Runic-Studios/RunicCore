@@ -9,7 +9,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Disband extends Spell {
     private static final int ATTACKS_TO_TRIGGER = 3;
@@ -17,7 +21,7 @@ public class Disband extends Spell {
     private static final int DURATION = 3;
     private static final int THRESHOLD = 10;
     private final Set<UUID> cooldownSet = new HashSet<>();
-    private final Map<UUID, DisbandTracker> bardsMap = new HashMap<>();
+    private final ConcurrentHashMap<UUID, DisbandTracker> bardsMap = new ConcurrentHashMap<>();
 
     public Disband() {
         super("Disband",
@@ -38,7 +42,9 @@ public class Disband extends Spell {
         if (cooldownSet.contains(event.getPlayer().getUniqueId())) return;
         // add to counter
         UUID uuid = event.getPlayer().getUniqueId();
-        bardsMap.computeIfAbsent(uuid, key -> bardsMap.put(key, new DisbandTracker(key, event.getVictim().getUniqueId(), 0, bardsMap)));
+        if (!bardsMap.containsKey(uuid)) {
+            bardsMap.put(uuid, new DisbandTracker(uuid, event.getVictim().getUniqueId(), 0, bardsMap));
+        }
         UUID trackedUuid = bardsMap.get(uuid).getTrackedUuid(); // the tracked entity
         if (event.getVictim().getUniqueId() != trackedUuid) { // player hit a new entity
             bardsMap.get(uuid).setStacks(bardsMap.get(uuid).getStacks() + 1);

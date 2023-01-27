@@ -14,13 +14,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Warsong extends Spell {
     private static final int DURATION = 6;
     private static final int RADIUS = 6;
     private static final double PERCENT = .50;
-    private final Map<UUID, Set<UUID>> buffedPlayersMap;
+    private final ConcurrentHashMap<UUID, Set<UUID>> buffedPlayersMap = new ConcurrentHashMap<>();
 
     public Warsong() {
         super("Warsong",
@@ -30,7 +33,6 @@ public class Warsong extends Spell {
                         "basic attack damage of you and your allies " +
                         "by " + (int) (PERCENT * 100) + "% of your &eIntelligenceʔ&7!",
                 ChatColor.WHITE, CharacterClass.CLERIC, 10, 15);
-        buffedPlayersMap = new HashMap<>();
     }
 
     public static double getPERCENT() {
@@ -45,7 +47,9 @@ public class Warsong extends Spell {
         // Buff all players within 10 blocks
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), RADIUS, RADIUS, RADIUS, target -> isValidAlly(player, target))) {
             if (player.getLocation().distanceSquared(entity.getLocation()) > RADIUS * RADIUS) continue;
-            buffedPlayersMap.computeIfAbsent(player.getUniqueId(), key -> buffedPlayersMap.put(key, new HashSet<>()));
+            if (!buffedPlayersMap.containsKey(player.getUniqueId())) {
+                buffedPlayersMap.put(player.getUniqueId(), new HashSet<>());
+            }
             buffedPlayersMap.get(player.getUniqueId()).add(entity.getUniqueId());
         }
 

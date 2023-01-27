@@ -130,20 +130,6 @@ public class SpellManager implements Listener, SpellAPI {
         }
     }
 
-    private void handleDisarm(Entity entity, double durationInSecs, boolean displayMessage) {
-        if (displayMessage) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "disarmed!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f); // todo: tool break sound?
-        }
-        BukkitTask task = new BukkitRunnable() {
-            @Override
-            public void run() {
-                disarmedEntities.remove(entity.getUniqueId());
-            }
-        }.runTaskLaterAsynchronously(plugin, (long) durationInSecs * 20L);
-        disarmedEntities.put(entity.getUniqueId(), task);
-    }
-
     @Override
     public Spell getPlayerSpell(Player player, int number) {
         Spell spellToCast = null;
@@ -193,7 +179,11 @@ public class SpellManager implements Listener, SpellAPI {
 
     @Override
     public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid) {
-        return cooldownMap.get(uuid).keySet();
+        if (cooldownMap.containsKey(uuid)) {
+            return cooldownMap.get(uuid).keySet();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -313,6 +303,20 @@ public class SpellManager implements Listener, SpellAPI {
             }
         }
         return ((int) (cooldownRemaining / 1000));
+    }
+
+    private void handleDisarm(Entity entity, double durationInSecs, boolean displayMessage) {
+        if (displayMessage) {
+            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "disarmed!");
+            entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f); // todo: tool break sound?
+        }
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                disarmedEntities.remove(entity.getUniqueId());
+            }
+        }.runTaskLaterAsynchronously(plugin, (long) durationInSecs * 20L);
+        disarmedEntities.put(entity.getUniqueId(), task);
     }
 
     @EventHandler

@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Encore extends Spell implements MagicDamageSpell {
     private static final int COOLDOWN = 5;
@@ -37,6 +38,10 @@ public class Encore extends Spell implements MagicDamageSpell {
         this.setIsPassive(true);
     }
 
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
 
     @EventHandler
     public void onWeaponHit(PhysicalDamageEvent event) {
@@ -52,17 +57,14 @@ public class Encore extends Spell implements MagicDamageSpell {
         DamageUtil.damageEntitySpell(DAMAGE, event.getVictim(), player, this);
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), RADIUS, RADIUS, RADIUS, target -> isValidAlly(player, target))) {
             Player ally = (Player) entity;
-            for (Spell spell : RunicCore.getSpellAPI().getSpellsOnCooldown(ally.getUniqueId())) {
+            ConcurrentHashMap.KeySetView<Spell, Long> spellsOnCD = RunicCore.getSpellAPI().getSpellsOnCooldown(ally.getUniqueId());
+            if (spellsOnCD == null) continue;
+            for (Spell spell : spellsOnCD) {
                 RunicCore.getSpellAPI().reduceCooldown(ally, spell, DURATION);
             }
         }
         encoreCooldowns.add(player.getUniqueId());
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> encoreCooldowns.remove(player.getUniqueId()), COOLDOWN * 20L);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 

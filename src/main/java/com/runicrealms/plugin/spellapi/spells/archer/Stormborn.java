@@ -60,6 +60,7 @@ public class Stormborn extends Spell {
         if (!event.isRanged()) return;
         if (!event.isBasicAttack()) return;
         Arrow arrow = event.getArrow();
+        if (!arrow.hasMetadata(ARROW_META_KEY)) return;
         if (!arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE)) return;
         if (hasBeenHit.containsKey(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);

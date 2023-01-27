@@ -4,6 +4,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,9 +47,10 @@ public interface SpellAPI {
     Spell getSpell(String name);
 
     /**
-     * @param uuid
-     * @return
+     * @param uuid of the player to lookup
+     * @return a key set view of their spells which are on cooldown
      */
+    @Nullable
     ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid);
 
     /**
