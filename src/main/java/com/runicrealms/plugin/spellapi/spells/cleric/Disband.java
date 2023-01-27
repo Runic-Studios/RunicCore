@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -52,10 +53,12 @@ public class Disband extends Spell {
         // todo: angry villager
 //        bardsMap.get(uuid).second
 //
-//        int count = bardsMap.get(uuid);
-//        if (count >= ATTACKS_TO_TRIGGER) {
-//            // todo: effect
-//        }
+
+        if (bardsMap.get(uuid).getStacks() >= ATTACKS_TO_TRIGGER) {
+            addStatusEffect(event.getVictim(), RunicStatusEffect.DISARM, DURATION, true);
+            bardsMap.get(uuid).getBukkitTask().cancel();
+            bardsMap.remove(uuid);
+        }
     }
 
     static class DisbandTracker {

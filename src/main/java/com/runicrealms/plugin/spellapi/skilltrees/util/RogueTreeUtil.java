@@ -21,9 +21,9 @@ public class RogueTreeUtil {
         perks.add(new PerkBaseStat(111, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(112, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(113, 1, 0, 1, "Cloak"));
-        perks.add(new PerkBaseStat(114, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkBaseStat(115, 1, 0, 3, Stat.DEXTERITY));
-        perks.add(new PerkBaseStat(117, 1, 0, 5, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(114, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(115, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(117, 1, 0, 5, Stat.DEXTERITY));
         perks.add(new PerkSpell(116, 1, 0, 1, "Slice and Dice"));
         perks.add(new PerkBaseStat(118, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(119, 1, 0, 1, "Predator"));

@@ -513,7 +513,7 @@ public class SpellManager implements Listener, SpellAPI {
                             if (getUserCooldown(player, spell) <= 0)
                                 removeCooldown(player, spell);
                             else
-                                cdString.add(ChatColor.DARK_RED + spell.getName() + ChatColor.DARK_RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
+                                cdString.add(ChatColor.DARK_RED + "" + ChatColor.BOLD + spell.getName() + ChatColor.DARK_RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
                         }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.DARK_RED + String.join(ChatColor.YELLOW + " ", cdString)));
