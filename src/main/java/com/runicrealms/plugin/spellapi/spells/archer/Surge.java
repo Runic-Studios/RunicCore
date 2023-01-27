@@ -6,10 +6,7 @@ import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,25 +17,17 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class Surge extends Spell implements MagicDamageSpell {
-    private static final int DAMAGE = 30;
-    private static final double DURATION = 3;
     private static final double DURATION_FALL = 2.5;
-    private static final int RADIUS = 2;
     private static final double DAMAGE_PER_LEVEL = 1.5;
     private static final double DELAY = 0.75;
     private static final double LAUNCH_MULTIPLIER = 1.75;
     private static final double SPEED_MULTIPLIER = 3.0;
     private static final double VERTICAL_POWER = 0.5;
-    private final Set<UUID> damagedEntitiesSet = new HashSet<>();
     private final Map<UUID, BukkitTask> surgeTasks = new HashMap<>();
 
     public Surge() {
         super("Surge",
-                "You surge forward then upwards, leaving a trail " +
-                        "of lightning behind you! Enemies who step in the trail " +
-                        "take " + "(" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) magicʔ damage per second! " +
-                        "The trail lasts for " + (int) DURATION + "s.",
+                "You launch yourself forward then upwards!",
                 ChatColor.WHITE, CharacterClass.ARCHER, 20, 50);
     }
 
@@ -54,8 +43,6 @@ public class Surge extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        Spell spell = this;
-
         // Particle trail
         Set<Location> trailSpots = new HashSet<>();
         BukkitTask trailTask = new BukkitRunnable() {
@@ -68,29 +55,6 @@ public class Surge extends Spell implements MagicDamageSpell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 5L);
-
-        // Damage task
-        new BukkitRunnable() {
-            int count = 1;
-
-            @Override
-            public void run() {
-                if (count > DURATION) {
-                    this.cancel();
-                } else {
-                    count += 1;
-                    damagedEntitiesSet.clear();
-                    for (Location location : trailSpots) {
-                        for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
-                            if (!damagedEntitiesSet.contains(entity.getUniqueId())) { // Prevent concussive hits
-                                DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, player, spell);
-                                damagedEntitiesSet.add(entity.getUniqueId());
-                            }
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
 
         // Fall damage immunity
         BukkitTask surgeTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
@@ -141,17 +105,5 @@ public class Surge extends Spell implements MagicDamageSpell {
             event.setCancelled(true);
     }
 
-//    /**
-//     * Prevents an abuse where surge can be stacked in the same location to get ridiculous damage
-//     */
-//    @EventHandler(priority = EventPriority.LOWEST)
-//    public void onMagicDamage(MagicDamageEvent event) {
-//        if (event.isCancelled()) return;
-//        if (event.getSpell() == null) return;
-//        if (event.getSpell() != this) return;
-//        if (damagedEntitiesSet.contains(event.getVictim().getUniqueId())) {
-//            event.setCancelled(true);
-//        }
-//    }
 }
 

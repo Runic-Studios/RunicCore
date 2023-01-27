@@ -32,7 +32,7 @@ public class HologramUtil {
         if (xDif == 0) {
             xDif = 0.5;
         }
-        double yDif = (randInt() - 5) / 5D; // todo: 5
+        double yDif = (randInt() - 7.5) / 7.5D; // todo: 5
         double zDif = -0.5 + (int) (Math.random() * ((0.5 - (-0.5)) + 1));
         if (zDif == 0) {
             zDif = 0.5;

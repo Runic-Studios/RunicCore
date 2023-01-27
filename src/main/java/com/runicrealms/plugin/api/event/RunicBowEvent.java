@@ -5,12 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is called when an Archer fires a custom arrow for their basic attack
  */
 public class RunicBowEvent extends Event implements Cancellable {
-
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private Arrow arrow;
@@ -20,7 +20,7 @@ public class RunicBowEvent extends Event implements Cancellable {
      * @param player who fired the arrow
      * @param arrow  that was fired
      */
-    public RunicBowEvent(Player player, Arrow arrow) {
+    public RunicBowEvent(Player player, @Nullable Arrow arrow) {
         this.player = player;
         this.arrow = arrow;
     }

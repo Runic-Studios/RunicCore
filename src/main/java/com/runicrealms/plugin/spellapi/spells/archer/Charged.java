@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Charged extends Spell {
-    private static final int BASE_INT = 1;
+    private static final int BASE_INT = 2;
     private static final int MAX_STACKS = 5;
     private static final int TIMEOUT = 6;
     private static final double INT_PER_LEVEL = 0.1;

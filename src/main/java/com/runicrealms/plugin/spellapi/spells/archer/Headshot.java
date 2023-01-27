@@ -33,7 +33,7 @@ public class Headshot extends Spell {
         if (!headshot) return;
 
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 2.0f);
-        event.getVictim().getWorld().spawnParticle(Particle.CRIT, event.getVictim().getEyeLocation(), 3, 0.25f, 0.25f, 0.25f);
+        event.getVictim().getWorld().spawnParticle(Particle.CRIT, event.getVictim().getEyeLocation(), 3, 0.25f, 0.25f, 0.25f, 0);
         event.setAmount((int) (event.getAmount() * PERCENT));
     }
 

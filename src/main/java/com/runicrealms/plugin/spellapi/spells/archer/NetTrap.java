@@ -103,12 +103,10 @@ public class NetTrap extends Spell {
         addStatusEffect(livingEntity, RunicStatusEffect.STUN, STUN_DURATION, true);
         if (!(livingEntity instanceof Player)) {
             weakenedMobs.add(livingEntity.getUniqueId());
-            livingEntity.setGlowing(true);
             // Mobs don't have a PlayerMoveEvent, so we keep teleporting them
             BukkitTask mobTeleportTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(),
                     () -> livingEntity.teleport(higher), 0, 10L);
             Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                livingEntity.setGlowing(false);
                 mobTeleportTask.cancel();
             }, STUN_DURATION * 20L);
         }
