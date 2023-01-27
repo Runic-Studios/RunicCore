@@ -3,7 +3,6 @@ package com.runicrealms.plugin.api;
 import com.runicrealms.plugin.item.lootchests.BossChestTier;
 import com.runicrealms.plugin.item.lootchests.ChestItem;
 import com.runicrealms.plugin.item.lootchests.LootChestTier;
-import com.runicrealms.plugin.item.lootchests.WeightedRandomBag;
 import org.bukkit.inventory.ItemStack;
 
 public interface LootTableAPI {

@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.item.lootchests;
+package com.runicrealms.plugin.api;
 
 import java.util.ArrayList;
 import java.util.List;
