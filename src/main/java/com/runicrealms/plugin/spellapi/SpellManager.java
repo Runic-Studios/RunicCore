@@ -431,7 +431,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Kneebreak());
         this.spellList.add(new FireBlast());
         this.spellList.add(new Scald());
-        this.spellList.add(new FireAura());
+        this.spellList.add(new FireStorm());
         this.spellList.add(new IceBlock());
         this.spellList.add(new ColdTouch());
         this.spellList.add(new IcyAffinity());

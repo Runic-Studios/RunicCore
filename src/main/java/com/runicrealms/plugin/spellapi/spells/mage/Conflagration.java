@@ -47,7 +47,7 @@ public class Conflagration extends Spell implements MagicDamageSpell {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Fireball
-                || event.getSpell() instanceof FireAura
+                || event.getSpell() instanceof FireStorm
                 || event.getSpell() instanceof FireBlast
                 || event.getSpell() instanceof MeteorShower)) return; // verify fire spell
         Random rand = new Random();

@@ -19,9 +19,9 @@ public class FireBlast extends Spell implements MagicDamageSpell {
     private static final int DAMAGE_AMOUNT = 15;
     private static final int DAMAGE_PER_LEVEL = 2;
     private static final int MAX_DIST = 10;
-    private static final int RADIUS = 4;
+    private static final int RADIUS = 3;
     private static final double KNOCKUP_MULTIPLIER = 1.0;
-    private static final double RAY_SIZE = 2.5D;
+    private static final double RAY_SIZE = 1.5D;
 
     public FireBlast() {
         super("Fire Blast",
@@ -29,13 +29,12 @@ public class FireBlast extends Spell implements MagicDamageSpell {
                         "your target enemy or location that deals " +
                         "(" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to enemies within " + RADIUS + " blocks and " +
-                        "knocks them up them up!",
+                        "knocks them up!",
                 ChatColor.WHITE, CharacterClass.MAGE, 12, 30);
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
@@ -44,7 +43,6 @@ public class FireBlast extends Spell implements MagicDamageSpell {
                         RAY_SIZE,
                         entity -> isValidEnemy(player, entity)
                 );
-
         Location location;
         if (rayTraceResult == null) {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
@@ -55,7 +53,6 @@ public class FireBlast extends Spell implements MagicDamageSpell {
         } else {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
         }
-
         fireBlast(player, location);
     }
 
