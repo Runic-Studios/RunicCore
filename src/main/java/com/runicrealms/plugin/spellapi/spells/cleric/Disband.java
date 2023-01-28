@@ -7,6 +7,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -48,23 +49,28 @@ public class Disband extends Spell {
         }
         UUID trackedUuid = bardsMap.get(uuid).getTrackedUuid(); // the tracked entity
         if (event.getVictim().getUniqueId() != trackedUuid) { // player hit a new entity
-            bardsMap.get(uuid).setStacks(bardsMap.get(uuid).getStacks() + 1);
+            bardsMap.get(uuid).setTrackedUuid(trackedUuid);
+            bardsMap.get(uuid).setStacks(0); // reset stacks
         }
-        // todo: angry villager
-//        bardsMap.get(uuid).second
-//
+        bardsMap.get(uuid).setStacks(bardsMap.get(uuid).getStacks() + 1);
+        event.getVictim().getWorld().spawnParticle
+                (Particle.VILLAGER_ANGRY, event.getVictim().getLocation().add(0, 1.5, 0),
+                        5, 1.0F, 0, 0, 0);
 
         if (bardsMap.get(uuid).getStacks() >= ATTACKS_TO_TRIGGER) {
             addStatusEffect(event.getVictim(), RunicStatusEffect.DISARM, DURATION, true);
             bardsMap.get(uuid).getBukkitTask().cancel();
             bardsMap.remove(uuid);
+            cooldownSet.add(event.getPlayer().getUniqueId());
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                    () -> cooldownSet.remove(uuid), COOLDOWN * 20L);
         }
     }
 
     static class DisbandTracker {
         private final UUID uuid;
-        private final UUID trackedUuid;
         private final BukkitTask bukkitTask;
+        private UUID trackedUuid;
         private int stacks;
 
         public DisbandTracker(UUID uuid, UUID trackedUuid, int stacks, Map<UUID, DisbandTracker> bardsMap) {
@@ -89,6 +95,10 @@ public class Disband extends Spell {
 
         public UUID getTrackedUuid() {
             return trackedUuid;
+        }
+
+        public void setTrackedUuid(UUID trackedUuid) {
+            this.trackedUuid = trackedUuid;
         }
 
         public UUID getUuid() {

@@ -14,8 +14,7 @@ import org.bukkit.event.EventPriority;
  * Logic for hit found in Fireball.
  */
 public class Scald extends Spell {
-
-    private static final double DAMAGE_PERCENT = .25;
+    private static final double DAMAGE_PERCENT = .5;
     private static final int RADIUS = 4;
 
     public Scald() {

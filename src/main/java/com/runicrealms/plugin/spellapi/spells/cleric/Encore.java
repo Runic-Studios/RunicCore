@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Encore extends Spell implements MagicDamageSpell {
-    private static final int COOLDOWN = 5;
+    private static final int COOLDOWN = 8;
     private static final int DAMAGE = 10;
     private static final int DURATION = 2;
     private static final int RADIUS = 4;

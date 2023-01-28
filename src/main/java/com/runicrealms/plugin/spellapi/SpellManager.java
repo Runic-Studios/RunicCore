@@ -24,6 +24,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
@@ -308,7 +309,8 @@ public class SpellManager implements Listener, SpellAPI {
     private void handleDisarm(Entity entity, double durationInSecs, boolean displayMessage) {
         if (displayMessage) {
             entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "disarmed!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f); // todo: tool break sound?
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5f, 1.0f);
+            entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f);
         }
         BukkitTask task = new BukkitRunnable() {
             @Override
@@ -319,13 +321,16 @@ public class SpellManager implements Listener, SpellAPI {
         disarmedEntities.put(entity.getUniqueId(), task);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onMobDamage(MobDamageEvent event) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
+        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty() && disarmedEntities.isEmpty())
+            return;
         if (silencedEntities.containsKey(event.getDamager().getUniqueId())
                 || stunnedEntities.containsKey(event.getDamager().getUniqueId())
-                || invulnerableEntities.containsKey(event.getVictim().getUniqueId()))
+                || invulnerableEntities.containsKey(event.getVictim().getUniqueId())
+                || disarmedEntities.containsKey(event.getDamager().getUniqueId())) {
             event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -513,10 +518,10 @@ public class SpellManager implements Listener, SpellAPI {
                             if (getUserCooldown(player, spell) <= 0)
                                 removeCooldown(player, spell);
                             else
-                                cdString.add(ChatColor.DARK_RED + "" + ChatColor.BOLD + spell.getName() + ChatColor.DARK_RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
+                                cdString.add(ChatColor.RED + "" + ChatColor.BOLD + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
                         }
 
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.DARK_RED + String.join(ChatColor.YELLOW + " ", cdString)));
+                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
                     }
                 }
             }

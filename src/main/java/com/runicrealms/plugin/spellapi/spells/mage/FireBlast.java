@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -13,39 +12,68 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class FireBlast extends Spell implements MagicDamageSpell {
-
     private static final int DAMAGE_AMOUNT = 15;
     private static final int DAMAGE_PER_LEVEL = 2;
     private static final int MAX_DIST = 10;
     private static final int RADIUS = 4;
-    private static final int STUN_DURATION = 2;
+    private static final double KNOCKUP_MULTIPLIER = 1.0;
+    private static final double RAY_SIZE = 2.5D;
 
     public FireBlast() {
         super("Fire Blast",
                 "You erupt a powerful blast of fire at " +
-                        "your target location that deals (" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
+                        "your target enemy or location that deals " +
+                        "(" + DAMAGE_AMOUNT + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to enemies within " + RADIUS + " blocks and " +
-                        "stuns them for " + STUN_DURATION + "s!",
+                        "knocks them up them up!",
                 ChatColor.WHITE, CharacterClass.MAGE, 12, 30);
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
-        Location blastLoc = player.getTargetBlock(null, MAX_DIST).getLocation();
-        player.getWorld().playSound(blastLoc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-        player.getWorld().spawnParticle(Particle.LAVA, blastLoc, 25, 0.3f, 0.3f, 0.3f, 0);
+        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
+                (
+                        player.getLocation(),
+                        player.getLocation().getDirection(),
+                        MAX_DIST,
+                        RAY_SIZE,
+                        entity -> isValidEnemy(player, entity)
+                );
 
-        for (Entity en : player.getWorld().getNearbyEntities(blastLoc, RADIUS, RADIUS, RADIUS)) {
-            if (!isValidEnemy(player, en)) continue;
-            LivingEntity le = (LivingEntity) en;
-            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, le, player, this);
-            en.getWorld().spawnParticle(Particle.FLAME, le.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f, 0);
-            addStatusEffect(en, RunicStatusEffect.SILENCE, STUN_DURATION, true);
-            addStatusEffect(en, RunicStatusEffect.STUN, STUN_DURATION, true);
+        Location location;
+        if (rayTraceResult == null) {
+            location = player.getTargetBlock(null, MAX_DIST).getLocation();
+        } else if (rayTraceResult.getHitEntity() != null) {
+            location = rayTraceResult.getHitEntity().getLocation();
+        } else if (rayTraceResult.getHitBlock() != null) {
+            location = rayTraceResult.getHitBlock().getLocation();
+        } else {
+            location = player.getTargetBlock(null, MAX_DIST).getLocation();
+        }
+
+        fireBlast(player, location);
+    }
+
+    /**
+     * Erupts a column of flame at the given location and knocks up all enemies in the radius
+     *
+     * @param player        who cast the spell
+     * @param blastLocation to erupt the flame
+     */
+    private void fireBlast(Player player, Location blastLocation) {
+        player.getWorld().playSound(blastLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
+        player.getWorld().spawnParticle(Particle.LAVA, blastLocation, 25, 0.3f, 0.3f, 0.3f, 0);
+
+        for (Entity entity : player.getWorld().getNearbyEntities(blastLocation, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
+            LivingEntity livingEntity = (LivingEntity) entity;
+            DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, livingEntity, player, this);
+            entity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
+            entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(KNOCKUP_MULTIPLIER));
         }
     }
 
