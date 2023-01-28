@@ -59,6 +59,7 @@ public class FireStorm extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
