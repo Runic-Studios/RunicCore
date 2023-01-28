@@ -57,23 +57,15 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
             location = rayTraceResult.getHitEntity().getLocation();
         } else if (rayTraceResult.getHitBlock() != null) {
             location = rayTraceResult.getHitBlock().getLocation();
-//            Block block = rayTraceResult.getHitBlock();
-//            while (block.getRelative(BlockFace.DOWN).getType() == Material.AIR)
-//                block = block.getRelative(BlockFace.DOWN);
-//            location = block.getLocation();
         } else {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
-//            Block block = player.getTargetBlock(null, MAX_DIST);
-//            while (block.getRelative(BlockFace.DOWN).getType() == Material.AIR)
-//                block = block.getRelative(BlockFace.DOWN);
-//            location = block.getLocation();
         }
         summonMeteorShower(player, location);
     }
 
     /**
-     * @param player
-     * @param location
+     * @param player   who cast the spell
+     * @param location to spawn explosion
      */
     private void explode(Player player, Location location) {
         new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.FLAME, location, Color.RED);
@@ -109,8 +101,8 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
     }
 
     /**
-     * @param player
-     * @param location
+     * @param player   who cast the spell
+     * @param location to spawn the meteor
      */
     private void summonMeteorShower(Player player, Location location) {
         final Location[] meteorLocation = {location.clone().add(0, HEIGHT, 0)};
