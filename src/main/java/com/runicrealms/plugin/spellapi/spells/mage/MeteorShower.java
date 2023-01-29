@@ -115,12 +115,11 @@ public class MeteorShower extends Spell implements MagicDamageSpell {
                     this.cancel();
                 } else {
                     count += 1;
-                    meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0], EntityType.FIREBALL);
+                    final Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
+                    meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
                     EntityTrail.entityTrail(meteor, Particle.FLAME);
                     meteor.setIsIncendiary(false);
                     meteor.setYield(0F);
-                    final Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
-                    meteor.setVelocity(velocity);
                     meteor.setShooter(player);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                 }
