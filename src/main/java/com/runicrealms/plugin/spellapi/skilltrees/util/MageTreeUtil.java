@@ -37,18 +37,18 @@ public class MageTreeUtil {
 
     public static List<Perk> cryomancerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(72, 1, 0, 1, "Ice Block"));
-        perks.add(new PerkBaseStat(73, 1, 0, 5, Stat.VITALITY, 3));
-        perks.add(new PerkSpell(74, 1, 0, 1, "Icy Affinity"));
-        perks.add(new PerkBaseStat(75, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(72, 1, 0, 1, "Snap Freeze"));
+        perks.add(new PerkBaseStat(73, 1, 0, 5, Stat.INTELLIGENCE, 3));
+        perks.add(new PerkSpell(74, 1, 0, 1, "Cold Touch"));
+        perks.add(new PerkBaseStat(75, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(76, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(77, 1, 0, 1, "Frostbite"));
         perks.add(new PerkBaseStat(78, 1, 0, 3, Stat.VITALITY, 4));
-        perks.add(new PerkBaseStat(79, 1, 0, 3, Stat.WISDOM));
-        perks.add(new PerkBaseStat(80, 1, 0, 5, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(79, 1, 0, 3, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(80, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(81, 1, 0, 1, "Blizzard"));
-        perks.add(new PerkBaseStat(82, 1, 0, 3, Stat.VITALITY, 4));
-        perks.add(new PerkSpell(83, 1, 0, 1, "Cold Touch"));
+        perks.add(new PerkBaseStat(82, 1, 0, 3, Stat.INTELLIGENCE, 4));
+        perks.add(new PerkSpell(83, 1, 0, 1, "Winter's Grasp"));
         return perks;
     }
 
@@ -60,9 +60,9 @@ public class MageTreeUtil {
         perks.add(new PerkBaseStat(87, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkBaseStat(88, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(89, 1, 0, 1, "Fire Blast"));
-        perks.add(new PerkBaseStat(90, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkBaseStat(91, 1, 0, 3, Stat.WISDOM));
-        perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(90, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkBaseStat(91, 1, 0, 3, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(92, 1, 0, 5, Stat.WISDOM));
         perks.add(new PerkSpell(93, 1, 0, 1, "Meteor Shower"));
         perks.add(new PerkBaseStat(94, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(95, 1, 0, 1, "Conflagration"));

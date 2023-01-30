@@ -7,6 +7,7 @@ import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -30,10 +31,11 @@ public class Scald extends Spell {
     public void onMagicDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!(event.getSpell() instanceof Fireball)) return;
-        for (Entity entity : event.getVictim().getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!isValidEnemy(event.getPlayer(), entity)) continue;
-            DamageUtil.damageEntitySpell(event.getAmount() * DAMAGE_PERCENT, (LivingEntity) entity, event.getPlayer());
+        if (!(event.getSpell() instanceof Fireball || event.getSpell() instanceof Frostbolt)) return;
+        Player player = event.getPlayer();
+        Entity victim = event.getVictim();
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
+            DamageUtil.damageEntitySpell(event.getAmount() * DAMAGE_PERCENT, (LivingEntity) entity, player);
         }
     }
 }

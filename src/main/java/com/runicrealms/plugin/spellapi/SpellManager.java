@@ -432,9 +432,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new FireBlast());
         this.spellList.add(new Scald());
         this.spellList.add(new FireStorm());
-        this.spellList.add(new IceBlock());
         this.spellList.add(new ColdTouch());
-        this.spellList.add(new IcyAffinity());
         this.spellList.add(new Foresight());
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());
@@ -466,6 +464,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Stormborn());
         this.spellList.add(new Charged());
         this.spellList.add(new Surge());
+        this.spellList.add(new SnapFreeze());
+        this.spellList.add(new WintersGrasp());
         /*
         Items
          */

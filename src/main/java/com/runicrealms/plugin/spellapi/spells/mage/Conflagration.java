@@ -18,12 +18,12 @@ public class Conflagration extends Spell {
     private static final int DAMAGE_CAP = 500;
     private static final int DURATION = 4;
     private static final int PERIOD = 2;
-    private static final double PERCENT = .5;
+    private static final double PERCENT = .05;
 
     public Conflagration() {
         super("Conflagration",
                 "Your spells roar with magical fire! " +
-                        "Enemies hit by your spells take " + (PERCENT * 100) + "% of their " +
+                        "Enemies hit by your spells take " + (int) (PERCENT * 100) + "% of their " +
                         "max health as magic damage over " + DURATION + "s! " +
                         "Capped at " + DAMAGE_CAP + " total damage against monsters.",
                 ChatColor.WHITE, CharacterClass.MAGE, 0, 0);

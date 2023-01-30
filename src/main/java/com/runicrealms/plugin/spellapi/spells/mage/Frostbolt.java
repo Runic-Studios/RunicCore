@@ -20,9 +20,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Frostbolt extends Spell implements MagicDamageSpell {
-
     private static final int DAMAGE_AMT = 25;
     private static final double DAMAGE_PER_LEVEL = 2.75;
     private static final double SPEED_MULT = 2.5;
@@ -47,8 +45,13 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         EntityTrail.entityTrail(snowball, Particle.SNOWBALL);
     }
 
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onsnowballDamage(EntityDamageByEntityEvent event) {
+    public void onSnowballDamage(EntityDamageByEntityEvent event) {
 
         // only listen for our snowball
         if (!(event.getDamager().equals(this.snowball))) return;
@@ -56,14 +59,14 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         event.setCancelled(true);
 
         // grab our variables
-        Player pl = (Player) snowball.getShooter();
-        if (pl == null) return;
+        Player player = (Player) snowball.getShooter();
+        if (player == null) return;
 
         LivingEntity victim = (LivingEntity) event.getEntity();
-        if (!isValidEnemy(pl, victim)) return;
+        if (!isValidEnemy(player, victim)) return;
 
         // cancel the event, apply spell mechanics
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
+        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, this);
 
         // slow
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));
@@ -71,12 +74,7 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
                 5, 0.5F, 0.5F, 0.5F, 0, Material.PACKED_ICE.createBlockData());
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
     }
 }
 
