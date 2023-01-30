@@ -76,7 +76,7 @@ public class Frostbite extends Spell {
                     Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
                             () -> {
                                 new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.CLOUD, finalTargetBlockLocation);
-                                new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.REDSTONE, finalTargetBlockLocation, Color.AQUA);
+                                new HorizontalCircleFrame(RADIUS, false).playParticle(player, Particle.BLOCK_CRACK, finalTargetBlockLocation);
                             });
                     player.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(finalTargetBlockLocation, RADIUS, RADIUS, RADIUS)) {

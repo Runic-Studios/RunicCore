@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -31,6 +29,8 @@ public class HorizontalCircleFrame implements ParticleFormat {
             vector = new Vector(this.radius * Math.cos(theta), 0D, this.radius * Math.sin(theta));
             if (particle == Particle.REDSTONE) {
                 player.getWorld().spawnParticle(particle, location.add(vector), 1, 0, 0, 0, new Particle.DustOptions(color[0], 1));
+            } else if (particle == Particle.BLOCK_CRACK) {
+                player.getWorld().spawnParticle(particle, location.add(vector), 1, 0, 0, 0, Bukkit.createBlockData(Material.BLUE_ICE));
             } else {
                 player.getWorld().spawnParticle(particle, location.add(vector), 1, 0, 0, 0, 0);
             }

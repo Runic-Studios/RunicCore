@@ -18,7 +18,7 @@ public class Conflagration extends Spell {
     private static final int DAMAGE_CAP = 500;
     private static final int DURATION = 4;
     private static final int PERIOD = 2;
-    private static final double PERCENT = .05;
+    private static final double PERCENT = .02;
 
     public Conflagration() {
         super("Conflagration",

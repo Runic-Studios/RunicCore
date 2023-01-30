@@ -35,6 +35,7 @@ public class Scald extends Spell {
         Player player = event.getPlayer();
         Entity victim = event.getVictim();
         for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
+            if (entity.equals(victim)) continue;
             DamageUtil.damageEntitySpell(event.getAmount() * DAMAGE_PERCENT, (LivingEntity) entity, player);
         }
     }
