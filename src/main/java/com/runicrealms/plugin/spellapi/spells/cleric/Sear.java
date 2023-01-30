@@ -12,14 +12,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Smite extends Spell implements MagicDamageSpell {
+public class Sear extends Spell implements MagicDamageSpell {
     private static final int DAMAGE = 20;
     private static final double DAMAGE_PER_LEVEL = 0.4;
     private static final int MAX_DIST = 10;
     private final double BEAM_WIDTH = 1.5;
 
-    public Smite() {
-        super("Smite",
+    public Sear() {
+        super("Sear",
                 "You launch a ripple of magic, " +
                         "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl) magicʔ damage to the first enemy hit!",

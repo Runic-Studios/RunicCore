@@ -411,7 +411,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Warsong());
         this.spellList.add(new Ironhide());
         this.spellList.add(new ThunderArrow());
-        this.spellList.add(new Smite());
+        this.spellList.add(new Sear());
         this.spellList.add(new ArcaneBomb());
         this.spellList.add(new CureScurvy());
         this.spellList.add(new HolyWater());

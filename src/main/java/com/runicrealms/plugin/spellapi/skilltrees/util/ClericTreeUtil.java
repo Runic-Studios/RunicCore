@@ -32,7 +32,7 @@ public class ClericTreeUtil {
 
     public static List<Perk> hereticPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(48, 1, 0, 1, "Smite"));
+        perks.add(new PerkSpell(48, 1, 0, 1, "Sear"));
         perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.WISDOM));
         perks.add(new PerkSpell(50, 1, 0, 1, "HolyFire"));
         perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.VITALITY));
@@ -49,7 +49,7 @@ public class ClericTreeUtil {
 
     public static List<Perk> lightbringerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(60, 1, 0, 1, "Smite"));
+        perks.add(new PerkSpell(60, 1, 0, 1, "Sear"));
         perks.add(new PerkBaseStat(61, 1, 0, 5, Stat.WISDOM));
         perks.add(new PerkSpell(62, 1, 0, 1, "Lightwell"));
         perks.add(new PerkBaseStat(63, 1, 0, 3, Stat.INTELLIGENCE));

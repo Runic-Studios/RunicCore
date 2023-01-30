@@ -49,7 +49,7 @@ public class WarriorTreeUtil {
 
     public static List<Perk> paladinPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(168, 1, 0, 1, "Smite"));
+        perks.add(new PerkSpell(168, 1, 0, 1, "Sear"));
         perks.add(new PerkBaseStat(169, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(170, 1, 0, 1, "Consecration"));
         perks.add(new PerkBaseStat(171, 1, 0, 3, Stat.WISDOM));

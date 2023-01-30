@@ -22,7 +22,7 @@ import java.util.*;
 public class SnapFreeze extends Spell implements MagicDamageSpell {
     private static final int DAMAGE_AMOUNT = 20;
     private static final int DAMAGE_PER_LEVEL = 1;
-    private static final int MAX_DIST = 5;
+    private static final int MAX_DIST = 4;
     private static final int RADIUS = 1;
     private static final double DURATION = 0.5;
     private static final double PERIOD = 0.5;

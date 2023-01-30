@@ -25,10 +25,10 @@ public class HolyFire extends Spell {
 
     public HolyFire() {
         super("Holy Fire",
-                "Each time you land your &aSmite &7spell, you gain " +
+                "Each time you land your &aSear &7spell, you gain " +
                         "a stack of Holy Fire! For each stack, you gain " + (int) (PERCENT * 100) +
                         "% of your total &eWisdom✸ &7as increased healing! " +
-                        "Each &aSmite &7refreshes the duration " +
+                        "Each &aSear &7refreshes the duration " +
                         "of your stacks. While at max stacks, " +
                         "you glow bright with holy power!" +
                         "\nMax stacks: " + MAX_STACKS + "\nStacks expiry: " + STACK_DURATION + "s",
@@ -37,7 +37,7 @@ public class HolyFire extends Spell {
     }
 
     /**
-     * If a player has the passive, attempts to add a stack of holy fire when 'Smite' is cast.
+     * If a player has the passive, attempts to add a stack of holy fire when 'Sear' is cast.
      * Fails if the player is >= max stacks
      *
      * @param event the spell cast event
@@ -77,7 +77,7 @@ public class HolyFire extends Spell {
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        if (!(event.getSpell() instanceof Smite)) return;
+        if (!(event.getSpell() instanceof Sear)) return;
         attemptToStackHolyFire(event);
     }
 
