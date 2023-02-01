@@ -126,22 +126,22 @@ public class Blizzard extends Spell implements MagicDamageSpell {
                     spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
                     spawnSnowball(player, cloudLoc.add(0, 0, -2), launchPath);
                     spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-                    // 1
-                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-                    // 2
-                    spawnSnowball(player, cloudLoc.add(1, 0, 1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
-                    // 3
-                    spawnSnowball(player, cloudLoc.add(-1, 0, 1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
-                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
-                    // 4
-                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
+//                    // 1
+//                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
+//                    // 2
+//                    spawnSnowball(player, cloudLoc.add(1, 0, 1), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
+//                    // 3
+//                    spawnSnowball(player, cloudLoc.add(-1, 0, 1), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
+//                    // 4
+//                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
+//                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20); // drops a snowball every second

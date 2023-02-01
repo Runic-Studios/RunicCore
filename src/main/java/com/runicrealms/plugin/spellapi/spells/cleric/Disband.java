@@ -42,7 +42,7 @@ public class Disband extends Spell {
         if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (cooldownSet.contains(event.getPlayer().getUniqueId())) return;
-        // add to counter
+        // Add to counter
         UUID uuid = event.getPlayer().getUniqueId();
         if (!bardsMap.containsKey(uuid)) {
             bardsMap.put(uuid, new DisbandTracker(uuid, event.getVictim().getUniqueId(), 0, bardsMap));
@@ -56,7 +56,7 @@ public class Disband extends Spell {
         event.getVictim().getWorld().spawnParticle
                 (Particle.VILLAGER_ANGRY, event.getVictim().getLocation().add(0, 1.5, 0),
                         5, 1.0F, 0, 0, 0);
-
+        // todo: I don't think this logic is sound, check it again.
         if (bardsMap.get(uuid).getStacks() >= ATTACKS_TO_TRIGGER) {
             addStatusEffect(event.getVictim(), RunicStatusEffect.DISARM, DURATION, true);
             bardsMap.get(uuid).getBukkitTask().cancel();
