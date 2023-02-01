@@ -62,6 +62,7 @@ public class WintersGrasp extends Spell {
             Cone.coneEffect(event.getVictim(), Particle.REDSTONE, DURATION, 0, 10L, Color.AQUA);
             addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION, true);
             cooldownSet.add(trackedUuid);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> cooldownSet.remove(trackedUuid), COOLDOWN * 20L);
         }
     }
 
