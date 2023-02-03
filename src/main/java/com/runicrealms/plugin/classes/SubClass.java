@@ -16,7 +16,7 @@ public enum SubClass {
     /*
      Archer
      */
-    MARKSMAN("Marksman", 1, CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of single-target &cphysical⚔ &7damage and long-range attacks!"),
+    MARKSMAN("Marksman", 1, CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of mobility and long-range &cphysical⚔ attacks!"),
     STORMSHOT("Stormshot", 2, CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of lightning &3magicʔ&7, slinging area-of-effect spells!"),
     WARDEN("Warden", 3, CharacterClass.ARCHER, wardenItem(), "Warden is the keeper of the forest, &ahealing✦ &7allies through the power of nature!"),
     /*
