@@ -7,6 +7,7 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -64,10 +65,17 @@ public class TouchOfDeath extends Spell implements HealingSpell, MagicDamageSpel
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!markedEnemiesMap.containsKey(event.getPlayer().getUniqueId())) {
-            markedEnemiesMap.put(event.getPlayer().getUniqueId(), new HashMap<>());
+        if (event.isBasicAttack()) {
+            if (markedEnemiesMap.get(event.getPlayer().getUniqueId()) == null) return;
+            if (markedEnemiesMap.get(event.getPlayer().getUniqueId()).get(event.getVictim().getUniqueId()) == null)
+                return;
+            HealUtil.healPlayer(HEALING, event.getPlayer(), event.getPlayer(), false, this);
+        } else {
+            if (!markedEnemiesMap.containsKey(event.getPlayer().getUniqueId())) {
+                markedEnemiesMap.put(event.getPlayer().getUniqueId(), new HashMap<>());
+            }
+            markedEnemiesMap.get(event.getPlayer().getUniqueId()).put(event.getVictim().getUniqueId(), System.currentTimeMillis());
         }
-        markedEnemiesMap.get(event.getPlayer().getUniqueId()).put(event.getVictim().getUniqueId(), System.currentTimeMillis());
     }
 
     /**
@@ -79,7 +87,10 @@ public class TouchOfDeath extends Spell implements HealingSpell, MagicDamageSpel
             for (UUID uuid : markedEnemiesMap.keySet()) {
                 for (UUID markedEnemyUuid : markedEnemiesMap.get(uuid).keySet()) {
                     if (System.currentTimeMillis() - markedEnemiesMap.get(uuid).get(markedEnemyUuid) > (DURATION * 1000)) {
-                        Bukkit.broadcastMessage("mark removed");
+                        markedEnemiesMap.get(uuid).remove(markedEnemyUuid);
+                        if (markedEnemiesMap.get(uuid).isEmpty()) {
+                            markedEnemiesMap.remove(uuid);
+                        }
                     }
                 }
             }

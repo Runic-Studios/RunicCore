@@ -43,7 +43,7 @@ public class ClericTreeUtil {
         perks.add(new PerkBaseStat(56, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(57, 1, 0, 1, "Ruination"));
         perks.add(new PerkBaseStat(58, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(59, 1, 0, 1, "Unholy Water"));
+        perks.add(new PerkSpell(59, 1, 0, 1, "Corrupted Waters"));
         return perks;
     }
 
