@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -15,22 +17,45 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public class UnholyWater extends Spell implements MagicDamageSpell {
-    private static final int DAMAGE = 12;
-    private static final double DAMAGE_PER_LEVEL = 1.25;
+    public static final int DAMAGE = 30;
+    public static final int DURATION = 4;
+    public static final double HEALING_REDUCTION = 0.5D;
+    public static final double DAMAGE_PER_LEVEL = 1.0D;
     private static final int RADIUS = 5;
+    private static final double PERIOD = 2.0; // seconds
     private static final double POTION_SPEED_MULT = 1.25;
-    private static Set<ThrownPotion> thrownPotionSet;
+    private static final Set<ThrownPotion> thrownPotionSet = new HashSet<>();
+    private static final Set<UUID> unholyPlayers = new HashSet<>();
 
     public UnholyWater() {
         super("Unholy Water", "", ChatColor.WHITE, CharacterClass.CLERIC, 10, 15);
-        thrownPotionSet = new HashSet<>();
+    }
+
+    private void applyUnholyWater(Player player, LivingEntity livingEntity) {
+        unholyPlayers.add(livingEntity.getUniqueId());
+        Spell spell = this;
+        new BukkitRunnable() {
+            int count = 1;
+
+            @Override
+            public void run() {
+                if (count > DURATION) {
+                    this.cancel();
+                } else {
+                    count += PERIOD;
+                    DamageUtil.damageEntitySpell(DAMAGE / PERIOD, livingEntity, player, spell);
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, (long) PERIOD * 20L);
     }
 
     @Override
@@ -72,9 +97,15 @@ public class UnholyWater extends Spell implements MagicDamageSpell {
         expiredBomb.getWorld().playSound(location, Sound.ENTITY_EXPERIENCE_BOTTLE_THROW, 0.5F, 1.0F);
 
         for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
-            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, player, this);
-            // todo: unholy logic
+            applyUnholyWater(player, (LivingEntity) entity);
         }
+    }
+
+    @EventHandler
+    public void onSpellHeal(SpellHealEvent event) {
+        if (event.isCancelled()) return;
+        if (!unholyPlayers.contains(event.getEntity().getUniqueId())) return;
+        event.setAmount((int) (event.getAmount() * HEALING_REDUCTION));
     }
 }
 

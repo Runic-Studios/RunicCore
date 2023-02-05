@@ -11,14 +11,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 public class CorruptedWaters extends Spell {
+//    private static final int DAMAGE = 30;
+//    private static final int DURATION = 4;
+//    private static final double HEALING_REDUCTION = 0.5D;
+//    private static final double DAMAGE_PER_LEVEL = 1.0D;
 
     public CorruptedWaters() {
         super("Corrupted Waters",
                 "Your &aHoly Water &7spell is now &aUnholy Water&7. " +
                         "Unholy Water no longer heals your allies, " +
-                        "and instead deals (30 + 1x lvl) magic damage over 4s " +
+                        "and instead deals (" + UnholyWater.DAMAGE + " + &f" + UnholyWater.DAMAGE_PER_LEVEL
+                        + "x&7 lvl) magicʔ damage over " + UnholyWater.DURATION + "s " +
                         "to all affected enemies. Additionally, " +
-                        "enemies suffer 50% reduced healing from all " +
+                        "enemies suffer " + (int) (UnholyWater.HEALING_REDUCTION * 100) + "% reduced healing from all " +
                         "sources for the duration!",
                 ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);

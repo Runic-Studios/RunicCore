@@ -144,7 +144,7 @@ public enum SubClass {
     }
 
     private static ItemStack hereticItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE5ZWQ0MjNkNTc1MDk0Mzc1YmU4OWI3ZDJmOTAwODE0NDZmZmI2YzhkMjQ0YTExOWE3NmE4OGJmNGNiNDA2NCJ9fX0=");
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQ5MTdiNTFlNDYyMzA1Yzc3NjczNTM3MGQ4MmQ3MmNmOTU5Njg1MmRmMWM0YmI5ODNmMmViMDIwYTRlNjg1NyJ9fX0=");
     }
 
     private static ItemStack lightbringerItem() {
