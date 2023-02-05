@@ -466,6 +466,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Surge());
         this.spellList.add(new SnapFreeze());
         this.spellList.add(new WintersGrasp());
+        this.spellList.add(new Despair());
+        this.spellList.add(new TouchOfDeath());
         /*
         Items
          */

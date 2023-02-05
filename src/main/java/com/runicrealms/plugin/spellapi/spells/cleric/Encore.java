@@ -34,7 +34,7 @@ public class Encore extends Spell implements MagicDamageSpell {
                         + "x&7 lvl) magicʔ damage! " +
                         "It also reduces the active spell cooldowns of all allies " +
                         "within " + RADIUS + " blocks by " + DURATION + "s!",
-                ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
+                ChatColor.WHITE, CharacterClass.CLERIC, 0, 0);
         this.setIsPassive(true);
     }
 
