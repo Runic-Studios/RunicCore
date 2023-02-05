@@ -42,6 +42,7 @@ public class UnholyWater extends Spell implements MagicDamageSpell {
 
     private void applyUnholyWater(Player player, LivingEntity livingEntity) {
         unholyPlayers.add(livingEntity.getUniqueId());
+        livingEntity.getWorld().playSound(livingEntity.getEyeLocation(), Sound.ENTITY_PLAYER_HURT, 0.5F, 1.0F);
         Spell spell = this;
         new BukkitRunnable() {
             int count = 1;
