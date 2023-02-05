@@ -470,6 +470,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new TouchOfDeath());
         this.spellList.add(new CorruptedWaters());
         this.spellList.add(new UnholyWater());
+        this.spellList.add(new UmbralGrasp());
+        this.spellList.add(new Ruination());
         /*
         Items
          */

@@ -50,11 +50,11 @@ public class Despair extends Spell implements MagicDamageSpell {
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
             location.setDirection(player.getLocation().getDirection());
-            location.setY(player.getEyeLocation().getY());
+            location.setY(player.getLocation().add(0, 1, 0).getY());
             new HorizontalCircleFrame((float) BEAM_WIDTH, true).playParticle(player, Particle.SOUL_FIRE_FLAME, location);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            new HorizontalCircleFrame((float) BEAM_WIDTH, true).playParticle(player, Particle.SOUL_FIRE_FLAME, livingEntity.getEyeLocation().setDirection(player.getLocation().getDirection()));
+            new HorizontalCircleFrame((float) BEAM_WIDTH, true).playParticle(player, Particle.SOUL_FIRE_FLAME, livingEntity.getLocation().add(0, 1, 0).setDirection(player.getLocation().getDirection()));
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.25f);
             livingEntity.getWorld().spawnParticle(Particle.SOUL, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
             Collection<Entity> targets = player.getWorld().getNearbyEntities

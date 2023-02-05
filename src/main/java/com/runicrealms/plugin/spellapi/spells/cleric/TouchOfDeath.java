@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TouchOfDeath extends Spell implements HealingSpell, MagicDamageSpell {
     private static final int DAMAGE = 8;
@@ -22,7 +23,7 @@ public class TouchOfDeath extends Spell implements HealingSpell, MagicDamageSpel
     private static final int HEALING = 3;
     private static final double DAMAGE_PER_LEVEL = 0.3D;
     private static final double HEALING_PER_LEVEL = 0.4D;
-    private final Map<UUID, Map<UUID, Long>> markedEnemiesMap = new HashMap<>();
+    private final ConcurrentHashMap<UUID, Map<UUID, Long>> markedEnemiesMap = new ConcurrentHashMap<>();
 
     public TouchOfDeath() {
         super("Touch of Death",

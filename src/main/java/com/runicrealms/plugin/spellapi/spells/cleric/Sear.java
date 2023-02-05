@@ -28,7 +28,6 @@ public class Sear extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
