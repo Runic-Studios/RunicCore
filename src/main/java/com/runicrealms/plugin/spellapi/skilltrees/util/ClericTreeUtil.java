@@ -30,23 +30,6 @@ public class ClericTreeUtil {
         return perks;
     }
 
-    public static List<Perk> hereticPerkList() {
-        List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(48, 1, 0, 1, "Despair"));
-        perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(50, 1, 0, 1, "Touch of Death"));
-        perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkBaseStat(52, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(53, 1, 0, 1, "Umbral Grasp"));
-        perks.add(new PerkBaseStat(54, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkBaseStat(55, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(56, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(57, 1, 0, 1, "Ruination"));
-        perks.add(new PerkBaseStat(58, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(59, 1, 0, 1, "Corrupted Waters"));
-        return perks;
-    }
-
     public static List<Perk> lightbringerPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(60, 1, 0, 1, "Sear"));
@@ -61,6 +44,23 @@ public class ClericTreeUtil {
         perks.add(new PerkSpell(69, 1, 0, 1, "Ray of Light"));
         perks.add(new PerkBaseStat(70, 1, 0, 3, Stat.WISDOM));
         perks.add(new PerkSpell(71, 1, 0, 1, "Holy Fire"));
+        return perks;
+    }
+
+    public static List<Perk> soulreaverPerkList() {
+        List<Perk> perks = new ArrayList<>();
+        perks.add(new PerkSpell(48, 1, 0, 1, "Despair"));
+        perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.VITALITY));
+        perks.add(new PerkSpell(50, 1, 0, 1, "Touch of Death"));
+        perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(52, 1, 0, 3, Stat.VITALITY));
+        perks.add(new PerkSpell(53, 1, 0, 1, "Umbral Grasp"));
+        perks.add(new PerkBaseStat(54, 1, 0, 3, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(55, 1, 0, 3, Stat.VITALITY));
+        perks.add(new PerkBaseStat(56, 1, 0, 5, Stat.INTELLIGENCE));
+        perks.add(new PerkSpell(57, 1, 0, 1, "Ruination"));
+        perks.add(new PerkBaseStat(58, 1, 0, 3, Stat.VITALITY));
+        perks.add(new PerkSpell(59, 1, 0, 1, "Corrupted Waters"));
         return perks;
     }
 }

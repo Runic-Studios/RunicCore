@@ -303,8 +303,8 @@ public class SkillTreeData implements SessionData {
                 return ArcherTreeUtil.wardenPerkList();
             case BARD:
                 return ClericTreeUtil.bardPerkList();
-            case HERETIC:
-                return ClericTreeUtil.hereticPerkList();
+            case SOULREAVER:
+                return ClericTreeUtil.soulreaverPerkList();
             case LIGHTBRINGER:
                 return ClericTreeUtil.lightbringerPerkList();
             case ARCANIST:
