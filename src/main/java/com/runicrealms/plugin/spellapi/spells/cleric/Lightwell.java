@@ -47,7 +47,9 @@ public class Lightwell extends Spell implements HealingSpell {
     @EventHandler(priority = EventPriority.LOW)
     public void onPotionBreak(PotionSplashEvent event) {
         if (event.isCancelled()) return;
-        if (!HolyWater.getThrownPotionSet().contains(event.getPotion())) return;
+        if (!(HolyWater.getThrownPotionSet().contains(event.getPotion())
+                || UnholyWater.getThrownPotionSet().contains(event.getPotion())))
+            return;
         if (!(event.getPotion().getShooter() instanceof Player)) return;
         Player player = (Player) event.getPotion().getShooter();
         if (!hasPassive(player.getUniqueId(), this.getName())) return;
@@ -71,7 +73,7 @@ public class Lightwell extends Spell implements HealingSpell {
                 player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, 0.75f, 0.75f, 0.75f, 0);
 
                 for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
-                    if (isValidAlly(player, entity)) {
+                    if (isValidAlly(player, entity) && !UnholyWater.getThrownPotionSet().contains(event.getPotion())) { // Unholy Water cannot heal
                         if (entity.equals(player)) continue; // does not heal self
                         HealUtil.healPlayer(HEAL_AMT, (Player) entity, player, false, spell);
                     } else if (isValidEnemy(player, entity)) {

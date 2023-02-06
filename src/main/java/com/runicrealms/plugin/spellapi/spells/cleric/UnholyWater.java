@@ -40,6 +40,10 @@ public class UnholyWater extends Spell implements MagicDamageSpell {
         super("Unholy Water", "", ChatColor.WHITE, CharacterClass.CLERIC, 10, 15);
     }
 
+    public static Set<ThrownPotion> getThrownPotionSet() {
+        return thrownPotionSet;
+    }
+
     private void applyUnholyWater(Player player, LivingEntity livingEntity) {
         unholyPlayers.add(livingEntity.getUniqueId());
         livingEntity.getWorld().playSound(livingEntity.getEyeLocation(), Sound.ENTITY_PLAYER_HURT, 0.5F, 1.0F);
