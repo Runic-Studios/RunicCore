@@ -16,7 +16,7 @@ public enum SubClass {
     /*
      Archer
      */
-    MARKSMAN("Marksman", 1, CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of mobility and long-range &cphysical⚔ attacks!"),
+    MARKSMAN("Marksman", 1, CharacterClass.ARCHER, marksmanItem(), "Marksman is a master of mobility and long-range &cphysical⚔ &7attacks!"),
     STORMSHOT("Stormshot", 2, CharacterClass.ARCHER, stormshotItem(), "Stormshot is a master of lightning &3magicʔ&7, slinging area-of-effect spells!"),
     WARDEN("Warden", 3, CharacterClass.ARCHER, wardenItem(), "Warden is the keeper of the forest, &ahealing✦ &7allies through the power of nature!"),
     /*
@@ -28,9 +28,9 @@ public enum SubClass {
     /*
      Mage
      */
-    ARCANIST("Arcanist", 1, CharacterClass.MAGE, arcanistItem(), "Arcanist has &abuffs &7to empower &3magicalʔ &7allies!"),
-    CRYOMANCER("Cryomancer", 2, CharacterClass.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with &fcrowd control&7!"),
-    PYROMANCER("Pyromancer", 3, CharacterClass.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect &3magicʔ &7damage!"),
+    CRYOMANCER("Cryomancer", 1, CharacterClass.MAGE, cryomancerItem(), "Cryomancer freezes and slows enemies with &fcrowd control&7!"),
+    PYROMANCER("Pyromancer", 2, CharacterClass.MAGE, pyromancerItem(), "Pyromancer deals powerful area-of-effect &3magicʔ &7damage!"),
+    SPELLSWORD("Spellsword", 3, CharacterClass.MAGE, spellswordItem(), "Spellsword uses magical melee attacks to &ashield &7allies!"),
     /*
      Rogue
      */
@@ -160,9 +160,8 @@ public enum SubClass {
                 "leHR1cmUvNDA4MGJiZWZjYTg3ZGMwZjM2NTM2YjY1MDg0MjVjZmM0Yjk1YmE2ZThmNWU2YTQ2ZmY5ZTljYjQ4OGE5ZWQifX19");
     }
 
-    private static ItemStack arcanistItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvY2NiM2QyMmFlMDAxMjE4NjFlZTY1ZTg1MDJjMzEzNzg0YTI2OGU0MmExMzBlM2Q2N2RlZDNhNjg0OGVhZjk2OCJ9fX0=");
+    private static ItemStack spellswordItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUwMzIzNzczYzBkYTViNDE3NzE4NTAwYTQ0OGFlM2RiZjg3ZDQ5YWMwNjhjZDUzZjAxNTAyZjRjMDMxNjE1MyJ9fX0=");
     }
 
     private static ItemStack assassinItem() {
