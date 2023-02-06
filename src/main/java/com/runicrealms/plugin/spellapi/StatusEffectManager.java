@@ -29,6 +29,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 
     public StatusEffectManager() {
         this.statusEffectMap = new ConcurrentHashMap<>();
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         startRemovalTask();
     }
 
@@ -38,8 +39,9 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
-    public boolean hasStatusEffect(UUID player, RunicStatusEffect runicStatusEffect) {
-        return false;
+    public boolean hasStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
+        if (!statusEffectMap.containsKey(uuid)) return false;
+        return statusEffectMap.get(uuid).containsKey(statusEffect);
     }
 
     @Override
@@ -125,15 +127,15 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             if (!(hasStatusEffect(uuid, RunicStatusEffect.SPEED_II) || hasStatusEffect(uuid, RunicStatusEffect.SPEED_III))) {
                 livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (durationInSecs * 20), 0));
             }
-            return;
+//            return;
         } else if (runicStatusEffect == RunicStatusEffect.SPEED_II) {
             if (!hasStatusEffect(uuid, RunicStatusEffect.SPEED_III)) {
                 livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (durationInSecs * 20), 1));
             }
-            return;
+//            return;
         } else if (runicStatusEffect == RunicStatusEffect.SPEED_III) {
             livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (durationInSecs * 20), 2));
-            return;
+//            return;
         }
 
         // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
@@ -164,6 +166,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                     if (System.currentTimeMillis() - startTime > (duration * 1000)) {
                         statusEffectMap.get(uuid).remove(runicStatusEffect);
                         if (statusEffectMap.get(uuid).isEmpty()) {
+                            Bukkit.broadcastMessage("removing status effect");
                             statusEffectMap.remove(uuid);
                         }
                     }

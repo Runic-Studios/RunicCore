@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
@@ -11,8 +12,6 @@ import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -24,7 +23,6 @@ public class Sprint extends Spell implements MagicDamageSpell {
     private static final int DAMAGE_AMOUNT = 5;
     private static final double DAMAGE_PER_LEVEL = 1.75;
     private static final int DURATION = 5;
-    private static final int SPEED_AMPLIFIER = 2;
     private final Map<UUID, BukkitTask> sprintTasks = new HashMap<>();
 
     public Sprint() {
@@ -38,7 +36,7 @@ public class Sprint extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, DURATION * 20, SPEED_AMPLIFIER));
+        addStatusEffect(player, RunicStatusEffect.SPEED_II, DURATION, false);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
         new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getLocation(), Color.FUCHSIA);
         new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getEyeLocation(), Color.FUCHSIA);

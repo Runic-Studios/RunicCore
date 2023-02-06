@@ -2,13 +2,12 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class Accelerando extends Spell {
     private static final int DURATION_I = 3;
@@ -38,7 +37,17 @@ public class Accelerando extends Spell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 0.7F);
 
         // add player effects
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, duration * 20, multiplier));
+        switch (multiplier) {
+            case 1:
+                addStatusEffect(player, RunicStatusEffect.SPEED_II, duration, false);
+                break;
+            case 2:
+                addStatusEffect(player, RunicStatusEffect.SPEED_III, duration, false);
+                break;
+            default:
+                addStatusEffect(player, RunicStatusEffect.SPEED_I, duration, false);
+                break;
+        }
         player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.WHITE, 20));
     }

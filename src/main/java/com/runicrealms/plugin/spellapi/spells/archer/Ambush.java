@@ -5,6 +5,7 @@ import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import org.bukkit.Bukkit;
@@ -66,7 +67,7 @@ public class Ambush extends Spell {
         successfulPlayers.remove(event.getPlayer().getUniqueId());
         event.setAmount((int) (event.getAmount() + DAMAGE + (DAMAGE_PER_LEVEL * event.getPlayer().getLevel())));
         event.getVictim().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, BLIND_DURATION * 20, 1));
-        event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, SPEED_DURATION * 20, 1)); // speed II
+        addStatusEffect(event.getPlayer(), RunicStatusEffect.SPEED_II, SPEED_DURATION, false);
     }
 
     @EventHandler(priority = EventPriority.LOW) // early
