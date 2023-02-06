@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 
 public class StatsGUI implements InventoryHolder {
-
     private static final int[] STAT_ITEM_SLOTS = new int[]{20, 22, 24, 30, 32};
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
     private final int dexterity;
@@ -194,14 +193,17 @@ public class StatsGUI implements InventoryHolder {
     private ItemStack wisdomMenuItem() {
         double maxManaPercent = (Stat.getMaxManaMult() * 100) * wisdom;
         double spellHealingPercent = (Stat.getSpellHealingMult() * 100) * wisdom;
+        double spellShieldingPercent = (Stat.getSpellShieldingMult() * 100) * wisdom;
         String maxManaString = maxManaPercent > 0 ? DECIMAL_FORMAT.format(maxManaPercent) : "0";
         String spellHealingString = spellHealingPercent > 0 ? DECIMAL_FORMAT.format(spellHealingPercent) : "0";
+        String spellShieldingString = spellShieldingPercent > 0 ? DECIMAL_FORMAT.format(spellShieldingPercent) : "0";
         return GUIUtil.dispItem(getStatMaterial(Stat.WISDOM), ChatColor.YELLOW + "Wisdom" + Stat.WISDOM.getIcon() + ": " + wisdom, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
                         ChatColor.GRAY + "Max Mana: " + statPrefix(wisdom) + maxManaString + "%",
-                        ChatColor.GRAY + "Spell Healing: " + statPrefix(wisdom) + spellHealingString + "%"
+                        ChatColor.GRAY + "Spell Healing: " + statPrefix(wisdom) + spellHealingString + "%",
+                        ChatColor.GRAY + "Spell Shielding: " + statPrefix(wisdom) + spellShieldingString + "%"
                 });
     }
 }
