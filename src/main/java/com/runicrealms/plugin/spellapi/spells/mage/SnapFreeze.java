@@ -65,7 +65,7 @@ public class SnapFreeze extends Spell implements MagicDamageSpell {
         for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, (LivingEntity) entity, player, this);
-            addStatusEffect(entity, RunicStatusEffect.ROOT, DURATION, true);
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, DURATION, true);
             damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
         }
     }

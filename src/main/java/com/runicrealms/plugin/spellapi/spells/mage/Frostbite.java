@@ -81,7 +81,6 @@ public class Frostbite extends Spell {
                     player.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity en : player.getWorld().getNearbyEntities(finalTargetBlockLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(isValidEnemy(player, en))) continue;
-                        if (isRooted(en)) continue;
                         LivingEntity victim = (LivingEntity) en;
                         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                         addStatusEffect(victim, RunicStatusEffect.ROOT, (DURATION + 2) - count, true); // root for remaining duration

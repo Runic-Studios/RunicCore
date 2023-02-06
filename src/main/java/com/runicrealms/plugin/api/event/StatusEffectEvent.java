@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.api.event;
 
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -11,21 +11,31 @@ import org.bukkit.event.HandlerList;
  */
 public class StatusEffectEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private final Player player;
-    private RunicStatusEffect runicStatusEffect;
+    private final LivingEntity livingEntity;
+    private final RunicStatusEffect runicStatusEffect;
+    private final double durationInSeconds;
+    private final boolean displayMessage;
     private boolean isCancelled;
 
     /**
-     * @param player
-     * @param runicStatusEffect
+     * @param livingEntity      entity who gained the status effect
+     * @param runicStatusEffect that was applied
+     * @param durationInSeconds the duration of the effect
+     * @param displayMessage    whether to display the chat message
      */
-    public StatusEffectEvent(Player player, RunicStatusEffect runicStatusEffect) {
-        this.player = player;
+    public StatusEffectEvent(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSeconds, boolean displayMessage) {
+        this.livingEntity = livingEntity;
         this.runicStatusEffect = runicStatusEffect;
+        this.durationInSeconds = durationInSeconds;
+        this.displayMessage = displayMessage;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
+    }
+
+    public double getDurationInSeconds() {
+        return durationInSeconds;
     }
 
     @SuppressWarnings("NullableProblems")
@@ -34,8 +44,12 @@ public class StatusEffectEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public Player getPlayer() {
-        return player;
+    public LivingEntity getLivingEntity() {
+        return livingEntity;
+    }
+
+    public RunicStatusEffect getRunicStatusEffect() {
+        return runicStatusEffect;
     }
 
     @Override
@@ -46,5 +60,9 @@ public class StatusEffectEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean arg0) {
         this.isCancelled = arg0;
+    }
+
+    public boolean willDisplayMessage() {
+        return displayMessage;
     }
 }

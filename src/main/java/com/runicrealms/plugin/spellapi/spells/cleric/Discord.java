@@ -41,11 +41,11 @@ public class Discord extends Spell implements MagicDamageSpell {
     private void discord(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 2.0f);
         player.getWorld().spawnParticle(Particle.CRIT_MAGIC, player.getEyeLocation(), 50, 1.0F, 0.5F, 1.0F, 0);
-        for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!(isValidEnemy(player, en))) continue;
-            causeDiscord(player, (LivingEntity) en);
-            addStatusEffect(en, RunicStatusEffect.STUN, DURATION, true);
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, player, this);
+        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!(isValidEnemy(player, entity))) continue;
+            causeDiscord(player, (LivingEntity) entity);
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.STUN, DURATION, true);
+            DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) entity, player, this);
         }
     }
 

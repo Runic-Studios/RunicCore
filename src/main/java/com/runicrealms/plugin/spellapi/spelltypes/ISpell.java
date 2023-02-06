@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 import com.runicrealms.plugin.classes.CharacterClass;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -12,12 +13,12 @@ public interface ISpell {
     /**
      * Adds a custom status effect to an entity that interacts with runic systems, like silence preventing spells
      *
-     * @param entity            to add effect to
+     * @param livingEntity      to add effect to
      * @param runicStatusEffect the type of custom runic effect
      * @param duration          of the effect (in seconds)
      * @param displayMessage    whether to inform player of status effect
      */
-    void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double duration, boolean displayMessage);
+    void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double duration, boolean displayMessage);
 
     /**
      * Casts the actual spell effect
@@ -67,12 +68,13 @@ public interface ISpell {
     boolean hasPassive(UUID uuid, String passive);
 
     /**
-     * Check whether the entity is invulnerable by a custom runic effect
+     * Check whether the given player is effected by the given status effect
      *
-     * @param entity to check
-     * @return true if invulnerable
+     * @param uuid              of player or entity to check
+     * @param runicStatusEffect to lookup
+     * @return true if the player is currently impacted by the effect
      */
-    boolean isInvulnerable(Entity entity);
+    boolean hasStatusEffect(UUID uuid, RunicStatusEffect runicStatusEffect);
 
     /**
      * Check whether the current spell is on cooldown (use 'this')
@@ -81,30 +83,6 @@ public interface ISpell {
      * @return true if spell is on cooldown
      */
     boolean isOnCooldown(Player player);
-
-    /**
-     * Check whether the entity is rooted by a custom runic effect
-     *
-     * @param entity to check
-     * @return true if rooted
-     */
-    boolean isRooted(Entity entity);
-
-    /**
-     * Check whether the entity is silenced by a custom runic effect
-     *
-     * @param entity to check
-     * @return true if silenced
-     */
-    boolean isSilenced(Entity entity);
-
-    /**
-     * Check whether the entity is stunned by a custom runic effect
-     *
-     * @param entity to check
-     * @return true if stunned
-     */
-    boolean isStunned(Entity entity);
 
     /**
      * Method to check for valid enemy before applying healing / buff spell calculation. True if enemy can be healed.

@@ -31,10 +31,7 @@ import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
-import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
-import com.runicrealms.plugin.spellapi.SpellManager;
-import com.runicrealms.plugin.spellapi.SpellScalingListener;
-import com.runicrealms.plugin.spellapi.SpellUseListener;
+import com.runicrealms.plugin.spellapi.*;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
 import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
@@ -84,6 +81,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static RedisAPI redisAPI;
     private static TitleManager titleManager;
     private static ShopAPI shopAPI;
+    private static StatusEffectAPI statusEffectAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -148,6 +146,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static ShopAPI getShopAPI() {
         return shopAPI;
+    }
+
+    public static StatusEffectAPI getStatusEffectAPI() {
+        return statusEffectAPI;
     }
 
     public static RegionAPI getRegionAPI() {
@@ -235,6 +237,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         redisAPI = null;
         titleManager = null;
         shopAPI = null;
+        statusEffectAPI = null;
     }
 
     public void onEnable() {
@@ -267,6 +270,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         redisAPI = new RedisManager();
         titleManager = new TitleManager();
         shopAPI = new RunicItemShopManager();
+        statusEffectAPI = new StatusEffectManager();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);

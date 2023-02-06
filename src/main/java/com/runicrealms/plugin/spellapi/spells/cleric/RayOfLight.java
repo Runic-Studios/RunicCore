@@ -76,7 +76,7 @@ public class RayOfLight extends Spell implements MagicDamageSpell {
             Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-KNOCKBACK).setY(0.3);
             entity.setVelocity(force);
             DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) entity), player, this);
-            addStatusEffect(entity, RunicStatusEffect.SILENCE, DURATION, true);
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, DURATION, true);
 
         }
     }

@@ -89,7 +89,7 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                     if (isValidEnemy(player, entity)) {
                         if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
                         hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                        addStatusEffect(entity, RunicStatusEffect.SILENCE, DURATION, true);
+                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, DURATION, true);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);

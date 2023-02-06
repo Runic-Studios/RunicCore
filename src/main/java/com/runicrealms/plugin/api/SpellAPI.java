@@ -1,8 +1,6 @@
 package com.runicrealms.plugin.api;
 
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,15 +17,6 @@ public interface SpellAPI {
      * @param cooldownTime of spell
      */
     void addCooldown(final Player player, final Spell spell, double cooldownTime);
-
-    /**
-     * Add a custom status effect to an entity.
-     *
-     * @param entity            to be silenced
-     * @param runicStatusEffect which status effect to add
-     * @param durationInSecs    (in seconds) of effect
-     */
-    void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage);
 
     /**
      * Gets the spell in the associated 'slot' from player spell wrapper.
@@ -62,14 +51,6 @@ public interface SpellAPI {
     boolean isCasting(Player player);
 
     /**
-     * Check whether the entity is invulnerable by a custom runic effect
-     *
-     * @param entity to check
-     * @return true if invulnerable
-     */
-    boolean isInvulnerable(Entity entity);
-
-    /**
      * Check whether the current spell is on cooldown
      *
      * @param player    to check
@@ -77,30 +58,6 @@ public interface SpellAPI {
      * @return true if spell is on cooldown
      */
     boolean isOnCooldown(Player player, String spellName);
-
-    /**
-     * Checks whether an entity is rooted.
-     *
-     * @param entity to check
-     * @return true if rooted
-     */
-    boolean isRooted(Entity entity);
-
-    /**
-     * Checks whether an entity is silenced.
-     *
-     * @param entity to check
-     * @return true if silenced
-     */
-    boolean isSilenced(Entity entity);
-
-    /**
-     * Checks whether an entity is stunned.
-     *
-     * @param entity to check
-     * @return true if stunned
-     */
-    boolean isStunned(Entity entity);
 
     /**
      * Reduces the cooldown of the given spell for the player by the duration (CDR)
@@ -120,12 +77,4 @@ public interface SpellAPI {
      */
     void reduceCooldown(Player player, String spell, double duration);
 
-    /**
-     * Removes the custom status effect (root, stun, etc.) from the specified player
-     *
-     * @param uuid         of the player to remove
-     * @param statusEffect the status effect enum
-     * @return true if an effect was removed
-     */
-    boolean removeStatusEffect(UUID uuid, RunicStatusEffect statusEffect);
 }

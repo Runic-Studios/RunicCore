@@ -42,8 +42,12 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public void addStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
-        RunicCore.getSpellAPI().addStatusEffect(entity, runicStatusEffect, durationInSecs, displayMessage);
+    public void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
+        RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage);
+    }
+
+    public boolean attemptToExecute(Player player) {
+        return true;
     }
 
     @Override
@@ -108,28 +112,13 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public boolean isInvulnerable(Entity entity) {
-        return RunicCore.getSpellAPI().isInvulnerable(entity);
+    public boolean hasStatusEffect(UUID uuid, RunicStatusEffect runicStatusEffect) {
+        return RunicCore.getStatusEffectAPI().hasStatusEffect(uuid, runicStatusEffect);
     }
 
     @Override
     public boolean isOnCooldown(Player player) {
         return RunicCore.getSpellAPI().isOnCooldown(player, this.getName());
-    }
-
-    @Override
-    public boolean isRooted(Entity entity) {
-        return RunicCore.getSpellAPI().isRooted(entity);
-    }
-
-    @Override
-    public boolean isSilenced(Entity entity) {
-        return RunicCore.getSpellAPI().isSilenced(entity);
-    }
-
-    @Override
-    public boolean isStunned(Entity entity) {
-        return RunicCore.getSpellAPI().isStunned(entity);
     }
 
     @Override
@@ -157,11 +146,7 @@ public abstract class Spell implements ISpell, Listener {
 
     @Override
     public boolean removeStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect) {
-        return RunicCore.getSpellAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
-    }
-
-    public boolean attemptToExecute(Player player) {
-        return true;
+        return RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
     }
 
     public void executeSpell(Player player, SpellItemType type) {

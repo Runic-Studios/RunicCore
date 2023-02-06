@@ -58,7 +58,7 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
         victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 1.0f);
         victim.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, victim.getLocation(), 1, 0, 0, 0, 0);
         DamageUtil.damageEntityPhysical(DAMAGE_AMT, (LivingEntity) victim, shooter, false, false, spell);
-        addStatusEffect(victim, RunicStatusEffect.SILENCE, DURATION, true);
+        addStatusEffect((LivingEntity) victim, RunicStatusEffect.SILENCE, DURATION, true);
         Vector force = shooter.getLocation().toVector().subtract(victim.getLocation().toVector()).normalize().multiply(KNOCKBACK_MULT);
         victim.setVelocity(force);
     }

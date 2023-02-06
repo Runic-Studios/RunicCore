@@ -45,7 +45,7 @@ public class Riposte extends Spell {
         if (!ripostePlayers.contains(event.getVictim())) return;
         if (!(event.getDamager() instanceof LivingEntity)) return;
         event.setCancelled(true);
-        addStatusEffect(event.getDamager(), RunicStatusEffect.STUN, DURATION_STUN, true);
+        addStatusEffect((LivingEntity) event.getDamager(), RunicStatusEffect.STUN, DURATION_STUN, true);
     }
 
     @EventHandler
