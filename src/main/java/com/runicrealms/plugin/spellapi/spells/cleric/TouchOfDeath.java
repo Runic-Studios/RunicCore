@@ -7,7 +7,6 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -70,7 +69,7 @@ public class TouchOfDeath extends Spell implements HealingSpell, MagicDamageSpel
             if (markedEnemiesMap.get(event.getPlayer().getUniqueId()) == null) return;
             if (markedEnemiesMap.get(event.getPlayer().getUniqueId()).get(event.getVictim().getUniqueId()) == null)
                 return;
-            HealUtil.healPlayer(HEALING, event.getPlayer(), event.getPlayer(), false, this);
+            healPlayer(event.getPlayer(), event.getPlayer(), HEALING, this);
         } else {
             if (!markedEnemiesMap.containsKey(event.getPlayer().getUniqueId())) {
                 markedEnemiesMap.put(event.getPlayer().getUniqueId(), new HashMap<>());

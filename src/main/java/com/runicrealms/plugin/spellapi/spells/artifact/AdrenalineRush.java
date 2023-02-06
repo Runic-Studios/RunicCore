@@ -3,7 +3,6 @@ package com.runicrealms.plugin.spellapi.spells.artifact;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -33,11 +32,11 @@ public class AdrenalineRush extends Spell implements ArtifactSpell {
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
+    public void onArtifactUse(RunicItemArtifactTriggerEvent event) {
+        if (!event.getRunicItemArtifact().getTemplateId().equals(ARTIFACT_ID)) return;
         double roll = ThreadLocalRandom.current().nextDouble();
         if (roll > CHANCE) return;
-        HealUtil.healPlayer(HEAL_AMOUNT, e.getPlayer(), e.getPlayer(), false);
+        healPlayer(event.getPlayer(), event.getPlayer(), HEAL_AMOUNT);
     }
 }
 

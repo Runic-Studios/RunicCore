@@ -43,6 +43,14 @@ public interface SpellAPI {
     ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid);
 
     /**
+     * @param caster    who cast the spell
+     * @param recipient to receive the healing
+     * @param amount    amount to be healed before gem or buff calculations
+     * @param spell     an optional reference to some spell for spell scaling
+     */
+    void healPlayer(Player caster, Player recipient, double amount, Spell... spell);
+
+    /**
      * Determine whether the player is in casting mode to cancel certain interactions.
      *
      * @param player to check

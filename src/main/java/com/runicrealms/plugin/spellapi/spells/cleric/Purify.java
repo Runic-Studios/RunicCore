@@ -6,7 +6,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -78,7 +77,7 @@ public class Purify extends Spell implements HealingSpell {
                     ally.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
 
                 } else {
-                    HealUtil.healPlayer(HEAL_AMT, ally, player, false, this);
+                    healPlayer(player, ally, HEAL_AMT, this);
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                     removeStatusEffect(ally, RunicStatusEffect.SILENCE);
                     // stop the beam if it hits a player
@@ -90,16 +89,13 @@ public class Purify extends Spell implements HealingSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        // Heal the caster
+        healPlayer(player, player, HEAL_AMT, this);
 
-        player.swingMainHand();
-
-        // heal the caster
-        HealUtil.healPlayer(HEAL_AMT, player, player, false, this);
-
-        // sound effect
+        // Sound effect
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
 
-        // particle effect, spell effects
+        // Particle effect, spell effects
         Vector middle = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
         startTask(player, new Vector[]{middle});
     }

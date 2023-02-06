@@ -6,7 +6,6 @@ import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -85,7 +84,7 @@ public class Rejuvenate extends Spell implements HealingSpell {
 
                 } else {
 
-                    HealUtil.healPlayer(HEAL_AMT, ally, caster, false, this);
+                    healPlayer(caster, ally, HEAL_AMT, this);
                     caster.playSound(caster.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
                     affectedPlayers.get(caster.getUniqueId()).add(entity.getUniqueId());
                     Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> affectedPlayers.remove(caster.getUniqueId()), DURATION * 20L);
@@ -98,7 +97,7 @@ public class Rejuvenate extends Spell implements HealingSpell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.swingMainHand();
-        HealUtil.healPlayer(HEAL_AMT, player, player, false, this);
+        healPlayer(player, player, HEAL_AMT, this);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
         Vector middle = player.getEyeLocation().getDirection().normalize().multiply(BEAM_SPEED);
         startTask(player, new Vector[]{middle});

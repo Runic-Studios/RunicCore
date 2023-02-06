@@ -46,10 +46,6 @@ public abstract class Spell implements ISpell, Listener {
         RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage);
     }
 
-    public boolean attemptToExecute(Player player) {
-        return true;
-    }
-
     @Override
     public void execute(Player player, SpellItemType type) {
 
@@ -117,6 +113,11 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
+    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        RunicCore.getSpellAPI().healPlayer(caster, recipient, amount, spell);
+    }
+
+    @Override
     public boolean isOnCooldown(Player player) {
         return RunicCore.getSpellAPI().isOnCooldown(player, this.getName());
     }
@@ -147,6 +148,10 @@ public abstract class Spell implements ISpell, Listener {
     @Override
     public boolean removeStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect) {
         return RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
+    }
+
+    public boolean attemptToExecute(Player player) {
+        return true;
     }
 
     public void executeSpell(Player player, SpellItemType type) {

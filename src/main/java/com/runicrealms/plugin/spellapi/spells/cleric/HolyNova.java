@@ -5,7 +5,6 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -46,7 +45,7 @@ public class HolyNova extends Spell implements HealingSpell {
             spawnSphere(player, location);
             for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidAlly(player, target))) {
                 Player ally = (Player) entity;
-                HealUtil.healPlayer(HEAL_AMT, ally, player, false, this);
+                healPlayer(player, ally, HEAL_AMT, this);
             }
         }, SLOW_DURATION * 20L);
     }

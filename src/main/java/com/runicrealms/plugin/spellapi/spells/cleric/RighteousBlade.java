@@ -4,7 +4,6 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -44,10 +43,10 @@ public class RighteousBlade extends Spell implements HealingSpell {
         Random rand = new Random();
         int roll = rand.nextInt(100) + 1;
         if (roll > PERCENT) return;
-        HealUtil.healPlayer(HEAL_AMOUNT, player, player, false, this);
+        healPlayer(player, player, HEAL_AMOUNT, this);
         for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
             if (!isValidAlly(player, en)) continue;
-            HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, player, false, this);
+            healPlayer(player, (Player) en, HEAL_AMOUNT, this);
         }
     }
 

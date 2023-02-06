@@ -7,7 +7,6 @@ public enum RunicStatusEffect {
     DISARM(false, "disarmed!", Sound.ENTITY_ITEM_BREAK),
     INVULNERABILITY(true, "invulnerability!", Sound.ITEM_TOTEM_USE),
     ROOT(false, "rooted!", Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR),
-    SHIELD(true, "a shield!", Sound.BLOCK_ANVIL_USE),
     SILENCE(false, "silenced!", Sound.ENTITY_CHICKEN_DEATH),
     SPEED_I(true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),
     SPEED_II(true, "speed!", Sound.ENTITY_FIREWORK_ROCKET_BLAST),

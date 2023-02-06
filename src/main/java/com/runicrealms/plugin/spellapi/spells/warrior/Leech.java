@@ -5,7 +5,6 @@ import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -30,20 +29,20 @@ public class Leech extends Spell implements HealingSpell {
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
         // particles, sounds
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 0.5f, 0.5f);
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 1.0f);
-        Cone.coneEffect(pl, Particle.REDSTONE, BUFF_DURATION, 0, 20L, Color.RED);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WANDERING_TRADER_DRINK_POTION, 0.5f, 0.5f);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 0.5f, 1.0f);
+        Cone.coneEffect(player, Particle.REDSTONE, BUFF_DURATION, 0, 20L, Color.RED);
 
         // apply effect
-        leechers.add(pl.getUniqueId());
+        leechers.add(player.getUniqueId());
 
         // remove buff
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, () -> {
-            pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.5f, 1.0f);
-            leechers.remove(pl.getUniqueId());
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CONDUIT_DEACTIVATE, 0.5f, 1.0f);
+            leechers.remove(player.getUniqueId());
         }, BUFF_DURATION * 20L);
     }
 
@@ -61,11 +60,11 @@ public class Leech extends Spell implements HealingSpell {
      * Activate on-hit effects
      */
     @EventHandler
-    public void onSuccessfulHit(PhysicalDamageEvent e) {
-        if (!leechers.contains(e.getPlayer().getUniqueId())) return;
-        if (e.isCancelled()) return;
-        Player pl = e.getPlayer();
-        HealUtil.healPlayer(HEAL_AMT, pl, pl, false, this);
+    public void onSuccessfulHit(PhysicalDamageEvent event) {
+        if (!leechers.contains(event.getPlayer().getUniqueId())) return;
+        if (event.isCancelled()) return;
+        Player player = event.getPlayer();
+        healPlayer(player, player, HEAL_AMT, this);
     }
 }
 

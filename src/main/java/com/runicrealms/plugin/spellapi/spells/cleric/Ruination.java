@@ -6,7 +6,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.ChatColor;
@@ -64,7 +63,7 @@ public class Ruination extends Spell implements HealingSpell, MagicDamageSpell {
                     }
                     if (incrementDuration && duration[0] < MAX_DURATION) {
                         duration[0] += 1;
-                        HealUtil.healPlayer(HEAL, player, player, false, spell);
+                        healPlayer(player, player, HEAL, spell);
                     }
                 }
             }

@@ -4,7 +4,6 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -75,7 +74,7 @@ public class Lightwell extends Spell implements HealingSpell {
                 for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                     if (isValidAlly(player, entity) && !UnholyWater.getThrownPotionSet().contains(event.getPotion())) { // Unholy Water cannot heal
                         if (entity.equals(player)) continue; // does not heal self
-                        HealUtil.healPlayer(HEAL_AMT, (Player) entity, player, false, spell);
+                        healPlayer(player, (Player) entity, HEAL_AMT, spell);
                     } else if (isValidEnemy(player, entity)) {
                         entity.getWorld().spawnParticle(Particle.REDSTONE, ((LivingEntity) entity).getEyeLocation(), 5, 0.5f, 0.5f, 0.5f,
                                 new Particle.DustOptions(Color.BLACK, 1));

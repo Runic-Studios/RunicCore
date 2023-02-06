@@ -77,6 +77,14 @@ public interface ISpell {
     boolean hasStatusEffect(UUID uuid, RunicStatusEffect runicStatusEffect);
 
     /**
+     * @param caster    who cast the spell
+     * @param recipient to receive the healing
+     * @param amount    amount to be healed before gem or buff calculations
+     * @param spell     an optional reference to some spell for spell scaling
+     */
+    void healPlayer(Player caster, Player recipient, double amount, Spell... spell);
+
+    /**
      * Check whether the current spell is on cooldown (use 'this')
      *
      * @param player to check

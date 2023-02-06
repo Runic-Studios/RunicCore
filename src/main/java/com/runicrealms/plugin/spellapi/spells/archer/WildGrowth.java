@@ -7,7 +7,6 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import org.bukkit.*;
 import org.bukkit.block.data.Bisected;
@@ -46,7 +45,7 @@ public class WildGrowth extends Spell implements HealingSpell {
                     for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS)) {
                         if (!isValidAlly(player, entity)) continue;
                         Player playerEntity = (Player) entity;
-                        HealUtil.healPlayer(HEAL_AMT / DURATION, playerEntity, player, false, spell);
+                        healPlayer(player, playerEntity, HEAL_AMT / DURATION, spell);
                     }
                 }
             }

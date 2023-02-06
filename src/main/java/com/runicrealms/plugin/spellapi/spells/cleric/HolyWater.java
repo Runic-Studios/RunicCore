@@ -5,7 +5,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -98,11 +97,11 @@ public class HolyWater extends Spell implements HealingSpell, MagicDamageSpell {
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 0.5F);
         expiredBomb.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_BOTTLE_THROW, 0.5F, 1.0F);
 
-        for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (isValidAlly(player, en))
-                HealUtil.healPlayer(HEAL_AMT, (Player) en, player, false, this);
-            if (isValidEnemy(player, en))
-                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) en), player, this);
+        for (Entity entity : player.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
+            if (isValidAlly(player, entity))
+                healPlayer(player, (Player) entity, HEAL_AMT, this);
+            if (isValidEnemy(player, entity))
+                DamageUtil.damageEntitySpell(DAMAGE, ((LivingEntity) entity), player, this);
         }
     }
 }

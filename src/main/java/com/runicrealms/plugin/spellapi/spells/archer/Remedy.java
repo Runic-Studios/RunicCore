@@ -5,7 +5,6 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -65,7 +64,7 @@ public class Remedy extends Spell implements HealingSpell {
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PARROT_AMBIENT, 0.5f, 0.2f);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.25f, 0.2f);
                     createSphere(player, player.getEyeLocation());
-                    HealUtil.healPlayer(HEAL_AMT, player, player, false, spell);
+                    healPlayer(player, player, HEAL_AMT, spell);
                     for (PotionEffect effect : player.getActivePotionEffects()) {
                         if (effect.getType() == PotionEffectType.SLOW)
                             player.removePotionEffect(effect.getType());
@@ -78,7 +77,7 @@ public class Remedy extends Spell implements HealingSpell {
                             if (effect.getType() == PotionEffectType.SLOW)
                                 playerEntity.removePotionEffect(effect.getType());
                         }
-                        HealUtil.healPlayer(HEAL_AMT / DURATION, playerEntity, player, false, spell);
+                        healPlayer(player, playerEntity, HEAL_AMT / DURATION, spell);
                     }
                 }
             }

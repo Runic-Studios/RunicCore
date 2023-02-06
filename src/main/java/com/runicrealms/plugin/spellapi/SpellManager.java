@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.SpellAPI;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.spellapi.spells.Consumable;
 import com.runicrealms.plugin.spellapi.spells.Potion;
@@ -12,19 +13,19 @@ import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.HologramUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpellManager implements Listener, SpellAPI {
@@ -108,6 +109,47 @@ public class SpellManager implements Listener, SpellAPI {
         } else {
             return null;
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        // Call our custom heal event for interaction with buffs/de buffs
+        SpellHealEvent event = spell.length > 0
+                ? new SpellHealEvent((int) amount, recipient, caster, spell)
+                : new SpellHealEvent((int) amount, recipient, caster);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        amount = event.getAmount();
+
+        double newHP = recipient.getHealth() + amount;
+        double difference = recipient.getMaxHealth() - recipient.getHealth();
+
+        // If they are missing less than healAmt
+        if (newHP > recipient.getMaxHealth()) {
+
+            recipient.setHealth(recipient.getMaxHealth());
+
+            if (difference == (int) difference) {
+                if (difference <= 0) {
+                    return;
+                }
+            }
+
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.GREEN;
+            HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), chatColor + "+" + (int) difference + " ❤✦");
+
+        } else {
+
+            recipient.setHealth(newHP);
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.GREEN;
+            HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), chatColor + "+" + (int) amount + " ❤✦");
+        }
+        recipient.playSound(recipient.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 0.5f);
+        recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 3, 0.35F, 0.35F, 0.35F, 0);
+
+        // Call a new health regen event
+        Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, amount, EntityRegainHealthEvent.RegainReason.CUSTOM));
     }
 
     @Override
