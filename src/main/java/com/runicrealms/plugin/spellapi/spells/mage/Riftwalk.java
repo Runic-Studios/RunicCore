@@ -14,14 +14,14 @@ import org.bukkit.event.EventPriority;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class Foresight extends Spell {
+public class Riftwalk extends Spell {
 
     private static final int DURATION = 2;
     private static final double PERCENT_REDUCTION = .5;
     private static final HashSet<UUID> doomers = new HashSet<>();
 
-    public Foresight() {
-        super("Foresight",
+    public Riftwalk() {
+        super("Riftwalk",
                 "After casting your &aBlink &7spell, " +
                         "you gain " + (int) (PERCENT_REDUCTION * 100) + "% " +
                         "damage reduction for " + DURATION + "s!",

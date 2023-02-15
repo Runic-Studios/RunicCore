@@ -76,7 +76,10 @@ public class Slam extends Spell implements PhysicalDamageSpell {
         velocity.multiply(new Vector(0.6D, 0.8D, 0.6D));
 
         player.setVelocity(velocity);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> slamTasks.get(player.getUniqueId()).cancel(), 120L); // insurance
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+            if (slamTasks.get(player.getUniqueId()) != null)
+                slamTasks.get(player.getUniqueId()).cancel();
+        }, 120L); // insurance
 
         new BukkitRunnable() {
             @Override

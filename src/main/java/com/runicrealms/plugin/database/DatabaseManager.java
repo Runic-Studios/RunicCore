@@ -2,6 +2,7 @@ package com.runicrealms.plugin.database;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.ReadConcern;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
@@ -65,7 +66,8 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
                 .applyToSocketSettings(builder -> builder.connectTimeout(30, TimeUnit.SECONDS))
                 .applyConnectionString(connString)
                 .retryWrites(true)
-                .writeConcern(WriteConcern.W2)
+                .readConcern(ReadConcern.MAJORITY)
+                .writeConcern(WriteConcern.MAJORITY)
                 .build();
 
         // create a client (keep it open / alive)

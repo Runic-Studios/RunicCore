@@ -272,6 +272,7 @@ public class DamageListener implements Listener {
                 // successful damage
                 if (((Player) damager).getCooldown(artifact.getType()) != 0)
                     return;
+                damager.getWorld().playSound(damager.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);
                 DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
                 ((Player) damager).setCooldown(artifact.getType(), 10);
                 // ---------------------------

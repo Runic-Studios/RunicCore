@@ -37,7 +37,7 @@ public class AimedShot extends Spell implements PhysicalDamageSpell {
                         "(" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
                         + "x&7 lvl)" + " physical⚔ damage! " +
                         "Cannot reach a target father than " + MAX_DIST + " blocks.",
-                ChatColor.WHITE, CharacterClass.ARCHER, 1, 35); // todo: 18
+                ChatColor.WHITE, CharacterClass.ARCHER, 18, 35);
         aimedPlayers = new HashSet<>();
     }
 

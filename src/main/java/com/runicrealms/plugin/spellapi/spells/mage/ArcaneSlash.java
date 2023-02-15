@@ -36,8 +36,8 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.5f, 1.0f);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITCH_DEATH, 0.5f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
@@ -54,8 +54,7 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell {
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
             SlashEffect.slashHorizontal(player, Particle.SPELL_WITCH);
-            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
-//            livingEntity.getWorld().spawnParticle(Particle.SOUL, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
             targets.forEach(target -> DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) target, player, this));
