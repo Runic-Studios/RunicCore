@@ -90,7 +90,7 @@ public class Stormborn extends Spell {
             stormPlayers.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;

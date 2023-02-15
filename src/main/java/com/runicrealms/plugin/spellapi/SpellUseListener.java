@@ -138,18 +138,24 @@ public class SpellUseListener implements Listener {
         return selectedSpell;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onSpellCast(SpellCastEvent event) {
-        if (!event.isCancelled() && event.willExecute())
-            event.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
+        if (event.isCancelled()) return;
+        if (event.willExecute()) {
+            boolean willCast = event.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
+            if (!willCast)
+                event.setCancelled(true);
+        } else {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
-    public void onSpellCast(PlayerItemHeldEvent e) {
-        if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
-        if (e.getNewSlot() != 0) return;
-        e.setCancelled(true);
-        castSpell(e.getPlayer(), 1, RunicCore.getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
+    public void onSpellCast(PlayerItemHeldEvent event) {
+        if (!casters.containsKey(event.getPlayer().getUniqueId())) return;
+        if (event.getNewSlot() != 0) return;
+        event.setCancelled(true);
+        castSpell(event.getPlayer(), 1, RunicCore.getCharacterAPI().getPlayerClass(event.getPlayer()).equalsIgnoreCase("archer"));
     }
 
     @EventHandler

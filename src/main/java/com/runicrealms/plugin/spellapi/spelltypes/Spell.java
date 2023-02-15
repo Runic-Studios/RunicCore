@@ -47,9 +47,9 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
-    public void execute(Player player, SpellItemType type) {
+    public boolean execute(Player player, SpellItemType type) {
 
-        if (isOnCooldown(player)) return; // ensure spell is not on cooldown
+        if (isOnCooldown(player)) return false; // ensure spell is not on cooldown
         UUID uuid = player.getUniqueId();
 
         // verify class
@@ -59,10 +59,10 @@ public abstract class Spell implements ISpell, Listener {
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             ActionBarUtil.sendTimedMessage(player, "&cYour class cannot cast this spell!", 3);
-            return;
+            return false;
         }
 
-        if (!this.attemptToExecute(player)) return; // check additional conditions
+        if (!this.attemptToExecute(player)) return false; // check additional conditions (being on ground)
 
         // cast the spell
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
@@ -70,6 +70,7 @@ public abstract class Spell implements ISpell, Listener {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
         RunicCore.getSpellAPI().addCooldown(player, this, this.getCooldown());
         this.executeSpell(player, type);
+        return true;
     }
 
     @Override

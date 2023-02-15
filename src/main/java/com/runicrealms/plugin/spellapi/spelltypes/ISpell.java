@@ -21,12 +21,13 @@ public interface ISpell {
     void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double duration, boolean displayMessage);
 
     /**
-     * Casts the actual spell effect
+     * Casts the actual spell effect, checks additional conditions (like being on ground)
      *
      * @param player who cast the spell
      * @param type   the type of spell item (artifact usually now)
+     * @return true if spell will cast
      */
-    void execute(Player player, SpellItemType type);
+    boolean execute(Player player, SpellItemType type);
 
     /**
      * @return The color associated with the spell. Typically, always WHITE
