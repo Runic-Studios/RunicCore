@@ -8,6 +8,7 @@ import com.runicrealms.runicitems.item.RunicItemGeneric;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,7 +22,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class RuneListener implements Listener {
 
@@ -72,11 +72,11 @@ public class RuneListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onRuneUse(PlayerInteractEvent event) {
-
+        if (event.useInteractedBlock() == Event.Result.DENY && event.useItemInHand() == Event.Result.DENY)
+            return;
         Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
 
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;

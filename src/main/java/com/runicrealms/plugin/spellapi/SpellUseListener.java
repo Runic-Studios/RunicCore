@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -164,21 +165,23 @@ public class SpellUseListener implements Listener {
         castSpell(e.getPlayer(), 4, RunicCore.getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
-    @EventHandler
-    public void onWeaponInteract(PlayerInteractEvent e) {
-        // if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        WeaponType heldItemType = WeaponType.matchType(e.getPlayer().getInventory().getItemInMainHand());
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onWeaponInteract(PlayerInteractEvent event) {
+        if (event.useInteractedBlock() == Event.Result.DENY && event.useItemInHand() == Event.Result.DENY)
+            return;
+        // if (CAST_MENU_CASTERS.contains(event.getPlayer().getUniqueId())) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        WeaponType heldItemType = WeaponType.matchType(event.getPlayer().getInventory().getItemInMainHand());
         if (heldItemType == WeaponType.NONE) return;
         if (heldItemType == WeaponType.GATHERING_TOOL) return;
-        if (!DamageListener.matchClass(e.getPlayer(), false)) return;
-        Player player = e.getPlayer();
+        if (!DamageListener.matchClass(event.getPlayer(), false)) return;
+        Player player = event.getPlayer();
         String className = RunicCore.getCharacterAPI().getPlayerClass(player); // lowercase
         boolean isArcher = className.equalsIgnoreCase("archer");
-        if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.LEFT, 2, isArcher);
-        else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
     }
 
