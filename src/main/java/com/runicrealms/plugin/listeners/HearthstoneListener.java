@@ -6,7 +6,9 @@ import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -81,11 +83,11 @@ public class HearthstoneListener implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 0, 20);
     }
 
-    @EventHandler
-    public void onHearthstoneUse(PlayerInteractEvent e) {
-
-        Player player = e.getPlayer();
-        UUID uuid = player.getUniqueId();
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onHearthstoneUse(PlayerInteractEvent event) {
+        if (event.useInteractedBlock() == Event.Result.DENY && event.useItemInHand() == Event.Result.DENY)
+            return;
+        Player player = event.getPlayer();
 
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
@@ -97,8 +99,8 @@ public class HearthstoneListener implements Listener {
         if (hearthstone == null) return;
 
         // annoying 1.9 feature which makes the event run twice, once for each hand
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         // cancel the event if the hearthstone has no location
         String location = RunicItemsAPI.getRunicItemFromItemStack(hearthstone).getData().get("location");

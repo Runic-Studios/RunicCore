@@ -166,7 +166,6 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
                     if (System.currentTimeMillis() - startTime > (duration * 1000)) {
                         statusEffectMap.get(uuid).remove(runicStatusEffect);
                         if (statusEffectMap.get(uuid).isEmpty()) {
-                            Bukkit.broadcastMessage("removing status effect");
                             statusEffectMap.remove(uuid);
                         }
                     }
