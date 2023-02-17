@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
 
@@ -83,6 +84,9 @@ public class SpellGUIListener implements Listener {
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellField());
+        }
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            playerSpellData.writeToJedis(jedis, RunicCore.getCharacterAPI().getCharacterSlot(uuid));
         }
     }
 }
