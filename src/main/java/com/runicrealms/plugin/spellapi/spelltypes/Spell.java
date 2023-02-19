@@ -151,6 +151,11 @@ public abstract class Spell implements ISpell, Listener {
         return RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
     }
 
+    @Override
+    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        RunicCore.getSpellAPI().shieldPlayer(caster, recipient, amount, spell);
+    }
+
     public boolean attemptToExecute(Player player) {
         return true;
     }

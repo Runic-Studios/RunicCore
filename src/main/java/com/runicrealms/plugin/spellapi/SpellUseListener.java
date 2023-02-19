@@ -11,7 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -165,11 +164,8 @@ public class SpellUseListener implements Listener {
         castSpell(e.getPlayer(), 4, RunicCore.getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onWeaponInteract(PlayerInteractEvent event) {
-        if (event.useInteractedBlock() == Event.Result.DENY && event.useItemInHand() == Event.Result.DENY)
-            return;
-        // if (CAST_MENU_CASTERS.contains(event.getPlayer().getUniqueId())) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         WeaponType heldItemType = WeaponType.matchType(event.getPlayer().getInventory().getItemInMainHand());
@@ -181,8 +177,9 @@ public class SpellUseListener implements Listener {
         boolean isArcher = className.equalsIgnoreCase("archer");
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.LEFT, 2, isArcher);
-        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
+        }
     }
 
     enum ClickType {

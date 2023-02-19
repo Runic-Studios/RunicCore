@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
@@ -17,19 +18,22 @@ import org.bukkit.util.RayTraceResult;
 
 import java.util.Collection;
 
-public class ArcaneSlash extends Spell implements MagicDamageSpell {
+public class ArcaneSlash extends Spell implements MagicDamageSpell, ShieldingSpell {
     private static final int DAMAGE = 30;
     private static final int MAX_DIST = 2;
+    private static final int SHIELD = 50;
     private static final double BEAM_WIDTH = 2;
     private static final double DAMAGE_PER_LEVEL = 0.5;
+    private static final double SHIELD_PER_LEVEL = 1.0;
 
     public ArcaneSlash() {
         super("Arcane Slash",
                 "You slash in a line in front of you, " +
-                        "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) magicʔ damage to all enemies. " +
+                        "dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
+                        "x&7 lvl) magicʔ damage to all enemies. " +
                         "If you hit at least one enemy, gain a " +
-                        "shield equal to (50 + 1.0 x lvl) health!",
+                        "shield equal to (" + SHIELD + " + &f" + SHIELD_PER_LEVEL +
+                        "x&7 lvl) health!",
                 ChatColor.WHITE, CharacterClass.MAGE, 10, 20);
 
     }
@@ -58,7 +62,9 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell {
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
             targets.forEach(target -> DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) target, player, this));
-            // todo: shield effect
+            if (targets.size() > 0) {
+                shieldPlayer(player, player, SHIELD, this);
+            }
         }
     }
 
@@ -68,5 +74,14 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell {
     }
 
 
+    @Override
+    public int getShield() {
+        return SHIELD;
+    }
+
+    @Override
+    public double getShieldingPerLevel() {
+        return SHIELD_PER_LEVEL;
+    }
 }
 

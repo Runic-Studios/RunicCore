@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.api.event;
 
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -13,10 +12,9 @@ import org.bukkit.event.HandlerList;
 public class SpellShieldEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
-    private final Entity entity;
+    private final Player recipient;
     private final Spell spell;
     private int amount;
-    private boolean isCritical;
     private boolean isCancelled;
 
     /**
@@ -25,12 +23,11 @@ public class SpellShieldEvent extends Event implements Cancellable {
      * @param caster    who cast the spell
      * @param spell     optional parameter to specify which spell caused the shield. if specified, activates auto-scaling based on shield-per-level
      */
-    public SpellShieldEvent(int amount, Entity recipient, Player caster, Spell... spell) {
+    public SpellShieldEvent(int amount, Player recipient, Player caster, Spell... spell) {
         this.amount = amount;
-        this.entity = recipient;
+        this.recipient = recipient;
         this.player = caster;
         this.spell = spell.length > 0 ? spell[0] : null;
-        this.isCritical = false;
         this.isCancelled = false;
     }
 
@@ -46,10 +43,6 @@ public class SpellShieldEvent extends Event implements Cancellable {
         this.amount = amount;
     }
 
-    public Entity getEntity() {
-        return this.entity;
-    }
-
     @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
@@ -58,6 +51,10 @@ public class SpellShieldEvent extends Event implements Cancellable {
 
     public Player getPlayer() {
         return this.player;
+    }
+
+    public Player getRecipient() {
+        return this.recipient;
     }
 
     public Spell getSpell() {
@@ -74,11 +71,4 @@ public class SpellShieldEvent extends Event implements Cancellable {
         this.isCancelled = arg0;
     }
 
-    public boolean isCritical() {
-        return this.isCritical;
-    }
-
-    public void setCritical(boolean isCritical) {
-        this.isCritical = isCritical;
-    }
 }

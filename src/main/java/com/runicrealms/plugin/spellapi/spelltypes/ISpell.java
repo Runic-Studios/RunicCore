@@ -128,5 +128,13 @@ public interface ISpell {
      * @return true if an effect was removed
      */
     boolean removeStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect);
+
+    /**
+     * @param caster    who cast the spell
+     * @param recipient to receive the shield
+     * @param amount    amount to be shielded before gem or buff calculations
+     * @param spell     an optional reference to some spell for spell scaling
+     */
+    void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell);
 }
 

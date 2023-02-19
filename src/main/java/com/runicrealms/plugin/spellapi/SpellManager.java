@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.SpellAPI;
+import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.model.PlayerSpellData;
 import com.runicrealms.plugin.spellapi.spells.Consumable;
@@ -29,14 +30,15 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpellManager implements Listener, SpellAPI {
-
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
+    private final Map<UUID, Double> shieldedPlayers;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldownMap = new ConcurrentHashMap<>();
+        this.shieldedPlayers = new HashMap<>();
         this.registerSpells();
         this.startCooldownTask();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -95,6 +97,11 @@ public class SpellManager implements Listener, SpellAPI {
             // haha sky is lazy
         }
         return spellToCast;
+    }
+
+    @Override
+    public Map<UUID, Double> getShieldedPlayers() {
+        return this.shieldedPlayers;
     }
 
     @Override
@@ -166,6 +173,11 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
+    public boolean isShielded(Player player) {
+        return this.shieldedPlayers.containsKey(player.getUniqueId());
+    }
+
+    @Override
     public void reduceCooldown(Player player, Spell spell, double duration) {
         if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
@@ -184,6 +196,15 @@ public class SpellManager implements Listener, SpellAPI {
         long durationToReduce = (long) (duration * 1000);
         playerSpellsOnCooldown.put(spellOptional.get(), playerSpellsOnCooldown.get(spellOptional.get()) - durationToReduce);
         this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        // Call our custom shield event for interaction with buffs/de buffs
+        SpellShieldEvent event = spell.length > 0
+                ? new SpellShieldEvent((int) amount, recipient, caster, spell)
+                : new SpellShieldEvent((int) amount, recipient, caster);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public Spell getSpellByName(String name) {

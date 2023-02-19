@@ -4,6 +4,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,11 @@ public interface SpellAPI {
      * @return a Spell object to be used elsewhere
      */
     Spell getPlayerSpell(Player player, int number);
+
+    /**
+     * @return a list of players currently affected by shields
+     */
+    Map<UUID, Double> getShieldedPlayers();
 
     /**
      * Get the spell object matching name
@@ -68,6 +74,14 @@ public interface SpellAPI {
     boolean isOnCooldown(Player player, String spellName);
 
     /**
+     * Check if the current player is affected by a shield spell
+     *
+     * @param player to check
+     * @return true if the player has a shield
+     */
+    boolean isShielded(Player player);
+
+    /**
      * Reduces the cooldown of the given spell for the player by the duration (CDR)
      *
      * @param player   who cast the spell
@@ -84,5 +98,13 @@ public interface SpellAPI {
      * @param duration the duration to reduce the CD (in seconds, so 0.5 for half sec)
      */
     void reduceCooldown(Player player, String spell, double duration);
+
+    /**
+     * @param caster    who cast the spell
+     * @param recipient to receive the shield
+     * @param amount    amount to be healed before gem or buff calculations
+     * @param spell     an optional reference to some spell for spell scaling
+     */
+    void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell);
 
 }
