@@ -29,9 +29,11 @@ public interface SpellAPI {
     Spell getPlayerSpell(Player player, int number);
 
     /**
+     * Maps a player UUID to a pair of double (the shield amount) and long (the time the shield was applied)
+     *
      * @return a list of players currently affected by shields
      */
-    Map<UUID, Double> getShieldedPlayers();
+    Map<UUID, Pair<Double, Long>> getShieldedPlayers();
 
     /**
      * Get the spell object matching name
@@ -76,10 +78,10 @@ public interface SpellAPI {
     /**
      * Check if the current player is affected by a shield spell
      *
-     * @param player to check
+     * @param uuid of player to check
      * @return true if the player has a shield
      */
-    boolean isShielded(Player player);
+    boolean isShielded(UUID uuid);
 
     /**
      * Reduces the cooldown of the given spell for the player by the duration (CDR)

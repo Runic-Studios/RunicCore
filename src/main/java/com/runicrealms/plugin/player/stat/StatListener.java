@@ -1,18 +1,19 @@
 package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class StatListener implements Listener {
-
     private static final float DEFAULT_SPEED = 0.2f;
 
     @EventHandler
@@ -86,7 +87,7 @@ public class StatListener implements Listener {
     }
 
     @EventHandler
-    public void onSpellHealing(SpellHealEvent event) {
+    public void onSpellHeal(SpellHealEvent event) {
         if (event.getSpell() == null) return; // potions, other effects
         UUID uuid = event.getPlayer().getUniqueId();
         double healAmountBonusPercent = Stat.getSpellHealingMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
@@ -96,6 +97,14 @@ public class StatListener implements Listener {
             event.setCritical(true);
             event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onSpellShield(SpellShieldEvent event) {
+        if (event.getSpell() == null) return; // potions, other effects
+        UUID uuid = event.getPlayer().getUniqueId();
+        double shieldAmountBonusPercent = Stat.getSpellShieldingMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
+        event.setAmount((int) (event.getAmount() + Math.ceil(event.getAmount() * shieldAmountBonusPercent)));
     }
 
     @EventHandler

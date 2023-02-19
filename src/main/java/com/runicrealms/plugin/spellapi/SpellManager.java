@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
@@ -32,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpellManager implements Listener, SpellAPI {
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
-    private final Map<UUID, Double> shieldedPlayers;
+    private final Map<UUID, Pair<Double, Long>> shieldedPlayers;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
@@ -100,7 +101,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Map<UUID, Double> getShieldedPlayers() {
+    public Map<UUID, Pair<Double, Long>> getShieldedPlayers() {
         return this.shieldedPlayers;
     }
 
@@ -173,8 +174,8 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public boolean isShielded(Player player) {
-        return this.shieldedPlayers.containsKey(player.getUniqueId());
+    public boolean isShielded(UUID uuid) {
+        return this.shieldedPlayers.containsKey(uuid);
     }
 
     @Override

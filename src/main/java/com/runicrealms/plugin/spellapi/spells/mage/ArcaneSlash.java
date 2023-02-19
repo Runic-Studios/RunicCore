@@ -34,7 +34,7 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell, ShieldingSpe
                         "If you hit at least one enemy, gain a " +
                         "shield equal to (" + SHIELD + " + &f" + SHIELD_PER_LEVEL +
                         "x&7 lvl) health!",
-                ChatColor.WHITE, CharacterClass.MAGE, 10, 20);
+                ChatColor.WHITE, CharacterClass.MAGE, 1, 20); // todo: 10
 
     }
 
