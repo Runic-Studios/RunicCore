@@ -19,10 +19,10 @@ import org.bukkit.util.RayTraceResult;
 import java.util.Collection;
 
 public class ArcaneSlash extends Spell implements MagicDamageSpell, ShieldingSpell {
+    public static final int MAX_DIST = 2;
+    public static final double BEAM_WIDTH = 2;
     private static final int DAMAGE = 30;
-    private static final int MAX_DIST = 2;
     private static final int SHIELD = 50;
-    private static final double BEAM_WIDTH = 2;
     private static final double DAMAGE_PER_LEVEL = 0.5;
     private static final double SHIELD_PER_LEVEL = 1.0;
 

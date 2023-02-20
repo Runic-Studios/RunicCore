@@ -15,16 +15,17 @@ import java.util.HashSet;
 import java.util.UUID;
 
 public class Riftwalk extends Spell {
-
     private static final int DURATION = 2;
     private static final double PERCENT_REDUCTION = .5;
     private static final HashSet<UUID> doomers = new HashSet<>();
 
     public Riftwalk() {
         super("Riftwalk",
-                "After casting your &aBlink &7spell, " +
-                        "you gain " + (int) (PERCENT_REDUCTION * 100) + "% " +
-                        "damage reduction for " + DURATION + "s!",
+                "Upon exiting your &aBlink &7spell, " +
+                        "you blast all enemies within 5 blocks " +
+                        "with arcane magic, dealing 20 + (3 x lvl) " +
+                        "magic damage! If Riftwalk successfully hits " +
+                        "a target, reduce the cooldown of &aBlink &7by 3s!",
                 ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
