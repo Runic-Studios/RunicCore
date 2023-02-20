@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
@@ -14,6 +13,7 @@ import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
+import com.runicrealms.plugin.spellapi.spelltypes.Shield;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpellManager implements Listener, SpellAPI {
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
-    private final Map<UUID, Pair<Double, Long>> shieldedPlayers;
+    private final HashMap<UUID, Shield> shieldedPlayers;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
@@ -101,7 +101,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public Map<UUID, Pair<Double, Long>> getShieldedPlayers() {
+    public HashMap<UUID, Shield> getShieldedPlayers() {
         return this.shieldedPlayers;
     }
 
