@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -65,6 +66,16 @@ public class ShieldListener implements Listener {
             removeShield(player, shieldedPlayers);
         }
         return shieldLeftOver;
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onGenericDamage(GenericDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!(event.getVictim() instanceof Player)) return;
+        Player victim = (Player) event.getVictim();
+        if (!RunicCore.getSpellAPI().isShielded(victim.getUniqueId())) return;
+        int shieldLeftOver = (int) damageShield(victim, event.getAmount());
+        event.setAmount(Math.min(shieldLeftOver, 0)); // Deal leftover damage if shield is negative
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // runs after stat calculations
