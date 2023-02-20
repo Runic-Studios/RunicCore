@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.ShieldBreakEvent;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
@@ -60,7 +61,8 @@ public class ShieldListener implements Listener {
         double shieldLeftOver = shield - damage;
         if (shieldLeftOver > 0) {
             player.setAbsorptionAmount(shieldLeftOver / HALF_HEART_AMOUNT);
-            shieldedPlayers.put(player.getUniqueId(), new Shield(shieldLeftOver, System.currentTimeMillis()));
+            shieldedPlayers.get(player.getUniqueId()).setAmount(shieldLeftOver);
+            shieldedPlayers.get(player.getUniqueId()).setStartTime(System.currentTimeMillis());
         } else if (shieldLeftOver <= 0) {
             // Shield was broken and there's leftover damage
             removeShield(player, shieldedPlayers);
@@ -133,15 +135,26 @@ public class ShieldListener implements Listener {
         HashMap<UUID, Shield> shieldedPlayers = RunicCore.getSpellAPI().getShieldedPlayers();
         if (shieldedPlayers.containsKey(recipient.getUniqueId())) {
             Shield oldShield = shieldedPlayers.get(recipient.getUniqueId());
-            shieldedPlayers.put(recipient.getUniqueId(), new Shield((amount + oldShield.getAmount()), System.currentTimeMillis()));
+            shieldedPlayers.get(recipient.getUniqueId()).setAmount(amount + oldShield.getAmount());
+            shieldedPlayers.get(recipient.getUniqueId()).setStartTime(System.currentTimeMillis());
+            shieldedPlayers.get(recipient.getUniqueId()).addSource(caster.getUniqueId());
         } else {
-            shieldedPlayers.put(recipient.getUniqueId(), new Shield(amount, System.currentTimeMillis()));
+            shieldedPlayers.put(recipient.getUniqueId(), new Shield(amount, System.currentTimeMillis(), caster.getUniqueId()));
         }
         double currentAmount = shieldedPlayers.get(recipient.getUniqueId()).getAmount();
         recipient.setAbsorptionAmount(currentAmount / HALF_HEART_AMOUNT);
         HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), ChatColor.YELLOW + "+" + amount + " ❤✦");
         recipient.playSound(recipient.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 0.5f);
         recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 3, 0.35F, 0.35F, 0.35F, 0);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onShieldBreak(ShieldBreakEvent event) {
+        if (event.isCancelled()) return;
+        Player player = event.getPlayer();
+        player.setAbsorptionAmount(0);
+        RunicCore.getSpellAPI().getShieldedPlayers().remove(player.getUniqueId());
+        player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f);
     }
 
     /**
@@ -151,8 +164,6 @@ public class ShieldListener implements Listener {
      * @param shieldedPlayers the map of all shields
      */
     private void removeShield(Player player, Map<UUID, Shield> shieldedPlayers) {
-        player.setAbsorptionAmount(0);
-        shieldedPlayers.remove(player.getUniqueId());
-        player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f);
+        Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(player, shieldedPlayers.get(player.getUniqueId())));
     }
 }

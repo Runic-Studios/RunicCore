@@ -25,14 +25,12 @@ import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpectralBlade extends Spell {
-    private static final int DURATION = 2;
 
     public SpectralBlade() {
         super("Spectral Blade",
                 "While you are shielded, your basic attacks " +
                         "have the same hitbox as &aArcane Slash &7and deal " +
-                        "magic damage instead! After losing your shield, " +
-                        "this effect persists for another " + DURATION + "s before ending.",
+                        "magic damage instead!",
                 ChatColor.WHITE, CharacterClass.MAGE, 0, 0);
         this.setIsPassive(true);
     }
