@@ -43,19 +43,25 @@ public class Riftwalk extends Spell implements MagicDamageSpell {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (!(event.getSpell() instanceof Blink)) return;
-        boolean foundEnemy = false;
         Player caster = event.getCaster();
-        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.2f);
-        for (Entity entity : event.getCaster().getWorld().getNearbyEntities
-                (event.getCaster().getLocation(), RADIUS, RADIUS, RADIUS,
-                        target -> isValidEnemy(event.getCaster(), target))) {
-            DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, event.getCaster(), this);
-            foundEnemy = true;
-        }
+
         // Delay CDR, particle by one tick
-        if (foundEnemy) {
-            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), "Blink", COOLDOWN_REDUCTION), 1L);
-        }
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> {
+                    boolean foundEnemy = false;
+                    caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 0.2f);
+                    for (Entity entity : event.getCaster().getWorld().getNearbyEntities
+                            (event.getCaster().getLocation(), RADIUS, RADIUS, RADIUS,
+                                    target -> isValidEnemy(event.getCaster(), target))) {
+                        DamageUtil.damageEntitySpell(DAMAGE, (LivingEntity) entity, event.getCaster(), this);
+                        foundEnemy = true;
+                    }
+                    if (foundEnemy) {
+                        RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), "Blink", COOLDOWN_REDUCTION);
+                    }
+
+                }
+                , 1L);
     }
 
 }

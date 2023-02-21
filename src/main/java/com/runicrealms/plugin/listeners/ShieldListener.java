@@ -154,7 +154,7 @@ public class ShieldListener implements Listener {
         Player player = event.getPlayer();
         player.setAbsorptionAmount(0);
         RunicCore.getSpellAPI().getShieldedPlayers().remove(player.getUniqueId());
-        player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 0.5f, 1.0f);
+        player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.0f, 0.5f);
     }
 
     /**

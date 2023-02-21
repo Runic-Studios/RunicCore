@@ -271,6 +271,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         titleManager = new TitleManager();
         shopAPI = new RunicItemShopManager();
         statusEffectAPI = new StatusEffectManager();
+        new DaylightCycleListener();
 
         // ACF commands
         commandManager = new PaperCommandManager(this);

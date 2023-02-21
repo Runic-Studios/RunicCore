@@ -19,10 +19,10 @@ import java.util.Collection;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Despair extends Spell implements MagicDamageSpell {
-    private static final int DAMAGE = 30;
+    private static final int DAMAGE = 20;
     private static final int MAX_DIST = 2;
     private static final double BEAM_WIDTH = 2;
-    private static final double DAMAGE_PER_LEVEL = 1.2;
+    private static final double DAMAGE_PER_LEVEL = 1.0;
     private static final double PERCENT = 2.5;
 
     public Despair() {
