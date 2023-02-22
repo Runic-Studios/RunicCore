@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,7 +37,8 @@ public class LootChestManager {
                 String tier = locations.getString(id + ".tier");
                 LootChestTier lootChestTier = LootChestTier.getFromIdentifier(tier);
                 if (lootChestTier == null) continue;
-                World world = Bukkit.getWorld(Objects.requireNonNull(locations.getString(id + ".world")));
+                String worldName = locations.getString(id + ".world");
+                World world = Bukkit.getWorld(worldName);
                 double x = locations.getDouble(id + ".x");
                 double y = locations.getDouble(id + ".y");
                 double z = locations.getDouble(id + ".z");
@@ -114,8 +114,10 @@ public class LootChestManager {
      */
     private void particleTask() {
         for (LootChest lootChest : lootChests) {
-            if (!Objects.requireNonNull(lootChest.getLocation().getWorld()).isChunkLoaded(lootChest.getLocation().getChunk()))
-                continue;
+            if (!lootChest.getLocation().isWorldLoaded()) continue;
+            World world = lootChest.getLocation().getWorld();
+            assert world != null;
+            if (!world.isChunkLoaded(lootChest.getLocation().getChunk())) continue;
             Location location = lootChest.getLocation();
             if (location.getBlock().getType() != Material.CHEST) continue;
             for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {

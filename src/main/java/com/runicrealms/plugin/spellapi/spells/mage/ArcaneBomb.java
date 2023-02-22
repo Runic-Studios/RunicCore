@@ -41,7 +41,8 @@ public class ArcaneBomb extends Spell implements MagicDamageSpell {
     public void executeSpell(Player player, SpellItemType type) {
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        Objects.requireNonNull(meta).setColor(Color.FUCHSIA);
+        assert meta != null;
+        meta.setColor(Color.FUCHSIA);
         item.setItemMeta(meta);
         thrownPotion = player.launchProjectile(ThrownPotion.class);
         thrownPotion.setItem(item);

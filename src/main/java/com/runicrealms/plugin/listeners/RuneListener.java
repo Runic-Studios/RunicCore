@@ -21,8 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
-
 public class RuneListener implements Listener {
 
     private static final String RUNE_TEMPLATE_ID = "rune";
@@ -51,19 +49,19 @@ public class RuneListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
 
         if (event.isCancelled()) return;
-        Player pl = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
         int itemSlot = event.getSlot();
         if (itemSlot != 0) return;
 
         // don't trigger if there's no item in the slot to avoid null issues
-        if (pl.getInventory().getItem(0) == null) return;
-        ItemStack rune = pl.getInventory().getItem(0);
-
-        ItemMeta meta = Objects.requireNonNull(rune).getItemMeta();
+        if (player.getInventory().getItem(0) == null) return;
+        ItemStack rune = player.getInventory().getItem(0);
+        if (rune == null) return;
+        ItemMeta meta = rune.getItemMeta();
         if (meta == null) return;
 
         // only activate in survival mode to save builders the headache
-        if (pl.getGameMode() == GameMode.CREATIVE) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
 
         // only listen for a player inventory
         if (event.getClickedInventory() == null) return;
@@ -89,7 +87,8 @@ public class RuneListener implements Listener {
 
         // annoying 1.9 feature which makes the event run twice, once for each hand
         if (event.getHand() != EquipmentSlot.HAND) return;
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
 
         player.openInventory(new RuneGUI(player).getInventory());
     }

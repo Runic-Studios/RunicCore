@@ -21,7 +21,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,7 +66,8 @@ public class UnholyWater extends Spell implements MagicDamageSpell {
     public void executeSpell(Player player, SpellItemType type) {
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        Objects.requireNonNull(meta).setColor(Color.LIME);
+        assert meta != null;
+        meta.setColor(Color.LIME);
         item.setItemMeta(meta);
         ThrownPotion thrownPotion = player.launchProjectile(ThrownPotion.class);
         thrownPotionSet.add(thrownPotion);
