@@ -5,6 +5,8 @@ import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.event.LeaveReason;
 import com.runicrealms.plugin.party.event.PartyLeaveEvent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -22,7 +24,8 @@ public class PartyCommand extends BaseCommand {
 
     public PartyCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-invite", context -> {
-            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) == null) return new ArrayList<>();
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) == null)
+                return new ArrayList<>();
             if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()).getLeader() != context.getPlayer())
                 return new ArrayList<>();
             Set<String> players = new HashSet<>();
@@ -34,7 +37,8 @@ public class PartyCommand extends BaseCommand {
             return players;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-join", context -> {
-            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) != null) return new ArrayList<>();
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) != null)
+                return new ArrayList<>();
             Set<String> invites = new HashSet<>();
             for (Party party : RunicCore.getPartyAPI().getParties()) {
                 for (Party.Invite invite : party.getInvites()) {
@@ -46,7 +50,8 @@ public class PartyCommand extends BaseCommand {
             return invites;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-kick", context -> {
-            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) == null) return new ArrayList<>();
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) == null)
+                return new ArrayList<>();
             if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()).getLeader() != context.getPlayer())
                 return new ArrayList<>();
             Set<String> members = new HashSet<>();
@@ -101,7 +106,7 @@ public class PartyCommand extends BaseCommand {
 
     @Subcommand("invite|add|i|a")
     @Syntax("<player>")
-    @CommandCompletion("@party-invite")
+    @CommandCompletion("@online")
     @Conditions("is-player")
     public void onCommandInvite(Player player, String[] args) {
         if (args.length < 1) {
@@ -133,7 +138,17 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
             return;
         }
-        invited.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
+        String inviteMessage = ChatColor.translateAlternateColorCodes('&',
+                PREFIX + " &aYou have been invited to " + player.getName() + "'s party! To join, ");
+        String clickableMessage = ChatColor.GOLD + "[Click Here]";
+        TextComponent textComponent = new TextComponent(clickableMessage);
+        textComponent.setClickEvent(new ClickEvent
+                (
+                        ClickEvent.Action.RUN_COMMAND,
+                        "/party join " + player.getName()
+                ));
+        invited.sendMessage(inviteMessage);
+        invited.spigot().sendMessage(textComponent);
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
     }
