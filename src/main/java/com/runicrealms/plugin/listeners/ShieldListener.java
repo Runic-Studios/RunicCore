@@ -65,7 +65,8 @@ public class ShieldListener implements Listener {
             shieldedPlayers.get(player.getUniqueId()).setStartTime(System.currentTimeMillis());
         } else if (shieldLeftOver <= 0) {
             // Shield was broken and there's leftover damage
-            removeShield(player, shieldedPlayers);
+            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                    () -> removeShield(player, shieldedPlayers));
         }
         return shieldLeftOver;
     }
@@ -111,7 +112,7 @@ public class ShieldListener implements Listener {
     }
 
     /**
-     * Remove shield on character select
+     * Remove shield on character select async
      */
     @EventHandler
     public void onQuit(CharacterSelectEvent event) {
@@ -119,7 +120,7 @@ public class ShieldListener implements Listener {
     }
 
     /**
-     * Remove shield on logout
+     * Remove shield on character quit async
      */
     @EventHandler
     public void onQuit(CharacterQuitEvent event) {
