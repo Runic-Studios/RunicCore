@@ -6,7 +6,9 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.event.LeaveReason;
 import com.runicrealms.plugin.party.event.PartyLeaveEvent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -139,7 +141,7 @@ public class PartyCommand extends BaseCommand {
             return;
         }
         String inviteMessage = ChatColor.translateAlternateColorCodes('&',
-                PREFIX + " &aYou have been invited to " + player.getName() + "'s party! To join, ");
+                PREFIX + " &aYou have been invited to " + player.getName() + "'s party!");
         String clickableMessage = ChatColor.GOLD + "[Click Here]";
         TextComponent textComponent = new TextComponent(clickableMessage);
         textComponent.setClickEvent(new ClickEvent
@@ -147,8 +149,14 @@ public class PartyCommand extends BaseCommand {
                         ClickEvent.Action.RUN_COMMAND,
                         "/party join " + player.getName()
                 ));
+        textComponent.setHoverEvent(new HoverEvent
+                (
+                        HoverEvent.Action.SHOW_TEXT,
+                        new Text(ChatColor.GREEN + "Join " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "'s party")
+                ));
         invited.sendMessage(inviteMessage);
-        invited.spigot().sendMessage(textComponent);
+        invited.spigot().sendMessage(textComponent, new TextComponent(ChatColor.GREEN + " to " +
+                "join"));
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
     }
