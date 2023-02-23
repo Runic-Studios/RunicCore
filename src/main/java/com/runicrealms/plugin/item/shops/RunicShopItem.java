@@ -88,16 +88,6 @@ public class RunicShopItem {
         return requiredItems;
     }
 
-    /**
-     * Method to match a string to a runic item
-     *
-     * @param templateID of the currency item
-     * @return RunicItem w/ template ID matching string name
-     */
-    public ItemStack getRunicItemCurrency(String templateID) {
-        return RunicItemsAPI.generateItemFromTemplate(templateID).generateGUIItem();
-    }
-
     public ItemStack getShopItem() {
         return shopItem;
     }

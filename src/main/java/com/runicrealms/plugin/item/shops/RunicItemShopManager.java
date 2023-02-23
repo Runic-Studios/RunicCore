@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class RunicItemShopManager implements Listener, ShopAPI {
-
     private static final int LOAD_DELAY = 10; // to allow RunicItems to load
     private static final Map<Integer, RunicItemShop> shops = new HashMap<>();
     private static final Map<UUID, Long> clickCooldowns = new HashMap<>();
@@ -44,6 +43,52 @@ public class RunicItemShopManager implements Listener, ShopAPI {
     }
 
     @Override
+    public boolean completeTransaction(Player player, Map<String, Integer> requiredItems,
+                                       String itemDisplayName, boolean removePayment) {
+        if (player.getInventory().firstEmpty() == -1) {
+            player.closeInventory();
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "You don't have enough inventory space to buy this!");
+            return false;
+        }
+        if (!hasAllReqItems(player, requiredItems)) {
+            player.closeInventory();
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "You don't have enough items to buy this!");
+            return false;
+        }
+        if (removePayment) {
+            for (String templateID : requiredItems.keySet()) {
+                ItemRemover.takeItem
+                        (
+                                player,
+                                this.getRunicItemCurrency(templateID),
+                                requiredItems.get(templateID)
+                        );
+            }
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+            player.updateInventory();
+            player.sendMessage(ChatColor.GREEN + "You purchased " + itemDisplayName + ChatColor.GREEN + "!");
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack getRunicItemCurrency(String templateID) {
+        return RunicItemsAPI.generateItemFromTemplate(templateID).generateGUIItem();
+    }
+
+    @Override
+    public boolean hasAllReqItems(Player player, Map<String, Integer> reqItems) {
+        for (String templateID : reqItems.keySet()) {
+            ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(templateID).generateItem();
+            if (!hasItem(player, itemStack, reqItems.get(templateID)))
+                return false;
+        }
+        return true;
+    }
+
+    @Override
     public boolean hasItem(Player player, ItemStack itemStack, int needed) {
         if (needed == 0) return true;
         int amount = 0;
@@ -58,16 +103,6 @@ public class RunicItemShopManager implements Listener, ShopAPI {
             }
         }
         return false;
-    }
-
-    @Override
-    public boolean hasAllReqItems(Player player, Map<String, Integer> reqItems) {
-        for (String templateID : reqItems.keySet()) {
-            ItemStack itemStack = RunicItemsAPI.generateItemFromTemplate(templateID).generateItem();
-            if (!hasItem(player, itemStack, reqItems.get(templateID)))
-                return false;
-        }
-        return true;
     }
 
     @Override
@@ -90,36 +125,17 @@ public class RunicItemShopManager implements Listener, ShopAPI {
         Player player = (Player) event.getWhoClicked();
         if (!inShop.containsKey(player.getUniqueId())) return;
         event.setCancelled(true);
-        if (!inShop.get(player.getUniqueId()).getContents().containsKey(event.getSlot() - 9)) return;
+        if (!inShop.get(player.getUniqueId()).getContents().containsKey(event.getSlot() - 9))
+            return;
         if (event.getRawSlot() > event.getInventory().getSize()) return;
         RunicShopItem runicShopItem = inShop.get(player.getUniqueId()).getContents().get(event.getSlot() - 9);
-        if (player.getInventory().firstEmpty() == -1) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "You don't have enough inventory space to buy this!");
-            return;
+        String displayName = runicShopItem.getShopItem().getItemMeta() != null ?
+                runicShopItem.getShopItem().getItemMeta().getDisplayName() : "Item";
+        boolean result = completeTransaction(player, runicShopItem.getRequiredItems(),
+                displayName, runicShopItem.removePayment());
+        if (result) {
+            runicShopItem.runBuy(player);
         }
-        if (!hasAllReqItems(player, runicShopItem.getRequiredItems())) {
-            player.closeInventory();
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "You don't have enough items to buy this!");
-            return;
-        }
-        if (runicShopItem.removePayment()) {
-            for (String templateID : runicShopItem.getRequiredItems().keySet()) {
-                ItemRemover.takeItem
-                        (
-                                player,
-                                runicShopItem.getRunicItemCurrency(templateID),
-                                runicShopItem.getRequiredItems().get(templateID)
-                        );
-            }
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-            player.updateInventory();
-            String displayName = runicShopItem.getShopItem().getItemMeta() != null ? runicShopItem.getShopItem().getItemMeta().getDisplayName() : "Item";
-            player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
-        }
-        runicShopItem.runBuy(player);
     }
 
     @EventHandler
