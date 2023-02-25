@@ -18,11 +18,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class Harpoon extends Spell implements PhysicalDamageSpell {
-
     private static final int DAMAGE_AMT = 100;
     private static final int DAMAGE_PER_LEVEL = 4;
     private static final int DURATION = 3;
-    private static final double TRIDENT_SPEED = 1.25;
+    private static final double TRIDENT_SPEED = 1.5; // todo: was 1.25, experiment with faster
+    // trident
     private Trident trident;
 
     public Harpoon() {
@@ -31,7 +31,7 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
                         "the trident deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) physical⚔ damage and pulls its target towards you, slowing them for " + DURATION + "s! " +
                         "If an ally is hit, you are instead teleported to their location.",
-                ChatColor.WHITE, CharacterClass.ROGUE, 18, 35);
+                ChatColor.WHITE, CharacterClass.ROGUE, 20, 25);
     }
 
     @Override

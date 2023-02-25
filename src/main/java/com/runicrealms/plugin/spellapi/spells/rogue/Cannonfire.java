@@ -36,7 +36,7 @@ public class Cannonfire extends Spell implements PhysicalDamageSpell {
                         "On hit, each fragment will deal " +
                         "(" + DAMAGE_AMT + " + &f" + (int) DAMAGE_PER_LEVEL + "x&7 lvl) physical⚔ damage, " +
                         "silence the target for " + DURATION + "s, and launch them back!",
-                ChatColor.WHITE, CharacterClass.ROGUE, 7, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 9, 15);
         this.hasBeenHit = new HashMap<>();
     }
 

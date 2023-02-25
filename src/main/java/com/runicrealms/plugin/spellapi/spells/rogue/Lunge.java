@@ -31,7 +31,7 @@ public class Lunge extends Spell {
                 "You lunge forward into the air! " +
                         "Your next basic attack within " + DURATION + "s deals " +
                         (int) (PERCENT * 100) + "% damage!",
-                ChatColor.WHITE, CharacterClass.ROGUE, 8, 15);
+                ChatColor.WHITE, CharacterClass.ROGUE, 12, 15);
     }
 
     /**

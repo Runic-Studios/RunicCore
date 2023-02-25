@@ -34,7 +34,7 @@ public enum SubClass {
     /*
      Rogue
      */
-    BREWMASTER("Brewmaster", 1, CharacterClass.ROGUE, duelistItem(), "Brewmaster is an excellent " +
+    BREWMASTER("Brewmaster", 1, CharacterClass.ROGUE, brewmasterItem(), "Brewmaster is an excellent " +
             "&cphysical⚔ &7fighter against a single opponent!"),
     CORSAIR("Corsair", 2, CharacterClass.ROGUE, corsairItem(), "Corsair uses &cphysical⚔ " +
             "&7projectiles to control the flow of battle!"),
@@ -171,14 +171,12 @@ public enum SubClass {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg1YzFlZTYxZjJiZDQ0M2MwYTllNjE3ZjM3MjAzY2RmZjQ0MGJmYTJkMDBiNmRkMzZmZjgzNGNkODcwMmQ5In19fQ==");
     }
 
-    private static ItemStack duelistItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvYmIxNzliNTY0ODc2MGRiNjY1NTg1YTMwZWM4YjFiZThjM2QyNTFjYTMwNzUwNjA1OTJhYzU1YmI5ZDg1M2U4In19fQ==");
+    private static ItemStack brewmasterItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ2MDFlNjY0ZTJhZjA3NmI1NDU1MzViN2E2ODljYzc5YjEwODI2YWE2NTc1M2ZiYzZmNjU0MmJjOTRjZjcxIn19fQ==");
     }
 
     private static ItemStack corsairItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvOTg4MGE1YjM2OTcyZWFmNTY2M2Y5Y2ExYjBiZDAwZWE4YzRmMDU1ZmM2ZTJhOWU3YTIyMDZlYzM5OTA5ZGVhMSJ9fX0=");
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmExNGE0ZDJkMDJkY2QyNmExNzU1ZWI4NTYxYjcxYjM0ZDU5ZjQ1MThkOTk0NGExNDJjMmUxMTU2ODg2NzdkMSJ9fX0=");
     }
 
     private static ItemStack berserkerItem() {
