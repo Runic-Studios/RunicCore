@@ -326,6 +326,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new UmbralGrasp());
         this.spellList.add(new Ruination());
         this.spellList.add(new ArcaneSlash());
+        this.spellList.add(new TwinFangs());
         /*
         Items
          */

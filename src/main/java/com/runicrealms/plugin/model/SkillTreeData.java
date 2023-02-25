@@ -158,11 +158,14 @@ public class SkillTreeData implements SessionData {
      * Loops through currently purchased perks to store passives in memory
      */
     public void addPassivesToMap() {
-        if (RunicCore.getSkillTreeAPI().getPassives(uuid) == null) return; // player is offline or removed from memory
+        if (RunicCore.getSkillTreeAPI().getPassives(uuid) == null)
+            return; // player is offline or removed from memory
         for (Perk perk : perks) {
             if (perk instanceof PerkBaseStat) continue;
-            if (RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName()) == null) continue;
-            if (!RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName()).isPassive()) continue;
+            if (RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName()) == null)
+                continue;
+            if (!RunicCore.getSpellAPI().getSpell(((PerkSpell) perk).getSpellName()).isPassive())
+                continue;
             if (perk.getCurrentlyAllocatedPoints() >= perk.getCost())
                 RunicCore.getSkillTreeAPI().getPassives(uuid).add(((PerkSpell) perk).getSpellName());
         }
@@ -313,12 +316,12 @@ public class SkillTreeData implements SessionData {
                 return MageTreeUtil.pyromancerPerkList();
             case SPELLSWORD:
                 return MageTreeUtil.spellswordPerkList();
-            case ASSASSIN:
-                return RogueTreeUtil.assassinPerkList();
+            case NIGHTCRAWLER:
+                return RogueTreeUtil.nightcrawlerPerkList();
             case CORSAIR:
                 return RogueTreeUtil.corsairPerkList();
-            case DUELIST:
-                return RogueTreeUtil.duelistPerkList();
+            case BREWMASTER:
+                return RogueTreeUtil.brewmasterPerkList();
             case BERSERKER:
                 return WarriorTreeUtil.berserkerPerkList();
             case GUARDIAN:

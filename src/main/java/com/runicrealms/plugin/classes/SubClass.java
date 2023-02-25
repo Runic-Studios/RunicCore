@@ -34,9 +34,12 @@ public enum SubClass {
     /*
      Rogue
      */
-    ASSASSIN("Assassin", 1, CharacterClass.ROGUE, assassinItem(), "Assassin emerges from the &8shadows &7to quickly burst an opponent with &cphysical⚔ &7strikes!"),
-    CORSAIR("Corsair", 2, CharacterClass.ROGUE, corsairItem(), "Corsair uses &cphysical⚔ &7projectiles to control the flow of battle!"),
-    DUELIST("Duelist", 3, CharacterClass.ROGUE, duelistItem(), "Duelist is an excellent &cphysical⚔ &7fighter against a single opponent!"),
+    BREWMASTER("Brewmaster", 1, CharacterClass.ROGUE, duelistItem(), "Brewmaster is an excellent " +
+            "&cphysical⚔ &7fighter against a single opponent!"),
+    CORSAIR("Corsair", 2, CharacterClass.ROGUE, corsairItem(), "Corsair uses &cphysical⚔ " +
+            "&7projectiles to control the flow of battle!"),
+    NIGHTCRAWLER("Nightcrawler", 3, CharacterClass.ROGUE, nightcrawlerItem(), "Nightcrawler emerges " +
+            "from the &8shadows &7to quickly burst an opponent with &cphysical⚔ &7strikes!"),
     /*
     Warrior
      */
@@ -164,9 +167,8 @@ public enum SubClass {
         return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUwMzIzNzczYzBkYTViNDE3NzE4NTAwYTQ0OGFlM2RiZjg3ZDQ5YWMwNjhjZDUzZjAxNTAyZjRjMDMxNjE1MyJ9fX0=");
     }
 
-    private static ItemStack assassinItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvMjZkOWRmZjBiZTkzNTlmODExODIyYmZlNGJkOGRkNDBkMDVhZmNjZGJkMTE0ZGUwODFlMWJmNDY5MzA3MWVmYiJ9fX0=");
+    private static ItemStack nightcrawlerItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg1YzFlZTYxZjJiZDQ0M2MwYTllNjE3ZjM3MjAzY2RmZjQ0MGJmYTJkMDBiNmRkMzZmZjgzNGNkODcwMmQ5In19fQ==");
     }
 
     private static ItemStack duelistItem() {

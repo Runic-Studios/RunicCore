@@ -71,10 +71,13 @@ public class UmbralGrasp extends Spell implements MagicDamageSpell {
                 );
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
-            beginSpell(player, location.setDirection(player.getLocation().getDirection()), player.getEyeLocation());
+            beginSpell(player, location.setDirection(player.getEyeLocation().getDirection()),
+                    player.getEyeLocation());
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            beginSpell(player, livingEntity.getEyeLocation().setDirection(player.getLocation().getDirection()), player.getEyeLocation());
+            beginSpell(player,
+                    livingEntity.getEyeLocation().setDirection(player.getEyeLocation().getDirection()),
+                    player.getEyeLocation());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -23,16 +24,41 @@ public class SlashEffect {
         slashVertical(player, topOrBottom, leftOrRight, Particle.CRIT, .05f);
     }
 
-    public static void slashHorizontal(Player player, Particle particle) {
+    /**
+     * Creates a horizontal-style slash
+     *
+     * @param player
+     * @param particle
+     * @param color    optional param for redstone particle
+     */
+    public static void slashHorizontal(Player player, Particle particle, Color... color) {
         boolean topOrBottom = ThreadLocalRandom.current().nextBoolean();
         boolean leftOrRight = ThreadLocalRandom.current().nextBoolean();
-        slashHorizontal(player, topOrBottom, leftOrRight, particle, .05f);
+        slashHorizontal(player, topOrBottom, leftOrRight, particle, .05f, color);
     }
 
-    public static void slashVertical(Player player, Particle particle) {
+    /**
+     * Creates a vertical-style slash
+     *
+     * @param player
+     * @param particle
+     * @param color    optional param for redstone particle
+     */
+    public static void slashVertical(Player player, Particle particle, Color... color) {
         boolean topOrBottom = ThreadLocalRandom.current().nextBoolean();
         boolean leftOrRight = ThreadLocalRandom.current().nextBoolean();
-        slashVertical(player, topOrBottom, leftOrRight, particle, .05f);
+        slashVertical(player, topOrBottom, leftOrRight, particle, .05f, color);
+    }
+
+    /**
+     * Creates a vertical-style slash
+     *
+     * @param leftOrRight control which direction the slash comes from
+     */
+    public static void slashVertical(Player player, Particle particle,
+                                     boolean leftOrRight, Color... color) {
+        boolean topOrBottom = ThreadLocalRandom.current().nextBoolean();
+        slashVertical(player, leftOrRight, leftOrRight, particle, .05f, color);
     }
 
     public static void slashHorizontal(Player player, Particle particle, float density) {
@@ -56,8 +82,10 @@ public class SlashEffect {
      * @param leftOrRight if true slashes from left to right
      * @param particle    the particle to display
      * @param density     space between particles
+     * @param color       optional param for redstone particle
      */
-    public static void slashVertical(Player player, boolean topOrBottom, boolean leftOrRight, Particle particle, float density) {
+    public static void slashVertical(Player player, boolean topOrBottom, boolean leftOrRight,
+                                     Particle particle, float density, Color... color) {
 
         Location playerLocationClone = player.getLocation().clone();
 
@@ -83,8 +111,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI / 2 * finalDirection)).clone().add(0, finalI, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
-                            player.getLocation().getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                     count = 0;
@@ -95,7 +127,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI / 2 * finalDirection)).clone().add(0, finalI, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                 }
@@ -111,8 +148,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI / 2 * finalDirection)).clone().add(0, finalI, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
-                            player.getLocation().getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                     count = 0;
@@ -123,7 +164,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI / 2 * finalDirection)).clone().add(0, finalI, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                 }
@@ -141,9 +187,10 @@ public class SlashEffect {
      * @param leftOrRight if true slashes from left to right
      * @param particle    the particle to display
      * @param density     space between particles
+     * @param color       optional param for redstone particle
      */
-    public static void slashHorizontal(Player player, boolean topOrBottom, boolean leftOrRight, Particle particle, float density) {
-
+    public static void slashHorizontal(Player player, boolean topOrBottom, boolean leftOrRight,
+                                       Particle particle, float density, Color... color) {
         Location playerLocationClone = player.getLocation().clone();
         if (playerLocationClone.getPitch() > 60 || playerLocationClone.getPitch() < -60)
             playerLocationClone.setPitch(0);
@@ -162,7 +209,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                     count = 0;
@@ -173,7 +225,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                 }
@@ -189,7 +246,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                     count = 0;
@@ -200,7 +262,12 @@ public class SlashEffect {
                         @Override
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
-                            player.spawnParticle(particle, location, 0, 0, 0, 0);
+                            if (particle == Particle.REDSTONE && color.length > 0) {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                        new Particle.DustOptions(color[0], 1));
+                            } else {
+                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                            }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
                 }
