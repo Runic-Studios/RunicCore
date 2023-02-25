@@ -8,6 +8,7 @@ import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -68,7 +69,8 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (!(hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.ROOT)
-                || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN))) return;
+                || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)))
+            return;
         if (event.getTo() == null) return;
         Location to = event.getFrom();
         to.setPitch(event.getTo().getPitch());
@@ -138,12 +140,15 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 //            return;
         }
 
-        // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
-        if (!(livingEntity instanceof Player)
-                && (runicStatusEffect == RunicStatusEffect.ROOT || runicStatusEffect == RunicStatusEffect.STUN)) {
-            livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
-            livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
-            return;
+        if (runicStatusEffect == RunicStatusEffect.ROOT || runicStatusEffect == RunicStatusEffect.STUN) {
+            livingEntity.getWorld().playSound(livingEntity.getLocation(),
+                    Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.75f, 1.0f);
+            // Since there's no entity move event, we handle root & stun the old-fashioned way for mobs
+            if (!(livingEntity instanceof Player)) {
+                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 3));
+                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (durationInSecs * 20), 127));
+                return;
+            }
         }
 
         if (!statusEffectMap.containsKey(uuid)) {

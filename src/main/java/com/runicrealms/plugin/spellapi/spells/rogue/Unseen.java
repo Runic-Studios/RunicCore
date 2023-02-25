@@ -20,32 +20,27 @@ import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class Cloak extends Spell {
-
-    private static final int DURATION = 5;
+public class Unseen extends Spell {
+    private static final int DURATION = 6;
     private static final HashSet<UUID> markedForEarlyReveal = new HashSet<>();
     private final Set<UUID> cloakers;
 
-    public Cloak() {
-        super("Cloak",
+    public Unseen() {
+        super("Unseen",
                 "For " + DURATION + " seconds, you vanish completely, " +
                         "causing you to appear invisible to " +
                         "players. During this time, you are " +
                         "immune to damage from monsters! " +
-                        "Dealing damage or taking damage from " +
-                        "players ends the effect early.",
-                ChatColor.WHITE, CharacterClass.ROGUE, 30, 15);
+                        "Dealing damage, taking damage from " +
+                        "players, or sneaking ends the effect early.",
+                ChatColor.WHITE, CharacterClass.ROGUE, 20, 20);
         cloakers = new HashSet<>();
-    }
-
-    public static HashSet<UUID> getMarkedForEarlyReveal() {
-        return markedForEarlyReveal;
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
 
-        // poof!
+        // Poof!
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
         player.getWorld().spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f,
                 new Particle.DustOptions(Color.BLACK, 1));
@@ -54,7 +49,7 @@ public class Cloak extends Spell {
                 new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER,
                         ((CraftPlayer) player).getHandle());
 
-        // hide the player, prevent them from disappearing in tab
+        // Hide the player, prevent them from disappearing in tab
         for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
             Player loaded = Bukkit.getPlayer(uuid);
             if (loaded == null) continue;
@@ -65,13 +60,13 @@ public class Cloak extends Spell {
         cloakers.add(player.getUniqueId());
         player.sendMessage(ChatColor.GRAY + "You vanished!");
 
-        // reappear after duration or upon dealing damage. can't be tracked async :(
+        // Reappear after duration or upon dealing damage. Can't be tracked async :(
         new BukkitRunnable() {
             int count = 0;
 
             @Override
             public void run() {
-                if (count >= DURATION || markedForEarlyReveal.contains(player.getUniqueId())) {
+                if (count >= DURATION || markedForEarlyReveal.contains(player.getUniqueId()) || player.isSneaking()) {
                     this.cancel();
                     cloakers.remove(player.getUniqueId());
                     for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
@@ -109,10 +104,8 @@ public class Cloak extends Spell {
                 || cloakers.contains(event.getVictim().getUniqueId()))) return;
         if (cloakers.contains(event.getPlayer().getUniqueId())) {
             markedForEarlyReveal.add(event.getPlayer().getUniqueId());
-            Predator.getPredators().add(event.getPlayer().getUniqueId());
         } else {
             markedForEarlyReveal.add(event.getVictim().getUniqueId());
-            Predator.getPredators().add(event.getVictim().getUniqueId());
         }
     }
 

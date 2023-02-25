@@ -253,7 +253,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Barrage());
         this.spellList.add(new Grapple());
         this.spellList.add(new Slam());
-        this.spellList.add(new Cloak());
+        this.spellList.add(new Unseen());
         this.spellList.add(new HolyNova());
         this.spellList.add(new Blizzard());
         this.spellList.add(new Frostbite());
@@ -327,6 +327,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Ruination());
         this.spellList.add(new ArcaneSlash());
         this.spellList.add(new TwinFangs());
+        this.spellList.add(new Cocoon());
+        this.spellList.add(new FromTheShadows());
         /*
         Items
          */

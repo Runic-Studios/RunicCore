@@ -1,41 +1,62 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Predator extends Spell {
-
-    private static final double DURATION = 2.5;
-    private static final HashSet<UUID> predators = new HashSet<>();
+    private static final double DURATION = 0.5;
+    private static final Map<UUID, Set<UUID>> predators = new ConcurrentHashMap<>();
 
     public Predator() {
         super("Predator",
-                "Upon reappearing after becoming invisible, " +
-                        "your next melee attack will stun your target for " + DURATION + "s!",
+                "When you basic-attack enemies who have been hit by " +
+                        "&aTwin Fangs&7, lower the cooldown of &aTwin Fangs &7by " + DURATION +
+                        "s!",
                 ChatColor.WHITE, CharacterClass.ROGUE, 0, 0);
         this.setIsPassive(true);
     }
 
-    public static HashSet<UUID> getPredators() {
-        return predators;
+    /**
+     * Reset the data map each cast
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onFangsCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        predators.remove(event.getCaster().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGH) // runs last
     public void onPredatorHit(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!predators.contains(event.getPlayer().getUniqueId())) return;
-        predators.remove(event.getPlayer().getUniqueId());
-        addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, DURATION, true);
+
+        // Reduce fangs CD if the player hits a basic attack
+        if (event.isBasicAttack()) {
+            if (!predators.containsKey(event.getPlayer().getUniqueId())) return;
+            if (!predators.get(event.getPlayer().getUniqueId()).contains(event.getVictim().getUniqueId()))
+                return;
+            RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Twin Fangs", DURATION);
+
+            // Add victim to list of marked enemies
+        } else if (event.getSpell() != null && event.getSpell() instanceof TwinFangs) {
+            if (!predators.containsKey(event.getPlayer().getUniqueId())) {
+                predators.put(event.getPlayer().getUniqueId(), new HashSet<>());
+            }
+            predators.get(event.getPlayer().getUniqueId()).add(event.getVictim().getUniqueId());
+        }
     }
 }
 
