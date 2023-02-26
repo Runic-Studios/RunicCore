@@ -20,7 +20,7 @@ public class PartyChannel extends ChatChannel {
 
     @Override
     public String getPrefix() {
-        return "&a[Party] &r";
+        return "&a[Party] %luckperms_meta_name_color%%player_name%: ";
     }
 
     @Override
@@ -40,7 +40,7 @@ public class PartyChannel extends ChatChannel {
 
     @Override
     public String getMessageFormat() {
-        return "%luckperms_meta_name_color%%player_name%: &r%message%";
+        return "&r%message%";
     }
 
     @Override

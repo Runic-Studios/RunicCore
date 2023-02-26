@@ -154,9 +154,11 @@ public class PartyCommand extends BaseCommand {
                         HoverEvent.Action.SHOW_TEXT,
                         new Text(ChatColor.GREEN + "Join " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "'s party")
                 ));
+        invited.sendMessage("");
         invited.sendMessage(inviteMessage);
         invited.spigot().sendMessage(textComponent, new TextComponent(ChatColor.GREEN + " to " +
                 "join"));
+        invited.sendMessage("");
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
     }
