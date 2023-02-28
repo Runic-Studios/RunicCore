@@ -51,7 +51,8 @@ public class SkillPointsListener implements Listener {
                     (
                             ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have unlocked " +
                                     ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.LIGHT_PURPLE +
-                                    "! Right click your Ancient Rune to unlock new perks with your skill points!"
+                                    "! Right click your Ancient Runestone to unlock new perks " +
+                                    "with your skill points!"
                     );
         } else if (event.getOldLevel() != 0 || (event.getOldLevel() == 0 && event.getNewLevel() == 1)) { // ignores login level-up
             int levelsRemainingUntilSkillTrees = SKILL_TREE_UNLOCK_LEVEL - event.getNewLevel();

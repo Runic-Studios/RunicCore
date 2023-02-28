@@ -257,7 +257,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new HolyNova());
         this.spellList.add(new Blizzard());
         this.spellList.add(new Frostbite());
-        this.spellList.add(new ThrowAxe());
+        this.spellList.add(new AxeToss());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
         this.spellList.add(new Warsong());

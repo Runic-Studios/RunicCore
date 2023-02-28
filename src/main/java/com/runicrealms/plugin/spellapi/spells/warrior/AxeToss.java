@@ -14,6 +14,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -21,21 +23,20 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class ThrowAxe extends Spell implements PhysicalDamageSpell {
-
+public class AxeToss extends Spell implements PhysicalDamageSpell {
     private static final int DAMAGE = 20;
     private static final double DAMAGE_PER_LEVEL = 1.5;
-    private static final int DURATION = 3;
+    private static final int SLOW_DURATION = 2;
+    private static final int SPEED_DURATION = 1;
     private final HashMap<UUID, UUID> hasBeenHit;
     private final boolean canHitAllies;
 
-    public ThrowAxe() {
-        super("Throw Axe",
+    public AxeToss() {
+        super("Axe Toss",
                 "You throw your weapon, dealing (" + DAMAGE + " + &f" + DAMAGE_PER_LEVEL +
                         "x&7 lvl) physical⚔ damage to the first enemy " +
-                        "hit and silencing it, preventing it " +
-                        "from dealing damage for " + DURATION + "s!",
+                        "hit, slowing it for " + SLOW_DURATION + "s and granting you Speed II for" +
+                        " " + SPEED_DURATION + "s!",
                 ChatColor.WHITE, CharacterClass.WARRIOR, 10, 20);
         hasBeenHit = new HashMap<>();
         this.canHitAllies = false;
@@ -89,7 +90,9 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
                     if (isValidEnemy(player, entity)) {
                         if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
                         hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, DURATION, true);
+                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW,
+                                SLOW_DURATION * 20, 2));
+                        addStatusEffect(player, RunicStatusEffect.SPEED_II, SPEED_DURATION, false);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle
                                 (Particle.VILLAGER_ANGRY, entity.getLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
@@ -100,7 +103,8 @@ public class ThrowAxe extends Spell implements PhysicalDamageSpell {
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), hasBeenHit::clear, DURATION * 20L);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                hasBeenHit::clear, SLOW_DURATION * 20L);
     }
 
     @Override

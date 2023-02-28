@@ -44,7 +44,9 @@ public enum SubClass {
     Warrior
      */
     BERSERKER("Berserker", 1, CharacterClass.WARRIOR, berserkerItem(), "Berserker fights ferociously with &cphysical⚔ &7attacks that cleave enemies!"),
-    GUARDIAN("Guardian", 2, CharacterClass.WARRIOR, guardianItem(), "Guardian excels as a &ftank&7, defending allies from harm!"),
+    EARTHSHAKER("Earthshaker", 2, CharacterClass.WARRIOR, earthshakerItem(), "Earthshaker excels " +
+            "as " +
+            "a &ftank&7, defending allies from harm!"),
     PALADIN("Paladin", 3, CharacterClass.WARRIOR, paladinItem(), "Paladin is a hybrid &3magicalʔ &7fighter and &ahealer✦&7!");
 
     public static final Set<SubClass> ARCHER_SUBCLASSES = new LinkedHashSet<>();
@@ -180,13 +182,11 @@ public enum SubClass {
     }
 
     private static ItemStack berserkerItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvZjdkYjQ2NDRkYTc1MjcxZWQzZTVhN2UwODJjMDJlOWNjZDc4ODQyN2JmNWFiNDQyMTNiYjRjMTc3ZTFiMSJ9fX0=");
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjZmNDNjYWFkYjQwMzNjNDFjN2YzNDcwMmM0N2ZmM2IyMWNlOTc3MTBjOGQ2NTMwN2Y1ODc2ZWU0NWMzZjRlNSJ9fX0=");
     }
 
-    private static ItemStack guardianItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
-                "leHR1cmUvMzgyZWU4NWZlNmRjNjMyN2RhZDIwMmZjYTkzYzlhOTRhYzk5YjdiMTY5NzUyNGJmZTk0MTc1ZDg4NzI1In19fQ==");
+    private static ItemStack earthshakerItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjdkYjQ2NDRkYTc1MjcxZWQzZTVhN2UwODJjMDJlOWNjZDc4ODQyN2JmNWFiNDQyMTNiYjRjMTc3ZTFiMSJ9fX0=");
     }
 
     private static ItemStack paladinItem() {

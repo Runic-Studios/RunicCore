@@ -95,7 +95,7 @@ public class RunicItemShopHelper {
         wagonItem.setItemMeta(meta);
         return wagonItem;
     }
-    
+
     public RunicShopGeneric getCaptain() {
         Map<String, Integer> coin = new HashMap<String, Integer>() {{
             put("Coin", 120);
@@ -194,12 +194,13 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getLibraryGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        Gatekeeper first = new Gatekeeper(519, SILVER_KEY_MAP, DungeonLocation.SUNKEN_LIBRARY, 1);
-        Gatekeeper second = new Gatekeeper(520, ETHEREAL_KEY_MAP, DungeonLocation.SUNKEN_LIBRARY, 2);
-        Gatekeeper third = new Gatekeeper(521, GOLD_KEY_MAP, DungeonLocation.SUNKEN_LIBRARY, 3);
+        Map<String, Integer> requiredItems = new HashMap<String, Integer>() {{
+            put("SilverKey", 1);
+            put("EtherealKey", 1);
+            put("GoldKey", 1);
+        }};
+        Gatekeeper first = new Gatekeeper(519, requiredItems, DungeonLocation.SUNKEN_LIBRARY, 1);
         gateKeepers.add(first);
-        gateKeepers.add(second);
-        gateKeepers.add(third);
         return gateKeepers;
     }
 

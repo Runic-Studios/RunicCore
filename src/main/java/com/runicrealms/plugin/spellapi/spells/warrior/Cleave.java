@@ -19,7 +19,7 @@ public class Cleave extends Spell {
 
     public Cleave() {
         super("Cleave",
-                "While your &aEnrage &7spell is active, " +
+                "While your &aWhirlwind &7spell is active, " +
                         "your basic attacks cleave enemies within " + RADIUS + " " +
                         "blocks for " + (int) (PERCENT * 100) + "% damage! Max " + MAX_TARGETS +
                         " additional targets.",
@@ -30,9 +30,9 @@ public class Cleave extends Spell {
     @EventHandler
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!Enrage.getRagers().contains(event.getPlayer().getUniqueId())) return;
-        if (!event.isBasicAttack()) return; // only listen for basic attacks
-        // aoe
+        if (!Whirlwind.getUuidSet().contains(event.getPlayer().getUniqueId())) return;
+        if (!event.isBasicAttack()) return; // Only listen for basic attacks
+        // Cleave!
         int targetsHit = 0;
         Player player = event.getPlayer();
         for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {

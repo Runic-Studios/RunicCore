@@ -116,7 +116,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onStatusEffect(StatusEffectEvent event) {
         if (event.isCancelled()) return;
         UUID uuid = event.getLivingEntity().getUniqueId();

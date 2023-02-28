@@ -32,7 +32,7 @@ public class RuneGUI implements InventoryHolder {
     private final Player player;
 
     public RuneGUI(Player player) {
-        this.inventory = Bukkit.createInventory(this, 27, ColorUtil.format("&dAncient Rune"));
+        this.inventory = Bukkit.createInventory(this, 27, ColorUtil.format("&dAncient Runestone"));
         this.player = player;
         openMenu();
     }

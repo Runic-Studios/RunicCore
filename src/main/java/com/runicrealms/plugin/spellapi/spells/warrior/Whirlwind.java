@@ -12,11 +12,15 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 public class Whirlwind extends Spell implements MagicDamageSpell {
     private static final int DAMAGE_AMT = 4;
     private static final double DAMAGE_PER_LEVEL = .25;
-    private static final int DURATION = 10;
+    private static final int DURATION = 4;
     private static final float RADIUS = 2f;
+    private static final HashSet<UUID> playerUuidSet = new HashSet<>();
 
     public Whirlwind() {
         super("Whirlwind",
@@ -24,11 +28,16 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
                         "fury of the winds, summoning a cyclone around you that damages " +
                         "enemies within " + (double) RADIUS + " blocks for (" +
                         DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) magicʔ damage!",
-                ChatColor.WHITE, CharacterClass.WARRIOR, 20, 25);
+                ChatColor.WHITE, CharacterClass.WARRIOR, 8, 15);
+    }
+
+    public static HashSet<UUID> getUuidSet() {
+        return playerUuidSet;
     }
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        playerUuidSet.add(player.getUniqueId());
         final Spell spell = this;
 
         BukkitRunnable whirlwind = new BukkitRunnable() {
@@ -45,7 +54,11 @@ public class Whirlwind extends Spell implements MagicDamageSpell {
             }
         };
         whirlwind.runTaskTimer(RunicCore.getInstance(), 0, 20);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), whirlwind::cancel, DURATION * 20L);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+                    whirlwind.cancel();
+                    playerUuidSet.remove(player.getUniqueId());
+                },
+                DURATION * 20L);
     }
 
     @Override

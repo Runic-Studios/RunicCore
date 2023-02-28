@@ -30,7 +30,7 @@ public class RogueTreeUtil {
         perks.add(new PerkSpell(125, 1, 0, 1, "Cripple"));
         perks.add(new PerkBaseStat(126, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(127, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkBaseStat(129, 1, 0, 5, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(129, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(128, 1, 0, 1, "Riposte"));
         perks.add(new PerkBaseStat(130, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(131, 1, 0, 1, "Challenger"));

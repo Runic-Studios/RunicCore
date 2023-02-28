@@ -324,8 +324,8 @@ public class SkillTreeData implements SessionData {
                 return RogueTreeUtil.brewmasterPerkList();
             case BERSERKER:
                 return WarriorTreeUtil.berserkerPerkList();
-            case GUARDIAN:
-                return WarriorTreeUtil.guardianPerkList();
+            case EARTHSHAKER:
+                return WarriorTreeUtil.earthshakerPerkList();
             case PALADIN:
                 return WarriorTreeUtil.paladinPerkList();
         }
