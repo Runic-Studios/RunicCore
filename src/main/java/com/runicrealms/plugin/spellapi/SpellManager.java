@@ -265,7 +265,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new ThunderArrow());
         this.spellList.add(new Sear());
         this.spellList.add(new ArcaneBomb());
-        this.spellList.add(new CureScurvy());
         this.spellList.add(new HolyWater());
         this.spellList.add(new Seasick());
         this.spellList.add(new HomingArrow());
@@ -331,6 +330,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new FromTheShadows());
         this.spellList.add(new RapidReload());
         this.spellList.add(new CallOfTheDeep());
+        this.spellList.add(new Adrenaline());
+        this.spellList.add(new Unstoppable());
         /*
         Items
          */
