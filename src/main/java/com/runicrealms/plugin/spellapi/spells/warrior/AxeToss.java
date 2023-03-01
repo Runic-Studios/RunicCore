@@ -14,8 +14,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -90,8 +88,8 @@ public class AxeToss extends Spell implements PhysicalDamageSpell {
                     if (isValidEnemy(player, entity)) {
                         if (hasBeenHit.get(player.getUniqueId()) == entity.getUniqueId()) continue;
                         hasBeenHit.put(player.getUniqueId(), entity.getUniqueId()); // prevent concussive hits
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW,
-                                SLOW_DURATION * 20, 2));
+                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III,
+                                SLOW_DURATION, false);
                         addStatusEffect(player, RunicStatusEffect.SPEED_II, SPEED_DURATION, false);
                         entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
                         entity.getWorld().spawnParticle

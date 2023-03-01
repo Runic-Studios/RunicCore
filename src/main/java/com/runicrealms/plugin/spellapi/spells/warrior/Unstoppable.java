@@ -25,8 +25,11 @@ public class Unstoppable extends Spell {
     public void onDrainingHit(StatusEffectEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getLivingEntity().getUniqueId(), this.getName())) return;
-        // todo: slows?
-        if (!(event.getRunicStatusEffect() == RunicStatusEffect.STUN || event.getRunicStatusEffect() == RunicStatusEffect.ROOT))
+        if (!(event.getRunicStatusEffect() == RunicStatusEffect.STUN
+                || event.getRunicStatusEffect() == RunicStatusEffect.ROOT
+                || event.getRunicStatusEffect() == RunicStatusEffect.SLOW_I
+                || event.getRunicStatusEffect() == RunicStatusEffect.SLOW_II
+                || event.getRunicStatusEffect() == RunicStatusEffect.SLOW_III))
             return;
         if (!(hasStatusEffect(event.getLivingEntity().getUniqueId(), RunicStatusEffect.SPEED_I)
                 || hasStatusEffect(event.getLivingEntity().getUniqueId(), RunicStatusEffect.SPEED_II)

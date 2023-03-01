@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -11,8 +12,6 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -65,18 +64,16 @@ public class Remedy extends Spell implements HealingSpell {
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.25f, 0.2f);
                     createSphere(player, player.getEyeLocation());
                     healPlayer(player, player, HEAL_AMT, spell);
-                    for (PotionEffect effect : player.getActivePotionEffects()) {
-                        if (effect.getType() == PotionEffectType.SLOW)
-                            player.removePotionEffect(effect.getType());
-                    }
+                    removeStatusEffect(player, RunicStatusEffect.SLOW_I);
+                    removeStatusEffect(player, RunicStatusEffect.SLOW_II);
+                    removeStatusEffect(player, RunicStatusEffect.SLOW_III);
                     for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                         if (entity.equals(player)) continue;
                         if (!isValidAlly(player, entity)) continue;
                         Player playerEntity = (Player) entity;
-                        for (PotionEffect effect : playerEntity.getActivePotionEffects()) {
-                            if (effect.getType() == PotionEffectType.SLOW)
-                                playerEntity.removePotionEffect(effect.getType());
-                        }
+                        removeStatusEffect(player, RunicStatusEffect.SLOW_II);
+                        removeStatusEffect(player, RunicStatusEffect.SLOW_II);
+                        removeStatusEffect(player, RunicStatusEffect.SLOW_III);
                         healPlayer(player, playerEntity, HEAL_AMT / DURATION, spell);
                     }
                 }

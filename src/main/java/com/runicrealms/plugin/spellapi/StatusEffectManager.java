@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,6 +50,25 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     public boolean removeStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
         if (!statusEffectMap.containsKey(uuid)) return false;
         if (statusEffectMap.get(uuid).containsKey(statusEffect)) {
+            // Remove vanilla potion slowness
+            if (statusEffect == RunicStatusEffect.SLOW_I
+                    || statusEffect == RunicStatusEffect.SLOW_II
+                    || statusEffect == RunicStatusEffect.SLOW_III) {
+                Entity entity = Bukkit.getEntity(uuid);
+                if (entity == null) return false;
+                if (!(entity instanceof LivingEntity)) return false;
+                removePotionEffect((LivingEntity) entity, PotionEffectType.SLOW);
+            }
+            // Remove vanilla potion speed
+            if (statusEffect == RunicStatusEffect.SPEED_I
+                    || statusEffect == RunicStatusEffect.SPEED_II
+                    || statusEffect == RunicStatusEffect.SPEED_III) {
+                Entity entity = Bukkit.getEntity(uuid);
+                if (entity == null) return false;
+                if (!(entity instanceof LivingEntity)) return false;
+                removePotionEffect((LivingEntity) entity, PotionEffectType.SPEED);
+            }
+
             statusEffectMap.get(uuid).remove(statusEffect);
             return true;
         }
@@ -124,6 +144,21 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         RunicStatusEffect runicStatusEffect = event.getRunicStatusEffect();
         double durationInSecs = event.getDurationInSeconds();
 
+        // Prevent lower-level slowness from overriding
+        if (runicStatusEffect == RunicStatusEffect.SLOW_I) {
+            if (!(hasStatusEffect(uuid, RunicStatusEffect.SLOW_II) || hasStatusEffect(uuid,
+                    RunicStatusEffect.SLOW_III))) {
+                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,
+                        (int) (durationInSecs * 20), 0));
+            }
+        } else if (runicStatusEffect == RunicStatusEffect.SLOW_II) {
+            if (!hasStatusEffect(uuid, RunicStatusEffect.SLOW_III)) {
+                livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 1));
+            }
+        } else if (runicStatusEffect == RunicStatusEffect.SLOW_III) {
+            livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (durationInSecs * 20), 2));
+        }
+
         // Prevent lower-level speeds from overriding
         if (runicStatusEffect == RunicStatusEffect.SPEED_I) {
             if (!(hasStatusEffect(uuid, RunicStatusEffect.SPEED_II) || hasStatusEffect(uuid, RunicStatusEffect.SPEED_III))) {
@@ -158,6 +193,13 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         livingEntity.getWorld().playSound(livingEntity.getLocation(), runicStatusEffect.getSound(), 0.25f, 1.0f);
         if (livingEntity instanceof Player && event.willDisplayMessage()) {
             livingEntity.sendMessage(runicStatusEffect.getMessage());
+        }
+    }
+
+    private void removePotionEffect(LivingEntity livingEntity, PotionEffectType potionEffectType) {
+        for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
+            if (effect.getType() == potionEffectType)
+                livingEntity.removePotionEffect(effect.getType());
         }
     }
 

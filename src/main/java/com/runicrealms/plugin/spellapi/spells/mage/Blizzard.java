@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
@@ -16,8 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -26,6 +25,7 @@ public class Blizzard extends Spell implements MagicDamageSpell {
     private static final int DAMAGE_AMOUNT = 15;
     private static final int DURATION = 5;
     private static final int MAX_DIST = 10;
+    private static final int SLOW_DURATION = 2;
     private static final int RADIUS = 3;
     private static final double DAMAGE_PER_LEVEL = 0.75;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -46,7 +46,7 @@ public class Blizzard extends Spell implements MagicDamageSpell {
         for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
             player.getWorld().playSound(entity.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25F, 1.0F);
             DamageUtil.damageEntitySpell(DAMAGE_AMOUNT, (LivingEntity) entity, player, this);
-            ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 2));
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_III, SLOW_DURATION, false);
         }
     }
 
@@ -126,22 +126,6 @@ public class Blizzard extends Spell implements MagicDamageSpell {
                     spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
                     spawnSnowball(player, cloudLoc.add(0, 0, -2), launchPath);
                     spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-//                    // 1
-//                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-//                    // 2
-//                    spawnSnowball(player, cloudLoc.add(1, 0, 1), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(0, 0, 1), launchPath);
-//                    // 3
-//                    spawnSnowball(player, cloudLoc.add(-1, 0, 1), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
-//                    // 4
-//                    spawnSnowball(player, cloudLoc.add(-1, 0, -1), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
-//                    spawnSnowball(player, cloudLoc.add(0, 0, -1), launchPath);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20); // drops a snowball every second
