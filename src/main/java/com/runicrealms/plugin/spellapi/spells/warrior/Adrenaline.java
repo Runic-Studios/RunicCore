@@ -56,7 +56,6 @@ public class Adrenaline extends Spell implements PhysicalDamageSpell {
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         // Apply preliminary particle effects
-//        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, CHANNEL_DURATION * 20, 2));
 //        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, CHANNEL_DURATION * 20, 2));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);

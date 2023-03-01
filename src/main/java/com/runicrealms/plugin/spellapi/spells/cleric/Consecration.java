@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
@@ -11,8 +12,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -52,7 +51,7 @@ public class Consecration extends Spell implements MagicDamageSpell {
                     for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
                         if (!(isValidEnemy(player, en))) continue;
                         LivingEntity victim = (LivingEntity) en;
-                        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 2));
+                        addStatusEffect(victim, RunicStatusEffect.SLOW_III, 3, false);
                         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, spell);
                     }
                     count += 1;

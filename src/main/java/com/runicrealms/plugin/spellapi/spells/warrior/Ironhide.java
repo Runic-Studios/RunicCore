@@ -6,6 +6,7 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -16,8 +17,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +56,7 @@ public class Ironhide extends Spell implements MagicDamageSpell {
         player.getWorld().spawnParticle
                 (Particle.CRIT_MAGIC, player.getEyeLocation(), 25, 0.5F, 0.5F, 0.5F, 0);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 0.5f);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 0));
+        addStatusEffect(player, RunicStatusEffect.SLOW_I, DURATION, false);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
             ironPlayers.remove(player.getUniqueId());
@@ -75,7 +74,8 @@ public class Ironhide extends Spell implements MagicDamageSpell {
         if (!this.ironPlayers.contains(event.getVictim().getUniqueId())) return; // the tank
         if (!(event.getVictim() instanceof Player)) return;
         if (event.isCancelled()) return;
-        if (event.getSpell().getName().equalsIgnoreCase(this.getName())) return; // prevent infinite looping
+        if (event.getSpell().getName().equalsIgnoreCase(this.getName()))
+            return; // prevent infinite looping
         Player damager = event.getPlayer();
         Player victim = (Player) event.getVictim();
         damageAttacker(damager, victim);

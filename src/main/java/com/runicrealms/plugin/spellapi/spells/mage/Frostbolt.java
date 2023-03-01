@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
@@ -16,8 +17,6 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Frostbolt extends Spell implements MagicDamageSpell {
@@ -69,7 +68,7 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, player, this);
 
         // slow
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));
+        addStatusEffect(victim, RunicStatusEffect.SLOW_III, 5, false);
 
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),

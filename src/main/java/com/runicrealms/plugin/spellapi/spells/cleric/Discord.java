@@ -12,8 +12,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class Discord extends Spell implements MagicDamageSpell {
     private static final int DELAY = 2;
@@ -51,7 +49,7 @@ public class Discord extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DELAY * 20, 2));
+        addStatusEffect(player, RunicStatusEffect.SLOW_III, DELAY, false);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
         Cone.coneEffect(player, Particle.NOTE, DELAY, 0, 20, Color.GREEN);

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -24,12 +25,12 @@ import java.util.Objects;
 @SuppressWarnings("FieldCanBeLocal")
 public class SmokeBomb extends Spell implements MagicDamageSpell {
 
-    private final boolean frostBomb;
     private static final int FROSTBOMB_DURATION = 4;
     private static final int DAMAGE_AMT = 6;
     private static final int DAMAGE_PER_LEVEL = 1;
     private static final int DURATION = 3;
     private static final int RADIUS = 5;
+    private final boolean frostBomb;
     private ThrownPotion thrownPotion;
 
     public SmokeBomb() {
@@ -53,6 +54,21 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
         this.frostBomb = frostBomb;
     }
 
+    public static int getFrostbombDuration() {
+        return FROSTBOMB_DURATION;
+    }
+
+    private void damageNearby(Player pl, Location loc) {
+        for (Entity entity : pl.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
+            if (entity instanceof LivingEntity && isValidEnemy(pl, entity)) {
+                LivingEntity victim = (LivingEntity) entity;
+                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
+                victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 2));
+                addStatusEffect(victim, RunicStatusEffect.SLOW_III, DURATION, false);
+            }
+        }
+    }
+
     // spell execute code
     @Override
     public void executeSpell(Player pl, SpellItemType type) {
@@ -68,6 +84,11 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
         final Vector velocity = pl.getLocation().getDirection().normalize().multiply(1.25);
         thrownPotion.setVelocity(velocity);
         thrownPotion.setShooter(pl);
+    }
+
+    @Override
+    public double getDamagePerLevel() {
+        return DAMAGE_PER_LEVEL;
     }
 
     @EventHandler
@@ -108,26 +129,6 @@ public class SmokeBomb extends Spell implements MagicDamageSpell {
                 }
             }.runTaskTimer(plugin, 0, 20L);
         }
-    }
-
-    private void damageNearby(Player pl, Location loc) {
-        for (Entity entity : pl.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (entity instanceof LivingEntity && isValidEnemy(pl, entity)) {
-                LivingEntity victim = (LivingEntity) entity;
-                DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
-                victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, DURATION * 20, 2));
-                victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
-            }
-        }
-    }
-
-    public static int getFrostbombDuration() {
-        return FROSTBOMB_DURATION;
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }
 

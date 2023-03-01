@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -12,8 +13,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -95,7 +94,7 @@ public class Harpoon extends Spell implements PhysicalDamageSpell {
             //final double hPower = 0.5D;
 
             DamageUtil.damageEntityPhysical(DAMAGE_AMT, victim, player, false, true, this);
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
+            addStatusEffect(victim, RunicStatusEffect.SLOW_III, DURATION, false);
 
             new BukkitRunnable() {
                 @Override
