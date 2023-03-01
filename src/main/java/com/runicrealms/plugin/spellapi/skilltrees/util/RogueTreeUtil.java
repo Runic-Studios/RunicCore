@@ -50,7 +50,7 @@ public class RogueTreeUtil {
         perks.add(new PerkBaseStat(141, 1, 0, 5, Stat.VITALITY));
         perks.add(new PerkSpell(140, 1, 0, 1, "Harpoon"));
         perks.add(new PerkBaseStat(142, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(143, 1, 0, 1, "Feathered Friend"));
+        perks.add(new PerkSpell(143, 1, 0, 1, "Call of the Deep"));
         return perks;
     }
 

@@ -330,7 +330,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Cocoon());
         this.spellList.add(new FromTheShadows());
         this.spellList.add(new RapidReload());
-        this.spellList.add(new FeatheredFriend());
+        this.spellList.add(new CallOfTheDeep());
         /*
         Items
          */
