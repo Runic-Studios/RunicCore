@@ -46,7 +46,7 @@ public class RedisManager implements Listener, RedisAPI {
 
     @Override
     public long getExpireTime() {
-        return 1209600; // seconds (2 weeks)
+        return 2419200; // seconds (28 days, or roughly four weeks)
     }
 
     @Override
