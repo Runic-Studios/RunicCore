@@ -24,6 +24,7 @@ public class KnockbackUtil {
 
         // Apply knockback to enemy
         Vector knockbackVector = knockbackDirection.multiply(MELEE_STRENGTH);
+        knockbackVector.setY(knockbackVector.getY() + 0.15);
         victim.setVelocity(victim.getVelocity().add(knockbackVector));
     }
 
@@ -41,6 +42,7 @@ public class KnockbackUtil {
 
         // Apply knockback to enemy
         Vector knockbackVector = knockbackDirection.multiply(RANGED_STRENGTH);
+        knockbackVector.setY(knockbackVector.getY() + 0.15);
         victim.setVelocity(victim.getVelocity().add(knockbackVector));
     }
 
@@ -66,6 +68,7 @@ public class KnockbackUtil {
         // Apply knockback to enemy
         double knockbackStrength = isRanged ? RANGED_STRENGTH : MELEE_STRENGTH;
         Vector knockbackVector = knockbackDirection.multiply(knockbackStrength);
+        knockbackVector.setY(knockbackVector.getY() + 0.15);
         entity.setVelocity(entity.getVelocity().add(knockbackVector));
     }
 }
