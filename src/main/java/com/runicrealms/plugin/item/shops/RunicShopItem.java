@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.utilities.CurrencyUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;
@@ -9,100 +8,91 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RunicShopItem {
 
-    private final int price;
-    private final String currencyTemplateID;
+    private final Map<String, Integer> requiredItems;
     private final ItemStack shopItem;
-    private final String priceDisplayString;
     private final RunicItemRunnable runicItemRunnable;
     private boolean removePayment = true;
 
     /**
      * Creates a 'buy item' for the shop!
      *
-     * @param price              in chosen currency of item
-     * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem           to be purchased
+     * @param requiredItems Map of string name(s) of template ID for RunicItem currency to an amount of that item
+     * @param shopItem      to be purchased
      */
-    public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem) {
-        this.price = price;
-        this.currencyTemplateID = currencyTemplateID;
+    public RunicShopItem(Map<String, Integer> requiredItems, ItemStack shopItem) {
+        this.requiredItems = requiredItems;
         this.shopItem = shopItem;
-        this.priceDisplayString = CurrencyUtil.goldCoin().getItemMeta().getDisplayName();
         this.runicItemRunnable = runDefaultBuy();
     }
 
     /**
      * Creates a 'buy item' for the shop!
      *
-     * @param price              in chosen currency of item
-     * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem           to be purchased
-     * @param priceDisplayString a string that represents the kind of price (coin, hunter points, etc.)
+     * @param runicItemRunnable a custom runnable to be executed upon item purchase
      */
-    public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem, String priceDisplayString) {
-        this.price = price;
-        this.currencyTemplateID = currencyTemplateID;
+    public RunicShopItem(Map<String, Integer> requiredItems, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
+        this.requiredItems = requiredItems;
         this.shopItem = shopItem;
-        this.priceDisplayString = priceDisplayString;
-        this.runicItemRunnable = runDefaultBuy();
-    }
-
-    /**
-     * Creates a 'buy item' for the shop!
-     *
-     * @param price              in chosen currency of item
-     * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem           to be purchased
-     * @param runicItemRunnable  a custom runnable to be executed upon item purchase
-     */
-    public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
-        this.price = price;
-        this.currencyTemplateID = currencyTemplateID;
-        this.shopItem = shopItem;
-        this.priceDisplayString = CurrencyUtil.goldCoin().getItemMeta().getDisplayName();
         this.runicItemRunnable = runicItemRunnable;
     }
 
     /**
-     * Creates a 'buy item' for the shop!
+     * The generic item shop lore generator that appends the price
      *
-     * @param price              in chosen currency of item
-     * @param currencyTemplateID String name of template ID for RunicItem currency
-     * @param shopItem           to be purchased
-     * @param priceDisplayString a string that represents the kind of price (coin, hunter points, etc.)
-     * @param runicItemRunnable  a custom runnable to be executed upon item purchase
+     * @param runicShopItem the ShopItem wrapper of the item in the store
+     * @return a display-able item with lore like price info
      */
-    public RunicShopItem(int price, String currencyTemplateID, ItemStack shopItem, String priceDisplayString, RunicItemRunnable runicItemRunnable) {
-        this.price = price;
-        this.currencyTemplateID = currencyTemplateID;
-        this.shopItem = shopItem;
-        this.priceDisplayString = priceDisplayString;
-        this.runicItemRunnable = runicItemRunnable;
-    }
-
-    public int getPrice() {
-        return price;
+    public static ItemStack iconWithLore(RunicShopItem runicShopItem) {
+        ItemStack itemStack = runicShopItem.getShopItem();
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
+        if (runicItem instanceof RunicItemArmor runicItemArmor) {
+            runicItemArmor.setIsMenuDisplay(true);
+            itemStack = runicItemArmor.generateGUIItem();
+        }
+        ItemStack iconWithLore = itemStack.clone();
+        ItemMeta meta = iconWithLore.getItemMeta();
+        assert meta != null;
+        List<String> lore = meta.getLore();
+        assert lore != null;
+        lore.addAll(runicShopItem.getPriceLore());
+        meta.setLore(lore);
+        iconWithLore.setItemMeta(meta);
+        return iconWithLore;
     }
 
     /**
-     * Method to match a string to a runic item
-     *
-     * @return RunicItem w/ template ID matching string name
+     * @return
      */
-    public ItemStack getRunicItemCurrency() {
-        return RunicItemsAPI.generateItemFromTemplate(currencyTemplateID).generateItem();
+    public List<String> getPriceLore() {
+        List<String> lore = new ArrayList<>();
+        lore.add("");
+        lore.add(ChatColor.GOLD + "Price: ");
+        for (String templateID : this.requiredItems.keySet()) {
+            String displayName = RunicItemsAPI.generateItemFromTemplate(templateID).getDisplayableItem().getDisplayName();
+            lore.add(ChatColor.GOLD + "- " + ChatColor.GREEN + ChatColor.BOLD + this.requiredItems.get(templateID) + " " + displayName);
+        }
+        return lore;
+    }
+
+    /**
+     * @return
+     */
+    public Map<String, Integer> getRequiredItems() {
+        return requiredItems;
     }
 
     public ItemStack getShopItem() {
         return shopItem;
     }
 
-    public String getPriceDisplayString() {
-        return priceDisplayString;
+    public boolean removePayment() {
+        return removePayment;
     }
 
     /*
@@ -119,41 +109,7 @@ public class RunicShopItem {
         };
     }
 
-    public boolean removePayment() {
-        return removePayment;
-    }
-
     public void setRemovePayment(boolean removePayment) {
         this.removePayment = removePayment;
-    }
-
-    /**
-     * The generic item shop lore generator that appends the price
-     *
-     * @param itemStack itemstack to be sold
-     * @param price     of the item
-     * @return a display-able item with lore like price info
-     */
-    public static ItemStack iconWithLore(ItemStack itemStack, int price, String priceItemDisplayName) {
-        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
-        if (runicItem instanceof RunicItemArmor) {
-            RunicItemArmor runicItemArmor = (RunicItemArmor) runicItem;
-            runicItemArmor.setIsMenuDisplay(true);
-            itemStack = runicItemArmor.generateGUIItem();
-        }
-        ItemStack iconWithLore = itemStack.clone();
-        ItemMeta meta = iconWithLore.getItemMeta();
-        if (price > 0 && meta != null && meta.getLore() != null) {
-            List<String> lore = meta.getLore();
-            lore.add("");
-            lore.add(
-                    ChatColor.GOLD + "Price: " +
-                            ChatColor.GREEN + ChatColor.BOLD +
-                            price + " " + priceItemDisplayName
-            );
-            meta.setLore(lore);
-            iconWithLore.setItemMeta(meta);
-        }
-        return iconWithLore;
     }
 }

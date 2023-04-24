@@ -1,22 +1,28 @@
 package com.runicrealms.plugin.listeners;
 
+import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.api.Pair;
+import com.runicrealms.plugin.api.event.BasicAttackEvent;
+import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
+import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,132 +32,134 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Skyfallin
  */
 public class StaffListener implements Listener {
+    public static final int STAFF_COOLDOWN = 15; // ticks (0.75s)
+    private static final int MAX_DIST = 9;
+    private static final double RAY_SIZE = 1.0D;
 
-    private static final int STAFF_COOLDOWN = 15; // ticks (0.75s)
-    private static final int RADIUS = 5;
-    private static final int MAX_DIST = 8;
-    private static final double BEAM_HITBOX_SIZE = 1.5;
+    /**
+     * Verifies that the player's held item is a runic weapon and a staff.
+     * Returns true if the item is a staff, the player can wield it, high enough level, etc.
+     *
+     * @param player who is holding the staff
+     * @return true if all checks pass
+     */
+    public static Pair<Boolean, RunicItemWeapon> verifyStaff(Player player, ItemStack itemStack) {
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
+        if (runicItem == null) return Pair.pair(false, null);
+        if (!(runicItem instanceof RunicItemWeapon runicItemWeapon)) return Pair.pair(false, null);
+        Material runicItemType = runicItemWeapon.getDisplayableItem().getMaterial();
+        double cooldown = player.getCooldown(runicItemType);
+        if (cooldown != 0) return Pair.pair(false, null);
 
-    @EventHandler
-    public void onStaffAttack(PlayerInteractEvent e) {
+        // Check for mage
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        if (className == null) return Pair.pair(false, null);
+        if (!className.equals("Mage")) return Pair.pair(false, null);
+        if (RunicCore.getSpellAPI().isCasting(player)) return Pair.pair(false, null);
+        int reqLv = runicItemWeapon.getLevel();
+        if (reqLv > player.getLevel()) {
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+            return Pair.pair(false, null);
+        }
 
-        // check for null
-        if (e.getItem() == null) return;
+        return Pair.pair(true, runicItemWeapon);
+    }
 
-        // retrieve the weapon type
-        ItemStack artifact = e.getItem();
-        Material artifactType = artifact.getType();
-        double cooldown = e.getPlayer().getCooldown(artifact.getType());
+    /**
+     * Create a PhysicalDamageEvent for our staff attack, verify that the player can use the weapon
+     *
+     * @param player          who summoned staff attack
+     * @param victim          to be damaged
+     * @param runicItemWeapon runic item to read damage values from
+     */
+    private void damageStaff(Player player, LivingEntity victim, RunicItemWeapon runicItemWeapon) {
+        int minDamage = runicItemWeapon.getWeaponDamage().getMin();
+        int maxDamage = runicItemWeapon.getWeaponDamage().getMax();
 
-        // only listen for items that can be artifact weapons
-        if (artifactType == Material.AIR) return;
-        if (e.getHand() != EquipmentSlot.HAND) return;
+        // apply attack effects, random damage amount
+        if (maxDamage != 0) {
+            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
+            DamageUtil.damageEntityPhysical(randomNum, victim, player, true, true);
+        } else {
+            DamageUtil.damageEntityPhysical(maxDamage, victim, player, true, true);
+        }
 
-        // IGNORE NON-STAFF ITEMS
-        if (artifactType != Material.WOODEN_HOE) return;
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+    }
 
-        Player pl = e.getPlayer();
+    /**
+     * @param player who cast the beam
+     * @param victim the entity hit by the staff beam
+     * @return true if the enemy can be damaged
+     */
+    private boolean isValidEnemy(Player player, Entity victim) {
+        EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(player, victim);
+        Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
+        return !enemyVerifyEvent.isCancelled();
+    }
 
-        // only listen for left clicks
-        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) return;
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onStaffAttack(PlayerInteractEvent event) {
+        // Only listen for left clicks
+        if (event.getAction() == Action.RIGHT_CLICK_AIR
+                || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+            return;
+        if (event.getItem() == null) return;
+        if (event.getItem().getType() == Material.AIR) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getItem().getType() != Material.WOODEN_HOE) return;
+        // Retrieve the weapon type and try to fire staff attack
+        TaskChain<?> chain = RunicCore.newChain();
+        chain
+                .asyncFirst(() -> verifyStaff(event.getPlayer(), event.getItem()))
+                .syncLast(result -> {
+                    if (result.first) {
+                        event.setCancelled(true);
+                        Bukkit.getPluginManager().callEvent(new StaffAttackEvent(event.getPlayer(), result.second));
+                    }
+                })
+                .execute();
+    }
 
-        // only apply cooldown if it's not already active
-        if (cooldown != 0) return;
-
-        // cancel the event, run custom mechanics
-        e.setCancelled(true);
-
-        // check for mage
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
-        if (className == null) return;
-        if (!className.equals("Mage")) return;
-        if (RunicCoreAPI.isCasting(pl)) return;
-
-        staffAttack(pl, artifact);
-        // set the cooldown
-        pl.setCooldown(artifact.getType(), STAFF_COOLDOWN);
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onStaffAttack(StaffAttackEvent event) {
+        if (event.isCancelled()) return;
+        staffAttack(event.getPlayer(), event.getRunicItemWeapon());
     }
 
     /**
      * Function to begin staff attack
      *
-     * @param player    who initiated attack
-     * @param itemStack to be passed down to damage function
+     * @param player          who initiated attack
+     * @param runicItemWeapon to be passed down to damage function
      */
-    private void staffAttack(Player player, ItemStack itemStack) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
-        createStaffParticle(player, player.getEyeLocation(), player.getTargetBlock(null, MAX_DIST).getLocation(), itemStack);
-    }
+    private void staffAttack(Player player, RunicItemWeapon runicItemWeapon) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.4f, 2.0F);
 
-    /**
-     * Summon a vector which acts as our staff attack
-     *
-     * @param player    who conjured attack
-     * @param point1    eye location of player
-     * @param point2    player's target block
-     * @param itemStack to be passed to the damage function
-     */
-    private void createStaffParticle(Player player, Location point1, Location point2, ItemStack itemStack) {
-        double space = 0.5;
-        double distance = point1.distance(point2);
-        Vector p1 = point1.toVector();
-        Vector p2 = point2.toVector();
-        Vector vector = p2.clone().subtract(p1).normalize().multiply(space);
-        for (double length = 0; length < distance; p1.add(vector)) {
-            Location vectorLocation = p1.toLocation(player.getWorld());
-            for (Entity en : player.getWorld().getNearbyEntities(p1.toLocation(player.getWorld()), RADIUS, RADIUS, RADIUS)) {
-                EnemyVerifyEvent e = new EnemyVerifyEvent(player, en);
-                Bukkit.getServer().getPluginManager().callEvent(e);
-                if (e.isCancelled()) continue;
-                if (en.getLocation().distanceSquared(vectorLocation) <= BEAM_HITBOX_SIZE * BEAM_HITBOX_SIZE) {
-                    damageStaff(player, (LivingEntity) en, itemStack);
-                    return;
-                }
-            }
-            player.getWorld().spawnParticle(Particle.CRIT_MAGIC,
-                    new Location(player.getWorld(), p1.getX(), p1.getY(), p1.getZ()), 25, 0, 0, 0, 0);
-            length += space;
-        }
-    }
+        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
+                (
+                        player.getLocation(),
+                        player.getLocation().getDirection(),
+                        MAX_DIST,
+                        RAY_SIZE,
+                        entity -> isValidEnemy(player, entity)
+                );
 
-    /**
-     * Create a WeaponDamageEvent for our staff attack
-     *
-     * @param player   who summoned staff attack
-     * @param victim   to be damaged
-     * @param artifact held item to read damage values from
-     */
-    private void damageStaff(Player player, LivingEntity victim, ItemStack artifact) {
-
-        int minDamage;
-        int maxDamage;
-        int reqLv;
-
-        try {
-            RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
-            minDamage = runicItemWeapon.getWeaponDamage().getMin();
-            maxDamage = runicItemWeapon.getWeaponDamage().getMax();
-            reqLv = runicItemWeapon.getLevel();
-        } catch (Exception ex) {
-            minDamage = 1;
-            maxDamage = 1;
-            reqLv = 1;
+        if (rayTraceResult == null) {
+            Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            VectorUtil.drawLine(player, Particle.SPELL_WITCH, Color.FUCHSIA, player.getEyeLocation(), location, 0.85D, 1, 0.15f);
+        } else if (rayTraceResult.getHitEntity() != null) {
+            LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
+            VectorUtil.drawLine(player, Particle.SPELL_WITCH, Color.FUCHSIA, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.85D, 1, 0.15f);
+            damageStaff(player, livingEntity, runicItemWeapon);
         }
 
-        if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel()) {
-            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-            return;
-        }
-
-        // apply attack effects, random damage amount
-        if (maxDamage != 0) {
-            int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
-            DamageUtil.damageEntityWeapon(randomNum, victim, player, true, true);
-        } else {
-            DamageUtil.damageEntityWeapon(maxDamage, victim, player, true, true);
-        }
-
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+        Bukkit.getPluginManager().callEvent(new BasicAttackEvent
+                (
+                        player,
+                        runicItemWeapon.getDisplayableItem().getMaterial(),
+                        BasicAttackEvent.BASE_STAFF_COOLDOWN
+                ));
     }
 }

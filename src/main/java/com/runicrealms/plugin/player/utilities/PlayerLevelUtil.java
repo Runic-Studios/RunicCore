@@ -1,12 +1,12 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.utilities.ClassUtil;
-import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.utilities.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 public class PlayerLevelUtil {
 
@@ -33,118 +33,86 @@ public class PlayerLevelUtil {
      */
     public static int calculateTotalExp(int currentLv) {
         int cubed = (int) Math.pow((currentLv + 5), 3);
-        return ((30 * cubed) / 5) - 750;
+        return ((53 * cubed) / 5) - 1325;
     }
 
-    /*
-    This method takes in an experience amount and returns the level which corresponds to that amount.
-    i.e., passing 997,500 will return level 50.
+    /**
+     * This method takes in an experience amount and returns the level which corresponds to that amount.
+     * i.e., passing 997,500 will return level 50.
+     *
+     * @param experience the experience of the player
      */
     public static int calculateExpectedLv(int experience) {
-        return (int) Math.cbrt(((experience + 750) / 6)) - 5;
+        return (int) Math.cbrt((((5 * experience) + 6625.0) / 53)) - 5;
     }
 
     /**
      * Called when a player earns experience towards their combat class
+     *
+     * @param player    who earned the exp
+     * @param expGained the amount of exp earned
      */
-    public static void giveExperience(Player pl, int expGained) {
+    public static void giveExperience(Player player, int expGained) {
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                int currentLevel = player.getLevel();
+                if (currentLevel >= MAX_LEVEL) return;
+                int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
+                CoreCharacterData characterData = RunicCore.getDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
+                int currentExp = characterData.getExp();
+                currentExp = currentExp + expGained;
 
-        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCaches().get(pl);
-        if (playerCache == null) return;
+                // If the player's actual level is incorrect based on their total exp, adjust level
+                if (calculateExpectedLv(currentExp) != currentLevel) {
+                    player.sendMessage("\n");
+                    sendLevelMessage(player, calculateExpectedLv(currentExp));
+                    player.sendMessage("\n");
+                    player.setLevel(calculateExpectedLv(currentExp));
+                    currentLevel = calculateExpectedLv(currentExp);
+                }
 
-        String className = playerCache.getClassName();
-        int currentLv = playerCache.getClassLevel();
-        int currentExp = playerCache.getClassExp();
+                int totalExpAtLevel = calculateTotalExp(currentLevel);
+                int totalExpToLevel = calculateTotalExp(currentLevel + 1);
+                double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
+                if (currentLevel == MAX_LEVEL) {
+                    player.setExp(0);
+                }
+                if (proportion < 0) {
+                    proportion = 0.0f;
+                }
 
-        if (currentLv >= MAX_LEVEL)
-            return;
-
-        currentExp = currentExp + expGained;
-        playerCache.setClassExp(currentExp);
-
-        int newTotalExp = playerCache.getClassExp();
-
-        if (calculateExpectedLv(newTotalExp) != currentLv) {
-
-            // apply milestones for 10, 20, 30, 40, 50, 60.
-            boolean needsMilestone = applyMileStone(pl, currentLv, className, calculateExpectedLv(newTotalExp));
-
-            // send a basic leveling message for all the levels that aren't milestones.
-            // (10, 20, etc.)
-            if (!needsMilestone) {
-                pl.sendMessage("\n");
-                sendLevelMessage(pl, calculateExpectedLv(newTotalExp));
-                pl.sendMessage("\n");
+                characterData.setExp(currentExp);
+                characterData.setLevel(currentLevel);
+                player.setExp((float) proportion);
+                characterData.writeToJedis(player.getUniqueId(), jedis, slot);
             }
-
-            pl.setLevel(calculateExpectedLv(newTotalExp));
-            RunicCore.getCacheManager().getPlayerCaches().get(pl).setClassLevel(calculateExpectedLv(newTotalExp));
-            currentLv = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel();
-        }
-
-        int totalExpAtLevel = calculateTotalExp(currentLv);
-        int totalExpToLevel = calculateTotalExp(currentLv + 1);
-        double proportion = (double) (currentExp - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
-        if (currentLv == MAX_LEVEL) {
-            pl.setExp(0);
-        }
-        if (proportion < 0) {
-            proportion = 0.0f;
-        }
-        pl.setExp((float) proportion);
+        });
     }
 
-    private static boolean applyMileStone(Player pl, int oldLevel, String className, int classLevel) {
-        if (classLevel >= 5 && oldLevel < 5) {
-            sendLevelMessage(pl, 5);
-            return true;
-        } else if (classLevel >= 10 && oldLevel < 10) {
-            sendLevelMessage(pl, 10);
-            return true;
-        } else if (classLevel >= 15 && oldLevel < 15) {
-            sendLevelMessage(pl, 15);
-            return true;
-        } else if (classLevel >= 25 && oldLevel < 25) {
-            sendLevelMessage(pl, 25);
-            return true;
-        } else if (classLevel >= 35 && oldLevel < 35) {
-            sendLevelMessage(pl, 35);
-            return true;
-        } else if (classLevel >= 40 && oldLevel < 40) {
-            sendLevelMessage(pl, 40);
-            return true;
-        } else if (classLevel >= MAX_LEVEL) {
-            Bukkit.broadcastMessage(ChatColor.WHITE + "" + ChatColor.BOLD + pl.getName()
-                    + ChatColor.GOLD + ChatColor.BOLD + " has reached level " + classLevel + " " + className + "!");
-            pl.sendMessage("\n");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GRAY + " You've reached level " + classLevel + "!");
-            ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "     You can now access " + ChatColor.DARK_RED + "The Frozen Fortress!");
-            pl.sendMessage("\n");
-            ClassUtil.launchFirework(pl, className);
-            return true;
-        }
-        return false;
-    }
-
-    private static void sendLevelMessage(Player pl, int classLv) {
-
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
-        if (className == null)
-            return;
-
-        pl.sendTitle(
+    /**
+     * When the player earns a level, send them a message!
+     *
+     * @param player  to receive message
+     * @param classLv the level they reached
+     */
+    private static void sendLevelMessage(Player player, int classLv) {
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        if (className == null) return;
+        player.sendTitle(
                 ChatColor.GREEN + "Level Up!",
                 ChatColor.GREEN + className + " Level " + ChatColor.WHITE + classLv, 10, 40, 10);
 
         // save player hp, restore hp.food
-        pl.sendMessage("\n");
-        ChatUtils.sendCenteredMessage(pl, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
+        player.sendMessage("\n");
+        if (classLv != MAX_LEVEL)
+            ChatUtils.sendCenteredMessage(player, ChatColor.GREEN + "" + ChatColor.BOLD + "LEVEL UP!");
+        else
+            ChatUtils.sendCenteredMessage(player, ChatColor.GOLD + "" + ChatColor.BOLD + "MAX LEVEL REACHED!");
         int gainedHealth = calculateHealthAtLevel(classLv, className) - calculateHealthAtLevel(classLv - 1, className);
-        ChatUtils.sendCenteredMessage(pl,
+        ChatUtils.sendCenteredMessage(player,
                 ChatColor.RED + "" + ChatColor.BOLD + "+" + gainedHealth + "❤ "
-                        + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(pl) + "✸");
-        pl.sendMessage("\n");
+                        + ChatColor.DARK_AQUA + "+" + RunicCore.getRegenManager().getManaPerLv(player) + "✸");
+        player.sendMessage("\n");
     }
 
     /**
@@ -166,20 +134,15 @@ public class PlayerLevelUtil {
      * @return um can return either dis might be bad but to lazy to write two methods
      */
     public static double determineHealthLvByClass(String className) {
-        switch (className.toLowerCase()) {
-            case "archer":
-                return PlayerLevelUtil.getArcherHpLv();
-            case "cleric":
-                return PlayerLevelUtil.getClericHpLv();
-            case "mage":
-                return PlayerLevelUtil.getMageHpLv();
-            case "rogue":
-                return PlayerLevelUtil.getRogueHpLv();
-            case "warrior":
-                return PlayerLevelUtil.getWarriorHpLv();
-            default:
-                throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
-        }
+        return switch (className.toLowerCase()) {
+            case "archer" -> PlayerLevelUtil.getArcherHpLv();
+            case "cleric" -> PlayerLevelUtil.getClericHpLv();
+            case "mage" -> PlayerLevelUtil.getMageHpLv();
+            case "rogue" -> PlayerLevelUtil.getRogueHpLv();
+            case "warrior" -> PlayerLevelUtil.getWarriorHpLv();
+            default ->
+                    throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
+        };
     }
 
     public static int getMaxLevel() {

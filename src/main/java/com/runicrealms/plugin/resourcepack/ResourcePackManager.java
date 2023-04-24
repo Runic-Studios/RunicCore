@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.resourcepack;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import us.myles.ViaVersion.api.Via;
@@ -15,7 +16,7 @@ public class ResourcePackManager {
             //Bukkit.broadcastMessage(pack.name());
             player.setResourcePack(pack.getLink());
         } else {
-            player.sendMessage(ChatColor.RED + "Error: We couldn't find a resource pack for your minecraft version!");
+            Bukkit.getLogger().info(ChatColor.RED + "ERROR: We couldn't find a resource pack for a player's minecraft version!");
         }
     }
 

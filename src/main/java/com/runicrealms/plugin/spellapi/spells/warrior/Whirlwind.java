@@ -1,12 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -15,84 +13,115 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class Whirlwind extends Spell implements MagicDamageSpell {
+public class Whirlwind extends Spell implements DurationSpell, PhysicalDamageSpell, RadiusSpell {
+    private static final HashSet<UUID> playerUuidSet = new HashSet<>();
+    private double damageAmt;
+    private double damagePerLevel;
+    private double duration;
+    private double radius;
 
-    private static final int DAMAGE_AMT = 4;
-    private static final double DAMAGE_PER_LEVEL = .25;
-    private static final int DURATION = 10;
-    private static final float RADIUS = 2f;
-
-    // constructor
     public Whirlwind() {
-        super("Whirlwind",
-                "For " + DURATION + " seconds, you unleash the " +
-                        "fury of the winds, summoning a cyclone around you that damages " +
-                        "enemies within " + (double) RADIUS + " blocks for (" +
-                        DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL + "x&7 lvl) spellʔ damage!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 20, 25);
+        super("Whirlwind", CharacterClass.WARRIOR);
+        this.setDescription("For " + duration + " seconds, you unleash the " +
+                "fury of the winds, summoning a cyclone around you that damages " +
+                "enemies within " + radius + " blocks for (" +
+                damageAmt + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ damage!");
+    }
+
+    public static HashSet<UUID> getUuidSet() {
+        return playerUuidSet;
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
+        playerUuidSet.add(player.getUniqueId());
+        final Spell spell = this;
 
-        // begin effect
         BukkitRunnable whirlwind = new BukkitRunnable() {
             @Override
             public void run() {
-                spawnCyclone(pl);
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> spawnCycloneParticle(player));
+
+                for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius)) {
+                    if (!(entity instanceof LivingEntity livingEntity)) continue;
+                    if (!isValidEnemy(player, entity)) continue;
+                    DamageUtil.damageEntitySpell(damageAmt, livingEntity, player, spell);
+                }
             }
         };
         whirlwind.runTaskTimer(RunicCore.getInstance(), 0, 20);
-
-        // cancel effect
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                whirlwind.cancel();
-            }
-        }.runTaskLater(RunicCore.getInstance(), DURATION * 20);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+                    whirlwind.cancel();
+                    playerUuidSet.remove(player.getUniqueId());
+                },
+                (int) duration * 20L);
     }
 
-    private void spawnCyclone(Player pl) {
+    @Override
+    public double getDuration() {
+        return duration;
+    }
 
-        Location loc = pl.getLocation();
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
+    }
 
-        Location location1 = pl.getEyeLocation();
-        Location location2 = pl.getEyeLocation().add(0, 1, 0);
-        Location location3 = pl.getEyeLocation().subtract(0, 1, 0);
-        int particles = 50;
-        float radius = RADIUS;
+    @Override
+    public double getPhysicalDamage() {
+        return damageAmt;
+    }
+
+    @Override
+    public void setPhysicalDamage(double physicalDamage) {
+        this.damageAmt = physicalDamage;
+    }
+
+    @Override
+    public double getPhysicalDamagePerLevel() {
+        return damagePerLevel;
+    }
+
+    @Override
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = physicalDamagePerLevel;
+    }
+
+    @Override
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    private void spawnCloud(Player player, Location location, double x, double z) {
+        location.add(x, 0, z);
+        player.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 0);
+        location.subtract(x, 0, z);
+    }
+
+    private void spawnCycloneParticle(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.75f, 0.5f);
+        Location location1 = player.getEyeLocation();
+        Location location2 = player.getEyeLocation().add(0, 1, 0);
+        Location location3 = player.getEyeLocation().subtract(0, 1, 0);
+        int particles = 15;
+        float radius = (float) this.radius;
 
         for (int i = 0; i < particles; i++) {
             double angle, x, z;
             angle = 2 * Math.PI * i / particles;
             x = Math.cos(angle) * radius;
             z = Math.sin(angle) * radius;
-            spawnCloud(pl, location1, x, z);
-            spawnCloud(pl, location2, x, z);
-            spawnCloud(pl, location3, x, z);
+            spawnCloud(player, location1, x, z);
+            spawnCloud(player, location2, x, z);
+            spawnCloud(player, location3, x, z);
         }
-
-        for (Entity en : Objects.requireNonNull(loc.getWorld()).getNearbyEntities(loc, RADIUS, RADIUS, RADIUS)) {
-            if (!(en instanceof LivingEntity)) continue;
-            LivingEntity le = (LivingEntity) en;
-            if (!verifyEnemy(pl, en)) continue;
-            DamageUtil.damageEntitySpell(DAMAGE_AMT, le, pl, this);
-        }
-    }
-
-    private void spawnCloud(Player pl, Location location, double x, double z) {
-        location.add(x, 0, z);
-        pl.getWorld().spawnParticle(Particle.CLOUD, location, 1, 0, 0, 0, 0);
-        location.subtract(x, 0, z);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }

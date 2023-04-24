@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 public enum CityLocation {
 
     TUTORIAL("tutorial", "Tutorial",
-            new Location(Bukkit.getWorld("Alterra"), -2317.5, 38, 1719.5, 0, 0), HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK),
+            new Location(Bukkit.getWorld("Alterra"), -2277.5, 23, 1676.5, -250, 0), HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK),
     AZANA("azana", "Azana",
             new Location(Bukkit.getWorld("Alterra"), -764.5, 40, 206.5, 180, 0), HearthstoneItemUtil.HEARTHSTONE_AZANA_ITEMSTACK),
     KOLDORE("koldore", "Koldore",

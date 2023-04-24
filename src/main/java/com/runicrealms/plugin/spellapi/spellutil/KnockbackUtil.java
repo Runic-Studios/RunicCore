@@ -13,11 +13,11 @@ public class KnockbackUtil {
 
     private static final double POWER = 0.35;
 
-    // todo: fix this
     /**
      * Controls strength of on-hit knockback for melee attacks against other players.
+     *
      * @param damager Who hit the player (can be mob or another player)
-     * @param victim player who was hit
+     * @param victim  player who was hit
      */
     public static void knockbackMeleePlayer(Entity damager, Player victim) {
         Location l = victim.getLocation().subtract(damager.getLocation());
@@ -25,7 +25,7 @@ public class KnockbackUtil {
         double distance = victim.getLocation().distance(damager.getLocation());
         if (distance == 0) distance = 1;
         DecimalFormat finite = new DecimalFormat("#.####");
-        double multiplier = POWER/distance;
+        double multiplier = POWER / distance;
         Vector vec = l.toVector().normalize().multiply(multiplier);
         vec.setX(Double.parseDouble(finite.format(vec.getX())));
         vec.setY(0.3333);
@@ -35,8 +35,9 @@ public class KnockbackUtil {
 
     /**
      * Controls strength of on-hit knockback for melee attacks against other players.
+     *
      * @param damager player who attacked
-     * @param victim player who was hit
+     * @param victim  player who was hit
      */
     public static void knockbackRangedPlayer(Player damager, Player victim) {
         Vector vector = damager.getLocation().getDirection().multiply(0.35);
@@ -46,7 +47,8 @@ public class KnockbackUtil {
 
     /**
      * Controls strength of on-hit knockback for melee attacks against mobs.
-     * @param entity entity to be hit back
+     *
+     * @param entity   entity to be hit back
      * @param isRanged whether the attack came from a melee or ranged hit
      */
     public static void knockBackMob(Player damager, Entity entity, boolean isRanged) {

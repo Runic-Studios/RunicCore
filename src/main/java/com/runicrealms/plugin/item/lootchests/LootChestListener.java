@@ -24,6 +24,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -36,26 +37,71 @@ public class LootChestListener implements Listener {
 
     private static final File CHESTS = new File(RunicCore.getInstance().getDataFolder(), "chests.yml");
     private static final FileConfiguration CHESTS_CONFIG = YamlConfiguration.loadConfiguration(CHESTS);
+    /**
+     * This event adds a new workstation to the file, so long as the player is op and holding a green wool.
+     * The event then listens for the player's chat response, and adds the block to the file accordingly.
+     * NEW: If the player is holding red wool, they can remove a chest.
+     */
+    private final ArrayList<UUID> chatters = new ArrayList<>();
 
-    @EventHandler(priority = EventPriority.NORMAL) // first
-    public void onChestInteract(PlayerInteractEvent e) {
+    /**
+     * Admin chat handling for adding / removing loot chests
+     */
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent e) {
+        Player pl = e.getPlayer();
+        if (!this.chatters.contains(pl.getUniqueId())) return;
 
-        if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-        if (!(e.getHand() == EquipmentSlot.HAND)) return;
-        if (!e.hasBlock()) return;
-        if (e.getClickedBlock() == null) return;
-        if (e.getClickedBlock().getType() != Material.CHEST) return;
-        Chest chest = (Chest) e.getClickedBlock().getState();
-        BossChest bossChest = BossChest.getFromBlock(RunicCore.getBossTagger().getActiveBossLootChests(), chest);
-        if (bossChest != null) return; // handled in BossTagger
         e.setCancelled(true);
 
-        Player player = e.getPlayer();
-        Block block = e.getClickedBlock();
+        // retrieve chat message
+        String chestTier = e.getMessage().toLowerCase();
+
+        // verify input
+        if (!(chestTier.equals("common")
+                || chestTier.equals("uncommon")
+                || chestTier.equals("rare")
+                || chestTier.equals("epic"))) {
+            pl.sendMessage(ChatColor.RED + "Please specify a correct input.");
+            return;
+        }
+
+        if (!CHESTS_CONFIG.isSet("Chests.NEXT_ID")) {
+            CHESTS_CONFIG.set("Chests.NEXT_ID", 0);
+        }
+        int nextID = CHESTS_CONFIG.getInt("Chests.NEXT_ID");
+
+        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".tier", chestTier);
+        CHESTS_CONFIG.set("Chests.NEXT_ID", nextID + 1);
+        pl.sendMessage(ChatColor.GREEN + "Chest tier set to: " + ChatColor.YELLOW + chestTier);
+        chatters.remove(pl.getUniqueId());
+
+        // save data file
+        try {
+            CHESTS_CONFIG.save(CHESTS);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL) // first
+    public void onChestInteract(PlayerInteractEvent event) {
+        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!(event.getHand() == EquipmentSlot.HAND)) return;
+        if (!event.hasBlock()) return;
+        if (event.getClickedBlock() == null) return;
+        if (event.getClickedBlock().getType() != Material.CHEST) return;
+        Chest chest = (Chest) event.getClickedBlock().getState();
+        BossChest bossChest = BossChest.getFromBlock(RunicCore.getBossTagger().getActiveBossLootChests(), chest);
+        if (bossChest != null) return; // handled in BossTagger
+        event.setCancelled(true);
+
+        Player player = event.getPlayer();
+        Block block = event.getClickedBlock();
         Location blockLoc = block.getLocation();
         if (block.getType() == Material.AIR) return;
 
-        if (RunicCore.getLootChestManager().getQueuedChest(blockLoc) != null) return; // chest already queued
+        // if (RunicCore.getLootChestManager().getQueuedChest(blockLoc) != null) return; // chest already queued
         if (RunicCore.getLootChestManager().getLootChest(blockLoc) == null)
             return; // chest doesn't match saved chest locations
         LootChest lootChest = RunicCore.getLootChestManager().getLootChest(blockLoc);
@@ -74,31 +120,21 @@ public class LootChestListener implements Listener {
             return;
         }
 
-        // destroy chest, open inv if all conditions are met
-        RunicCore.getLootChestManager().getQueuedChests().put(lootChest, System.currentTimeMillis()); // update respawn timer
-        player.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
-        block.setType(Material.AIR);
+        // verify chest has not already been looted
+        Map<LootChest, Long> chestsOnCD = RunicCore.getLootChestManager().getChestsOnCDForUuid(player.getUniqueId());
+        if (chestsOnCD.containsKey(lootChest)) {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+            long timeLeft = (lootChest.getLootChestRarity().getRespawnTimeSeconds() * 1000L) - (System.currentTimeMillis() - chestsOnCD.get(lootChest));
+            player.sendMessage(ChatColor.RED + "You must wait " + (int) (timeLeft / 1000) + " seconds to loot this chest again!");
+            return;
+        }
 
+        // open inv if all conditions are met, put chest on CD for player
+        chestsOnCD.put(lootChest, System.currentTimeMillis()); // put chest on CD
+        player.getWorld().playSound(blockLoc, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 1);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 1);
         player.openInventory(new LootChestInventory(player, lootChestTier).getInventory());
     }
-
-    @EventHandler
-    public void onLootChestInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() == null) return;
-        if (!(e.getView().getTopInventory().getHolder() instanceof LootChestInventory)) return;
-        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
-        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(e.getCurrentItem());
-        if (RunicItemsAPI.containsBlockedTag(runicItem))
-            e.setCancelled(true);
-    }
-
-    /**
-     * This event adds a new workstation to the file, so long as the player is op and holding a green wool.
-     * The event then listens for the player's chat response, and adds the block to the file accordingly.
-     * NEW: If the player is holding red wool, they can remove a chest.
-     */
-    private final ArrayList<UUID> chatters = new ArrayList<>();
 
     /**
      * Admin functionality for adding / removing loot chests
@@ -156,43 +192,13 @@ public class LootChestListener implements Listener {
         }
     }
 
-    /**
-     * Admin chat handling for adding / removing loot chests
-     */
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent e) {
-        Player pl = e.getPlayer();
-        if (!this.chatters.contains(pl.getUniqueId())) return;
-
-        e.setCancelled(true);
-
-        // retrieve chat message
-        String chestTier = e.getMessage().toLowerCase();
-
-        // verify input
-        if (!(chestTier.equals("common")
-                || chestTier.equals("uncommon")
-                || chestTier.equals("rare")
-                || chestTier.equals("epic"))) {
-            pl.sendMessage(ChatColor.RED + "Please specify a correct input.");
-            return;
-        }
-
-        if (!CHESTS_CONFIG.isSet("Chests.NEXT_ID")) {
-            CHESTS_CONFIG.set("Chests.NEXT_ID", 0);
-        }
-        int nextID = CHESTS_CONFIG.getInt("Chests.NEXT_ID");
-
-        CHESTS_CONFIG.set("Chests.Locations." + nextID + ".tier", chestTier);
-        CHESTS_CONFIG.set("Chests.NEXT_ID", nextID + 1);
-        pl.sendMessage(ChatColor.GREEN + "Chest tier set to: " + ChatColor.YELLOW + chestTier);
-        chatters.remove(pl.getUniqueId());
-
-        // save data file
-        try {
-            CHESTS_CONFIG.save(CHESTS);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    public void onLootChestInventoryClick(InventoryClickEvent e) {
+        if (e.getClickedInventory() == null) return;
+        if (!(e.getView().getTopInventory().getHolder() instanceof LootChestInventory)) return;
+        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
+        RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(e.getCurrentItem());
+        if (RunicItemsAPI.containsBlockedTag(runicItem))
+            e.setCancelled(true);
     }
 }

@@ -1,12 +1,15 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,14 +26,13 @@ public class SliceAndDice extends Spell {
     private static final double LAUNCH_PATH_MULT = 1.5;
 
     public SliceAndDice() {
-        super("Slice and Dice",
-                "You launch yourself backwards " +
-                        "in the air then blink forward, " +
-                        "slashing enemies within " + RADIUS + " blocks " +
-                        "for (&f" + DAMAGE_AMT + " + " + PERCENT + "x " +
-                        "their missing health&7) as weapon⚔ damage! " +
-                        "Capped at " + DAMAGE_CAP + " against monsters.",
-                ChatColor.WHITE, ClassEnum.ROGUE, 15, 30);
+        super("Slice and Dice", CharacterClass.ROGUE);
+        this.setDescription("You launch yourself backwards " +
+                "in the air then blink forward, " +
+                "slashing enemies within " + RADIUS + " blocks " +
+                "for (&f" + DAMAGE_AMT + " + " + PERCENT + "x " +
+                "their missing health&7) as physical⚔ damage! " +
+                "Capped at " + DAMAGE_CAP + " against monsters.");
     }
 
     @Override
@@ -55,17 +57,16 @@ public class SliceAndDice extends Spell {
                 pl.teleport(original);
                 pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 2.0f);
                 pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 2.0f);
-                VectorUtil.drawLine(pl, Particle.REDSTONE, Color.BLACK, original, current, 0.5);
-                pl.swingMainHand();
+                VectorUtil.drawLine(pl, Particle.REDSTONE, Color.BLACK, original, current, 0.5D, 25);
                 for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
                     if (!(en instanceof LivingEntity))
                         continue;
-                    if (verifyEnemy(pl, en)) {
+                    if (isValidEnemy(pl, en)) {
                         pl.getWorld().spawnParticle(Particle.SWEEP_ATTACK, ((LivingEntity) en).getEyeLocation(), 5, 0, 0, 0, 0);
                         int amount = DAMAGE_AMT + percentMissingHealth(en, PERCENT);
                         if (!(en instanceof Player) && amount > DAMAGE_CAP)
                             amount = DAMAGE_CAP;
-                        DamageUtil.damageEntityWeapon(amount, (LivingEntity) en, pl, false, false);
+                        DamageUtil.damageEntityPhysical(amount, (LivingEntity) en, pl, false, false);
                     }
                 }
             }

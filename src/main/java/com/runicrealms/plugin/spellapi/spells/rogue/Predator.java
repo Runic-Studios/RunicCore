@@ -1,64 +1,71 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
-import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class Predator extends Spell {
-
-    private static final int DURATION = 3;
-    private static final double PERCENT = 0.75;
-    private static final HashSet<UUID> predators = new HashSet<>();
+public class Predator extends Spell implements DurationSpell {
+    private static final Map<UUID, Set<UUID>> predators = new ConcurrentHashMap<>();
+    private double duration;
 
     public Predator() {
-        super("Predator",
-                "Upon reappearing after becoming invisible, " +
-                        "you gain a " + (int) (PERCENT * 100) + "% damage " +
-                        "buff for " + DURATION + "s! ",
-                ChatColor.WHITE, ClassEnum.ROGUE, 0, 0);
+        super("Predator", CharacterClass.ROGUE);
         this.setIsPassive(true);
+        this.setDescription("When you basic-attack enemies who have been hit by " +
+                "&aTwin Fangs&7, lower the cooldown of &aTwin Fangs &7by " + duration +
+                "s! Affected enemies are reset each cast.");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // runs last
-    public void onPredatorHit(SpellDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
-        if (!predators.contains(e.getPlayer().getUniqueId())) return;
-        e.setAmount((int) predatorDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
+    @Override
+    public double getDuration() {
+        return duration;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // runs last
-    public void onPredatorHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
-        if (!predators.contains(e.getPlayer().getUniqueId())) return;
-        e.setAmount((int) predatorDamage(e.getPlayer(), e.getVictim(), e.getAmount()));
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
-    private double predatorDamage(Player pl, Entity en, double eventAmount) {
-        LivingEntity victim = (LivingEntity) en;
-        pl.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                new Particle.DustOptions(Color.BLACK, 1));
-        return eventAmount + (eventAmount * PERCENT);
+    /**
+     * Reset the data map each cast
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onFangsCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        predators.remove(event.getCaster().getUniqueId());
     }
 
-    public static int getDuration() {
-        return DURATION;
-    }
+    @EventHandler(priority = EventPriority.HIGH) // runs last
+    public void onPredatorHit(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
 
-    public static HashSet<UUID> getPredators() {
-        return predators;
+        // Reduce fangs CD if the player hits a basic attack
+        if (event.isBasicAttack()) {
+            if (!predators.containsKey(event.getPlayer().getUniqueId())) return;
+            if (!predators.get(event.getPlayer().getUniqueId()).contains(event.getVictim().getUniqueId()))
+                return;
+            RunicCore.getSpellAPI().reduceCooldown(event.getPlayer(), "Twin Fangs", duration);
+
+            // Add victim to list of marked enemies
+        } else if (event.getSpell() != null && event.getSpell() instanceof TwinFangs) {
+            if (!predators.containsKey(event.getPlayer().getUniqueId())) {
+                predators.put(event.getPlayer().getUniqueId(), new HashSet<>());
+            }
+            predators.get(event.getPlayer().getUniqueId()).add(event.getVictim().getUniqueId());
+        }
     }
 }
 

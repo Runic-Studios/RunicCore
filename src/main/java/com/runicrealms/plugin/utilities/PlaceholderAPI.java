@@ -25,14 +25,29 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.model.TitleData;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class PlaceholderAPI extends PlaceholderExpansion {
 
+    @NotNull
     @Override
     public String getIdentifier() {
         return "core";
+    }
+
+    @NotNull
+    @Override
+    public String getAuthor() {
+        return "Skyfallin";
+    }
+
+    @NotNull
+    @Override
+    public String getVersion() {
+        return "2.0.0";
     }
 
     @Override
@@ -41,33 +56,38 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     }
 
     @Override
-    public String getAuthor() {
-        return "Skyfallin_";
-    }
+    public String onPlaceholderRequest(Player player, @NotNull String arg) {
 
-    @Override
-    public String getVersion() {
-        return "1.0.0";
-    }
-
-    @Override
-    public String onPlaceholderRequest(Player pl, String arg) {
-
-        if (pl == null)  return null;
-
+        if (player == null) return null;
         String lowerArg = arg.toLowerCase();
+
+        TitleData titleData = RunicCore.getTitleAPI().getTitleData(player.getUniqueId());
 
         switch (lowerArg) {
             case "class":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+                return RunicCore.getCharacterAPI().getPlayerClass(player);
             case "class_prefix":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName().substring(0, 2);
+                return RunicCore.getCharacterAPI().getPlayerClass(player).substring(0, 2);
             case "level":
-                return pl.getLevel() + "";
+                return player.getLevel() + "";
             case "prof":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfName();
+                return "";
             case "prof_level":
-                return RunicCore.getCacheManager().getPlayerCaches().get(pl).getProfLevel() + "";
+                return "";
+            case "prefix":
+                return titleData.getPrefix();
+            case "prefix_formatted":
+                if (!titleData.getPrefix().equals("")) {
+                    return "[" + titleData.getPrefix() + "] ";
+                }
+                return "";
+            case "suffix":
+                return titleData.getSuffix();
+            case "suffix_formatted":
+                if (!titleData.getSuffix().equals("")) {
+                    return "[" + titleData.getSuffix() + "] ";
+                }
+                return "";
             default:
                 return "";
         }

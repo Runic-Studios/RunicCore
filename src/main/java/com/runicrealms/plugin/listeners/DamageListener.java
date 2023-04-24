@@ -2,6 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
+import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -32,138 +33,16 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onDamage(EntityDamageByEntityEvent e) {
-
-        if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
-        if (e.getDamager() instanceof SmallFireball) return;
-        if (e.getDamager() instanceof Arrow) return;
-        if (e.getDamage() <= 0) return;
-
-        Entity damager = e.getDamager();
-        if (damager instanceof Arrow && damager.getCustomName() == null) return;
-        if (damager instanceof Arrow && ((Arrow) damager).getShooter() != null) {
-            damager = (Entity) ((Arrow) damager).getShooter();
-        }
-
-        Entity entity = e.getEntity();
-
-        // bugfix for armor stands
-        if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
-            entity = e.getEntity().getVehicle();
-        }
-
-        // only listen for damageable entities
-        if (!(entity instanceof LivingEntity)) return;
-        LivingEntity victim = (LivingEntity) entity;
-
-        // mobs
-        if (!(damager instanceof Player)) {
-            if (damager instanceof Arrow) {
-                damager = (Entity) ((Arrow) damager).getShooter();
-            }
-            e.setCancelled(true);
-            double dmgAmt = e.getDamage();
-            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
-                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
-                dmgAmt = mm.getDamage();
-            }
-            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
-                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
-                        (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
-        }
-
-        // only listen for when a player swings or fires an arrow
-        if (damager instanceof Player) {
-
-            Player pl = (Player) damager;
-
-            ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
-            WeaponType artifactType = WeaponType.matchType(artifact);
-            int damage;
-            int maxDamage;
-            int reqLv;
-            try {
-                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
-                damage = runicItemWeapon.getWeaponDamage().getMin();
-                maxDamage = runicItemWeapon.getWeaponDamage().getMax();
-                reqLv = runicItemWeapon.getLevel();
-            } catch (Exception ex) {
-                damage = 1;
-                maxDamage = 1;
-                reqLv = 0;
-            }
-
-            // --------------------
-            // for punching 'n stuff
-            if (damage == 0)
-                damage = 1;
-            if (maxDamage == 0)
-                maxDamage = 1;
-            // -------------------
-
-            if (reqLv > RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassLevel()) {
-                pl.playSound(pl.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
-                pl.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
-                e.setCancelled(true);
-                return;
-            }
-
-            // check for cooldown
-            if (artifactType.equals(WeaponType.NONE)
-                    //|| artifactType.equals(WeaponEnum.STAFF)
-                    || artifactType.equals(WeaponType.BOW)) {
-                damage = 1;
-                maxDamage = 1;
-            }
-
-            if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
-                e.setCancelled(true);
-                int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
-
-                // outlaw check
-                if (victim.hasMetadata("NPC"))
-                    return;
-
-                // ensure correct class/weapon combo (archers and bows, etc)
-                if (!matchClass(pl, true))
-                    return;
-
-                // ---------------------------
-                // successful damage
-                if (((Player) damager).getCooldown(artifact.getType()) != 0)
-                    return;
-                DamageUtil.damageEntityWeapon(randomNum, victim, (Player) damager, true, false);
-                ((Player) damager).setCooldown(artifact.getType(), 10);
-                // ---------------------------
-
-            } else {
-                e.setCancelled(true);
-                return;
-            }
-        }
-
-        // only listen if a player is the entity receiving damage, to check for death mechanics
-        if (!(victim instanceof Player)) return;
-
-        // only listen for if the player were to "die"
-        if (!((victim.getHealth() - e.getFinalDamage() <= 0))) return;
-
-        applySlainMechanics(e.getDamager(), ((Player) victim));
-    }
-
-    public static boolean matchClass(Player pl, boolean sendMessage) {
-        ItemStack mainHand = pl.getInventory().getItemInMainHand();
-        String className = RunicCore.getCacheManager().getPlayerCaches().get(pl).getClassName();
+    public static boolean matchClass(Player player, boolean sendMessage) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:
                 if (!className.equals("Archer")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -172,8 +51,8 @@ public class DamageListener implements Listener {
             case WOODEN_SHOVEL:
                 if (!className.equals("Cleric")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -182,8 +61,8 @@ public class DamageListener implements Listener {
             case WOODEN_HOE:
                 if (!className.equals("Mage")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -192,8 +71,8 @@ public class DamageListener implements Listener {
             case WOODEN_SWORD:
                 if (!className.equals("Rogue")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -202,8 +81,8 @@ public class DamageListener implements Listener {
             case WOODEN_AXE:
                 if (!className.equals("Warrior")) {
                     if (sendMessage) {
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
-                        pl.sendMessage(weaponMessage(className));
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
+                        player.sendMessage(weaponMessage(className));
                     }
                     return false;
                 } else {
@@ -236,31 +115,6 @@ public class DamageListener implements Listener {
         return s;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onDamage(EntityDamageEvent e) {
-
-        if (e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
-        if (e.getDamage() <= 0) return;
-
-        // this event likes to get confused with the event above, so let's just fix that.
-        if (e instanceof EntityDamageByEntityEvent) return;
-
-        // only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
-        if (!(e.getEntity() instanceof Player)) return;
-        Player pl = (Player) e.getEntity();
-        if (!(pl.getHealth() - e.getDamage() <= 0)) return;
-
-        // initialize event variables
-        Player victim = (Player) e.getEntity();
-
-        // cancel the event
-        e.setCancelled(true);
-
-        // call custom death event
-        RunicDeathEvent event = new RunicDeathEvent(victim);
-        Bukkit.getPluginManager().callEvent(event);
-    }
-
     public static void applySlainMechanics(Entity damager, Player victim) {
 
         // if the player was killed by an arrow, set damager to its shooter
@@ -286,22 +140,23 @@ public class DamageListener implements Listener {
         broadcastSlainDeathMessage(damager, victim);
     }
 
+    /**
+     * @param damager
+     * @param victim
+     */
     private static void broadcastSlainDeathMessage(Entity damager, Player victim) {
-
         String nameVic = victim.getName();
-
         if (damager instanceof Player) {
-
-            String nameDam = damager.getName();
-//            double ratingP1 = RunicCore.getCacheManager().getPlayerCaches().get((Player) damager).getRating();
-//            double ratingP2 = RunicCore.getCacheManager().getPlayerCaches().get(victim).getRating();
-
+            String damagerName = damager.getName();
             // if both players are outlaws, amend the death message to display their rating
-            if (RunicCore.getCacheManager().getPlayerCaches().get(damager).getIsOutlaw()
-                    && RunicCore.getCacheManager().getPlayerCaches().get(victim).getIsOutlaw()) {
-                nameDam = ChatColor.WHITE + nameDam; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
+//            boolean damagerIsOutlaw = OutlawData.getOutlawDataMap().get(damager.getUniqueId());
+//            boolean victimIsOutlaw = OutlawData.getOutlawDataMap().get(victim.getUniqueId());
+            boolean damagerIsOutlaw = false;
+            boolean victimIsOutlaw = false;
+            if (damagerIsOutlaw && victimIsOutlaw) {
+                damagerName = ChatColor.WHITE + damagerName; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
                 nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
-                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + nameDam);
+                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + damagerName);
             }
         }
     }
@@ -314,5 +169,157 @@ public class DamageListener implements Listener {
     public static void broadcastDeathMessage(Player victim) {
         String nameVic = victim.getName();
         Bukkit.getServer().broadcastMessage(ChatColor.RED + nameVic + " died!");
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDamage(EntityDamageByEntityEvent e) {
+
+        if (e.getCause() == EntityDamageByEntityEvent.DamageCause.CUSTOM) return;
+        if (e.getDamager() instanceof SmallFireball) return;
+        if (e.getDamager() instanceof Arrow) return;
+        if (e.getDamage() <= 0) return;
+
+        Entity damager = e.getDamager();
+        if (damager instanceof Arrow && damager.getCustomName() == null) return;
+        if (damager instanceof Arrow && ((Arrow) damager).getShooter() != null) {
+            damager = (Entity) ((Arrow) damager).getShooter();
+        }
+
+        Entity entity = e.getEntity();
+
+        // bugfix for armor stands
+        if (e.getEntity() instanceof ArmorStand && e.getEntity().getVehicle() != null) {
+            entity = e.getEntity().getVehicle();
+        }
+
+        // only listen for damageable entities
+        if (!(entity instanceof LivingEntity)) return;
+        LivingEntity victim = (LivingEntity) entity;
+
+        // Fix for fireworks
+        if (damager instanceof Firework) {
+            e.setCancelled(true);
+            return;
+        }
+
+        // mobs
+        if (!(damager instanceof Player)) {
+            if (damager instanceof Arrow) {
+                damager = (Entity) ((Arrow) damager).getShooter();
+            }
+            e.setCancelled(true);
+            double dmgAmt = e.getDamage();
+            if (MythicMobs.inst().getMobManager().isActiveMob(Objects.requireNonNull(damager).getUniqueId())) {
+                ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(damager);
+                dmgAmt = mm.getDamage();
+            }
+            MobDamageEvent event = new MobDamageEvent((int) Math.ceil(dmgAmt), e.getDamager(), victim, false);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                DamageUtil.damageEntityMob(Math.ceil(event.getAmount()),
+                        (LivingEntity) event.getVictim(), e.getDamager(), event.shouldApplyMechanics());
+        }
+
+        // only listen for when a player swings or fires an arrow
+        if (damager instanceof Player player) {
+
+            ItemStack artifact = ((Player) damager).getInventory().getItemInMainHand();
+            WeaponType artifactType = WeaponType.matchType(artifact);
+            int damage;
+            int maxDamage;
+            int reqLv;
+            try {
+                RunicItemWeapon runicItemWeapon = (RunicItemWeapon) RunicItemsAPI.getRunicItemFromItemStack(artifact);
+                damage = runicItemWeapon.getWeaponDamage().getMin();
+                maxDamage = runicItemWeapon.getWeaponDamage().getMax();
+                reqLv = runicItemWeapon.getLevel();
+            } catch (Exception ex) {
+                damage = 1;
+                maxDamage = 1;
+                reqLv = 0;
+            }
+
+            // --------------------
+            // for punching 'n stuff
+            if (damage == 0)
+                damage = 1;
+            if (maxDamage == 0)
+                maxDamage = 1;
+            // -------------------
+
+            if (reqLv > player.getLevel()) {
+                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 1.0f);
+                player.sendMessage(ChatColor.RED + "Your level is too low to wield this!");
+                e.setCancelled(true);
+                return;
+            }
+
+            // check for cooldown
+            if (artifactType.equals(WeaponType.NONE)
+                    //|| artifactType.equals(WeaponEnum.STAFF)
+                    || artifactType.equals(WeaponType.BOW)) {
+                damage = 1;
+                maxDamage = 1;
+            }
+
+            if (((Player) damager).getCooldown(artifact.getType()) <= 0) {
+                e.setCancelled(true);
+                int randomNum = ThreadLocalRandom.current().nextInt(damage, maxDamage + 1);
+
+                // outlaw check
+                if (victim.hasMetadata("NPC"))
+                    return;
+
+                // ensure correct class/weapon combo (archers and bows, etc)
+                if (!matchClass(player, true))
+                    return;
+
+                // ---------------------------
+                // successful damage
+                if (((Player) damager).getCooldown(artifact.getType()) != 0)
+                    return;
+                damager.getWorld().playSound(damager.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);
+                DamageUtil.damageEntityPhysical(randomNum, victim, (Player) damager, true, false);
+                Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, artifact.getType(), BasicAttackEvent.BASE_MELEE_COOLDOWN));
+                // ---------------------------
+
+            } else {
+                e.setCancelled(true);
+                return;
+            }
+        }
+
+        // only listen if a player is the entity receiving damage, to check for death mechanics
+        if (!(victim instanceof Player)) return;
+
+        // only listen for if the player were to "die"
+        if (!((victim.getHealth() - e.getFinalDamage() <= 0))) return;
+
+        applySlainMechanics(e.getDamager(), ((Player) victim));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onDamage(EntityDamageEvent e) {
+
+        if (e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+        if (e.getDamage() <= 0) return;
+
+        // this event likes to get confused with the event above, so let's just fix that.
+        if (e instanceof EntityDamageByEntityEvent) return;
+
+        // only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
+        if (!(e.getEntity() instanceof Player)) return;
+        Player pl = (Player) e.getEntity();
+        if (!(pl.getHealth() - e.getDamage() <= 0)) return;
+
+        // initialize event variables
+        Player victim = (Player) e.getEntity();
+
+        // cancel the event
+        e.setCancelled(true);
+
+        // call custom death event
+        RunicDeathEvent event = new RunicDeathEvent(victim);
+        Bukkit.getPluginManager().callEvent(event);
     }
 }

@@ -22,6 +22,7 @@ public class Party {
 
     /**
      * Create a player party! Also calls the custom party event.
+     *
      * @param leader player who created the party
      */
     public Party(Player leader) {
@@ -32,23 +33,13 @@ public class Party {
         Bukkit.getPluginManager().callEvent(partyEvent);
     }
 
-    public Player getLeader() {
-        return this.leader;
-    }
-
-    public Invite addInvite(Player player) {
-        Invite invite = new Invite(player, this);
-        this.invites.add(invite);
-        return invite;
-    }
-
     /**
-     * Method called when a player accepts an invite to a party.
+     * Method called when a player accepts an invitation to a party.
+     *
      * @param player who accepted invite
      * @return whether player joined party
      */
     public boolean acceptMemberInvite(Player player) {
-        this.members.add(player);
         Invite playerInvite = null;
         for (Invite invite : this.invites) {
             if (invite.getPlayer() == player) {
@@ -61,28 +52,39 @@ public class Party {
             this.invites.remove(playerInvite);
             PartyJoinEvent partyJoinEvent = new PartyJoinEvent(this, player);
             Bukkit.getPluginManager().callEvent(partyJoinEvent);
-            return true;
+            if (!partyJoinEvent.isCancelled()) {
+                this.members.add(player);
+                return true;
+            }
         }
         return false;
     }
 
-    /**
-     * Called when a player is kicked from the party
-     * @param player to be kicked
-     * @param leaveReason reason the player left
-     */
-    public void kickMember(Player player, LeaveReason leaveReason) {
-        this.members.remove(player);
-        PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(this, player, leaveReason);
-        Bukkit.getPluginManager().callEvent(partyLeaveEvent);
+    public Invite addInvite(Player player) {
+        Invite invite = new Invite(player, this);
+        this.invites.add(invite);
+        return invite;
+    }
+
+    public Invite getInvite(Player player) {
+        for (Invite invite : this.invites) {
+            if (invite.getPlayer() == player) {
+                return invite;
+            }
+        }
+        return null;
+    }
+
+    public Set<Invite> getInvites() {
+        return this.invites;
+    }
+
+    public Player getLeader() {
+        return this.leader;
     }
 
     public void setLeader(Player player) {
         this.leader = player;
-    }
-
-    public boolean hasMember(Player player) {
-        return this.members.contains(player) || this.leader == player;
     }
 
     public Set<Player> getMembers() {
@@ -99,17 +101,20 @@ public class Party {
         return this.members.size() + 1;
     }
 
-    public Set<Invite> getInvites() {
-        return this.invites;
+    public boolean hasMember(Player player) {
+        return this.members.contains(player) || this.leader == player;
     }
 
-    public Invite getInvite(Player player) {
-        for (Invite invite : this.invites) {
-            if (invite.getPlayer() == player) {
-                return invite;
-            }
-        }
-        return null;
+    /**
+     * Called when a player is kicked from the party
+     *
+     * @param player      to be kicked
+     * @param leaveReason reason the player left
+     */
+    public void kickMember(Player player, LeaveReason leaveReason) {
+        this.members.remove(player);
+        PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(this, player, leaveReason);
+        Bukkit.getPluginManager().callEvent(partyLeaveEvent);
     }
 
     public void removeInvite(Player player) {
@@ -147,20 +152,20 @@ public class Party {
             }.runTaskLater(RunicCore.getInstance(), 60 * 20);
         }
 
-        public void inviteAccepted() {
-            if (this.task != null) {
-                if (!task.isCancelled()) {
-                    this.task.cancel();
-                }
-            }
+        public Party getParty() {
+            return this.party;
         }
 
         public Player getPlayer() {
             return this.player;
         }
 
-        public Party getParty() {
-            return this.party;
+        public void inviteAccepted() {
+            if (this.task != null) {
+                if (!task.isCancelled()) {
+                    this.task.cancel();
+                }
+            }
         }
 
     }

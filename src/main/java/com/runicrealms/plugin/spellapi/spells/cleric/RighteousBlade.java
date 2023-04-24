@@ -1,11 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,41 +19,50 @@ public class RighteousBlade extends Spell implements HealingSpell {
     private static final double PERCENT = 10;
 
     public RighteousBlade() {
-        super("Righteous Blade",
-                "Your melee weapon⚔ attacks have a " + (int) PERCENT + "% chance " +
-                        "to heal✦ yourself and allies within " + RADIUS + " blocks " +
-                        "for (" + HEAL_AMOUNT + " + &f" + HEALING_PER_LEVEL +
-                        "x&7 lvl) health!",
-                ChatColor.WHITE, ClassEnum.CLERIC, 0, 0);
+        super("Righteous Blade", CharacterClass.CLERIC);
         this.setIsPassive(true);
-    }
-
-    @EventHandler
-    public void onHealingHit(WeaponDamageEvent e) {
-        if (!hasPassive(e.getPlayer(), this.getName())) return;
-        if (!e.isBasicAttack()) return;
-        healAllies(e.getPlayer());
-    }
-
-    private void healAllies(Player pl) {
-        Random rand = new Random();
-        int roll = rand.nextInt(100) + 1;
-        if (roll > PERCENT) return;
-        HealUtil.healPlayer(HEAL_AMOUNT, pl, pl, false, this);
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!verifyAlly(pl, en)) continue;
-            HealUtil.healPlayer(HEAL_AMOUNT, (Player) en, pl, false, this);
-        }
+        this.setDescription("Your basic attacks have a " + (int) PERCENT + "% chance " +
+                "to heal✦ yourself and allies within " + RADIUS + " blocks " +
+                "for (" + HEAL_AMOUNT + " + &f" + HEALING_PER_LEVEL +
+                "x&7 lvl) health!");
     }
 
     @Override
-    public int getHeal() {
+    public double getHeal() {
         return HEAL_AMOUNT;
+    }
+
+    @Override
+    public void setHeal(double heal) {
+
     }
 
     @Override
     public double getHealingPerLevel() {
         return HEALING_PER_LEVEL;
+    }
+
+    @Override
+    public void setHealingPerLevel(double healingPerLevel) {
+
+    }
+
+    private void healAllies(Player player) {
+        Random rand = new Random();
+        int roll = rand.nextInt(100) + 1;
+        if (roll > PERCENT) return;
+        healPlayer(player, player, HEAL_AMOUNT, this);
+        for (Entity en : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!isValidAlly(player, en)) continue;
+            healPlayer(player, (Player) en, HEAL_AMOUNT, this);
+        }
+    }
+
+    @EventHandler
+    public void onHealingHit(PhysicalDamageEvent event) {
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!event.isBasicAttack()) return;
+        healAllies(event.getPlayer());
     }
 }
 

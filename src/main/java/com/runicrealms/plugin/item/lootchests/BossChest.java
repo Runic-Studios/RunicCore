@@ -1,88 +1,32 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.DungeonLocation;
-import com.runicrealms.plugin.utilities.ConfigUtil;
-import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.block.Chest;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Custom object implementation for the chest which spawns upon defeating a boss
+ */
 public class BossChest {
-
     private final UUID bossUuid;
     private final Chest chest;
     private final DungeonLocation dungeonLocation;
-    private final HashSet<UUID> playersWhoHaveReceivedTokens;
+    private final HashMap<UUID, BossChestInventory> playerBossChestMap;
 
-    private static final String BOSS_CHEST_NAME = ChatColor.GOLD + "" + ChatColor.BOLD + "Boss Spoils";
-
+    /**
+     * @param bossUuid        of the mob entity
+     * @param chest           that spawns on boss death
+     * @param dungeonLocation the enum value of which dungeon
+     */
     public BossChest(UUID bossUuid, Chest chest, DungeonLocation dungeonLocation) {
         this.bossUuid = bossUuid;
         this.dungeonLocation = dungeonLocation;
         this.chest = chest;
-        this.playersWhoHaveReceivedTokens = new HashSet<>();
-        populateChestWithBossDrops();
-    }
-
-    /**
-     * First checks if the player's inventory has a free space, then adds a token directly to inventory
-     * Then, opens the chest inventory with boss drops
-     *
-     * @param player who wants to open chest
-     */
-    public void attemptToOpen(Player player) {
-        if (!playersWhoHaveReceivedTokens.contains(player.getUniqueId())) {
-            if (player.getInventory().firstEmpty() == -1) {
-                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                player.sendMessage(ChatColor.RED + "You must have at least one empty inventory space!");
-                return;
-            }
-            playersWhoHaveReceivedTokens.add(player.getUniqueId());
-            player.sendMessage(ChatColor.GREEN + "You received a dungeon token!");
-            RunicItemsAPI.addItem
-                    (
-                            player.getInventory(),
-                            RunicItemsAPI.generateItemFromTemplate(dungeonLocation.getCurrencyTemplateId()).generateItem()
-                    );
-        }
-        player.openInventory(chest.getBlockInventory());
-    }
-
-    /**
-     * Runs through the drops section of file and populated chest
-     */
-    private void populateChestWithBossDrops() {
-        ConfigurationSection dungeonSection = ConfigUtil.getDungeonConfigurationSection().getConfigurationSection(dungeonLocation.getIdentifier());
-        if (dungeonSection == null) return;
-        ConfigurationSection drops = dungeonSection.getConfigurationSection("drops");
-        if (drops == null) return;
-        Set<String> dropsSection = drops.getKeys(false);
-        Set<Integer> used = new HashSet<>();
-        for (String drop : dropsSection) {
-            // prevent items overriding the same slot
-            int slot = ThreadLocalRandom.current().nextInt(0, 27);
-            while (used.contains(slot)) {
-                slot = ThreadLocalRandom.current().nextInt(0, 27);
-            }
-            used.add(slot);
-            double chance = drops.getDouble(drop + ".chance");
-            if (ThreadLocalRandom.current().nextDouble() <= chance) {
-                int amount = drops.getInt(drop + ".amount");
-                chest.getBlockInventory().setItem
-                        (
-                                slot,
-                                RunicItemsAPI.generateItemFromTemplate(drop, amount).generateItem()
-                        );
-            }
-        }
+        this.playerBossChestMap = new HashMap<>();
     }
 
     /**
@@ -100,6 +44,22 @@ public class BossChest {
         return null;
     }
 
+    /**
+     * First checks if the player's inventory has a free space, then adds a token directly to inventory
+     * Then, opens the chest inventory with boss drops
+     *
+     * @param player who wants to open chest
+     */
+    public void attemptToOpen(Player player) {
+        // Handle first open of the chest
+        if (!playerBossChestMap.containsKey(player.getUniqueId())) {
+            playerBossChestMap.put(player.getUniqueId(), new BossChestInventory(player, dungeonLocation));
+        }
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.1f, 0.1f);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.5f, 0.5f);
+        player.openInventory(playerBossChestMap.get(player.getUniqueId()).getInventory());
+    }
+
     public UUID getBossUuid() {
         return bossUuid;
     }
@@ -108,15 +68,4 @@ public class BossChest {
         return chest;
     }
 
-    public DungeonLocation getDungeonLocation() {
-        return dungeonLocation;
-    }
-
-    public HashSet<UUID> getPlayersWhoHaveReceivedTokens() {
-        return playersWhoHaveReceivedTokens;
-    }
-
-    public static String getBossChestName() {
-        return BOSS_CHEST_NAME;
-    }
 }

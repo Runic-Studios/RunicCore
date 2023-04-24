@@ -1,11 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -19,49 +18,11 @@ public class Resolve extends Spell {
     private static final double PERCENT_DMG = 35;
 
     public Resolve() {
-        super("Resolve",
-                "While below " + (int) PERCENT_HP + "% health, you " +
-                        "receive a " + (int) PERCENT_DMG + "% damage reduction " +
-                        "buff!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
+        super("Resolve", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-    }
-
-    @EventHandler
-    public void onResolvedHit(SpellDamageEvent e) {
-        if (!(e.getVictim() instanceof Player)) return;
-        Player hurtPlayer = (Player) e.getVictim();
-        if (!shouldReduceDamage(hurtPlayer)) return;
-        e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
-    }
-
-    @EventHandler
-    public void onResolvedHit(WeaponDamageEvent e) {
-        if (!(e.getVictim() instanceof Player)) return;
-        Player hurtPlayer = (Player) e.getVictim();
-        if (!shouldReduceDamage(hurtPlayer)) return;
-        e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
-    }
-
-    @EventHandler
-    public void onMobHit(MobDamageEvent e) {
-        if (!(e.getVictim() instanceof Player)) return;
-        Player hurtPlayer = (Player) e.getVictim();
-        if (!shouldReduceDamage(hurtPlayer)) return;
-        e.setAmount(getResolvedDamage(hurtPlayer, e.getAmount()));
-    }
-
-    /**
-     * Quick check to see if player is within Resolve health threshold.
-     *
-     * @param hurtPlayer player to check hp for
-     * @return true if damage should be reduced, false if not
-     */
-    private boolean shouldReduceDamage(Player hurtPlayer) {
-        if (!hasPassive(hurtPlayer, this.getName())) return false;
-        double percent = PERCENT_HP / 100;
-        double threshold = percent * hurtPlayer.getMaxHealth();
-        return hurtPlayer.getHealth() < threshold;
+        this.setDescription("While below " + (int) PERCENT_HP + "% health, you " +
+                "receive a " + (int) PERCENT_DMG + "% damage reduction " +
+                "buff!");
     }
 
     /*
@@ -73,6 +34,40 @@ public class Resolve extends Spell {
                 5, 0.5F, 0.5F, 0.5F, 0, Material.OAK_WOOD.createBlockData());
         double percent = (100 - PERCENT_DMG) / 100;
         return (int) (damage * percent);
+    }
+
+    @EventHandler
+    public void onMobHit(MobDamageEvent event) {
+        if (!(event.getVictim() instanceof Player hurtPlayer)) return;
+        if (!shouldReduceDamage(hurtPlayer)) return;
+        event.setAmount(getResolvedDamage(hurtPlayer, event.getAmount()));
+    }
+
+    @EventHandler
+    public void onResolvedHit(MagicDamageEvent event) {
+        if (!(event.getVictim() instanceof Player hurtPlayer)) return;
+        if (!shouldReduceDamage(hurtPlayer)) return;
+        event.setAmount(getResolvedDamage(hurtPlayer, event.getAmount()));
+    }
+
+    @EventHandler
+    public void onResolvedHit(PhysicalDamageEvent event) {
+        if (!(event.getVictim() instanceof Player hurtPlayer)) return;
+        if (!shouldReduceDamage(hurtPlayer)) return;
+        event.setAmount(getResolvedDamage(hurtPlayer, event.getAmount()));
+    }
+
+    /**
+     * Quick check to see if player is within Resolve health threshold.
+     *
+     * @param hurtPlayer player to check hp for
+     * @return true if damage should be reduced, false if not
+     */
+    private boolean shouldReduceDamage(Player hurtPlayer) {
+        if (!hasPassive(hurtPlayer.getUniqueId(), this.getName())) return false;
+        double percent = PERCENT_HP / 100;
+        double threshold = percent * hurtPlayer.getMaxHealth();
+        return hurtPlayer.getHealth() < threshold;
     }
 }
 

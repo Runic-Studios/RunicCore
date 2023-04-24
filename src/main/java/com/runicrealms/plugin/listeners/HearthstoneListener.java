@@ -2,11 +2,13 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -31,73 +33,6 @@ public class HearthstoneListener implements Listener {
     private static final int TELEPORT_TIME = 5;
     private final static HashMap<UUID, BukkitTask> currentlyUsing = new HashMap<>();
 
-    /**
-     * Give new players the hearthstone
-     */
-    @EventHandler
-    public void onJoin(CharacterLoadEvent e) {
-        Player player = e.getPlayer();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (player.getInventory().getItem(8) == null
-                        || (player.getInventory().getItem(8) != null
-                        && player.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
-                    player.getInventory().setItem(8, CityLocation.TUTORIAL.getItemStack());
-                }
-            }
-        }.runTaskLater(RunicCore.getInstance(), 2L);
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
-        Player player = (Player) e.getWhoClicked();
-        int itemSlot = e.getSlot();
-        // if it's the 8th slot in a player's inventory, run the stuff
-        if (itemSlot != 8) return;
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
-        if (e.getClickedInventory() == null) return;
-        if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
-        e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onHearthstoneUse(PlayerInteractEvent e) {
-
-        Player player = e.getPlayer();
-        UUID uuid = player.getUniqueId();
-
-        if (player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-
-        int slot = player.getInventory().getHeldItemSlot();
-        if (slot != 8) return;
-        if (player.getInventory().getItem(8) == null) return;
-        ItemStack hearthstone = player.getInventory().getItem(8);
-        if (hearthstone == null) return;
-
-        // annoying 1.9 feature which makes the event run twice, once for each hand
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        // cancel the event if the hearthstone has no location
-        String location = RunicItemsAPI.getRunicItemFromItemStack(hearthstone).getData().get("location");
-        if (location == null || location.equals("")) {
-            return;
-        }
-
-        // prevent player's from teleporting in combat
-        if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(uuid)) {
-            player.sendMessage(ChatColor.RED + "You can't use that in combat!");
-            return;
-        }
-
-        if (currentlyUsing.containsKey(player.getUniqueId())) return;
-
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
-        currentlyUsing.put(player.getUniqueId(), beginTeleportation(player, CityLocation.getLocationFromIdentifier(location)));
-    }
-
     public static BukkitTask beginTeleportation(Player player, Location location) {
 
         double timer_initX = Math.round(player.getLocation().getX() * MOVE_CONSTANT);
@@ -120,7 +55,7 @@ public class HearthstoneListener implements Listener {
                     return;
                 }
 
-                if (RunicCore.getCombatManager().getPlayersInCombat().containsKey(player.getUniqueId())) {
+                if (RunicCore.getCombatAPI().isInCombat(player.getUniqueId())) {
                     this.cancel();
                     currentlyUsing.remove(player.getUniqueId());
                     player.sendMessage(ChatColor.RED + "Teleportation cancelled due to combat!");
@@ -146,6 +81,74 @@ public class HearthstoneListener implements Listener {
 
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onHearthstoneUse(PlayerInteractEvent event) {
+        if (event.useInteractedBlock() == Event.Result.DENY && event.useItemInHand() == Event.Result.DENY)
+            return;
+        Player player = event.getPlayer();
+
+        if (player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+
+        int slot = player.getInventory().getHeldItemSlot();
+        if (slot != 8) return;
+        if (player.getInventory().getItem(8) == null) return;
+        ItemStack hearthstone = player.getInventory().getItem(8);
+        if (hearthstone == null) return;
+
+        // annoying 1.9 feature which makes the event run twice, once for each hand
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+
+        // cancel the event if the hearthstone has no location
+        String location = RunicItemsAPI.getRunicItemFromItemStack(hearthstone).getData().get("location");
+        if (location == null || location.equals("")) {
+            return;
+        }
+
+        // prevent player's from teleporting in combat
+        if (RunicCore.getCombatAPI().isInCombat(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "You can't use that in combat!");
+            return;
+        }
+
+        if (currentlyUsing.containsKey(player.getUniqueId())) return;
+
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 1.0f);
+        currentlyUsing.put(player.getUniqueId(), beginTeleportation(player, CityLocation.getLocationFromIdentifier(location)));
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        int itemSlot = e.getSlot();
+        // if it's the 8th slot in a player's inventory, run the stuff
+        if (itemSlot != 8) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+        if (e.getClickedInventory() == null) return;
+        if (e.getClickedInventory().getType() != InventoryType.PLAYER) return;
+        e.setCancelled(true);
+    }
+
+    /**
+     * Give players the hearthstone
+     */
+    @EventHandler
+    public void onJoin(CharacterLoadedEvent event) {
+        Player player = event.getPlayer();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (player.getInventory().getItem(8) == null
+                        || (player.getInventory().getItem(8) != null
+                        && player.getInventory().getItem(8).getType() != Material.CLAY_BALL)) {
+                    player.getInventory().setItem(8, CityLocation.TUTORIAL.getItemStack());
+                }
+            }
+        }.runTaskLater(RunicCore.getInstance(), 2L);
     }
 }
 

@@ -1,32 +1,39 @@
 package com.runicrealms.plugin.character.api;
 
-import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.plugin.model.CoreCharacterData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * A custom ASYNC event which is called when a player disconnects after selecting a character
+ *
+ * @author Skyfallin
+ */
 public class CharacterQuitEvent extends Event {
-
-    private final PlayerCache cache;
-    private final Player player;
-
     private static final HandlerList handlers = new HandlerList();
+    private final Player player;
+    private final int slot;
+    private final CoreCharacterData coreCharacterData;
 
-    public CharacterQuitEvent(PlayerCache cache, Player player) {
-        this.cache = cache;
+    /**
+     * @param player  who quit
+     * @param slot    of the character
+     * @param isAsync whether the event should be called async
+     */
+    public CharacterQuitEvent(final Player player, final int slot, final CoreCharacterData coreCharacterData, boolean isAsync) {
+        super(isAsync);
         this.player = player;
+        this.slot = slot;
+        this.coreCharacterData = coreCharacterData;
     }
 
-    public PlayerCache getPlayerCache() {
-        return this.cache;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    public Integer getSlot() {
-        return this.cache.getCharacterSlot();
+    public CoreCharacterData getCoreCharacterData() {
+        return this.coreCharacterData;
     }
 
     @Override
@@ -34,8 +41,12 @@ public class CharacterQuitEvent extends Event {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public int getSlot() {
+        return this.slot;
     }
 
 }

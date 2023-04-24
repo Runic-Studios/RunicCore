@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
-import com.runicrealms.plugin.api.RunicCoreAPI;
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -16,40 +17,40 @@ import org.bukkit.inventory.ItemStack;
 public class SubClassGUIListener implements Listener {
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
+    public void onInventoryClick(InventoryClickEvent event) {
 
         /*
         Preliminary checks
          */
-        if (e.getClickedInventory() == null) return;
-        if (!(e.getView().getTopInventory().getHolder() instanceof SubClassGUI)) return;
-        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
-            e.setCancelled(true);
+        if (event.getClickedInventory() == null) return;
+        if (!(event.getView().getTopInventory().getHolder() instanceof SubClassGUI)) return;
+        if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            event.setCancelled(true);
             return;
         }
-        SubClassGUI subClassGUI = (SubClassGUI) e.getClickedInventory().getHolder();
-        if (!e.getWhoClicked().equals(subClassGUI.getPlayer())) {
-            e.setCancelled(true);
-            e.getWhoClicked().closeInventory();
+        SubClassGUI subClassGUI = (SubClassGUI) event.getClickedInventory().getHolder();
+        if (!event.getWhoClicked().equals(subClassGUI.getPlayer())) {
+            event.setCancelled(true);
+            event.getWhoClicked().closeInventory();
             return;
         }
-        Player player = (Player) e.getWhoClicked();
-        if (e.getCurrentItem() == null) return;
-        if (subClassGUI.getInventory().getItem(e.getRawSlot()) == null) return;
+        Player player = (Player) event.getWhoClicked();
+        if (event.getCurrentItem() == null) return;
+        if (subClassGUI.getInventory().getItem(event.getRawSlot()) == null) return;
 
-        ItemStack item = e.getCurrentItem();
+        ItemStack item = event.getCurrentItem();
         Material material = item.getType();
 
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-        e.setCancelled(true);
+        event.setCancelled(true);
 
-        if (material == GUIUtil.backButton().getType())
+        if (material == GUIUtil.BACK_BUTTON.getType())
             player.openInventory(new RuneGUI(player).getInventory());
-        else if (e.getRawSlot() == 11) // sub-class 1
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, 1).getInventory());
-        else if (e.getRawSlot() == 13) // sub-class 2
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, 2).getInventory());
-        else // sub-class 3
-            player.openInventory(RunicCoreAPI.skillTreeGUI(player, 3).getInventory());
+        else if (event.getRawSlot() == 11) // subclass 1
+            player.openInventory(RunicCore.getSkillTreeAPI().skillTreeGUI(player, SkillTreePosition.FIRST).getInventory());
+        else if (event.getRawSlot() == 13) // subclass 2
+            player.openInventory(RunicCore.getSkillTreeAPI().skillTreeGUI(player, SkillTreePosition.SECOND).getInventory());
+        else // subclass 3
+            player.openInventory(RunicCore.getSkillTreeAPI().skillTreeGUI(player, SkillTreePosition.THIRD).getInventory());
     }
 }

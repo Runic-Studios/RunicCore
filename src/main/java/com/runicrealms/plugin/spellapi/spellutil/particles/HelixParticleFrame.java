@@ -1,6 +1,9 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class HelixParticleFrame implements ParticleFormat {
@@ -16,7 +19,7 @@ public class HelixParticleFrame implements ParticleFormat {
     }
 
     @Override
-    public void playParticle(Particle particle, Location location, Color color) {
+    public void playParticle(Player player, Particle particle, Location location, Color... color) {
         location = location.clone();
         final double totalDegrees = ((360 / this.frequency) * this.height);
         final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);
@@ -24,12 +27,11 @@ public class HelixParticleFrame implements ParticleFormat {
         for (double a = 0; a <= totalDegrees; a++) {
             double theta = Math.toRadians(a % 360);
             Vector vector = new Vector(this.radius * Math.cos(theta), 0D, this.radius * Math.sin(theta));
-
             if (particle == Particle.REDSTONE) {
-                location.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement),
-                        1, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
+                player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement),
+                        1, 0, 0, 0, 0, new Particle.DustOptions(color[0], 1));
             } else {
-                location.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
             }
             location.subtract(vector);
         }

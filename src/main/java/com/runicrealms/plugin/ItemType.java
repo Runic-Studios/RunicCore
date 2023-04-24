@@ -14,6 +14,9 @@ public enum ItemType {
         }
         if (itemStack.getType() == Material.SHEARS) {
             switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
+                case 237:
+                case 234:
+                    return OFFHAND;
                 case 25:
                     return PLATE; // (iron)
                 case 20:

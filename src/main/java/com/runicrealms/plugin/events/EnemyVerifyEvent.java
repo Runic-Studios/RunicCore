@@ -6,7 +6,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/*
+/**
  * This custom event is called when a spell attempts to activate the spell logic on an entity.
  * Used to prevent non-pvpers from taking damage/effects
  */
@@ -25,6 +25,7 @@ public class EnemyVerifyEvent extends Event implements Cancellable {
     public Player getCaster() {
         return this.caster;
     }
+
     public Entity getVictim() {
         return this.victim;
     }

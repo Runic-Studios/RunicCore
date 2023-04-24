@@ -1,10 +1,9 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.api.event.AllyVerifyEvent;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
-import com.runicrealms.plugin.player.cache.PlayerCache;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -12,145 +11,73 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Map;
+import java.util.UUID;
 
 public abstract class Spell implements ISpell, Listener {
-
-    private boolean isPassive = false;
-    private final int manaCost;
-    private final double cooldown;
+    private static final String SPELLS_DIRECTORY = "RunicCore/spells";
     private final String name;
-    private final String description;
-    private final ChatColor color;
-    private final ClassEnum reqClass;
+    private final CharacterClass reqClass;
     protected RunicCore plugin = RunicCore.getInstance();
+    private double cooldown;
+    private int manaCost;
+    private String description = "";
+    private boolean isPassive = false;
 
-    public Spell(String name, String description, ChatColor color,
-                 ClassEnum reqClass, double cooldown, int manaCost) {
+    /**
+     * Creates this spell object once on startup. Loads its values from flat file
+     *
+     * @param name     of the spell
+     * @param reqClass to use the spell
+     */
+    public Spell(String name, CharacterClass reqClass) {
         this.name = name;
-        this.description = description;
-        this.color = color;
         this.reqClass = reqClass;
-        this.cooldown = cooldown;
-        this.manaCost = manaCost;
+        this.loadSpellData(); // Load values like mana, cooldown, etc. from file
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
-    public void execute(Player player, SpellItemType type) {
+    public void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage) {
+        RunicCore.getStatusEffectAPI().addStatusEffect(livingEntity, runicStatusEffect, durationInSecs, displayMessage);
+    }
 
-        if (isOnCooldown(player)) return; // ensure spell is not on cooldown
+    @Override
+    public boolean execute(Player player, SpellItemType type) {
+
+        if (isOnCooldown(player)) return false; // ensure spell is not on cooldown
+        UUID uuid = player.getUniqueId();
 
         // verify class
-        boolean canCast = this.getReqClass() == ClassEnum.ANY || this.getReqClass().toString().equalsIgnoreCase
-                (RunicCore.getCacheManager().getPlayerCaches().get(player).getClassName());
+        boolean canCast = this.getReqClass() == CharacterClass.ANY
+                || this.getReqClass().toString().equalsIgnoreCase(RunicCore.getCharacterAPI().getPlayerClass(uuid));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             ActionBarUtil.sendTimedMessage(player, "&cYour class cannot cast this spell!", 3);
-            return;
+            return false;
         }
 
-        if (!verifyMana(player)) return; // verify the mana
-        if (!this.attemptToExecute(player)) return; // check additional conditions
+        if (!this.attemptToExecute(player))
+            return false; // check additional conditions (being on ground)
 
         // cast the spell
         int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
         RunicCore.getRegenManager().getCurrentManaList().put(player.getUniqueId(), currentMana - this.manaCost);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + getColor() + getName() + ChatColor.GREEN + "!"));
-        RunicCore.getSpellManager().addCooldown(player, this, this.getCooldown());
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "You cast " + ChatColor.WHITE + getName() + ChatColor.GREEN + "!"));
+        RunicCore.getSpellAPI().addCooldown(player, this, this.getCooldown());
         this.executeSpell(player, type);
-    }
-
-    private boolean verifyMana(Player player) {
-        int currentMana = RunicCore.getRegenManager().getCurrentManaList().get(player.getUniqueId());
-        if (currentMana < this.manaCost) {
-            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-            ActionBarUtil.sendTimedMessage(player, "&cYou don't have enough mana!", 2);
-            return false;
-        }
         return true;
-    }
-
-    /**
-     * Method to check for valid enemy before applying healing calculation. True if enemy can be healed.
-     *
-     * @param caster player who used spell
-     * @param ally   player who was hit by spell
-     * @return whether target is valid
-     */
-    @Override
-    public boolean verifyAlly(Player caster, Entity ally) {
-
-        // target must be a player
-        if (!(ally instanceof Player)) return false;
-        Player playerAlly = (Player) ally;
-
-        // ignore NPCs
-        if (playerAlly.hasMetadata("NPC")) return false;
-        // probably unnecessary, but insurance
-        if (playerAlly instanceof ArmorStand) return false;
-
-        PlayerCache casterData = RunicCoreAPI.getPlayerCache(caster);
-        PlayerCache allyData = RunicCoreAPI.getPlayerCache((Player) ally);
-
-        // If either player is an outlaw
-        if (casterData.getIsOutlaw() || allyData.getIsOutlaw())
-            // Does the caster have a party?
-            return RunicCore.getPartyManager().getPlayerParty(caster) != null
-                    // Does that party contain the outlaw ally?
-                    && RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
-        // skip the target player if the caster has a party and the target is NOT in it
-        return RunicCore.getPartyManager().getPlayerParty(caster) == null
-                || RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) ally);
-    }
-
-    @Override
-    public boolean hasPassive(Player player, String passive) {
-        return RunicCoreAPI.hasPassive(player, passive);
-    }
-
-    /**
-     * Method to check for valid enemy before applying damage calculation. True if enemy can be damaged.
-     *
-     * @param caster player who used spell
-     * @param victim mob or player who was hit by spell
-     * @return whether target is valid
-     */
-    @Override
-    public boolean verifyEnemy(Player caster, Entity victim) {
-        EnemyVerifyEvent e = new EnemyVerifyEvent(caster, victim);
-        Bukkit.getServer().getPluginManager().callEvent(e);
-        return !e.isCancelled();
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return this.color;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public ClassEnum getReqClass() {
-        return reqClass;
     }
 
     @Override
@@ -159,10 +86,149 @@ public abstract class Spell implements ISpell, Listener {
     }
 
     @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
     public int getManaCost() {
         return this.manaCost;
     }
 
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public CharacterClass getReqClass() {
+        return reqClass;
+    }
+
+    @Override
+    public boolean hasPassive(UUID uuid, String passive) {
+        return RunicCore.getSkillTreeAPI().hasPassiveFromSkillTree(uuid, passive);
+    }
+
+    @Override
+    public boolean hasStatusEffect(UUID uuid, RunicStatusEffect runicStatusEffect) {
+        return RunicCore.getStatusEffectAPI().hasStatusEffect(uuid, runicStatusEffect);
+    }
+
+    @Override
+    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        RunicCore.getSpellAPI().healPlayer(caster, recipient, amount, spell);
+    }
+
+    @Override
+    public boolean isOnCooldown(Player player) {
+        return RunicCore.getSpellAPI().isOnCooldown(player, this.getName());
+    }
+
+    @Override
+    public boolean isValidAlly(Player caster, Entity ally) {
+        AllyVerifyEvent allyVerifyEvent = new AllyVerifyEvent(caster, ally);
+        Bukkit.getServer().getPluginManager().callEvent(allyVerifyEvent);
+        return !allyVerifyEvent.isCancelled();
+    }
+
+    @Override
+    public boolean isValidEnemy(Player caster, Entity victim) {
+        EnemyVerifyEvent enemyVerifyEvent = new EnemyVerifyEvent(caster, victim);
+        Bukkit.getServer().getPluginManager().callEvent(enemyVerifyEvent);
+        return !enemyVerifyEvent.isCancelled();
+    }
+
+    @Override
+    public int percentMissingHealth(Entity entity, double percent) {
+        if (!(entity instanceof LivingEntity livingEntity)) return 0;
+        double max = livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double missing = max - livingEntity.getHealth();
+        return (int) (missing * percent);
+    }
+
+    @Override
+    public boolean removeStatusEffect(Entity entity, RunicStatusEffect runicStatusEffect) {
+        return RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
+    }
+
+    @Override
+    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        RunicCore.getSpellAPI().shieldPlayer(caster, recipient, amount, spell);
+    }
+
+    public boolean attemptToExecute(Player player) {
+        return true;
+    }
+
+    public void executeSpell(Player player, SpellItemType type) {
+
+    }
+
+    public boolean isPassive() {
+        return isPassive;
+    }
+
+    /**
+     * Loads the spell balance values from flat file
+     */
+    private void loadSpellData() {
+        String nameNoFormatting = name.replace(" ", "").replace("'", "");
+        File filePath = new File(RunicCore.getInstance().getDataFolder().getParent(), SPELLS_DIRECTORY + "/" + nameNoFormatting + ".yml");
+
+        if (filePath.exists()) {
+            Yaml yaml = new Yaml();
+            try {
+                FileInputStream fileInputStream = new FileInputStream(filePath);
+                Map<String, Object> spellData = yaml.load(fileInputStream);
+                this.cooldown = (int) spellData.getOrDefault("cooldown", 0);
+                this.manaCost = (int) spellData.getOrDefault("mana", 0);
+                loadSpellSpecificData(spellData);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Loads the values associated with this unique spell-type.
+     * E.g. AttributeSpell, MagicDamageSpell, etc.
+     *
+     * @param spellData the map from the yml file
+     */
+    protected void loadSpellSpecificData(Map<String, Object> spellData) {
+        if (this instanceof AttributeSpell attributeSpell) {
+            attributeSpell.loadAttributeData(spellData);
+        }
+        if (this instanceof DistanceSpell distanceSpell) {
+            distanceSpell.loadDistanceData(spellData);
+        }
+        if (this instanceof DurationSpell durationSpell) {
+            durationSpell.loadDurationData(spellData);
+        }
+        if (this instanceof HealingSpell healingSpell) {
+            healingSpell.loadHealingData(spellData);
+        }
+        if (this instanceof MagicDamageSpell magicDamageSpell) {
+            magicDamageSpell.loadMagicData(spellData);
+        }
+        if (this instanceof PhysicalDamageSpell physicalDamageSpell) {
+            physicalDamageSpell.loadPhysicalData(spellData);
+        }
+        if (this instanceof RadiusSpell radiusSpell) {
+            radiusSpell.loadRadiusData(spellData);
+        }
+        if (this instanceof ShieldingSpell shieldingSpell) {
+            shieldingSpell.loadShieldingData(spellData);
+        }
+        if (this instanceof WarmupSpell warmupSpell) {
+            warmupSpell.loadWarmupData(spellData);
+        }
+    }
 
     protected Vector rotateVectorAroundY(Vector vector, double degrees) {
         Vector newVector = vector.clone();
@@ -176,119 +242,7 @@ public abstract class Spell implements ISpell, Listener {
         return newVector;
     }
 
-    public boolean isPassive() {
-        return isPassive;
-    }
-
     public void setIsPassive(boolean isPassive) {
         this.isPassive = isPassive;
-    }
-
-    public boolean attemptToExecute(Player pl) {
-        return true;
-    }
-
-    public void executeSpell(Player player, SpellItemType type) {
-
-    }
-
-    /**
-     * Add a custom status effect to an entity.
-     *
-     * @param entity     to be silenced
-     * @param effectEnum which status effect to add
-     * @param duration   (in seconds) of effect
-     */
-    @Override
-    public void addStatusEffect(Entity entity, EffectEnum effectEnum, double duration) {
-        if (effectEnum == EffectEnum.SILENCE) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "silenced!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getSilencedEntities().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
-            RunicCore.getSpellManager().getSilencedEntities().put(entity.getUniqueId(), task);
-        } else if (effectEnum == EffectEnum.STUN) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "stunned!");
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getStunnedEntities().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
-            RunicCore.getSpellManager().getStunnedEntities().put(entity.getUniqueId(), task);
-            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration * 20), 3));
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
-            }
-        } else if (effectEnum == EffectEnum.ROOT) {
-            entity.sendMessage(ChatColor.RED + "You have been " + ChatColor.DARK_RED + ChatColor.BOLD + "rooted!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5f, 1.0f);
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getRootedEntites().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
-            RunicCore.getSpellManager().getRootedEntites().put(entity.getUniqueId(), task);
-            if (!(entity instanceof Player)) { // since there's no entity move event, we do it the old fashioned way for mobs
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration * 20), 3));
-                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), 127));
-            }
-        } else if (effectEnum == EffectEnum.INVULN) {
-            entity.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.DARK_GREEN + ChatColor.BOLD + "invulnerable!");
-            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 0.1f);
-            BukkitTask task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    RunicCore.getSpellManager().getInvulnerableEntities().remove(entity.getUniqueId());
-                }
-            }.runTaskLaterAsynchronously(plugin, (long) (duration * 20L));
-            RunicCore.getSpellManager().getInvulnerableEntities().put(entity.getUniqueId(), task);
-        }
-    }
-
-    @Override
-    public boolean isInvulnerable(Entity entity) {
-        return RunicCore.getSpellManager().getInvulnerableEntities().containsKey(entity.getUniqueId());
-    }
-
-    @Override
-    public boolean isOnCooldown(Player player) {
-        return RunicCore.getSpellManager().isOnCooldown(player, this.getName());
-    }
-
-    @Override
-    public boolean isSilenced(Entity entity) {
-        return RunicCore.getSpellManager().getSilencedEntities().containsKey(entity.getUniqueId());
-    }
-
-    @Override
-    public boolean isStunned(Entity entity) {
-        return RunicCore.getSpellManager().getStunnedEntities().containsKey(entity.getUniqueId());
-    }
-
-    @Override
-    public boolean isRooted(Entity entity) {
-        return RunicCore.getSpellManager().getRootedEntites().containsKey(entity.getUniqueId());
-    }
-
-    /**
-     * Used for execute skills that rely on percent missing health.
-     *
-     * @param entity  mob/player to check hp for
-     * @param percent multiplier for missing health (.25 * missing health, etc.)
-     * @return the percent times missing health
-     */
-    @Override
-    public int percentMissingHealth(Entity entity, double percent) {
-        if (!(entity instanceof LivingEntity)) return 0;
-        LivingEntity le = (LivingEntity) entity;
-        double max = le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        double missing = max - le.getHealth();
-        return (int) (missing * percent);
     }
 }

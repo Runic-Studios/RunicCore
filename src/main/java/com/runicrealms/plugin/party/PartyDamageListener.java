@@ -12,25 +12,25 @@ import org.bukkit.projectiles.ProjectileSource;
 public class PartyDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDamage(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Player)) {
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
-        Player victim = (Player) e.getEntity();
-        if (e.getDamager() instanceof Player) {
-            Player damager = (Player) e.getDamager();
-            Party party = RunicCore.getPartyManager().getPlayerParty(damager);
+        Player victim = (Player) event.getEntity();
+        if (event.getDamager() instanceof Player) {
+            Player damager = (Player) event.getDamager();
+            Party party = RunicCore.getPartyAPI().getParty(damager.getUniqueId());
             if (party != null && party.hasMember(victim)) {
-                e.setCancelled(true);
+                event.setCancelled(true);
             }
         }
-        if (e.getDamager() instanceof Projectile) {
-            ProjectileSource shooter = (ProjectileSource) ((Projectile) e.getDamager()).getShooter();
+        if (event.getDamager() instanceof Projectile) {
+            ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
             if (shooter instanceof Player) {
                 Player damager = (Player) shooter;
-                Party party = RunicCore.getPartyManager().getPlayerParty(damager);
+                Party party = RunicCore.getPartyAPI().getParty(damager.getUniqueId());
                 if (party != null && party.hasMember(victim)) {
-                    e.setCancelled(true);
+                    event.setCancelled(true);
                 }
             }
         }

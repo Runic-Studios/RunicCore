@@ -1,14 +1,16 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.item.event.RunicArtifactOnKillEvent;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,7 +19,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ThunderousRift extends Spell implements ArtifactSpell {
-
     private static final int DURATION = 8;
     private static final int RADIUS = 8;
     private static final double CHANCE = 1.0;
@@ -25,43 +26,8 @@ public class ThunderousRift extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "jorundrs-wrath";
 
     public ThunderousRift() {
-        super("Thunderous Rift", "", ChatColor.WHITE, ClassEnum.WARRIOR, 30, 0);
+        super("Thunderous Rift", CharacterClass.WARRIOR);
         this.setIsPassive(false);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        if (!(e instanceof RunicArtifactOnKillEvent)) return;
-        RunicArtifactOnKillEvent onHitEvent = (RunicArtifactOnKillEvent) e;
-        if (isOnCooldown(e.getPlayer())) return;
-        int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
-        riftTask(e.getPlayer(), onHitEvent.getVictim(), damage);
-        e.setArtifactSpellToCast(this);
-    }
-
-    private void riftTask(Player player, Entity victim, int damage) {
-        Location castLocation = victim.getLocation();
-        new BukkitRunnable() {
-            int count = 1;
-
-            @Override
-            public void run() {
-                if (count > DURATION) {
-                    this.cancel();
-                } else {
-                    createCircle(player, castLocation);
-                    player.getWorld().playSound(castLocation, Sound.ENTITY_CAT_HISS, 0.5f, 0.1f);
-                    for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
-                        if (!(verifyEnemy(player, en))) continue;
-                        LivingEntity victim = (LivingEntity) en;
-                        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 2.0f);
-                        DamageUtil.damageEntitySpell(damage, victim, player);
-                    }
-                    count += 1;
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
 
     private void createCircle(Player player, Location location) {
@@ -86,6 +52,41 @@ public class ThunderousRift extends Spell implements ArtifactSpell {
     @Override
     public double getChance() {
         return CHANCE;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onArtifactUse(RunicItemArtifactTriggerEvent event) {
+        if (!event.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        if (!(event instanceof RunicArtifactOnKillEvent)) return;
+        RunicArtifactOnKillEvent onHitEvent = (RunicArtifactOnKillEvent) event;
+        if (isOnCooldown(event.getPlayer())) return;
+        int damage = (int) ((event.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCore.getStatAPI().getPlayerStrength(event.getPlayer().getUniqueId()));
+        riftTask(event.getPlayer(), onHitEvent.getVictim(), damage);
+        event.setArtifactSpellToCast(this);
+    }
+
+    private void riftTask(Player player, Entity victim, int damage) {
+        Location castLocation = victim.getLocation();
+        new BukkitRunnable() {
+            int count = 1;
+
+            @Override
+            public void run() {
+                if (count > DURATION) {
+                    this.cancel();
+                } else {
+                    createCircle(player, castLocation);
+                    player.getWorld().playSound(castLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
+                    for (Entity en : player.getWorld().getNearbyEntities(castLocation, RADIUS, RADIUS, RADIUS)) {
+                        if (!(isValidEnemy(player, en))) continue;
+                        LivingEntity victim = (LivingEntity) en;
+                        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 2.0f);
+                        DamageUtil.damageEntitySpell(damage, victim, player);
+                    }
+                    count += 1;
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
 }
 

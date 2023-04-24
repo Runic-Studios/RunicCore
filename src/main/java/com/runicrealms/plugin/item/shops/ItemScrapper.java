@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
-import com.runicrealms.plugin.utilities.Tuple;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;
@@ -27,10 +27,10 @@ import java.util.*;
  */
 public class ItemScrapper implements RunicShop {
 
-    private static final int SHOP_SIZE = 27;
-    private static final String SHOP_NAME = ChatColor.YELLOW + "Item Scrapper";
     public static final Collection<Integer> SCRAPPER_NPC_IDS = Arrays.asList(144, 143, 145, 147, 148, 149, 151, 152, 153, 154, 155);
     public static final Collection<Integer> SCRAPPER_SLOTS = Arrays.asList(10, 11, 12, 13, 14);
+    private static final int SHOP_SIZE = 27;
+    private static final String SHOP_NAME = ChatColor.YELLOW + "Item Scrapper";
     private final InventoryHolder inventoryHolder;
     private final HashMap<UUID, List<ItemStack>> storedItems; // list of items NOT to return
 
@@ -42,50 +42,16 @@ public class ItemScrapper implements RunicShop {
     }
 
     /**
-     * This method reads the items in the first seven slots of the menu,
-     * removes them, and then decides how much gold to dish out.
-     *
-     * @param player to give gold to
-     */
-    public void scrapItems(Player player) {
-
-        Inventory inventory = this.getInventoryHolder().getInventory();
-        boolean placedValidItem = false;
-
-        // loop through items
-        for (Integer slot : SCRAPPER_SLOTS) {
-            if (inventory.getItem(slot) == null) continue;
-            ItemStack itemStack = inventory.getItem(slot);
-            Tuple<RunicItem, Integer> scrapItems = determineScrappedItems(itemStack);
-            if (scrapItems == null) continue;
-            storedItems.get(player.getUniqueId()).add(itemStack);
-            scrapItems.x.setCount(scrapItems.y);
-            RunicItemsAPI.addItem(player.getInventory(), scrapItems.x.generateItem());
-            placedValidItem = true;
-        }
-
-        if (placedValidItem) {
-            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.GREEN + "You received scraps for your item(s)!");
-        } else {
-            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-            player.sendMessage(ChatColor.GRAY + "Place an armor piece or weapon inside the menu to scrap it!");
-        }
-
-        player.closeInventory();
-    }
-
-    /**
      * Returns a hashmap with a type of scrap and the amount of scrap to reward
      *
      * @param itemStack to be scrapped
      * @return a list of scrap items to reward
      */
-    private static Tuple<RunicItem, Integer> determineScrappedItems(ItemStack itemStack) {
+    private static Pair<RunicItem, Integer> determineScrappedItems(ItemStack itemStack) {
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
         RunicItem runicItemScrap = determineRunicItemScrap(itemStack);
         if (runicItemScrap == null) return null;
-        return new Tuple<>(runicItemScrap, determineNumberOfScraps(runicItem));
+        return new Pair<>(runicItemScrap, determineNumberOfScraps(runicItem));
     }
 
     /**
@@ -114,12 +80,12 @@ public class ItemScrapper implements RunicShop {
             case DIAMOND_CHESTPLATE:
             case DIAMOND_LEGGINGS:
             case DIAMOND_BOOTS:
-                return RunicItemsAPI.generateItemFromTemplate("Thread");
+                return RunicItemsAPI.generateItemFromTemplate("thread");
             case LEATHER_HELMET:
             case LEATHER_CHESTPLATE:
             case LEATHER_LEGGINGS:
             case LEATHER_BOOTS:
-                return RunicItemsAPI.generateItemFromTemplate("AnimalHide");
+                return RunicItemsAPI.generateItemFromTemplate("animal-hide");
             case IRON_HELMET:
             case IRON_CHESTPLATE:
             case IRON_LEGGINGS:
@@ -174,8 +140,14 @@ public class ItemScrapper implements RunicShop {
         }
     }
 
-    public HashMap<UUID, List<ItemStack>> getStoredItems() {
-        return storedItems;
+    public static ItemStack checkMark() {
+        ItemStack item = new ItemStack(Material.SLIME_BALL, 1);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(ColorUtil.format("&aScrap Items"));
+        meta.setLore(Collections.singletonList(ColorUtil.format("&7Scrap items and receive &ecrafting reagents&7!")));
+        item.setItemMeta(meta);
+        return item;
     }
 
     @Override
@@ -201,6 +173,44 @@ public class ItemScrapper implements RunicShop {
     @Override
     public InventoryHolder getInventoryHolder() {
         return inventoryHolder;
+    }
+
+    public HashMap<UUID, List<ItemStack>> getStoredItems() {
+        return storedItems;
+    }
+
+    /**
+     * This method reads the items in the first seven slots of the menu,
+     * removes them, and then decides how much gold to dish out.
+     *
+     * @param player to give gold to
+     */
+    public void scrapItems(Player player) {
+
+        Inventory inventory = this.getInventoryHolder().getInventory();
+        boolean placedValidItem = false;
+
+        // loop through items
+        for (Integer slot : SCRAPPER_SLOTS) {
+            if (inventory.getItem(slot) == null) continue;
+            ItemStack itemStack = inventory.getItem(slot);
+            Pair<RunicItem, Integer> scrapItems = determineScrappedItems(itemStack);
+            if (scrapItems == null) continue;
+            storedItems.get(player.getUniqueId()).add(itemStack);
+            scrapItems.first.setCount(scrapItems.second);
+            RunicItemsAPI.addItem(player.getInventory(), scrapItems.first.generateItem());
+            placedValidItem = true;
+        }
+
+        if (placedValidItem) {
+            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.GREEN + "You received scraps for your item(s)!");
+        } else {
+            player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+            player.sendMessage(ChatColor.GRAY + "Place an armor piece or weapon inside the menu to scrap it!");
+        }
+
+        player.closeInventory();
     }
 
     /**
@@ -232,23 +242,13 @@ public class ItemScrapper implements RunicShop {
          */
         private void setupInventory() {
             this.inventory.clear();
-            this.inventory.setItem(0, GUIUtil.backButton());
+            this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
             for (int i = 0; i < SHOP_SIZE; i++) {
                 if (SCRAPPER_SLOTS.contains(i)) continue; // skip scrapper slots
-                this.inventory.setItem(i, GUIUtil.borderItem());
+                this.inventory.setItem(i, GUIUtil.BORDER_ITEM);
             }
             this.inventory.setItem(16, checkMark());
-            this.inventory.setItem(17, GUIUtil.closeButton());
+            this.inventory.setItem(17, GUIUtil.CLOSE_BUTTON);
         }
-    }
-
-    public static ItemStack checkMark() {
-        ItemStack item = new ItemStack(Material.SLIME_BALL, 1);
-        ItemMeta meta = item.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(ColorUtil.format("&aScrap Items"));
-        meta.setLore(Collections.singletonList(ColorUtil.format("&7Scrap items and receive &ecrafting reagents&7!")));
-        item.setItemMeta(meta);
-        return item;
     }
 }

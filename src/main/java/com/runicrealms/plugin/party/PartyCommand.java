@@ -5,6 +5,11 @@ import co.aikar.commands.annotation.*;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.party.event.LeaveReason;
 import com.runicrealms.plugin.party.event.PartyLeaveEvent;
+import com.runicrealms.plugin.utilities.ChatUtils;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -22,21 +27,23 @@ public class PartyCommand extends BaseCommand {
 
     public PartyCommand() {
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-invite", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<>();
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer())
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) == null)
+                return new ArrayList<>();
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()).getLeader() != context.getPlayer())
                 return new ArrayList<>();
             Set<String> players = new HashSet<>();
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+                if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) {
                     players.add(player.getName());
                 }
             }
             return players;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-join", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) != null) return new ArrayList<>();
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) != null)
+                return new ArrayList<>();
             Set<String> invites = new HashSet<>();
-            for (Party party : RunicCore.getPartyManager().getParties()) {
+            for (Party party : RunicCore.getPartyAPI().getParties()) {
                 for (Party.Invite invite : party.getInvites()) {
                     if (invite.getPlayer() == context.getPlayer()) {
                         invites.add(party.getLeader().getName());
@@ -46,13 +53,51 @@ public class PartyCommand extends BaseCommand {
             return invites;
         });
         RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("party-kick", context -> {
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()) == null) return new ArrayList<>();
-            if (RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getLeader() != context.getPlayer())
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()) == null)
+                return new ArrayList<>();
+            if (RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()).getLeader() != context.getPlayer())
                 return new ArrayList<>();
             Set<String> members = new HashSet<>();
-            RunicCore.getPartyManager().getPlayerParty(context.getPlayer()).getMembers().forEach(member -> members.add(member.getName()));
+            RunicCore.getPartyAPI().getParty(context.getPlayer().getUniqueId()).getMembers().forEach(member -> members.add(member.getName()));
             return members;
         });
+    }
+
+    @Subcommand("create|c")
+    @Conditions("is-player")
+    public void onCommandCreate(Player player) {
+        if (!RunicCore.getPartyAPI().canJoinParty(player.getUniqueId())) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou are already in a party/group!"));
+            return;
+        }
+        Party party = new Party(player);
+        RunicCore.getPartyAPI().getParties().add(party);
+        RunicCore.getPartyAPI().updatePlayerParty(player.getUniqueId(), party);
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou created a party! Use &2/party invite &ato invite players"));
+        RunicCore.getTabAPI().setupTab(player);
+    }
+
+    @Subcommand("disband|d|delete")
+    @Conditions("is-player")
+    public void onCommandDisband(Player player) {
+        if (!RunicCore.getPartyAPI().hasParty(player.getUniqueId())) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be in a party to use this command!"));
+            return;
+        }
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()).getLeader() != player) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
+            return;
+        }
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
+        party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
+        for (Player member : party.getMembersWithLeader()) {
+            RunicCore.getPartyAPI().updatePlayerParty(member.getUniqueId(), null);
+            RunicCore.getTabAPI().setupTab(member);
+        }
+        PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
+        Bukkit.getPluginManager().callEvent(partyLeaveEvent);
+        RunicCore.getPartyAPI().getParties().remove(party);
     }
 
     @Default
@@ -62,56 +107,11 @@ public class PartyCommand extends BaseCommand {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aAvailable commands: &ecreate, disband, help, invite, join, kick, leave, list"));
     }
 
-    @Subcommand("create|c")
-    @Conditions("is-player")
-    public void onCommandCreate(Player player) {
-        if (!RunicCore.getPartyManager().canJoinParty(player)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou are already in a party/group!"));
-            return;
-        }
-        Party party = new Party(player);
-        RunicCore.getPartyManager().getParties().add(party);
-        RunicCore.getPartyManager().updatePlayerParty(player, party);
-        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1);
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou created a party! Use &2/party invite &ato invite players"));
-        RunicCore.getTabListManager().setupTab(player);
-    }
-
-    @Subcommand("disband|d|delete")
-    @Conditions("is-player")
-    public void onCommandDisband(Player player) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be in a party to use this command!"));
-            return;
-        }
-        if (RunicCore.getPartyManager().getPlayerParty(player).getLeader() != player) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
-            return;
-        }
-        Party party = RunicCore.getPartyManager().getPlayerParty(player);
-        party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
-        for (Player member : party.getMembersWithLeader()) {
-            RunicCore.getPartyManager().updatePlayerParty(member, null);
-            RunicCore.getTabListManager().setupTab(member);
-        }
-        PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
-        Bukkit.getPluginManager().callEvent(partyLeaveEvent);
-        RunicCore.getPartyManager().getParties().remove(party);
-    }
-
     @Subcommand("invite|add|i|a")
     @Syntax("<player>")
-    @CommandCompletion("@party-invite")
+    @CommandCompletion("@online")
     @Conditions("is-player")
     public void onCommandInvite(Player player, String[] args) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be in a party to use this command!"));
-            return;
-        }
-        if (RunicCore.getPartyManager().getPlayerParty(player).getLeader() != player) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
-            return;
-        }
         if (args.length < 1) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cPlease specify a player to invite!"));
             return;
@@ -121,20 +121,45 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is not online!"));
             return;
         }
-        if (!RunicCore.getPartyManager().canJoinParty(invited)) {
+        if (!RunicCore.getPartyAPI().canJoinParty(invited.getUniqueId())) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is already in a party/group!"));
             return;
         }
-        if (RunicCore.getPartyManager().memberHasInvite(invited)) {
+        if (RunicCore.getPartyAPI().memberHasInvite(invited)) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player has already been invited to your/a different party!"));
             return;
         }
-        Party party = RunicCore.getPartyManager().getPlayerParty(player);
-        if (Math.abs(party.getLeader().getLevel() - invited.getLevel()) > 15) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is outside the party level range [15]"));
+        if (invited.equals(player)) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou cannot invite yourself!"));
             return;
         }
-        invited.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou have been invited to " + player.getName() + "'s party, type &2/party join " + player.getName() + " &ato join."));
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) {
+            onCommandCreate(player);
+        }
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
+        if (party.getLeader() != player) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou must be party leader to use this command!"));
+            return;
+        }
+        String inviteMessage = ChatColor.translateAlternateColorCodes('&',
+                PREFIX + " &aYou have been invited to " + player.getName() + "'s party!");
+        String clickableMessageSpaces = ChatUtils.centeredMessage(player, ChatColor.GOLD + "[Click Here]" + ChatColor.GREEN + " to join");
+        TextComponent textComponent = new TextComponent(clickableMessageSpaces + ChatColor.GOLD + "[Click Here]");
+        textComponent.setClickEvent(new ClickEvent
+                (
+                        ClickEvent.Action.RUN_COMMAND,
+                        "/party join " + player.getName()
+                ));
+        textComponent.setHoverEvent(new HoverEvent
+                (
+                        HoverEvent.Action.SHOW_TEXT,
+                        new Text(ChatColor.GREEN + "Join " + ChatColor.WHITE + player.getName() + ChatColor.GREEN + "'s party")
+                ));
+        invited.sendMessage("");
+        invited.sendMessage(inviteMessage);
+        invited.spigot().sendMessage(textComponent, new TextComponent(ChatColor.GREEN + " to " +
+                "join"));
+        invited.sendMessage("");
         party.sendMessageInChannel(player.getName() + " has invited " + invited.getName() + " to the party");
         party.addInvite(invited);
     }
@@ -144,7 +169,7 @@ public class PartyCommand extends BaseCommand {
     @CommandCompletion("@party-join")
     @Conditions("is-player")
     public void onCommandJoin(Player player, String[] args) {
-        if (!RunicCore.getPartyManager().canJoinParty(player)) {
+        if (!RunicCore.getPartyAPI().canJoinParty(player.getUniqueId())) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou cannot use this command while in a party/group!"));
             return;
         }
@@ -157,7 +182,7 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is not online!"));
             return;
         }
-        Party party = RunicCore.getPartyManager().getPlayerParty(inviter);
+        Party party = RunicCore.getPartyAPI().getParty(inviter.getUniqueId());
         if (party == null) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player has not invited you to their party!"));
             return;
@@ -167,9 +192,11 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player has not invited you to their party!"));
             return;
         }
-        party.acceptMemberInvite(player);
-        party.sendMessageInChannel(player.getName() + " has joined the party");
-        RunicCore.getPartyManager().updatePlayerParty(player, party);
+        boolean joinedParty = party.acceptMemberInvite(player);
+        if (joinedParty) {
+            party.sendMessageInChannel(player.getName() + " has joined the party");
+            RunicCore.getPartyAPI().updatePlayerParty(player.getUniqueId(), party);
+        }
     }
 
     @Subcommand("kick|k")
@@ -177,11 +204,11 @@ public class PartyCommand extends BaseCommand {
     @CommandCompletion("@party-kick")
     @Conditions("is-player")
     public void onCommandKick(Player player, String[] args) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou need to be in a party to use this command!"));
             return;
         }
-        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
         if (party.getLeader() != player) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou need to be party leader to use this command!"));
             return;
@@ -199,20 +226,20 @@ public class PartyCommand extends BaseCommand {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou cannot kick yourself!"));
             return;
         }
-        if (RunicCore.getPartyManager().getPlayerParty(kicked) == null) {
+        if (RunicCore.getPartyAPI().getParty(kicked.getUniqueId()) == null) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is not in your party!"));
             return;
         }
-        if (RunicCore.getPartyManager().getPlayerParty(kicked) != party) {
+        if (RunicCore.getPartyAPI().getParty(kicked.getUniqueId()) != party) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cThat player is not in your party!"));
             return;
         }
         //party.getMembers().remove(kicked);
         party.kickMember(kicked, LeaveReason.KICK);
-        RunicCore.getPartyManager().updatePlayerParty(kicked, null);
-        RunicCore.getTabListManager().setupTab(kicked);
+        RunicCore.getPartyAPI().updatePlayerParty(kicked.getUniqueId(), null);
+        RunicCore.getTabAPI().setupTab(kicked);
         for (Player member : party.getMembersWithLeader()) {
-            RunicCore.getTabListManager().setupTab(member);
+            RunicCore.getTabAPI().setupTab(member);
         }
         party.sendMessageInChannel(kicked.getName() + " has been removed from this party &7Reason: kicked");
         kicked.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &aYou have been kicked from the party!"));
@@ -221,28 +248,28 @@ public class PartyCommand extends BaseCommand {
     @Subcommand("leave|quit|q")
     @Conditions("is-player")
     public void onCommandLeave(Player player) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou need to be in a party to use this command!"));
             return;
         }
-        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
         if (party.getLeader() == player) {
             party.sendMessageInChannel("This party has been disbanded &7Reason: leader disbanded");
             PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, party.getLeader(), LeaveReason.DISBAND);
             Bukkit.getPluginManager().callEvent(partyLeaveEvent);
             for (Player member : party.getMembersWithLeader()) {
-                RunicCore.getPartyManager().updatePlayerParty(member, null);
-                RunicCore.getTabListManager().setupTab(member);
+                RunicCore.getPartyAPI().updatePlayerParty(member.getUniqueId(), null);
+                RunicCore.getTabAPI().setupTab(member);
             }
         } else {
             party.sendMessageInChannel(player.getName() + " has been removed this party &7Reason: left");
             PartyLeaveEvent partyLeaveEvent = new PartyLeaveEvent(party, player, LeaveReason.LEAVE);
             Bukkit.getPluginManager().callEvent(partyLeaveEvent);
             party.getMembers().remove(player);
-            RunicCore.getPartyManager().updatePlayerParty(player, null);
-            RunicCore.getTabListManager().setupTab(player);
+            RunicCore.getPartyAPI().updatePlayerParty(player.getUniqueId(), null);
+            RunicCore.getTabAPI().setupTab(player);
             for (Player member : party.getMembersWithLeader()) {
-                RunicCore.getTabListManager().setupTab(member);
+                RunicCore.getTabAPI().setupTab(member);
             }
         }
     }
@@ -250,11 +277,11 @@ public class PartyCommand extends BaseCommand {
     @Subcommand("list|players|members|l")
     @Conditions("is-player")
     public void onCommandList(Player player) {
-        if (RunicCore.getPartyManager().getPlayerParty(player) == null) {
+        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + " &cYou need to be in a party to use this command!"));
             return;
         }
-        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
         StringBuilder builder = new StringBuilder();
         builder.append(PREFIX + " &aMembers: &e");
         int i = 0;
@@ -282,7 +309,7 @@ public class PartyCommand extends BaseCommand {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThat player is not online!"));
             return;
         }
-        Party party = RunicCore.getPartyManager().getPlayerParty(player);
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
         if (party == null) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThat player is not in a party!"));
             return;

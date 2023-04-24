@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
 import com.runicrealms.plugin.RunicCore;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -15,27 +16,29 @@ public class Cone {
 
     /**
      * Creates a helix cone around given livingEntity.
+     *
      * @param livingEntity livingEntity to create particle around
-     * @param particle type of particle to use
-     * @param DURATION length of effect (in seconds)
-     * @param delay delay of effect (in ticks)
-     * @param period of effect (in ticks)
-     * @param color color of effect if using redstone
+     * @param particle     type of particle to use
+     * @param DURATION     length of effect (in seconds)
+     * @param delay        delay of effect (in ticks)
+     * @param period       of effect (in ticks)
+     * @param color        color of effect if using redstone
      * @return return BukkitTask that can be cancelled
      */
-    public static BukkitTask coneEffect(final LivingEntity livingEntity, Particle particle, double DURATION, int delay, long period, Color color){
+    public static BukkitTask coneEffect(final LivingEntity livingEntity, Particle particle, double DURATION, int delay, long period, Color color) {
 
-        return new BukkitRunnable(){
+        BukkitTask bukkitTask = new BukkitRunnable() {
 
-            int count = 1;
+            //            int count = 1;
             double phi = 0;
-            public void run(){
 
-                if (count > DURATION || livingEntity.isDead()) {
+            public void run() {
+
+                if (livingEntity.isDead()) { // count > DURATION ||
                     this.cancel();
                 } else {
 
-                    count += 1;
+//                    count += 1;
                     phi = phi + Math.PI / 8;
                     double x, y, z;
 
@@ -61,5 +64,9 @@ public class Cone {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), delay, period);
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), bukkitTask::cancel, (long) DURATION * 20L);
+
+        return bukkitTask;
     }
 }

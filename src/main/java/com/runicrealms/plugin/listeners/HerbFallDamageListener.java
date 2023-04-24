@@ -2,35 +2,26 @@ package com.runicrealms.plugin.listeners;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class HerbFallDamageListener implements Listener {
 
-    @EventHandler
-    public void onFallDamage(EntityDamageEvent e) {
-        if (e.getCause() != EntityDamageEvent.DamageCause.FALL)
+    @EventHandler(priority = EventPriority.LOW) // early
+    public void onFallDamage(EntityDamageEvent event) {
+        if (event.getCause() != EntityDamageEvent.DamageCause.FALL)
             return;
-        if (e.getEntity() instanceof Player) return;
-        if (!MythicMobs.inst().getMobManager().isActiveMob(e.getEntity().getUniqueId())) return;
-        if (MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).isPresent()) {
-            ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(e.getEntity().getUniqueId()).get();
+        if (event.getEntity() instanceof Player) return;
+        if (!MythicMobs.inst().getMobManager().isActiveMob(event.getEntity().getUniqueId())) return;
+        if (MythicMobs.inst().getMobManager().getActiveMob(event.getEntity().getUniqueId()).isPresent()) {
+            ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(event.getEntity().getUniqueId()).get();
             if (am.hasFaction() && am.getFaction().equalsIgnoreCase("herb")) {
-                e.setCancelled(true);
+                event.setCancelled(true);
             }
         }
     }
 
-    /*
-    Fireworks
-     */
-    @EventHandler
-    public void onFireworkDamage(EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Firework)
-            e.setCancelled(true);
-    }
 }

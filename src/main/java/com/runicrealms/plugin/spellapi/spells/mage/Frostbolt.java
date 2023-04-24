@@ -1,12 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -16,25 +16,20 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Frostbolt extends Spell implements MagicDamageSpell {
-
-    private static final int DAMAGE_AMT = 25;
-    private static final double DAMAGE_PER_LEVEL = 2.75;
     private static final double SPEED_MULT = 2.5;
+    private double damage;
+    private double damagePerLevel;
     private Snowball snowball;
 
     public Frostbolt() {
-        super("Frostbolt",
-                "You launch a projectile bolt of ice " +
-                        "that deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL
-                        + "x&7 lvl) spellʔ damage on " +
-                        "impact and slows its target!",
-                ChatColor.WHITE, ClassEnum.MAGE, 5, 20);
+        super("Frostbolt", CharacterClass.MAGE);
+        this.setDescription("You launch a projectile bolt of ice " +
+                "that deals (" + damage + " + &f" + damagePerLevel
+                + "x&7 lvl) magicʔ damage on " +
+                "impact and slows its target!");
     }
 
     @Override
@@ -47,8 +42,28 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         EntityTrail.entityTrail(snowball, Particle.SNOWBALL);
     }
 
+    @Override
+    public double getMagicDamage() {
+        return damage;
+    }
+
+    @Override
+    public void setMagicDamage(double magicDamage) {
+        this.damage = magicDamage;
+    }
+
+    @Override
+    public double getMagicDamagePerLevel() {
+        return damagePerLevel;
+    }
+
+    @Override
+    public void setMagicDamagePerLevel(double magicDamagePerLevel) {
+        this.damagePerLevel = magicDamagePerLevel;
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onsnowballDamage(EntityDamageByEntityEvent event) {
+    public void onSnowballDamage(EntityDamageByEntityEvent event) {
 
         // only listen for our snowball
         if (!(event.getDamager().equals(this.snowball))) return;
@@ -56,27 +71,22 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         event.setCancelled(true);
 
         // grab our variables
-        Player pl = (Player) snowball.getShooter();
-        if (pl == null) return;
+        Player player = (Player) snowball.getShooter();
+        if (player == null) return;
 
         LivingEntity victim = (LivingEntity) event.getEntity();
-        if (!verifyEnemy(pl, victim)) return;
+        if (!isValidEnemy(player, victim)) return;
 
         // cancel the event, apply spell mechanics
-        DamageUtil.damageEntitySpell(DAMAGE_AMT, victim, pl, this);
+        DamageUtil.damageEntitySpell(damage, victim, player, this);
 
         // slow
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 2));
+        addStatusEffect(victim, RunicStatusEffect.SLOW_III, 5, false);
 
         // particles, sounds
         victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
                 5, 0.5F, 0.5F, 0.5F, 0, Material.PACKED_ICE.createBlockData());
-        pl.getWorld().playSound(pl.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
     }
 }
 

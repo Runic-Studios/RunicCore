@@ -1,9 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,59 +21,10 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
  */
 public final class MobMechanicsListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void updateHealthBarSpellDamage(SpellDamageEvent e) {
-        if (e.isCancelled()) return;
-        if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
-        updateDisplayName(e.getVictim(), e.getAmount());
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void updateHealthBarWeaponDamage(WeaponDamageEvent e) {
-        if (e.isCancelled()) return;
-        if (e.getVictim() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getVictim()) != null) return;
-        updateDisplayName(e.getVictim(), e.getAmount());
-    }
-
-    /*
-     * Updates mob health on regen
-     */
-    @EventHandler
-    public void onMobRegainHealth(EntityRegainHealthEvent e) {
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        if (e.getEntity() instanceof ArmorStand) return;
-        if (e.getEntity() instanceof Player && RunicCoreAPI.getPlayerCache((Player) e.getEntity()) != null) return;
-        if (e.getEntity().getPassengers().size() == 0) return;
-        if (e.getEntity() instanceof Horse) return;
-        LivingEntity le = (LivingEntity) e.getEntity();
-        updateDisplayName(le, 0);
-    }
-
-    @EventHandler
-    public void onBurn(EntityCombustEvent event) {
-        event.setCancelled(true);
-    }
-
-    /**
-     * Updates the healthbar of a mob!
-     *
-     * @param le     mob to update health for
-     * @param damage from event
-     */
-    private void updateDisplayName(LivingEntity le, int damage) {
-        String healthBar = ChatColor.YELLOW + "" + "["
-                + createHealthDisplay(le, damage)
-                + ChatColor.YELLOW + "]";
-        if (MythicMobs.inst().getMobManager().getActiveMob(le.getUniqueId()).isPresent()) // delay by 1 tick to display correct health
-            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> createMythicHealthDisplay(le));
-        else
-            le.setCustomName(healthBar);
-    }
-
     /**
      * Uses the MythicMobs skills system to update the MM health bars, since disguises breaks the default method.
      *
-     * @param livingEntity MythicMob to update healthbar for
+     * @param livingEntity MythicMob to update health bar for
      */
     private static void createMythicHealthDisplay(LivingEntity livingEntity) {
         int numColorBars = calculateNumColors(livingEntity);
@@ -152,5 +102,57 @@ public final class MobMechanicsListener implements Listener {
         currentHealth = Math.max(livingEntity.getHealth(), 0);
         int healthPercentage = (int) ((currentHealth / maxHealth) * 100.0D);
         return healthPercentage / 10;
+    }
+
+    @EventHandler
+    public void onBurn(EntityCombustEvent event) {
+        event.setCancelled(true);
+    }
+
+    /*
+     * Updates mob health on regen
+     */
+    @EventHandler
+    public void onMobRegainHealth(EntityRegainHealthEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (event.getEntity() instanceof ArmorStand) return;
+        if (event.getEntity() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getEntity().getUniqueId()))
+            return;
+        if (event.getEntity().getPassengers().size() == 0) return;
+        if (event.getEntity() instanceof Horse) return;
+        LivingEntity le = (LivingEntity) event.getEntity();
+        updateDisplayName(le, 0);
+    }
+
+    /**
+     * Updates the healthbar of a mob!
+     *
+     * @param livingEntity mob to update health for
+     * @param damage       from event
+     */
+    private void updateDisplayName(LivingEntity livingEntity, int damage) {
+        String healthBar = ChatColor.YELLOW + "" + "["
+                + createHealthDisplay(livingEntity, damage)
+                + ChatColor.YELLOW + "]";
+        if (MythicMobs.inst().getMobManager().getActiveMob(livingEntity.getUniqueId()).isPresent()) // delay by 1 tick to display correct health
+            Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> createMythicHealthDisplay(livingEntity));
+        else
+            livingEntity.setCustomName(healthBar);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
+    public void updateHealthBarOnPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getVictim() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getVictim().getUniqueId()))
+            return;
+        updateDisplayName(event.getVictim(), event.getAmount());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
+    public void updateHealthBarSpellDamage(MagicDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getVictim() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getVictim().getUniqueId()))
+            return;
+        updateDisplayName(event.getVictim(), event.getAmount());
     }
 }

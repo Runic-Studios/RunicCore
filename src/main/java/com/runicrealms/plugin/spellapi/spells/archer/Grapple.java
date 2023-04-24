@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.ChatColor;
@@ -22,64 +22,22 @@ import java.util.UUID;
 
 public class Grapple extends Spell {
 
+    private static final double HOOK_LENGTH = 30.0;
     private final HashMap<Arrow, UUID> hooks = new HashMap<>();
     private final HashMap<UUID, Long> safefall = new HashMap<>();
-    private static final double HOOK_LENGTH = 30.0;
 
     public Grapple() {
-        super("Grapple",
-                "You fire a grappling hook which pulls " +
-                        "you to your target location, up to a max " +
-                        "of " + (int) HOOK_LENGTH + " blocks!",
-                ChatColor.WHITE, ClassEnum.ARCHER, 14, 25);
+        super("Grapple", CharacterClass.ARCHER);
+        this.setDescription("You fire a grappling hook that pulls " +
+                "you to your target location, up to a max " +
+                "of " + (int) HOOK_LENGTH + " blocks!");
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1);
-        startTask(pl);
-    }
-
-    private void startTask(Player pl) {
-        Vector direction = pl.getEyeLocation().getDirection().normalize().multiply(2);
-        Arrow arrow = pl.launchProjectile(Arrow.class);
-        UUID uuid = pl.getUniqueId();
-        arrow.setVelocity(direction);
-        arrow.setShooter(pl);
-        hooks.put(arrow, uuid);
-        Location startLoc = arrow.getLocation();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Location arrowLoc = arrow.getLocation();
-                pl.getWorld().spawnParticle(Particle.CLOUD, arrowLoc, 5, 0, 0, 0, 0);
-                if (arrow.isDead() && !arrow.isOnGround()) {
-                    this.cancel();
-                    pl.sendMessage(ChatColor.RED + "Your line was blocked!");
-                    pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
-                }
-                if (arrow.isOnGround()) {
-                    this.cancel();
-                    if (arrowLoc.distance(startLoc) > HOOK_LENGTH) {
-                        pl.sendMessage(ChatColor.RED + "Your hook flew too far!");
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
-                    } else {
-                        safefall.put(uuid, System.currentTimeMillis());
-                        pl.playSound(pl.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5F, 1);
-                        pl.teleport(pl.getLocation().add(0.0D, 0.5D, 0.0D));
-                        final Vector v = getVectorForPoints(pl.getLocation(), arrowLoc);
-                        pl.setVelocity(v);
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                safefall.remove(uuid);
-                            }
-                        }.runTaskLater(RunicCore.getInstance(), 40);
-                    }
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
+    public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.5f, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.5f, 1);
+        startTask(player);
     }
 
     // handles the vector
@@ -90,6 +48,16 @@ public class Grapple extends Spell {
         double vY = (1.0D + 0.03D * d) * (l2.getY() - l1.getY()) / d - 0.5D * g * d;
         double vZ = (1.0D + 0.07D * d) * (l2.getZ() - l1.getZ()) / d;
         return new Vector(vX, vY, vZ);
+    }
+
+    // prevent the grappling hook from damaging players
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onArrowDamage(EntityDamageByEntityEvent e) {
+        if (e.getDamager() instanceof Arrow arrow) {
+            if (this.hooks.containsKey(arrow)) {
+                e.setCancelled(true);
+            }
+        }
     }
 
     // prevent fall damage if the user if grappling
@@ -103,15 +71,45 @@ public class Grapple extends Spell {
         }
     }
 
-    // prevent the grappling hook from damaging players
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onArrowDamage(EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Arrow) {
-            Arrow arrow = (Arrow) e.getDamager();
-            if (this.hooks.containsKey(arrow)) {
-                e.setCancelled(true);
+    private void startTask(Player player) {
+        Vector direction = player.getEyeLocation().getDirection().normalize().multiply(2);
+        Arrow arrow = player.launchProjectile(Arrow.class);
+        UUID uuid = player.getUniqueId();
+        arrow.setVelocity(direction);
+        arrow.setShooter(player);
+        hooks.put(arrow, uuid);
+        Location startLoc = arrow.getLocation();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location arrowLoc = arrow.getLocation();
+                player.getWorld().spawnParticle(Particle.CLOUD, arrowLoc, 5, 0, 0, 0, 0);
+                if (arrow.isDead() && !arrow.isOnGround()) {
+                    this.cancel();
+                    player.sendMessage(ChatColor.RED + "Your line was blocked!");
+                    player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
+                }
+                if (arrow.isOnGround()) {
+                    this.cancel();
+                    if (arrowLoc.distanceSquared(startLoc) > HOOK_LENGTH * HOOK_LENGTH) {
+                        player.sendMessage(ChatColor.RED + "Your hook flew too far!");
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5F, 1);
+                    } else {
+                        safefall.put(uuid, System.currentTimeMillis());
+                        player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.5F, 1);
+                        player.teleport(player.getLocation().add(0.0D, 0.5D, 0.0D));
+                        final Vector v = getVectorForPoints(player.getLocation(), arrowLoc);
+                        player.setVelocity(v);
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                safefall.remove(uuid);
+                            }
+                        }.runTaskLater(RunicCore.getInstance(), 40);
+                    }
+                }
             }
-        }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
     }
 }
 
