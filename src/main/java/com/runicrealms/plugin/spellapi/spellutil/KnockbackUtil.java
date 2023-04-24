@@ -2,16 +2,13 @@ package com.runicrealms.plugin.spellapi.spellutil;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.text.DecimalFormat;
-
 public class KnockbackUtil {
-
-    private static final double POWER = 0.35;
+    private static final double MELEE_STRENGTH = 0.65;
+    private static final double RANGED_STRENGTH = 0.5;
 
     /**
      * Controls strength of on-hit knockback for melee attacks against other players.
@@ -20,17 +17,14 @@ public class KnockbackUtil {
      * @param victim  player who was hit
      */
     public static void knockbackMeleePlayer(Entity damager, Player victim) {
-        Location l = victim.getLocation().subtract(damager.getLocation());
-        if (victim.getLocation().getWorld() != damager.getLocation().getWorld()) return;
-        double distance = victim.getLocation().distance(damager.getLocation());
-        if (distance == 0) distance = 1;
-        DecimalFormat finite = new DecimalFormat("#.####");
-        double multiplier = POWER / distance;
-        Vector vec = l.toVector().normalize().multiply(multiplier);
-        vec.setX(Double.parseDouble(finite.format(vec.getX())));
-        vec.setY(0.3333);
-        vec.setZ(Double.parseDouble(finite.format(vec.getZ())));
-        victim.setVelocity(vec);
+        // Calculate knockback direction
+        Vector attackerPos = damager.getLocation().toVector();
+        Vector enemyPos = victim.getLocation().toVector();
+        Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
+
+        // Apply knockback to enemy
+        Vector knockbackVector = knockbackDirection.multiply(MELEE_STRENGTH);
+        victim.setVelocity(victim.getVelocity().add(knockbackVector));
     }
 
     /**
@@ -40,9 +34,14 @@ public class KnockbackUtil {
      * @param victim  player who was hit
      */
     public static void knockbackRangedPlayer(Player damager, Player victim) {
-        Vector vector = damager.getLocation().getDirection().multiply(0.35);
-        vector.setY(0.2);
-        victim.setVelocity(vector);
+        // Calculate knockback direction
+        Vector attackerPos = damager.getLocation().toVector();
+        Vector enemyPos = victim.getLocation().toVector();
+        Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
+
+        // Apply knockback to enemy
+        Vector knockbackVector = knockbackDirection.multiply(RANGED_STRENGTH);
+        victim.setVelocity(victim.getVelocity().add(knockbackVector));
     }
 
     /**
@@ -52,19 +51,22 @@ public class KnockbackUtil {
      * @param isRanged whether the attack came from a melee or ranged hit
      */
     public static void knockBackMob(Player damager, Entity entity, boolean isRanged) {
-        double multiplier = 0.5;
-        if (isRanged)
-            multiplier = 0.4;
-        Vector vector = damager.getLocation().getDirection().multiply(multiplier);
-        vector.setY(0.225);
-        // no boss knockback!
+        // No boss knockback!
         if (MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) {
             ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
             if (am.hasFaction() && am.getFaction().equalsIgnoreCase("boss")) {
                 return;
             }
         }
-        entity.setVelocity(vector);
+        // Calculate knockback direction
+        Vector attackerPos = damager.getLocation().toVector();
+        Vector enemyPos = entity.getLocation().toVector();
+        Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
+
+        // Apply knockback to enemy
+        double knockbackStrength = isRanged ? RANGED_STRENGTH : MELEE_STRENGTH;
+        Vector knockbackVector = knockbackDirection.multiply(knockbackStrength);
+        entity.setVelocity(entity.getVelocity().add(knockbackVector));
     }
 }
 

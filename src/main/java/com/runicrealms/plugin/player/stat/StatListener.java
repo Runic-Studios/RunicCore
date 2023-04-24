@@ -18,8 +18,9 @@ public class StatListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBasicAttack(BasicAttackEvent event) {
         if (event.isCancelled()) return;
+        if (event.getOriginalCooldownTicks() < 15) return; // Only affect ranged attacks
         UUID uuid = event.getPlayer().getUniqueId();
-        double attackSpeedBonus = Stat.getAttackSpeed() * RunicCore.getStatAPI().getPlayerDexterity(uuid);
+        double attackSpeedBonus = Stat.getRangedAttackSpeed() * RunicCore.getStatAPI().getPlayerDexterity(uuid);
         int reducedTicks = (int) (event.getOriginalCooldownTicks() * attackSpeedBonus);
         // Cooldown cannot drop beneath a certain value
         event.setCooldownTicks(Math.max(event.getCooldownTicks() - reducedTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
