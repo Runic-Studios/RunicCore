@@ -211,7 +211,7 @@ public class BowListener implements Listener {
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
 
         // Set the cooldown
-        Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, Material.BOW, BasicAttackEvent.BASE_BOW_COOLDOWN));
+        Bukkit.getPluginManager().callEvent(new BasicAttackEvent(player, Material.BOW, BasicAttackEvent.BASE_BOW_COOLDOWN, BasicAttackEvent.BASE_BOW_COOLDOWN));
 
         // Call custom event
         Bukkit.getPluginManager().callEvent(new RunicBowEvent(player, myArrow));

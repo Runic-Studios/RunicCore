@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.*;
 import com.runicrealms.plugin.player.listener.ManaListener;
@@ -11,9 +12,18 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class StatListener implements Listener {
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBasicAttack(BasicAttackEvent event) {
+        if (event.isCancelled()) return;
+        UUID uuid = event.getPlayer().getUniqueId();
+        double attackSpeedBonus = Stat.getAttackSpeed() * RunicCore.getStatAPI().getPlayerDexterity(uuid);
+        int reducedTicks = (int) (event.getOriginalCooldownTicks() * attackSpeedBonus);
+        // Cooldown cannot drop beneath a certain value
+        event.setCooldownTicks(Math.max(event.getCooldownTicks() - reducedTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
+    }
 
     @EventHandler
     public void onHealthRegen(HealthRegenEvent event) {
@@ -28,11 +38,11 @@ public class StatListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         double magicDamageBonusPercent = Stat.getMagicDmgMult() * RunicCore.getStatAPI().getPlayerIntelligence(uuid);
         event.setAmount((int) (event.getAmount() + Math.ceil(event.getAmount() * magicDamageBonusPercent)));
-        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
-        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCore.getStatAPI().getPlayerDexterity(uuid))) {
-            event.setCritical(true);
-            event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
-        }
+//        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
+//        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCore.getStatAPI().getPlayerDexterity(uuid))) {
+//            event.setCritical(true);
+//            event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
+//        }
         /*
         Defense calculated last
          */
@@ -68,11 +78,11 @@ public class StatListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         double physicalDamageBonusPercent = Stat.getPhysicalDmgMult() * RunicCore.getStatAPI().getPlayerStrength(uuid);
         event.setAmount((int) (event.getAmount() + Math.ceil(event.getAmount() * physicalDamageBonusPercent)));
-        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
-        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCore.getStatAPI().getPlayerDexterity(uuid))) {
-            event.setCritical(true);
-            event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
-        }
+//        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
+//        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCore.getStatAPI().getPlayerDexterity(uuid))) {
+//            event.setCritical(true);
+//            event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
+//        }
         /*
         Defense calculated last
          */
@@ -85,17 +95,27 @@ public class StatListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getSpell() == null) return; // potions, other effects
+        UUID uuid = event.getCaster().getUniqueId();
+        double abilityHaste = Stat.getAbilityHaste() * RunicCore.getStatAPI().getPlayerDexterity(uuid);
+        double secondsToReduce = event.getSpell().getCooldown() * abilityHaste;
+        RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), event.getSpell(), secondsToReduce);
+    }
+
     @EventHandler
     public void onSpellHeal(SpellHealEvent event) {
         if (event.getSpell() == null) return; // potions, other effects
         UUID uuid = event.getPlayer().getUniqueId();
         double healAmountBonusPercent = Stat.getSpellHealingMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
         event.setAmount((int) (event.getAmount() + Math.ceil(event.getAmount() * healAmountBonusPercent)));
-        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
-        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCore.getStatAPI().getPlayerStrength(uuid))) {
-            event.setCritical(true);
-            event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
-        }
+//        double chanceToCrit = ThreadLocalRandom.current().nextDouble();
+//        if (chanceToCrit <= (Stat.getCriticalChance() * RunicCore.getStatAPI().getPlayerStrength(uuid))) {
+//            event.setCritical(true);
+//            event.setAmount((int) (event.getAmount() * Stat.getCriticalDamageMultiplier()));
+//        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

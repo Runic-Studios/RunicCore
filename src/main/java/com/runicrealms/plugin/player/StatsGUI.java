@@ -53,13 +53,16 @@ public class StatsGUI implements InventoryHolder {
     }
 
     private ItemStack dexterityMenuItem() {
-        double critChancePercent = (Stat.getCriticalChance() * 100) * dexterity;
-        String critChanceString = critChancePercent > 0 ? DECIMAL_FORMAT.format(critChancePercent) : "0";
+        double abilityHaste = (Stat.getAbilityHaste() * 100) * dexterity;
+        String abilityHasteString = abilityHaste > 0 ? DECIMAL_FORMAT.format(abilityHaste) : "0";
+        double attackSpeed = (Stat.getAttackSpeed() * 100) * dexterity;
+        String attackSpeedString = attackSpeed > 0 ? DECIMAL_FORMAT.format(attackSpeed) : "0";
         return GUIUtil.dispItem(getStatMaterial(Stat.DEXTERITY), ChatColor.YELLOW + "Dexterity" + Stat.DEXTERITY.getIcon() + ": " + dexterity, new String[]
                 {
                         "",
                         ChatColor.GREEN + "" + ChatColor.BOLD + "Combat bonuses:",
-                        ChatColor.GRAY + "Crit Chance: " + statPrefix(dexterity) + critChanceString + "%",
+                        ChatColor.GRAY + "Ability Haste: " + statPrefix(dexterity) + abilityHasteString + "%",
+                        ChatColor.GRAY + "Attack Speed: " + statPrefix(dexterity) + attackSpeedString + "%",
                 });
     }
 

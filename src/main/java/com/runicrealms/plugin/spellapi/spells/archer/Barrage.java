@@ -66,9 +66,11 @@ public class Barrage extends Spell implements DurationSpell {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBasicAttack(BasicAttackEvent event) {
         if (!players.contains(event.getPlayer().getUniqueId())) return;
-        double cooldownTicks = event.getCooldownTicks();
-        cooldownTicks /= percent;
-        event.setCooldownTicks((int) cooldownTicks);
+        double reducedTicks = event.getOriginalCooldownTicks();
+        reducedTicks /= percent;
+        int roundedCooldownTicks = (int) (event.getOriginalCooldownTicks() - reducedTicks);
+        // Cooldown cannot drop beneath a certain value
+        event.setCooldownTicks(Math.max(event.getCooldownTicks() - roundedCooldownTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
     }
 
 }

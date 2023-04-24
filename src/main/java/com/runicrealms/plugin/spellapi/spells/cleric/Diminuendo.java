@@ -121,7 +121,7 @@ public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
                 affected.set(true);
         });
         if (!affected.get()) return;
-        double addedTicks = event.getCooldownTicks() * attackSpeedReduction;
+        double addedTicks = event.getOriginalCooldownTicks() * attackSpeedReduction;
         event.setCooldownTicks((int) (event.getCooldownTicks() + addedTicks));
     }
 

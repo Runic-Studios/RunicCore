@@ -159,6 +159,7 @@ public class StaffListener implements Listener {
                 (
                         player,
                         runicItemWeapon.getDisplayableItem().getMaterial(),
+                        BasicAttackEvent.BASE_STAFF_COOLDOWN,
                         BasicAttackEvent.BASE_STAFF_COOLDOWN
                 ));
     }
