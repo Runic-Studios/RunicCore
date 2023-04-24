@@ -1,13 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -33,16 +31,9 @@ public class LightningArrow extends Spell implements ArtifactSpell {
     private final Set<Arrow> lightningArrows;
 
     public LightningArrow() {
-        super("Lightning Arrow", "", ChatColor.WHITE, ClassEnum.ARCHER, 0, 0);
+        super("Lightning Arrow", CharacterClass.ARCHER);
         this.setIsPassive(true);
         lightningArrows = new HashSet<>();
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        int damage = (int) ((e.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCoreAPI.getPlayerStrength(e.getPlayer().getUniqueId()));
-        fireLightningArrow(e.getPlayer(), damage);
     }
 
     private void fireLightningArrow(Player player, int damage) {
@@ -50,6 +41,31 @@ public class LightningArrow extends Spell implements ArtifactSpell {
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2f);
         Vector vec = player.getEyeLocation().getDirection().normalize().multiply(2);
         startTask(player, vec, damage);
+    }
+
+    @Override
+    public String getArtifactId() {
+        return ARTIFACT_ID;
+    }
+
+    @Override
+    public double getChance() {
+        return CHANCE;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onArtifactUse(RunicItemArtifactTriggerEvent event) {
+        if (!event.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        int damage = (int) ((event.getRunicItemArtifact().getWeaponDamage().getRandomValue() * DAMAGE_PERCENT) + RunicCore.getStatAPI().getPlayerStrength(event.getPlayer().getUniqueId()));
+        fireLightningArrow(event.getPlayer(), damage);
+    }
+
+    @EventHandler
+    public void onSearingArrowHit(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Arrow arrow)) return;
+        if (!(arrow.getShooter() instanceof Player)) return;
+        if (!lightningArrows.contains(arrow)) return;
+        event.setCancelled(true);
     }
 
     private void startTask(Player player, Vector vector, int damage) {
@@ -70,31 +86,12 @@ public class LightningArrow extends Spell implements ArtifactSpell {
                     powerShot.getWorld().spawnParticle(Particle.CRIT_MAGIC, arrowLoc, 25, 0.5f, 0.5f, 0.5f, 0);
                     for (Entity entity : player.getWorld().getNearbyEntities(arrowLoc, RADIUS, RADIUS, RADIUS)) {
                         if (!(entity instanceof LivingEntity)) continue;
-                        if (!verifyEnemy(player, entity)) continue;
+                        if (!isValidEnemy(player, entity)) continue;
                         DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player);
                     }
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 1L);
-    }
-
-    @EventHandler
-    public void onSearingArrowHit(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Arrow)) return;
-        Arrow arrow = (Arrow) e.getDamager();
-        if (!(arrow.getShooter() instanceof Player)) return;
-        if (!lightningArrows.contains(arrow)) return;
-        e.setCancelled(true);
-    }
-
-    @Override
-    public String getArtifactId() {
-        return ARTIFACT_ID;
-    }
-
-    @Override
-    public double getChance() {
-        return CHANCE;
     }
 }
 

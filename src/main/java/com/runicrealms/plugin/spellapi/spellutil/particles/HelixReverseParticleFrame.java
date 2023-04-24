@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.*;
-
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class HelixReverseParticleFrame implements ParticleFormat {
@@ -17,8 +18,8 @@ public class HelixReverseParticleFrame implements ParticleFormat {
         this.frequency = frequency;
     }
 
-
-    public void playParticle(Particle particle, Location location, Color color) {
+    @Override
+    public void playParticle(Player player, Particle particle, Location location, Color... color) {
         location = location.clone();
         final double totalDegrees = ((360 / this.frequency) * this.height);
         final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);
@@ -27,7 +28,7 @@ public class HelixReverseParticleFrame implements ParticleFormat {
             double stageRadius = ((this.endRadius / this.height) * (a / totalDegrees));
             Vector vector = new Vector(stageRadius * Math.cos(theta), 0D, stageRadius * Math.sin(theta));
 
-            location.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
+            player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
             location.subtract(vector);
         }
     }

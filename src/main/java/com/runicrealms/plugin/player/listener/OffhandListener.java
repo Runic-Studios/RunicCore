@@ -24,7 +24,7 @@ public class OffhandListener implements Listener {
         Player player = (Player) e.getWhoClicked();
         if (e.getClickedInventory() == null) return;
         if (!e.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         ItemStack oldItem = e.getCurrentItem();
         ItemStack newItem = e.getCursor();
         if (newItem == null) return;
@@ -55,7 +55,7 @@ public class OffhandListener implements Listener {
     public void onInventoryDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
         if (!event.getInventory().getType().equals(InventoryType.CRAFTING)) return;
-        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         if (!event.getInventorySlots().contains(40)) return;
         event.setCancelled(true);
     }

@@ -1,84 +1,52 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.*;
+import com.runicrealms.plugin.api.SpellAPI;
+import com.runicrealms.plugin.api.event.SpellShieldEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.spellapi.spells.Consumable;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.artifact.*;
-import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.*;
 import com.runicrealms.plugin.spellapi.spells.mage.*;
 import com.runicrealms.plugin.spellapi.spells.rogue.*;
 import com.runicrealms.plugin.spellapi.spells.warrior.*;
+import com.runicrealms.plugin.spellapi.spelltypes.Shield;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.HologramUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpellManager implements Listener {
-
+public class SpellManager implements Listener, SpellAPI {
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
-    private final HashMap<UUID, BukkitTask> invulnerableEntities;
-    private final HashMap<UUID, BukkitTask> rootedEntities;
-    private final HashMap<UUID, BukkitTask> silencedEntities;
-    private final HashMap<UUID, BukkitTask> stunnedEntities;
+    private final HashMap<UUID, Shield> shieldedPlayers;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
         this.spellList = new ArrayList<>();
         this.cooldownMap = new ConcurrentHashMap<>();
-        this.invulnerableEntities = new HashMap<>();
-        this.rootedEntities = new HashMap<>();
-        this.silencedEntities = new HashMap<>();
-        this.stunnedEntities = new HashMap<>();
+        this.shieldedPlayers = new HashMap<>();
         this.registerSpells();
         this.startCooldownTask();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public List<Spell> getSpells() {
-        return this.spellList;
-    }
-
-    public HashMap<UUID, BukkitTask> getInvulnerableEntities() {
-        return invulnerableEntities;
-    }
-
-    public HashMap<UUID, BukkitTask> getRootedEntites() {
-        return rootedEntities;
-    }
-
-    public HashMap<UUID, BukkitTask> getSilencedEntities() {
-        return silencedEntities;
-    }
-
-    public HashMap<UUID, BukkitTask> getStunnedEntities() {
-        return stunnedEntities;
-    }
-
-    /**
-     * Adds spell to player, spell cooldown map
-     *
-     * @param player       to add cooldown to
-     * @param spell        to apply cooldown to
-     * @param cooldownTime of spell
-     */
+    @Override
     public void addCooldown(final Player player, final Spell spell, double cooldownTime) {
-
         if (this.cooldownMap.containsKey(player.getUniqueId())) {
             ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
@@ -88,17 +56,172 @@ public class SpellManager implements Listener {
             playerSpellsOnCooldown.put(spell, System.currentTimeMillis());
             this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
         }
-
-        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin,
-                () -> removeCooldown(player, spell), (long) cooldownTime * 20);
-
     }
 
+    @Override
+    public Spell getPlayerSpell(Player player, int number) {
+        Spell spellToCast = null;
+        UUID uuid = player.getUniqueId();
+        try {
+            int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+            SpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
+            switch (number) {
+                case 1 -> {
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellHotbarOne());
+                    if (playerSpellData.getSpellHotbarOne().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                }
+                case 2 -> {
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellLeftClick());
+                    if (playerSpellData.getSpellLeftClick().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                }
+                case 3 -> {
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellRightClick());
+                    if (playerSpellData.getSpellRightClick().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                }
+                case 4 -> {
+                    spellToCast = this.getSpellByName(playerSpellData.getSpellSwapHands());
+                    if (playerSpellData.getSpellSwapHands().equals("")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
+                        player.sendMessage(ChatColor.RED + "You have no spell set in this slot!");
+                    }
+                }
+            }
+        } catch (NullPointerException e) {
+            // haha sky is lazy
+        }
+        return spellToCast;
+    }
+
+    @Override
+    public HashMap<UUID, Shield> getShieldedPlayers() {
+        return this.shieldedPlayers;
+    }
+
+    @Override
+    public Spell getSpell(String name) {
+        return this.getSpellByName(name);
+    }
+
+    @Override
+    public ConcurrentHashMap.KeySetView<Spell, Long> getSpellsOnCooldown(UUID uuid) {
+        if (cooldownMap.containsKey(uuid)) {
+            return cooldownMap.get(uuid).keySet();
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void healPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        // Call our custom heal event for interaction with buffs/de buffs
+        SpellHealEvent event = spell.length > 0
+                ? new SpellHealEvent((int) amount, recipient, caster, spell)
+                : new SpellHealEvent((int) amount, recipient, caster);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        amount = event.getAmount();
+
+        double newHP = recipient.getHealth() + amount;
+        double difference = recipient.getMaxHealth() - recipient.getHealth();
+
+        // If they are missing less than healAmt
+        if (newHP > recipient.getMaxHealth()) {
+
+            recipient.setHealth(recipient.getMaxHealth());
+
+            if (difference == (int) difference) {
+                if (difference <= 0) {
+                    return;
+                }
+            }
+
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.GREEN;
+            HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), chatColor + "+" + (int) difference + " ❤✦");
+
+        } else {
+
+            recipient.setHealth(newHP);
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.GREEN;
+            HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), chatColor + "+" + (int) amount + " ❤✦");
+        }
+        recipient.playSound(recipient.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 0.5f);
+        recipient.getWorld().spawnParticle(Particle.HEART, recipient.getEyeLocation(), 3, 0.35F, 0.35F, 0.35F, 0);
+
+        // Call a new health regen event
+        Bukkit.getPluginManager().callEvent(new EntityRegainHealthEvent(recipient, amount, EntityRegainHealthEvent.RegainReason.CUSTOM));
+    }
+
+    @Override
+    public boolean isCasting(Player player) {
+        return SpellUseListener.getCasters().containsKey(player.getUniqueId());
+    }
+
+    @Override
     public boolean isOnCooldown(Player player, String spellName) {
         if (!this.cooldownMap.containsKey(player.getUniqueId()))
             return false;
         ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
         return playerSpellsOnCooldown.keySet().stream().anyMatch(n -> n.getName().equalsIgnoreCase(spellName));
+    }
+
+    @Override
+    public boolean isShielded(UUID uuid) {
+        return this.shieldedPlayers.containsKey(uuid);
+    }
+
+    @Override
+    public void reduceCooldown(Player player, Spell spell, double duration) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        if (!playerSpellsOnCooldown.containsKey(spell)) return;
+        long durationToReduce = (long) duration * 1000;
+        playerSpellsOnCooldown.put(spell, playerSpellsOnCooldown.get(spell) - durationToReduce);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void reduceCooldown(Player player, String spell, double duration) {
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        Optional<Spell> spellOptional = playerSpellsOnCooldown.keySet().stream().filter(key -> key.getName().equalsIgnoreCase(spell)).findAny();
+        if (spellOptional.isEmpty()) return;
+        long durationToReduce = (long) (duration * 1000);
+        playerSpellsOnCooldown.put(spellOptional.get(), playerSpellsOnCooldown.get(spellOptional.get()) - durationToReduce);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
+    }
+
+    @Override
+    public void shieldPlayer(Player caster, Player recipient, double amount, Spell... spell) {
+        // Call our custom shield event for interaction with buffs/de buffs
+        SpellShieldEvent event = spell.length > 0
+                ? new SpellShieldEvent((int) amount, recipient, caster, spell)
+                : new SpellShieldEvent((int) amount, recipient, caster);
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    public Spell getSpellByName(String name) {
+        Spell foundSpell = null;
+        for (Spell spell : getSpells()) {
+            if (spell.getName().equalsIgnoreCase(name)) {
+                foundSpell = spell;
+                break;
+            }
+        }
+        return foundSpell;
+    }
+
+    public List<Spell> getSpells() {
+        return this.spellList;
     }
 
     private int getUserCooldown(Player player, Spell spell) {
@@ -113,24 +236,6 @@ public class SpellManager implements Listener {
         return ((int) (cooldownRemaining / 1000));
     }
 
-    private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
-        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
-        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
-        playerSpellsOnCooldown.remove(spell);
-        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
-    }
-
-    public Spell getSpellByName(String name) {
-        Spell foundSpell = null;
-        for (Spell spell : getSpells()) {
-            if (spell.getName().equalsIgnoreCase(name)) {
-                foundSpell = spell;
-                break;
-            }
-        }
-        return foundSpell;
-    }
-
     /**
      * Add all spell classes to spell manager
      */
@@ -138,89 +243,91 @@ public class SpellManager implements Listener {
         this.spellList.add(new Fireball());
         this.spellList.add(new Frostbolt());
         this.spellList.add(new Sprint());
-        this.spellList.add(new Parry());
         this.spellList.add(new Blink());
         this.spellList.add(new MeteorShower());
-        this.spellList.add(new Windstride());
+        this.spellList.add(new Accelerando());
         this.spellList.add(new Rejuvenate());
-        this.spellList.add(new Enrage());
         this.spellList.add(new Judgment());
-        this.spellList.add(new SmokeBomb());
         this.spellList.add(new Backstab());
         this.spellList.add(new Barrage());
         this.spellList.add(new Grapple());
         this.spellList.add(new Slam());
-        this.spellList.add(new Cloak());
-        this.spellList.add(new HolyNova());
+        this.spellList.add(new Unseen());
+        this.spellList.add(new RadiantNova());
         this.spellList.add(new Blizzard());
         this.spellList.add(new Frostbite());
-        this.spellList.add(new ThrowAxe());
-        this.spellList.add(new ArcaneOrb());
+        this.spellList.add(new AxeToss());
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
-        this.spellList.add(new Spellsong());
-        this.spellList.add(new Reflect());
-        this.spellList.add(new PowerShot());
-        this.spellList.add(new Smite());
-        this.spellList.add(new ShadowBomb());
-        this.spellList.add(new Cleanse());
-        this.spellList.add(new HolyWater());
-        this.spellList.add(new Shadowbolt());
-        this.spellList.add(new Insanity());
-        this.spellList.add(new Hawkeye());
-        this.spellList.add(new Manawell());
-        this.spellList.add(new Agility());
+        this.spellList.add(new Warsong());
+        this.spellList.add(new Ironhide());
+        this.spellList.add(new ThunderArrow());
+        this.spellList.add(new Sear());
+        this.spellList.add(new SacredSpring());
+        this.spellList.add(new RadiantFire());
         this.spellList.add(new Predator());
         this.spellList.add(new Resolve());
         this.spellList.add(new Taunt());
-        this.spellList.add(new Leech());
         this.spellList.add(new Frostbite());
-        this.spellList.add(new ManaShield());
         this.spellList.add(new SliceAndDice());
         this.spellList.add(new Cripple());
         this.spellList.add(new Challenger());
-        this.spellList.add(new Riposte());
         this.spellList.add(new Kneebreak());
         this.spellList.add(new FireBlast());
         this.spellList.add(new Scald());
-        this.spellList.add(new FireAura());
-        this.spellList.add(new BlazingSpeed());
-        this.spellList.add(new IceBlock());
+        this.spellList.add(new Firestorm());
         this.spellList.add(new ColdTouch());
-        this.spellList.add(new IcyAffinity());
-        this.spellList.add(new ShadowTouch());
-        this.spellList.add(new Shadowmeld());
-        this.spellList.add(new TwistOfFate());
+        this.spellList.add(new Riftwalk());
+        this.spellList.add(new SpectralBlade());
+        this.spellList.add(new Manashield());
         this.spellList.add(new Cleave());
         this.spellList.add(new Whirlwind());
         this.spellList.add(new LastResort());
-        this.spellList.add(new Rescue());
         this.spellList.add(new Bolster());
-        this.spellList.add(new Condemn());
-        this.spellList.add(new Subdue());
-        this.spellList.add(new Rebuke());
         this.spellList.add(new Rift());
-        this.spellList.add(new SoulLink());
         this.spellList.add(new DivineShield());
-        this.spellList.add(new Improvisation());
+        this.spellList.add(new Encore());
         this.spellList.add(new Discord());
         this.spellList.add(new RayOfLight());
-        this.spellList.add(new Dissonance());
-        this.spellList.add(new Absolution());
+        this.spellList.add(new Lightwell());
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());
-        this.spellList.add(new KillShot());
-        this.spellList.add(new BearTrap());
-        this.spellList.add(new WingClip());
-        this.spellList.add(new Flare());
-        this.spellList.add(new SummonSentry());
-        this.spellList.add(new EscapeArtist());
-        this.spellList.add(new ArcaneShot());
-        this.spellList.add(new Icebrand());
-        this.spellList.add(new IceVolley());
-        this.spellList.add(new BindingShot());
-        this.spellList.add(new SurvivalInstinct());
+        this.spellList.add(new Headshot());
+        this.spellList.add(new AimedShot());
+        this.spellList.add(new Conflagration());
+        this.spellList.add(new Remedy());
+        this.spellList.add(new Ambush());
+        this.spellList.add(new NetTrap());
+        this.spellList.add(new SacredGrove());
+        this.spellList.add(new GiftsOfTheGrove());
+        this.spellList.add(new RefreshingVolley());
+        this.spellList.add(new Decoy());
+        this.spellList.add(new Fade());
+        this.spellList.add(new Stormborn());
+        this.spellList.add(new Charged());
+        this.spellList.add(new Surge());
+        this.spellList.add(new SnapFreeze());
+        this.spellList.add(new WintersGrasp());
+        this.spellList.add(new Despair());
+        this.spellList.add(new TouchOfDeath());
+        this.spellList.add(new Diminuendo());
+        DefiledFont defiledFont = new DefiledFont();
+        this.spellList.add(defiledFont);
+        this.spellList.add(new CorruptedWaters(defiledFont));
+        this.spellList.add(new UmbralGrasp());
+        this.spellList.add(new Ruination());
+        this.spellList.add(new ArcaneSlash());
+        this.spellList.add(new TwinFangs());
+        this.spellList.add(new Cocoon());
+        this.spellList.add(new FromTheShadows());
+        this.spellList.add(new RapidReload());
+        this.spellList.add(new CallOfTheDeep());
+        this.spellList.add(new Adrenaline());
+        this.spellList.add(new Unstoppable());
+        /*
+        Items
+         */
         this.spellList.add(new Potion());
         /*
         Artifacts
@@ -235,11 +342,20 @@ public class SpellManager implements Listener {
         this.spellList.add(new Maelstrom());
         this.spellList.add(new Thundershock());
         this.spellList.add(new ThunderousRift());
-//        this.spellList.add(new ScorchedBlade());
+        this.spellList.add(new Cannonfire());
+        this.spellList.add(new Consumable());
+//        this.spellList.add(new ScorchedBlade()); sunken artifact passives
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());
 //        this.spellList.add(new BlazingRings());
 //        this.spellList.add(new FirePulse());
+    }
+
+    private void removeCooldown(Player player, Spell spell) { // in case we forget to remove a removeCooldown method
+        if (!this.cooldownMap.containsKey(player.getUniqueId())) return;
+        ConcurrentHashMap<Spell, Long> playerSpellsOnCooldown = this.cooldownMap.get(player.getUniqueId());
+        playerSpellsOnCooldown.remove(spell);
+        this.cooldownMap.put(player.getUniqueId(), playerSpellsOnCooldown);
     }
 
     /**
@@ -259,67 +375,15 @@ public class SpellManager implements Listener {
 
                         for (Spell spell : spells.keySet()) {
                             if (getUserCooldown(player, spell) <= 0)
-                                removeCooldown(player, spell); // insurance
+                                removeCooldown(player, spell);
                             else
-                                cdString.add(ChatColor.RED + spell.getName() + ChatColor.RED + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
+                                cdString.add(ChatColor.RED + "" + ChatColor.BOLD + spell.getName() + ChatColor.RED + ChatColor.BOLD + ": " + ChatColor.YELLOW + getUserCooldown(player, spell) + "s");
                         }
 
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + String.join(ChatColor.YELLOW + " ", cdString)));
                     }
                 }
             }
-        }.runTaskTimer(this.plugin, 0, 10);
-    }
-
-    @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (silencedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getCaster().getUniqueId())
-                || stunnedEntities.containsKey(e.getCaster().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getDamager().getUniqueId())
-                || stunnedEntities.containsKey(e.getDamager().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onSpellHeal(SpellHealEvent e) {
-        if (silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        if (invulnerableEntities.isEmpty() && silencedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (silencedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId())
-                || invulnerableEntities.containsKey(e.getVictim().getUniqueId()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent e) {
-        if (rootedEntities.isEmpty() && stunnedEntities.isEmpty()) return;
-        if (!(rootedEntities.containsKey(e.getPlayer().getUniqueId())
-                || stunnedEntities.containsKey(e.getPlayer().getUniqueId()))) return;
-        if (e.getTo() == null) return;
-        if (!e.getFrom().toVector().equals(e.getTo().toVector())) e.setCancelled(true);
+        }.runTaskTimerAsynchronously(this.plugin, 0, 5L); // every 0.25s
     }
 }

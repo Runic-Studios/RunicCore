@@ -1,11 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -18,16 +16,8 @@ public class Bloodlust extends Spell implements ArtifactSpell {
     private static final String ARTIFACT_ID = "corruption";
 
     public Bloodlust() {
-        super("Bloodlust", "", ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+        super("Bloodlust", CharacterClass.MAGE);
         this.setIsPassive(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        double roll = ThreadLocalRandom.current().nextDouble();
-        if (roll > getChance()) return;
-        HealUtil.healPlayer(HEAL_AMOUNT, e.getPlayer(), e.getPlayer(), false);
     }
 
     @Override
@@ -38,6 +28,14 @@ public class Bloodlust extends Spell implements ArtifactSpell {
     @Override
     public double getChance() {
         return CHANCE;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onArtifactUse(RunicItemArtifactTriggerEvent event) {
+        if (!event.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        double roll = ThreadLocalRandom.current().nextDouble();
+        if (roll > getChance()) return;
+        healPlayer(event.getPlayer(), event.getPlayer(), HEAL_AMOUNT);
     }
 }
 

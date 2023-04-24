@@ -12,26 +12,38 @@ import org.bukkit.event.Listener;
 public class CombatListener implements Listener {
 
     @EventHandler
-    public void onEnterCombat(EnterCombatEvent e) {
-        if (e.isCancelled()) return;
-        EnterCombatEvent.tagPlayerAndPartyInCombat(e.getPlayer());
+    public void onEnterCombat(EnterCombatEvent event) {
+        if (event.isCancelled()) return;
+        EnterCombatEvent.tagPlayerAndPartyInCombat(event.getPlayer());
     }
 
     @EventHandler
-    public void onLeaveCombat(LeaveCombatEvent e) {
-        RunicCore.getCombatManager().getPlayersInCombat().remove(e.getPlayer().getUniqueId());
-        e.getPlayer().sendMessage(ChatColor.GREEN + "You have left combat!");
+    public void onLeaveCombat(LeaveCombatEvent event) {
+        RunicCore.getCombatAPI().leaveCombat(event.getPlayer().getUniqueId());
+        event.getPlayer().sendMessage(ChatColor.GREEN + "You have left combat!");
     }
 
     /**
      * Here the attacker is the MOB (no victim)
      */
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void onMobDamage(MobDamageEvent e) {
-        if (e.isCancelled()) return;
-        if (!(e.getVictim() instanceof Player)) return; // only listen when a player takes damage
-        Player player = (Player) e.getVictim();
+    public void onMobDamage(MobDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!(event.getVictim() instanceof Player)) return; // only listen when a player takes damage
+        Player player = (Player) event.getVictim();
         EnterCombatEvent enterCombatEvent = new EnterCombatEvent(player);
+        Bukkit.getPluginManager().callEvent(enterCombatEvent);
+    }
+
+    /**
+     * PhysicalDamageEvent can only be triggered by players, not mobs
+     * If the victim is a Player, we let RunicPvP handle it
+     */
+    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getVictim() instanceof Player) return; // handled in RunicPvP
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer());
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 
@@ -40,22 +52,10 @@ public class CombatListener implements Listener {
      * If the victim is a Player, we let RunicPvP handle it
      */
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void onSpellDamage(SpellDamageEvent e) {
-        if (e.isCancelled()) return;
-        if (e.getVictim() instanceof Player) return; // handled in RunicPvP
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(e.getPlayer());
-        Bukkit.getPluginManager().callEvent(enterCombatEvent);
-    }
-
-    /**
-     * WeaponDamageEvent can only be triggered by players, not mobs
-     * If the victim is a Player, we let RunicPvP handle it
-     */
-    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        if (e.isCancelled()) return;
-        if (e.getVictim() instanceof Player) return; // handled in RunicPvP
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(e.getPlayer());
+    public void onSpellDamage(MagicDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getVictim() instanceof Player) return; // handled in RunicPvP
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer());
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 }

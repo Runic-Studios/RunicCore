@@ -2,13 +2,13 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.ArmorStandAPI;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -20,36 +20,33 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashMap;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class Bolster extends Spell {
-
     private static final int DURATION = 8;
     private static final double PERCENT = .25;
     private static final int RADIUS = 10;
     private final HashMap<UUID, Location> buffed;
-    private ArmorStand warbanner;
+    private ArmorStand armorStand;
 
     public Bolster() {
-        super("Bolster",
-                "You summon a banner of war for " + DURATION + "s! " +
-                        "Yourself and allies who stand within " + RADIUS + " blocks of " +
-                        "the banner are bolstered, receiving a " + (int) (PERCENT * 100) +
-                        "% damage reduction buff!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 15, 20);
+        super("Bolster", CharacterClass.WARRIOR);
         buffed = new HashMap<>();
+        this.setDescription("You summon a banner of war for " + DURATION + "s! " +
+                "Yourself and allies who stand within " + RADIUS + " blocks of " +
+                "the banner are bolstered, receiving a " + (int) (PERCENT * 100) +
+                "% damage reduction buff!");
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
 
-        Location plLoc = pl.getLocation();
-        Location bannerLoc = plLoc.clone().subtract(0, 1.75, 0);
-        this.warbanner = summonBanner(pl, bannerLoc);
-        if (warbanner == null) return;
+        Location location = player.getLocation();
+        Location bannerLoc = location.clone().subtract(0, 1.75, 0);
+        this.armorStand = summonBanner(player, bannerLoc);
+        if (armorStand == null) return;
 
-        buffed.put(pl.getUniqueId(), bannerLoc);
-        if (RunicCoreAPI.hasParty(pl))
-            for (Player ally : RunicCore.getPartyManager().getPlayerParty(pl).getMembers()) // add allies
+        buffed.put(player.getUniqueId(), bannerLoc);
+        if (RunicCore.getPartyAPI().hasParty(player.getUniqueId()))
+            for (Player ally : RunicCore.getPartyAPI().getParty(player.getUniqueId()).getMembers()) // add allies
                 buffed.put(ally.getUniqueId(), bannerLoc);
 
         new BukkitRunnable() {
@@ -59,57 +56,33 @@ public class Bolster extends Spell {
             public void run() {
                 if (count > DURATION) {
                     this.cancel();
-                    warbanner.remove();
+                    Bolster.this.armorStand.remove();
                     buffed.clear();
                 } else {
                     count += 1;
-                    createCircle(pl, plLoc);
+                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                            () -> Circle.createParticleCircle(player, location, RADIUS, Particle.VILLAGER_HAPPY));
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
     }
 
-    private ArmorStand summonBanner(Player pl, Location loc) {
-        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(loc);
-        if (armorStand == null) return null;
-        if (armorStand.getEquipment() == null) return null;
-        armorStand.setArms(true);
-        armorStand.setMarker(false);
-        armorStand.setCustomNameVisible(false);
-        armorStand.getEquipment().setHelmet(new ItemStack(Material.RED_BANNER));
-        pl.getWorld().playSound(armorStand.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 0.5f);
-        return armorStand;
-    }
-
-    private void createCircle(Player pl, Location loc) {
-        int particles = 50;
-        for (int i = 0; i < particles; i++) {
-            double angle, x, z;
-            angle = 2 * Math.PI * i / particles;
-            x = Math.cos(angle) * (float) RADIUS;
-            z = Math.sin(angle) * (float) RADIUS;
-            loc.add(x, 0, z);
-            pl.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 5, 0, 0, 0, 0);
-            loc.subtract(x, 0, z);
-        }
+    @EventHandler
+    public void onMobDamage(MobDamageEvent event) {
+        double reducedDamage = reduceDamage(event.getVictim(), event.getAmount());
+        event.setAmount((int) reducedDamage);
     }
 
     @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
-        e.setAmount((int) reducedDamage);
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        double reducedDamage = reduceDamage(event.getVictim(), event.getAmount());
+        event.setAmount((int) reducedDamage);
     }
 
     @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-        double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
-        e.setAmount((int) reducedDamage);
-    }
-
-    @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        double reducedDamage = reduceDamage(e.getVictim(), e.getAmount());
-        e.setAmount((int) reducedDamage);
+    public void onSpellDamage(MagicDamageEvent event) {
+        double reducedDamage = reduceDamage(event.getVictim(), event.getAmount());
+        event.setAmount((int) reducedDamage);
     }
 
     private double reduceDamage(Entity victim, double damageAmount) {
@@ -119,5 +92,18 @@ public class Bolster extends Spell {
         if (dist > RADIUS * RADIUS) return damageAmount;
         victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f);
         return damageAmount * (1 - PERCENT);
+    }
+
+    private ArmorStand summonBanner(Player player, Location location) {
+        ArmorStand armorStand = ArmorStandAPI.spawnArmorStand(location);
+        if (armorStand == null) return null;
+        if (armorStand.getEquipment() == null) return null;
+        armorStand.setArms(true);
+        armorStand.setMarker(false);
+        armorStand.setCustomName(ChatColor.YELLOW + player.getName() + "'s Banner");
+        armorStand.setCustomNameVisible(true);
+        armorStand.getEquipment().setHelmet(new ItemStack(Material.BLUE_BANNER));
+        player.getWorld().playSound(armorStand.getLocation(), Sound.BLOCK_ANVIL_USE, 0.5f, 0.5f);
+        return armorStand;
     }
 }

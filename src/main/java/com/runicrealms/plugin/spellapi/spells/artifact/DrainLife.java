@@ -1,12 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
 import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,23 +13,24 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DrainLife extends Spell implements ArtifactSpell {
-
     private static final double CHANCE = 0.35;
     private static final double DURATION = 4;
     private static final double HEAL_AMOUNT = 20;
     private static final String ARTIFACT_ID = "bloodmoon";
 
     public DrainLife() {
-        super("Drain Life", "", ChatColor.WHITE, ClassEnum.WARRIOR, 0, 0);
+        super("Drain Life", CharacterClass.WARRIOR);
         this.setIsPassive(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
-        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
-        double roll = ThreadLocalRandom.current().nextDouble();
-        if (roll > getChance()) return;
-        healOverTime(e.getPlayer());
+    @Override
+    public String getArtifactId() {
+        return ARTIFACT_ID;
+    }
+
+    @Override
+    public double getChance() {
+        return CHANCE;
     }
 
     private void healOverTime(Player player) {
@@ -45,20 +44,18 @@ public class DrainLife extends Spell implements ArtifactSpell {
                     this.cancel();
                 } else {
                     count++;
-                    HealUtil.healPlayer((int) healAmount, player, player, false);
+                    healPlayer(player, player, (int) healAmount);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
 
-    @Override
-    public String getArtifactId() {
-        return ARTIFACT_ID;
-    }
-
-    @Override
-    public double getChance() {
-        return CHANCE;
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onArtifactUse(RunicItemArtifactTriggerEvent e) {
+        if (!e.getRunicItemArtifact().getTemplateId().equals(getArtifactId())) return;
+        double roll = ThreadLocalRandom.current().nextDouble();
+        if (roll > getChance()) return;
+        healOverTime(e.getPlayer());
     }
 }
 

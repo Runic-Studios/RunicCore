@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
+import com.runicrealms.plugin.api.StatAPI;
+import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.runicitems.Stat;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,7 +15,7 @@ import org.bukkit.event.Listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class StatManager implements Listener {
+public class StatManager implements Listener, StatAPI {
 
     private final HashMap<UUID, StatContainer> playerStatMap;
 
@@ -24,40 +24,111 @@ public class StatManager implements Listener {
         RunicCore.getInstance().getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    // Fire as HIGHEST so that runic items loads cached stats first for base stats tree grab, and SkillTreeManager loads skill trees
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onLoad(CharacterLoadEvent e) {
-        StatContainer statContainer = new StatContainer(e.getPlayer());
-        playerStatMap.put(e.getPlayer().getUniqueId(), statContainer);
-        grabBaseStatsFromTree(e.getPlayer(), 1);
-        grabBaseStatsFromTree(e.getPlayer(), 2);
-        grabBaseStatsFromTree(e.getPlayer(), 3);
-    }
-
-    @EventHandler
-    public void onQuit(CharacterQuitEvent e) {
-        playerStatMap.remove(e.getPlayer().getUniqueId());
-    }
-
-    /**
-     * Loads the base stats across all sub-class trees into memory.
-     *
-     * @param player       player to load stats for
-     * @param treePosition which sub-tree are we loading? (1,2,3)
-     */
-    private void grabBaseStatsFromTree(Player player, int treePosition) {
-        if (RunicCoreAPI.getSkillTree(player, treePosition) == null) return;
-        for (Perk perk : RunicCoreAPI.getSkillTree(player, treePosition).getPerks()) {
-            if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
-            if (!(perk instanceof PerkBaseStat)) continue;
-            PerkBaseStat perkBaseStat = (PerkBaseStat) perk;
-            Stat stat = perkBaseStat.getStat();
-            int amount = perkBaseStat.getBonusAmount() * perkBaseStat.getCurrentlyAllocatedPoints();
-            playerStatMap.get(player.getUniqueId()).increaseStat(stat, amount);
+    @Override
+    public int getPlayerDexterity(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return playerStatMap.get(uuid).getStat(Stat.DEXTERITY);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 
+    @Override
+    public int getPlayerIntelligence(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return playerStatMap.get(uuid).getStat(Stat.INTELLIGENCE);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
     public StatContainer getPlayerStatContainer(UUID uuid) {
         return playerStatMap.get(uuid);
+    }
+
+    @Override
+    public int getPlayerStrength(UUID uuid) {
+        if (playerStatMap.get(uuid) == null) return 0;
+        try {
+            return playerStatMap.get(uuid).getStat(Stat.STRENGTH);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int getPlayerVitality(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return playerStatMap.get(uuid).getStat(Stat.VITALITY);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int getPlayerWisdom(UUID uuid) {
+        if (RunicCore.getStatAPI().getPlayerStatContainer(uuid) == null) return 0;
+        try {
+            return playerStatMap.get(uuid).getStat(Stat.WISDOM);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int getStat(UUID uuid, String statName) {
+        Stat stat = Stat.getFromIdentifier(statName);
+        try {
+            return playerStatMap.get(uuid).getStat(stat);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    /**
+     * Loads the base stats across all subclass trees into memory.
+     *
+     * @param uuid         of player to load stats for
+     * @param treePosition which subtree are we loading? (1,2,3)
+     */
+    private void grabBaseStatsFromTree(UUID uuid, int slot, SkillTreePosition treePosition) {
+        if (RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, treePosition) == null) return;
+        for (Perk perk : RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, treePosition).getPerks()) {
+            if (perk.getCurrentlyAllocatedPoints() < perk.getCost()) continue;
+            if (!(perk instanceof PerkBaseStat perkBaseStat)) continue;
+            Stat stat = perkBaseStat.getStat();
+            int amount = perkBaseStat.getBonusAmount() * perkBaseStat.getCurrentlyAllocatedPoints();
+            playerStatMap.get(uuid).increaseStat(stat, amount);
+        }
+    }
+
+    /**
+     * Fires AFTER PlayerManager in RunicItems can set up stats
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onLoad(CharacterLoadedEvent event) {
+        StatContainer statContainer = new StatContainer(event.getPlayer());
+        UUID uuid = event.getPlayer().getUniqueId();
+        playerStatMap.put(event.getPlayer().getUniqueId(), statContainer);
+        int slot = event.getCharacterSelectEvent().getSlot();
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.FIRST);
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.SECOND);
+        grabBaseStatsFromTree(uuid, slot, SkillTreePosition.THIRD);
+
+    }
+
+    @EventHandler
+    public void onQuit(CharacterQuitEvent event) {
+        playerStatMap.remove(event.getPlayer().getUniqueId());
     }
 }

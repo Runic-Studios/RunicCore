@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -24,39 +23,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 public class SpellUseListener implements Listener {
 
     private static final int SPELL_TIMEOUT = 5;
-    private static final int GLOBAL_COOLDOWN_TICKS = 5; // 0.25s
+    // private static final int GLOBAL_COOLDOWN_TICKS = 5; // 0.25s
     private static final String ACTIVATE_RIGHT = "R";
     private static final String ACTIVATE_LEFT = "L";
-    private static final HashSet<UUID> CAST_MENU_CASTERS = new HashSet<>();
+    // private static final HashSet<UUID> CAST_MENU_CASTERS = new HashSet<>();
     private static final HashMap<UUID, BukkitTask> casters = new HashMap<>();
 
-    enum ClickType {
-        LEFT,
-        RIGHT
-    }
-
-    @EventHandler
-    public void onWeaponInteract(PlayerInteractEvent e) {
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        WeaponType heldItemType = WeaponType.matchType(e.getPlayer().getInventory().getItemInMainHand());
-        if (heldItemType == WeaponType.NONE) return;
-        if (heldItemType == WeaponType.GATHERING_TOOL) return;
-        if (!DamageListener.matchClass(e.getPlayer(), false)) return;
-        if (CAST_MENU_CASTERS.contains(e.getPlayer().getUniqueId())) return;
-        Player player = e.getPlayer();
-        String className = RunicCoreAPI.getPlayerClass(player); // lowercase
-        boolean isArcher = className.equals("archer");
-        if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)
-            activateSpellMode(player, ClickType.LEFT, 2, isArcher);
-        else if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
-            activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
+    public static HashMap<UUID, BukkitTask> getCasters() {
+        return casters;
     }
 
     /**
@@ -80,10 +59,43 @@ public class SpellUseListener implements Listener {
                                     " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
                     );
         } else {
-            castSpell(player, whichSpellToCast, RunicCoreAPI.getPlayerClass(player).equals("archer"));
+            castSpell(player, whichSpellToCast, RunicCore.getCharacterAPI().getPlayerClass(player).equalsIgnoreCase("archer"));
         }
-        CAST_MENU_CASTERS.add(player.getUniqueId());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> CAST_MENU_CASTERS.remove(player.getUniqueId()), GLOBAL_COOLDOWN_TICKS);
+        // CAST_MENU_CASTERS.add(player.getUniqueId());
+        // Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> CAST_MENU_CASTERS.remove(player.getUniqueId()), GLOBAL_COOLDOWN_TICKS);
+    }
+
+    /**
+     * Determines which spell to case based on the selected number.
+     *
+     * @param player caster of spell
+     * @param number which spell number to cast (1, 2, 3, 4)
+     */
+    private void castSelectedSpell(Player player, int number) {
+        Spell spellToCast = RunicCore.getSpellAPI().getPlayerSpell(player, number);
+        if (spellToCast == null) return;
+        if (RunicCore.getSpellAPI().isOnCooldown(player, spellToCast.getName())) return;
+        SpellCastEvent event = new SpellCastEvent(player, spellToCast);
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    /**
+     * Removes the player from casters set and executes spell logic
+     *
+     * @param player who cast the spell
+     * @param number which spell to execute (1, 2, 3, 4)
+     */
+    private void castSpell(Player player, int number, boolean isArcher) {
+        casters.get(player.getUniqueId()).cancel(); // cancel timeout task
+        casters.remove(player.getUniqueId());
+        String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
+        player.sendTitle
+                (
+                        "",
+                        ChatColor.LIGHT_PURPLE + prefix + " - "
+                                + determineSelectedSlot(number), 0, 15, 0
+                );
+        castSelectedSpell(player, number);
     }
 
     /**
@@ -99,45 +111,6 @@ public class SpellUseListener implements Listener {
                 casters.remove(player.getUniqueId());
             }
         }.runTaskLater(RunicCore.getInstance(), SPELL_TIMEOUT * 20L);
-    }
-
-    @EventHandler
-    public void onSpellCast(PlayerItemHeldEvent e) {
-        if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
-        if (e.getNewSlot() != 0) return;
-        e.setCancelled(true);
-        castSpell(e.getPlayer(), 1, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onSpellCast(SpellCastEvent e) {
-        if (!e.isCancelled() && e.willExecute())
-            e.getSpellCasted().execute(e.getCaster(), SpellItemType.ARTIFACT);
-    }
-
-    @EventHandler
-    public void onSwapHands(PlayerSwapHandItemsEvent e) {
-        if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
-        castSpell(e.getPlayer(), 4, RunicCoreAPI.getPlayerClass(e.getPlayer()).equals("archer"));
-    }
-
-    /**
-     * Removes the player from casters set and executes spell logic
-     *
-     * @param player who casted the spell
-     * @param number which spell to execute (1, 2, 3, 4)
-     */
-    private void castSpell(Player player, int number, boolean isArcher) {
-        casters.get(player.getUniqueId()).cancel(); // cancel timeout task
-        casters.remove(player.getUniqueId());
-        String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
-        player.sendTitle
-                (
-                        "",
-                        ChatColor.LIGHT_PURPLE + prefix + " - "
-                                + determineSelectedSlot(number), 0, 15, 0
-                );
-        castSelectedSpell(player, number);
     }
 
     /**
@@ -165,22 +138,53 @@ public class SpellUseListener implements Listener {
         return selectedSpell;
     }
 
-    /**
-     * Determines which spell to case based on the selected number.
-     *
-     * @param player caster of spell
-     * @param number which spell number to cast (1, 2, 3, 4)
-     */
-    private void castSelectedSpell(Player player, int number) {
-        Spell spellToCast = RunicCoreAPI.getPlayerSpell(player, number);
-        if (spellToCast == null) return;
-        if (RunicCore.getSpellManager().isOnCooldown(player, spellToCast.getName())) return;
-        SpellCastEvent event = new SpellCastEvent(player, spellToCast);
-        Bukkit.getPluginManager().callEvent(event);
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (event.willExecute()) {
+            boolean willCast = event.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
+            if (!willCast)
+                event.setCancelled(true);
+        } else {
+            event.setCancelled(true);
+        }
     }
 
-    public static HashMap<UUID, BukkitTask> getCasters() {
-        return casters;
+    @EventHandler
+    public void onSpellCast(PlayerItemHeldEvent event) {
+        if (!casters.containsKey(event.getPlayer().getUniqueId())) return;
+        if (event.getNewSlot() != 0) return;
+        event.setCancelled(true);
+        castSpell(event.getPlayer(), 1, RunicCore.getCharacterAPI().getPlayerClass(event.getPlayer()).equalsIgnoreCase("archer"));
+    }
+
+    @EventHandler
+    public void onSwapHands(PlayerSwapHandItemsEvent e) {
+        if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
+        castSpell(e.getPlayer(), 4, RunicCore.getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onWeaponInteract(PlayerInteractEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        WeaponType heldItemType = WeaponType.matchType(event.getPlayer().getInventory().getItemInMainHand());
+        if (heldItemType == WeaponType.NONE) return;
+        if (heldItemType == WeaponType.GATHERING_TOOL) return;
+        if (!DamageListener.matchClass(event.getPlayer(), false)) return;
+        Player player = event.getPlayer();
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player); // lowercase
+        boolean isArcher = className.equalsIgnoreCase("archer");
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
+            activateSpellMode(player, ClickType.LEFT, 2, isArcher);
+        else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            activateSpellMode(player, ClickType.RIGHT, 3, isArcher);
+        }
+    }
+
+    enum ClickType {
+        LEFT,
+        RIGHT
     }
 }
 

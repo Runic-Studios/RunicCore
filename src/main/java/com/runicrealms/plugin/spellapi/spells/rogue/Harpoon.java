@@ -2,52 +2,45 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.EffectEnum;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class Harpoon extends Spell implements WeaponDamageSpell {
+import java.util.Map;
 
-    private static final int DAMAGE_AMT = 35;
-    private static final double DAMAGE_PER_LEVEL = 1.75;
-    private static final int DURATION = 3;
-    private static final int SILENCE_DURATION = 1;
-    private static final double TRIDENT_SPEED = 1.25;
+public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell {
+    private double damage;
+    private double damagePerLevel;
+    private double duration;
+    private double tridentSpeed;
     private Trident trident;
 
     public Harpoon() {
-        super("Harpoon",
-                "You launch a projectile harpoon " +
-                        "which deals (" + DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage, pulls your enemy towards you, " +
-                        "silences them for " + SILENCE_DURATION + "s, and slows them for " +
-                        DURATION + "s!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 12, 15);
+        super("Harpoon", CharacterClass.ROGUE);
+        this.setDescription("You launch a projectile harpoon of the sea! Upon hitting an enemy, " +
+                "the trident deals (" + damage + " + &f" + damagePerLevel +
+                "x&7 lvl) physical⚔ damage and pulls its target towards you, slowing them for " + duration + "s! " +
+                "If an ally is hit, you are instead teleported to their location.");
     }
 
-    // spell execute code
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.swingMainHand();
         trident = player.launchProjectile(Trident.class);
-        final Vector velocity = player.getLocation().getDirection().normalize().multiply(TRIDENT_SPEED);
+        final Vector velocity = player.getLocation().getDirection().normalize().multiply(tridentSpeed);
         trident.setDamage(0);
         trident.setVelocity(velocity);
         trident.setShooter(player);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.75f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_SPLASH_HIGH_SPEED, 0.5f, 1.5f);
 
         // more particles
@@ -64,48 +57,92 @@ public class Harpoon extends Spell implements WeaponDamageSpell {
         }.runTaskTimer(plugin, 0, 1);
     }
 
-    @EventHandler
-    public void onTridentDamage(ProjectileCollideEvent e) {
+    @Override
+    public double getDuration() {
+        return duration;
+    }
 
-        if (!e.getEntity().equals(this.trident)) return;
-        e.setCancelled(true);
-        e.getEntity().remove();
+    @Override
+    public void setDuration(double duration) {
+        this.duration = (int) duration;
+    }
+
+    @Override
+    public double getPhysicalDamage() {
+        return damage;
+    }
+
+    @Override
+    public void setPhysicalDamage(double physicalDamage) {
+        this.damage = (int) physicalDamage;
+    }
+
+    @Override
+    public double getPhysicalDamagePerLevel() {
+        return damagePerLevel;
+    }
+
+    @Override
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = (int) physicalDamagePerLevel;
+    }
+
+    @Override
+    public void loadPhysicalData(Map<String, Object> spellData) {
+        Number physicalDamage = (Number) spellData.getOrDefault("physical-damage", 0);
+        setPhysicalDamage(physicalDamage.doubleValue());
+        Number physicalDamagePerLevel = (Number) spellData.getOrDefault("physical-damage-per-level", 0);
+        setPhysicalDamagePerLevel(physicalDamagePerLevel.doubleValue());
+        Number tridentSpeed = (Number) spellData.getOrDefault("trident-speed", 0);
+        setTridentSpeed(tridentSpeed.doubleValue());
+    }
+
+    @EventHandler
+    public void onTridentDamage(ProjectileCollideEvent event) {
+        if (!event.getEntity().equals(this.trident)) return;
+        event.setCancelled(true);
+        event.getEntity().remove();
 
         // grab our variables
         Player player = (Player) trident.getShooter();
         if (player == null) return;
-        LivingEntity victim = (LivingEntity) e.getCollidedWith();
-        if (!verifyEnemy(player, victim)) return;
+        LivingEntity victim = (LivingEntity) event.getCollidedWith();
+        if (isValidAlly(player, victim)) {
+            player.teleport(victim.getEyeLocation());
+            final Vector velocity = player.getLocation().getDirection().add(new Vector(0, 0.5, 0)).normalize().multiply(0.5);
+            player.setVelocity(velocity);
+            return;
+        }
+        if (isValidEnemy(player, victim)) {
 
-        // apply spell mechanics
-        Location playerLoc = player.getLocation();
-        Location targetLoc = victim.getLocation();
+            // apply spell mechanics
+            Location playerLoc = player.getLocation();
+            Location targetLoc = victim.getLocation();
 
-        Vector pushUpVector = new Vector(0.0D, 0.4D, 0.0D);
-        victim.setVelocity(pushUpVector);
+            Vector pushUpVector = new Vector(0.0D, 0.4D, 0.0D);
+            victim.setVelocity(pushUpVector);
 
-        final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3.0D;
-        double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
-        //final double hPower = 0.5D;
+            final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3.0D;
+            double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3.0D;
+            //final double hPower = 0.5D;
 
-        DamageUtil.damageEntityWeapon(DAMAGE_AMT, victim, player, false, true, this);
-        addStatusEffect(victim, EffectEnum.SILENCE, SILENCE_DURATION);
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, DURATION * 20, 2));
+            DamageUtil.damageEntityPhysical(damage, victim, player, false, true, this);
+            addStatusEffect(victim, RunicStatusEffect.SLOW_III, duration, false);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Vector pushVector = new Vector(xDir, 0.0D, zDir).normalize().multiply(2).setY(0.4D);
-                victim.setVelocity(pushVector);
-                victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
-                victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-            }
-        }.runTaskLater(RunicCore.getInstance(), 4L);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Vector pushVector = new Vector(xDir, 0.0D, zDir).normalize().multiply(2).setY(0.4D);
+                    victim.setVelocity(pushVector);
+                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                    victim.getWorld().spawnParticle(Particle.CRIT, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+                }
+            }.runTaskLater(RunicCore.getInstance(), 4L);
+        }
     }
 
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
+    public void setTridentSpeed(double tridentSpeed) {
+        this.tridentSpeed = tridentSpeed;
     }
 }
 

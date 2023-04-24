@@ -10,23 +10,34 @@ import org.bukkit.Sound;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
+/**
+ * Gatekeepers are used in dungeons by players to access next room
+ */
 public class Gatekeeper extends RunicShopGeneric {
 
     private final Integer checkpoint;
     private final DungeonLocation dungeonLocation;
 
-    public Gatekeeper(Integer runicNpcId, String currencyTemplateId, Integer price, DungeonLocation dungeonLocation, Integer checkpoint) {
+    /**
+     * @param runicNpcId      id of the runic npc
+     * @param requiredItems   a map of templateIDs and their amounts required to access next room
+     * @param dungeonLocation an enum value of the dungeon
+     * @param checkpoint      a number representing which room checkpoint
+     */
+    public Gatekeeper(Integer runicNpcId, Map<String, Integer> requiredItems,
+                      DungeonLocation dungeonLocation, Integer checkpoint) {
         super(9, ChatColor.YELLOW + "Gatekeeper", Collections.singletonList(runicNpcId));
         this.dungeonLocation = dungeonLocation;
         this.checkpoint = checkpoint;
-        RunicItem runicItem = RunicItemsAPI.generateItemFromTemplate(currencyTemplateId);
+        Map.Entry<String, Integer> entry = requiredItems.entrySet().iterator().next();
+        String key = entry.getKey();
+        RunicItem runicItem = RunicItemsAPI.generateItemFromTemplate(key);
         setItemsForSale(new LinkedHashSet<>(Collections.singleton(new RunicShopItem
                 (
-                        price,
-                        currencyTemplateId,
+                        requiredItems,
                         runicItem.generateItem(),
-                        ChatColor.RESET + runicItem.getDisplayableItem().getDisplayName(),
                         runGatekeeperBuy()
                 ))));
     }

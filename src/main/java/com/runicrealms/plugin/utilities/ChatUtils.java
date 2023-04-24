@@ -3,6 +3,7 @@ package com.runicrealms.plugin.utilities;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 public class ChatUtils {
 
     private final static int CENTER_PX = 154;
-    private static final int LINE_LENGTH = 25;
+    private static final int LINE_LENGTH = 28;
 
     public static List<String> formattedText(String text) {
         return Arrays.asList(ChatPaginator.wordWrap(ColorUtil.format(text), LINE_LENGTH));
@@ -21,7 +22,12 @@ public class ChatUtils {
     }
 
     public static void sendCenteredMessage(Player player, String message) {
-        if (message == null || message.equals("")) player.sendMessage("");
+        String centeredMessage = centeredMessage(player, message);
+        player.sendMessage(centeredMessage + message);
+    }
+
+    public static String centeredMessage(Player player, @NotNull String message) {
+        if (message.equals("")) player.sendMessage("");
         message = ChatColor.translateAlternateColorCodes('&', message);
 
         int messagePxSize = 0;
@@ -31,13 +37,9 @@ public class ChatUtils {
         for (char c : message.toCharArray()) {
             if (c == '§') {
                 previousCode = true;
-                continue;
-            } else if (previousCode == true) {
+            } else if (previousCode) {
                 previousCode = false;
-                if (c == 'l' || c == 'L') {
-                    isBold = true;
-                    continue;
-                } else isBold = false;
+                isBold = c == 'l' || c == 'L';
             } else {
                 DefaultFontEnum dFI = DefaultFontEnum.getDefaultFontInfo(c);
                 messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
@@ -54,7 +56,7 @@ public class ChatUtils {
             sb.append(" ");
             compensated += spaceLength;
         }
-        player.sendMessage(sb.toString() + message);
+        return sb.toString();
     }
 
     public static String determineSpaces(String message) {

@@ -1,12 +1,14 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -20,65 +22,82 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class Cripple extends Spell {
-
+public class Cripple extends Spell implements PhysicalDamageSpell {
     private static final int DURATION = 3;
-    private static final double PERCENT = 65;
-    private static final int RADIUS = 3;
+    private static final double PERCENT = 40;
+    private static final int RADIUS = 2;
     private final Set<UUID> crippledEntities;
+    private double damage;
+    private double damagePerLevel;
 
     public Cripple() {
-        super("Cripple",
-                "You cripple enemies within " + RADIUS + " " +
-                        "blocks, disorienting them and " +
-                        "reducing their damage by " + (int) PERCENT + "% " +
-                        "for " + DURATION + " seconds!",
-                ChatColor.WHITE, ClassEnum.ROGUE, 15, 20);
+        super("Cripple", CharacterClass.ROGUE);
         crippledEntities = new HashSet<>();
+        this.setDescription("You cripple enemies within " + RADIUS + " " +
+                "blocks, dealing (" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ " +
+                "damage to them reducing their damage by " + (int) PERCENT + "% " +
+                "for " + DURATION + " seconds!");
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
 
-        // spell variables, vectors
-        pl.swingMainHand();
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_CHICKEN_DEATH, 0.5f, 1.0f);
-
-        for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-            if (!(en instanceof LivingEntity)) continue;
-            if (!verifyEnemy(pl, en)) continue;
-            en.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) en).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-            crippledEntities.add(en.getUniqueId());
-            en.sendMessage(ChatColor.RED + "You have been crippled!");
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), () -> {
-                crippledEntities.remove(en.getUniqueId());
-                en.sendMessage(ChatColor.GREEN + "You are no longer crippled!");
+        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!(entity instanceof LivingEntity)) continue;
+            if (!isValidEnemy(player, entity)) continue;
+            entity.getWorld().spawnParticle(Particle.CLOUD, ((LivingEntity) entity).getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
+            DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, this);
+            crippledEntities.add(entity.getUniqueId());
+            entity.sendMessage(ChatColor.RED + "You have been crippled!");
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+                crippledEntities.remove(entity.getUniqueId());
+                entity.sendMessage(ChatColor.GREEN + "You are no longer crippled!");
             }, DURATION * 20L);
         }
     }
 
-    @EventHandler
-    public void onSpellDamage(SpellDamageEvent e) {
-        if (!crippledEntities.contains(e.getPlayer().getUniqueId())) return;
-        double percent = PERCENT / 100;
-        double reduced = e.getAmount() * percent;
-        e.setAmount((int) (e.getAmount() - reduced));
+    @Override
+    public double getPhysicalDamage() {
+        return damage;
+    }
+
+    @Override
+    public void setPhysicalDamage(double physicalDamage) {
+        this.damage = physicalDamage;
+    }
+
+    @Override
+    public double getPhysicalDamagePerLevel() {
+        return damagePerLevel;
+    }
+
+    @Override
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = physicalDamagePerLevel;
     }
 
     @EventHandler
-    public void onWeaponDamage(WeaponDamageEvent e) {
-        if (!crippledEntities.contains(e.getPlayer().getUniqueId())) return;
+    public void onMobDamage(MobDamageEvent event) {
+        if (!crippledEntities.contains(event.getDamager().getUniqueId())) return;
         double percent = PERCENT / 100;
-        double reduced = e.getAmount() * percent;
-        e.setAmount((int) (e.getAmount() - reduced));
+        double reduced = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reduced));
     }
 
     @EventHandler
-    public void onMobDamage(MobDamageEvent e) {
-        if (!crippledEntities.contains(e.getDamager().getUniqueId())) return;
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!crippledEntities.contains(event.getPlayer().getUniqueId())) return;
         double percent = PERCENT / 100;
-        double reduced = e.getAmount() * percent;
-        e.setAmount((int) (e.getAmount() - reduced));
+        double reduced = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reduced));
+    }
+
+    @EventHandler
+    public void onSpellDamage(MagicDamageEvent event) {
+        if (!crippledEntities.contains(event.getPlayer().getUniqueId())) return;
+        double percent = PERCENT / 100;
+        double reduced = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reduced));
     }
 }

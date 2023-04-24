@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.item.shops;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RunicCoreAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -73,7 +72,7 @@ public class RunicShopGeneric implements RunicItemShop {
                 e.printStackTrace();
                 Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
             }
-            RunicCoreAPI.registerRunicItemShop(this);
+            RunicCore.getShopAPI().registerRunicItemShop(this);
         }, LOAD_DELAY * 20L);
     }
 
@@ -90,12 +89,6 @@ public class RunicShopGeneric implements RunicItemShop {
     @Override
     public int getShopSize() {
         return this.size;
-    }
-
-
-    @Override
-    public String getName() {
-        return shopName;
     }
 
     @Override
@@ -118,6 +111,11 @@ public class RunicShopGeneric implements RunicItemShop {
     @Override
     public Collection<Integer> getRunicNpcIds() {
         return this.runicNpcIds;
+    }
+
+    @Override
+    public String getName() {
+        return shopName;
     }
 
     @Override
@@ -145,7 +143,7 @@ public class RunicShopGeneric implements RunicItemShop {
                 e.printStackTrace();
                 Bukkit.getLogger().info(ChatColor.DARK_RED + "Error: runic item template id not found!");
             }
-            RunicCoreAPI.registerRunicItemShop(this);
+            RunicCore.getShopAPI().registerRunicItemShop(this);
         }, LOAD_DELAY * 20L);
     }
 }

@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CurrencyUtil {
 
-    private static final ItemStack GOLD_COIN = RunicItemsAPI.generateItemFromTemplate("Coin").generateItem();
+    private static final ItemStack GOLD_COIN = RunicItemsAPI.generateItemFromTemplate("coin").generateItem();
 
     /*
      * A single gold coin, the smallest unit of currency
@@ -18,6 +18,6 @@ public class CurrencyUtil {
     }
 
     public static ItemStack goldCoin(int stackSize) {
-        return RunicItemsAPI.generateItemFromTemplate("Coin", stackSize).generateItem();
+        return RunicItemsAPI.generateItemFromTemplate("coin", stackSize).generateItem();
     }
 }

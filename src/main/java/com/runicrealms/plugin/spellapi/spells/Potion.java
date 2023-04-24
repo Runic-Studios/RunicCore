@@ -1,10 +1,12 @@
 package com.runicrealms.plugin.spellapi.spells;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.runicitems.item.event.RunicItemGenericTriggerEvent;
+import com.runicrealms.runicitems.item.stats.RunicItemTag;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,7 +24,7 @@ public class Potion extends Spell {
     private final HashSet<UUID> potionDrinkers = new HashSet<>();
 
     public Potion() {
-        super("Potion", "", ChatColor.WHITE, ClassEnum.ANY, 30, 0);
+        super("Potion", CharacterClass.ANY);
     }
 
     @Override
@@ -33,12 +35,23 @@ public class Potion extends Spell {
                 (long) (this.getCooldown() * 20L));
     }
 
+    /**
+     * Handles cooldowns for potions
+     */
+    @EventHandler(priority = EventPriority.HIGHEST) // last
+    public void onConsumableUse(RunicItemGenericTriggerEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getItem() == null) return;
+        if (!event.getItem().getTags().contains(RunicItemTag.POTION)) return;
+        Bukkit.getPluginManager().callEvent(new SpellCastEvent(event.getPlayer(), this));
+    }
+
     @EventHandler(priority = EventPriority.LOWEST) // first
-    public void onPotionConsume(RunicItemGenericTriggerEvent e) {
-        if (!potionDrinkers.contains(e.getPlayer().getUniqueId())) return;
-        if (!e.getItem().getTemplateId().contains("potion")) return;
-        e.setCancelled(true);
-        e.getPlayer().sendMessage(ChatColor.RED + "Use of potions is on cooldown!");
+    public void onPotionConsume(RunicItemGenericTriggerEvent event) {
+        if (!potionDrinkers.contains(event.getPlayer().getUniqueId())) return;
+        if (!event.getItem().getTags().contains(RunicItemTag.POTION)) return;
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.RED + "Use of potions is on cooldown!");
     }
 }
 

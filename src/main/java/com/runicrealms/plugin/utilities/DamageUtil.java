@@ -1,16 +1,20 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.RangedDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.events.SpellDamageEvent;
-import com.runicrealms.plugin.events.WeaponDamageEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.util.Collections;
 
 public class DamageUtil {
 
@@ -30,20 +34,15 @@ public class DamageUtil {
         }
 
         // call our custom event
-        SpellDamageEvent event = new SpellDamageEvent((int) dmgAmt, recipient, caster, spell);
+        MagicDamageEvent event = new MagicDamageEvent((int) dmgAmt, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
 
-        // todo: this needs to go inside spell, because this is wrong
-        // ignore NPCs
-        if (recipient.hasMetadata("NPC")) return;
-        //if (recipient instanceof ArmorStand) return;
-
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }
@@ -51,11 +50,14 @@ public class DamageUtil {
 
         // apply the damage
         damageEntityByEntity(dmgAmt, recipient, caster, false);
-        HologramUtil.createSpellDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
+        if (!(recipient instanceof Player)) { // we use health bars now for PvP
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.DARK_AQUA;
+            HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤ʔ");
+        }
     }
 
     /**
-     * Our universal method to apply weapon damage to a player using custom calculation.
+     * Our universal method to apply physical damage to a player using custom calculation.
      *
      * @param dmgAmt        amount to be healed before gem or buff calculations
      * @param recipient     player to be healed
@@ -64,15 +66,53 @@ public class DamageUtil {
      * @param isRanged      whether the attack is ranged
      * @param spell         include a reference to spell for spell scaling
      */
-    public static void damageEntityWeapon(double dmgAmt, LivingEntity recipient, Player caster,
-                                          boolean isBasicAttack, boolean isRanged, Spell... spell) {
+    public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
+                                            boolean isBasicAttack, boolean isRanged, Spell... spell) {
+
+        // prevent healing
+        if (dmgAmt < 0) {
+            dmgAmt = 0;
+        }
+
+        // call an event, apply modifiers if necessary
+        PhysicalDamageEvent event = new PhysicalDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, isRanged, spell);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        dmgAmt = event.getAmount();
+
+        // skip party members
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
+            if (recipient instanceof Player) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
+                    return;
+                }
+            }
+        }
+
+        damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
+        if (!(recipient instanceof Player)) { // we use health bars now for PvP
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
+            HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
+        }
+    }
+
+    /**
+     * @param dmgAmt
+     * @param recipient
+     * @param caster
+     * @param isBasicAttack
+     * @param arrow
+     * @param spell
+     */
+    public static void damageEntityRanged(double dmgAmt, LivingEntity recipient, Player caster,
+                                          boolean isBasicAttack, Arrow arrow, Spell... spell) {
 
         // prevent healing
         if (dmgAmt < 0)
             dmgAmt = 0;
 
         // call an event, apply modifiers if necessary
-        WeaponDamageEvent event = new WeaponDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, isRanged, spell);
+        PhysicalDamageEvent event = new RangedDamageEvent((int) dmgAmt, caster, recipient, isBasicAttack, arrow, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
@@ -82,16 +122,19 @@ public class DamageUtil {
         if (recipient instanceof ArmorStand) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }
         }
 
-        damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
-        HologramUtil.createDamageHologram(caster, recipient.getLocation().add(0, 1.5, 0), dmgAmt, event.isCritical());
+        damageEntityByEntity(dmgAmt, recipient, caster, true);
+        if (!(recipient instanceof Player)) { // we use health bars now for PvP
+            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
+            HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
+        }
     }
 
     public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
@@ -156,9 +199,9 @@ public class DamageUtil {
         if (recipient == caster) return;
 
         // skip party members
-        if (RunicCore.getPartyManager().getPlayerParty(caster) != null) {
+        if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
-                if (RunicCore.getPartyManager().getPlayerParty(caster).hasMember((Player) recipient)) {
+                if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
                     return;
                 }
             }
@@ -212,7 +255,7 @@ public class DamageUtil {
         Bukkit.getPluginManager().callEvent(e);
         victim.setLastDamageCause(e);
 
-        // apply knockback
+        // apply knock back
         victim.setVelocity(victim.getLocation().getDirection().multiply(DamageEventUtil.getEnvironmentKnockbackMultiplier()));
 
         // apply custom mechanics if the player were to die
@@ -224,8 +267,9 @@ public class DamageUtil {
             RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim);
             Bukkit.getPluginManager().callEvent(runicDeathEvent);
         }
-        HologramUtil.createGenericDamageHologram(victim, victim.getEyeLocation(), dmgAmt);
+        HologramUtil.createCombatHologram(null, victim.getEyeLocation(), ChatColor.RED + "-" + (int) dmgAmt + " ❤");
     }
+
 }
 
 

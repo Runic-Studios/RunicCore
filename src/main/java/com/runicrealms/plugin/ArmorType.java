@@ -54,6 +54,7 @@ public enum ArmorType {
             case STONE_HOE:
             case STONE_SWORD:
             case STONE_AXE:
+            case SHEARS:
                 return OFFHAND;
             default:
                 return null;

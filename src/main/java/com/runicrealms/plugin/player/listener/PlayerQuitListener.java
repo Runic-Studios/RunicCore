@@ -1,46 +1,54 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
-import com.runicrealms.plugin.database.event.CacheSaveReason;
-import com.runicrealms.plugin.player.cache.PlayerCache;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import redis.clients.jedis.Jedis;
 
 import java.util.UUID;
 
-/**
- * Saves player data async when they log out and removes them from the saving queue
- */
 public class PlayerQuitListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST) // runs LAST to give other events the chance to run logout code
-    public void onLoadedQuit(CharacterQuitEvent e) {
+    public static final String DATA_SAVING_KEY = "isSavingData";
+    /*
+    Player is prevented from joining network while data is saving,
+    or for a max of 30 seconds
+     */
+    private static final int DATA_LOCKOUT_TIMEOUT = 30;
 
-        // get player cache (if they've loaded in)
-        if (RunicCore.getCacheManager().getPlayerCaches().get(e.getPlayer()) == null) return;
+    @EventHandler
+    public void onCharacterHasQuit(CharacterHasQuitEvent event) {
+        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        UUID uuid = event.getPlayer().getUniqueId();
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                jedis.del(database + ":" + uuid + ":" + PlayerQuitListener.DATA_SAVING_KEY);
+            }
+        });
+    }
 
-        PlayerCache playerCache = RunicCore.getCacheManager().getPlayerCaches().get(e.getPlayer());
-        UUID cacheID = playerCache.getPlayerID();
-
-        RunicCore.getCacheManager().getPlayerCaches().remove(e.getPlayer());
-
-        // remove player data from data queue, remove them from memory
-        RunicCore.getCacheManager().getQueuedCaches().removeIf(n -> (n.getPlayerID() == cacheID));
-
-        // update cache, save it
-        RunicCore.getCacheManager().savePlayerCache(playerCache, false);
-        RunicCore.getCacheManager().setFieldsSaveFile(playerCache, e.getPlayer(), true, CacheSaveReason.LOGOUT);
-
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onCharacterQuit(CharacterQuitEvent event) {
+        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        UUID uuid = event.getPlayer().getUniqueId();
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                jedis.set(database + ":" + uuid + ":" + DATA_SAVING_KEY, "true");
+                jedis.expire(database + ":" + uuid + ":" + DATA_SAVING_KEY, DATA_LOCKOUT_TIMEOUT);
+            }
+        });
     }
 
     @EventHandler
-    public void onQuit (PlayerQuitEvent e) {
-        Player pl = e.getPlayer();
-        e.setQuitMessage("");
-        pl.setWalkSpeed(0.2f);
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        event.setQuitMessage("");
+        player.setWalkSpeed(0.2f);
     }
 }

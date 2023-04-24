@@ -1,53 +1,70 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.events.GenericDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spelltypes.WeaponDamageSpell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class Slam extends Spell implements WeaponDamageSpell {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-    private final boolean ignite;
+@SuppressWarnings("FieldCanBeLocal")
+public class Slam extends Spell implements PhysicalDamageSpell, RadiusSpell {
     private static final double KNOCKUP_AMT = 0.2;
-    private static final int DAMAGE_AMT = 15;
-    private static final double DAMAGE_PER_LEVEL = 1.25;
     private static final double HEIGHT = 1.2;
-    private static final int RADIUS = 3;
+    private final boolean ignite;
+    private final Map<UUID, BukkitTask> slamTasks = new HashMap<>();
+    private double damage;
+    private double damagePerLevel;
+    private double radius;
 
     public Slam() {
-        super("Slam",
-                "You charge fearlessly into the air! " +
-                        "Upon hitting the ground, you deal (" +
-                        DAMAGE_AMT + " + &f" + DAMAGE_PER_LEVEL +
-                        "x&7 lvl) weapon⚔ damage to enemies within " +
-                        RADIUS + " blocks and knock them up!",
-                ChatColor.WHITE, ClassEnum.WARRIOR, 8, 20);
+        super("Slam", CharacterClass.WARRIOR);
         ignite = false;
+        this.setDescription("You charge fearlessly into the air! " +
+                "Upon hitting the ground, you deal (" +
+                damage + " + &f" + damagePerLevel +
+                "x&7 lvl) physical⚔ damage to enemies within " +
+                radius + " blocks and knock them up!");
     }
 
     @Override
-    public void executeSpell(Player pl, SpellItemType type) {
+    @SuppressWarnings("deprecation")
+    public boolean attemptToExecute(Player player) {
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void executeSpell(Player player, SpellItemType type) {
 
         // sounds, particles
-        pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2.0f);
 
         // apply effects
-        final Vector velocity = pl.getVelocity().setY(HEIGHT);
-        Vector directionVector = pl.getLocation().getDirection();
+        final Vector velocity = player.getVelocity().setY(HEIGHT);
+        Vector directionVector = player.getLocation().getDirection();
         directionVector.setY(0);
         directionVector.normalize();
 
-        float pitch = pl.getEyeLocation().getPitch();
+        float pitch = player.getEyeLocation().getPitch();
         if (pitch > 0.0F) {
             pitch = -pitch;
         }
@@ -57,47 +74,91 @@ public class Slam extends Spell implements WeaponDamageSpell {
         velocity.add(directionVector);
         velocity.multiply(new Vector(0.6D, 0.8D, 0.6D));
 
-        pl.setVelocity(velocity);
+        player.setVelocity(velocity);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
+            if (slamTasks.get(player.getUniqueId()) != null)
+                slamTasks.get(player.getUniqueId()).cancel();
+        }, 120L); // insurance
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                pl.setVelocity(new Vector
-                        (pl.getLocation().getDirection().getX(), -10.0,
-                                pl.getLocation().getDirection().getZ()).multiply(2).normalize());
-                pl.setFallDistance(-512.0F);
-                BukkitTask jumpTask = startSlamTask(pl);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(), jumpTask::cancel, 100L); // insurance
+                player.setVelocity(new Vector
+                        (player.getLocation().getDirection().getX(), -10.0,
+                                player.getLocation().getDirection().getZ()).multiply(2).normalize());
+                slamTasks.put(player.getUniqueId(), startSlamTask(player));
             }
         }.runTaskLater(RunicCore.getInstance(), 20L);
     }
 
-    private BukkitTask startSlamTask(Player pl) {
+    @Override
+    public double getPhysicalDamage() {
+        return damage;
+    }
+
+    @Override
+    public void setPhysicalDamage(double physicalDamage) {
+        this.damage = physicalDamage;
+    }
+
+    @Override
+    public double getPhysicalDamagePerLevel() {
+        return damagePerLevel;
+    }
+
+    @Override
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = physicalDamagePerLevel;
+    }
+
+    @Override
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    /**
+     * Disable fall damage for players who are lunging
+     */
+    @EventHandler(priority = EventPriority.LOW)
+    public void onFallDamage(GenericDamageEvent event) {
+        if (!slamTasks.containsKey(event.getVictim().getUniqueId())) return;
+        if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE) {
+            event.setCancelled(true);
+            slamTasks.remove(event.getVictim().getUniqueId());
+        }
+    }
+
+    private BukkitTask startSlamTask(Player player) {
         Spell spell = this;
         return new BukkitRunnable() {
             @Override
             public void run() {
 
-                if (pl.isOnGround() || pl.getFallDistance() == 1) { //  || pl.getFallDistance() == 1
+                if (player.isOnGround() || player.getFallDistance() == 1) {
 
                     this.cancel();
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
-                    pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
-                    pl.getWorld().spawnParticle(Particle.REDSTONE, pl.getLocation(),
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
                             25, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
 
-                    for (Entity en : pl.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
-                        if (verifyEnemy(pl, en)) {
-                            DamageUtil.damageEntityWeapon(DAMAGE_AMT, (LivingEntity) en, pl, false, false, spell);
-                            Vector force = (pl.getLocation().toVector().subtract
+                    for (Entity en : player.getNearbyEntities(radius, radius, radius)) {
+                        if (isValidEnemy(player, en)) {
+                            DamageUtil.damageEntityPhysical(damage, (LivingEntity) en, player, false, false, spell);
+                            Vector force = (player.getLocation().toVector().subtract
                                     (en.getLocation().toVector()).multiply(0).setY(KNOCKUP_AMT));
                             en.setVelocity(force.normalize());
                             if (ignite) {
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
-                                    DamageUtil.damageEntitySpell(DAMAGE_AMT, (LivingEntity) en, pl, spell);
+                                    DamageUtil.damageEntitySpell(damage, (LivingEntity) en, player, spell);
                                     en.getWorld().spawnParticle
                                             (Particle.LAVA, ((LivingEntity) en).getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
-                                    pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
+                                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
                                 }, 20L);
                             }
                         }
@@ -105,10 +166,5 @@ public class Slam extends Spell implements WeaponDamageSpell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
-    }
-
-    @Override
-    public double getDamagePerLevel() {
-        return DAMAGE_PER_LEVEL;
     }
 }

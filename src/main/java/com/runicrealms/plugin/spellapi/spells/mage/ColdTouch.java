@@ -1,13 +1,13 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.ClassEnum;
+import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 /**
  * Logic for hit found in Fireball.
@@ -15,22 +15,23 @@ import org.bukkit.event.EventHandler;
 public class ColdTouch extends Spell {
 
     public ColdTouch() {
-        super ("Cold Touch",
-                "Your &aFireball &7spell is now &aFrostbolt&7, " +
-                        "slowing its target!",
-                ChatColor.WHITE, ClassEnum.MAGE, 0, 0);
+        super("Cold Touch", CharacterClass.MAGE);
         this.setIsPassive(true);
+        this.setDescription("Your &aFireball &7spell is now &aFrostbolt&7, " +
+                "slowing its target!");
     }
 
-    @EventHandler
-    public void onSpellCast(SpellCastEvent e) {
-        if (!hasPassive(e.getCaster(), this.getName())) return;
-        if (!(e.getSpell() instanceof Fireball)) return;
-        e.setCancelled(true);
-        SpellCastEvent spellCastEvent = new SpellCastEvent(e.getCaster(), RunicCore.getSpellManager().getSpellByName("Frostbolt"));
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onSpellCast(SpellCastEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!(event.getSpell() instanceof Fireball)) return;
+        event.setCancelled(true);
+        if (RunicCore.getSpellAPI().isOnCooldown(event.getCaster(), "Frostbolt")) return;
+        SpellCastEvent spellCastEvent = new SpellCastEvent(event.getCaster(), RunicCore.getSpellAPI().getSpell("Frostbolt"));
         Bukkit.getPluginManager().callEvent(spellCastEvent);
         if (!spellCastEvent.isCancelled() && spellCastEvent.willExecute())
-            spellCastEvent.getSpellCasted().execute(e.getCaster(), SpellItemType.ARTIFACT);
+            spellCastEvent.getSpellCasted().execute(event.getCaster(), SpellItemType.ARTIFACT);
     }
 }
 

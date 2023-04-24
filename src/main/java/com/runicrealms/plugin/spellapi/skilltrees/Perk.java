@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.spellapi.skilltrees;
 
-public abstract class Perk {
+import org.bson.Document;
 
-    private final Integer perkID;
+public abstract class Perk {
+    private Integer perkID;
     private int cost;
     private int currentlyAllocatedPoints;
     private int maxAllocatedPoints;
@@ -20,10 +21,6 @@ public abstract class Perk {
         this.cost = cost;
         this.currentlyAllocatedPoints = currentlyAllocatedPoints;
         this.maxAllocatedPoints = maxAllocatedPoints;
-    }
-
-    public Integer getPerkID() {
-        return perkID;
     }
 
     public int getCost() {
@@ -49,4 +46,28 @@ public abstract class Perk {
     public void setMaxAllocatedPoints(int maxAllocatedPoints) {
         this.maxAllocatedPoints = maxAllocatedPoints;
     }
+
+    public Integer getPerkID() {
+        return perkID;
+    }
+
+    public void setPerkID(Integer perkID) {
+        this.perkID = perkID;
+    }
+
+    /**
+     * Writes a perk to mongo. Override in child methods
+     *
+     * @param source   the perk to write
+     * @param document the document to modify
+     * @return the modified document
+     */
+    public Document writeToDocument(Perk source, Document document) {
+        document.put("cost", source.getCost());
+        document.put("currentPoints", source.getCurrentlyAllocatedPoints());
+        document.put("maxPoints", source.getMaxAllocatedPoints());
+        document.put("perkId", source.getPerkID());
+        return document;
+    }
+
 }

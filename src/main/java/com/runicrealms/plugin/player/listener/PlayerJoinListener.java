@@ -1,12 +1,15 @@
 package com.runicrealms.plugin.player.listener;
 
+import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadEvent;
-import com.runicrealms.plugin.player.cache.PlayerCache;
+import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
+import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.model.CoreCharacterData;
+import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;
-import com.runicrealms.runicnpcs.api.RunicNpcsAPI;
+import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,121 +18,158 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import redis.clients.jedis.Jedis;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public class PlayerJoinListener implements Listener {
-
-    /**
-     * Reset the player's displayed values when they join the server, before selecting a character
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onJoin(PlayerJoinEvent e) {
-        e.setJoinMessage("");
-        Player pl = e.getPlayer();
-        // build database file async (if it doesn't exist)
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(RunicCore.getInstance(),
-                () -> RunicCore.getCacheManager().tryCreateNewPlayer(pl), 1L);
-        pl.getInventory().clear();
-        pl.setInvulnerable(true);
-        pl.setMaxHealth(20);
-        pl.setHealth(pl.getMaxHealth());
-        pl.setHealthScale(20);
-        pl.setLevel(0);
-        pl.setExp(0);
-        pl.setFoodLevel(20);
-        pl.teleport(new Location(Bukkit.getWorld("Alterra"), -2318.5, 2, 1720.5));
-        // prompt resource pack
-        ResourcePackManager.openPackForPlayer(pl);
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onJoin(CharacterLoadEvent e) {
-        Player player = e.getPlayer();
-        PlayerCache playerCache = e.getPlayerCache();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadPlayerHealthScaleLevelAndLocation(player, playerCache), 1L);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> loadCurrentPlayerHealthAndHunger(player, playerCache), 2L);
-    }
+    public static final Set<UUID> LOADING_PLAYERS = new HashSet<>();
+    private static final String WORLD_NAME = "Alterra";
+    private static final Location SPAWN_BOX = new Location(Bukkit.getWorld(WORLD_NAME), -2271.5, 2, 2289.5);
 
     /**
      * Sets up some basic player values, such as max health, level, location, etc.
      *
-     * @param player      to set values for
-     * @param playerCache the stored object with values
+     * @param player               to set values for
+     * @param characterSelectEvent the associated select event to finish loading
      */
-    private void loadPlayerHealthScaleLevelAndLocation(Player player, PlayerCache playerCache) {
-        player.setInvulnerable(false);
-        HealthUtils.setPlayerMaxHealth(player);
-        player.setHealthScale(HealthUtils.getHeartAmount());
-        player.setLevel(playerCache.getClassLevel()); // update player's level (this will change storedHealth, but we already got variable)
-        int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(playerCache.getClassLevel());
-        int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(playerCache.getClassLevel() + 1);
-        double proportion = (double) (playerCache.getClassExp() - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
-        if (playerCache.getClassLevel() >= PlayerLevelUtil.getMaxLevel()) player.setExp(0);
+    private void buildCharacterFromEvent(Player player, CharacterSelectEvent characterSelectEvent) {
+        // For benchmarking
+        long startTime = System.nanoTime();
+        characterSelectEvent.getPluginsToLoadData().add("core");
+        CorePlayerData corePlayerData = characterSelectEvent.getCorePlayerData();
+        CoreCharacterData coreCharacterData = corePlayerData.getCharacter(characterSelectEvent.getSlot());
+        LOADING_PLAYERS.add(player.getUniqueId());
+        player.setLevel(coreCharacterData.getLevel());
+        int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(coreCharacterData.getLevel());
+        int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(coreCharacterData.getLevel() + 1);
+        double proportion = (double) (coreCharacterData.getExp() - totalExpAtLevel) / (totalExpToLevel - totalExpAtLevel);
+        if (coreCharacterData.getLevel() >= PlayerLevelUtil.getMaxLevel())
+            player.setExp(0);
         if (proportion < 0) proportion = 0.0f;
         if (proportion >= 1) proportion = 0.99f;
         player.setExp((float) proportion);
-        player.teleport(playerCache.getLocation()); // set their location
+        // Call the CharacterLoadedEvent sync at the end of the event
+        characterSelectEvent.getPluginsToLoadData().remove("core");
+        // Calculate elapsed time
+        long endTime = System.nanoTime();
+        long elapsedTime = endTime - startTime;
+        // Log elapsed time in milliseconds
+        Bukkit.getLogger().info("RunicCore|character took: " + elapsedTime / 1_000_000 + "ms to load");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (characterSelectEvent.getPluginsToLoadData().size() > 0)
+                    return; // Other plugins loading data
+                this.cancel();
+                CharacterLoadedEvent characterLoadedEvent = new CharacterLoadedEvent(player, characterSelectEvent);
+                // Inform all plugins that character is loaded!
+                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(characterLoadedEvent));
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onCharacterLoaded(CharacterLoadedEvent event) {
+        Player player = event.getPlayer();
+        player.setInvulnerable(false);
+        HealthUtils.setPlayerMaxHealth(player);
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        player.setHealth(player.getMaxHealth());
+        int slot = event.getCharacterSelectEvent().getSlot();
+        player.teleport(event.getCharacterSelectEvent().getCorePlayerData().getCharacter(slot).getLocation());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS);
+            LOADING_PLAYERS.remove(event.getPlayer().getUniqueId());
+        }, 7L);
+        // If the player joined in a safezone, play our song! This should be an entire feature
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            if (RunicCore.getRegionAPI().isSafezone(player.getLocation())) {
+                player.playSound(player.getLocation(), "music.fresh_beginnings", 0.1f, 1.0f);
+            }
+        });
     }
 
     /**
-     * Loads the current player values associated w/ combat, like current health, hunger, etc.
-     *
-     * @param player      to set values for
-     * @param playerCache the stored object with values
+     * Loads values on login from the CorePlayerData object once they select a character from select screen
      */
-    private void loadCurrentPlayerHealthAndHunger(Player player, PlayerCache playerCache) {
-        // set their hp to stored value from last logout
-        int storedHealth = playerCache.getCurrentHealth();
-        // update their health
-        // new players or corrupted data
-        if (storedHealth == 0) {
-            storedHealth = HealthUtils.getBaseHealth();
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onJoin(CharacterSelectEvent event) {
+        if (!event.getPlayer().hasPlayedBefore()) {
+            setupNewPlayer(event.getPlayer());
         }
-        if (storedHealth <= player.getMaxHealth()) {
-            player.setHealth(storedHealth);
-        } else {
-            player.setHealth(player.getMaxHealth());
-        }
-        // set their last stored hunger
-        player.setFoodLevel(playerCache.getStoredHunger());
+        buildCharacterFromEvent(event.getPlayer(), event);
     }
 
     /**
-     * Setup for new players
+     * Reset the player's displayed values when they join the server, before selecting a character
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onFirstLoad(CharacterLoadEvent event) {
-        Player pl = event.getPlayer();
-        if (pl.hasPlayedBefore()) return;
-        // broadcast new player welcome message
-        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + pl.getName()
-                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
-        // heal player
-        HealthUtils.setPlayerMaxHealth(pl);
-        pl.setHealthScale(HealthUtils.getHeartAmount());
-        int playerHealth = (int) pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        pl.setHealth(playerHealth);
-        pl.setFoodLevel(20);
-    }
-
-    // Handles loading in Runic NPCs on player login
-    // Loads with delay to allow for data loading in NPCs plugin
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onLoadHandleNPCs(CharacterLoadEvent event) {
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> RunicNpcsAPI.updateNpcsForPlayer(event.getPlayer()), 5L);
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onJoin(PlayerJoinEvent event) {
+        event.setJoinMessage("");
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        player.getInventory().clear();
+        player.setInvulnerable(true);
+        player.setMaxHealth(20);
+        player.setHealth(player.getMaxHealth());
+        player.setHealthScale(20);
+        player.setLevel(0);
+        player.setExp(0);
+        player.setFoodLevel(20);
+        player.teleport(SPAWN_BOX);
+        // Sync task to load player's data object, or will call an async task to create it in mongo
+        TaskChain<?> chain = RunicCore.newChain();
+        chain
+                .asyncFirst(() -> RunicCore.getDataAPI().loadCorePlayerData(uuid))
+                .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to load on join!")
+                .syncLast(corePlayerData -> {
+                    RunicCore.getDataAPI().getCorePlayerDataMap().put(uuid, corePlayerData);
+                    ResourcePackManager.openPackForPlayer(player); // Prompt resource pack (triggers character select screen)
+                })
+                .execute();
     }
 
     /**
      * Allows donator ranks to enter a full server
      */
     @EventHandler
-    public void onJoinFullServer(PlayerLoginEvent e) {
-        if (e.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (e.getPlayer().hasPermission("core.full.join")) {
-                e.allow();
+    public void onJoinFullServer(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            if (event.getPlayer().hasPermission("core.full.join")) {
+                event.allow();
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPreJoin(AsyncPlayerPreLoginEvent event) {
+        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                        ChatColor.GREEN + "You recently played and your data is saving!" +
+                                "\n" + ChatColor.GREEN + "Try again in a moment");
+            }
+        }
+    }
+
+    private void setupNewPlayer(Player player) {
+        // broadcast new player welcome message
+        Bukkit.getServer().broadcastMessage(ChatColor.WHITE + player.getName()
+                + ChatColor.LIGHT_PURPLE + " joined the realm for the first time!");
+        // heal player
+        HealthUtils.setPlayerMaxHealth(player);
+        player.setHealthScale(HealthUtils.getHeartAmount());
+        int playerHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        player.setHealth(playerHealth);
+        player.setFoodLevel(20);
     }
 }

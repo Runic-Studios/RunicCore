@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.ItemType;
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
@@ -29,7 +28,7 @@ public class MinLevelListener implements Listener {
         RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(equippedItem);
         if (runicItem == null) return;
         if (!(runicItem instanceof RunicItemArmor)) return;
-        int playerLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
+        int playerLevel = player.getLevel();
         int requiredLevel = ((RunicItemArmor) runicItem).getLevel();
         if (playerLevel < requiredLevel) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
@@ -47,7 +46,7 @@ public class MinLevelListener implements Listener {
         if (ItemType.matchType(e.getCursor()) != ItemType.OFFHAND)
             return;
         Player player = (Player) e.getWhoClicked();
-        int playerLevel = RunicCore.getCacheManager().getPlayerCaches().get(player).getClassLevel();
+        int playerLevel = player.getLevel();
         int requiredLevel = ((RunicItemOffhand) RunicItemsAPI.getRunicItemFromItemStack(e.getCursor())).getLevel();
         if (playerLevel < requiredLevel) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
