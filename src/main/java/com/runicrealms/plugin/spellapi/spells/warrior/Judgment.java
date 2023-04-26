@@ -3,6 +3,7 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,13 +16,13 @@ import java.util.Map;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Judgment extends Spell implements DurationSpell, HealingSpell {
-    private static final int BUBBLE_SIZE = 5;
-    private static final double UPDATES_PER_SECOND = 5;
+public class Judgment extends Spell implements DurationSpell, HealingSpell, RadiusSpell {
+    private static final double UPDATES_PER_SECOND = 4;
     private double bubbleDuration;
     private double heal;
     private double healingPerLevel;
     private double knockbackMultiplier;
+    private double radius;
 
     public Judgment() {
         super("Judgment", CharacterClass.WARRIOR);
@@ -53,7 +54,7 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
         // Heal caster, look for targets nearby
         BukkitTask healTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
             healPlayer(player, player, heal, this);
-            for (Entity entity : player.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
+            for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 if (isValidEnemy(player, entity)) {
                     Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-knockbackMultiplier).setY(0.3);
                     entity.setVelocity(force);
@@ -72,17 +73,20 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
             @Override
             public void run() {
 
-                // create visual bubble
+                // Create visual bubble
                 phi += Math.PI / 10;
                 Location loc = player.getLocation();
                 for (double theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 40) {
-                    double x = BUBBLE_SIZE * cos(theta) * sin(phi);
-                    double y = BUBBLE_SIZE * cos(phi) + 1.5;
-                    double z = BUBBLE_SIZE * sin(theta) * sin(phi);
+                    double x = radius * cos(theta) * sin(phi);
+                    double y = radius * cos(phi) + 1.5;
+                    double z = radius * sin(theta) * sin(phi);
                     loc.add(x, y, z);
                     player.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
                     loc.subtract(x, y, z);
                 }
+                
+                // Radius indicator
+                new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.VILLAGER_HAPPY, loc, Color.GREEN);
 
                 // Spell duration, allow cancel by sneaking
                 long timePassed = System.currentTimeMillis() - startTime;
@@ -136,6 +140,16 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
     @Override
     public void setHealingPerLevel(double healingPerLevel) {
         this.healingPerLevel = healingPerLevel;
+    }
+
+    @Override
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 
     public void setKnockbackMultiplier(double knockbackMultiplier) {
