@@ -64,8 +64,8 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
         Location bestLocation = null;
         double minDistanceSquared = Double.MAX_VALUE;
 
-        for (int x = -3; x <= 3; x++) {
-            for (int y = -3; y <= 3; y++) {
+        for (int y = 0; y <= 3; y++) {
+            for (int x = -3; x <= 3; x++) {
                 for (int z = -3; z <= 3; z++) {
                     Block currentBlock = location.clone().add(x, y, z).getBlock();
                     if (currentBlock.getType() == Material.AIR) {
@@ -77,6 +77,8 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
                     }
                 }
             }
+
+
         }
 
         return bestLocation;
@@ -158,14 +160,14 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
      */
     private void spawnBell(Player caster, Location location) {
         Location bestLocation = findNearestAir(location);
-        if (bestLocation == null) { // Couldn't find an air block
+        if (bestLocation == null) { // Couldn't find a nearby air block
             caster.sendMessage(ChatColor.RED + "A valid location could not be found!");
             caster.playSound(caster.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             return;
         }
         Material oldMaterial = bestLocation.getBlock().getType();
         bestLocation.getBlock().setType(Material.BELL, false);
-        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), bestLocation.getBlock().getLocation().add(0.5, 2.5, 0.5));
+        Hologram hologram = HologramsAPI.createHologram(RunicCore.getInstance(), bestLocation.clone().add(0.5, 2.5, 0.5));
         hologram.appendTextLine(ChatColor.WHITE + caster.getName() + "'s " + ChatColor.GRAY + "Bell");
         caster.getWorld().playSound(location, Sound.BLOCK_BELL_USE, 0.5f, 1.0f);
         BellTask bellTask = new BellTask(caster.getUniqueId(), hologram, bestLocation, oldMaterial, duration);
