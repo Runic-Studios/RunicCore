@@ -3,30 +3,30 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+
+import java.util.Map;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Judgment extends Spell implements DurationSpell, HealingSpell {
     private static final int BUBBLE_SIZE = 5;
-    private static final double KNOCKBACK = 0.15;
     private static final double UPDATES_PER_SECOND = 5;
     private double bubbleDuration;
     private double heal;
     private double healingPerLevel;
+    private double knockbackMultiplier;
 
     public Judgment() {
         super("Judgment", CharacterClass.WARRIOR);
-        this.setDescription("You instantly summon a barrier of magic " +
-                "around yourself for " + bubbleDuration + "s! The barrier " +
+        this.setDescription("You summon a barrier of magic " +
+                "around yourself for " + bubbleDuration + "s, instantly knocking away all enemies! The barrier " +
                 "prevents enemies from entering, but allies may pass through freely! " +
                 "Each second, allies within the barrier are healed for " +
                 "(" + heal + " + &f" + healingPerLevel + "x&7 lvl) health! " +
@@ -50,9 +50,22 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
         player.getWorld().spigot().strikeLightningEffect(player.getLocation(), true);
         addStatusEffect(player, RunicStatusEffect.ROOT, bubbleDuration, true);
 
+        // Heal caster, look for targets nearby
+        BukkitTask healTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
+            healPlayer(player, player, heal, this);
+            for (Entity entity : player.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
+                if (isValidEnemy(player, entity)) {
+                    Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-knockbackMultiplier).setY(0.3);
+                    entity.setVelocity(force);
+                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
+                } else if (isValidAlly(player, entity)) {
+                    healPlayer(player, (Player) entity, heal, this);
+                }
+            }
+        }, 0, 20L);
+
         // Begin spell event
         final long startTime = System.currentTimeMillis();
-        Spell spell = this;
         new BukkitRunnable() {
             double phi = 0;
 
@@ -74,24 +87,15 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
                 // Spell duration, allow cancel by sneaking
                 long timePassed = System.currentTimeMillis() - startTime;
                 if (timePassed > bubbleDuration * 1000 || player.isSneaking()) {
+                    healTask.cancel();
                     this.cancel();
                     removeStatusEffect(player, RunicStatusEffect.ROOT);
                     return;
                 }
 
                 // More effect noises
-                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 2.0f);
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 1.0f, 2.0f);
 
-                // Look for targets nearby
-                for (Entity entity : player.getNearbyEntities(BUBBLE_SIZE, BUBBLE_SIZE, BUBBLE_SIZE)) {
-                    if (isValidEnemy(player, entity)) {
-                        Vector force = player.getLocation().toVector().subtract(entity.getLocation().toVector()).multiply(-KNOCKBACK).setY(0.3);
-                        entity.setVelocity(force);
-                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.01F, 0.5F);
-                    } else if (isValidAlly(player, entity)) {
-                        healPlayer(player, (Player) entity, heal, spell);
-                    }
-                }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, (int) (20 / UPDATES_PER_SECOND));
     }
@@ -104,6 +108,14 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
     @Override
     public void setDuration(double duration) {
         this.bubbleDuration = duration;
+    }
+
+    @Override
+    public void loadDurationData(Map<String, Object> spellData) {
+        Number duration = (Number) spellData.getOrDefault("duration", 0);
+        setDuration(duration.doubleValue());
+        Number knockback = (Number) spellData.getOrDefault("knockback", 0);
+        setKnockbackMultiplier(knockback.doubleValue());
     }
 
     @Override
@@ -124,6 +136,10 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell {
     @Override
     public void setHealingPerLevel(double healingPerLevel) {
         this.healingPerLevel = healingPerLevel;
+    }
+
+    public void setKnockbackMultiplier(double knockbackMultiplier) {
+        this.knockbackMultiplier = knockbackMultiplier;
     }
 
 }

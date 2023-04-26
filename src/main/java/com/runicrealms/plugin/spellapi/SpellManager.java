@@ -326,6 +326,9 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Adrenaline());
         this.spellList.add(new Unstoppable());
         this.spellList.add(new Smite());
+        this.spellList.add(new Consecrate());
+        this.spellList.add(new Salvation());
+        this.spellList.add(new BlessedBlade());
         /*
         Items
          */

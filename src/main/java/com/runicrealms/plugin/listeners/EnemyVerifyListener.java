@@ -27,12 +27,10 @@ public class EnemyVerifyListener implements Listener {
         }
 
         // target must be alive
-        if (!(victim instanceof LivingEntity)) {
+        if (!(victim instanceof LivingEntity livingVictim)) {
             event.setCancelled(true);
             return;
         }
-
-        LivingEntity livingVictim = (LivingEntity) victim;
 
         if (victim instanceof Horse && !MythicMobs.inst().getMobManager().isActiveMob(victim.getUniqueId())) {
             event.setCancelled(true);

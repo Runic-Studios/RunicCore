@@ -16,11 +16,10 @@ public class AllyVerifyListener implements Listener {
         Entity ally = event.getRecipient();
 
         // target must be a player
-        if (!(ally instanceof Player)) {
+        if (!(ally instanceof Player playerAlly)) {
             event.setCancelled(true);
             return;
         }
-        Player playerAlly = (Player) ally;
 
         // ignore NPCs
         if (playerAlly.hasMetadata("NPC")) {
