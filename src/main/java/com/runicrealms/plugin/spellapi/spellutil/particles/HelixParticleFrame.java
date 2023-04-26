@@ -18,13 +18,37 @@ public class HelixParticleFrame implements ParticleFormat {
         this.frequency = frequency;
     }
 
+    public double getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(double frequency) {
+        this.frequency = frequency;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
     @Override
-    public void playParticle(Player player, Particle particle, Location location, Color... color) {
+    public void playParticle(Player player, Particle particle, Location location, double particleSpacing, Color... color) {
         location = location.clone();
         final double totalDegrees = ((360 / this.frequency) * this.height);
         final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);
 
-        for (double a = 0; a <= totalDegrees; a++) {
+        for (double a = 0; a <= totalDegrees; a += particleSpacing) {
             double theta = Math.toRadians(a % 360);
             Vector vector = new Vector(this.radius * Math.cos(theta), 0D, this.radius * Math.sin(theta));
             if (particle == Particle.REDSTONE) {
@@ -37,28 +61,8 @@ public class HelixParticleFrame implements ParticleFormat {
         }
     }
 
-    public double getRadius() {
-        return radius;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public double getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(double frequency) {
-        this.frequency = frequency;
+    public void playParticle(Player player, Particle particle, Location location, Color... color) {
+        playParticle(player, particle, location, 15, color);
     }
 
 }

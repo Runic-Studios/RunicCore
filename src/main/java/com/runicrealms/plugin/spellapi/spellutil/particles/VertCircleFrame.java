@@ -15,7 +15,7 @@ public class VertCircleFrame implements ParticleFormat {
     }
 
     @Override
-    public void playParticle(Player player, Particle particle, Location location, Color... color) {
+    public void playParticle(Player player, Particle particle, Location location, double particleSpacing, Color... color) {
         location = location.clone();
 
         for (double a = 0; a <= 360; a++) {
@@ -24,6 +24,10 @@ public class VertCircleFrame implements ParticleFormat {
             player.getWorld().spawnParticle(particle, location.add(vector), 1, 0, 0, 0, 0);
             location.subtract(vector);
         }
+    }
+
+    public void playParticle(Player player, Particle particle, Location location, Color... color) {
+        playParticle(player, particle, location, 15, color);
     }
 
     public void setRadius(float radius) {

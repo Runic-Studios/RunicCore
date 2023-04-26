@@ -72,7 +72,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
     private void explode(Player player, Location location) {
         new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.FLAME, location, Color.RED);
         player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 15, 0.25f, 0, 0.25f, 0);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, location, 10, 0.25f, 0, 0.25f, 0);
         for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
             player.getWorld().playSound(location, Sound.ENTITY_PLAYER_HURT, 0.5f, 1);

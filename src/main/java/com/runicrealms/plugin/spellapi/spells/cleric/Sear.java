@@ -1,31 +1,65 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 @SuppressWarnings("FieldCanBeLocal")
-public class Sear extends Spell implements MagicDamageSpell {
+public class Sear extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
     private static final int MAX_DIST = 10;
     private final double BEAM_WIDTH = 1.5;
+    private final Set<UUID> atoningEntities = new HashSet<>();
     private double damage;
     private double damagePerLevel;
+    private double duration;
+    private double radius;
 
     public Sear() {
         super("Sear", CharacterClass.CLERIC);
-        this.setDescription("You launch a ripple of magic, " +
+        this.setDescription("You fire a beam of light, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage to the first enemy hit!");
+                + "x&7 lvl) magicʔ damage to the first enemy hit " +
+                "and applying &oAtone &7for " + duration + "s. " +
+                "If the atoning enemy suffers damage from any source, " +
+                "&7&oAtone &7detonates, dealing this spell's damage " +
+                "again in a " + radius + " block radius around the enemy!");
+    }
+
+    private void applyAtonement(Player caster, LivingEntity victim) {
+        atoningEntities.add(victim.getUniqueId());
+        new BukkitRunnable() {
+            double count = 0;
+
+            @Override
+            public void run() {
+                if (count >= duration) {
+                    this.cancel();
+                    atoningEntities.remove(victim.getUniqueId());
+                } else {
+                    count += 1;
+                    new HorizontalCircleFrame((float) 0.5, false).playParticle(caster, Particle.FLAME, victim.getEyeLocation(), 30, Color.YELLOW);
+                }
+            }
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
     }
 
     @Override
@@ -50,7 +84,18 @@ public class Sear extends Spell implements MagicDamageSpell {
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
             livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
+            applyAtonement(player, livingEntity);
         }
+    }
+
+    @Override
+    public double getDuration() {
+        return duration;
+    }
+
+    @Override
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     @Override
@@ -71,6 +116,38 @@ public class Sear extends Spell implements MagicDamageSpell {
     @Override
     public void setMagicDamagePerLevel(double magicDamagePerLevel) {
         this.damagePerLevel = magicDamagePerLevel;
+    }
+
+    @Override
+    public double getRadius() {
+        return radius;
+    }
+
+    @Override
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    @EventHandler
+    public void onMagicDamage(MagicDamageEvent event) {
+        if (!atoningEntities.contains(event.getVictim().getUniqueId())) return;
+        atoningEntities.remove(event.getVictim().getUniqueId());
+        Player caster = event.getPlayer();
+        LivingEntity victim = event.getVictim();
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
+            DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, this);
+        }
+    }
+
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (!atoningEntities.contains(event.getVictim().getUniqueId())) return;
+        atoningEntities.remove(event.getVictim().getUniqueId());
+        Player caster = event.getPlayer();
+        LivingEntity victim = event.getVictim();
+        for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
+            DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, this);
+        }
     }
 }
 

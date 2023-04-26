@@ -9,10 +9,11 @@ import org.bukkit.entity.Player;
 public interface ParticleFormat {
 
     /**
-     * @param player   who spawned the particle
-     * @param particle the particle to display
-     * @param location to spawn the particle
-     * @param color    optional argument for redstone color (if the particle is redstone)
+     * @param player          who spawned the particle
+     * @param particle        the particle to display
+     * @param location        to spawn the particle
+     * @param particleSpacing distance between particles in the ring
+     * @param color           optional argument for redstone color (if the particle is redstone)
      */
-    void playParticle(Player player, Particle particle, Location location, Color... color);
+    void playParticle(Player player, Particle particle, Location location, double particleSpacing, Color... color);
 }

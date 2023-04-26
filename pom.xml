@@ -227,6 +227,12 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
+        <!-- Apache FastMath (for sine and cosine) -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
+        </dependency>
         <!-- Apache Commons (for Jedis) -->
         <dependency>
             <groupId>org.apache.commons</groupId>

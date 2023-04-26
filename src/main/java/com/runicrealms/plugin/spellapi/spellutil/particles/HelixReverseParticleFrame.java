@@ -18,27 +18,20 @@ public class HelixReverseParticleFrame implements ParticleFormat {
         this.frequency = frequency;
     }
 
-    @Override
-    public void playParticle(Player player, Particle particle, Location location, Color... color) {
-        location = location.clone();
-        final double totalDegrees = ((360 / this.frequency) * this.height);
-        final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);
-        for (double a = 0; a <= totalDegrees; a++) {
-            double theta = Math.toRadians(a % 360);
-            double stageRadius = ((this.endRadius / this.height) * (a / totalDegrees));
-            Vector vector = new Vector(stageRadius * Math.cos(theta), 0D, stageRadius * Math.sin(theta));
-
-            player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
-            location.subtract(vector);
-        }
-    }
-
     public double getEndRadius() {
         return endRadius;
     }
 
     public void setEndRadius(double endRadius) {
         this.endRadius = endRadius;
+    }
+
+    public double getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(double frequency) {
+        this.frequency = frequency;
     }
 
     public int getHeight() {
@@ -49,12 +42,23 @@ public class HelixReverseParticleFrame implements ParticleFormat {
         this.height = height;
     }
 
-    public double getFrequency() {
-        return frequency;
+    @Override
+    public void playParticle(Player player, Particle particle, Location location, double particleSpacing, Color... color) {
+        location = location.clone();
+        final double totalDegrees = ((360 / this.frequency) * this.height);
+        final Vector constantIncrement = new Vector(0D, (this.height / totalDegrees), 0D);
+        for (double a = 0; a <= totalDegrees; a += particleSpacing) {
+            double theta = Math.toRadians(a % 360);
+            double stageRadius = ((this.endRadius / this.height) * (a / totalDegrees));
+            Vector vector = new Vector(stageRadius * Math.cos(theta), 0D, stageRadius * Math.sin(theta));
+
+            player.getWorld().spawnParticle(particle, location.add(vector).add(constantIncrement), 1, 0, 0, 0, 0);
+            location.subtract(vector);
+        }
     }
 
-    public void setFrequency(double frequency) {
-        this.frequency = frequency;
+    public void playParticle(Player player, Particle particle, Location location, Color... color) {
+        playParticle(player, particle, location, 15, color);
     }
 
 }
