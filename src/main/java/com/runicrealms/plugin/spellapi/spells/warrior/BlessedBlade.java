@@ -8,7 +8,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -98,6 +97,7 @@ public class BlessedBlade extends Spell implements HealingSpell, MagicDamageSpel
     @EventHandler
     public void onBasicAttack(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
+        if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!this.blessedBladeMap.containsKey(event.getPlayer().getUniqueId())) return;
         Player player = event.getPlayer();
@@ -109,6 +109,7 @@ public class BlessedBlade extends Spell implements HealingSpell, MagicDamageSpel
         healPlayer(player, player, heal, this);
         int alliesHealed = 0;
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidAlly(player, target))) {
+            if (entity.equals(player)) continue;
             healPlayer(player, (Player) entity, heal, this);
             alliesHealed++;
             if (alliesHealed >= maxTargets)
@@ -125,7 +126,6 @@ public class BlessedBlade extends Spell implements HealingSpell, MagicDamageSpel
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         this.blessedBladeMap.put(event.getCaster().getUniqueId(), 2);
-        event.getCaster().playSound(event.getCaster().getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
     }
 
     public void setMaxTargets(double maxTargets) {
