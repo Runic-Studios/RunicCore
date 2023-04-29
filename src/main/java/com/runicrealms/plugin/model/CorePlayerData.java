@@ -26,6 +26,7 @@ public class CorePlayerData implements SessionDataMongo {
     @Field("playerUuid")
     private UUID uuid;
     private LocalDate lastLoginDate;
+    private String guild = "";
     private HashMap<Integer, CoreCharacterData> coreCharacterDataMap = new HashMap<>();
     private HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> skillTreeDataMap = new HashMap<>();
     private HashMap<Integer, SpellData> spellDataMap = new HashMap<>();
@@ -116,6 +117,14 @@ public class CorePlayerData implements SessionDataMongo {
 
     public void setCoreCharacterDataMap(HashMap<Integer, CoreCharacterData> coreCharacterDataMap) {
         this.coreCharacterDataMap = coreCharacterDataMap;
+    }
+
+    public String getGuild() {
+        return guild;
+    }
+
+    public void setGuild(String guild) {
+        this.guild = guild;
     }
 
     public ObjectId getId() {

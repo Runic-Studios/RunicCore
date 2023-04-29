@@ -51,6 +51,8 @@ public class MongoTask implements MongoTaskOperation {
         this only updates the character with new data.
          */
         update.set("lastLoginDate", corePlayerData.getLastLoginDate());
+        // Update guild
+        update.set("guild", corePlayerData.getGuild());
         /*
         Since we lazy-load character-specific data, we'll try to retrieve it for all slots which may exist in Redis.
         We do this for each character-specific field (skill trees, spells, etc.)
