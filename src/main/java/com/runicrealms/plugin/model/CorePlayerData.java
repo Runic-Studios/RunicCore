@@ -75,6 +75,10 @@ public class CorePlayerData implements SessionDataMongo {
     public CorePlayerData(UUID uuid, Jedis jedis) {
         this.uuid = uuid;
         this.lastLoginDate = LocalDate.now();
+        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        if (jedis.exists(database + ":" + uuid + ":guild")) {
+            this.guild = jedis.get(database + ":" + uuid + ":guild");
+        }
         // Load title data from Redis (no lazy loading for TitleData)
         TitleData titleDataRedis = RunicCore.getTitleAPI().checkRedisForTitleData(uuid, jedis);
         if (titleDataRedis != null) {
@@ -249,6 +253,9 @@ public class CorePlayerData implements SessionDataMongo {
         // Inform the server that there is some core data
         jedis.set(database + ":" + uuid + ":hasCoreData", this.uuid.toString());
         jedis.expire(database + ":" + uuid + ":hasCoreData", RunicCore.getRedisAPI().getExpireTime());
+        // Write guild
+        jedis.set(database + ":" + uuid + ":guild", this.guild);
+        jedis.expire(database + ":" + uuid + ":guild", RunicCore.getRedisAPI().getExpireTime());
         // Save character data
         for (int slot : this.coreCharacterDataMap.keySet()) {
             // Ensure the system knows that there is data in redis

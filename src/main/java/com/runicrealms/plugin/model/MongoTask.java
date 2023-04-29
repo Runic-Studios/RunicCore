@@ -117,6 +117,7 @@ public class MongoTask implements MongoTaskOperation {
                 UUID uuid = UUID.fromString(uuidString);
                 // Load their data async with a future
                 CorePlayerData corePlayerData = RunicCore.getDataAPI().loadCorePlayerData(uuid);
+                Bukkit.broadcastMessage("guild is " + corePlayerData.getGuild());
                 // Player is no longer marked for save
                 jedis.srem(getJedisSet(), uuid.toString());
                 // Find the correct document to update
