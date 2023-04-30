@@ -69,6 +69,9 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
                     }
                     if (trapSprung) {
                         this.cancel();
+                        assert castLocation.getWorld() != null;
+                        castLocation.getWorld().playSound(castLocation, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 1.0f);
+                        castLocation.getWorld().playSound(castLocation, Sound.BLOCK_PORTAL_TRAVEL, 0.25f, 1.0f);
                         hologram.delete();
                         Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                                 () -> weakenedMobs.remove(player.getUniqueId()), (int) stunDuration * 20L);
@@ -134,8 +137,6 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
     private void springTrap(LivingEntity livingEntity) {
         Location higher = livingEntity.getLocation().add(0, 2, 0);
         livingEntity.getWorld().spawnParticle(Particle.CRIT, higher, 15, 0.25f, 0.25f, 0.25f, 0);
-        livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 1.0f);
-        livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.25f, 1.0f);
         livingEntity.teleport(higher);
         addStatusEffect(livingEntity, RunicStatusEffect.STUN, stunDuration, true);
         if (!(livingEntity instanceof Player)) {
