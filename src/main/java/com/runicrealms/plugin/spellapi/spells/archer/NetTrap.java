@@ -73,8 +73,6 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
                         castLocation.getWorld().playSound(castLocation, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.25f, 1.0f);
                         castLocation.getWorld().playSound(castLocation, Sound.BLOCK_PORTAL_TRAVEL, 0.25f, 1.0f);
                         hologram.delete();
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                                () -> weakenedMobs.remove(player.getUniqueId()), (int) stunDuration * 20L);
                     }
                 }
 
@@ -141,6 +139,8 @@ public class NetTrap extends Spell implements DurationSpell, RadiusSpell, Warmup
         addStatusEffect(livingEntity, RunicStatusEffect.STUN, stunDuration, true);
         if (!(livingEntity instanceof Player)) {
             weakenedMobs.add(livingEntity.getUniqueId());
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                    () -> weakenedMobs.remove(livingEntity.getUniqueId()), (int) stunDuration * 20L);
             // Mobs don't have a PlayerMoveEvent, so we keep teleporting them
             BukkitTask mobTeleportTask = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(),
                     () -> livingEntity.teleport(higher), 0, 10L);
