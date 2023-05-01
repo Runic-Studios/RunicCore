@@ -2,7 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -143,11 +142,9 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onSpellCast(SpellCastEvent event) {
+    public void onSpellCast(Slam.SlamLandEvent event) {
         if (event.isCancelled()) return;
-        if (!event.willExecute()) return; // Player not on ground
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        if (!(event.getSpell() instanceof Slam)) return;
         consecrate(event.getCaster(), event.getCaster().getLocation());
     }
 

@@ -12,8 +12,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -142,6 +141,7 @@ public class Slam extends Spell implements PhysicalDamageSpell, RadiusSpell {
                 if (player.isOnGround() || player.getFallDistance() == 1) {
 
                     this.cancel();
+                    Bukkit.getPluginManager().callEvent(new SlamLandEvent(player));
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
                     player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
@@ -167,4 +167,46 @@ public class Slam extends Spell implements PhysicalDamageSpell, RadiusSpell {
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 1L);
     }
+
+    /**
+     * This custom event is called when the player lands
+     */
+    public static class SlamLandEvent extends Event implements Cancellable {
+        private static final HandlerList handlers = new HandlerList();
+        private final Player caster;
+        private boolean isCancelled;
+
+        /**
+         * @param caster player who cast heal spell
+         */
+        public SlamLandEvent(Player caster) {
+            this.caster = caster;
+            this.isCancelled = false;
+        }
+
+        public static HandlerList getHandlerList() {
+            return handlers;
+        }
+
+        public Player getCaster() {
+            return this.caster;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public HandlerList getHandlers() {
+            return handlers;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return this.isCancelled;
+        }
+
+        @Override
+        public void setCancelled(boolean arg0) {
+            this.isCancelled = arg0;
+        }
+    }
+
 }
