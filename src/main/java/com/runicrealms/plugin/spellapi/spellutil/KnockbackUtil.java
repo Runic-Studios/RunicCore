@@ -8,7 +8,9 @@ import org.bukkit.util.Vector;
 
 public class KnockbackUtil {
     private static final double MELEE_STRENGTH = 0.65;
+    private static final double MAX_VELOCITY = 0.65D;
     private static final double RANGED_STRENGTH = 0.5;
+//    private static final double VERTICAL_COMPONENT = 0.15;
 
     /**
      * Controls strength of on-hit knockback for melee attacks against other players.
@@ -17,33 +19,43 @@ public class KnockbackUtil {
      * @param victim  player who was hit
      */
     public static void knockbackMeleePlayer(Entity damager, Player victim) {
+        applyKnockback(damager, victim, MELEE_STRENGTH);
+    }
+
+    private static void applyKnockback(Entity damager, Entity victim, double multiplier) {
         // Calculate knockback direction
         Vector attackerPos = damager.getLocation().toVector();
         Vector enemyPos = victim.getLocation().toVector();
         Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
 
         // Apply knockback to enemy
-        Vector knockbackVector = knockbackDirection.multiply(MELEE_STRENGTH);
-        knockbackVector.setY(knockbackVector.getY() + 0.15);
-        victim.setVelocity(victim.getVelocity().add(knockbackVector));
+        Vector knockbackVector = knockbackDirection.multiply(multiplier);
+        knockbackVector.setY(0.15);
+        Vector newVelocity = victim.getVelocity().add(knockbackVector);
+
+        // Limit the victim's velocity magnitude
+        double maxVelocity = MAX_VELOCITY;
+        if (newVelocity.length() > maxVelocity) {
+            newVelocity = newVelocity.normalize().multiply(maxVelocity);
+        }
+
+        // Limit the y-component of the velocity
+        double maxYVelocity = 0.5D;  // Define your maximum y-velocity here
+        if (newVelocity.getY() > maxYVelocity) {
+            newVelocity.setY(maxYVelocity);
+        }
+
+        victim.setVelocity(newVelocity);
     }
 
     /**
-     * Controls strength of on-hit knockback for melee attacks against other players.
+     * Controls strength of on-hit knockback for ranged attacks against other players.
      *
      * @param damager player who attacked
      * @param victim  player who was hit
      */
     public static void knockbackRangedPlayer(Player damager, Player victim) {
-        // Calculate knockback direction
-        Vector attackerPos = damager.getLocation().toVector();
-        Vector enemyPos = victim.getLocation().toVector();
-        Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
-
-        // Apply knockback to enemy
-        Vector knockbackVector = knockbackDirection.multiply(RANGED_STRENGTH);
-        knockbackVector.setY(knockbackVector.getY() + 0.15);
-        victim.setVelocity(victim.getVelocity().add(knockbackVector));
+        applyKnockback(damager, victim, RANGED_STRENGTH);
     }
 
     /**
@@ -60,16 +72,8 @@ public class KnockbackUtil {
                 return;
             }
         }
-        // Calculate knockback direction
-        Vector attackerPos = damager.getLocation().toVector();
-        Vector enemyPos = entity.getLocation().toVector();
-        Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
-
-        // Apply knockback to enemy
         double knockbackStrength = isRanged ? RANGED_STRENGTH : MELEE_STRENGTH;
-        Vector knockbackVector = knockbackDirection.multiply(knockbackStrength);
-        knockbackVector.setY(knockbackVector.getY() + 0.15);
-        entity.setVelocity(entity.getVelocity().add(knockbackVector));
+        applyKnockback(damager, entity, knockbackStrength);
     }
 }
 

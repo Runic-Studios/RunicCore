@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StaffListener implements Listener {
     public static final int STAFF_COOLDOWN = 15; // ticks (0.75s)
     private static final int MAX_DIST = 9;
-    private static final double RAY_SIZE = 1.0D;
+    private static final double RAY_SIZE = 0.35D;
 
     /**
      * Verifies that the player's held item is a runic weapon and a staff.
