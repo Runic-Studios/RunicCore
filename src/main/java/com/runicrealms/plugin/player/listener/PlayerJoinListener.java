@@ -21,7 +21,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
@@ -33,7 +32,7 @@ import java.util.UUID;
 public class PlayerJoinListener implements Listener {
     public static final Set<UUID> LOADING_PLAYERS = new HashSet<>();
     private static final String WORLD_NAME = "Alterra";
-    private static final Location SPAWN_BOX = new Location(Bukkit.getWorld(WORLD_NAME), -2271.5, 2, 2289.5);
+    public static final Location SPAWN_BOX = new Location(Bukkit.getWorld(WORLD_NAME), -2271.5, 2, 2289.5);
 
     /**
      * Sets up some basic player values, such as max health, level, location, etc.
@@ -87,7 +86,6 @@ public class PlayerJoinListener implements Listener {
         int slot = event.getCharacterSelectEvent().getSlot();
         player.teleport(event.getCharacterSelectEvent().getCorePlayerData().getCharacter(slot).getLocation());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            event.getPlayer().removePotionEffect(PotionEffectType.BLINDNESS);
             LOADING_PLAYERS.remove(event.getPlayer().getUniqueId());
         }, 7L);
         // If the player joined in a safezone, play our song! TODO: This should be an entire feature
@@ -104,7 +102,7 @@ public class PlayerJoinListener implements Listener {
      * Loads values on login from the CorePlayerData object once they select a character from select screen
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onJoin(CharacterSelectEvent event) {
+    public void onCharacterSelect(CharacterSelectEvent event) {
         if (!event.getPlayer().hasPlayedBefore()) {
             setupNewPlayer(event.getPlayer());
         }

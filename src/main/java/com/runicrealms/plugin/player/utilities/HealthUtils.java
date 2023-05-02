@@ -18,10 +18,10 @@ public class HealthUtils {
 
     public static void setPlayerMaxHealth(Player player) {
 
-        // grab the player's new info
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        // Grab the player's new info
+        String className = RunicCore.getCharacterAPI().getPlayerClass(player); // todo: NULL
 
-        // for new players
+        // For new players
         if (className == null) {
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(BASE_HEALTH);
             return;

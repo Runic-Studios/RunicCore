@@ -191,11 +191,15 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
 
     @Override
     public String getPlayerClass(Player player) {
+        if (loadedCharacterMap.get(player.getUniqueId()) == null)
+            return null;
         return loadedCharacterMap.get(player.getUniqueId()).second.getName();
     }
 
     @Override
     public String getPlayerClass(UUID uuid) {
+        if (loadedCharacterMap.get(uuid) == null)
+            return null;
         return loadedCharacterMap.get(uuid).second.getName();
     }
 
