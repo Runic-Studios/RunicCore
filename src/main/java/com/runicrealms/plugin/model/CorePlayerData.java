@@ -31,6 +31,7 @@ public class CorePlayerData implements SessionDataMongo {
     private HashMap<Integer, HashMap<SkillTreePosition, SkillTreeData>> skillTreeDataMap = new HashMap<>();
     private HashMap<Integer, SpellData> spellDataMap = new HashMap<>();
     private TitleData titleData = new TitleData();
+    private SettingsData settingsData = new SettingsData();
 
     @SuppressWarnings("unused")
     public CorePlayerData() {
@@ -78,6 +79,11 @@ public class CorePlayerData implements SessionDataMongo {
         String database = RunicCore.getDataAPI().getMongoDatabase().getName();
         if (jedis.exists(database + ":" + uuid + ":guild")) {
             this.guild = jedis.get(database + ":" + uuid + ":guild");
+        }
+        // Load settings data from Redis (no lazy loading)
+        SettingsData settingsDataRedis = RunicCore.getSettingsAPI().checkRedisForSettingsData(uuid, jedis);
+        if (settingsDataRedis != null) {
+            this.settingsData = settingsDataRedis;
         }
         // Load title data from Redis (no lazy loading for TitleData)
         TitleData titleDataRedis = RunicCore.getTitleAPI().checkRedisForTitleData(uuid, jedis);
@@ -145,6 +151,14 @@ public class CorePlayerData implements SessionDataMongo {
 
     public void setLastLoginDate(LocalDate lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
+    }
+
+    public SettingsData getSettingsData() {
+        return settingsData;
+    }
+
+    public void setSettingsData(SettingsData settingsData) {
+        this.settingsData = settingsData;
     }
 
     /**
@@ -264,6 +278,8 @@ public class CorePlayerData implements SessionDataMongo {
             CoreCharacterData characterData = this.coreCharacterDataMap.get(slot);
             characterData.writeToJedis(this.uuid, jedis, slot);
         }
+        // Settings
+        this.settingsData.writeToJedis(uuid, jedis);
     }
 
 }

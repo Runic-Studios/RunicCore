@@ -163,7 +163,6 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
                             new HashMap<>(),
                             new TitleData()
                     );
-            Bukkit.getLogger().info("CREATING NEW CORE PLAYER DATA!");
             newData.addDocumentToMongo();
             newData.writeToJedis(jedis);
             return newData;

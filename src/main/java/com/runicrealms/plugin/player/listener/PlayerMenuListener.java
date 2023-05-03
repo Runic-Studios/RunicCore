@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.player.StatsGUI;
+import com.runicrealms.plugin.player.settings.SettingsUI;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.*;
@@ -21,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
 
@@ -79,7 +81,10 @@ public class PlayerMenuListener implements Listener {
                         player,
                         Material.PLAYER_HEAD,
                         "&e" + player.getName() + "'s Achievements",
-                        "\n&6&lCLICK" + "\n&7To view your achievements!"
+                        """
+
+                                &6&lCLICK
+                                &7To view your achievements!"""
                 );
     }
 
@@ -95,7 +100,11 @@ public class PlayerMenuListener implements Listener {
                         player,
                         Material.IRON_PICKAXE,
                         "&eGathering Skills",
-                        "\n&6&lCLICK" + "\n&7To view your gathering skills!" + "\n&7They are account-wide!"
+                        """
+
+                                &6&lCLICK
+                                &7To view your gathering skills!
+                                &7They are account-wide!"""
                 );
     }
 
@@ -111,7 +120,10 @@ public class PlayerMenuListener implements Listener {
                         player,
                         Material.REDSTONE,
                         "&eCharacter Stats",
-                        "\n&6&lCLICK" + "\n&7To view your character stats!"
+                        """
+
+                                &6&lCLICK
+                                &7To view your character stats!"""
                 );
     }
 
@@ -119,15 +131,18 @@ public class PlayerMenuListener implements Listener {
      * The info item for the player to find a group
      *
      * @param player to display menu for
-     * @return an Itemstack to display
+     * @return an ItemStack to display
      */
     private ItemStack groupFinderIcon(Player player) {
         return item
                 (
                         player,
                         Material.BELL,
-                        ChatColor.YELLOW + "Group Finder",
-                        "\n&6&lCLICK" + "\n&7To open the Group Finder!"
+                        ChatColor.YELLOW + "Settings",
+                        """
+
+                                &6&lCLICK
+                                &7To open your player settings!"""
                 );
     }
 
@@ -167,13 +182,20 @@ public class PlayerMenuListener implements Listener {
         event.setCancelled(true);
         player.updateInventory();
         if (event.getCursor() == null) return;
-        if (event.getCursor().getType() != Material.AIR) return; // prevents clicking with items on cursor
+        if (event.getCursor().getType() != Material.AIR)
+            return; // prevents clicking with items on cursor
         if (event.getSlot() == 2) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             player.openInventory(new StatsGUI(player).getInventory());
         } else if (event.getSlot() == 4) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-            Bukkit.dispatchCommand(player, "group");
+            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                player.openInventory(new SettingsUI
+                        (
+                                player,
+                                RunicCore.getSettingsAPI().loadSettingsData(player.getUniqueId(), jedis)
+                        ).getInventory());
+            }
         }
     }
 
