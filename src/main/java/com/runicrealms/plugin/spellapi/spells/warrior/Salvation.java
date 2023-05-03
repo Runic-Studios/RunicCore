@@ -14,7 +14,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.RayTraceResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,6 @@ import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Salvation extends Spell implements DistanceSpell, DurationSpell, HealingSpell {
-    private final double BEAM_WIDTH = 1.5;
     private final Map<Block, BellTask> blockMap = new HashMap<>();
     private double distance;
     private double duration;
@@ -43,21 +41,12 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.0f);
-        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
-                (
-                        player.getLocation(),
-                        player.getLocation().getDirection(),
-                        distance,
-                        BEAM_WIDTH,
-                        entity -> isValidEnemy(player, entity)
-                );
-
-        if (rayTraceResult == null) {
-            Location location = player.getTargetBlock(null, (int) distance).getLocation();
-            VectorUtil.drawLine(player, Particle.VILLAGER_HAPPY, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.25f);
-            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 8, 0.5f, 0.5f, 0.5f, 0);
-            spawnBell(player, location);
-        }
+        Location location = player.getTargetBlock(null, (int) distance).getLocation();
+        if (location.getBlock().getType() != Material.AIR)
+            location.add(0, 1, 0); // Try to prevent bell spawning in floor
+        VectorUtil.drawLine(player, Particle.VILLAGER_HAPPY, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.25f);
+        player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 8, 0.5f, 0.5f, 0.5f, 0);
+        spawnBell(player, location);
     }
 
     private Location findNearestAir(Location location) {
