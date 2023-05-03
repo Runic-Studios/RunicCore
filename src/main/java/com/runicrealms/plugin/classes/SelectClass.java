@@ -16,7 +16,7 @@ public class SelectClass {
         // build class-specific variables
         Color color = WHITE;
         switch (className.toLowerCase()) {
-            case "archer":
+            case "archer" -> {
                 color = LIME;
                 if (isTutorial) {
                     player.sendTitle(
@@ -28,8 +28,8 @@ public class SelectClass {
                             ChatColor.DARK_GREEN + "You selected",
                             ChatColor.GREEN + "Archer!", 10, 40, 10);
                 }
-                break;
-            case "cleric":
+            }
+            case "cleric" -> {
                 color = AQUA;
                 if (isTutorial) {
                     player.sendTitle(
@@ -41,8 +41,8 @@ public class SelectClass {
                             ChatColor.DARK_AQUA + "You selected",
                             ChatColor.AQUA + "Cleric!", 10, 40, 10);
                 }
-                break;
-            case "mage":
+            }
+            case "mage" -> {
                 color = FUCHSIA;
                 if (isTutorial) {
                     player.sendTitle(
@@ -54,8 +54,8 @@ public class SelectClass {
                             ChatColor.DARK_PURPLE + "You selected",
                             ChatColor.LIGHT_PURPLE + "Mage!", 10, 40, 10);
                 }
-                break;
-            case "rogue":
+            }
+            case "rogue" -> {
                 color = YELLOW;
                 if (isTutorial) {
                     player.sendTitle(
@@ -67,8 +67,8 @@ public class SelectClass {
                             ChatColor.GOLD + "You selected",
                             ChatColor.YELLOW + "Rogue!", 10, 40, 10);
                 }
-                break;
-            case "warrior":
+            }
+            case "warrior" -> {
                 color = RED;
                 if (isTutorial) {
                     player.sendTitle(
@@ -80,7 +80,7 @@ public class SelectClass {
                             ChatColor.DARK_RED + "You selected",
                             ChatColor.RED + "Warrior!", 10, 40, 10);
                 }
-                break;
+            }
         }
         if (!isTutorial) ClassUtil.launchFirework(player, color);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1);

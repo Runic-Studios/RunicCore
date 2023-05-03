@@ -53,9 +53,10 @@ public class SpellUseListener implements Listener {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.25f, 1.0f);
             casters.put(player.getUniqueId(), castTimeoutTask(player));
             String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
+            // Add space to title to fix a 1.17/1.18 bug
             player.sendTitle
                     (
-                            "", ChatColor.LIGHT_PURPLE + prefix +
+                            " ", ChatColor.LIGHT_PURPLE + prefix +
                                     " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
                     );
         } else {
@@ -91,7 +92,7 @@ public class SpellUseListener implements Listener {
         String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
         player.sendTitle
                 (
-                        "",
+                        " ",
                         ChatColor.LIGHT_PURPLE + prefix + " - "
                                 + determineSelectedSlot(number), 0, 15, 0
                 );
