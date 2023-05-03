@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
+import com.runicrealms.plugin.model.SettingsData;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
@@ -53,6 +54,8 @@ public class SpellUseListener implements Listener {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.25f, 1.0f);
             casters.put(player.getUniqueId(), castTimeoutTask(player));
             String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
+            boolean displayCastMenu = ((SettingsData) RunicCore.getSettingsManager().getSessionData(player.getUniqueId())).isCastMenuEnabled();
+            if (!displayCastMenu) return;
             // Add space to title to fix a 1.17/1.18 bug
             player.sendTitle
                     (
@@ -62,8 +65,6 @@ public class SpellUseListener implements Listener {
         } else {
             castSpell(player, whichSpellToCast, RunicCore.getCharacterAPI().getPlayerClass(player).equalsIgnoreCase("archer"));
         }
-        // CAST_MENU_CASTERS.add(player.getUniqueId());
-        // Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> CAST_MENU_CASTERS.remove(player.getUniqueId()), GLOBAL_COOLDOWN_TICKS);
     }
 
     /**
@@ -90,12 +91,15 @@ public class SpellUseListener implements Listener {
         casters.get(player.getUniqueId()).cancel(); // cancel timeout task
         casters.remove(player.getUniqueId());
         String prefix = isArcher ? ACTIVATE_LEFT : ACTIVATE_RIGHT;
-        player.sendTitle
-                (
-                        " ",
-                        ChatColor.LIGHT_PURPLE + prefix + " - "
-                                + determineSelectedSlot(number), 0, 15, 0
-                );
+        boolean displayCastMenu = ((SettingsData) RunicCore.getSettingsManager().getSessionData(player.getUniqueId())).isCastMenuEnabled();
+        if (displayCastMenu) {
+            player.sendTitle
+                    (
+                            " ",
+                            ChatColor.LIGHT_PURPLE + prefix + " - "
+                                    + determineSelectedSlot(number), 0, 15, 0
+                    );
+        }
         castSelectedSpell(player, number);
     }
 

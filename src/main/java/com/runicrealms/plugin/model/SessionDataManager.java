@@ -2,8 +2,6 @@ package com.runicrealms.plugin.model;
 
 import redis.clients.jedis.Jedis;
 
-import java.util.Map;
-
 public interface SessionDataManager {
 
     /**
@@ -12,24 +10,22 @@ public interface SessionDataManager {
      * @param slot       an optional parameter for the character slot
      * @return a SessionDataRedis object if it is found in jedis, else null
      */
-    SessionDataRedis checkJedisForSessionData(Object identifier, Jedis jedis, int... slot);
+    SessionDataRedis checkRedisForSessionData(Object identifier, Jedis jedis, int... slot);
 
     /**
-     * @return a map of identifier (uuid or prefix) to their session data (for in-memory caching)
-     */
-    Map<Object, SessionDataRedis> getSessionDataMap();
-
-    /**
-     * Attempts to load the session data for player from memory if it is found
+     * Some objects are stored in-memory for fast lookups
+     * This method can be overridden to return the in-memory data structure for the object
      *
      * @param identifier of the session data. uuid for player, or prefix for guild
      * @param slot       an optional parameter for the character slot
-     * @return the session data associated with this uuid
+     * @return null, or the in-memory object if it is used
      */
-    SessionDataRedis loadSessionData(Object identifier, int... slot);
+    default SessionDataRedis getSessionData(Object identifier, int... slot) {
+        return null;
+    }
 
     /**
-     * Loads session data for player from jedis
+     * Loads session data for player from Redis
      *
      * @param identifier of the session data. uuid for player, or prefix for guild
      * @param jedis      the jedis resource

@@ -80,11 +80,6 @@ public class CorePlayerData implements SessionDataMongo {
         if (jedis.exists(database + ":" + uuid + ":guild")) {
             this.guild = jedis.get(database + ":" + uuid + ":guild");
         }
-        // Load settings data from Redis (no lazy loading)
-        SettingsData settingsDataRedis = RunicCore.getSettingsAPI().checkRedisForSettingsData(uuid, jedis);
-        if (settingsDataRedis != null) {
-            this.settingsData = settingsDataRedis;
-        }
         // Load title data from Redis (no lazy loading for TitleData)
         TitleData titleDataRedis = RunicCore.getTitleAPI().checkRedisForTitleData(uuid, jedis);
         if (titleDataRedis != null) {

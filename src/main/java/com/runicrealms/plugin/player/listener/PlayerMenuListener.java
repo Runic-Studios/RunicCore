@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.model.SettingsData;
 import com.runicrealms.plugin.player.StatsGUI;
 import com.runicrealms.plugin.player.settings.SettingsUI;
 import com.runicrealms.plugin.utilities.ColorUtil;
@@ -193,7 +194,7 @@ public class PlayerMenuListener implements Listener {
                 player.openInventory(new SettingsUI
                         (
                                 player,
-                                RunicCore.getSettingsAPI().loadSettingsData(player.getUniqueId(), jedis)
+                                (SettingsData) RunicCore.getSettingsManager().loadSessionData(player.getUniqueId(), jedis)
                         ).getInventory());
             }
         }

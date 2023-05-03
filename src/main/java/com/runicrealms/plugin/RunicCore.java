@@ -23,6 +23,7 @@ import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
 import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.model.MongoTask;
+import com.runicrealms.plugin.model.SessionDataManager;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
 import com.runicrealms.plugin.party.PartyChannel;
@@ -33,6 +34,7 @@ import com.runicrealms.plugin.player.CombatManager;
 import com.runicrealms.plugin.player.PlayerHungerManager;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.listener.*;
+import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.redis.RedisManager;
@@ -90,7 +92,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PlayerHungerManager playerHungerManager;
     private static RedisAPI redisAPI;
     private static TitleAPI titleAPI;
-    private static SettingsAPI settingsAPI;
+    private static SessionDataManager settingsManager;
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
     private static StatusEffectAPI statusEffectAPI;
@@ -208,8 +210,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         return titleAPI;
     }
 
-    public static SettingsAPI getSettingsAPI() {
-        return settingsAPI;
+    public static SessionDataManager getSettingsManager() {
+        return settingsManager;
     }
 
     public static MongoTask getMongoTask() {
@@ -265,7 +267,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         playerHungerManager = null;
         redisAPI = null;
         titleAPI = null;
-        settingsAPI = null;
+        settingsManager = null;
         shopAPI = null;
         mongoTask = null;
         statusEffectAPI = null;
@@ -305,7 +307,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         playerHungerManager = new PlayerHungerManager();
         redisAPI = new RedisManager();
         titleAPI = new TitleManager();
-        settingsAPI = new SettingsManager();
+        settingsManager = new SettingsManager();
         shopAPI = new RunicItemShopManager();
         mongoTask = new MongoTask();
         statusEffectAPI = new StatusEffectManager();
@@ -452,6 +454,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ShieldListener(), this);
         pm.registerEvents(new PreCommandListener(), this);
         pm.registerEvents(new BasicAttackListener(), this);
+        pm.registerEvents(new SettingsUIListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

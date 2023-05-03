@@ -32,6 +32,10 @@ public class SettingsUI implements InventoryHolder {
         return player;
     }
 
+    public SettingsData getSettingsData() {
+        return settingsData;
+    }
+
     /**
      * Opens the inventory associated w/ this GUI, ordering perks
      */

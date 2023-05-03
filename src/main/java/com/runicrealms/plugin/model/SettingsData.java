@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class SettingsData implements SessionDataRedis {
-    public static final String DATA_SECTION_PREFIX = "settings:castMenuEnabled";
+    public static final String DATA_SECTION_SETTINGS = "settings:castMenuEnabled";
     private boolean castMenuEnabled = true;
 
     public SettingsData() {
@@ -23,7 +23,7 @@ public class SettingsData implements SessionDataRedis {
      */
     public SettingsData(UUID uuid, Jedis jedis) {
         String database = RunicCore.getDataAPI().getMongoDatabase().getName();
-        this.castMenuEnabled = Boolean.parseBoolean(jedis.get(database + ":" + uuid + ":" + DATA_SECTION_PREFIX));
+        this.castMenuEnabled = Boolean.parseBoolean(jedis.get(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS));
     }
 
     @Override
@@ -46,8 +46,8 @@ public class SettingsData implements SessionDataRedis {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
         String database = RunicCore.getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":markedForSave:core", uuid.toString());
-        jedis.set(database + ":" + uuid + ":" + DATA_SECTION_PREFIX, String.valueOf(this.castMenuEnabled));
-        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_PREFIX, RunicCore.getRedisAPI().getExpireTime());
+        jedis.set(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, String.valueOf(this.castMenuEnabled));
+        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, RunicCore.getRedisAPI().getExpireTime());
     }
 
     public boolean isCastMenuEnabled() {

@@ -138,9 +138,8 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
         try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
             boolean dataInRedis = checkRedisForCoreData(uuid, jedis);
             if (dataInRedis) {
-                CorePlayerData corePlayerData = new CorePlayerData(uuid, jedis);
-//                Bukkit.getLogger().info("LOADING CORE DATA FROM REDIS");
-                return corePlayerData;
+                //                Bukkit.getLogger().info("LOADING CORE DATA FROM REDIS");
+                return new CorePlayerData(uuid, jedis);
             }
             // Step 2: Check the mongo database
             Query query = new Query();
