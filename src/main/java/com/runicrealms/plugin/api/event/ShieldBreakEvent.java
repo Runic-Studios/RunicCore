@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This custom ASYNC event is called when a player's spell shield is broken
@@ -19,7 +20,7 @@ public class ShieldBreakEvent extends Event implements Cancellable {
      * @param player whose shield was broken
      * @param shield container that broke
      */
-    public ShieldBreakEvent(Player player, Shield shield) {
+    public ShieldBreakEvent(Player player, @NotNull Shield shield) {
         super(true);
         this.player = player;
         this.shield = shield;

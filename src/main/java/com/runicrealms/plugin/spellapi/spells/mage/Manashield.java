@@ -104,6 +104,7 @@ public class Manashield extends Spell implements RadiusSpell, ShieldingSpell {
     public void onShieldBreak(ShieldBreakEvent event) {
         if (event.isCancelled()) return;
         Shield shield = event.getShield();
+        if (shield == null) return; // Fixes a bug from race condition due to shield removal task
         for (UUID uuid : shieldedPlayersMap.keySet()) { // The casters who apply mana shields
             if (shieldedPlayersMap.get(uuid).stream().anyMatch(value -> shield.getSources().contains(value))) { // If a mana shield caster contributed to this shield
                 Player player = Bukkit.getPlayer(uuid);

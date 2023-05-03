@@ -85,9 +85,7 @@ public class PlayerJoinListener implements Listener {
         player.setHealth(player.getMaxHealth());
         int slot = event.getCharacterSelectEvent().getSlot();
         player.teleport(event.getCharacterSelectEvent().getCorePlayerData().getCharacter(slot).getLocation());
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            LOADING_PLAYERS.remove(event.getPlayer().getUniqueId());
-        }, 7L);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> LOADING_PLAYERS.remove(event.getPlayer().getUniqueId()), 7L);
         // If the player joined in a safezone, play our song! TODO: This should be an entire feature
         String database = RunicCore.getDataAPI().getMongoDatabase().getName();
         if (database.equalsIgnoreCase("dev")) return; // Music doesn't play during development

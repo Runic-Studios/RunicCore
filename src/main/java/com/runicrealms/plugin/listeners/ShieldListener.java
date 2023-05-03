@@ -39,9 +39,12 @@ public class ShieldListener implements Listener {
                 long lastShieldTime = RunicCore.getSpellAPI().getShieldedPlayers().get(uuid).getStartTime();
                 if (System.currentTimeMillis() - lastShieldTime > SHIELD_EXPIRE_TIME * 1000) {
                     Player player = Bukkit.getPlayer(uuid);
-                    if (player != null) {
-                        removeShield(player, RunicCore.getSpellAPI().getShieldedPlayers());
-                    }
+                    if (player == null) continue;
+                    Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
+                            (
+                                    player,
+                                    RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
+                            ));
                 }
             }
         }, 0, 5L);
@@ -66,7 +69,11 @@ public class ShieldListener implements Listener {
         } else if (shieldLeftOver <= 0) {
             // Shield was broken and there's leftover damage
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                    () -> removeShield(player, shieldedPlayers));
+                    () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
+                            (
+                                    player,
+                                    RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
+                            )));
         }
         return shieldLeftOver;
     }
@@ -74,8 +81,7 @@ public class ShieldListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onGenericDamage(GenericDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!(event.getVictim() instanceof Player)) return;
-        Player victim = (Player) event.getVictim();
+        if (!(event.getVictim() instanceof Player victim)) return;
         if (!RunicCore.getSpellAPI().isShielded(victim.getUniqueId())) return;
         int shieldLeftOver = (int) damageShield(victim, event.getAmount());
         event.setAmount(Math.min(shieldLeftOver, 0)); // Deal leftover damage if shield is negative
@@ -84,8 +90,7 @@ public class ShieldListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // runs after stat calculations
     public void onMagicDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!(event.getVictim() instanceof Player)) return;
-        Player victim = (Player) event.getVictim();
+        if (!(event.getVictim() instanceof Player victim)) return;
         if (!RunicCore.getSpellAPI().isShielded(victim.getUniqueId())) return;
         int shieldLeftOver = (int) damageShield(victim, event.getAmount());
         event.setAmount(Math.min(shieldLeftOver, 0)); // Deal leftover damage if shield is negative
@@ -94,8 +99,7 @@ public class ShieldListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onMobDamage(MobDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!(event.getVictim() instanceof Player)) return;
-        Player victim = (Player) event.getVictim();
+        if (!(event.getVictim() instanceof Player victim)) return;
         if (!RunicCore.getSpellAPI().isShielded(victim.getUniqueId())) return;
         int shieldLeftOver = (int) damageShield(victim, event.getAmount());
         event.setAmount(Math.min(shieldLeftOver, 0)); // Deal leftover damage if shield is negative
@@ -104,8 +108,7 @@ public class ShieldListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!(event.getVictim() instanceof Player)) return;
-        Player victim = (Player) event.getVictim();
+        if (!(event.getVictim() instanceof Player victim)) return;
         if (!RunicCore.getSpellAPI().isShielded(victim.getUniqueId())) return;
         int shieldLeftOver = (int) damageShield(victim, event.getAmount());
         event.setAmount(Math.min(shieldLeftOver, 0)); // Deal leftover damage if shield is negative
@@ -116,7 +119,13 @@ public class ShieldListener implements Listener {
      */
     @EventHandler
     public void onQuit(CharacterSelectEvent event) {
-        removeShield(event.getPlayer(), RunicCore.getSpellAPI().getShieldedPlayers());
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
+                        (
+                                player,
+                                RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
+                        )));
     }
 
     /**
@@ -124,8 +133,13 @@ public class ShieldListener implements Listener {
      */
     @EventHandler
     public void onQuit(CharacterQuitEvent event) {
+        Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                () -> removeShield(event.getPlayer(), RunicCore.getSpellAPI().getShieldedPlayers()));
+                () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
+                        (
+                                player,
+                                RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
+                        )));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -159,13 +173,4 @@ public class ShieldListener implements Listener {
         player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.0f, 0.5f);
     }
 
-    /**
-     * Removes a player's shield
-     *
-     * @param player          to remove shield from
-     * @param shieldedPlayers the map of all shields
-     */
-    private void removeShield(Player player, Map<UUID, Shield> shieldedPlayers) {
-        Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(player, shieldedPlayers.get(player.getUniqueId())));
-    }
 }
