@@ -45,6 +45,8 @@ public class HorizontalCircleFrame implements ParticleFormat {
                     world.spawnParticle(particle, particleLocation, 1, 0, 0, 0, dustOptions);
                 } else if (particle == Particle.BLOCK_CRACK) {
                     world.spawnParticle(particle, particleLocation, 1, 0, 0, 0, blockData);
+                } else if (particle == Particle.FALLING_DUST) {
+                    world.spawnParticle(particle, particleLocation, 1, 0, 0, 0, Material.COAL_BLOCK.createBlockData());
                 } else {
                     world.spawnParticle(particle, particleLocation, 1, 0, 0, 0, 0);
                 }

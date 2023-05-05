@@ -64,7 +64,7 @@ public class UmbralGrasp extends Spell implements DistanceSpell, DurationSpell, 
                         entity -> isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
-            Location location = player.getTargetBlock(null, (int) maxDistance).getLocation();
+            Location location = player.getTargetBlock(null, (int) maxDistance).getLocation().add(0.5, 0, 0.5);
             beginSpell(player, location.setDirection(player.getEyeLocation().getDirection()),
                     player.getEyeLocation());
         } else if (rayTraceResult.getHitEntity() != null) {
@@ -144,7 +144,7 @@ public class UmbralGrasp extends Spell implements DistanceSpell, DurationSpell, 
     private void grasp(Player player, Location location) {
         if (!damageMap.containsKey(player.getUniqueId()))
             damageMap.put(player.getUniqueId(), new HashSet<>());
-        new HorizontalCircleFrame(RADIUS, true).playParticle(player, Particle.ASH, location);
+        new HorizontalCircleFrame(RADIUS, true).playParticle(player, Particle.FALLING_DUST, location);
         player.getWorld().playSound(location, Sound.BLOCK_GLASS_BREAK, 0.25f, 0.25f);
         for (Entity entity : player.getWorld().getNearbyEntities(location, RADIUS, RADIUS, RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;

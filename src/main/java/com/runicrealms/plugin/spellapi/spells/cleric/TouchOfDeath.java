@@ -23,10 +23,10 @@ public class TouchOfDeath extends Spell implements DurationSpell, MagicDamageSpe
     private double damagePerLevel;
 
     public TouchOfDeath() {
-        super("Touch of Death", CharacterClass.CLERIC);
+        super("Touch Of Death", CharacterClass.CLERIC);
         this.setIsPassive(true);
         startMarkRemovalTask();
-        this.setDescription("Enemies who have been hit by your spells in the last 2s " +
+        this.setDescription("Enemies who have been hit by your spells in the last " + duration + "s " +
                 "take (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) extra magicʔ damage from " +
                 "your basic attacks!");
