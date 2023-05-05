@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.settings;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -40,7 +41,9 @@ public class SettingsUIListener implements Listener {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         event.setCancelled(true);
         // Toggle spell cast UI
-        if (material == Material.PAPER) {
+        if (material == GUIUtil.CLOSE_BUTTON.getType()) {
+            player.closeInventory();
+        } else if (material == Material.PAPER) {
             TaskChain<?> chain = RunicCore.newChain();
             chain
                     .asyncFirst(() -> {

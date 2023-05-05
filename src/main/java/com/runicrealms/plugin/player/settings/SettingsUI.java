@@ -43,7 +43,7 @@ public class SettingsUI implements InventoryHolder {
     private void openMenu() {
         this.inventory.clear();
         GUIUtil.fillInventoryBorders(this.inventory);
-        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
+        this.inventory.setItem(0, GUIUtil.CLOSE_BUTTON);
         boolean castMenuEnabled = this.settingsData.isCastMenuEnabled();
         ChatColor chatColor = castMenuEnabled ? ChatColor.GREEN : ChatColor.RED;
         this.inventory.setItem(22, GUIUtil.dispItem(
