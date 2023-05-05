@@ -74,26 +74,23 @@ public class TabListManager implements Listener, TabAPI {
                         ChatColor.DARK_GREEN + "Our Website: " + ChatColor.GREEN + "www.runicrealms.com" +
                                 "\n" + ChatColor.DARK_PURPLE + "Our Discord: " + ChatColor.LIGHT_PURPLE + "discord.gg/5FjVVd4");
 
-        // Column 1 (Online)
+        // Columns 1-2 (Online)
         tableTabList.set(0, 0, new TextTabItem
                 (ChatColor.YELLOW + "" + ChatColor.BOLD + "  Online [" + Bukkit.getOnlinePlayers().size() + "]", 0, Skins.getDot(ChatColor.YELLOW)));
 
-        // fill column with online players, stop after first column
+        // Fill column with online players, stop after second column
         try {
             int i = 0;
+            int j = 0;
             for (Player online : Bukkit.getOnlinePlayers()) {
-                if (i > 19) break;
-                tableTabList.set(0, i + 1, new TextTabItem(online.getName(), getPing(online), Skins.getPlayer(online)));
+                if (i > 19) j = 1;
+                if (i > 39) break;
+                tableTabList.set(j, i + 1, new TextTabItem(online.getName(), getPing(online), Skins.getPlayer(online)));
                 i++;
             }
-
-            // Column 4 (Friends)
-            tableTabList.set(3, 0, new TextTabItem
-                    (ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "  Friends [0]", 0, Skins.getDot(ChatColor.DARK_GREEN)));
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        // return tableTabList;
     }
 
     @EventHandler
