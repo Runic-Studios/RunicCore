@@ -4,6 +4,7 @@ import com.runicrealms.plugin.model.SettingsData;
 import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -44,10 +45,11 @@ public class SettingsUI implements InventoryHolder {
         GUIUtil.fillInventoryBorders(this.inventory);
         this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         boolean castMenuEnabled = this.settingsData.isCastMenuEnabled();
+        ChatColor chatColor = castMenuEnabled ? ChatColor.GREEN : ChatColor.RED;
         this.inventory.setItem(22, GUIUtil.dispItem(
                 Material.PAPER,
-                "Spell Cast UI",
-                new String[]{castMenuEnabled + ""}
+                ChatColor.LIGHT_PURPLE + "Display Spell Cast UI",
+                new String[]{ChatColor.YELLOW + "Enabled: " + chatColor + castMenuEnabled}
         ));
     }
 }
