@@ -30,7 +30,7 @@ public class TabListManager implements Listener, TabAPI {
         updateTablists();
     }
 
-    private ChatColor getHealthChatColor(Player player) {
+    public static ChatColor getHealthChatColor(Player player) {
         int healthToDisplay = (int) (player.getHealth());
         int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         double healthPercent = (double) healthToDisplay / maxHealth;

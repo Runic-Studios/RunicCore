@@ -47,43 +47,26 @@ public final class MobMechanicsListener implements Listener {
         String secHalf = ChatColor.DARK_GRAY + "" + "|||||";
         ChatColor healthColor = ChatColor.WHITE;
         switch (numColorBars) {
-            case 10:
-                secHalf = ChatColor.GREEN + "" + "|||||";
-                break;
-            case 9:
-                secHalf = ChatColor.GREEN + "" + "||||" + ChatColor.DARK_GRAY + "|";
-                break;
-            case 8:
-                secHalf = ChatColor.GREEN + "" + "|||" + ChatColor.DARK_GRAY + "||";
-                break;
-            case 7:
+            case 10 -> secHalf = ChatColor.GREEN + "" + "|||||";
+            case 9 -> secHalf = ChatColor.GREEN + "" + "||||" + ChatColor.DARK_GRAY + "|";
+            case 8 -> secHalf = ChatColor.GREEN + "" + "|||" + ChatColor.DARK_GRAY + "||";
+            case 7 -> {
                 firstHalf = ChatColor.YELLOW + "" + "|||||";
                 secHalf = ChatColor.YELLOW + "" + "||" + ChatColor.DARK_GRAY + "|||";
-                break;
-            case 6:
+            }
+            case 6 -> {
                 firstHalf = ChatColor.YELLOW + "" + "|||||";
                 secHalf = ChatColor.YELLOW + "" + "|" + ChatColor.DARK_GRAY + "||||";
-                break;
-            case 5:
+            }
+            case 5 -> {
                 firstHalf = ChatColor.YELLOW + "" + "|||||";
                 secHalf = ChatColor.DARK_GRAY + "" + "|||||";
-                break;
-            case 4:
-                firstHalf = ChatColor.YELLOW + "" + "||||" + ChatColor.DARK_GRAY + "|";
-                break;
-            case 3:
-                firstHalf = ChatColor.RED + "" + "|||" + ChatColor.DARK_GRAY + "||";
-                break;
-            case 2:
-                firstHalf = ChatColor.RED + "" + "||" + ChatColor.DARK_GRAY + "|||";
-                break;
-            case 1:
-                firstHalf = ChatColor.RED + "" + "|" + ChatColor.DARK_GRAY + "||||";
-                break;
-            default:
-                firstHalf = ChatColor.DARK_GRAY + "" + "|||||";
-                break;
-
+            }
+            case 4 -> firstHalf = ChatColor.YELLOW + "" + "||||" + ChatColor.DARK_GRAY + "|";
+            case 3 -> firstHalf = ChatColor.RED + "" + "|||" + ChatColor.DARK_GRAY + "||";
+            case 2 -> firstHalf = ChatColor.RED + "" + "||" + ChatColor.DARK_GRAY + "|||";
+            case 1 -> firstHalf = ChatColor.RED + "" + "|" + ChatColor.DARK_GRAY + "||||";
+            default -> firstHalf = ChatColor.DARK_GRAY + "" + "|||||";
         }
 
         String healthStr = healthColor + "" + (int) (livingEntity.getHealth() - damage);
@@ -114,14 +97,13 @@ public final class MobMechanicsListener implements Listener {
      */
     @EventHandler
     public void onMobRegainHealth(EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
         if (event.getEntity() instanceof ArmorStand) return;
         if (event.getEntity() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getEntity().getUniqueId()))
             return;
         if (event.getEntity().getPassengers().size() == 0) return;
         if (event.getEntity() instanceof Horse) return;
-        LivingEntity le = (LivingEntity) event.getEntity();
-        updateDisplayName(le, 0);
+        updateDisplayName(livingEntity, 0);
     }
 
     /**

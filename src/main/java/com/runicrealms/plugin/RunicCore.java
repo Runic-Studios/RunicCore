@@ -96,7 +96,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
     private static StatusEffectAPI statusEffectAPI;
-    private static PlayerBarManager playerBarManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -227,10 +226,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return taskChainFactory;
     }
 
-    public static PlayerBarManager getPlayerBarManager() {
-        return playerBarManager;
-    }
-
     /**
      * @return a TaskChain for thread context switching
      */
@@ -277,7 +272,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         mongoTask = null;
         statusEffectAPI = null;
         taskChainFactory = null;
-        playerBarManager = null;
     }
 
     @Override
@@ -317,7 +311,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         shopAPI = new RunicItemShopManager();
         mongoTask = new MongoTask();
         statusEffectAPI = new StatusEffectManager();
-        playerBarManager = new PlayerBarManager();
         new DaylightCycleListener();
 
         // WorldGuard events
@@ -454,7 +447,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new EnderpearlListener(), this);
         pm.registerEvents(new ArtifactSpellListener(), this);
         pm.registerEvents(new StatsGUIListener(), this);
-        pm.registerEvents(new HealthBarListener(), this);
         pm.registerEvents(new ServerListPingListener(), this);
         pm.registerEvents(new BossChestListener(), this);
         pm.registerEvents(new ExpBoostListener(), this);

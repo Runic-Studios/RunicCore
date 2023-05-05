@@ -45,8 +45,7 @@ public class ScoreboardListener implements Listener {
      */
     @EventHandler
     public void onOffhandEquip(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-        Player player = (Player) event.getWhoClicked();
+        if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getCurrentItem() == null) return;
         if (event.getClickedInventory() == null) return;
         if (event.getSlot() != 40) return;

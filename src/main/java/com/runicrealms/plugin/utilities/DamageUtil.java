@@ -50,10 +50,8 @@ public class DamageUtil {
 
         // apply the damage
         damageEntityByEntity(dmgAmt, recipient, caster, false);
-        if (!(recipient instanceof Player)) { // we use health bars now for PvP
-            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.DARK_AQUA;
-            HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤ʔ");
-        }
+        ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.DARK_AQUA;
+        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤ʔ");
     }
 
     /**
@@ -90,20 +88,10 @@ public class DamageUtil {
         }
 
         damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
-        if (!(recipient instanceof Player)) { // we use health bars now for PvP
-            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
-            HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
-        }
+        ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
+        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
     }
 
-    /**
-     * @param dmgAmt
-     * @param recipient
-     * @param caster
-     * @param isBasicAttack
-     * @param arrow
-     * @param spell
-     */
     public static void damageEntityRanged(double dmgAmt, LivingEntity recipient, Player caster,
                                           boolean isBasicAttack, Arrow arrow, Spell... spell) {
 
@@ -131,10 +119,8 @@ public class DamageUtil {
         }
 
         damageEntityByEntity(dmgAmt, recipient, caster, true);
-        if (!(recipient instanceof Player)) { // we use health bars now for PvP
-            ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
-            HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
-        }
+        ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
+        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
     }
 
     public static void damageEntityMob(double dmgAmt, LivingEntity recipient, Entity damager, boolean knockBack) {
@@ -174,8 +160,7 @@ public class DamageUtil {
         // apply custom mechanics if the player were to die
         int newHP = (int) (recipient.getHealth() - dmgAmt);
         if (newHP >= 1) {
-            if (recipient instanceof Monster) {
-                Monster monster = (Monster) recipient;
+            if (recipient instanceof Monster monster) {
                 if (damager instanceof LivingEntity) {
                     if (monster.getTarget() == null) monster.setTarget((LivingEntity) damager);
                 }
@@ -226,8 +211,7 @@ public class DamageUtil {
 
         // apply custom mechanics if the player were to die
         if (newHP >= 1) {
-            if (recipient instanceof Monster) {
-                Monster monster = (Monster) recipient;
+            if (recipient instanceof Monster monster) {
                 if (monster.getTarget() == null) monster.setTarget(caster);
             }
             recipient.setHealth(newHP);
