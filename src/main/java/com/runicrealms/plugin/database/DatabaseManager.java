@@ -51,6 +51,7 @@ import java.util.logging.Level;
  * @author Skyfallin
  */
 public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
+    private static final int CHARACTER_SAVE_PERIOD = 30; // Seconds
     private final ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> loadedCharacterMap; // stores the current character the player is playing
     private final Map<UUID, CorePlayerData> corePlayerDataMap; // For caching session data in-memory
     private final Map<UUID, ProjectedData> projectedDataMap; // For character select screen (projects only a few fields)
@@ -86,6 +87,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
                 } finally {
                     Bukkit.getLogger().info(ChatColor.GREEN + springString());
                     RunicRestart.getAPI().markPluginLoaded("core");
+                    startLocationSaveTask(); // Save location periodically
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 10L);
@@ -321,15 +323,37 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
      * @return a string for console to confirm server startup
      */
     private String springString() {
-        return "\n" +
-                "   _____            _               _____        _          __  __                         _____  ____  \n" +
-                "  / ____|          (_)             |  __ \\      | |        |  \\/  |                       |  __ \\|  _ \\ \n" +
-                " | (___  _ __  _ __ _ _ __   __ _  | |  | | __ _| |_ __ _  | \\  / | ___  _ __   __ _  ___ | |  | | |_) |\n" +
-                "  \\___ \\| '_ \\| '__| | '_ \\ / _` | | |  | |/ _` | __/ _` | | |\\/| |/ _ \\| '_ \\ / _` |/ _ \\| |  | |  _ < \n" +
-                "  ____) | |_) | |  | | | | | (_| | | |__| | (_| | || (_| | | |  | | (_) | | | | (_| | (_) | |__| | |_) |\n" +
-                " |_____/| .__/|_|  |_|_| |_|\\__, | |_____/ \\__,_|\\__\\__,_| |_|  |_|\\___/|_| |_|\\__, |\\___/|_____/|____/ \n" +
-                "        | |                  __/ |                                              __/ |                   \n" +
-                "        |_|                 |___/                                              |___/                    \n";
+        return """
+
+                   _____            _               _____        _          __  __                         _____  ____ \s
+                  / ____|          (_)             |  __ \\      | |        |  \\/  |                       |  __ \\|  _ \\\s
+                 | (___  _ __  _ __ _ _ __   __ _  | |  | | __ _| |_ __ _  | \\  / | ___  _ __   __ _  ___ | |  | | |_) |
+                  \\___ \\| '_ \\| '__| | '_ \\ / _` | | |  | |/ _` | __/ _` | | |\\/| |/ _ \\| '_ \\ / _` |/ _ \\| |  | |  _ <\s
+                  ____) | |_) | |  | | | | | (_| | | |__| | (_| | || (_| | | |  | | (_) | | | | (_| | (_) | |__| | |_) |
+                 |_____/| .__/|_|  |_|_| |_|\\__, | |_____/ \\__,_|\\__\\__,_| |_|  |_|\\___/|_| |_|\\__, |\\___/|_____/|____/\s
+                        | |                  __/ |                                              __/ |                  \s
+                        |_|                 |___/                                              |___/                   \s
+                """;
+    }
+
+    /**
+     * Periodic task to save player location
+     */
+    private void startLocationSaveTask() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+            for (UUID uuid : loadedCharacterMap.keySet()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null) continue; // Player not online
+                int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+                Location location = player.getLocation();
+                try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                    CorePlayerData corePlayerData = getCorePlayerData(uuid);
+                    corePlayerData.getCharacter(slot).setLocation(location);
+                    corePlayerData.getCharacter(slot).setCurrentHp((int) player.getHealth());
+                    corePlayerData.writeToJedis(jedis);
+                }
+            }
+        }, 0, CHARACTER_SAVE_PERIOD * 20L);
     }
 
 }
