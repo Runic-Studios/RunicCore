@@ -317,10 +317,12 @@ public class PartyCommand extends BaseCommand {
         for (Player target : party.getMembersWithLeader()) {
             if (target == player) continue;
             if (target.getWorld() != player.getWorld()) continue;
-            target.teleport(player.getLocation());
+            double squaredDistance = player.getLocation().distanceSquared(target.getLocation());
+            // Compare the squared distance to the squared threshold (128 * 128 = 16384)
+            if (squaredDistance > 16384) continue;
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou were teleported with your party!"));
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported party members to your location!"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported nearby party members to your location!"));
     }
 
 }
