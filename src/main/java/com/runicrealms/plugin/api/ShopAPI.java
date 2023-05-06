@@ -17,8 +17,8 @@ public interface ShopAPI {
      * @param removePayment   true if payment should be removed
      * @return true if transaction is successful
      */
-    boolean completeTransaction(Player player, Map<String, Integer> requiredItems,
-                                String itemDisplayName, boolean removePayment);
+    boolean checkItemRequirement(Player player, Map<String, Integer> requiredItems,
+                                 String itemDisplayName, boolean removePayment);
 
     /**
      * Method to match a string to a runic item

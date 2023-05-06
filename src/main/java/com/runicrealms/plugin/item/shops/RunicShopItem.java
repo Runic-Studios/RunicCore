@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 public class RunicShopItem {
-
     private final Map<String, Integer> requiredItems;
     private final ItemStack shopItem;
     private final RunicItemRunnable runicItemRunnable;
+    private List<ShopCondition> extraConditions = new ArrayList<>(); // A list of additional requirements to purchase items
     private boolean removePayment = true;
 
     /**
@@ -43,6 +43,17 @@ public class RunicShopItem {
     }
 
     /**
+     * @param extraConditions a set of extra conditions which must be met to purchase item
+     */
+    public RunicShopItem(Map<String, Integer> requiredItems, ItemStack shopItem,
+                         RunicItemRunnable runicItemRunnable, List<ShopCondition> extraConditions) {
+        this.requiredItems = requiredItems;
+        this.shopItem = shopItem;
+        this.runicItemRunnable = runicItemRunnable;
+        this.extraConditions = extraConditions;
+    }
+
+    /**
      * The generic item shop lore generator that appends the price
      *
      * @param runicShopItem the ShopItem wrapper of the item in the store
@@ -66,9 +77,10 @@ public class RunicShopItem {
         return iconWithLore;
     }
 
-    /**
-     * @return
-     */
+    public List<ShopCondition> getExtraConditions() {
+        return extraConditions;
+    }
+
     public List<String> getPriceLore() {
         List<String> lore = new ArrayList<>();
         lore.add("");
@@ -81,7 +93,7 @@ public class RunicShopItem {
     }
 
     /**
-     * @return
+     * @return a map of the runic item id to the number
      */
     public Map<String, Integer> getRequiredItems() {
         return requiredItems;
@@ -112,4 +124,5 @@ public class RunicShopItem {
     public void setRemovePayment(boolean removePayment) {
         this.removePayment = removePayment;
     }
+
 }

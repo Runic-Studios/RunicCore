@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,8 +44,8 @@ public class RunicItemShopManager implements Listener, ShopAPI {
     }
 
     @Override
-    public boolean completeTransaction(Player player, Map<String, Integer> requiredItems,
-                                       String itemDisplayName, boolean removePayment) {
+    public boolean checkItemRequirement(Player player, Map<String, Integer> requiredItems,
+                                        String itemDisplayName, boolean removePayment) {
         if (player.getInventory().firstEmpty() == -1) {
             player.closeInventory();
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
@@ -56,19 +57,6 @@ public class RunicItemShopManager implements Listener, ShopAPI {
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You don't have enough items to buy this!");
             return false;
-        }
-        if (removePayment) {
-            for (String templateID : requiredItems.keySet()) {
-                ItemRemover.takeItem
-                        (
-                                player,
-                                this.getRunicItemCurrency(templateID),
-                                requiredItems.get(templateID)
-                        );
-            }
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
-            player.updateInventory();
-            player.sendMessage(ChatColor.GREEN + "You purchased " + itemDisplayName + ChatColor.GREEN + "!");
         }
         return true;
     }
@@ -130,11 +118,30 @@ public class RunicItemShopManager implements Listener, ShopAPI {
         RunicShopItem runicShopItem = inShop.get(player.getUniqueId()).getContents().get(event.getSlot() - 9);
         String displayName = runicShopItem.getShopItem().getItemMeta() != null ?
                 runicShopItem.getShopItem().getItemMeta().getDisplayName() : "Item";
-        boolean result = completeTransaction(player, runicShopItem.getRequiredItems(),
+        boolean requirementsMet = checkItemRequirement(player, runicShopItem.getRequiredItems(),
                 displayName, runicShopItem.removePayment());
-        if (result) {
-            runicShopItem.runBuy(player);
+        List<ShopCondition> extraConditions = runicShopItem.getExtraConditions();
+        for (ShopCondition condition : extraConditions) {
+            if (!condition.test(player)) {
+                requirementsMet = false;
+                break;
+            }
         }
+        if (!requirementsMet) return;
+        if (runicShopItem.removePayment()) {
+            for (String templateID : runicShopItem.getRequiredItems().keySet()) {
+                ItemRemover.takeItem
+                        (
+                                player,
+                                this.getRunicItemCurrency(templateID),
+                                runicShopItem.getRequiredItems().get(templateID)
+                        );
+            }
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1.0f);
+            player.updateInventory();
+            player.sendMessage(ChatColor.GREEN + "You purchased " + displayName + ChatColor.GREEN + "!");
+        }
+        runicShopItem.runBuy(player);
     }
 
     @EventHandler
