@@ -120,9 +120,6 @@ public class LootChestManager {
             if (!world.isChunkLoaded(lootChest.getLocation().getChunk())) continue;
             Location location = lootChest.getLocation();
             if (location.getBlock().getType() != Material.CHEST) continue;
-            if (lootChest.getLocation().getZ() == 643) {
-                Bukkit.broadcastMessage(lootChest.getLocation().getWorld() + " is world");
-            }
             for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {
                 Player online = Bukkit.getPlayer(loaded);
                 if (online == null) continue; // Player offline
