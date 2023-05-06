@@ -13,84 +13,30 @@ public enum ItemType {
             return null;
         }
         if (itemStack.getType() == Material.SHEARS) {
-            switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
-                case 237:
-                case 234:
-                    return OFFHAND;
-                case 25:
-                    return PLATE; // (iron)
-                case 20:
-                    return GILDED; // (gold)
-                case 15:
-                    return MAIL; // (chain mail)
-                case 10:
-                    return LEATHER; // (leather)
-                case 5:
-                    return CLOTH; // (diamond)
-                default:
-                    return CLOTH;
-            }
+            return switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
+                case 236, 237 -> OFFHAND;
+                default -> CLOTH;
+            };
         } else {
-            switch (itemStack.getType()) {
-                case IRON_HELMET:
-                case IRON_CHESTPLATE:
-                case IRON_LEGGINGS:
-                case IRON_BOOTS:
-                    return PLATE;
-                case GOLDEN_HELMET:
-                case GOLDEN_CHESTPLATE:
-                case GOLDEN_LEGGINGS:
-                case GOLDEN_BOOTS:
-                    return GILDED;
-                case CHAINMAIL_HELMET:
-                case CHAINMAIL_CHESTPLATE:
-                case CHAINMAIL_LEGGINGS:
-                case CHAINMAIL_BOOTS:
-                    return MAIL;
-                case LEATHER_HELMET:
-                case LEATHER_CHESTPLATE:
-                case LEATHER_LEGGINGS:
-                case LEATHER_BOOTS:
-                    return LEATHER;
-                case DIAMOND_HELMET:
-                case DIAMOND_CHESTPLATE:
-                case DIAMOND_LEGGINGS:
-                case DIAMOND_BOOTS:
-                    return CLOTH;
-                case REDSTONE:
-                case LAPIS_LAZULI:
-                case QUARTZ:
-                case EMERALD:
-                case DIAMOND:
-                    return GEMSTONE;
-                case IRON_SWORD:
-                    return MAINHAND;
-                case BOOK:
-                case FEATHER:
-                case FIRE_CHARGE:
-                case RABBIT_FOOT:
-                case SHIELD:
-                case STONE_SHOVEL:
-                case STONE_HOE:
-                case STONE_SWORD:
-                case STONE_AXE:
-                    return OFFHAND;
-                case FLINT:
-                case PURPLE_DYE:
-                    return CONSUMABLE;
-                case BOW:
-                    return ARCHER;
-                case WOODEN_SHOVEL:
-                    return CLERIC;
-                case WOODEN_HOE:
-                    return MAGE;
-                case WOODEN_SWORD:
-                    return ROGUE;
-                case WOODEN_AXE:
-                    return WARRIOR;
-                default:
-                    return AIR;
-            }
+            return switch (itemStack.getType()) {
+                case IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS -> PLATE;
+                case GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS -> GILDED;
+                case CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS ->
+                        MAIL;
+                case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS -> LEATHER;
+                case DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS -> CLOTH;
+                case REDSTONE, LAPIS_LAZULI, QUARTZ, EMERALD, DIAMOND -> GEMSTONE;
+                case IRON_SWORD -> MAINHAND;
+                case BOOK, FEATHER, FIRE_CHARGE, RABBIT_FOOT, SHIELD, STONE_SHOVEL, STONE_HOE, STONE_SWORD, STONE_AXE, TRIDENT ->
+                        OFFHAND;
+                case FLINT, PURPLE_DYE -> CONSUMABLE;
+                case BOW -> ARCHER;
+                case WOODEN_SHOVEL -> CLERIC;
+                case WOODEN_HOE -> MAGE;
+                case WOODEN_SWORD -> ROGUE;
+                case WOODEN_AXE -> WARRIOR;
+                default -> AIR;
+            };
         }
     }
 }

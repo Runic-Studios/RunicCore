@@ -47,7 +47,6 @@ public class SettingsManager implements Listener, SessionDataManager {
         CorePlayerData corePlayerData = RunicCore.getDataAPI().getCorePlayerData(uuid);
         SettingsData settingsData = (SettingsData) checkRedisForSessionData(uuid, jedis);
         if (settingsData != null) {
-            Bukkit.broadcastMessage("SETTINGS DATA FOUND REDIS");
             corePlayerData.setSettingsData(settingsData);
             settingsDataMap.put(uuid, settingsData);
             return settingsData;
@@ -58,13 +57,11 @@ public class SettingsManager implements Listener, SessionDataManager {
         query.fields().include("settingsData");
         SettingsData settingsDataMongo = RunicCore.getDataAPI().getMongoTemplate().findOne(query, SettingsData.class);
         if (settingsDataMongo != null) {
-            Bukkit.broadcastMessage("SETTINGS DATA FOUND MONGO");
             corePlayerData.setSettingsData(settingsDataMongo);
             settingsDataMongo.writeToJedis(uuid, jedis);
             settingsDataMap.put(uuid, settingsDataMongo);
             return settingsDataMongo;
         }
-        Bukkit.broadcastMessage("CREATING NEW SETTINGS DATA");
         // Step 3: Create new and add to in-memory object
         SettingsData newData = new SettingsData();
         corePlayerData.setSettingsData(newData);

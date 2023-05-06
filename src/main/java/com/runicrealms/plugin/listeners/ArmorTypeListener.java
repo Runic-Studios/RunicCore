@@ -19,30 +19,19 @@ import org.bukkit.inventory.ItemStack;
 public class ArmorTypeListener implements Listener {
 
     private String armorMessage(String className) {
-        String s = "";
-        switch (className) {
-            case "Archer":
-                s = (ChatColor.RED + "Archers can only equip mail armor.");
-                break;
-            case "Cleric":
-                s = (ChatColor.RED + "Clerics can only equip gilded armor.");
-                break;
-            case "Mage":
-                s = (ChatColor.RED + "Mages can only equip cloth armor.");
-                break;
-            case "Rogue":
-                s = (ChatColor.RED + "Rogues can only equip leather armor.");
-                break;
-            case "Warrior":
-                s = (ChatColor.RED + "Warriors can only equip plate armor.");
-                break;
-        }
-        return s;
+        return switch (className) {
+            case "Archer" -> (ChatColor.RED + "Archers can only equip mail armor.");
+            case "Cleric" -> (ChatColor.RED + "Clerics can only equip gilded armor.");
+            case "Mage" -> (ChatColor.RED + "Mages can only equip cloth armor.");
+            case "Rogue" -> (ChatColor.RED + "Rogues can only equip leather armor.");
+            case "Warrior" -> (ChatColor.RED + "Warriors can only equip plate armor.");
+            default -> "";
+        };
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onArmorEquip(ArmorEquipEvent event) {
-
+        if (event.isCancelled()) return;
         if (event.getType() == null) return;
         if (event.getNewArmorPiece() == null) return;
         if (event.getNewArmorPiece().getType().equals(Material.AIR)) return;
@@ -50,58 +39,45 @@ public class ArmorTypeListener implements Listener {
         ItemStack equippedItem = event.getNewArmorPiece();
         Player player = event.getPlayer();
         String className = RunicCore.getCharacterAPI().getPlayerClass(player);
-
         ItemType itemType = ItemType.matchType(equippedItem);
-
         switch (itemType) {
-            case GEMSTONE:
-            case MAINHAND:
-            case OFFHAND:
-            case CONSUMABLE:
-            case ARCHER:
-            case CLERIC:
-            case MAGE:
-            case ROGUE:
-            case WARRIOR:
-            case AIR:
-                break;
             case PLATE:
-                if (!className.equals("Warrior")) {
+                if (!className.equalsIgnoreCase("Warrior")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
                 break;
             case GILDED:
-                if (!className.equals("Cleric")) {
+                if (!className.equalsIgnoreCase("Cleric")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
                 break;
             case MAIL:
-                if (!className.equals("Archer")) {
+                if (!className.equalsIgnoreCase("Archer")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
                 break;
             case LEATHER:
-                if (!className.equals("Rogue")) {
+                if (!className.equalsIgnoreCase("Rogue")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
                 break;
             case CLOTH:
-                if (!className.equals("Mage")) {
+                if (!className.equalsIgnoreCase("Mage")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + itemType);
+                break;
         }
     }
 }

@@ -20,45 +20,16 @@ public enum ArmorType {
      */
     public static ArmorType matchType(final ItemStack itemStack) {
         if (itemStack == null) return null;
-        switch (itemStack.getType()) {
-            case CHAINMAIL_HELMET:
-            case GOLDEN_HELMET:
-            case DIAMOND_HELMET:
-            case LEATHER_HELMET:
-            case IRON_HELMET:
-                return HELMET;
-            case CHAINMAIL_CHESTPLATE:
-            case GOLDEN_CHESTPLATE:
-            case DIAMOND_CHESTPLATE:
-            case LEATHER_CHESTPLATE:
-            case IRON_CHESTPLATE:
-                return CHESTPLATE;
-            case CHAINMAIL_LEGGINGS:
-            case GOLDEN_LEGGINGS:
-            case DIAMOND_LEGGINGS:
-            case LEATHER_LEGGINGS:
-            case IRON_LEGGINGS:
-                return LEGGINGS;
-            case CHAINMAIL_BOOTS:
-            case GOLDEN_BOOTS:
-            case DIAMOND_BOOTS:
-            case LEATHER_BOOTS:
-            case IRON_BOOTS:
-                return BOOTS;
-            case BOOK:
-            case FEATHER:
-            case FIRE_CHARGE:
-            case RABBIT_FOOT:
-            case SHIELD:
-            case STONE_SHOVEL:
-            case STONE_HOE:
-            case STONE_SWORD:
-            case STONE_AXE:
-            case SHEARS:
-                return OFFHAND;
-            default:
-                return null;
-        }
+        return switch (itemStack.getType()) {
+            case CHAINMAIL_HELMET, GOLDEN_HELMET, DIAMOND_HELMET, LEATHER_HELMET, IRON_HELMET ->
+                    HELMET;
+            case CHAINMAIL_CHESTPLATE, GOLDEN_CHESTPLATE, DIAMOND_CHESTPLATE, LEATHER_CHESTPLATE, IRON_CHESTPLATE ->
+                    CHESTPLATE;
+            case CHAINMAIL_LEGGINGS, GOLDEN_LEGGINGS, DIAMOND_LEGGINGS, LEATHER_LEGGINGS, IRON_LEGGINGS ->
+                    LEGGINGS;
+            case CHAINMAIL_BOOTS, GOLDEN_BOOTS, DIAMOND_BOOTS, LEATHER_BOOTS, IRON_BOOTS -> BOOTS;
+            default -> null;
+        };
     }
 
     public int getSlot() {
