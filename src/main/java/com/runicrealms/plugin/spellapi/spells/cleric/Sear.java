@@ -17,17 +17,18 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Sear extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
     private static final int MAX_DIST = 10;
     private final double BEAM_WIDTH = 1.5;
-    private final Set<UUID> atoningEntities = new HashSet<>();
+    private final Map<UUID, BukkitTask> atoningEntitiesMap = new ConcurrentHashMap<>();
     private double damage;
     private double damagePerLevel;
     private double duration;
@@ -45,21 +46,20 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
     }
 
     private void applyAtonement(Player caster, LivingEntity victim) {
-        atoningEntities.add(victim.getUniqueId());
-        new BukkitRunnable() {
+        atoningEntitiesMap.put(victim.getUniqueId(), new BukkitRunnable() {
             double count = 0;
 
             @Override
             public void run() {
                 if (count >= duration) {
                     this.cancel();
-                    atoningEntities.remove(victim.getUniqueId());
+                    atoningEntitiesMap.remove(victim.getUniqueId());
                 } else {
                     count += 1;
                     new HorizontalCircleFrame((float) 0.5, false).playParticle(caster, Particle.FLAME, victim.getEyeLocation(), 30, Color.YELLOW);
                 }
             }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
+        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L));
     }
 
     @Override
@@ -130,8 +130,9 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
 
     @EventHandler
     public void onMagicDamage(MagicDamageEvent event) {
-        if (!atoningEntities.contains(event.getVictim().getUniqueId())) return;
-        atoningEntities.remove(event.getVictim().getUniqueId());
+        if (!atoningEntitiesMap.containsKey(event.getVictim().getUniqueId())) return;
+        atoningEntitiesMap.get(event.getVictim().getUniqueId()).cancel();
+        atoningEntitiesMap.remove(event.getVictim().getUniqueId());
         Player caster = event.getPlayer();
         LivingEntity victim = event.getVictim();
         for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
@@ -141,8 +142,9 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
 
     @EventHandler
     public void onPhysicalDamage(PhysicalDamageEvent event) {
-        if (!atoningEntities.contains(event.getVictim().getUniqueId())) return;
-        atoningEntities.remove(event.getVictim().getUniqueId());
+        if (!atoningEntitiesMap.containsKey(event.getVictim().getUniqueId())) return;
+        atoningEntitiesMap.get(event.getVictim().getUniqueId()).cancel();
+        atoningEntitiesMap.remove(event.getVictim().getUniqueId());
         Player caster = event.getPlayer();
         LivingEntity victim = event.getVictim();
         for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
