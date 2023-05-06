@@ -120,14 +120,19 @@ public class LootChestManager {
             if (!world.isChunkLoaded(lootChest.getLocation().getChunk())) continue;
             Location location = lootChest.getLocation();
             if (location.getBlock().getType() != Material.CHEST) continue;
+            if (lootChest.getLocation().getZ() == 643) {
+                Bukkit.broadcastMessage(lootChest.getLocation().getWorld() + " is world");
+            }
             for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {
                 Player online = Bukkit.getPlayer(loaded);
-                if (online == null) continue;
+                if (online == null) continue; // Player offline
                 if (playerChestCooldownMap.containsKey(loaded)) {
                     Map<LootChest, Long> chestsOnCooldown = playerChestCooldownMap.get(online.getUniqueId());
                     if (chestsOnCooldown.containsKey(lootChest))
                         continue; // only display particles to players who are not on cooldown
                 }
+                if (!online.getWorld().equals(world))
+                    continue; // They must be in the same world as this chest
                 online.spawnParticle(Particle.REDSTONE, location.clone().add(0.5, 0.5, 0.5),
                         10, 0.25f, 0.25f, 0.25f, 0, new Particle.DustOptions(lootChest.getLootChestRarity().getColor(), 3));
             }
