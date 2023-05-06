@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.ArmorType;
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.ArmorEquipEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,23 +17,85 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Call our custom ArmorEquipEvent to listen for player gear changes
  * Most events run last to wait for other plugins
  * Handles off-hands now as well
  */
+@SuppressWarnings("deprecation")
 public class ArmorEquipListener implements Listener {
+    private static final HashSet<Material> BLOCKED_MATERIALS = new HashSet<>() {{
+        add(Material.CAMPFIRE);
+        add(Material.FURNACE);
+        add(Material.CHEST);
+        add(Material.TRAPPED_CHEST);
+        add(Material.BEACON);
+        add(Material.DISPENSER);
+        add(Material.DROPPER);
+        add(Material.HOPPER);
+        add(Material.LEGACY_WORKBENCH);
+        add(Material.LEGACY_ENCHANTMENT_TABLE);
+        add(Material.ENDER_CHEST);
+        add(Material.ANVIL);
+        add(Material.LEGACY_BED_BLOCK);
+        add(Material.LEGACY_FENCE_GATE);
+        add(Material.SPRUCE_FENCE_GATE);
+        add(Material.BIRCH_FENCE_GATE);
+        add(Material.ACACIA_FENCE_GATE);
+        add(Material.JUNGLE_FENCE_GATE);
+        add(Material.DARK_OAK_FENCE_GATE);
+        add(Material.LEGACY_IRON_DOOR_BLOCK);
+        add(Material.LEGACY_WOODEN_DOOR);
+        add(Material.SPRUCE_DOOR);
+        add(Material.BIRCH_DOOR);
+        add(Material.JUNGLE_DOOR);
+        add(Material.ACACIA_DOOR);
+        add(Material.DARK_OAK_DOOR);
+        add(Material.LEGACY_WOOD_BUTTON);
+        add(Material.STONE_BUTTON);
+        add(Material.LEGACY_TRAP_DOOR);
+        add(Material.IRON_TRAPDOOR);
+        add(Material.LEGACY_DIODE_BLOCK_OFF);
+        add(Material.LEGACY_DIODE_BLOCK_ON);
+        add(Material.LEGACY_REDSTONE_COMPARATOR_OFF);
+        add(Material.LEGACY_REDSTONE_COMPARATOR_ON);
+        add(Material.LEGACY_FENCE);
+        add(Material.SPRUCE_FENCE);
+        add(Material.BIRCH_FENCE);
+        add(Material.JUNGLE_FENCE);
+        add(Material.DARK_OAK_FENCE);
+        add(Material.ACACIA_FENCE);
+        add(Material.LEGACY_NETHER_FENCE);
+        add(Material.BREWING_STAND);
+        add(Material.CAULDRON);
+        add(Material.LEGACY_SIGN_POST);
+        add(Material.LEGACY_WALL_SIGN);
+        add(Material.LEGACY_SIGN);
+        add(Material.LEVER);
+        add(Material.BLACK_SHULKER_BOX);
+        add(Material.BLUE_SHULKER_BOX);
+        add(Material.BROWN_SHULKER_BOX);
+        add(Material.CYAN_SHULKER_BOX);
+        add(Material.GRAY_SHULKER_BOX);
+        add(Material.GREEN_SHULKER_BOX);
+        add(Material.LIGHT_BLUE_SHULKER_BOX);
+        add(Material.LIME_SHULKER_BOX);
+        add(Material.MAGENTA_SHULKER_BOX);
+        add(Material.ORANGE_SHULKER_BOX);
+        add(Material.PINK_SHULKER_BOX);
+        add(Material.PURPLE_SHULKER_BOX);
+        add(Material.RED_SHULKER_BOX);
+        add(Material.LEGACY_SILVER_SHULKER_BOX);
+        add(Material.WHITE_SHULKER_BOX);
+        add(Material.YELLOW_SHULKER_BOX);
+    }};
 
     /**
-     * Fixes a bug that causes inventory to be out-of-sync (probably due to all our dupe or inventory checks)
+     * A utility method to support versions that use null or air ItemStacks.
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onArmorEquip(InventoryClickEvent e) {
-        if (!(e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT)) return;
-        if (!(e.getWhoClicked() instanceof Player)) return;
-        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> ((Player) e.getWhoClicked()).updateInventory());
+    public static boolean isAirOrNull(ItemStack item) {
+        return item == null || item.getType().equals(Material.AIR);
     }
 
     /**
@@ -52,7 +114,8 @@ public class ArmorEquipListener implements Listener {
         }
         if (e.getSlotType() != SlotType.ARMOR && e.getSlotType() != SlotType.QUICKBAR && e.getSlotType() != SlotType.CONTAINER)
             return;
-        if (e.getClickedInventory() != null && !e.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
+        if (e.getClickedInventory() != null && !e.getClickedInventory().getType().equals(InventoryType.PLAYER))
+            return;
         if (!e.getInventory().getType().equals(InventoryType.CRAFTING) && !e.getInventory().getType().equals(InventoryType.PLAYER))
             return;
         if (!(e.getWhoClicked() instanceof Player)) return;
@@ -127,48 +190,6 @@ public class ArmorEquipListener implements Listener {
     }
 
     /**
-     * Handles right-clicking an armor piece to equip it
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerInteractEvent(PlayerInteractEvent e) {
-        if (e.useItemInHand().equals(Result.DENY)) return;
-        if (e.getAction() == Action.PHYSICAL) return;
-        if (!(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        Player player = e.getPlayer();
-        if (!e.useInteractedBlock().equals(Result.DENY)) {
-            if (e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking()) {
-                // some blocks have actions when you right-click them which stop the client from equipping the armor in hand
-                Material mat = e.getClickedBlock().getType();
-                if (blockedMaterials.contains(mat)) return;
-            }
-        }
-        ArmorType newArmorType = ArmorType.matchType(e.getItem());
-        if (newArmorType == null) return;
-        if (newArmorType.equals(ArmorType.HELMET)
-                && isAirOrNull(e.getPlayer().getInventory().getHelmet())
-                || newArmorType.equals(ArmorType.CHESTPLATE)
-                && isAirOrNull(e.getPlayer().getInventory().getChestplate())
-                || newArmorType.equals(ArmorType.LEGGINGS)
-                && isAirOrNull(e.getPlayer().getInventory().getLeggings())
-                || newArmorType.equals(ArmorType.BOOTS)
-                && isAirOrNull(e.getPlayer().getInventory().getBoots())) {
-            ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent
-                    (
-                            e.getPlayer(),
-                            ArmorEquipEvent.EquipMethod.HOTBAR,
-                            ArmorType.matchType(e.getItem()),
-                            null,
-                            e.getItem()
-                    );
-            Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
-            if (armorEquipEvent.isCancelled()) {
-                e.setCancelled(true);
-                player.updateInventory();
-            }
-        }
-    }
-
-    /**
      * Handles clicking and dragging items to equip them
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -199,76 +220,57 @@ public class ArmorEquipListener implements Listener {
     }
 
     /**
-     * A utility method to support versions that use null or air ItemStacks.
+     * Fixes a bug that causes inventory to be out-of-sync (probably due to all our dupe or inventory checks)
      */
-    public static boolean isAirOrNull(ItemStack item) {
-        return item == null || item.getType().equals(Material.AIR);
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onArmorEquip(InventoryClickEvent e) {
+        if (!(e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT))
+            return;
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> ((Player) e.getWhoClicked()).updateInventory());
     }
 
-    private static final HashSet<Material> blockedMaterials = new HashSet<Material>() {{
-        add(Material.FURNACE);
-        add(Material.CHEST);
-        add(Material.TRAPPED_CHEST);
-        add(Material.BEACON);
-        add(Material.DISPENSER);
-        add(Material.DROPPER);
-        add(Material.HOPPER);
-        add(Material.LEGACY_WORKBENCH);
-        add(Material.LEGACY_ENCHANTMENT_TABLE);
-        add(Material.ENDER_CHEST);
-        add(Material.ANVIL);
-        add(Material.LEGACY_BED_BLOCK);
-        add(Material.LEGACY_FENCE_GATE);
-        add(Material.SPRUCE_FENCE_GATE);
-        add(Material.BIRCH_FENCE_GATE);
-        add(Material.ACACIA_FENCE_GATE);
-        add(Material.JUNGLE_FENCE_GATE);
-        add(Material.DARK_OAK_FENCE_GATE);
-        add(Material.LEGACY_IRON_DOOR_BLOCK);
-        add(Material.LEGACY_WOODEN_DOOR);
-        add(Material.SPRUCE_DOOR);
-        add(Material.BIRCH_DOOR);
-        add(Material.JUNGLE_DOOR);
-        add(Material.ACACIA_DOOR);
-        add(Material.DARK_OAK_DOOR);
-        add(Material.LEGACY_WOOD_BUTTON);
-        add(Material.STONE_BUTTON);
-        add(Material.LEGACY_TRAP_DOOR);
-        add(Material.IRON_TRAPDOOR);
-        add(Material.LEGACY_DIODE_BLOCK_OFF);
-        add(Material.LEGACY_DIODE_BLOCK_ON);
-        add(Material.LEGACY_REDSTONE_COMPARATOR_OFF);
-        add(Material.LEGACY_REDSTONE_COMPARATOR_ON);
-        add(Material.LEGACY_FENCE);
-        add(Material.SPRUCE_FENCE);
-        add(Material.BIRCH_FENCE);
-        add(Material.JUNGLE_FENCE);
-        add(Material.DARK_OAK_FENCE);
-        add(Material.ACACIA_FENCE);
-        add(Material.LEGACY_NETHER_FENCE);
-        add(Material.BREWING_STAND);
-        add(Material.CAULDRON);
-        add(Material.LEGACY_SIGN_POST);
-        add(Material.LEGACY_WALL_SIGN);
-        add(Material.LEGACY_SIGN);
-        add(Material.LEVER);
-        add(Material.BLACK_SHULKER_BOX);
-        add(Material.BLUE_SHULKER_BOX);
-        add(Material.BROWN_SHULKER_BOX);
-        add(Material.CYAN_SHULKER_BOX);
-        add(Material.GRAY_SHULKER_BOX);
-        add(Material.GREEN_SHULKER_BOX);
-        add(Material.LIGHT_BLUE_SHULKER_BOX);
-        add(Material.LIME_SHULKER_BOX);
-        add(Material.MAGENTA_SHULKER_BOX);
-        add(Material.ORANGE_SHULKER_BOX);
-        add(Material.PINK_SHULKER_BOX);
-        add(Material.PURPLE_SHULKER_BOX);
-        add(Material.RED_SHULKER_BOX);
-        add(Material.LEGACY_SILVER_SHULKER_BOX);
-        add(Material.WHITE_SHULKER_BOX);
-        add(Material.YELLOW_SHULKER_BOX);
-    }};
-
+    /**
+     * Handles right-clicking an armor piece to equip it
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerInteractEvent(PlayerInteractEvent event) {
+        if (event.useItemInHand().equals(Result.DENY)) return;
+        if (event.getAction() == Action.PHYSICAL) return;
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK))
+            return;
+        Player player = event.getPlayer();
+        if (!event.useInteractedBlock().equals(Result.DENY)) {
+            if (event.getClickedBlock() != null && event.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking()) {
+                // Some blocks have actions when you right-click them which stop the client from equipping the armor in hand
+                Material mat = event.getClickedBlock().getType();
+                if (BLOCKED_MATERIALS.contains(mat)) return;
+            }
+        }
+        ArmorType newArmorType = ArmorType.matchType(event.getItem());
+        if (newArmorType == null) return;
+        if (newArmorType.equals(ArmorType.HELMET)
+                && isAirOrNull(event.getPlayer().getInventory().getHelmet())
+                || newArmorType.equals(ArmorType.CHESTPLATE)
+                && isAirOrNull(event.getPlayer().getInventory().getChestplate())
+                || newArmorType.equals(ArmorType.LEGGINGS)
+                && isAirOrNull(event.getPlayer().getInventory().getLeggings())
+                || newArmorType.equals(ArmorType.BOOTS)
+                && isAirOrNull(event.getPlayer().getInventory().getBoots())) {
+            ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent
+                    (
+                            event.getPlayer(),
+                            ArmorEquipEvent.EquipMethod.HOTBAR,
+                            ArmorType.matchType(event.getItem()),
+                            null,
+                            event.getItem()
+                    );
+            Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
+            if (armorEquipEvent.isCancelled()) {
+                event.setCancelled(true);
+                player.updateInventory();
+            }
+        }
+    }
 
 }
