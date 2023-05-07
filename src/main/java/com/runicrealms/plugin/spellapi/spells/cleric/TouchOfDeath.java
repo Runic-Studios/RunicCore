@@ -64,9 +64,10 @@ public class TouchOfDeath extends Spell implements DurationSpell, MagicDamageSpe
     @EventHandler
     public void onMagicDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
+        if (event.getSpell() == null) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (event.getSpell() != null && event.getSpell() instanceof TouchOfDeath)
-            return; // Can't trigger itself
+        if (event.getSpell() instanceof TouchOfDeath) return; // Can't trigger itself
+        if (event.getSpell() instanceof Encore) return; // Can't be triggered by Encore
         if (!markedEnemiesMap.containsKey(event.getPlayer().getUniqueId())) {
             markedEnemiesMap.put(event.getPlayer().getUniqueId(), new HashMap<>());
         }
