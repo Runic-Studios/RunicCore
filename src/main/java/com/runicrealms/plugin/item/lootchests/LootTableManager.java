@@ -55,7 +55,7 @@ public class LootTableManager implements LootTableAPI {
         ChestItem randomArmorOrWeaponInLevelRange = new ChestItem();
 
         ChestItem coin = new ChestItem("coin", 2, 4);
-        ChestItem bread = new ChestItem("bread", 1, 3);
+        ChestItem bread = new ChestItem("bread", 1, 2);
 
         // materials
         ChestItem spruceWood = new ChestItem("spruce-wood", 3, 5);
@@ -77,7 +77,7 @@ public class LootTableManager implements LootTableAPI {
         // add entries to table
         LOOT_TABLE_TIER_I.addEntry(randomArmorOrWeaponInLevelRange, 70.0);
         LOOT_TABLE_TIER_I.addEntry(coin, 50.0);
-        LOOT_TABLE_TIER_I.addEntry(bread, 50.0);
+        LOOT_TABLE_TIER_I.addEntry(bread, 35.0);
 
         LOOT_TABLE_TIER_I.addEntry(spruceWood, 8.0);
         LOOT_TABLE_TIER_I.addEntry(oakWood, 8.0);
@@ -91,7 +91,7 @@ public class LootTableManager implements LootTableAPI {
         LOOT_TABLE_TIER_I.addEntry(comfrey, 8.0);
         LOOT_TABLE_TIER_I.addEntry(petunia, 8.0);
 
-        LOOT_TABLE_TIER_I.addEntry(healthPotion, 20.0);
+        LOOT_TABLE_TIER_I.addEntry(healthPotion, 25.0);
         LOOT_TABLE_TIER_I.addEntry(manaPotion, 20.0);
     }
 
@@ -106,7 +106,7 @@ public class LootTableManager implements LootTableAPI {
         ChestItem coin = new ChestItem("coin", 3, 6);
 
         // food
-        ChestItem bread = new ChestItem("bread", 2, 4);
+        ChestItem bread = new ChestItem("bread", 1, 2);
 
         // materials
         ChestItem spruceWood = new ChestItem("spruce-wood", 3, 5);
@@ -164,7 +164,7 @@ public class LootTableManager implements LootTableAPI {
         ChestItem coin = new ChestItem("coin", 4, 8);
 
         // food
-        ChestItem bread = new ChestItem("bread", 2, 4);
+        ChestItem bread = new ChestItem("bread", 1, 3);
 
         // crafting materials
         ChestItem spruceWood = new ChestItem("spruce-wood", 3, 5);
