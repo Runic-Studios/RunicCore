@@ -425,6 +425,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new CharacterGuiManager(), this);
         pm.registerEvents(new SwapHandsListener(), this);
         pm.registerEvents(new HerbFallDamageListener(), this);
+        pm.registerEvents(new HorseFeedListener(), this);
         pm.registerEvents(new NametagHandler(), this);
         pm.registerEvents(new RunicExpListener(), this);
         pm.registerEvents(new EnemyVerifyListener(), this);
