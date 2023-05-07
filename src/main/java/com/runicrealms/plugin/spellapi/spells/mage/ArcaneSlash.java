@@ -1,10 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Location;
@@ -17,9 +14,9 @@ import org.bukkit.util.RayTraceResult;
 
 import java.util.Collection;
 
-public class ArcaneSlash extends Spell implements MagicDamageSpell, ShieldingSpell {
-    public static final int MAX_DIST = 2;
+public class ArcaneSlash extends Spell implements DistanceSpell, MagicDamageSpell, ShieldingSpell {
     public static final double BEAM_WIDTH = 2;
+    public double distance;
     private double damage;
     private double shield;
     private double damagePerLevel;
@@ -44,12 +41,12 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell, ShieldingSpe
                 (
                         player.getLocation(),
                         player.getLocation().getDirection(),
-                        MAX_DIST,
+                        distance,
                         BEAM_WIDTH,
                         entity -> isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
-            Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            Location location = player.getTargetBlock(null, (int) distance).getLocation();
             location.setDirection(player.getLocation().getDirection());
             location.setY(player.getLocation().add(0, 1, 0).getY());
             SlashEffect.slashHorizontal(player, Particle.SPELL_WITCH);
@@ -64,6 +61,16 @@ public class ArcaneSlash extends Spell implements MagicDamageSpell, ShieldingSpe
                 shieldPlayer(player, player, shield, this);
             }
         }
+    }
+
+    @Override
+    public double getDistance() {
+        return distance;
+    }
+
+    @Override
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     @Override

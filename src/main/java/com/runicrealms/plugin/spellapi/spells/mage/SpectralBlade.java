@@ -6,6 +6,7 @@ import com.runicrealms.plugin.api.event.StaffAttackEvent;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.listeners.StaffListener;
+import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
@@ -45,16 +46,17 @@ public class SpectralBlade extends Spell {
         int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
+        double distance = ((DistanceSpell) RunicCore.getSpellAPI().getSpell("ArcaneSlash")).getDistance();
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
                         player.getLocation().getDirection(),
-                        ArcaneSlash.MAX_DIST,
+                        distance,
                         ArcaneSlash.BEAM_WIDTH,
                         entity -> isValidEnemy(player, entity)
                 );
         if (rayTraceResult == null) {
-            Location location = player.getTargetBlock(null, ArcaneSlash.MAX_DIST).getLocation();
+            Location location = player.getTargetBlock(null, (int) distance).getLocation();
             location.setDirection(player.getLocation().getDirection());
             location.setY(player.getLocation().add(0, 1, 0).getY());
             SlashEffect.slashHorizontal(player, Particle.SPELL_WITCH);
