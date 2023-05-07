@@ -17,8 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
@@ -28,23 +26,13 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
     private double healAmt;
     private double radius;
     private double healingPerLevel;
-    private double blindDuration;
 
     public Lightwell() {
         super("Lightwell", CharacterClass.CLERIC);
         this.setIsPassive(true);
         this.setDescription("Your Sacred Spring now leaves behind a pool of light for " + duration + "s, " +
                 "healing✦ all allies for (" + healAmt + " + &f" + healingPerLevel +
-                "x&7 lvl) per second while they stand inside it. Enemy players who stand inside " +
-                "the pool are blinded for " + blindDuration + "s!");
-    }
-
-    public double getBlindDuration() {
-        return blindDuration;
-    }
-
-    public void setBlindDuration(double blindDuration) {
-        this.blindDuration = blindDuration;
+                "x&7 lvl) per second while they stand inside it.");
     }
 
     @Override
@@ -59,8 +47,6 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
 
     @Override
     public void loadDurationData(Map<String, Object> spellData) {
-        Number blindDuration = (Number) spellData.getOrDefault("blind-duration", 0);
-        setBlindDuration(blindDuration.doubleValue());
         Number duration = (Number) spellData.getOrDefault("duration", 0);
         setDuration(duration.doubleValue());
     }
@@ -83,14 +69,6 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
     @Override
     public void setHealingPerLevel(double healingPerLevel) {
         this.healingPerLevel = healingPerLevel;
-    }
-
-    public double getHealAmt() {
-        return healAmt;
-    }
-
-    public void setHealAmt(double healAmt) {
-        this.healAmt = healAmt;
     }
 
     @Override
@@ -136,7 +114,6 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
                     } else if (isValidEnemy(player, entity)) {
                         entity.getWorld().spawnParticle(Particle.REDSTONE, ((LivingEntity) entity).getEyeLocation(), 5, 0.5f, 0.5f, 0.5f,
                                 new Particle.DustOptions(Color.BLACK, 1));
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) blindDuration * 20, 2));
                     }
                 }
 

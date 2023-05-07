@@ -15,18 +15,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class SnapFreeze extends Spell implements DurationSpell, MagicDamageSpell {
-    private static final int MAX_DIST = 4;
+public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell {
     private static final double PERIOD = 0.5;
     private static final int BEAM_RADIUS = 1;
     private final Map<UUID, Set<UUID>> damageMap = new HashMap<>();
+    private double distance;
     private double damage;
     private double damagePerLevel;
     private double duration;
 
     public SnapFreeze() {
         super("Snap Freeze", CharacterClass.MAGE);
-        this.setDescription("You cast a wave of frost in a forward line. " +
+        this.setDescription("You cast a wave of frost in a forward line, up to " + distance + " blocks away. " +
                 "Enemies hit by the spell take (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage and are rooted for " + duration + "s!");
     }
@@ -40,7 +40,7 @@ public class SnapFreeze extends Spell implements DurationSpell, MagicDamageSpell
 
             @Override
             public void run() {
-                if (count > MAX_DIST) {
+                if (count > distance) {
                     this.cancel();
                     damageMap.remove(player.getUniqueId());
                 } else {
@@ -63,6 +63,16 @@ public class SnapFreeze extends Spell implements DurationSpell, MagicDamageSpell
             addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);
             damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
         }
+    }
+
+    @Override
+    public double getDistance() {
+        return distance;
+    }
+
+    @Override
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     @Override
