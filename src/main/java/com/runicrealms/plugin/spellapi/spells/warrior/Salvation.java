@@ -125,15 +125,16 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
         Optional<Block> optional = blockMap.keySet().stream().filter(block1 -> block1.equals(event.getClickedBlock())).findFirst();
         if (optional.isEmpty()) return;
         Block block = optional.get();
-        player.getWorld().playSound(event.getClickedBlock().getLocation(), Sound.BLOCK_BELL_USE, 0.5f, 2.0f);
         Player caster = Bukkit.getPlayer(blockMap.get(block).getCasterUUID());
         if (caster == null) return;
+        if (!isValidAlly(caster, player)) return; // Only allies can click the bell
+        player.getWorld().playSound(event.getClickedBlock().getLocation(), Sound.BLOCK_BELL_USE, 0.5f, 2.0f);
         // Handle the bell ringing event
         healPlayer(caster, caster, heal, this);
         // Destroy bell
         blockMap.get(block).getBukkitTask().cancel();
         blockMap.get(block).execute();
-        // An ally clicked the bell
+        // An ally clicked the bell (NOT the caster)
         if (!player.getUniqueId().equals(blockMap.get(block).getCasterUUID())) {
             healPlayer(caster, player, heal, this);
             player.teleport(caster);
