@@ -14,10 +14,9 @@ import org.bukkit.event.EventHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TouchOfDeath extends Spell implements DurationSpell, MagicDamageSpell {
-    private final ConcurrentHashMap<UUID, Map<UUID, Long>> markedEnemiesMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<UUID, Long>> markedEnemiesMap = new HashMap<>();
     private double damage;
     private double duration;
     private double damagePerLevel;
@@ -96,7 +95,7 @@ public class TouchOfDeath extends Spell implements DurationSpell, MagicDamageSpe
      * Running task to remove marks from enemies
      */
     private void startMarkRemovalTask() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
             if (markedEnemiesMap.isEmpty()) return;
             for (UUID uuid : markedEnemiesMap.keySet()) {
                 for (UUID markedEnemyUuid : markedEnemiesMap.get(uuid).keySet()) {
