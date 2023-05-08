@@ -97,11 +97,7 @@ public class Conflagration extends Spell implements DurationSpell {
         if (event.getSpell() == null) return;
         Player caster = event.getPlayer();
         LivingEntity victim = event.getVictim();
-        conflagrationMap.computeIfAbsent
-                (
-                        victim.getUniqueId(),
-                        k -> conflagrationMap.put(victim.getUniqueId(), new ConflagrationContainer(caster, victim, (int) duration))
-                );
+        conflagrationMap.computeIfAbsent(victim.getUniqueId(), k -> new ConflagrationContainer(caster, victim, (int) duration));
         // Refresh uptime
         conflagrationMap.get(event.getVictim().getUniqueId()).setDurationRemaining((int) duration);
     }
