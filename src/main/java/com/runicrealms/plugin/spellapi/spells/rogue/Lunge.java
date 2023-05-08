@@ -34,23 +34,23 @@ public class Lunge extends Spell implements DurationSpell {
     }
 
     /**
-     * Performs the lunge effect
+     * Performs the lunge effect, and caps the Y component of the vector to prevent odd behavior
      *
      * @param player who cast the spell
      */
     public static void lunge(Player player, double duration, double launchMultiplier, double verticalPower) {
-        // spell variables, vectors
+        // Spell variables, vectors
         Location location = player.getLocation();
         Vector look = location.getDirection();
         Vector launchPath = new Vector(look.getX(), verticalPower, look.getZ()).normalize();
-
-        // particles, sounds
+        launchPath.multiply(launchMultiplier);
+        double cappedY = Math.min(launchPath.getY(), 0.95);
+        launchPath.setY(cappedY);
+        // Particles, sounds
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 1.2f);
         player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),
                 25, 0.5f, 0.5f, 0.5f, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 20));
-
-        player.setVelocity(launchPath.multiply(launchMultiplier));
-
+        player.setVelocity(launchPath); // .multiply(launchMultiplier)
         BukkitTask lungeDamageTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                 () -> LUNGE_TASKS.remove(player.getUniqueId()), (int) duration * 20L);
         LUNGE_TASKS.put(player.getUniqueId(), lungeDamageTask);

@@ -41,7 +41,7 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
     }
 
     private void blizzardDamage(Player player, Location location) {
-        new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.REDSTONE, location, Color.AQUA);
+        new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.REDSTONE, location, Color.WHITE);
         for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
             player.getWorld().playSound(entity.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25F, 1.0F);
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
