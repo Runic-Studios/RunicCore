@@ -11,6 +11,7 @@ import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +95,7 @@ public class BlessedBlade extends Spell implements HealingSpell, MagicDamageSpel
         this.radius = radius;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBasicAttack(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;

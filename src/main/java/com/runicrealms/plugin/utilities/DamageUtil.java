@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.KnockbackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -85,6 +86,7 @@ public class DamageUtil {
             }
         }
 
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);
         damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
         ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
