@@ -29,9 +29,9 @@ public class DeathListener implements Listener {
      *
      * @param player player whose items may drop
      */
-    private static void tryDropItems(Player player) {
+    private static void tryDropItems(Player player, World world) {
         // don't drop items in dungeon world
-        if (player.getWorld().getName().equalsIgnoreCase("dungeons")) return;
+        if (world.getName().equalsIgnoreCase("dungeons")) return;
         for (int i = 9; i < 36; i++) { // ignore hotbar
             ItemStack itemStack = player.getInventory().getItem(i);
             if (itemStack == null) continue;
@@ -41,7 +41,7 @@ public class DeathListener implements Listener {
             if (runicItem.getTags().contains(RunicItemTag.SOULBOUND)) continue;
             if (runicItem.getTags().contains(RunicItemTag.UNTRADEABLE)) continue;
             player.getInventory().remove(itemStack);
-            player.getWorld().dropItem(player.getLocation(), itemStack);
+            world.dropItem(player.getLocation(), itemStack);
         }
     }
 
@@ -51,29 +51,34 @@ public class DeathListener implements Listener {
         if (event.isCancelled()) return;
         Player victim = event.getVictim();
 
-        // broadcast the death message
+        // Broadcast the death message
         DamageListener.broadcastDeathMessage(victim);
 
-        // update the scoreboard
+        // Particles, sounds
+        World world = event.getLocation().getWorld();
+        if (world != null) {
+            world.playSound(event.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
+            world.playSound(event.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
+            world.spawnParticle(Particle.REDSTONE, event.getLocation(), 25, 0.5f, 0.5f, 0.5f,
+                    new Particle.DustOptions(Color.RED, 3));
+            // Teleport them to their hearthstone location, or the front of the dungeon
+            tryDropItems(victim, world);
+        }
+
+        // Ignore following events if player is offline (PvP logging)
+        if (!victim.isOnline()) return;
+
+        // Update the scoreboard
         if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
             Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
             Score score = o.getScore(victim);
             score.setScore((int) victim.getHealth());
         }
 
-        // reset health, food, mana
+        // Reset health, food, mana
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         victim.setFoodLevel(20);
         ManaListener.calculateMaxMana(victim);
-
-        // Particles, sounds
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
-        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
-        victim.getWorld().spawnParticle(Particle.REDSTONE, victim.getEyeLocation(), 25, 0.5f, 0.5f, 0.5f,
-                new Particle.DustOptions(Color.RED, 3));
-
-        // Teleport them to their hearthstone location, or the front of the dungeon
-        tryDropItems(victim);
 
         // Check for dungeon
         DungeonLocation dungeonLocation = RunicCore.getRegionAPI().getDungeonFromLocation(victim.getLocation());
@@ -97,4 +102,5 @@ public class DeathListener implements Listener {
         LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(victim);
         Bukkit.getPluginManager().callEvent(leaveCombatEvent);
     }
+
 }

@@ -57,16 +57,16 @@ public class RogueTreeUtil {
     public static List<Perk> nightcrawlerPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(108, 1, 0, 1, "Twin Fangs"));
-        perks.add(new PerkBaseStat(109, 1, 0, 5, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(109, 1, 0, 5, Stat.STRENGTH));
         perks.add(new PerkSpell(110, 1, 0, 1, "Predator"));
-        perks.add(new PerkBaseStat(111, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkBaseStat(112, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(111, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(112, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(113, 1, 0, 1, "Cocoon"));
-        perks.add(new PerkBaseStat(114, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkBaseStat(115, 1, 0, 3, Stat.DEXTERITY));
-        perks.add(new PerkBaseStat(117, 1, 0, 5, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(114, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(115, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkBaseStat(117, 1, 0, 5, Stat.DEXTERITY));
         perks.add(new PerkSpell(116, 1, 0, 1, "Unseen"));
-        perks.add(new PerkBaseStat(118, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(118, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(119, 1, 0, 1, "From The Shadows"));
         return perks;
     }

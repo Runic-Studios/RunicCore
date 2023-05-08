@@ -27,19 +27,18 @@ public class DamageUtil {
      * @param spell     include a reference to spell for spell scaling
      */
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
-
-        // prevent healing
+        // Prevent healing
         if (dmgAmt < 0) {
             dmgAmt = 0;
         }
 
-        // call our custom event
+        // Call our custom event
         MagicDamageEvent event = new MagicDamageEvent((int) dmgAmt, recipient, caster, spell);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         dmgAmt = event.getAmount();
 
-        // skip party members
+        // Skip party members
         if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()) != null) {
             if (recipient instanceof Player) {
                 if (RunicCore.getPartyAPI().getParty(caster.getUniqueId()).hasMember((Player) recipient)) {
@@ -48,7 +47,7 @@ public class DamageUtil {
             }
         }
 
-        // apply the damage
+        // Apply the damage
         damageEntityByEntity(dmgAmt, recipient, caster, false);
         ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.DARK_AQUA;
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤ʔ");
@@ -66,7 +65,6 @@ public class DamageUtil {
      */
     public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
                                             boolean isBasicAttack, boolean isRanged, Spell... spell) {
-
         // prevent healing
         if (dmgAmt < 0) {
             dmgAmt = 0;
@@ -94,7 +92,6 @@ public class DamageUtil {
 
     public static void damageEntityRanged(double dmgAmt, LivingEntity recipient, Player caster,
                                           boolean isBasicAttack, Arrow arrow, Spell... spell) {
-
         // prevent healing
         if (dmgAmt < 0)
             dmgAmt = 0;
@@ -231,7 +228,6 @@ public class DamageUtil {
      * @param victim to receive damage
      */
     public static void damagePlayer(double dmgAmt, Player victim) {
-
         int newHP = (int) (victim.getHealth() - dmgAmt);
 
         // call a custom damage event to communicate with other listeners/plugins
@@ -248,7 +244,7 @@ public class DamageUtil {
             victim.setNoDamageTicks(0);
             victim.damage(0.0000000000001);
         } else {
-            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim);
+            RunicDeathEvent runicDeathEvent = new RunicDeathEvent(victim, victim.getLocation());
             Bukkit.getPluginManager().callEvent(runicDeathEvent);
         }
         HologramUtil.createCombatHologram(null, victim.getEyeLocation(), ChatColor.RED + "-" + (int) dmgAmt + " ❤");

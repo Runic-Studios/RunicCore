@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -87,6 +89,13 @@ public class PlayerMenuListener implements Listener {
                                 &6&lCLICK
                                 &7To view your achievements!"""
                 );
+    }
+
+    private void clearPlayerCraftingSlots(InventoryView view) {
+        view.setItem(1, null);
+        view.setItem(2, null);
+        view.setItem(3, null);
+        view.setItem(4, null);
     }
 
     /**
@@ -223,6 +232,24 @@ public class PlayerMenuListener implements Listener {
         if (event.getInventorySlots().contains(1) || event.getInventorySlots().contains(2)
                 || event.getInventorySlots().contains(3) || event.getInventorySlots().contains(4)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        InventoryView view = player.getOpenInventory();
+        if (isPlayerCraftingInv(view)) {
+            clearPlayerCraftingSlots(view);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST) // first
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        InventoryView view = player.getOpenInventory();
+        if (isPlayerCraftingInv(view)) {
+            clearPlayerCraftingSlots(view);
         }
     }
 }

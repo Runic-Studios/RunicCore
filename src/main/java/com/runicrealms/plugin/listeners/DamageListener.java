@@ -20,8 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -94,71 +92,27 @@ public class DamageListener implements Listener {
     }
 
     private static String weaponMessage(String className) {
-        String s = "";
-        switch (className) {
-            case "Archer":
-                s = (ChatColor.RED + "Archers can only wield bows.");
-                break;
-            case "Cleric":
-                s = (ChatColor.RED + "Clerics can only wield maces.");
-                break;
-            case "Mage":
-                s = (ChatColor.RED + "Mages can only wield staves.");
-                break;
-            case "Rogue":
-                s = (ChatColor.RED + "Rogues can only wield swords.");
-                break;
-            case "Warrior":
-                s = (ChatColor.RED + "Warriors can only wield axes.");
-                break;
-        }
-        return s;
+        return switch (className) {
+            case "Archer" -> (ChatColor.RED + "Archers can only wield bows.");
+            case "Cleric" -> (ChatColor.RED + "Clerics can only wield maces.");
+            case "Mage" -> (ChatColor.RED + "Mages can only wield staves.");
+            case "Rogue" -> (ChatColor.RED + "Rogues can only wield swords.");
+            case "Warrior" -> (ChatColor.RED + "Warriors can only wield axes.");
+            default -> "";
+        };
     }
 
     public static void applySlainMechanics(Entity damager, Player victim) {
-
         // if the player was killed by an arrow, set damager to its shooter
-        if (damager instanceof Arrow) {
-            Arrow arrow = (Arrow) damager;
+        if (damager instanceof Arrow arrow) {
             if (arrow.getShooter() instanceof Player) {
                 damager = (Player) arrow.getShooter();
             }
         }
 
-        // call custom death event
-        RunicDeathEvent event = new RunicDeathEvent(victim, damager);
+        // Call custom death event
+        RunicDeathEvent event = new RunicDeathEvent(victim, victim.getLocation(), damager);
         Bukkit.getPluginManager().callEvent(event);
-
-        // update the scoreboard
-        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
-            Score score = o.getScore(victim);
-            score.setScore((int) victim.getHealth());
-        }
-
-        // broadcast the death message
-        broadcastSlainDeathMessage(damager, victim);
-    }
-
-    /**
-     * @param damager
-     * @param victim
-     */
-    private static void broadcastSlainDeathMessage(Entity damager, Player victim) {
-        String nameVic = victim.getName();
-        if (damager instanceof Player) {
-            String damagerName = damager.getName();
-            // if both players are outlaws, amend the death message to display their rating
-//            boolean damagerIsOutlaw = OutlawData.getOutlawDataMap().get(damager.getUniqueId());
-//            boolean victimIsOutlaw = OutlawData.getOutlawDataMap().get(victim.getUniqueId());
-            boolean damagerIsOutlaw = false;
-            boolean victimIsOutlaw = false;
-            if (damagerIsOutlaw && victimIsOutlaw) {
-                damagerName = ChatColor.WHITE + damagerName; // ChatColor.RED + "[" + (int) ratingP1 + "] " +
-                nameVic = ChatColor.WHITE + nameVic; // ChatColor.RED + "[" + (int) ratingP2 + "] " +
-                Bukkit.getServer().broadcastMessage(ChatColor.WHITE + nameVic + " was slain by " + damagerName);
-            }
-        }
     }
 
     /**
@@ -193,8 +147,7 @@ public class DamageListener implements Listener {
         }
 
         // only listen for damageable entities
-        if (!(entity instanceof LivingEntity)) return;
-        LivingEntity victim = (LivingEntity) entity;
+        if (!(entity instanceof LivingEntity victim)) return;
 
         // Fix for fireworks
         if (damager instanceof Firework) {
@@ -299,27 +252,21 @@ public class DamageListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onDamage(EntityDamageEvent e) {
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+        if (event.getDamage() <= 0) return;
 
-        if (e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
-        if (e.getDamage() <= 0) return;
+        // This event likes to get confused with the event above, so let's just fix that.
+        if (event instanceof EntityDamageByEntityEvent) return;
 
-        // this event likes to get confused with the event above, so let's just fix that.
-        if (e instanceof EntityDamageByEntityEvent) return;
+        // Only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
+        if (!(event.getEntity() instanceof Player victim)) return;
+        if (!(victim.getHealth() - event.getDamage() <= 0)) return;
 
-        // only listen if a player is the entity receiving damage AND that player "dies" (hp < 0)
-        if (!(e.getEntity() instanceof Player)) return;
-        Player pl = (Player) e.getEntity();
-        if (!(pl.getHealth() - e.getDamage() <= 0)) return;
+        // Cancel the event
+        event.setCancelled(true);
 
-        // initialize event variables
-        Player victim = (Player) e.getEntity();
-
-        // cancel the event
-        e.setCancelled(true);
-
-        // call custom death event
-        RunicDeathEvent event = new RunicDeathEvent(victim);
-        Bukkit.getPluginManager().callEvent(event);
+        // Call custom death event
+        Bukkit.getPluginManager().callEvent(new RunicDeathEvent(victim, victim.getLocation()));
     }
 }
