@@ -41,7 +41,7 @@ public class Conflagration extends Spell implements DurationSpell {
         int damage = (int) ((percent * victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) / period);
         if (isCapped && damage > damageCapPerTick)
             damage = damageCapPerTick;
-        DamageUtil.damageEntitySpell(damage, victim, player);
+        DamageUtil.damageEntitySpell(damage, victim, player, false);
     }
 
     public int getDamageCapPerTick() {

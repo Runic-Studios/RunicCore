@@ -37,7 +37,7 @@ public class MageTreeUtil {
 
     public static List<Perk> pyromancerPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(84, 1, 0, 1, "Firestorm"));
+        perks.add(new PerkSpell(84, 1, 0, 1, "Dragon's Breath"));
         perks.add(new PerkBaseStat(85, 1, 0, 5, Stat.INTELLIGENCE));
         perks.add(new PerkSpell(86, 1, 0, 1, "Scald"));
         perks.add(new PerkBaseStat(87, 1, 0, 3, Stat.WISDOM));

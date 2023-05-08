@@ -12,8 +12,7 @@ public class GenericDamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onGenericDamage(GenericDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!(event.getVictim() instanceof Player)) return;
-        Player player = (Player) event.getVictim();
+        if (!(event.getVictim() instanceof Player player)) return;
         DamageUtil.damagePlayer(event.getAmount(), player);
         player.setNoDamageTicks(10);
     }

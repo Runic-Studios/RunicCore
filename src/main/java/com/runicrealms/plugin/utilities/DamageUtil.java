@@ -19,6 +19,10 @@ import java.util.Collections;
 
 public class DamageUtil {
 
+    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
+        damageEntitySpell(dmgAmt, recipient, caster, true, spell);
+    }
+
     /**
      * Our universal method to apply magic damage to a player using custom calculation.
      *
@@ -27,7 +31,7 @@ public class DamageUtil {
      * @param caster    player who cast the healing spell
      * @param spell     include a reference to spell for spell scaling
      */
-    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
+    public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, boolean knockback, Spell... spell) {
         // Prevent healing
         if (dmgAmt < 0) {
             dmgAmt = 0;
@@ -49,7 +53,7 @@ public class DamageUtil {
         }
 
         // Apply the damage
-        damageEntityByEntity(dmgAmt, recipient, caster, false);
+        damageEntityByEntity(dmgAmt, recipient, caster, false, knockback);
         ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.DARK_AQUA;
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤ʔ");
     }
@@ -174,6 +178,10 @@ public class DamageUtil {
     }
 
     private static void damageEntityByEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged) {
+        damageEntityByEntity(dmgAmt, recipient, caster, isRanged, true);
+    }
+
+    private static void damageEntityByEntity(double dmgAmt, LivingEntity recipient, Player caster, boolean isRanged, boolean knockback) {
 
         // ignore NPCs
         if (recipient.hasMetadata("NPC")) return;
@@ -198,13 +206,13 @@ public class DamageUtil {
         Bukkit.getPluginManager().callEvent(e);
         recipient.setLastDamageCause(e);
 
-        if (recipient instanceof Player) {
+        if (recipient instanceof Player && knockback) {
             if (isRanged) {
                 KnockbackUtil.knockbackRangedPlayer(caster, (Player) recipient);
             } else {
                 KnockbackUtil.knockbackMeleePlayer(caster, (Player) recipient);
             }
-        } else {
+        } else if (knockback) {
             KnockbackUtil.knockBackMob(caster, recipient, isRanged);
         }
 
