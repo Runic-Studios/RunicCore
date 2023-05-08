@@ -104,8 +104,7 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
                     Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
                             () -> {
                                 new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CLOUD, finalTargetBlockLocation, 20);
-                                Consecrate.createStarParticles(finalTargetBlockLocation, radius, Particle.BLOCK_CRACK, 5);
-//                                new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.BLOCK_CRACK, finalTargetBlockLocation, 20);
+                                Consecrate.createStarParticles(finalTargetBlockLocation, radius, Particle.BLOCK_CRACK, 6);
                             });
                     player.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
                     for (Entity entity : player.getWorld().getNearbyEntities(finalTargetBlockLocation, radius, radius, radius)) {

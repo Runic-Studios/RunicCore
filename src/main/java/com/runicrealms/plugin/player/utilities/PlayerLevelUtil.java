@@ -16,7 +16,7 @@ public class PlayerLevelUtil {
     Class-specific level coefficients
      */
     private static final int ARCHER_HP_LV = 6;
-    private static final int CLERIC_HP_LV = 10;
+    private static final int CLERIC_HP_LV = 6;
     private static final int MAGE_HP_LV = 4;
     private static final int ROGUE_HP_LV = 8;
     private static final int WARRIOR_HP_LV = 12;

@@ -64,8 +64,12 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
             Location point = new Location(center.getWorld(), x, center.getY(), z);
 
             // Spawn a particle at the current point
-            if (particle == Particle.BLOCK_CRACK) {
-                center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, Bukkit.createBlockData(Material.BLUE_ICE));
+            if (particle == Particle.FALLING_DUST) {
+                center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, 0, Bukkit.createBlockData(Material.PACKED_ICE));
+            } else if (particle == Particle.REDSTONE) {
+                center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, 0, new Particle.DustOptions(Color.AQUA, 1));
+            } else if (particle == Particle.BLOCK_CRACK) {
+                center.getWorld().spawnParticle(particle, point, 3, 0.05f, 0.025f, 0.05f, 0, Bukkit.createBlockData(Material.LIGHT_BLUE_TERRACOTTA));
             } else {
                 center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, 0);
             }
