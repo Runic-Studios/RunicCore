@@ -28,7 +28,7 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         super("Snap Freeze", CharacterClass.MAGE);
         this.setDescription("You cast a wave of frost in a forward line, up to " + distance + " blocks away. " +
                 "Enemies hit by the spell take (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage and are rooted for " + duration + "s!");
+                + "x&7 lvl) magicʔ damage and are stunned for " + duration + "s!");
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SnapFreeze extends Spell implements DistanceSpell, DurationSpell, M
         for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
             if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
-            addStatusEffect((LivingEntity) entity, RunicStatusEffect.ROOT, duration, true);
+            addStatusEffect((LivingEntity) entity, RunicStatusEffect.STUN, duration, true);
             damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
         }
     }

@@ -7,10 +7,8 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Circle;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -63,14 +61,6 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell {
         setPeriod(period.doubleValue());
     }
 
-    public double getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(double period) {
-        this.period = period;
-    }
-
     @Override
     public double getRadius() {
         return radius;
@@ -103,6 +93,9 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell {
                     this.cancel();
 
                 Circle.createParticleCircle(player, location, (int) radius, Particle.NOTE, Color.LIME);
+                Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                        () -> new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.NOTE, location, 20, Color.LIME));
+
                 player.getWorld().playSound(location, Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 0.5f);
 
                 for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
@@ -110,5 +103,9 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell {
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, (long) period * 20L);
+    }
+
+    public void setPeriod(double period) {
+        this.period = period;
     }
 }

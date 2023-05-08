@@ -5,9 +5,7 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -35,32 +33,10 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
                 "and causing enemies to receive slowness II for " + slowDuration + "s!");
     }
 
-    private void consecrate(Player caster, @NotNull Location castLocation) {
-        assert castLocation.getWorld() != null;
-        Spell spell = this;
-        new BukkitRunnable() {
-            double count = 0;
-
-            @Override
-            public void run() {
-                if (count >= duration) {
-                    this.cancel();
-                } else {
-                    count += 1;
-                    new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.SPELL_INSTANT, castLocation, 3, Color.YELLOW);
-                    createStarParticles(castLocation, radius, Particle.VILLAGER_ANGRY);
-                    for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidEnemy(caster, target))) {
-                        DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, spell);
-                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, slowDuration, false);
-                    }
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
-    }
-
-    public void createStarParticles(Location center, double radius, Particle particle) {
-        // The number of points on the star (5 for a standard star)
-        int points = 5;
+    /**
+     * @param points the number of points on the star (5 for a standard star)
+     */
+    public static void createStarParticles(Location center, double radius, Particle particle, int points) {
 
         // The angle between each point (in radians)
         double angleBetweenPoints = Math.PI * 2 / points;
@@ -88,10 +64,36 @@ public class Consecrate extends Spell implements DurationSpell, MagicDamageSpell
             Location point = new Location(center.getWorld(), x, center.getY(), z);
 
             // Spawn a particle at the current point
-            center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, 0);
+            if (particle == Particle.BLOCK_CRACK) {
+                center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, Bukkit.createBlockData(Material.BLUE_ICE));
+            } else {
+                center.getWorld().spawnParticle(particle, point, 1, 0, 0, 0, 0);
+            }
         }
     }
 
+    private void consecrate(Player caster, @NotNull Location castLocation) {
+        assert castLocation.getWorld() != null;
+        Spell spell = this;
+        new BukkitRunnable() {
+            double count = 0;
+
+            @Override
+            public void run() {
+                if (count >= duration) {
+                    this.cancel();
+                } else {
+                    count += 1;
+                    new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.SPELL_INSTANT, castLocation, 3, Color.YELLOW);
+                    createStarParticles(castLocation, radius, Particle.VILLAGER_ANGRY, 5);
+                    for (Entity entity : castLocation.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidEnemy(caster, target))) {
+                        DamageUtil.damageEntitySpell(magicDamage, (LivingEntity) entity, caster, spell);
+                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, slowDuration, false);
+                    }
+                }
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
+    }
 
     @Override
     public double getDuration() {

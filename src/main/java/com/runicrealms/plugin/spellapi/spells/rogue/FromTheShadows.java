@@ -23,7 +23,7 @@ public class FromTheShadows extends Spell {
         this.setDescription("The next spell you cast after you cast &aUnseen &7is empowered!\n\n" +
                 "&aSprint &7- You lunge forward on cast!\n" +
                 "&aTwin Fangs &7- Instantly refresh this spell’s cooldown!\n" +
-                "&aCocoon &7- Your web now roots your target!");
+                "&aCocoon &7- Your web now stuns your target!");
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -38,7 +38,7 @@ public class FromTheShadows extends Spell {
         Bukkit.broadcastMessage("this cocoon was empowered");
         empoweredCocoons.remove(event.getPlayer().getUniqueId());
         Spell spell = RunicCore.getSpellAPI().getSpell("Cocoon");
-        addStatusEffect(event.getVictim(), RunicStatusEffect.ROOT, ((DurationSpell) spell).getDuration(), true);
+        addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, ((DurationSpell) spell).getDuration(), true);
         buffedPlayers.remove(event.getPlayer().getUniqueId());
     }
 

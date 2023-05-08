@@ -10,7 +10,7 @@ public class KnockbackUtil {
     private static final double MELEE_STRENGTH = 0.65;
     private static final double MAX_VELOCITY = 0.65D;
     private static final double RANGED_STRENGTH = 0.5;
-//    private static final double VERTICAL_COMPONENT = 0.15;
+    private static final double VERTICAL_COMPONENT = 0.15;
 
     /**
      * Controls strength of on-hit knockback for melee attacks against other players.
@@ -26,11 +26,20 @@ public class KnockbackUtil {
         // Calculate knockback direction
         Vector attackerPos = damager.getLocation().toVector();
         Vector enemyPos = victim.getLocation().toVector();
-        Vector knockbackDirection = enemyPos.subtract(attackerPos).normalize();
+        Vector knockbackDirection = enemyPos.subtract(attackerPos);
+
+        // Check if the distance between the entities is above a certain threshold
+        double minDistance = 0.1; // Define a minimum distance threshold
+        if (knockbackDirection.lengthSquared() < minDistance * minDistance) {
+            return; // Do not apply knockback if the distance is too small
+        }
+
+        // Normalize the knockback direction
+        knockbackDirection.normalize();
 
         // Apply knockback to enemy
         Vector knockbackVector = knockbackDirection.multiply(multiplier);
-        knockbackVector.setY(0.15);
+        knockbackVector.setY(VERTICAL_COMPONENT);
         Vector newVelocity = victim.getVelocity().add(knockbackVector);
 
         // Limit the victim's velocity magnitude
@@ -47,6 +56,7 @@ public class KnockbackUtil {
 
         victim.setVelocity(newVelocity);
     }
+
 
     /**
      * Controls strength of on-hit knockback for ranged attacks against other players.
