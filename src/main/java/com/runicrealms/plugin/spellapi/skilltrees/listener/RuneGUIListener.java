@@ -52,7 +52,7 @@ public class RuneGUIListener implements Listener {
                 player.sendMessage(ChatColor.RED + "You can't use that in combat!");
             else
                 player.openInventory(new SpellEditorGUI(player).getInventory());
-        else
+        else if (material != RuneGUI.STATUS_EFFECT_TOOLTIP.getType())
             player.closeInventory();
     }
 }
