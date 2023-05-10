@@ -142,12 +142,10 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
 
     @EventHandler
     public void onMobDeath(MythicMobDeathEvent event) {
-        Bukkit.broadcastMessage("1");
         if (event.getEntity().getCustomName() != null) {
             Bukkit.broadcastMessage(event.getEntity().getCustomName());
         }
         if (!atoningEntitiesMap.containsKey(event.getEntity().getUniqueId())) return;
-        Bukkit.broadcastMessage("2");
         atoningEntitiesMap.get(event.getEntity().getUniqueId()).cancel();
         atoningEntitiesMap.remove(event.getEntity().getUniqueId());
     }
