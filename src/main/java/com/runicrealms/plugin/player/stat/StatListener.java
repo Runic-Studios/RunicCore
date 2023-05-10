@@ -52,7 +52,10 @@ public class StatListener implements Listener {
             double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCore.getStatAPI().getPlayerVitality(uuidVictim);
             if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
                 damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
-            event.setAmount((int) (event.getAmount() - Math.ceil(event.getAmount() * damageMitigationPercent)));
+            int damage = (int) (event.getAmount() - Math.ceil(event.getAmount() * damageMitigationPercent));
+            if (damage < 1)
+                damage = 1; // Damage can't drop below 0
+            event.setAmount(damage);
         }
     }
 
@@ -92,7 +95,10 @@ public class StatListener implements Listener {
             double damageMitigationPercent = Stat.getDamageReductionMult() * RunicCore.getStatAPI().getPlayerVitality(uuidVictim);
             if (damageMitigationPercent > (Stat.getDamageReductionCap() / 100))
                 damageMitigationPercent = (Stat.getDamageReductionCap() / 100); // cap it
-            event.setAmount((int) (event.getAmount() - Math.ceil(event.getAmount() * damageMitigationPercent)));
+            int damage = (int) (event.getAmount() - Math.ceil(event.getAmount() * damageMitigationPercent));
+            if (damage < 1)
+                damage = 1; // Damage can't drop below 0
+            event.setAmount(damage);
         }
     }
 

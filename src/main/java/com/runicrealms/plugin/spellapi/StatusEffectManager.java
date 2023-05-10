@@ -77,6 +77,10 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onMobDamage(MobDamageEvent event) {
+        // Roots break on damage
+        if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
+            removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
+        }
         UUID mobUuid = event.getDamager().getUniqueId();
         if (hasStatusEffect(mobUuid, RunicStatusEffect.SILENCE) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.STUN) ||
@@ -104,6 +108,10 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
             event.setCancelled(true);
             return;
         }
+        // Roots break on damage
+        if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
+            removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
+        }
         if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.SILENCE)
                 || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)
                 || hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.INVULNERABILITY)) {
@@ -121,6 +129,10 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 
     @EventHandler
     public void onSpellDamage(MagicDamageEvent event) {
+        // Roots break on damage
+        if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
+            removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
+        }
         if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.SILENCE)
                 || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)
                 || hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.INVULNERABILITY)) {

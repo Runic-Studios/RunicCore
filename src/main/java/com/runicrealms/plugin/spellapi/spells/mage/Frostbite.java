@@ -11,21 +11,20 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 
 public class Frostbite extends Spell implements DistanceSpell, DurationSpell, RadiusSpell {
     private static final double RAY_SIZE = 1.0D;
-    private double distance; // 10
+    private double distance;
     private double duration;
     private double radius;
 
     public Frostbite() {
         super("Frostbite", CharacterClass.MAGE);
         this.setDescription("You conjure a ring of frost at " +
-                "your target enemy or location up to " + distance +
-                " blocks away for " + duration + "s, rooting all enemies caught " +
-                "in the frost!");
+                "your target enemy or location up to " + distance + " " +
+                "blocks away, rooting all enemies caught " +
+                "in the frost for " + duration + "s!");
     }
 
     @Override
@@ -92,30 +91,19 @@ public class Frostbite extends Spell implements DistanceSpell, DurationSpell, Ra
             targetBlockLocation = targetBlockLocation.getRelative(BlockFace.UP);
 
         Location finalTargetBlockLocation = targetBlockLocation.getLocation();
-        new BukkitRunnable() {
-            int count = 1;
-
-            @Override
-            public void run() {
-                if (count > duration) {
-                    this.cancel();
-                } else {
-                    count += 1;
-                    Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                            () -> {
-                                new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CLOUD, finalTargetBlockLocation, 20);
-                                Consecrate.createStarParticles(finalTargetBlockLocation, radius, Particle.BLOCK_CRACK, 6);
-                            });
-                    player.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
-                    for (Entity entity : player.getWorld().getNearbyEntities(finalTargetBlockLocation, radius, radius, radius)) {
-                        if (!(isValidEnemy(player, entity))) continue;
-                        LivingEntity victim = (LivingEntity) entity;
-                        victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
-                        addStatusEffect(victim, RunicStatusEffect.ROOT, (duration + 2) - count, true); // root for remaining duration
-                    }
-                }
-            }
-        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
+                () -> {
+                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CLOUD, finalTargetBlockLocation, 20);
+                    Consecrate.createStarParticles(finalTargetBlockLocation, radius, Particle.BLOCK_CRACK, 6);
+                });
+        player.getWorld().playSound(finalTargetBlockLocation, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
+        for (Entity entity : player.getWorld().getNearbyEntities(finalTargetBlockLocation, radius, radius, radius)) {
+            if (!(isValidEnemy(player, entity))) continue;
+            LivingEntity victim = (LivingEntity) entity;
+            victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
+            addStatusEffect(victim, RunicStatusEffect.ROOT, duration, true);
+        }
     }
+
 }
 
