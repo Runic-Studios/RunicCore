@@ -46,7 +46,7 @@ public class SpectralBlade extends Spell {
         int randomNum = ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.2f);
-        double distance = ((DistanceSpell) RunicCore.getSpellAPI().getSpell("ArcaneSlash")).getDistance();
+        double distance = ((DistanceSpell) RunicCore.getSpellAPI().getSpell("Arcane Slash")).getDistance();
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),

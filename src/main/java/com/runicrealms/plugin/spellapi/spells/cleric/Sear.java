@@ -4,14 +4,13 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,7 +39,7 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
                 "dealing (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to the first enemy hit " +
                 "and applying &oAtone &7for " + duration + "s. " +
-                "If the atoning enemy suffers damage from any source, " +
+                "If the atoning enemy suffers damage from any source other than Sear, " +
                 "&7&oAtone &7detonates, dealing this spell's damage " +
                 "again in a " + radius + " block radius around the enemy!");
     }
@@ -83,8 +82,8 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
             VectorUtil.drawLine(player, Particle.CLOUD, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.75D, 1, 0.15f);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
             livingEntity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, livingEntity.getEyeLocation(), 8, 0.8f, 0.5f, 0.8f, 0);
-            DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
             applyAtonement(player, livingEntity);
+            DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
         }
     }
 
@@ -130,6 +129,7 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
 
     @EventHandler
     public void onMagicDamage(MagicDamageEvent event) {
+        if (event.getSpell() != null && event.getSpell() instanceof Sear) return;
         if (!atoningEntitiesMap.containsKey(event.getVictim().getUniqueId())) return;
         atoningEntitiesMap.get(event.getVictim().getUniqueId()).cancel();
         atoningEntitiesMap.remove(event.getVictim().getUniqueId());
@@ -138,6 +138,18 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
         for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, this);
         }
+    }
+
+    @EventHandler
+    public void onMobDeath(MythicMobDeathEvent event) {
+        Bukkit.broadcastMessage("1");
+        if (event.getEntity().getCustomName() != null) {
+            Bukkit.broadcastMessage(event.getEntity().getCustomName());
+        }
+        if (!atoningEntitiesMap.containsKey(event.getEntity().getUniqueId())) return;
+        Bukkit.broadcastMessage("2");
+        atoningEntitiesMap.get(event.getEntity().getUniqueId()).cancel();
+        atoningEntitiesMap.remove(event.getEntity().getUniqueId());
     }
 
     @EventHandler
@@ -150,6 +162,13 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
         for (Entity entity : victim.getWorld().getNearbyEntities(victim.getLocation(), radius, radius, radius, target -> isValidEnemy(caster, target))) {
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, caster, this);
         }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(RunicDeathEvent event) {
+        if (!atoningEntitiesMap.containsKey(event.getVictim().getUniqueId())) return;
+        atoningEntitiesMap.get(event.getVictim().getUniqueId()).cancel();
+        atoningEntitiesMap.remove(event.getVictim().getUniqueId());
     }
 }
 
