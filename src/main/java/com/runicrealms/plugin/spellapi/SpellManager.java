@@ -250,7 +250,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Judgment());
         this.spellList.add(new Backstab());
         this.spellList.add(new Barrage());
-        this.spellList.add(new Grapple());
         this.spellList.add(new Slam());
         this.spellList.add(new Unseen());
         this.spellList.add(new RadiantNova());
@@ -293,8 +292,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Purify());
         this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());
-        this.spellList.add(new Headshot());
-        this.spellList.add(new AimedShot());
         this.spellList.add(new Conflagration());
         this.spellList.add(new Remedy());
         this.spellList.add(new Ambush());
@@ -302,7 +299,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new SacredGrove());
         this.spellList.add(new GiftsOfTheGrove());
         this.spellList.add(new RefreshingVolley());
-        this.spellList.add(new Decoy());
         this.spellList.add(new Fade());
         this.spellList.add(new Stormborn());
         this.spellList.add(new Charged());
@@ -329,6 +325,10 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Consecrate());
         this.spellList.add(new Salvation());
         this.spellList.add(new BlessedBlade());
+        this.spellList.add(new RainFire());
+        this.spellList.add(new PiercingArrow());
+        this.spellList.add(new Sunder());
+        this.spellList.add(new LeapingShot());
         /*
         Items
          */

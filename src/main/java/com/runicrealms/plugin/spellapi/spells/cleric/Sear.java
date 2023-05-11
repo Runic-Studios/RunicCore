@@ -10,7 +10,10 @@ import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -142,9 +145,6 @@ public class Sear extends Spell implements DurationSpell, MagicDamageSpell, Radi
 
     @EventHandler
     public void onMobDeath(MythicMobDeathEvent event) {
-        if (event.getEntity().getCustomName() != null) {
-            Bukkit.broadcastMessage(event.getEntity().getCustomName());
-        }
         if (!atoningEntitiesMap.containsKey(event.getEntity().getUniqueId())) return;
         atoningEntitiesMap.get(event.getEntity().getUniqueId()).cancel();
         atoningEntitiesMap.remove(event.getEntity().getUniqueId());

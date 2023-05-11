@@ -15,18 +15,18 @@ public class ArcherTreeUtil {
 
     public static List<Perk> marksmanPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(0, 1, 0, 1, "Aimed Shot"));
+        perks.add(new PerkSpell(0, 1, 0, 1, "Piercing Arrow"));
         perks.add(new PerkBaseStat(1, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(2, 1, 0, 1, "Headshot"));
+        perks.add(new PerkSpell(2, 1, 0, 1, "Ambush"));
         perks.add(new PerkBaseStat(3, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(4, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(5, 1, 0, 1, "Grapple"));
+        perks.add(new PerkSpell(5, 1, 0, 1, "Rain Fire"));
         perks.add(new PerkBaseStat(6, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(7, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(9, 1, 0, 5, Stat.DEXTERITY));
-        perks.add(new PerkSpell(8, 1, 0, 1, "Decoy"));
+        perks.add(new PerkSpell(8, 1, 0, 1, "Leaping Shot"));
         perks.add(new PerkBaseStat(10, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(11, 1, 0, 1, "Homing Arrow"));
+        perks.add(new PerkSpell(11, 1, 0, 1, "Sunder"));
         return perks;
     }
 
