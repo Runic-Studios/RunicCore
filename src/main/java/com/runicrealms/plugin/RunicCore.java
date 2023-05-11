@@ -373,6 +373,7 @@ public class RunicCore extends JavaPlugin implements Listener {
             return;
         }
         commandManager.registerCommand(new ManaCMD());
+        commandManager.registerCommand(new CooldownCMD());
         commandManager.registerCommand(new RunicGiveCMD());
         commandManager.registerCommand(new SetCMD());
         commandManager.registerCommand(new TravelCMD());
