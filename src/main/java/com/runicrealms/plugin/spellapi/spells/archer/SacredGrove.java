@@ -10,9 +10,17 @@ import org.bukkit.*;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class SacredGrove extends Spell implements DurationSpell, HealingSpell, RadiusSpell, WarmupSpell {
+    private static final Map<UUID, Location> GROVE_LOCATION_MAP = new HashMap<>();
     private double duration;
     private double healAmt;
     private double healingPerLevel;
@@ -28,6 +36,10 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
                 (int) healAmt + " + &f" + healingPerLevel + "x&7 lvl) health every second for " + duration + "s!");
     }
 
+    public static Map<UUID, Location> getGroveLocationMap() {
+        return GROVE_LOCATION_MAP;
+    }
+
     private void createHealingRunnable(Player player, Location location) {
         Spell spell = this;
         new BukkitRunnable() {
@@ -36,12 +48,13 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
             @Override
             public void run() {
                 if (count >= duration) {
+                    Bukkit.getPluginManager().callEvent(new GroveExpiryEvent(player));
                     this.cancel();
+                    GROVE_LOCATION_MAP.remove(player.getUniqueId());
                 } else {
                     count += 1;
-                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.VILLAGER_HAPPY, location, Color.GREEN);
-                    for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-                        if (!isValidAlly(player, entity)) continue;
+                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.VILLAGER_HAPPY, location, 5, Color.GREEN);
+                    for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
                         Player playerEntity = (Player) entity;
                         healPlayer(player, playerEntity, healAmt, spell);
                     }
@@ -52,14 +65,19 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        Location location = player.getLocation();
+        // Center block
+        Location location = player.getLocation().getBlock().getLocation();
+        location.setX(location.getX() + 0.5);
+        location.setZ(location.getZ() + 0.5);
+        GROVE_LOCATION_MAP.put(player.getUniqueId(), location);
         spawnFlower(player, location);
+        // Runnable to 'grow' seedling
         new BukkitRunnable() {
             int count = 0;
 
             @Override
             public void run() {
-                if (count >= duration) {
+                if (count >= warmup) {
                     this.cancel();
                     player.getWorld().playSound(location, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5f, 1.0f);
                     player.getWorld().playSound(location, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
@@ -67,7 +85,7 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
                 } else {
                     count += 1;
                     player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_HARP, 0.5f, 1.0f);
-                    new HorizontalCircleFrame((float) (radius - duration + count), false).playParticle(player, Particle.CRIT, location, Color.GREEN);
+                    new HorizontalCircleFrame((float) (radius - warmup + count), false).playParticle(player, Particle.CRIT, location, 10, Color.GREEN);
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L);
@@ -150,7 +168,49 @@ public class SacredGrove extends Spell implements DurationSpell, HealingSpell, R
                 location.getBlock().setType(oldMaterial);
                 higher.getBlock().setType(oldMaterialHigher);
             }, (int) duration * 20L);
-        }, (int) duration * 20L);
+        }, (int) warmup * 20L);
     }
+
+    /**
+     * This custom event is called when Sacred Grove expires
+     */
+    public static class GroveExpiryEvent extends Event implements Cancellable {
+        private static final HandlerList handlers = new HandlerList();
+        private final Player caster;
+        private boolean isCancelled;
+
+        /**
+         * @param caster player who cast heal spell
+         */
+        public GroveExpiryEvent(Player caster) {
+            this.caster = caster;
+            this.isCancelled = false;
+        }
+
+        public static HandlerList getHandlerList() {
+            return handlers;
+        }
+
+        public Player getCaster() {
+            return this.caster;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public HandlerList getHandlers() {
+            return handlers;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return this.isCancelled;
+        }
+
+        @Override
+        public void setCancelled(boolean arg0) {
+            this.isCancelled = arg0;
+        }
+    }
+
 }
 

@@ -147,6 +147,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
     public void onSpellHeal(SpellHealEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (event.getSpell() == null) return;
         if (!(event.getSpell() instanceof HealingSpell)) return;
         if (!radiantFireMap.containsKey(event.getPlayer().getUniqueId())) return;
         int wisdom = RunicCore.getStatAPI().getPlayerWisdom(event.getPlayer().getUniqueId());
