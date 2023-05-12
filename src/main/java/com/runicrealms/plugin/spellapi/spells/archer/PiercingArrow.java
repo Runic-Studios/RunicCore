@@ -58,7 +58,8 @@ public class PiercingArrow extends Spell implements DistanceSpell, PhysicalDamag
                     );
 
             if (rayTraceResult == null) {
-                Location end = player.getTargetBlock(null, (int) remainingDistance).getLocation();
+//                Location end = player.getTargetBlock(null, (int) remainingDistance).getLocation();
+                Location end = start.clone().add(direction.clone().multiply(remainingDistance));
                 end.setDirection(direction);
                 end.setY(start.getY());
                 VectorUtil.drawLine(player, Particle.REDSTONE, Color.fromRGB(210, 180, 140), start, end, 0.5D, 1, 0.25f);
