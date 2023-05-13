@@ -6,6 +6,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
+import com.runicrealms.plugin.utilities.BlocksUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -47,30 +48,6 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
         VectorUtil.drawLine(player, Particle.VILLAGER_HAPPY, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.25f);
         player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, location, 8, 0.5f, 0.5f, 0.5f, 0);
         spawnBell(player, location);
-    }
-
-    private Location findNearestAir(Location location) {
-        Location bestLocation = null;
-        double minDistanceSquared = Double.MAX_VALUE;
-
-        for (int y = 0; y <= 3; y++) {
-            for (int x = -3; x <= 3; x++) {
-                for (int z = -3; z <= 3; z++) {
-                    Block currentBlock = location.clone().add(x, y, z).getBlock();
-                    if (currentBlock.getType() == Material.AIR) {
-                        double distanceSquared = location.distanceSquared(currentBlock.getLocation());
-                        if (distanceSquared < minDistanceSquared) {
-                            minDistanceSquared = distanceSquared;
-                            bestLocation = currentBlock.getLocation();
-                        }
-                    }
-                }
-            }
-
-
-        }
-
-        return bestLocation;
     }
 
     @Override
@@ -149,7 +126,7 @@ public class Salvation extends Spell implements DistanceSpell, DurationSpell, He
      * @param location to spawn the block
      */
     private void spawnBell(Player caster, Location location) {
-        Location bestLocation = findNearestAir(location);
+        Location bestLocation = BlocksUtil.findNearestAir(location, 3);
         if (bestLocation == null) { // Couldn't find a nearby air block
             caster.sendMessage(ChatColor.RED + "A valid location could not be found!");
             caster.playSound(caster.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

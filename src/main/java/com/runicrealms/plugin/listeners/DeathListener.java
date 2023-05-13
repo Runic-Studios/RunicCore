@@ -76,7 +76,7 @@ public class DeathListener implements Listener {
             // Teleport them to their hearthstone location, or the front of the dungeon
             Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
             // If the player should drop items, create their Gravestone
-            if (droppedItemsInventory != null && droppedItemsInventory.getContents().length > 0) {
+            if (droppedItemsInventory != null && !droppedItemsInventory.isEmpty()) {
                 boolean victimHasPriority = event.getKiller().length <= 0 || !(event.getKiller()[0] instanceof Player);
                 new Gravestone(victim, droppedItemsInventory, victimHasPriority);
             }
@@ -97,8 +97,12 @@ public class DeathListener implements Listener {
         DungeonLocation dungeonLocation = RunicCore.getRegionAPI().getDungeonFromLocation(victim.getLocation());
         if (dungeonLocation == null) {
             victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
-            victim.sendMessage(ChatColor.RED + "You have died! Your armor and hotbar have been returned.");
-            victim.sendMessage(ChatColor.RED + "Any soulbound, quest, and untradeable items have been returned also.");
+
+            victim.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&cYou have died! Your armor and hotbar have been returned. " +
+                            "Any soulbound, quest, and untradeable items have been returned also. " +
+                            "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
+                            Gravestone.PRIORITY_TIME + "s until it can be looted by others."));
         } else {
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
                 victim.teleport(dungeonLocation.getLocation());

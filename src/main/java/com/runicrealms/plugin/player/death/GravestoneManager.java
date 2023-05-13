@@ -31,7 +31,7 @@ public class GravestoneManager implements Listener {
     private boolean canOpenGravestone(UUID uuid, Player whoOpened, Gravestone gravestone) {
         if (gravestoneMap.get(uuid) != null && gravestoneMap.get(uuid).equals(gravestone))
             return true; // Always true if it is the slain player
-        if (!gravestone.isPriority())
+        if (!gravestone.hasPriority())
             return true; // True if priority has expired
         return RunicCore.getPartyAPI().isPartyMember(uuid, whoOpened); // Party members can open gravestone
     }
@@ -57,7 +57,7 @@ public class GravestoneManager implements Listener {
                             event.getPlayer().openInventory(gravestone.getInventory());
                         } else {
                             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
-                            event.getPlayer().sendMessage(ChatColor.RED + "Only slain player can loot this chest until priority ends!");
+                            event.getPlayer().sendMessage(ChatColor.RED + "Only slain player and their party can loot this chest until priority ends!");
                         }
                     }
                 });
@@ -68,7 +68,13 @@ public class GravestoneManager implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         if (gravestoneMap.isEmpty()) return;
-        // todo: on inventory close, if inventory is empty, instantly collapse, dont drop items
+        gravestoneMap.forEach((uuid, gravestone) -> {
+            if (gravestone.getInventory().equals(event.getInventory())
+                    && event.getInventory().isEmpty()) {
+                gravestoneMap.remove(uuid);
+                gravestone.collapse(false);
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -77,6 +83,7 @@ public class GravestoneManager implements Listener {
         if (gravestoneMap.isEmpty()) return;
         if (!gravestoneMap.containsKey(event.getVictim().getUniqueId())) return;
         Gravestone gravestone = gravestoneMap.get(event.getVictim().getUniqueId());
+        gravestoneMap.remove(event.getVictim().getUniqueId());
         gravestone.collapse(true);
     }
 
@@ -108,6 +115,10 @@ public class GravestoneManager implements Listener {
                     continue;
                 } else if (remainingPriorityTime <= 0) {
                     gravestone.setPriority(false);
+                }
+
+                // Update hologram if there is no priority
+                if (!gravestone.hasPriority()) {
                     remainingPriorityTime = 0;
                 }
 

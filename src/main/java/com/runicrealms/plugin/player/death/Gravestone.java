@@ -3,11 +3,9 @@ package com.runicrealms.plugin.player.death;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.utilities.BlocksUtil;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
@@ -95,7 +93,7 @@ public class Gravestone {
         return uuid;
     }
 
-    public boolean isPriority() {
+    public boolean hasPriority() {
         return priority;
     }
 
@@ -105,30 +103,27 @@ public class Gravestone {
 
     private ShulkerBox spawnGravestone(Player player) {
         // 1. Get the player's death location
-        Location playerLocation = player.getLocation();
-
-        // 2. todo: Check if the block at the death location is air
-//        if (playerLocation.getBlock().getType() == Material.AIR) {
-        // 3. Set the block at the death location to a shulker box
-        playerLocation.getBlock().setType(Material.LIGHT_GRAY_SHULKER_BOX);
-        BlockState blockState = playerLocation.getBlock().getState();
-
+        Location gravestoneLocation = BlocksUtil.findNearestAir(this.location, 5);
+        if (gravestoneLocation == null) {
+            Bukkit.getLogger().severe("A gravestone could not be placed for " + player.getName() + "!");
+            player.sendMessage(ChatColor.RED + "Error: Your gravestone could not be placed. Please contact an admin.");
+            return null;
+        }
+        // 2. Set the block at the death location to a shulker box
+        gravestoneLocation.getBlock().setType(Material.LIGHT_GRAY_SHULKER_BOX);
+        BlockState blockState = gravestoneLocation.getBlock().getState();
         // Ensure the blockState is of ShulkerBox
         if (blockState instanceof ShulkerBox shulkerBox) {
-
-            // 4. Load the player's items into the shulker box
+            // 3. Load the player's items into the shulker box
             for (ItemStack item : inventory.getContents()) {
                 if (item != null) {
                     shulkerBox.getInventory().addItem(item);
                 }
             }
-
             // Update the block with the inventory
             shulkerBox.update();
             return shulkerBox;
         }
-//        }
-
         return null;
     }
 
