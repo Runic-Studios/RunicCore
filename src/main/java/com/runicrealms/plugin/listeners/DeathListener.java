@@ -5,6 +5,7 @@ import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.player.death.Gravestone;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
@@ -15,11 +16,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeathListener implements Listener {
 
@@ -29,10 +32,11 @@ public class DeathListener implements Listener {
      *
      * @param player player whose items may drop
      */
-    private static void tryDropItems(Player player, World world) {
-        // don't drop items in dungeon world
-        if (world.getName().equalsIgnoreCase("dungeons")) return;
-        for (int i = 9; i < 36; i++) { // ignore hotbar
+    private static Inventory droppedItemsInventory(Player player, World world) {
+        // Don't create Gravestone in dungeon world
+        if (world.getName().equalsIgnoreCase("dungeons")) return null;
+        List<ItemStack> itemsToDrop = new ArrayList<>();
+        for (int i = 9; i < 36; i++) { // Ignore hotbar and armor
             ItemStack itemStack = player.getInventory().getItem(i);
             if (itemStack == null) continue;
             RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(itemStack);
@@ -40,14 +44,21 @@ public class DeathListener implements Listener {
             if (runicItem.getTags().contains(RunicItemTag.QUEST_ITEM)) continue;
             if (runicItem.getTags().contains(RunicItemTag.SOULBOUND)) continue;
             if (runicItem.getTags().contains(RunicItemTag.UNTRADEABLE)) continue;
+            itemsToDrop.add(itemStack);
             player.getInventory().remove(itemStack);
-            world.dropItem(player.getLocation(), itemStack);
         }
+
+        // Create a new inventory and add the items to drop to this inventory
+        Inventory droppedItemsInventory = Bukkit.createInventory(null, 36);
+        for (ItemStack item : itemsToDrop) {
+            droppedItemsInventory.addItem(item);
+        }
+
+        return droppedItemsInventory;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
     public void onRunicDeath(RunicDeathEvent event) {
-
         if (event.isCancelled()) return;
         Player victim = event.getVictim();
 
@@ -62,18 +73,19 @@ public class DeathListener implements Listener {
             world.spawnParticle(Particle.REDSTONE, event.getLocation(), 25, 0.5f, 0.5f, 0.5f,
                     new Particle.DustOptions(Color.RED, 3));
             // Teleport them to their hearthstone location, or the front of the dungeon
-            tryDropItems(victim, world);
+            Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
+            // If the player should drop items, create their Gravestone
+            if (droppedItemsInventory != null) {
+                boolean victimHasPriority = event.getKiller().length <= 0 || !(event.getKiller()[0] instanceof Player);
+                new Gravestone(victim, droppedItemsInventory, victimHasPriority);
+            }
         }
 
         // Ignore following events if player is offline (PvP logging)
         if (!victim.isOnline()) return;
 
         // Update the scoreboard
-        if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health") != null) {
-            Objective o = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("health");
-            Score score = o.getScore(victim);
-            score.setScore((int) victim.getHealth());
-        }
+        RunicCore.getScoreboardAPI().updatePlayerScoreboard(victim.getPlayer());
 
         // Reset health, food, mana
         victim.setHealth(victim.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());

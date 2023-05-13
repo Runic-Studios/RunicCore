@@ -33,6 +33,7 @@ import com.runicrealms.plugin.party.PartyManager;
 import com.runicrealms.plugin.player.CombatManager;
 import com.runicrealms.plugin.player.PlayerHungerManager;
 import com.runicrealms.plugin.player.RegenManager;
+import com.runicrealms.plugin.player.death.GravestoneManager;
 import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
@@ -96,6 +97,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
     private static StatusEffectAPI statusEffectAPI;
+    private static GravestoneManager gravestoneManager;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -210,6 +212,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return titleAPI;
     }
 
+    public static GravestoneManager getGravestoneManager() {
+        return gravestoneManager;
+    }
+
     public static SessionDataManager getSettingsManager() {
         return settingsManager;
     }
@@ -272,6 +278,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         mongoTask = null;
         statusEffectAPI = null;
         taskChainFactory = null;
+        gravestoneManager = null;
     }
 
     @Override
@@ -311,6 +318,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         shopAPI = new RunicItemShopManager();
         mongoTask = new MongoTask();
         statusEffectAPI = new StatusEffectManager();
+        gravestoneManager = new GravestoneManager();
         new DaylightCycleListener();
 
         // WorldGuard events

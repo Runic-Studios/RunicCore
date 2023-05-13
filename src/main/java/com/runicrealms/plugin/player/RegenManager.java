@@ -18,14 +18,13 @@ import java.util.UUID;
  * @author Skyfallin_
  */
 public class RegenManager implements Listener {
-
     private static final int HEALTH_REGEN_BASE_VALUE = 5;
     private static final double HEALTH_REGEN_LEVEL_MULTIPLIER = 0.15;
     private static final int OOC_MULTIPLIER = 4; // out-of-combat
     private static final int REGEN_PERIOD = 4; // seconds
 
     private static final int BASE_MANA = 150;
-    private static final int MANA_REGEN_AMT = 5;
+    private static final int MANA_REGEN_AMT = 4;
 
     private static final double ARCHER_MANA_LV = 1.75;
     private static final double CLERIC_MANA_LV = 2.25;
@@ -75,19 +74,14 @@ public class RegenManager implements Listener {
     public double getManaPerLv(Player player) {
         String className = RunicCore.getCharacterAPI().getPlayerClass(player);
         if (className.equals("")) return 0;
-        switch (className.toLowerCase()) {
-            case "archer":
-                return ARCHER_MANA_LV;
-            case "cleric":
-                return CLERIC_MANA_LV;
-            case "mage":
-                return MAGE_MANA_LV;
-            case "rogue":
-                return ROGUE_MANA_LV;
-            case "warrior":
-                return WARRIOR_MANA_LV;
-        }
-        return 0;
+        return switch (className.toLowerCase()) {
+            case "archer" -> ARCHER_MANA_LV;
+            case "cleric" -> CLERIC_MANA_LV;
+            case "mage" -> MAGE_MANA_LV;
+            case "rogue" -> ROGUE_MANA_LV;
+            case "warrior" -> WARRIOR_MANA_LV;
+            default -> 0;
+        };
     }
 
     /**
@@ -95,7 +89,8 @@ public class RegenManager implements Listener {
      */
     private void regenHealth() {
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(online.getUniqueId())) continue;
+            if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(online.getUniqueId()))
+                continue;
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
             if (!RunicCore.getCombatAPI().isInCombat(online.getUniqueId())) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
@@ -142,16 +137,5 @@ public class RegenManager implements Listener {
             }
         }
     }
-
-    /**
-     * Removes mana to the current pool for the given player. Cannot remove below 0
-     *
-     * @param player to lose mana
-     * @param amount of mana to lose
-     */
-    public void subtractMana(Player player, int amount) {
-        int mana = currentPlayerManaValues.get(player.getUniqueId());
-        if (mana <= 0) return;
-        currentPlayerManaValues.put(player.getUniqueId(), Math.max((mana - amount), 0));
-    }
+    
 }

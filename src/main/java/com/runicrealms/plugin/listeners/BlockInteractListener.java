@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityInteractEvent;
@@ -15,17 +16,34 @@ import java.util.Set;
 
 public class BlockInteractListener implements Listener {
 
-    private static final Set<Material> BLOCKED_TYPES = new HashSet<Material>() {{
+    private static final Set<Material> BLOCKED_TYPES = new HashSet<>() {{
         add(Material.BELL);
         add(Material.JUKEBOX);
         add(Material.NOTE_BLOCK);
         add(Material.LODESTONE);
     }};
 
+    @EventHandler
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onEnterBed(PlayerBedEnterEvent event) {
+        event.setCancelled(true);
+    }
+
     /**
      * Prevents destruction of soil, interaction with tons of new blocks
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL
                 && event.getClickedBlock() != null
@@ -67,10 +85,16 @@ public class BlockInteractListener implements Listener {
                             || event.getClickedBlock().getType() == Material.DISPENSER
                             || event.getClickedBlock().getType() == Material.DROPPER
                             || event.getClickedBlock().getType().toString().toLowerCase().contains("shulker")
-                            || event.getClickedBlock().getType() == Material.TRAPPED_CHEST) event.setCancelled(true);
+                            || event.getClickedBlock().getType() == Material.TRAPPED_CHEST)
+                        event.setCancelled(true);
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) event.setCancelled(true);
     }
 
     /**
@@ -79,28 +103,6 @@ public class BlockInteractListener implements Listener {
     @EventHandler
     public void onMobTrample(EntityInteractEvent event) {
         if (event.getEntity() instanceof Player) return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME) event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onEnterBed(PlayerBedEnterEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         event.setCancelled(true);
     }
 }
