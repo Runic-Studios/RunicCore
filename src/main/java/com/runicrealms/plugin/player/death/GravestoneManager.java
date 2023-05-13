@@ -51,14 +51,16 @@ public class GravestoneManager implements Listener {
         }
     }
 
+    // todo: (1) drop items after timer is up, need to check for air when spawning block
+    // todo: check CLICK_TO_COMBINE or whatever here and in loot chests
 
     @EventHandler
     public void onShutdown(PreShutdownEvent event) {
         for (UUID uuid : gravestoneMap.keySet()) {
             Gravestone gravestone = gravestoneMap.get(uuid);
-            // todo: drop items
             gravestone.getShulkerBox().getLocation().getBlock().setType(Material.AIR);
             gravestoneMap.remove(uuid);
+            gravestone.dropItems();
         }
     }
 

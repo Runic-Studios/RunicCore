@@ -18,6 +18,7 @@ public class Gravestone {
     public static final int PRIORITY_TIME = 180; // Seconds
     public static final int DURATION = 300; // Seconds
     private final UUID uuid;
+    private final Location location;
     private final Hologram hologram;
     private final long startTime;
     private final Inventory inventory;
@@ -34,6 +35,7 @@ public class Gravestone {
      */
     public Gravestone(Player player, Inventory inventory, boolean priority) {
         this.uuid = player.getUniqueId();
+        this.location = player.getLocation();
         this.inventory = inventory;
         this.priority = priority;
         this.startTime = System.currentTimeMillis();
@@ -54,12 +56,22 @@ public class Gravestone {
         return hologram;
     }
 
+    public void dropItems() {
+        for (ItemStack itemStack : this.getShulkerBox().getInventory()) {
+            this.getShulkerBox().getWorld().dropItem(location, itemStack);
+        }
+    }
+
     public Hologram getHologram() {
         return hologram;
     }
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public ShulkerBox getShulkerBox() {

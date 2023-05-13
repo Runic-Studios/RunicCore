@@ -5,6 +5,7 @@ import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.player.death.Gravestone;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -45,7 +46,7 @@ public class DeathListener implements Listener {
             if (runicItem.getTags().contains(RunicItemTag.SOULBOUND)) continue;
             if (runicItem.getTags().contains(RunicItemTag.UNTRADEABLE)) continue;
             itemsToDrop.add(itemStack);
-            player.getInventory().remove(itemStack);
+            ItemRemover.takeItem(player, itemStack, itemStack.getAmount());
         }
 
         // Create a new inventory and add the items to drop to this inventory
