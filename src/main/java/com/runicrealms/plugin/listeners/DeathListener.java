@@ -76,7 +76,7 @@ public class DeathListener implements Listener {
             // Teleport them to their hearthstone location, or the front of the dungeon
             Inventory droppedItemsInventory = droppedItemsInventory(victim, world);
             // If the player should drop items, create their Gravestone
-            if (droppedItemsInventory != null) {
+            if (droppedItemsInventory != null && droppedItemsInventory.getContents().length > 0) {
                 boolean victimHasPriority = event.getKiller().length <= 0 || !(event.getKiller()[0] instanceof Player);
                 new Gravestone(victim, droppedItemsInventory, victimHasPriority);
             }

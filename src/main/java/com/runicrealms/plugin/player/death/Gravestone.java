@@ -6,6 +6,8 @@ import com.runicrealms.plugin.RunicCore;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
@@ -15,15 +17,15 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class Gravestone {
-    public static final int PRIORITY_TIME = 180; // Seconds
-    public static final int DURATION = 300; // Seconds
+    public static final int PRIORITY_TIME = 18; // 180 Seconds
+    public static final int DURATION = 30; // 300 Seconds
     private final UUID uuid;
     private final Location location;
     private final Hologram hologram;
     private final long startTime;
     private final Inventory inventory;
     private final ShulkerBox shulkerBox;
-    private final boolean priority; // False in PvP (anyone can loot)
+    private boolean priority; // False in PvP (anyone can loot)
 
     /**
      * Creates a Gravestone at the player's death location which holds their items.
@@ -56,9 +58,16 @@ public class Gravestone {
         return hologram;
     }
 
-    public void dropItems() {
-        for (ItemStack itemStack : this.getShulkerBox().getInventory()) {
-            this.getShulkerBox().getWorld().dropItem(location, itemStack);
+    public void collapse(boolean dropItems) {
+        this.hologram.delete();
+        shulkerBox.getWorld().playSound(shulkerBox.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 0.5f, 0.2f);
+        shulkerBox.getWorld().spawnParticle(Particle.CLOUD, shulkerBox.getLocation(), 25, 0.75f, 1.0f, 0.75f, 0);
+        shulkerBox.getLocation().getBlock().setType(Material.AIR);
+        if (dropItems) {
+            for (ItemStack itemStack : this.inventory.getContents()) {
+                if (itemStack == null) continue;
+                shulkerBox.getWorld().dropItem(this.location, itemStack);
+            }
         }
     }
 
@@ -88,6 +97,10 @@ public class Gravestone {
 
     public boolean isPriority() {
         return priority;
+    }
+
+    public void setPriority(boolean priority) {
+        this.priority = priority;
     }
 
     private ShulkerBox spawnGravestone(Player player) {

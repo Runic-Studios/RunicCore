@@ -2,12 +2,18 @@ package com.runicrealms.plugin.player.death;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
@@ -20,6 +26,14 @@ public class GravestoneManager implements Listener {
     public GravestoneManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         startGravestoneTask();
+    }
+
+    private boolean canOpenGravestone(UUID uuid, Player whoOpened, Gravestone gravestone) {
+        if (gravestoneMap.get(uuid) != null && gravestoneMap.get(uuid).equals(gravestone))
+            return true; // Always true if it is the slain player
+        if (!gravestone.isPriority())
+            return true; // True if priority has expired
+        return RunicCore.getPartyAPI().isPartyMember(uuid, whoOpened); // Party members can open gravestone
     }
 
     public Map<UUID, Gravestone> getGravestoneMap() {
@@ -38,7 +52,7 @@ public class GravestoneManager implements Listener {
                 event.setCancelled(true);
                 gravestoneMap.forEach((uuid, gravestone) -> {
                     if (gravestone.getShulkerBox().getBlock().equals(event.getClickedBlock())) {
-                        if (!gravestone.isPriority() || event.getPlayer().getUniqueId().equals(gravestone.getUuid())) {
+                        if (canOpenGravestone(uuid, event.getPlayer(), gravestone)) {
                             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_SHULKER_BOX_OPEN, 0.5f, 1.0f);
                             event.getPlayer().openInventory(gravestone.getInventory());
                         } else {
@@ -51,16 +65,27 @@ public class GravestoneManager implements Listener {
         }
     }
 
-    // todo: (1) drop items after timer is up, need to check for air when spawning block
-    // todo: check CLICK_TO_COMBINE or whatever here and in loot chests
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (gravestoneMap.isEmpty()) return;
+        // todo: on inventory close, if inventory is empty, instantly collapse, dont drop items
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onRunicDeath(RunicDeathEvent event) {
+        if (event.isCancelled()) return;
+        if (gravestoneMap.isEmpty()) return;
+        if (!gravestoneMap.containsKey(event.getVictim().getUniqueId())) return;
+        Gravestone gravestone = gravestoneMap.get(event.getVictim().getUniqueId());
+        gravestone.collapse(true);
+    }
 
     @EventHandler
     public void onShutdown(PreShutdownEvent event) {
         for (UUID uuid : gravestoneMap.keySet()) {
             Gravestone gravestone = gravestoneMap.get(uuid);
-            gravestone.getShulkerBox().getLocation().getBlock().setType(Material.AIR);
             gravestoneMap.remove(uuid);
-            gravestone.dropItems();
+            gravestone.collapse(false);
         }
     }
 
@@ -75,6 +100,16 @@ public class GravestoneManager implements Listener {
 
                 int remainingPriorityTime = Gravestone.PRIORITY_TIME - (int) elapsedTimeInSeconds;
                 int duration = Gravestone.DURATION - (int) elapsedTimeInSeconds;
+
+                // Remove gravestone if time is up
+                if (duration <= 0) {
+                    gravestoneMap.remove(uuid);
+                    gravestone.collapse(false);
+                    continue;
+                } else if (remainingPriorityTime <= 0) {
+                    gravestone.setPriority(false);
+                    remainingPriorityTime = 0;
+                }
 
                 // Calculate minutes and seconds
                 int minutesPriority = remainingPriorityTime / 60;
