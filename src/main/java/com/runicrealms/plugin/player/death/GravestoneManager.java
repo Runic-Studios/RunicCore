@@ -32,7 +32,7 @@ public class GravestoneManager implements Listener {
         if (gravestoneMap.get(uuid) != null && gravestoneMap.get(uuid).equals(gravestone))
             return true; // Always true if it is the slain player
         if (!gravestone.hasPriority())
-            return true; // True if priority has expired
+            return false; // True if priority has expired
         return RunicCore.getPartyAPI().isPartyMember(uuid, whoOpened); // Party members can open gravestone
     }
 

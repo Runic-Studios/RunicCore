@@ -15,8 +15,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class Gravestone {
-    public static final int PRIORITY_TIME = 18; // 180 Seconds
-    public static final int DURATION = 30; // 300 Seconds
+    public static final int PRIORITY_TIME = 180; // Seconds
+    public static final int DURATION = 300; // Seconds
     private final UUID uuid;
     private final Location location;
     private final Hologram hologram;

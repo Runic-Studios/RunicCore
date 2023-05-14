@@ -25,11 +25,10 @@ public class Fade extends Spell implements DurationSpell {
         super("Fade", CharacterClass.ARCHER);
         this.setDescription("You begin to flicker in and out of invisibility " +
                 "for the next " + duration + "s! While invisible, " +
-                "you are immune to damage, but cannot cast spells.");
+                "you cannot cast spells.");
     }
 
     private void disappear(Player player) {
-        addStatusEffect(player, RunicStatusEffect.INVULNERABILITY, 1, false);
         addStatusEffect(player, RunicStatusEffect.SILENCE, 1, false);
         // poof!
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
