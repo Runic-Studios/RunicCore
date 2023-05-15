@@ -55,6 +55,7 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        leap(player);
         Vector middle = player.getEyeLocation().getDirection().normalize().multiply(2);
         Vector leftMid = rotateVectorAroundY(middle, -10);
         Vector rightMid = rotateVectorAroundY(middle, 10);
@@ -62,7 +63,6 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
         for (Vector vector : vectors) {
             fireArrow(player, vector);
         }
-        leap(player);
     }
 
     private void fireArrow(Player player, Vector vector) {
