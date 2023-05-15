@@ -44,7 +44,7 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
         this.setDescription("Sneaking without casting spells for at least " + warmup +
                 "s causes your next ranged basic attack (if it lands) to ambush its target, " +
                 "dealing an additional (" +
-                damage + " + &f" + (int) damagePerLevel +
+                damage + " + &f" + damagePerLevel +
                 "x &7lvl) physical⚔ damage, blinding your opponent for " + blindDuration + "s, " +
                 "and granting you a a boost of speed for " +
                 speedDuration + "s! Cannot occur more than once every " + cooldown + "s.");

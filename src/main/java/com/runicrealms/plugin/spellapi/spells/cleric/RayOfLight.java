@@ -40,7 +40,6 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
@@ -182,7 +181,7 @@ public class RayOfLight extends Spell implements DistanceSpell, DurationSpell, M
     private void lightBlast(Player player, Location location) {
 
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
-        VectorUtil.drawLine(player, Particle.SPELL_INSTANT, Color.WHITE, location, trailLoc[0].clone().subtract(0, 20, 0), 1.0D, 5);
+        VectorUtil.drawLine(player, Particle.VILLAGER_ANGRY, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.5D, 5);
 
         BukkitTask bukkitTask = new BukkitRunnable() {
             @Override
