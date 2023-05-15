@@ -4,7 +4,11 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
+import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
@@ -118,11 +122,16 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
     }
 
     private void rainFire(Player player, Location location) {
+        assert location.getWorld() != null;
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
-//        VectorUtil.drawLine(player, Particle.FLAME, Color.WHITE, location, trailLoc[0].clone().subtract(0, 20, 0), 1.0D, 5);
         VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.0D, 5);
+        new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CRIT, location, Color.RED);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             playArrowFlurry(location, 6);
+            new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.FLAME, location, Color.RED);
+            for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
+                DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, true, this);
+            }
         }, (long) (warmup * 20L));
     }
 }

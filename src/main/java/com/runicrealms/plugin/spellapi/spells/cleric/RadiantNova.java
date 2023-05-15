@@ -8,7 +8,9 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, WarmupSpell {
     public static final Random random = new Random(System.nanoTime());
@@ -28,21 +30,30 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
                 "(" + healAmt + " + &f" + (int) healingPerLevel + "x&7 lvl) health!");
     }
 
+    private void executeHeal(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
+        Location location = player.getEyeLocation();
+        spawnSphere(player, location);
+        for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
+            Player ally = (Player) entity;
+            healPlayer(player, ally, healAmt, this);
+        }
+    }
+
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 1.0f, 1.0f);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 2.0f);
-        Cone.coneEffect(player, Particle.FIREWORKS_SPARK, 1, 0, 20, Color.WHITE);
-        addStatusEffect(player, RunicStatusEffect.SLOW_III, warmup, false);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-            Location location = player.getEyeLocation();
-            spawnSphere(player, location);
-            for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
-                Player ally = (Player) entity;
-                healPlayer(player, ally, healAmt, this);
-            }
-        }, (long) warmup * 20L);
+        RadiantFire radiantFire = (RadiantFire) RunicCore.getSpellAPI().getSpell("Radiant Fire");
+        Map<UUID, RadiantFire.RadiantFireTask> radiantFireTaskMap = radiantFire.getRadiantFireMap();
+        boolean hasWarmup = !radiantFireTaskMap.containsKey(player.getUniqueId()) || radiantFireTaskMap.get(player.getUniqueId()).getStacks().get() != radiantFire.getMaxStacks();
+        if (hasWarmup) {
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 1.0f, 1.0f);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 2.0f);
+            Cone.coneEffect(player, Particle.FIREWORKS_SPARK, 1, 0, 20, Color.WHITE);
+            addStatusEffect(player, RunicStatusEffect.SLOW_III, warmup, false);
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> executeHeal(player), (long) warmup * 20L);
+        } else {
+            executeHeal(player); // No warmup
+        }
     }
 
     @Override

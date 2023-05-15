@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RadiantFire extends Spell implements AttributeSpell, DurationSpell {
-    private final Map<UUID, RadiantFireTask> radiantFireMap = new HashMap<>();
+    private static final Map<UUID, RadiantFireTask> RADIANT_FIRE_MAP = new HashMap<>();
     private double baseValue;
     private double maxStacks;
     private double multiplier;
@@ -30,12 +30,11 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         super("Radiant Fire", CharacterClass.CLERIC);
         this.setIsPassive(true);
         this.setDescription("Each time you land your &aSear &7spell, you gain " +
-                "a stack of Radiant Fire! For each stack, you gain " + (multiplier * 100) +
+                "a stack (and refresh current stacks) of Radiant Fire! For each stack, you gain " + (multiplier * 100) +
                 "% of your total &eWisdom✸ &7as increased healing! " +
-                "Each &aSear &7refreshes the duration " +
-                "of your stacks. While at max stacks, " +
-                "you glow bright with divine power!" +
-                "\nMax stacks: " + maxStacks + "\nStacks expiry: " + stackDuration + "s");
+                "While at max stacks, you glow bright with divine power " +
+                "and your &aRadiant Nova &7has no warmup!" +
+                "\nMax stacks: " + (int) maxStacks + "\nStacks expiry: " + stackDuration + "s");
     }
 
     /**
@@ -45,30 +44,30 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
      * @param event the spell cast event
      */
     private void attemptToStackRadiantFire(SpellCastEvent event) {
-        if (!radiantFireMap.containsKey(event.getCaster().getUniqueId())) {
+        if (!RADIANT_FIRE_MAP.containsKey(event.getCaster().getUniqueId())) {
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                radiantFireMap.remove(event.getCaster().getUniqueId());
+                RADIANT_FIRE_MAP.remove(event.getCaster().getUniqueId());
                 event.getCaster().setGlowing(false);
             }, (int) stackDuration * 20L);
-            radiantFireMap.put(event.getCaster().getUniqueId(), new RadiantFireTask(new AtomicInteger(1), bukkitTask));
+            RADIANT_FIRE_MAP.put(event.getCaster().getUniqueId(), new RadiantFireTask(new AtomicInteger(1), bukkitTask));
         } else {
-            AtomicInteger stacks = radiantFireMap.get(event.getCaster().getUniqueId()).getStacks();
+            AtomicInteger stacks = RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getStacks();
 
             // Refresh stack duration
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                radiantFireMap.remove(event.getCaster().getUniqueId());
+                RADIANT_FIRE_MAP.remove(event.getCaster().getUniqueId());
                 event.getCaster().setGlowing(false);
             }, (int) stackDuration * 20L);
-            radiantFireMap.get(event.getCaster().getUniqueId()).getBukkitTask().cancel();
-            radiantFireMap.get(event.getCaster().getUniqueId()).setBukkitTask(bukkitTask);
+            RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getBukkitTask().cancel();
+            RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).setBukkitTask(bukkitTask);
 
             if (stacks.get() >= maxStacks) return;
             // Increment stacks (add glow if max stacks reached)
             event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
             event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.5f, 0.5f);
             event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 1);
-            radiantFireMap.get(event.getCaster().getUniqueId()).getAndIncrement();
-            stacks = radiantFireMap.get(event.getCaster().getUniqueId()).getStacks();
+            RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getAndIncrement();
+            stacks = RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getStacks();
             if (stacks.get() >= maxStacks) {
                 event.getCaster().setGlowing(true);
             }
@@ -132,7 +131,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
     }
 
     public Map<UUID, RadiantFireTask> getRadiantFireMap() {
-        return radiantFireMap;
+        return RADIANT_FIRE_MAP;
     }
 
     @EventHandler
@@ -149,10 +148,10 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;
         if (!(event.getSpell() instanceof HealingSpell)) return;
-        if (!radiantFireMap.containsKey(event.getPlayer().getUniqueId())) return;
+        if (!RADIANT_FIRE_MAP.containsKey(event.getPlayer().getUniqueId())) return;
         int wisdom = RunicCore.getStatAPI().getPlayerWisdom(event.getPlayer().getUniqueId());
         double bonus = (multiplier * wisdom) / 100;
-        bonus *= radiantFireMap.get(event.getPlayer().getUniqueId()).getStacks().get();
+        bonus *= RADIANT_FIRE_MAP.get(event.getPlayer().getUniqueId()).getStacks().get();
         event.setAmount((int) (event.getAmount() + (event.getAmount() * bonus)));
     }
 
