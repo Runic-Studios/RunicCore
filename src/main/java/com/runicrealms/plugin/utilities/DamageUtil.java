@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.Collections;
 
 public class DamageUtil {
+    private static final double CRITICAL_MULTIPLIER = 1.5;
 
     public static void damageEntitySpell(double dmgAmt, LivingEntity recipient, Player caster, Spell... spell) {
         damageEntitySpell(dmgAmt, recipient, caster, true, spell);
@@ -53,9 +54,10 @@ public class DamageUtil {
         }
 
         // Apply the damage
-        damageEntityByEntity(dmgAmt, recipient, caster, false, knockback);
+        double finalDamage = event.isCritical() ? (dmgAmt * CRITICAL_MULTIPLIER) : dmgAmt;
+        damageEntityByEntity(finalDamage, recipient, caster, false, knockback);
         ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.DARK_AQUA;
-        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤ʔ");
+        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) finalDamage + " ❤ʔ");
     }
 
     /**
@@ -91,9 +93,12 @@ public class DamageUtil {
         }
 
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);
-        damageEntityByEntity(dmgAmt, recipient, caster, isRanged);
+
+        // Apply the damage
+        double finalDamage = event.isCritical() ? (dmgAmt * CRITICAL_MULTIPLIER) : dmgAmt;
+        damageEntityByEntity(finalDamage, recipient, caster, isRanged);
         ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
-        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) dmgAmt + " ❤⚔");
+        HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) finalDamage + " ❤⚔");
     }
 
     public static void damageEntityRanged(double dmgAmt, LivingEntity recipient, Player caster,

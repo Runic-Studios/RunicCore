@@ -23,6 +23,7 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
     private double damage;
     private double damagePerLevel;
     private double duration;
+    private int level;
 
     public Sprint() {
         super("Sprint", CharacterClass.ROGUE);
@@ -34,7 +35,11 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        addStatusEffect(player, RunicStatusEffect.SPEED_II, duration, false);
+        switch (level) {
+            case 1 -> addStatusEffect(player, RunicStatusEffect.SPEED_I, duration, false);
+            case 3 -> addStatusEffect(player, RunicStatusEffect.SPEED_III, duration, false);
+            default -> addStatusEffect(player, RunicStatusEffect.SPEED_II, duration, false);
+        }
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_BLAST, 0.5F, 1.0F);
         new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getLocation(), Color.FUCHSIA);
         new HorizontalCircleFrame(1, false).playParticle(player, Particle.TOTEM, player.getEyeLocation(), Color.FUCHSIA);
@@ -50,6 +55,14 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
     @Override
     public void setDuration(double duration) {
         this.duration = duration;
+    }
+
+    @Override
+    public void loadDurationData(Map<String, Object> spellData) {
+        Number duration = (Number) spellData.getOrDefault("duration", 0);
+        setDuration(duration.doubleValue());
+        Number level = (Number) spellData.getOrDefault("level", 0);
+        setLevel(level.intValue());
     }
 
     @Override
@@ -81,6 +94,10 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
         player.getWorld().spawnParticle(Particle.CRIT_MAGIC, event.getVictim().getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
         DamageUtil.damageEntitySpell(damage, event.getVictim(), player, this);
         sprintTasks.remove(player.getUniqueId());
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }
 

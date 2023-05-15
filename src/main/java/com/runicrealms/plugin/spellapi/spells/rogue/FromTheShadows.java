@@ -14,32 +14,37 @@ import org.bukkit.event.EventPriority;
 import java.util.*;
 
 public class FromTheShadows extends Spell {
-    private final Set<UUID> buffedPlayers = new HashSet<>();
-    private final Map<UUID, Cocoon> empoweredCocoons = new HashMap<>();
+    private final Set<UUID> potentialBuffedPlayers = new HashSet<>();
+    private final Map<UUID, Spell> actuallyBuffedPlayers = new HashMap<>();
 
     public FromTheShadows() {
         super("From The Shadows", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("The next spell you cast after you cast &aUnseen &7is empowered!\n\n" +
-                "&aSprint &7- You lunge forward on cast!\n" +
-                "&aTwin Fangs &7- Instantly refresh this spell’s cooldown!\n" +
-                "&aCocoon &7- Your web now stuns your target!");
+        this.setDescription("""
+                The next spell you cast after you cast &aUnseen &7is empowered!
+                Your empowerment is removed 1s after reappearing.
+
+                &aSprint &7- You lunge forward on cast!
+                &aTwin Fangs &7- This spell will critically strike!
+                &aCocoon &7- Your web now stuns your target (duration halved)!
+                """);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onCocoon(PhysicalDamageEvent event) {
+    public void onEmpoweredSpell(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (event.getSpell() == null) return;
-        if (!(event.getSpell() instanceof Cocoon)) return;
-        // todo: this cocoon should be empowered
-        if (!empoweredCocoons.containsKey(event.getPlayer().getUniqueId())) return;
-        if (!empoweredCocoons.get(event.getPlayer().getUniqueId()).equals(event.getSpell())) return;
-        Bukkit.broadcastMessage("this cocoon was empowered");
-        empoweredCocoons.remove(event.getPlayer().getUniqueId());
-        Spell spell = RunicCore.getSpellAPI().getSpell("Cocoon");
-        addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, ((DurationSpell) spell).getDuration(), true);
-        buffedPlayers.remove(event.getPlayer().getUniqueId());
+        if (!actuallyBuffedPlayers.containsKey(event.getPlayer().getUniqueId())) return;
+        if (event.getSpell() instanceof Cocoon) {
+            actuallyBuffedPlayers.remove(event.getPlayer().getUniqueId());
+            Spell spell = RunicCore.getSpellAPI().getSpell("Cocoon");
+            addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, ((DurationSpell) spell).getDuration() / 2, true);
+            potentialBuffedPlayers.remove(event.getPlayer().getUniqueId());
+        } else if (event.getSpell() instanceof TwinFangs) {
+            event.setCritical(true);
+        }
+        actuallyBuffedPlayers.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -48,30 +53,33 @@ public class FromTheShadows extends Spell {
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         // Apply buff
         if (event.getSpell() instanceof Unseen) {
-            buffedPlayers.add(event.getCaster().getUniqueId());
+            potentialBuffedPlayers.add(event.getCaster().getUniqueId());
             return;
         }
-        // Remove buff
-        if (!buffedPlayers.contains(event.getCaster().getUniqueId())) return;
-        buffedPlayers.remove(event.getCaster().getUniqueId());
-        Bukkit.broadcastMessage("unseen buff is active");
+        // Remove actual buff
+        if (actuallyBuffedPlayers.containsKey(event.getCaster().getUniqueId())) {
+            actuallyBuffedPlayers.remove(event.getCaster().getUniqueId());
+            return;
+        }
+        // Remove potential buff
+        if (!potentialBuffedPlayers.contains(event.getCaster().getUniqueId())) return;
+        potentialBuffedPlayers.remove(event.getCaster().getUniqueId());
         if (event.getSpell() instanceof Sprint) {
             Lunge lunge = (Lunge) RunicCore.getSpellAPI().getSpell("Lunge");
             double duration = lunge.getDuration();
             double launchMultiplier = lunge.getLaunchMultiplier();
             double verticalPower = lunge.getVerticalPower();
             Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower);
-        } else if (event.getSpell() instanceof TwinFangs) {
-            Spell spell = RunicCore.getSpellAPI().getSpell("Twin Fangs");
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
-                    () -> RunicCore.getSpellAPI().reduceCooldown(event.getCaster(), spell,
-                            spell.getCooldown()));
+        } else if (event.getSpell() instanceof TwinFangs twinFangs) {
+            actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), twinFangs);
         } else if (event.getSpell() instanceof Cocoon cocoon) {
-            empoweredCocoons.put(event.getCaster().getUniqueId(), cocoon);
-//            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
-//                    () -> buffedPlayers.remove(event.getCaster().getUniqueId()));
-            // todo: make cocoon buffed
+            actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), cocoon);
         }
+        double duration = ((DurationSpell) RunicCore.getSpellAPI().getSpell("Unseen")).getDuration();
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            potentialBuffedPlayers.remove(event.getCaster().getUniqueId());
+            actuallyBuffedPlayers.remove(event.getCaster().getUniqueId());
+        }, (long) (duration + 1) * 20L);
     }
 
 
