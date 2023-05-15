@@ -3,15 +3,19 @@ package com.runicrealms.plugin.spellapi.spells.archer;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.GenericDamageEvent;
-import com.runicrealms.plugin.events.RangedDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.*;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -36,7 +40,7 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
         this.setDescription("You fire a spread of 3 arrows that each " +
                 "(" + damage + " + &f" + damagePerLevel +
                 "x &7lvl) physical⚔ damage while simultaneously leaping backwards! " +
-                "If any of the arrows hit an enemy, gain Speed III for " + duration + "s!");
+                "During your leap, you are granted fall damage immunity for " + duration + "s.");
     }
 
     @Override
@@ -135,23 +139,22 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onPhysicalDamage(RangedDamageEvent event) {
+    public void onPhysicalDamage(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
-        if (!event.isRanged()) return;
-        if (!event.isBasicAttack()) return;
-        Arrow arrow = event.getArrow();
+        if (!(event.getDamager() instanceof Arrow arrow)) return;
         if (!arrow.hasMetadata(ARROW_META_KEY)) return;
         if (!arrow.getMetadata(ARROW_META_KEY).get(0).asString().equalsIgnoreCase(ARROW_META_VALUE))
             return;
-        if (hasBeenHit.containsKey(event.getPlayer().getUniqueId())) {
+        if (!(arrow.getShooter() instanceof Player player)) return;
+        if (hasBeenHit.containsKey(player.getUniqueId())) {
             event.setCancelled(true);
             return;
         }
-        Bukkit.broadcastMessage("detected");
-        DamageUtil.damageEntitySpell(damage, event.getVictim(), event.getPlayer(), this);
-        addStatusEffect(event.getPlayer(), RunicStatusEffect.SPEED_III, duration, false);
-        hasBeenHit.put(event.getPlayer().getUniqueId(), event.getVictim().getUniqueId()); // prevent concussive hits
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> hasBeenHit.remove(event.getPlayer().getUniqueId()), 8L);
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
+        event.setCancelled(true);
+        DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, true, this);
+        hasBeenHit.put(player.getUniqueId(), livingEntity.getUniqueId()); // prevent concussive hits
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> hasBeenHit.remove(player.getUniqueId()), 8L);
     }
 
     public void setLaunchMultiplier(double launchMultiplier) {
