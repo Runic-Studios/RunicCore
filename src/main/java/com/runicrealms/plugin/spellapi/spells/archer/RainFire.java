@@ -12,9 +12,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
+import java.util.Random;
+
 public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpell, RadiusSpell, WarmupSpell {
     private static final int HEIGHT = 8;
     private static final double BEAM_WIDTH = 1.5;
+    private static final Random RANDOM = new Random();
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -27,23 +30,6 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
                 "After a " + warmup + "s delay, a wave of arrows strikes " +
                 "the area around the mark, dealing (" + damage + " + &f" + damagePerLevel +
                 "x &7lvl) physical⚔ damage to all enemies within " + radius + " blocks of the impact!");
-    }
-
-    public static void playArrowFlurry(Location location, int arrowsCount) {
-        if (location.getWorld() == null) {
-            Bukkit.getLogger().warning("There was a problem getting Rain Fire world!");
-            return;
-        }
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            for (int i = 0; i < arrowsCount; i++) {
-                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> location.getWorld().playSound(location, Sound.ENTITY_ARROW_HIT, 2.0F, 1.0F));
-                try {
-                    Thread.sleep(100);  // 100 milliseconds pause between each sound
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     @Override
@@ -121,13 +107,39 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
         this.warmup = warmup;
     }
 
+    public void playArrowFlurry(Player player, Location location, int arrowsCount) {
+        if (location.getWorld() == null) {
+            Bukkit.getLogger().warning("There was a problem getting Rain Fire world!");
+            return;
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            for (int i = 0; i < arrowsCount; i++) {
+                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                    double offsetX = (RANDOM.nextDouble() * 2 * radius) - radius;
+                    double offsetZ = (RANDOM.nextDouble() * 2 * radius) - radius;
+
+                    Location randomLocation = location.clone().add(offsetX, 0, offsetZ);
+
+                    location.getWorld().playSound(randomLocation, Sound.ENTITY_ARROW_HIT, 2.0F, 1.0F);
+                    final Location[] trailLoc = {randomLocation.clone().add(0, HEIGHT, 0)};
+                    VectorUtil.drawLine(player, Particle.FLAME, Color.WHITE, trailLoc[0], randomLocation.clone().subtract(0, 20, 0), 2.0D, 5);
+                });
+                try {
+                    Thread.sleep(100);  // 100 milliseconds pause between each sound
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     private void rainFire(Player player, Location location) {
         assert location.getWorld() != null;
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
         VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.0D, 5);
         new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CRIT, location, Color.RED);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            playArrowFlurry(location, 6);
+            playArrowFlurry(player, location, 6);
             new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.FLAME, location, Color.RED);
             for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
                 DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, true, this);
