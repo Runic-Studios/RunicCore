@@ -90,7 +90,7 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
         // Summon whirlpool a few ticks after harpoon is landed
         if (event.getSpell() != null && event.getSpell() instanceof Harpoon) {
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> summonWhirlPool(event.getPlayer(), event.getVictim()), 15L); // 0.75s
+                    () -> summonWhirlPool(event.getPlayer(), event.getVictim()), 10L); // 0.5s
         }
     }
 
@@ -107,6 +107,7 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
     private void summonWhirlPool(Player caster, LivingEntity recipient) {
         Spell spell = this;
         Location castLocation = recipient.getLocation();
+        whirlpoolEffect(caster, recipient, castLocation);
         new BukkitRunnable() {
             double count = 1;
 
@@ -118,14 +119,7 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
                     this.cancel();
 
                 if (count % 1 == 0) {
-                    new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.REDSTONE,
-                            castLocation, Color.fromRGB(0, 64, 128));
-                    new HorizontalCircleFrame((float) (radius - 1), false).playParticle(caster, Particle.REDSTONE,
-                            castLocation, Color.fromRGB(0, 89, 179));
-                    new HorizontalCircleFrame((float) (radius - 2), false).playParticle(caster, Particle.REDSTONE,
-                            castLocation, Color.fromRGB(0, 102, 204));
-                    recipient.getWorld().playSound(castLocation,
-                            Sound.ENTITY_PLAYER_SPLASH_HIGH_SPEED, 0.5f, 1.0f);
+                    whirlpoolEffect(caster, recipient, castLocation);
                 }
 
                 for (Entity entity : recipient.getWorld().getNearbyEntities(castLocation, radius,
@@ -146,6 +140,17 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 5L);
+    }
+
+    private void whirlpoolEffect(Player caster, LivingEntity recipient, Location castLocation) {
+        new HorizontalCircleFrame((float) radius, false).playParticle(caster, Particle.REDSTONE,
+                castLocation, Color.fromRGB(0, 64, 128));
+        new HorizontalCircleFrame((float) (radius - 1), false).playParticle(caster, Particle.REDSTONE,
+                castLocation, Color.fromRGB(0, 89, 179));
+        new HorizontalCircleFrame((float) (radius - 2), false).playParticle(caster, Particle.REDSTONE,
+                castLocation, Color.fromRGB(0, 102, 204));
+        recipient.getWorld().playSound(castLocation,
+                Sound.ENTITY_PLAYER_SPLASH_HIGH_SPEED, 0.5f, 1.0f);
     }
 
 }
