@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 public class FloatingItemUtil {
 
     /**
-     *
      * @param loc
      * @param material
      * @param duration
@@ -35,7 +34,6 @@ public class FloatingItemUtil {
     }
 
     /**
-     *
      * @param loc
      * @param material
      * @param duration
@@ -51,13 +49,12 @@ public class FloatingItemUtil {
         Item droppedItem = loc.getWorld().dropItem(loc, item);
         droppedItem.setVelocity(vec);
         droppedItem.setPickupDelay(Integer.MAX_VALUE);
-        // tell the item when to despawn, based on duration (in seconds)
-        setAge(duration, droppedItem);
+//        // tell the item when to despawn, based on duration (in seconds)
+//        setAge(duration, droppedItem);
         return droppedItem;
     }
 
     /**
-     *
      * @param loc
      * @param material
      * @param duration
@@ -76,7 +73,6 @@ public class FloatingItemUtil {
     }
 
     /**
-     *
      * @param pl
      * @param loc
      * @param material
@@ -101,7 +97,6 @@ public class FloatingItemUtil {
     }
 
     /**
-     *
      * @param pl
      * @param loc
      * @param material
