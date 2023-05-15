@@ -11,18 +11,18 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
-public class Cocoon extends Spell implements DurationSpell, PhysicalDamageSpell {
-    private static final int MAX_DIST = 6;
+public class Cocoon extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
     private static final double BEAM_WIDTH = 1.0D;
     public double duration;
     private double damage;
     private double damagePerLevel;
+    private double distance;
 
     public Cocoon() {
         super("Cocoon", CharacterClass.ROGUE);
         this.setDescription("You launch a short-range string of web " +
                 "that deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) physical⚔ " +
-                "damage and slows the first enemy hit within " + MAX_DIST + " blocks " +
+                "damage and slows the first enemy hit within " + distance + " blocks " +
                 "for " + duration + "s!");
     }
 
@@ -33,13 +33,13 @@ public class Cocoon extends Spell implements DurationSpell, PhysicalDamageSpell 
                 (
                         player.getLocation(),
                         player.getLocation().getDirection(),
-                        MAX_DIST,
+                        distance,
                         BEAM_WIDTH,
                         entity -> isValidEnemy(player, entity)
                 );
 
         if (rayTraceResult == null) {
-            Location location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            Location location = player.getTargetBlock(null, (int) distance).getLocation();
             VectorUtil.drawLine(player, Material.COBWEB, player.getEyeLocation(),
                     location, 0.5D, 5, 0.05f);
         } else if (rayTraceResult.getHitEntity() != null) {
@@ -50,6 +50,16 @@ public class Cocoon extends Spell implements DurationSpell, PhysicalDamageSpell 
             addStatusEffect(livingEntity, RunicStatusEffect.SLOW_III, duration, false);
             DamageUtil.damageEntityPhysical(damage, livingEntity, player, false, false, this);
         }
+    }
+
+    @Override
+    public double getDistance() {
+        return distance;
+    }
+
+    @Override
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     @Override
