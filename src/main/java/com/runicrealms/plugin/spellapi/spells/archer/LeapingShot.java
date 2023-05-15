@@ -44,6 +44,16 @@ public class LeapingShot extends Spell implements DurationSpell, PhysicalDamageS
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    public boolean attemptToExecute(Player player) {
+        if (!player.isOnGround()) {
+            player.sendMessage(ChatColor.RED + "You must be on the ground to cast " + this.getName() + "!");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public void executeSpell(Player player, SpellItemType type) {
         Vector middle = player.getEyeLocation().getDirection().normalize().multiply(2);
         Vector leftMid = rotateVectorAroundY(middle, -10);

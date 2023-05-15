@@ -122,7 +122,7 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
 
                     location.getWorld().playSound(randomLocation, Sound.ENTITY_ARROW_HIT, 2.0F, 1.0F);
                     final Location[] trailLoc = {randomLocation.clone().add(0, HEIGHT, 0)};
-                    VectorUtil.drawLine(player, Particle.FLAME, Color.WHITE, trailLoc[0], randomLocation.clone().subtract(0, 20, 0), 2.0D, 5);
+                    VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], randomLocation.clone().subtract(0, 20, 0), 2.0D, 5);
                 });
                 try {
                     Thread.sleep(100);  // 100 milliseconds pause between each sound
