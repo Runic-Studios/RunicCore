@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import java.util.Random;
 
@@ -52,6 +53,17 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
             location = rayTraceResult.getHitBlock().getLocation();
         } else {
             location = player.getTargetBlock(null, (int) distance).getLocation();
+        }
+
+        if (location.getWorld() == null) {
+            Bukkit.getLogger().warning("There was a problem getting world for Rain Fire!");
+            return;
+        }
+
+        // Cast a ray downwards to get the ground location
+        RayTraceResult groundRayTraceResult = location.getWorld().rayTraceBlocks(location, new Vector(0, -1, 0), distance);
+        if (groundRayTraceResult != null && groundRayTraceResult.getHitBlock() != null) {
+            location = groundRayTraceResult.getHitBlock().getLocation().add(0.5, 1, 0.5);
         }
 
         rainFire(player, location);

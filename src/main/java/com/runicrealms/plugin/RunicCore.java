@@ -39,6 +39,7 @@ import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
 import com.runicrealms.plugin.redis.RedisManager;
+import com.runicrealms.plugin.region.RegionEventListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
 import com.runicrealms.plugin.spellapi.*;
@@ -50,7 +51,6 @@ import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
-import com.sk89q.worldguard.WorldGuard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -321,12 +321,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         gravestoneManager = new GravestoneManager();
         new DaylightCycleListener();
 
-        // WorldGuard events
-        if (!WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(Entry.factory, null)) {
-            Bukkit.getLogger().severe("[WorldGuardEvents] Could not register the entry handler !");
-            Bukkit.getLogger().severe("[WorldGuardEvents] Please report this error. The plugin will now be disabled.");
-        }
-
         // ACF commands
         commandManager = new PaperCommandManager(this);
         registerACFCommands();
@@ -454,6 +448,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SkillPointsListener(), this);
         pm.registerEvents(new MobCleanupListener(), this);
         pm.registerEvents(new InventoryClickListener(), this);
+        pm.registerEvents(new RegionEventListener(), this);
         pm.registerEvents(new DeathListener(), this);
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new CampfireListener(), this);

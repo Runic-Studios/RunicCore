@@ -54,6 +54,9 @@ public class FromTheShadows extends Spell {
         // Apply buff
         if (event.getSpell() instanceof Unseen) {
             potentialBuffedPlayers.add(event.getCaster().getUniqueId());
+            double duration = ((DurationSpell) RunicCore.getSpellAPI().getSpell("Unseen")).getDuration();
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                    () -> potentialBuffedPlayers.remove(event.getCaster().getUniqueId()), (long) ((duration + 1) * 20L));
             return;
         }
         // Remove actual buff
@@ -75,13 +78,7 @@ public class FromTheShadows extends Spell {
         } else if (event.getSpell() instanceof Cocoon cocoon) {
             actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), cocoon);
         }
-        double duration = ((DurationSpell) RunicCore.getSpellAPI().getSpell("Unseen")).getDuration();
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            potentialBuffedPlayers.remove(event.getCaster().getUniqueId());
-            actuallyBuffedPlayers.remove(event.getCaster().getUniqueId());
-        }, (long) (duration + 1) * 20L);
     }
-
 
 }
 

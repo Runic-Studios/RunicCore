@@ -5,10 +5,7 @@ import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,6 +19,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    private static final int HEIGHT = 9;
     private static final int MAX_DIST = 10;
     private static final int SLOW_DURATION = 2;
     private static final double SNOWBALL_SPEED = 0.5;
@@ -30,7 +28,6 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
     private double damagePerLevel;
     private double damage;
     private double duration;
-    private Snowball snowball;
 
     public Blizzard() {
         super("Blizzard", CharacterClass.MAGE);
@@ -41,7 +38,6 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
     }
 
     private void blizzardDamage(Player player, Location location) {
-        new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.REDSTONE, location, Color.WHITE);
         for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
             player.getWorld().playSound(entity.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.25F, 1.0F);
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
@@ -51,14 +47,14 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
-                (
-                        player.getLocation(),
-                        player.getLocation().getDirection(),
-                        MAX_DIST,
-                        RAY_SIZE,
-                        entity -> isValidEnemy(player, entity)
-                );
+        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities(
+                player.getLocation(),
+                player.getLocation().getDirection(),
+                MAX_DIST,
+                RAY_SIZE,
+                entity -> isValidEnemy(player, entity)
+        );
+
         Location location;
         if (rayTraceResult == null) {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
@@ -69,6 +65,18 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
         } else {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
         }
+
+        if (location.getWorld() == null) {
+            Bukkit.getLogger().warning("There was a problem getting world for Blizzard!");
+            return;
+        }
+
+        // Cast a ray downwards to get the ground location
+        RayTraceResult groundRayTraceResult = location.getWorld().rayTraceBlocks(location, new Vector(0, -1, 0), MAX_DIST);
+        if (groundRayTraceResult != null && groundRayTraceResult.getHitBlock() != null) {
+            location = groundRayTraceResult.getHitBlock().getLocation().add(0.5, 1, 0.5);
+        }
+
         spawnBlizzard(player, location);
     }
 
@@ -120,17 +128,14 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onSnowballHit(ProjectileHitEvent event) {
-        if (!event.getEntity().equals(this.snowball)) return;
-        Location location = snowball.getLocation();
+        if (!(event.getEntity() instanceof Snowball snowball)) return;
         snowball.remove();
         event.setCancelled(true);
-        Player player = (Player) snowball.getShooter();
-        if (player == null) return;
-        blizzardDamage(player, location);
     }
 
     private void spawnBlizzard(Player player, Location location) {
         Vector launchPath = new Vector(0, -1.0, 0).multiply(SNOWBALL_SPEED);
+        Location cloudLoc = location.clone().add(0, HEIGHT, 0);
 
         new BukkitRunnable() {
             int count = 1;
@@ -141,35 +146,44 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
                     this.cancel();
                 else {
                     count++;
-
-                    Location cloudLoc = new Location(player.getWorld(), location.getX(),
-                            player.getLocation().getY(), location.getZ()).add(0, 7.5, 0);
-
+                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.REDSTONE, location, Color.WHITE);
+                    new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.SNOWBALL, location, Color.WHITE);
                     // Sounds, reduced volume due to quantity of snowballs
                     player.getWorld().playSound(cloudLoc, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.25f, 1.0f);
                     player.getWorld().spawnParticle(Particle.REDSTONE, cloudLoc,
                             25, 1.5f, 0.75f, 0.75f, new Particle.DustOptions(Color.WHITE, 20));
-
-                    // Spawn 9 snowballs in a 3x3 square
-                    snowball = spawnSnowball(player, cloudLoc, launchPath);
-                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
-                    spawnSnowball(player, cloudLoc.add(-2, 0, 0), launchPath);
-                    spawnSnowball(player, cloudLoc.add(2, 0, 1), launchPath);
-                    spawnSnowball(player, cloudLoc.add(0, 0, -2), launchPath);
-                    spawnSnowball(player, cloudLoc.add(-1, 0, 2), launchPath);
-                    spawnSnowball(player, cloudLoc.add(-1, 0, 0), launchPath);
-                    spawnSnowball(player, cloudLoc.add(0, 0, -2), launchPath);
-                    spawnSnowball(player, cloudLoc.add(1, 0, 0), launchPath);
+                    // Visual effect
+                    spawnSnowballs(player, cloudLoc, launchPath);
+                    // Damage
+                    blizzardDamage(player, location);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20); // drops a snowball every second
     }
 
-    private Snowball spawnSnowball(Player player, Location loc, Vector vec) {
+    private void spawnSnowball(Player player, Location loc, Vector vec) {
         Snowball snowball = player.getWorld().spawn(loc, Snowball.class);
         snowball.setVelocity(vec);
         snowball.setShooter(player);
-        return snowball;
     }
+
+    private void spawnSnowballs(Player player, Location cloudLoc, Vector launchPath) {
+        int numberOfSnowballs = 4;  // Number of snowballs to spawn
+
+        double fixedRadius = radius - 1;
+        for (int i = 0; i < numberOfSnowballs; i++) {
+            // Generate random offsets within the given radius
+            double offsetX = (Math.random() * (fixedRadius * 2)) - fixedRadius;
+            double offsetY = (Math.random() * (fixedRadius * 2)) - fixedRadius;
+            double offsetZ = (Math.random() * (fixedRadius * 2)) - fixedRadius;
+
+            // Create a new location offset by the random amounts
+            Location spawnLocation = cloudLoc.clone().add(offsetX, offsetY, offsetZ);
+
+            // Spawn the snowball at the offset location
+            spawnSnowball(player, spawnLocation, launchPath);
+        }
+    }
+
 }
 

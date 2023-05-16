@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
+public class Sprint extends Spell implements DurationSpell, PhysicalDamageSpell {
     private final Map<UUID, BukkitTask> sprintTasks = new HashMap<>();
     private double damage;
     private double damagePerLevel;
@@ -30,7 +30,7 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
         this.setDescription("For " + duration + "s, you gain a " +
                 "massive boost of speed! While the speed persists, your first melee attack against " +
                 "an enemy deals (" + damage + " + &f" + damagePerLevel +
-                "x&7 lvl) magicʔ damage!");
+                "x&7 lvl) physical⚔ damage!");
     }
 
     @Override
@@ -66,23 +66,23 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
     }
 
     @Override
-    public double getMagicDamage() {
+    public double getPhysicalDamage() {
         return damage;
     }
 
     @Override
-    public void setMagicDamage(double magicDamage) {
-        this.damage = magicDamage;
+    public void setPhysicalDamage(double physicalDamage) {
+        this.damage = physicalDamage;
     }
 
     @Override
-    public double getMagicDamagePerLevel() {
+    public double getPhysicalDamagePerLevel() {
         return damagePerLevel;
     }
 
     @Override
-    public void setMagicDamagePerLevel(double magicDamagePerLevel) {
-        this.damagePerLevel = magicDamagePerLevel;
+    public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
+        this.damagePerLevel = physicalDamagePerLevel;
     }
 
     @EventHandler
@@ -92,7 +92,7 @@ public class Sprint extends Spell implements DurationSpell, MagicDamageSpell {
         Player player = event.getPlayer();
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_BREAK, 0.5f, 0.5f);
         player.getWorld().spawnParticle(Particle.CRIT_MAGIC, event.getVictim().getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-        DamageUtil.damageEntitySpell(damage, event.getVictim(), player, this);
+        DamageUtil.damageEntityPhysical(damage, event.getVictim(), player, false, false, this);
         sprintTasks.remove(player.getUniqueId());
     }
 
