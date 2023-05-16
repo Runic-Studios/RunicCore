@@ -46,7 +46,7 @@ public class Ambush extends Spell implements DurationSpell, WarmupSpell {
                 "dealing an additional (" +
                 damage + " + &f" + damagePerLevel +
                 "x &7lvl) physical⚔ damage, blinding your opponent for " + blindDuration + "s, " +
-                "and granting you a a boost of speed for " +
+                "and granting you a boost of speed for " +
                 speedDuration + "s! Cannot occur more than once every " + cooldown + "s.");
     }
 

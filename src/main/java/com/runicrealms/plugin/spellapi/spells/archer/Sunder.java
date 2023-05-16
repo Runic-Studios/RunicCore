@@ -25,7 +25,7 @@ public class Sunder extends Spell implements DurationSpell {
         this.setIsPassive(true);
         this.setDescription("Your spells now sunder the armor of enemies! " +
                 "All enemies who take damage from &aPiercing Arrow " +
-                "&7or &aRain of Arrows &7suffer " + (percent * 100) + "% additional " +
+                "&7or &aRain Fire &7suffer " + (percent * 100) + "% additional " +
                 "physical⚔ damage from all sources for the next " + duration + "s.");
         startMapTask();
     }
