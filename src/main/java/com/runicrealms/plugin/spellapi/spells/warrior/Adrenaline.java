@@ -8,10 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.runicitems.Stat;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -46,17 +43,14 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
     private int damageBasedOnStacks(Player player) {
         // If the player is at max stacks, give them the max stacks damage
         if (adrenalineMap.get(player.getUniqueId()).getStacks() >= maxStacks) {
-//            Bukkit.broadcastMessage("max stacks damage");
             double damageBonus = multiplier * RunicCore.getStatAPI().getPlayerStrength(player.getUniqueId());
             damageBonus *= maxStacks;
             return (int) (baseValue + damageBonus);
         }
         // Otherwise increment stacks
         adrenalineMap.get(player.getUniqueId()).increment();
-//        Bukkit.broadcastMessage(adrenalineMap.get(player.getUniqueId()).getStacks() + " is stacks");
         double damageBonus = multiplier * RunicCore.getStatAPI().getPlayerStrength(player.getUniqueId());
         damageBonus *= adrenalineMap.get(player.getUniqueId()).getStacks();
-//        Bukkit.broadcastMessage("damage bonus is " + damageBonus + " percent");
         // If this current increment brought us to threshold, refresh duration
         if (adrenalineMap.get(player.getUniqueId()).getStacks() >= maxStacks) {
             refresh(player);
@@ -70,7 +64,7 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
         new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.RED);
-        adrenalineMap.put(player.getUniqueId(), new AdrenalineTracker(player.getUniqueId()));
+        adrenalineMap.put(player.getUniqueId(), new AdrenalineTracker(player));
     }
 
     @Override
@@ -157,31 +151,33 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
     }
 
     class AdrenalineTracker {
-        private final UUID uuid;
+        private final Player player;
         private final AtomicInteger stacks;
         private BukkitTask bukkitTask;
 
-        public AdrenalineTracker(UUID uuid) {
-            this.uuid = uuid;
+        public AdrenalineTracker(Player player) {
+            this.player = player;
             this.stacks = new AtomicInteger(0);
             this.bukkitTask =
                     Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                             () -> {
-                                adrenalineMap.remove(uuid);
-//                                Bukkit.broadcastMessage("effect timeout");
+                                adrenalineMap.remove(player.getUniqueId());
+                                player.sendMessage(ChatColor.GRAY + "Adrenaline has expired.");
                             }, (int) duration * 20L);
+        }
+
+        public Player getPlayer() {
+            return player;
         }
 
         public int getStacks() {
             return stacks.get();
         }
 
-        public UUID getUuid() {
-            return uuid;
-        }
-
         private void increment() {
             this.stacks.getAndIncrement();
+            // Send message feedback
+            player.sendMessage(ChatColor.GRAY + "Adrenaline stacks: " + ChatColor.YELLOW + this.stacks.get());
         }
 
         /**
@@ -192,8 +188,8 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
             this.bukkitTask =
                     Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                             () -> {
-                                adrenalineMap.remove(uuid);
-//                                Bukkit.broadcastMessage("effect timeout");
+                                adrenalineMap.remove(player.getUniqueId());
+                                player.sendMessage(ChatColor.GRAY + "Adrenaline has expired.");
                             }, (int) duration * 20L);
         }
     }

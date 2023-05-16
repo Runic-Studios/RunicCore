@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
@@ -48,6 +49,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
                 RADIANT_FIRE_MAP.remove(event.getCaster().getUniqueId());
                 event.getCaster().setGlowing(false);
+                event.getCaster().sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
             }, (int) stackDuration * 20L);
             RADIANT_FIRE_MAP.put(event.getCaster().getUniqueId(), new RadiantFireTask(new AtomicInteger(1), bukkitTask));
         } else {
@@ -57,6 +59,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
                 RADIANT_FIRE_MAP.remove(event.getCaster().getUniqueId());
                 event.getCaster().setGlowing(false);
+                event.getCaster().sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
             }, (int) stackDuration * 20L);
             RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getBukkitTask().cancel();
             RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).setBukkitTask(bukkitTask);
@@ -72,6 +75,8 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
                 event.getCaster().setGlowing(true);
             }
         }
+        // Send message feedback
+        event.getCaster().sendMessage(ChatColor.GRAY + "Radiant Fire stacks: " + ChatColor.YELLOW + RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getStacks().get());
     }
 
     @Override

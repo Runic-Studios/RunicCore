@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -69,6 +70,8 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
                 event.getCaster().setGlowing(true);
             }
         }
+        // Send message feedback
+        event.getCaster().sendMessage(ChatColor.GRAY + "Charged stacks: " + ChatColor.YELLOW + chargedMap.get(event.getCaster().getUniqueId()).getStacks().get());
     }
 
     /**
@@ -77,6 +80,7 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
     private void cleanupTask(Player player) {
         chargedMap.remove(player.getUniqueId());
         player.setGlowing(false);
+        player.sendMessage(ChatColor.GRAY + "Charged has expired.");
     }
 
     @Override
