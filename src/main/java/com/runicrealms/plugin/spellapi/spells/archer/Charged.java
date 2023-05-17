@@ -133,9 +133,10 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
         event.setAmount(event.getAmount() + damageToGrant);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
+        if (!event.willExecute()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         attemptToStackCharged(event);
     }

@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
@@ -11,6 +11,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -42,41 +43,42 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
      * If a player has the passive, attempts to add a stack of radiant fire when 'Sear' is cast.
      * Fails if the player is >= max stacks
      *
-     * @param event the spell cast event
+     * @param event the magic damage event
      */
-    private void attemptToStackRadiantFire(SpellCastEvent event) {
-        if (!RADIANT_FIRE_MAP.containsKey(event.getCaster().getUniqueId())) {
+    private void attemptToStackRadiantFire(MagicDamageEvent event) {
+        Player player = event.getPlayer();
+        if (!RADIANT_FIRE_MAP.containsKey(player.getUniqueId())) {
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                RADIANT_FIRE_MAP.remove(event.getCaster().getUniqueId());
-                event.getCaster().setGlowing(false);
-                event.getCaster().sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
+                RADIANT_FIRE_MAP.remove(player.getUniqueId());
+                player.setGlowing(false);
+                player.sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
             }, (int) stackDuration * 20L);
-            RADIANT_FIRE_MAP.put(event.getCaster().getUniqueId(), new RadiantFireTask(new AtomicInteger(1), bukkitTask));
+            RADIANT_FIRE_MAP.put(player.getUniqueId(), new RadiantFireTask(new AtomicInteger(1), bukkitTask));
         } else {
-            AtomicInteger stacks = RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getStacks();
+            AtomicInteger stacks = RADIANT_FIRE_MAP.get(player.getUniqueId()).getStacks();
 
             // Refresh stack duration
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> {
-                RADIANT_FIRE_MAP.remove(event.getCaster().getUniqueId());
-                event.getCaster().setGlowing(false);
-                event.getCaster().sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
+                RADIANT_FIRE_MAP.remove(player.getUniqueId());
+                player.setGlowing(false);
+                player.sendMessage(ChatColor.GRAY + "Radiant Fire has expired.");
             }, (int) stackDuration * 20L);
-            RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getBukkitTask().cancel();
-            RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).setBukkitTask(bukkitTask);
+            RADIANT_FIRE_MAP.get(player.getUniqueId()).getBukkitTask().cancel();
+            RADIANT_FIRE_MAP.get(player.getUniqueId()).setBukkitTask(bukkitTask);
 
             if (stacks.get() >= maxStacks) return;
             // Increment stacks (add glow if max stacks reached)
-            event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
-            event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.5f, 0.5f);
-            event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 1);
-            RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getAndIncrement();
-            stacks = RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getStacks();
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
+            player.playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.5f, 0.5f);
+            player.playSound(player.getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 1);
+            RADIANT_FIRE_MAP.get(player.getUniqueId()).getAndIncrement();
+            stacks = RADIANT_FIRE_MAP.get(player.getUniqueId()).getStacks();
             if (stacks.get() >= maxStacks) {
-                event.getCaster().setGlowing(true);
+                player.setGlowing(true);
             }
         }
         // Send message feedback
-        event.getCaster().sendMessage(ChatColor.GRAY + "Radiant Fire stacks: " + ChatColor.YELLOW + RADIANT_FIRE_MAP.get(event.getCaster().getUniqueId()).getStacks().get());
+        player.sendMessage(ChatColor.GRAY + "Radiant Fire stacks: " + ChatColor.YELLOW + RADIANT_FIRE_MAP.get(player.getUniqueId()).getStacks().get());
     }
 
     @Override
@@ -140,9 +142,10 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
     }
 
     @EventHandler
-    public void onSpellCast(SpellCastEvent event) {
+    public void onSpellCast(MagicDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (event.getSpell() == null) return;
         if (!(event.getSpell() instanceof Sear)) return;
         attemptToStackRadiantFire(event);
     }

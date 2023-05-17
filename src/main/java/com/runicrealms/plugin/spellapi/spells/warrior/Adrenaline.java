@@ -63,7 +63,7 @@ public class Adrenaline extends Spell implements AttributeSpell, DurationSpell {
     public void executeSpell(Player player, SpellItemType type) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 1.0f);
-        new HelixParticleFrame(0.5F, 3, 2.5F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.RED);
+        new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.REDSTONE, player.getLocation(), Color.RED);
         adrenalineMap.put(player.getUniqueId(), new AdrenalineTracker(player));
     }
 
