@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
@@ -20,17 +19,6 @@ import org.bukkit.event.Listener;
 import java.util.UUID;
 
 public class StatListener implements Listener {
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onBasicAttack(BasicAttackEvent event) {
-        if (event.isCancelled()) return;
-        if (event.getOriginalCooldownTicks() < 15) return; // Only affect ranged attacks
-        UUID uuid = event.getPlayer().getUniqueId();
-        double attackSpeedBonus = Stat.getRangedAttackSpeed() * RunicCore.getStatAPI().getPlayerDexterity(uuid);
-        int reducedTicks = (int) (event.getOriginalCooldownTicks() * attackSpeedBonus);
-        // Cooldown cannot drop beneath a certain value
-        event.setCooldownTicks(Math.max(event.getCooldownTicks() - reducedTicks, BasicAttackEvent.MINIMUM_COOLDOWN_TICKS));
-    }
 
     @EventHandler
     public void onHealthRegen(HealthRegenEvent event) {

@@ -149,10 +149,22 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
                     final Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
                     meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
                     EntityTrail.entityTrail(meteor, Particle.FLAME);
+                    meteor.setInvulnerable(true);
                     meteor.setIsIncendiary(false);
                     meteor.setYield(0F);
                     meteor.setShooter(player);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 0.2f);
+                    // Repeatedly set velocity to prevent players redirecting meteor
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (!meteor.isDead()) {
+                                meteor.setVelocity(velocity);
+                            } else {
+                                this.cancel();
+                            }
+                        }
+                    }.runTaskTimer(RunicCore.getInstance(), 0L, 2L); // Every 2 ticks (1/10th of a second)
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 20L);
