@@ -3,6 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
@@ -59,6 +60,16 @@ public class EnemyVerifyListener implements Listener {
         // Cancel damage in safe zones
         if (RunicCore.getRegionAPI().isSafezone(victimPlayer.getLocation())) {
             event.setCancelled(true);
+            return;
         }
+
+        // Cancel enemy check in the dungeon world
+        World casterWorld = caster.getWorld();
+        World victimWorld = victim.getWorld();
+        if (casterWorld.getName().equalsIgnoreCase("dungeons")
+                || victimWorld.getName().equalsIgnoreCase("dungeons")) {
+            event.setCancelled(true);
+        }
+
     }
 }
