@@ -62,7 +62,7 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         this.damagePerLevel = magicDamagePerLevel;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onSnowballDamage(EntityDamageByEntityEvent event) {
 
         // only listen for our snowball

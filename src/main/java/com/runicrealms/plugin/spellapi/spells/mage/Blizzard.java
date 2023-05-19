@@ -27,16 +27,21 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
     private static final int HEIGHT = 9;
     private static final int MAX_DIST = 10;
     private static final int SLOW_DURATION = 2;
     private static final double SNOWBALL_SPEED = 0.5;
     private static final double RAY_SIZE = 1.0D;
-    private double radius;
-    private double damagePerLevel;
+    // Add a set for the blizzard snowballs
+    private final Set<Snowball> blizzardSnowballs = new HashSet<>();
     private double damage;
+    private double damagePerLevel;
     private double duration;
+    private double radius;
 
     public Blizzard() {
         super("Blizzard", CharacterClass.MAGE);
@@ -129,17 +134,24 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
         this.radius = radius;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSnowballDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Snowball)
+        if (event.getDamager() instanceof Snowball) {
             event.setCancelled(true);
+        }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onSnowballHit(ProjectileHitEvent event) {
+        if (event.isCancelled()) return;
         if (!(event.getEntity() instanceof Snowball snowball)) return;
-        snowball.remove();
-        event.setCancelled(true);
+
+        // Check if snowball was created by Blizzard spell
+        if (blizzardSnowballs.contains(snowball)) {
+            snowball.remove();
+            blizzardSnowballs.remove(snowball); // Remove snowball from set
+            event.setCancelled(true);
+        }
     }
 
     private void spawnBlizzard(Player player, Location location) {
@@ -174,6 +186,7 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
         Snowball snowball = player.getWorld().spawn(loc, Snowball.class);
         snowball.setVelocity(vec);
         snowball.setShooter(player);
+        blizzardSnowballs.add(snowball); // Add snowball to set
     }
 
     private void spawnSnowballs(Player player, Location cloudLoc, Vector launchPath) {

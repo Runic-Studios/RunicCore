@@ -25,6 +25,7 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 
 public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpell, RadiusSpell, WarmupSpell {
+    private static final int ARROW_COUNT = 6;
     private static final int HEIGHT = 8;
     private static final double BEAM_WIDTH = 1.5;
     private static final Random RANDOM = new Random();
@@ -44,6 +45,17 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        // Initial sound queue
+        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
+            for (int i = 0; i < ARROW_COUNT; i++) {
+                Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 3.0F, 2.0F));
+                try {
+                    Thread.sleep(100);  // 100 milliseconds pause between each sound
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
                 (
                         player.getLocation(),
@@ -128,20 +140,20 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
         this.warmup = warmup;
     }
 
-    public void playArrowFlurry(Player player, Location location, int arrowsCount) {
+    public void playArrowFlurry(Player player, Location location) {
         if (location.getWorld() == null) {
             Bukkit.getLogger().warning("There was a problem getting Rain Fire world!");
             return;
         }
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            for (int i = 0; i < arrowsCount; i++) {
+            for (int i = 0; i < ARROW_COUNT; i++) {
                 Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
                     double offsetX = (RANDOM.nextDouble() * 2 * radius) - radius;
                     double offsetZ = (RANDOM.nextDouble() * 2 * radius) - radius;
 
                     Location randomLocation = location.clone().add(offsetX, 0, offsetZ);
 
-                    location.getWorld().playSound(randomLocation, Sound.ENTITY_ARROW_HIT, 2.0F, 1.0F);
+                    location.getWorld().playSound(randomLocation, Sound.ENTITY_ARROW_HIT, 3.0F, 1.0F);
                     final Location[] trailLoc = {randomLocation.clone().add(0, HEIGHT, 0)};
                     VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], randomLocation.clone().subtract(0, 20, 0), 2.0D, 5);
                 });
@@ -157,10 +169,10 @@ public class RainFire extends Spell implements DistanceSpell, PhysicalDamageSpel
     private void rainFire(Player player, Location location) {
         assert location.getWorld() != null;
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
-        VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.0D, 5);
+        VectorUtil.drawLine(player, Particle.CRIT, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 3.0D, 5);
         new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CRIT, location, Color.RED);
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            playArrowFlurry(player, location, 6);
+            playArrowFlurry(player, location);
             new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.FLAME, location, Color.RED);
             for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidEnemy(player, target))) {
                 DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, true, this);

@@ -31,7 +31,7 @@ public class EnemyVerifyListener implements Listener {
         }
 
         // target must be alive
-        if (!(victim instanceof LivingEntity livingVictim)) {
+        if (!(victim instanceof LivingEntity)) {
             event.setCancelled(true);
             return;
         }
@@ -47,15 +47,18 @@ public class EnemyVerifyListener implements Listener {
             return;
         }
 
-        // ignore NPCs
-        if (livingVictim.hasMetadata("NPC")) {
+        // Handle player-specific checks
+        if (!(victim instanceof Player victimPlayer)) return;
+
+        // Skip party members
+        if (RunicCore.getPartyAPI().isPartyMember(caster.getUniqueId(), (Player) victim)) {
             event.setCancelled(true);
             return;
         }
-        if (!(victim instanceof Player)) return;
 
-        // skip party members
-        if (RunicCore.getPartyAPI().isPartyMember(caster.getUniqueId(), (Player) victim))
+        // Cancel damage in safe zones
+        if (RunicCore.getRegionAPI().isSafezone(victimPlayer.getLocation())) {
             event.setCancelled(true);
+        }
     }
 }
