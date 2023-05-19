@@ -89,6 +89,7 @@ import com.runicrealms.plugin.listeners.MinLevelListener;
 import com.runicrealms.plugin.listeners.MobCleanupListener;
 import com.runicrealms.plugin.listeners.MobMechanicsListener;
 import com.runicrealms.plugin.listeners.MobTagger;
+import com.runicrealms.plugin.listeners.NpcListener;
 import com.runicrealms.plugin.listeners.PreCommandListener;
 import com.runicrealms.plugin.listeners.ResourcePackListener;
 import com.runicrealms.plugin.listeners.RuneListener;
@@ -415,6 +416,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();
         new DaylightCycleListener();
+        new NpcListener();
+
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
