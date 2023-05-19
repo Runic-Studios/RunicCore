@@ -3,25 +3,29 @@ package com.runicrealms.plugin.player.death;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GravestoneManager implements Listener {
-    private final Map<UUID, Gravestone> gravestoneMap = new HashMap<>();
+    private final ConcurrentHashMap<UUID, Gravestone> gravestoneMap = new ConcurrentHashMap<>();
 
     public GravestoneManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
@@ -64,6 +68,22 @@ public class GravestoneManager implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (gravestoneMap.isEmpty()) return;
+        gravestoneMap.forEach((uuid, gravestone) -> {
+            if (gravestone.getInventory().equals(event.getInventory())) {
+                // If the action was a placement action (i.e., the clicked inventory is the top one), cancel the event.
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+                    return;
+                RunicItem runicItem = RunicItemsAPI.getRunicItemFromItemStack(event.getCurrentItem());
+                if (RunicItemsAPI.containsBlockedTag(runicItem))
+                    event.setCancelled(true);
+            }
+        });
+    }
+
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {

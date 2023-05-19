@@ -71,7 +71,7 @@ public class Fireball extends Spell implements MagicDamageSpell {
         if (!(event.getHitEntity() instanceof LivingEntity victim)) return;
         if (!isValidEnemy(player, victim)) return;
         DamageUtil.damageEntitySpell(this.magicDamage, victim, player, this);
-        victim.getWorld().spawnParticle(Particle.SNOWBALL, victim.getEyeLocation(), 5, 0.5F, 0.5F, 0.5F, 0);
+        victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
     }
 }
