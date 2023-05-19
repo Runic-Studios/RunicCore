@@ -75,19 +75,24 @@ import com.runicrealms.plugin.spellapi.spells.mage.WintersGrasp;
 import com.runicrealms.plugin.spellapi.spells.rogue.Backstab;
 import com.runicrealms.plugin.spellapi.spells.rogue.CallOfTheDeep;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cannonfire;
+import com.runicrealms.plugin.spellapi.spells.rogue.Castigate;
 import com.runicrealms.plugin.spellapi.spells.rogue.Challenger;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cocoon;
+import com.runicrealms.plugin.spellapi.spells.rogue.Condemn;
 import com.runicrealms.plugin.spellapi.spells.rogue.Cripple;
 import com.runicrealms.plugin.spellapi.spells.rogue.FromTheShadows;
 import com.runicrealms.plugin.spellapi.spells.rogue.Harpoon;
+import com.runicrealms.plugin.spellapi.spells.rogue.Hereticize;
 import com.runicrealms.plugin.spellapi.spells.rogue.Kneebreak;
 import com.runicrealms.plugin.spellapi.spells.rogue.Lunge;
 import com.runicrealms.plugin.spellapi.spells.rogue.Predator;
 import com.runicrealms.plugin.spellapi.spells.rogue.RapidReload;
+import com.runicrealms.plugin.spellapi.spells.rogue.SilverBolt;
 import com.runicrealms.plugin.spellapi.spells.rogue.SliceAndDice;
 import com.runicrealms.plugin.spellapi.spells.rogue.Sprint;
 import com.runicrealms.plugin.spellapi.spells.rogue.TwinFangs;
 import com.runicrealms.plugin.spellapi.spells.rogue.Unseen;
+import com.runicrealms.plugin.spellapi.spells.rogue.WardingGlyph;
 import com.runicrealms.plugin.spellapi.spells.warrior.Adrenaline;
 import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
@@ -426,6 +431,11 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new PiercingArrow());
         this.spellList.add(new Sunder());
         this.spellList.add(new LeapingShot());
+        this.spellList.add(new SilverBolt());
+        this.spellList.add(new Castigate());
+        this.spellList.add(new Condemn());
+        this.spellList.add(new WardingGlyph());
+        this.spellList.add(new Hereticize());
         /*
         Items
          */

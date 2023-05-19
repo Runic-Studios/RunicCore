@@ -20,23 +20,6 @@ public class RogueTreeUtil {
                     SpellData.DEFAULT_ROGUE
             );
 
-    public static List<Perk> brewmasterPerkList() {
-        List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(120, 1, 0, 1, "Lunge"));
-        perks.add(new PerkBaseStat(121, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(122, 1, 0, 1, "Kneebreak"));
-        perks.add(new PerkBaseStat(123, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(124, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(125, 1, 0, 1, "Cripple"));
-        perks.add(new PerkBaseStat(126, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(127, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkBaseStat(129, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(128, 1, 0, 1, "Riposte"));
-        perks.add(new PerkBaseStat(130, 1, 0, 3, Stat.STRENGTH));
-        perks.add(new PerkSpell(131, 1, 0, 1, "Challenger"));
-        return perks;
-    }
-
     public static List<Perk> corsairPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(132, 1, 0, 1, "Cannonfire"));
@@ -68,6 +51,23 @@ public class RogueTreeUtil {
         perks.add(new PerkSpell(116, 1, 0, 1, "Unseen"));
         perks.add(new PerkBaseStat(118, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(119, 1, 0, 1, "From The Shadows"));
+        return perks;
+    }
+
+    public static List<Perk> witchHunterPerkList() {
+        List<Perk> perks = new ArrayList<>();
+        perks.add(new PerkSpell(120, 1, 0, 1, "Silver Bolt"));
+        perks.add(new PerkBaseStat(121, 1, 0, 5, Stat.DEXTERITY));
+        perks.add(new PerkSpell(122, 1, 0, 1, "Castigate"));
+        perks.add(new PerkBaseStat(123, 1, 0, 3, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(124, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkSpell(125, 1, 0, 1, "Condemn"));
+        perks.add(new PerkBaseStat(126, 1, 0, 3, Stat.INTELLIGENCE));
+        perks.add(new PerkBaseStat(127, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(129, 1, 0, 5, Stat.INTELLIGENCE));
+        perks.add(new PerkSpell(128, 1, 0, 1, "Warding Glyph"));
+        perks.add(new PerkBaseStat(130, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkSpell(131, 1, 0, 1, "Hereticize"));
         return perks;
     }
 

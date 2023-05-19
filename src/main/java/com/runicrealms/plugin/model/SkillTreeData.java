@@ -283,7 +283,7 @@ public class SkillTreeData implements SessionDataRedis {
             case PYROMANCER -> MageTreeUtil.pyromancerPerkList();
             case SPELLSWORD -> MageTreeUtil.spellswordPerkList();
             case CORSAIR -> RogueTreeUtil.corsairPerkList();
-            case BREWMASTER -> RogueTreeUtil.brewmasterPerkList();
+            case WITCH_HUNTER -> RogueTreeUtil.witchHunterPerkList();
             case NIGHTCRAWLER -> RogueTreeUtil.nightcrawlerPerkList();
             case BERSERKER -> WarriorTreeUtil.berserkerPerkList();
             case EARTHSHAKER -> WarriorTreeUtil.earthshakerPerkList();
