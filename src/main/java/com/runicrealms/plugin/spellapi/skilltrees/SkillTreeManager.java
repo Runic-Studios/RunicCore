@@ -5,7 +5,11 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.SkillTreeAPI;
 import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
-import com.runicrealms.plugin.model.*;
+import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.model.CorePlayerData;
+import com.runicrealms.plugin.model.SkillTreeData;
+import com.runicrealms.plugin.model.SkillTreePosition;
+import com.runicrealms.plugin.model.SpellData;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
@@ -17,7 +21,14 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**

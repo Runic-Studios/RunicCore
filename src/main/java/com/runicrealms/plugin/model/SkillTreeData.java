@@ -6,14 +6,22 @@ import com.runicrealms.plugin.classes.SubClass;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
-import com.runicrealms.plugin.spellapi.skilltrees.util.*;
+import com.runicrealms.plugin.spellapi.skilltrees.util.ArcherTreeUtil;
+import com.runicrealms.plugin.spellapi.skilltrees.util.ClericTreeUtil;
+import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
+import com.runicrealms.plugin.spellapi.skilltrees.util.RogueTreeUtil;
+import com.runicrealms.plugin.spellapi.skilltrees.util.WarriorTreeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class SkillTreeData implements SessionDataRedis {
     public static final int FIRST_POINT_LEVEL = 10;

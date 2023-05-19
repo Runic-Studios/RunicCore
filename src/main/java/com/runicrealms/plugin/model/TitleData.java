@@ -3,7 +3,12 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.RunicCore;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class TitleData implements SessionDataRedis {
     public static final String DATA_SECTION_PREFIX = "title:prefix";

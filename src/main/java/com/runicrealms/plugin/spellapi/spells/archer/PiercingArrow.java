@@ -16,7 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class PiercingArrow extends Spell implements DistanceSpell, PhysicalDamageSpell {
     public static final double BEAM_WIDTH = 0.5;

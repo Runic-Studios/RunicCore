@@ -5,7 +5,11 @@ import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.character.api.CharacterDeleteEvent;
 import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.model.*;
+import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.model.ClassData;
+import com.runicrealms.plugin.model.CoreCharacterData;
+import com.runicrealms.plugin.model.CorePlayerData;
+import com.runicrealms.plugin.model.ProjectedData;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,7 +34,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Manages the character select menu which the player sees upon login

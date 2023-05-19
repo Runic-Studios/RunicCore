@@ -23,7 +23,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Ambush extends Spell implements DurationSpell, WarmupSpell {
     private static final String AMBUSH_ARROW_KEY = "ambush";

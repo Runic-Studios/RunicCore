@@ -10,7 +10,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class CoreCharacterData implements SessionDataRedis {
     public static final List<String> FIELDS = new ArrayList<>() {{

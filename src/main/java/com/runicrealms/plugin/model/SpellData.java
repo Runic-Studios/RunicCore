@@ -3,7 +3,11 @@ package com.runicrealms.plugin.model;
 import com.runicrealms.plugin.RunicCore;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class SpellData implements SessionDataRedis {
     public static final List<String> FIELDS = new ArrayList<>() {{

@@ -9,7 +9,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import redis.clients.jedis.Jedis;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Intermediary object used to read data from mongo or redis and then store data back in redis and mongo

@@ -6,7 +6,12 @@ import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.PolarBear;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 
 public class Taunt extends Spell {

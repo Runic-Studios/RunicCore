@@ -11,7 +11,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class FromTheShadows extends Spell {
     private final Set<UUID> potentialBuffedPlayers = new HashSet<>();
