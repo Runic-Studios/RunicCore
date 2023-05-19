@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -138,6 +139,7 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
         if (event.isCancelled()) return;
         if (!event.willExecute()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        if (event.getSpell() instanceof Potion) return;
         attemptToStackCharged(event);
     }
 
