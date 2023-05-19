@@ -2,6 +2,7 @@ package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;

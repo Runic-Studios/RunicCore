@@ -73,6 +73,7 @@ import com.runicrealms.plugin.listeners.CraftingListener;
 import com.runicrealms.plugin.listeners.CreatureSpawnListener;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.listeners.DaylightCycleListener;
+import com.runicrealms.plugin.listeners.DeathListener;
 import com.runicrealms.plugin.listeners.DurabilityListener;
 import com.runicrealms.plugin.listeners.EnderpearlListener;
 import com.runicrealms.plugin.listeners.EnemyVerifyListener;

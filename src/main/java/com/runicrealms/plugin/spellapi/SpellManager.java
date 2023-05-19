@@ -62,6 +62,7 @@ import com.runicrealms.plugin.spellapi.spells.mage.ColdTouch;
 import com.runicrealms.plugin.spellapi.spells.mage.Conflagration;
 import com.runicrealms.plugin.spellapi.spells.mage.DragonsBreath;
 import com.runicrealms.plugin.spellapi.spells.mage.FireBlast;
+import com.runicrealms.plugin.spellapi.spells.mage.Fireball;
 import com.runicrealms.plugin.spellapi.spells.mage.Frostbite;
 import com.runicrealms.plugin.spellapi.spells.mage.Frostbolt;
 import com.runicrealms.plugin.spellapi.spells.mage.Manashield;
