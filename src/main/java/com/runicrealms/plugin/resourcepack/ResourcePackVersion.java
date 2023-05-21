@@ -6,9 +6,9 @@ package com.runicrealms.plugin.resourcepack;
  */
 public enum ResourcePackVersion {
     // Every version is the same now actually
-    MC_1_16("https://www.dropbox.com/s/vj2mr0w0jx7xk51/RR%20Pack%201.19.3-Compatible.zip?dl=1", 578, 754),
-    MC_1_17("https://www.dropbox.com/s/vj2mr0w0jx7xk51/RR%20Pack%201.19.3-Compatible.zip?dl=1", 754, 756),
-    MC_1_18("https://www.dropbox.com/s/vj2mr0w0jx7xk51/RR%20Pack%201.19.3-Compatible.zip?dl=1", 756, 9999);
+    MC_1_16("https://www.dropbox.com/s/gx1cv0fp0rylxol/RR%20Resoucepack%205.21.23.zip?dl=1", 578, 754),
+    MC_1_17("https://www.dropbox.com/s/gx1cv0fp0rylxol/RR%20Resoucepack%205.21.23.zip?dl=1", 754, 756),
+    MC_1_18("https://www.dropbox.com/s/gx1cv0fp0rylxol/RR%20Resoucepack%205.21.23.zip?dl=1", 756, 9999);
 
     private final String link;
     private final Integer minVersion;
