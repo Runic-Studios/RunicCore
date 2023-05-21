@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -25,19 +26,20 @@ import org.bukkit.util.Vector;
 
 import java.util.Map;
 
-public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
     private double damage;
     private double radius;
     private double damagePerLevel;
     private double duration;
     private double multiplier;
+    private double warmup;
 
     public CallOfTheDeep() {
         super("Call Of The Deep", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("After pulling your target towards you, " +
+        this.setDescription("After " + warmup + "s, " +
                 "your &aHarpoon &7spell now summons a whirlpool " +
-                "at their feet for " + duration + "s! The whirlpool is " + radius + " " +
+                "at your target's feet for " + duration + "s! The whirlpool is " + radius + " " +
                 "blocks wide, deals (" + damage + " + &f" + damagePerLevel + "x&7 lvl) " +
                 "magicʔ damage to enemies inside each second and attempts to drag them " +
                 "into the center.");
@@ -91,6 +93,16 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
         this.radius = radius;
     }
 
+    @Override
+    public double getWarmup() {
+        return warmup;
+    }
+
+    @Override
+    public void setWarmup(double warmup) {
+        this.warmup = warmup;
+    }
+
     @EventHandler(priority = EventPriority.HIGH) // runs last
     public void onPredatorHit(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
@@ -98,7 +110,7 @@ public class CallOfTheDeep extends Spell implements DurationSpell, MagicDamageSp
         // Summon whirlpool a few ticks after harpoon is landed
         if (event.getSpell() != null && event.getSpell() instanceof Harpoon) {
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                    () -> summonWhirlPool(event.getPlayer(), event.getVictim()), 10L); // 0.5s
+                    () -> summonWhirlPool(event.getPlayer(), event.getVictim()), (long) warmup * 20L);
         }
     }
 
