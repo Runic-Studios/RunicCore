@@ -375,6 +375,9 @@ public class RunicCore extends JavaPlugin implements Listener {
         // Load config defaults
         this.loadConfig();
 
+        // Important
+        instance = this;
+
         // Set database stuff first
         converterAPI = new ConverterHandler();
         redisAPI = new RedisManager();
@@ -403,7 +406,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         playerDataAPI = databaseManager;
 
         // instantiate everything we need
-        instance = this;
         taskChainFactory = BukkitTaskChainFactory.create(this);
         combatAPI = new CombatManager();
         lootChestManager = new LootChestManager();

@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 public class ArtifactOnKillListener implements Listener {
 
     public ArtifactOnKillListener() {
-        Bukkit.getPluginManager().registerEvents(new ArtifactOnKillListener(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     /**

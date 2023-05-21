@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public class ArtifactOnHitListener implements Listener {
 
     public ArtifactOnHitListener() {
-        Bukkit.getPluginManager().registerEvents(new ArtifactOnHitListener(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

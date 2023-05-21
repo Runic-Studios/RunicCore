@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 public class NpcListener implements Listener {
 
     public NpcListener() {
-        Bukkit.getPluginManager().registerEvents(new NpcListener(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     /**

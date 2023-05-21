@@ -31,7 +31,7 @@ public class RedisManager implements Listener, RedisAPI {
     private final JedisPool jedisPool;
 
     public RedisManager() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(MAX_CONNECTIONS); // max pool size
         jedisPoolConfig.setMaxIdle(MAX_CONNECTIONS);

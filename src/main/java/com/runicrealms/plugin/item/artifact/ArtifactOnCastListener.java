@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public class ArtifactOnCastListener implements Listener {
 
     public ArtifactOnCastListener() {
-        Bukkit.getPluginManager().registerEvents(new ArtifactOnCastListener(), RunicCore.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // last
