@@ -33,7 +33,7 @@ public class MusicListener implements Listener {
                         player.getLocation(),
                         "music." + MUSIC_REGION_MAP.get(regionName),
                         SoundCategory.MUSIC,
-                        0.2f,
+                        0.5f,
                         1.0f
                 ), 20L);
     }
