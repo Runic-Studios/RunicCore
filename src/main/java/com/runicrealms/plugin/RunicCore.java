@@ -105,6 +105,7 @@ import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SessionDataManager;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
+import com.runicrealms.plugin.music.MusicListener;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
@@ -505,6 +506,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SpellUseListener(), this);
         pm.registerEvents(new ArmorTypeListener(), this);
         pm.registerEvents(new PlayerJoinListener(), this);
+        pm.registerEvents(new MusicListener(), this);
         pm.registerEvents(new ManaListener(), this);
         pm.registerEvents(new PlayerLevelListener(), this);
         pm.registerEvents(new CraftingListener(), this);
