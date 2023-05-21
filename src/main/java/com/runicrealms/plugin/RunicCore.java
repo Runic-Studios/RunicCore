@@ -89,6 +89,7 @@ import com.runicrealms.plugin.listeners.MinLevelListener;
 import com.runicrealms.plugin.listeners.MobCleanupListener;
 import com.runicrealms.plugin.listeners.MobMechanicsListener;
 import com.runicrealms.plugin.listeners.MobTagger;
+import com.runicrealms.plugin.listeners.NoJockeysListener;
 import com.runicrealms.plugin.listeners.PreCommandListener;
 import com.runicrealms.plugin.listeners.ResourcePackListener;
 import com.runicrealms.plugin.listeners.RuneListener;
@@ -545,6 +546,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryClickListener(), this);
         pm.registerEvents(new RegionEventListener(), this);
         pm.registerEvents(new DeathListener(), this);
+        pm.registerEvents(new NoJockeysListener(), this);
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new CampfireListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
