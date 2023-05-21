@@ -31,6 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeathListener implements Listener {
+    private static final String DUNGEON_DEATH_MESSAGE = ChatColor.RED + "You died in an instance! Your inventory has been returned.";
+    private static final String GRAVESTONE_DEATH_MESSAGE = ChatColor.translateAlternateColorCodes('&',
+            "&cYou have died! Your armor and hotbar have been returned. " +
+                    "Any soulbound, quest, and untradeable items have been returned also. " +
+                    "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
+                    Gravestone.PRIORITY_TIME + "s until it can be looted by others.");
+    private static final String NO_LOCATION_FOUND = ChatColor.RED + "No nearby respawn point could be found, so you have been returned to your hearthstone location.";
 
     /**
      * This method controls the dropping of items.
@@ -98,29 +105,30 @@ public class DeathListener implements Listener {
         victim.setFoodLevel(20);
         ManaListener.calculateMaxMana(victim);
 
-        // Check for dungeon
-        DungeonLocation dungeonLocation = RunicCore.getRegionAPI().getDungeonFromLocation(victim.getLocation());
-        if (dungeonLocation == null) {
-            victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
-
-            victim.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    "&cYou have died! Your armor and hotbar have been returned. " +
-                            "Any soulbound, quest, and untradeable items have been returned also. " +
-                            "Your &4&lGRAVESTONE &chas the remainder of your items and will last for " +
-                            Gravestone.PRIORITY_TIME + "s until it can be looted by others."));
-        } else {
+        // Players don't lose items in dungeons
+        if (victim.getWorld().getName().equalsIgnoreCase("dungeons")) {
+            // Check for dungeon
+            DungeonLocation dungeonLocation = RunicCore.getRegionAPI().getDungeonFromLocation(victim.getLocation());
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-                victim.teleport(dungeonLocation.getLocation());
-                victim.sendMessage(ChatColor.RED + "You died in an instance! Your inventory has been returned.");
+                victim.sendMessage(DUNGEON_DEATH_MESSAGE);
+                if (dungeonLocation != null)
+                    victim.teleport(dungeonLocation.getLocation());
+                else {
+                    victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+                    victim.sendMessage(NO_LOCATION_FOUND);
+                }
             });
+        } else {
+            victim.teleport(CityLocation.getLocationFromItemStack(victim.getInventory().getItem(8)));
+            victim.sendMessage(GRAVESTONE_DEATH_MESSAGE);
         }
 
-        // particles, sounds
+        // Particles, sounds
         victim.playSound(victim.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1.0f, 1);
         victim.playSound(victim.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.25f, 1);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 80, 0));
 
-        // flag leave combat for PvP and other things
+        // Flag leave combat for PvP and other things
         LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(victim);
         Bukkit.getPluginManager().callEvent(leaveCombatEvent);
     }
