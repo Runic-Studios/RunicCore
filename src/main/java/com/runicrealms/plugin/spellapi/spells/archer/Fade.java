@@ -1,7 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -40,7 +41,7 @@ public class Fade extends Spell implements DurationSpell {
                         ((CraftPlayer) player).getHandle());
 
         // hide the player, prevent them from disappearing in tab
-        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+        for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player loaded = Bukkit.getPlayer(uuid);
             if (loaded == null) continue;
             loaded.hidePlayer(plugin, player);
@@ -78,7 +79,7 @@ public class Fade extends Spell implements DurationSpell {
     }
 
     private void reappear(Player player) {
-        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+        for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player loaded = Bukkit.getPlayer(uuid);
             if (loaded == null) continue;
             loaded.showPlayer(plugin, player);

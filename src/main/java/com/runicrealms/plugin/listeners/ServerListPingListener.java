@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -2,10 +2,11 @@ package com.runicrealms.plugin.listeners;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
@@ -58,7 +59,7 @@ public class StaffListener implements Listener {
         if (cooldown != 0) return Pair.pair(false, null);
 
         // Check for mage
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className == null) return Pair.pair(false, null);
         if (!className.equals("Mage")) return Pair.pair(false, null);
         if (RunicCore.getSpellAPI().isCasting(player)) return Pair.pair(false, null);

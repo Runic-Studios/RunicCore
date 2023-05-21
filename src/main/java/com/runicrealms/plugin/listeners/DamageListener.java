@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
@@ -39,7 +39,7 @@ public class DamageListener implements Listener {
 
     public static boolean matchClass(Player player, boolean sendMessage) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className == null) return false;
         switch (mainHand.getType()) {
             case BOW:

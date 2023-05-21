@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -57,7 +58,7 @@ public class CombatManager implements CombatAPI, Listener {
      */
     private void startCombatTask() {
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
                 if (playersInCombat.containsKey(uuid)) {

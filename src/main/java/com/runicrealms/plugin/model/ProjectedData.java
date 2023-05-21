@@ -1,7 +1,8 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import org.bukkit.entity.Player;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -26,7 +27,7 @@ public class ProjectedData {
         this.uuid = player.getUniqueId();
         this.playerCharacters = new HashMap<>();
         try {
-            for (int i = 1; i <= RunicCore.getDataAPI().getMaxCharacterSlot(); i++) {
+            for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
                 // Try to project character data from redis
                 boolean foundInRedis = false;
 //                boolean foundInRedis = updateFromRedis(this.uuid, i, jedis); // todo: add redis logic back
@@ -60,7 +61,7 @@ public class ProjectedData {
      * Used when making a new character
      */
     public int findFirstUnusedSlot() {
-        for (int i = 1; i <= RunicCore.getDataAPI().getMaxCharacterSlot(); i++) {
+        for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
             if (this.playerCharacters.get(i) == null) {
                 return i;
             }
@@ -91,7 +92,7 @@ public class ProjectedData {
                 .include("coreCharacterDataMap." + slot + "." + CharacterField.CLASS_TYPE.getField())
                 .include("coreCharacterDataMap." + slot + "." + CharacterField.CLASS_LEVEL.getField())
                 .include("coreCharacterDataMap." + slot + "." + CharacterField.CLASS_EXP.getField());
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getMongoTemplate().findOne(query, CorePlayerData.class);
+        CorePlayerData corePlayerData = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().findOne(query, CorePlayerData.class);
         if (corePlayerData == null) return null;
         if (corePlayerData.getCharacter(slot) == null) return null; // character not found
         CharacterClass classType = corePlayerData.getCharacter(slot).getClassType();

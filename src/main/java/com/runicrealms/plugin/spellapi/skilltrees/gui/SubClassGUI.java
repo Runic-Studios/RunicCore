@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.SubClass;
+import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.SkillTreePosition;
-import com.runicrealms.plugin.utilities.ChatUtils;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,7 +61,7 @@ public class SubClassGUI implements InventoryHolder {
      * @return an ItemStack icon
      */
     private ItemStack subClassItem(SkillTreePosition position) {
-        SubClass subClass = SubClass.determineSubClass(RunicCore.getCharacterAPI().getPlayerClassValue(player.getUniqueId()), position);
+        SubClass subClass = SubClass.determineSubClass(RunicDatabase.getAPI().getCharacterAPI().getPlayerClassValue(player.getUniqueId()), position);
         String displayName = subClass != null ? subClass.getName() : "";
         ItemStack subClassItem = subClass != null ? subClass.getItemStack() : new ItemStack(Material.STONE);
         ItemMeta meta = subClassItem.getItemMeta();

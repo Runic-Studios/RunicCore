@@ -1,6 +1,6 @@
 package com.runicrealms.plugin;
 
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

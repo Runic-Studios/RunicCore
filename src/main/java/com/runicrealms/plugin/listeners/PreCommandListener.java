@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +21,7 @@ public class PreCommandListener implements Listener {
         Player player = event.getPlayer();
 
         // Check if the player executing the command is in the list of loaded players
-        if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(player.getUniqueId())) {
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(player.getUniqueId())) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "You cannot execute commands before your character is loaded!");
         }

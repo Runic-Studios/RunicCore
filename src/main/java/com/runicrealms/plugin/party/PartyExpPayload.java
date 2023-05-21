@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.party;
 
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.listeners.RunicExpListener;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

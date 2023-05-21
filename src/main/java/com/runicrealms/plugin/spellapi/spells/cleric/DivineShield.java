@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import org.bukkit.Bukkit;

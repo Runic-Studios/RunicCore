@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;

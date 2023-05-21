@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.SpellHealEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;

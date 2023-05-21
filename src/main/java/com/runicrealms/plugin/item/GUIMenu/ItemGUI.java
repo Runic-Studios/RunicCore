@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item.GUIMenu;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -149,10 +149,6 @@ public class ItemGUI implements Listener {
         }
     }
 
-    public interface OptionClickEventHandler {
-        void onOptionClick(OptionClickEvent event);
-    }
-
     /**
      * @param item       - the item in the menu
      * @param name       - name to display, accepts color codes
@@ -187,5 +183,9 @@ public class ItemGUI implements Listener {
         }
 
         return item;
+    }
+
+    public interface OptionClickEventHandler {
+        void onOptionClick(OptionClickEvent event);
     }
 }

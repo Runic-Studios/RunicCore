@@ -2,7 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.ShieldBreakEvent;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Shield;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;

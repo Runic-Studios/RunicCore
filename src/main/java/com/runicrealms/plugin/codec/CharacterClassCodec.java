@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.codec;
 
-import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.codecs.Codec;

@@ -2,8 +2,9 @@ package com.runicrealms.plugin.spellapi.spelltypes;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.AllyVerifyEvent;
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.EnemyVerifyEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.utilities.ActionBarUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -60,7 +61,7 @@ public abstract class Spell implements ISpell, Listener {
 
         // verify class
         boolean canCast = this.getReqClass() == CharacterClass.ANY
-                || this.getReqClass().toString().equalsIgnoreCase(RunicCore.getCharacterAPI().getPlayerClass(uuid));
+                || this.getReqClass().toString().equalsIgnoreCase(RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid));
 
         if (!canCast) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);

@@ -8,14 +8,12 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
-import com.runicrealms.plugin.api.CharacterAPI;
 import com.runicrealms.plugin.api.CodecAPI;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.ConfigAPI;
-import com.runicrealms.plugin.api.DataAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
-import com.runicrealms.plugin.api.RedisAPI;
+import com.runicrealms.plugin.api.PlayerDataAPI;
 import com.runicrealms.plugin.api.RegionAPI;
 import com.runicrealms.plugin.api.ScoreboardAPI;
 import com.runicrealms.plugin.api.ShopAPI;
@@ -48,10 +46,11 @@ import com.runicrealms.plugin.commands.player.MapLink;
 import com.runicrealms.plugin.commands.player.RunicVoteCMD;
 import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.config.ConfigManager;
-import com.runicrealms.plugin.converter.ConverterAPI;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
-import com.runicrealms.plugin.database.event.MongoSaveEvent;
+import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
+import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
+import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
 import com.runicrealms.plugin.item.lootchests.BossChestListener;
 import com.runicrealms.plugin.item.lootchests.BossTagger;
 import com.runicrealms.plugin.item.lootchests.LootChestListener;
@@ -102,7 +101,6 @@ import com.runicrealms.plugin.listeners.StaffListener;
 import com.runicrealms.plugin.listeners.SwapHandsListener;
 import com.runicrealms.plugin.listeners.WorldChangeListener;
 import com.runicrealms.plugin.model.MongoTask;
-import com.runicrealms.plugin.model.SessionDataManager;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
 import com.runicrealms.plugin.party.PartyChannel;
@@ -126,6 +124,14 @@ import com.runicrealms.plugin.player.listener.StatsGUIListener;
 import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.RunicDatabaseAPI;
+import com.runicrealms.plugin.rdb.api.CharacterAPI;
+import com.runicrealms.plugin.rdb.api.ConverterAPI;
+import com.runicrealms.plugin.rdb.api.DataAPI;
+import com.runicrealms.plugin.rdb.api.RedisAPI;
+import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
+import com.runicrealms.plugin.rdb.model.SessionDataManager;
 import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
@@ -176,10 +182,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
-    private static CharacterAPI characterAPI;
     private static CodecAPI codecAPI;
-    private static ConverterAPI converterAPI;
-    private static DataAPI dataAPI;
     private static RegionAPI regionAPI;
     private static PartyChannel partyChannel;
     private static PaperCommandManager commandManager;
@@ -187,13 +190,15 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static StatAPI statAPI;
     private static RunicShopManager runicShopManager;
     private static PlayerHungerManager playerHungerManager;
-    private static RedisAPI redisAPI;
     private static TitleAPI titleAPI;
     private static SessionDataManager settingsManager;
     private static ShopAPI shopAPI;
     private static MongoTask mongoTask;
     private static StatusEffectAPI statusEffectAPI;
     private static GravestoneManager gravestoneManager;
+    private static PlayerDataAPI playerDataAPI;
+    private static ConverterAPI converterAPI;
+    private static RedisAPI redisAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -248,20 +253,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         return protocolManager;
     }
 
-    public static CharacterAPI getCharacterAPI() {
-        return characterAPI;
-    }
-
     public static CodecAPI getCodecAPI() {
         return codecAPI;
-    }
-
-    public static ConverterAPI getConverterAPI() {
-        return converterAPI;
-    }
-
-    public static DataAPI getDataAPI() {
-        return dataAPI;
     }
 
     public static ShopAPI getShopAPI() {
@@ -300,10 +293,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return playerHungerManager;
     }
 
-    public static RedisAPI getRedisAPI() {
-        return redisAPI;
-    }
-
     public static TitleAPI getTitleAPI() {
         return titleAPI;
     }
@@ -326,6 +315,10 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static TaskChainFactory getTaskChainFactory() {
         return taskChainFactory;
+    }
+
+    public static PlayerDataAPI getPlayerDataAPI() {
+        return playerDataAPI;
     }
 
     /**
@@ -357,9 +350,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         lootTableAPI = null;
         mobTagger = null;
         bossTagger = null;
-        characterAPI = null;
-        dataAPI = null;
-        converterAPI = null;
         codecAPI = null;
         regionAPI = null;
         partyChannel = null;
@@ -367,7 +357,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         statAPI = null;
         runicShopManager = null;
         playerHungerManager = null;
-        redisAPI = null;
         titleAPI = null;
         settingsManager = null;
         shopAPI = null;
@@ -375,6 +364,9 @@ public class RunicCore extends JavaPlugin implements Listener {
         statusEffectAPI = null;
         taskChainFactory = null;
         gravestoneManager = null;
+        playerDataAPI = null;
+        converterAPI = null;
+        redisAPI = null;
     }
 
     @Override
@@ -382,6 +374,33 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // Load config defaults
         this.loadConfig();
+
+        // Set database stuff first
+        converterAPI = new ConverterHandler();
+        redisAPI = new RedisManager();
+        DatabaseManager databaseManager = new DatabaseManager();
+        RunicDatabase.getInstance().setAPIImplementation(new RunicDatabaseAPI() {
+            @Override
+            public CharacterAPI getCharacterAPI() {
+                return databaseManager;
+            }
+
+            @Override
+            public ConverterAPI getConverterAPI() {
+                return converterAPI;
+            }
+
+            @Override
+            public DataAPI getDataAPI() {
+                return databaseManager;
+            }
+
+            @Override
+            public RedisAPI getRedisAPI() {
+                return redisAPI;
+            }
+        });
+        playerDataAPI = databaseManager;
 
         // instantiate everything we need
         instance = this;
@@ -400,15 +419,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
         codecAPI = new CodecHandler();
-        converterAPI = new ConverterHandler();
-        DatabaseManager databaseManager = new DatabaseManager();
-        characterAPI = databaseManager;
-        dataAPI = databaseManager;
         skillTreeAPI = new SkillTreeManager();
         statAPI = new StatManager();
         runicShopManager = new RunicShopManager();
         playerHungerManager = new PlayerHungerManager();
-        redisAPI = new RedisManager();
         titleAPI = new TitleManager();
         settingsManager = new SettingsManager();
         shopAPI = new RunicItemShopManager();
@@ -417,6 +431,9 @@ public class RunicCore extends JavaPlugin implements Listener {
         gravestoneManager = new GravestoneManager();
         new DaylightCycleListener();
         new NpcListener();
+        new ArtifactOnCastListener();
+        new ArtifactOnHitListener();
+        new ArtifactOnKillListener();
 
 
         // ACF commands

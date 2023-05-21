@@ -3,13 +3,15 @@ package com.runicrealms.plugin.spellapi.skilltrees;
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.SkillTreeAPI;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
-import com.runicrealms.plugin.character.api.CharacterSelectEvent;
-import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
@@ -52,8 +54,8 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
      * @return a SpellData object if it is found in redis
      */
     public SkillTreeData checkRedisForSkillTreeData(UUID uuid, Integer slot, SkillTreePosition skillTreePosition, Jedis jedis) {
-        Set<String> redisSkillTreeSet = RunicCore.getRedisAPI().getRedisDataSet(uuid, "skillTreeData", jedis);
-        boolean dataInRedis = RunicCore.getRedisAPI().determineIfDataInRedis(redisSkillTreeSet, slot);
+        Set<String> redisSkillTreeSet = RunicDatabase.getAPI().getRedisAPI().getRedisDataSet(uuid, "skillTreeData", jedis);
+        boolean dataInRedis = RunicDatabase.getAPI().getRedisAPI().determineIfDataInRedis(redisSkillTreeSet, slot);
         if (dataInRedis) {
 //            Bukkit.getLogger().info("Redis skill tree data found, building skill tree data from redis");
             return new SkillTreeData(uuid, slot, skillTreePosition, jedis);
@@ -63,8 +65,8 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
     @Override
     public SpellData checkRedisForSpellData(UUID uuid, Integer slot, Jedis jedis) {
-        Set<String> redisSpellSet = RunicCore.getRedisAPI().getRedisDataSet(uuid, "spellData", jedis);
-        boolean dataInRedis = RunicCore.getRedisAPI().determineIfDataInRedis(redisSpellSet, slot);
+        Set<String> redisSpellSet = RunicDatabase.getAPI().getRedisAPI().getRedisDataSet(uuid, "spellData", jedis);
+        boolean dataInRedis = RunicDatabase.getAPI().getRedisAPI().determineIfDataInRedis(redisSpellSet, slot);
         if (dataInRedis) {
 //            Bukkit.getLogger().info("redis spell data found, building spell data from redis");
             return new SpellData(uuid, slot, jedis);
@@ -84,7 +86,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
     @Override
     public SpellData getPlayerSpellData(UUID uuid, int slot) {
-        return RunicCore.getDataAPI().getCorePlayerData(uuid).getSpellDataMap().get(slot);
+        return RunicCore.getPlayerDataAPI().getCorePlayerData(uuid).getSpellDataMap().get(slot);
     }
 
     @Override
@@ -123,12 +125,12 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
      */
     @Override
     public SkillTreeData loadSkillTreeData(UUID uuid, int slot, SkillTreePosition position) {
-        return RunicCore.getDataAPI().getCorePlayerData(uuid).getSkillTreeData(slot, position);
+        return RunicCore.getPlayerDataAPI().getCorePlayerData(uuid).getSkillTreeData(slot, position);
     }
 
     @Override
     public SpellData loadSpellData(UUID uuid, Integer slot, Jedis jedis, String playerClass) {
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getCorePlayerData(uuid);
+        CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(uuid);
         // Step 1: Check Redis
         SpellData spellData = checkRedisForSpellData(uuid, slot, jedis);
         if (spellData != null) {
@@ -140,7 +142,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
         Query query = new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
         // Project only the fields we need
         query.fields().include("spellDataMap");
-        SpellData spellDataMongo = RunicCore.getDataAPI().getMongoTemplate().findOne(query, SpellData.class);
+        SpellData spellDataMongo = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().findOne(query, SpellData.class);
         if (spellDataMongo != null) {
             corePlayerData.getSpellDataMap().put(slot, spellDataMongo);
             spellDataMongo.writeToJedis(uuid, jedis);
@@ -160,7 +162,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
     @Override
     public SkillTreeGUI skillTreeGUI(Player player, SkillTreePosition position) {
         UUID uuid = player.getUniqueId();
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
         SkillTreeData skillTreeData = loadSkillTreeData(uuid, slot, position);
         return new SkillTreeGUI(player, skillTreeData);
     }
@@ -188,7 +190,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
      * @return a SkillTreeData object
      */
     public SkillTreeData loadSkillTreeData(UUID uuid, Integer slot, SkillTreePosition position, Jedis jedis, String playerClass) {
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getCorePlayerData(uuid);
+        CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(uuid);
         // Step 1: Check Redis
         SkillTreeData skillTreeData = checkRedisForSkillTreeData(uuid, slot, position, jedis);
         if (skillTreeData != null) {
@@ -201,7 +203,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
         Query query = new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
         // Project only the fields we need
         query.fields().include("skillTreeDataMap");
-        SkillTreeData skillTreeMongo = RunicCore.getDataAPI().getMongoTemplate().findOne(query, SkillTreeData.class);
+        SkillTreeData skillTreeMongo = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().findOne(query, SkillTreeData.class);
         if (skillTreeMongo != null) {
             corePlayerData.getSkillTreeDataMap().computeIfAbsent(slot, k -> new HashMap<>());
             corePlayerData.getSkillTreeDataMap().get(slot).put(position, skillTreeMongo);
@@ -218,13 +220,13 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
     @EventHandler
     public void onCharacterQuit(CharacterQuitEvent event) {
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             saveSkillTreesToJedis
                     (
                             event.getPlayer().getUniqueId(),
                             event.getSlot(),
                             jedis,
-                            event.getCoreCharacterData().getClassType().getName()
+                            ((CoreCharacterData) event.getSessionDataRedis()).getClassType().getName()
                     );
         }
         this.playerPassiveMap.remove(event.getPlayer().getUniqueId());
@@ -245,10 +247,10 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
 
         // Ensures spell-related data is properly memoized
         this.playerPassiveMap.put(uuid, new HashSet<>()); // setup for passive map
-        CorePlayerData corePlayerData = event.getCorePlayerData();
-        String className = event.getCorePlayerData().getCharacter(slot).getClassType().getName();
+        CorePlayerData corePlayerData = (CorePlayerData) event.getSessionDataMongo();
+        String className = corePlayerData.getCharacter(slot).getClassType().getName();
 
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             TaskChain<?> spellSetupChain = RunicCore.newChain();
             spellSetupChain
                     .asyncFirst(() -> loadSpellData(uuid, slot, jedis, className))
@@ -297,7 +299,7 @@ public class SkillTreeManager implements Listener, SkillTreeAPI {
      */
     private void saveSkillTreesToJedis(UUID uuid, int slot, Jedis jedis, String playerClass) {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":" + "markedForSave:core", uuid.toString());
         SpellData playerSpellData = loadSpellDataFromMemory(uuid, slot, playerClass);
         SkillTreeData first = loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);

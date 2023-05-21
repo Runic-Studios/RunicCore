@@ -2,10 +2,14 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.WriteCallback;
-import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.database.DatabaseHelper;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
+import com.runicrealms.plugin.rdb.DatabaseHelper;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.api.WriteCallback;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.model.CharacterField;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
+import com.runicrealms.plugin.utilities.HearthstoneItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import redis.clients.jedis.Jedis;
@@ -65,7 +69,12 @@ public class CoreCharacterData implements SessionDataRedis {
     public CoreCharacterData(UUID uuid, int slot, Jedis jedis) {
         Map<String, String> fieldsMap = getDataMapFromJedis(uuid, jedis, slot);
         this.currentHp = Integer.parseInt(fieldsMap.get(CharacterField.CURRENT_HEALTH.getField()));
-        this.location = DatabaseHelper.loadLocationFromSerializedString(fieldsMap.get(CharacterField.LOCATION.getField()));
+        try {
+            this.location = DatabaseHelper.loadLocationFromSerializedString(fieldsMap.get(CharacterField.LOCATION.getField()));
+        } catch (IllegalStateException exception) {
+            exception.printStackTrace();
+            this.location = CityLocation.getLocationFromItemStack(HearthstoneItemUtil.HEARTHSTONE_ITEMSTACK); // return hearth location
+        }
         this.classType = CharacterClass.getFromName(fieldsMap.get(CharacterField.CLASS_TYPE.getField()));
         this.exp = Integer.parseInt(fieldsMap.get(CharacterField.CLASS_EXP.getField()));
         this.level = Integer.parseInt(fieldsMap.get(CharacterField.CLASS_LEVEL.getField()));
@@ -90,7 +99,7 @@ public class CoreCharacterData implements SessionDataRedis {
                             location
                     );
             corePlayerData.getCoreCharacterDataMap().put(slot, coreCharacterData);
-            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 corePlayerData.writeToJedis(jedis);
             }
             Bukkit.getScheduler().runTask(RunicCore.getInstance(), callback::onWriteComplete);
@@ -118,7 +127,7 @@ public class CoreCharacterData implements SessionDataRedis {
         Map<String, String> fieldsMap = new HashMap<>();
         List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         List<String> values = jedis.hmget(database + ":" + uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
             fieldsMap.put(fieldsToArray[i], values.get(i));
@@ -151,14 +160,14 @@ public class CoreCharacterData implements SessionDataRedis {
     @Override
     public void writeToJedis(UUID uuid, Jedis jedis, int... slot) {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":" + "markedForSave:core", uuid.toString());
         // Inform the server that there is some core data
         jedis.set(database + ":" + uuid + ":hasCoreData", uuid.toString());
-        jedis.expire(database + ":" + uuid + ":hasCoreData", RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + uuid + ":hasCoreData", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
         // Inform the server that there is some character data
         jedis.sadd(database + ":" + uuid + ":characterData", String.valueOf(slot[0]));
-        jedis.expire(database + ":" + uuid + ":characterData", RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + uuid + ":characterData", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
         String key = uuid + ":character:" + slot[0];
         jedis.hmset(database + ":" + key, this.toMap(uuid));
     }

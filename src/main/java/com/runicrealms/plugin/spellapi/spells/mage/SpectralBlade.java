@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.listeners.StaffListener;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;

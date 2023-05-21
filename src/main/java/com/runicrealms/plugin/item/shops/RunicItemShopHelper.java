@@ -4,7 +4,7 @@ import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.TravelLocation;
 import com.runicrealms.plugin.TravelType;
-import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

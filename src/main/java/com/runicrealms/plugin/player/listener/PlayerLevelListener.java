@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.player.listener;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.Pair;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -37,7 +37,7 @@ public class PlayerLevelListener implements Listener {
         // grab the player's new info
         String className;
         try {
-            className = RunicCore.getCharacterAPI().getPlayerClass(player);
+            className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         } catch (Exception e) {
             return HealthUtils.getBaseHealth();
         }
@@ -100,14 +100,14 @@ public class PlayerLevelListener implements Listener {
      */
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent event) {
-        if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
 
         Player player = event.getPlayer();
         if (player.getLevel() > PlayerLevelUtil.getMaxLevel()) return; // insurance
 
         // grab the player's new info
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className.equals("")) return;
         int classLevel = player.getLevel();
 
@@ -119,7 +119,7 @@ public class PlayerLevelListener implements Listener {
 
         if (player.getLevel() == 0) return;
 
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
         NametagHandler.updateNametag(player, slot);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
 

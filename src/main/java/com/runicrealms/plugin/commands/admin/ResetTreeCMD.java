@@ -9,10 +9,10 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Syntax;
 import com.runicrealms.api.event.ChatChannelMessageEvent;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.utilities.CurrencyUtil;
+import com.runicrealms.runicitems.util.CurrencyUtil;
+import com.runicrealms.runicitems.util.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -67,7 +67,7 @@ public class ResetTreeCMD extends BaseCommand implements Listener {
         if (event.getChatMessage().toLowerCase().contains("yes") && RunicCore.getShopAPI().hasItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(RunicCore.getInstance(), () -> {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
-                ItemRemover.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
+                ItemUtils.takeItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player));
                 SkillTreeData.resetSkillTrees(player);
             });
         } else if (event.getChatMessage().toLowerCase().contains("yes") && !RunicCore.getShopAPI().hasItem(player, CurrencyUtil.goldCoin(), getCostFromLevel(player))) {

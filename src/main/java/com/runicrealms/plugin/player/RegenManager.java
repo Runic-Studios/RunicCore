@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.HealthRegenEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -72,7 +73,7 @@ public class RegenManager implements Listener {
      * @return the mana per level
      */
     public double getManaPerLv(Player player) {
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className.equals("")) return 0;
         return switch (className.toLowerCase()) {
             case "archer" -> ARCHER_MANA_LV;
@@ -89,7 +90,7 @@ public class RegenManager implements Listener {
      */
     private void regenHealth() {
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(online.getUniqueId()))
+            if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(online.getUniqueId()))
                 continue;
             int regenAmount = (int) (HEALTH_REGEN_BASE_VALUE + (HEALTH_REGEN_LEVEL_MULTIPLIER * online.getLevel()));
             if (!RunicCore.getCombatAPI().isInCombat(online.getUniqueId())) {
@@ -110,7 +111,7 @@ public class RegenManager implements Listener {
      * Periodic task to regenerate mana for all online players
      */
     private void regenMana() {
-        for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+        for (UUID loaded : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player online = Bukkit.getPlayer(loaded);
             if (online == null) continue;
 
@@ -137,5 +138,5 @@ public class RegenManager implements Listener {
             }
         }
     }
-    
+
 }

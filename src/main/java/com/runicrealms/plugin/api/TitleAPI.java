@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.api;
 
 import com.runicrealms.plugin.model.TitleData;
+import com.runicrealms.plugin.rdb.api.WriteCallback;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 

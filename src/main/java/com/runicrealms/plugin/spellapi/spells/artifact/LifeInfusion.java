@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.artifact;
 
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.item.artifact.event.RunicArtifactOnKillEvent;
+import com.runicrealms.plugin.item.artifact.event.RunicItemArtifactTriggerEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.runicitems.item.event.RunicArtifactOnKillEvent;
-import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;

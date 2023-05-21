@@ -3,18 +3,21 @@ package com.runicrealms.plugin.database;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.CharacterAPI;
-import com.runicrealms.plugin.api.DataAPI;
-import com.runicrealms.plugin.api.Pair;
-import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
-import com.runicrealms.plugin.classes.CharacterClass;
-import com.runicrealms.plugin.database.event.MongoSaveEvent;
-import com.runicrealms.plugin.model.CharacterField;
+import com.runicrealms.plugin.api.PlayerDataAPI;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.model.ProjectedData;
 import com.runicrealms.plugin.model.TitleData;
+import com.runicrealms.plugin.rdb.CoreMongoConfiguration;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.api.CharacterAPI;
+import com.runicrealms.plugin.rdb.api.DataAPI;
+import com.runicrealms.plugin.rdb.event.CharacterHasQuitEvent;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.runicrestart.RunicRestart;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
@@ -50,7 +53,7 @@ import java.util.logging.Level;
  *
  * @author Skyfallin
  */
-public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
+public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Listener {
     private static final int CHARACTER_SAVE_PERIOD = 30; // Seconds
     private final ConcurrentHashMap<UUID, Pair<Integer, CharacterClass>> loadedCharacterMap; // stores the current character the player is playing
     private final Map<UUID, CorePlayerData> corePlayerDataMap; // For caching session data in-memory
@@ -137,7 +140,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
     @Override
     public CorePlayerData loadCorePlayerData(UUID uuid) {
         // Step 1: Check redis
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             boolean dataInRedis = checkRedisForCoreData(uuid, jedis);
             if (dataInRedis) {
                 //                Bukkit.getLogger().info("LOADING CORE DATA FROM REDIS");
@@ -146,7 +149,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
             // Step 2: Check the mongo database
             Query query = new Query();
             query.addCriteria(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
-            MongoTemplate mongoTemplate = RunicCore.getDataAPI().getMongoTemplate();
+            MongoTemplate mongoTemplate = RunicDatabase.getAPI().getDataAPI().getMongoTemplate();
             List<CorePlayerData> results = mongoTemplate.find(query, CorePlayerData.class);
             if (results.size() > 0) {
                 CorePlayerData result = results.get(0);
@@ -171,7 +174,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
     }
 
     public boolean checkRedisForCoreData(UUID uuid, Jedis jedis) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         return jedis.exists(database + ":" + uuid + ":hasCoreData");
     }
 
@@ -206,7 +209,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
     @Override
     public String getPlayerClass(UUID uuid, int slot, Jedis jedis) {
         // If player class is not cached, player is offline
-        String key = RunicCore.getRedisAPI().getCharacterKey(uuid, slot);
+        String key = RunicDatabase.getAPI().getRedisAPI().getCharacterKey(uuid, slot);
         if (jedis.exists(key))
             return jedis.hmget(key, CharacterField.CLASS_TYPE.getField()).get(0);
         else
@@ -237,7 +240,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
         loadedCharacterMap.put
                 (
                         event.getPlayer().getUniqueId(),
-                        Pair.pair(slot, event.getCharacterSelectEvent().getCorePlayerData().getCharacter(slot).getClassType())
+                        Pair.pair(slot, ((CorePlayerData) event.getCharacterSelectEvent().getSessionDataMongo()).getCharacter(slot).getClassType())
                 ); // Now we always know which character is playing
     }
 
@@ -248,7 +251,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // last thing that runs
     public void onCharacterQuitFinished(CharacterQuitEvent event) {
         Location location = event.getPlayer().getLocation();
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             CorePlayerData corePlayerData = getCorePlayerData(event.getPlayer().getUniqueId());
             corePlayerData.setLastLoginDate(LocalDate.now());
             corePlayerData.getCharacter(event.getSlot()).setLocation(location);
@@ -344,9 +347,9 @@ public class DatabaseManager implements CharacterAPI, DataAPI, Listener {
             for (UUID uuid : loadedCharacterMap.keySet()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue; // Player not online
-                int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
                 Location location = player.getLocation();
-                try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                     CorePlayerData corePlayerData = getCorePlayerData(uuid);
                     corePlayerData.getCharacter(slot).setLocation(location);
                     corePlayerData.getCharacter(slot).setCurrentHp((int) player.getHealth());

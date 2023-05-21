@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.player.listener;
 
-import com.runicrealms.plugin.ArmorType;
 import com.runicrealms.plugin.ItemType;
-import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.common.event.ArmorEquipEvent;
+import com.runicrealms.plugin.common.util.ArmorType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

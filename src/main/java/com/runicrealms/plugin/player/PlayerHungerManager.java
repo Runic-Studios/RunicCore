@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.HealthRegenEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
@@ -80,7 +81,7 @@ public class PlayerHungerManager implements Listener {
      * or reduces player hunger value if there is no saturation
      */
     private void tickAllOnlinePlayersHunger() {
-        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+        for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null) continue;
             if (RunicCore.getRegionAPI().isSafezone(player.getLocation())) { // prevent hunger loss in capital cities

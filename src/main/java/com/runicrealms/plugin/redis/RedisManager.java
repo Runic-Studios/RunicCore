@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.redis;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.RedisAPI;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.api.RedisAPI;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,7 +45,7 @@ public class RedisManager implements Listener, RedisAPI {
         if (slotToLoad != -1) {
             return redisDataSet.contains(String.valueOf(slotToLoad));
         } else {
-            for (int i = 1; i <= RunicCore.getDataAPI().getMaxCharacterSlot(); i++) {
+            for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
                 if (redisDataSet.contains(String.valueOf(i))) {
                     return true;
                 }
@@ -55,7 +56,7 @@ public class RedisManager implements Listener, RedisAPI {
 
     @Override
     public String getCharacterKey(UUID uuid, int slot) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         return database + ":" + uuid + ":character:" + slot;
     }
 
@@ -74,7 +75,7 @@ public class RedisManager implements Listener, RedisAPI {
 
     @Override
     public Set<String> getRedisDataSet(UUID uuid, String dataKey, Jedis jedis) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         return jedis.smembers(database + ":" + uuid + ":" + dataKey);
     }
 

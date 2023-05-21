@@ -1,7 +1,11 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterSelectEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
+import com.runicrealms.plugin.rdb.model.CharacterField;
+import com.runicrealms.plugin.rdb.model.SessionDataManager;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +27,7 @@ public class SettingsManager implements Listener, SessionDataManager {
     @Override
     public SessionDataRedis checkRedisForSessionData(Object identifier, Jedis jedis, int... slot) {
         UUID uuid = (UUID) identifier;
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         if (jedis.exists(database + ":" + uuid.toString() + ":" + SettingsData.DATA_SECTION_SETTINGS)) {
             return new SettingsData(uuid, jedis);
         }
@@ -44,7 +48,7 @@ public class SettingsManager implements Listener, SessionDataManager {
         if (settingsDataMap.get(uuid) != null)
             return settingsDataMap.get(uuid);
         // Step 1: Check if settings data is cached in redis
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getCorePlayerData(uuid);
+        CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(uuid);
         SettingsData settingsData = (SettingsData) checkRedisForSessionData(uuid, jedis);
         if (settingsData != null) {
             corePlayerData.setSettingsData(settingsData);
@@ -55,7 +59,7 @@ public class SettingsManager implements Listener, SessionDataManager {
         Query query = new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
         // Project only the fields we need
         query.fields().include("settingsData");
-        SettingsData settingsDataMongo = RunicCore.getDataAPI().getMongoTemplate().findOne(query, SettingsData.class);
+        SettingsData settingsDataMongo = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().findOne(query, SettingsData.class);
         if (settingsDataMongo != null) {
             corePlayerData.setSettingsData(settingsDataMongo);
             settingsDataMongo.writeToJedis(uuid, jedis);
@@ -74,7 +78,7 @@ public class SettingsManager implements Listener, SessionDataManager {
     public void onSelect(CharacterSelectEvent event) {
         // Ensure session data cached in-memory
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 loadSessionData(event.getPlayer().getUniqueId(), jedis);
             }
         });

@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.RuneGUI;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemGeneric;

@@ -3,8 +3,9 @@ package com.runicrealms.plugin.model;
 import co.aikar.taskchain.TaskChain;
 import com.mongodb.bulk.BulkWriteResult;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.MongoTaskOperation;
-import com.runicrealms.plugin.api.WriteCallback;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.api.MongoTaskOperation;
+import com.runicrealms.plugin.rdb.api.WriteCallback;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
@@ -57,7 +58,7 @@ public class MongoTask implements MongoTaskOperation {
         Since we lazy-load character-specific data, we'll try to retrieve it for all slots which may exist in Redis.
         We do this for each character-specific field (skill trees, spells, etc.)
          */
-        for (int slot = 1; slot < RunicCore.getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             CoreCharacterData characterData = corePlayerData.getCharacter(slot);
             if (characterData != null) {
 //                Bukkit.getLogger().info("found character data in slot " + slot);
@@ -65,7 +66,7 @@ public class MongoTask implements MongoTaskOperation {
             }
         }
         // Update SkillTreeData
-        for (int slot = 1; slot < RunicCore.getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             HashMap<SkillTreePosition, SkillTreeData> skillTreeData = corePlayerData.getSkillTreeData(slot);
             if (skillTreeData != null) {
 //                Bukkit.getLogger().info("found skill tree data in slot " + slot);
@@ -73,7 +74,7 @@ public class MongoTask implements MongoTaskOperation {
             }
         }
         // Update SpellData
-        for (int slot = 1; slot < RunicCore.getDataAPI().getMaxCharacterSlot(); slot++) {
+        for (int slot = 1; slot < RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); slot++) {
             SpellData spellData = corePlayerData.getSpellData(slot);
             if (spellData != null) {
 //                Bukkit.getLogger().info("found spell data in slot " + slot);
@@ -109,14 +110,14 @@ public class MongoTask implements MongoTaskOperation {
 
     @Override
     public BulkWriteResult sendBulkOperation() {
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             Set<String> playersToSave = jedis.smembers(getJedisSet());
             if (playersToSave.isEmpty()) return BulkWriteResult.unacknowledged();
-            BulkOperations bulkOperations = RunicCore.getDataAPI().getMongoTemplate().bulkOps(BulkOperations.BulkMode.UNORDERED, getCollectionName());
+            BulkOperations bulkOperations = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().bulkOps(BulkOperations.BulkMode.UNORDERED, getCollectionName());
             for (String uuidString : playersToSave) {
                 UUID uuid = UUID.fromString(uuidString);
                 // Load their data async with a future
-                CorePlayerData corePlayerData = RunicCore.getDataAPI().loadCorePlayerData(uuid);
+                CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().loadCorePlayerData(uuid);
                 Bukkit.broadcastMessage("guild is " + corePlayerData.getGuild());
                 // Player is no longer marked for save
                 jedis.srem(getJedisSet(), uuid.toString());

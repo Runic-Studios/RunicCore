@@ -3,12 +3,13 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.ShieldBreakEvent;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
-import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Shield;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
@@ -34,7 +35,7 @@ public class ShieldListener implements Listener {
      */
     public ShieldListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 if (!RunicCore.getSpellAPI().isShielded(uuid)) continue;
                 long lastShieldTime = RunicCore.getSpellAPI().getShieldedPlayers().get(uuid).getStartTime();
                 if (System.currentTimeMillis() - lastShieldTime > SHIELD_EXPIRE_TIME * 1000) {

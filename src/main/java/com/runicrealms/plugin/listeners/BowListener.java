@@ -5,6 +5,7 @@ import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
 import com.runicrealms.plugin.api.event.RunicBowEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
@@ -173,7 +174,7 @@ public class BowListener implements Listener {
         // only apply cooldown if it's not already active
         if (cooldown != 0) return;
 
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className == null) return;
         if (!className.equals("Archer")) return;
 

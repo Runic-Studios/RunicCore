@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.settings;
 
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.SettingsData;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.player.settings;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -50,7 +51,7 @@ public class SettingsUIListener implements Listener {
                         boolean castMenuEnabled = settingsUI.getSettingsData().isCastMenuEnabled();
                         settingsUI.getSettingsData().setCastMenuEnabled(!castMenuEnabled);
                         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-                            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                                 settingsUI.getSettingsData().writeToJedis(player.getUniqueId(), jedis);
                             }
                         });

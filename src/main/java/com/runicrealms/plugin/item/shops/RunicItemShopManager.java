@@ -4,8 +4,8 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.NpcClickEvent;
 import com.runicrealms.plugin.api.ShopAPI;
 import com.runicrealms.plugin.config.ShopConfigLoader;
-import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.runicitems.RunicItemsAPI;
+import com.runicrealms.runicitems.util.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -130,7 +130,7 @@ public class RunicItemShopManager implements Listener, ShopAPI {
         if (!requirementsMet) return;
         if (runicShopItem.removePayment()) {
             for (String templateID : runicShopItem.getRequiredItems().keySet()) {
-                ItemRemover.takeItem
+                ItemUtils.takeItem
                         (
                                 player,
                                 this.getRunicItemCurrency(templateID),

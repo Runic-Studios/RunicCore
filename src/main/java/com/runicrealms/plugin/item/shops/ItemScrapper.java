@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.item.shops;
 
-import com.runicrealms.plugin.api.Pair;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;

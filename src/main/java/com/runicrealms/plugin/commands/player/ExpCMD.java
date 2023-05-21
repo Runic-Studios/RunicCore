@@ -5,9 +5,10 @@ import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,8 +27,8 @@ public class ExpCMD extends BaseCommand {
         }
         Player player = (Player) commandSender;
         int classLevel = player.getLevel();
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
-        CoreCharacterData characterData = RunicCore.getDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        CoreCharacterData characterData = RunicCore.getPlayerDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
         int classExp = characterData.getExp();
         int totalExpAtLevel = PlayerLevelUtil.calculateTotalExp(classLevel);
         int totalExpToLevel = PlayerLevelUtil.calculateTotalExp(classLevel + 1);

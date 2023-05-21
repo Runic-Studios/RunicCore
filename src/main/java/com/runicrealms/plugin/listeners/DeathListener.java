@@ -5,12 +5,12 @@ import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
-import com.runicrealms.plugin.item.util.ItemRemover;
 import com.runicrealms.plugin.player.death.Gravestone;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
+import com.runicrealms.runicitems.util.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -51,7 +51,7 @@ public class DeathListener implements Listener {
             if (runicItem.getTags().contains(RunicItemTag.SOULBOUND)) continue;
             if (runicItem.getTags().contains(RunicItemTag.UNTRADEABLE)) continue;
             itemsToDrop.add(itemStack);
-            ItemRemover.takeItem(player, itemStack, itemStack.getAmount());
+            ItemUtils.takeItem(player, itemStack, itemStack.getAmount());
         }
 
         // Create a new inventory and add the items to drop to this inventory

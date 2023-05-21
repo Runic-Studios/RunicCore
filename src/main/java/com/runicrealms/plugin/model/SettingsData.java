@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class SettingsData implements SessionDataRedis {
      * @param jedis the jedis resource
      */
     public SettingsData(UUID uuid, Jedis jedis) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         this.castMenuEnabled = Boolean.parseBoolean(jedis.get(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS));
     }
 
@@ -44,10 +45,10 @@ public class SettingsData implements SessionDataRedis {
     @Override
     public void writeToJedis(UUID uuid, Jedis jedis, int... slot) {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":markedForSave:core", uuid.toString());
         jedis.set(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, String.valueOf(this.castMenuEnabled));
-        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_SETTINGS, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
     }
 
     public boolean isCastMenuEnabled() {

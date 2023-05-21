@@ -1,14 +1,15 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.SkillTreeData;
 import com.runicrealms.plugin.player.StatsGUI;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.utilities.ChatUtils;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -150,7 +151,7 @@ public class SkillTreeGUI implements InventoryHolder {
         ItemMeta meta = infoItem.getItemMeta();
         assert meta != null;
         meta.setDisplayName(ChatColor.GREEN + skillTreeData.getSubClass(this.player.getUniqueId()).getName() + " Tree Info");
-        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId(), RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId()));
+        String lore = "&7Remaining Skill Points: &a" + SkillTreeData.getAvailablePoints(player.getUniqueId(), RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId()));
         meta.setLore(ChatUtils.formattedText(lore));
         infoItem.setItemMeta(meta);
         return infoItem;

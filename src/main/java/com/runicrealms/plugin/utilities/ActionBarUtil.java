@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import net.minecraft.server.v1_16_R3.ChatMessageType;
 import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 import net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer;

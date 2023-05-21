@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.model.CharacterField;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
@@ -53,7 +55,7 @@ public class ClassData implements SessionDataRedis {
     public ClassData(UUID uuid, int slot, Jedis jedis) {
         Map<String, String> fieldsMap = new HashMap<>();
         String[] fieldsToArray = FIELDS.toArray(new String[0]);
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         List<String> values = jedis.hmget(database + ":" + uuid + ":character:" + slot, fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
             fieldsMap.put(fieldsToArray[i], values.get(i));
@@ -73,7 +75,7 @@ public class ClassData implements SessionDataRedis {
         Map<String, String> fieldsMap = new HashMap<>();
         List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         List<String> values = jedis.hmget(database + ":" + uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
             fieldsMap.put(fieldsToArray[i], values.get(i));
@@ -102,10 +104,10 @@ public class ClassData implements SessionDataRedis {
 
     @Override
     public void writeToJedis(UUID uuid, Jedis jedis, int... slot) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         String key = uuid + ":character:" + slot[0];
         jedis.hmset(database + ":" + key, this.toMap(uuid));
-        jedis.expire(database + ":" + key, RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + key, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
     }
 
     public int getExp() {

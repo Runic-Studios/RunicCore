@@ -5,6 +5,7 @@ import com.runicrealms.plugin.api.SpellAPI;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.spells.Consumable;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.Ambush;
@@ -165,7 +166,7 @@ public class SpellManager implements Listener, SpellAPI {
         Spell spellToCast = null;
         UUID uuid = player.getUniqueId();
         try {
-            int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+            int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
             SpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
             switch (number) {
                 case 1 -> {

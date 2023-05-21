@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
-import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.common.event.ArmorEquipEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.player.RegenManager;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -75,7 +76,7 @@ public class ManaListener implements Listener {
 
     @EventHandler
     public void onLevelUp(PlayerLevelChangeEvent event) {
-        if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
         Player player = event.getPlayer();
         if (player.getLevel() > RegenManager.getBaseMana()) return;

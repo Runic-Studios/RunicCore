@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.item.lootchests;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -125,7 +126,7 @@ public class LootChestManager {
             if (!world.isChunkLoaded(lootChest.getLocation().getChunk())) continue;
             Location location = lootChest.getLocation();
             if (location.getBlock().getType() != Material.CHEST) continue;
-            for (UUID loaded : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            for (UUID loaded : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 Player online = Bukkit.getPlayer(loaded);
                 if (online == null) continue; // Player offline
                 if (playerChestCooldownMap.containsKey(loaded)) {

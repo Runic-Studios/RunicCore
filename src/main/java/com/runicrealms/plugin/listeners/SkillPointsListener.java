@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
 import com.runicrealms.plugin.model.SkillTreeData;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,10 +24,10 @@ public class SkillPointsListener implements Listener {
 
     public SkillPointsListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
-                int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
                 if (slot == 0) continue;
                 int pointsToSpend = RunicCore.getSkillTreeAPI().getAvailableSkillPoints
                         (
@@ -41,7 +42,7 @@ public class SkillPointsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLevel(PlayerLevelChangeEvent event) {
-        if (!RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
+        if (!RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getPlayer().getUniqueId()))
             return; // ignore the change from PlayerJoinEvent
         if (event.getNewLevel() > SKILL_TREE_UNLOCK_LEVEL) return;
         Player player = event.getPlayer();

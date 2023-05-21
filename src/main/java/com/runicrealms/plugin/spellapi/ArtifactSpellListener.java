@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
+import com.runicrealms.plugin.item.artifact.event.RunicItemArtifactTriggerEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
