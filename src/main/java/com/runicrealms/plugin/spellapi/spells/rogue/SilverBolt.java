@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
@@ -10,17 +12,23 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, PhysicalDamageSpell {
     private static final double BEAM_WIDTH = 1.5;
+    private static final ConcurrentHashMap<UUID, UUID> BRANDED_ENEMIES_MAP = new ConcurrentHashMap<>();
     private double distance;
     private double duration;
     private double magicDamage;
@@ -37,6 +45,10 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
                 "&7for the next " + duration + "s. &7&oBranded &7enemies take an additional " +
                 "(" + magicDamage + " + &f" + magicDamagePerLevel
                 + "x&7 lvl) magicʔ damage from your basic attacks!");
+    }
+
+    public static ConcurrentHashMap<UUID, UUID> getBrandedEnemiesMap() {
+        return BRANDED_ENEMIES_MAP;
     }
 
     @Override
@@ -62,7 +74,8 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
             spawnArrowTip(livingEntity.getEyeLocation(), new Particle.DustOptions(Color.WHITE, 1), player, 1);
             DamageUtil.damageEntityPhysical(physicalDamage, livingEntity, player, false, true, this);
             Cone.coneEffect(livingEntity, Particle.REDSTONE, duration, 0, 20, Color.SILVER);
-            // todo: add new 'branded' status effect, listener
+            BRANDED_ENEMIES_MAP.put(player.getUniqueId(), livingEntity.getUniqueId());
+            Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> BRANDED_ENEMIES_MAP.remove(player.getUniqueId()), (long) duration * 20L);
         }
     }
 
@@ -124,6 +137,20 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
     @Override
     public void setPhysicalDamagePerLevel(double physicalDamagePerLevel) {
         this.physicalDamagePerLevel = physicalDamagePerLevel;
+    }
+
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!event.isBasicAttack()) return;
+        if (BRANDED_ENEMIES_MAP.isEmpty()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!BRANDED_ENEMIES_MAP.containsKey(event.getPlayer().getUniqueId())) return;
+        if (BRANDED_ENEMIES_MAP.get(event.getPlayer().getUniqueId()).equals(event.getVictim().getUniqueId())) {
+            // todo: sound
+            Bukkit.broadcastMessage("YUH");
+            DamageUtil.damageEntityPhysical(physicalDamage, event.getVictim(), event.getPlayer(), false, false, this);
+        }
     }
 
     public void spawnArrowTip(Location center, Particle.DustOptions dustOptions, Player player, double size) {

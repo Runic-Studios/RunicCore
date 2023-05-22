@@ -163,33 +163,38 @@ public class SkillTreeData implements SessionDataRedis {
      * @param previous the previous perk in the perk array (to ensure perks purchased in-sequence)
      * @param perk     the perk attempting to be purchased
      */
-    public void attemptToPurchasePerk(Player player, int slot, Perk previous, Perk perk) {
+    public boolean attemptToPurchasePerk(Player player, int slot, Perk previous, Perk perk) {
         int getAvailablePoints = getAvailablePoints(player.getUniqueId(), slot);
         if (perk.getCurrentlyAllocatedPoints() >= perk.getMaxAllocatedPoints()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You have already purchased this perk!");
-            return;
+            return false;
         }
         if (previous != null && previous.getCurrentlyAllocatedPoints() < previous.getMaxAllocatedPoints()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You must purchase all previous perks first!");
-            return;
+            return false;
         }
         if (getAvailablePoints <= 0 || getAvailablePoints < perk.getCost()) {
             player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1.0f);
             player.sendMessage(ChatColor.RED + "You don't have enough skill points to purchase this!");
-            return;
+            return false;
         }
         perk.setCurrentlyAllocatedPoints(perk.getCurrentlyAllocatedPoints() + 1);
         if (perk instanceof PerkSpell && (RunicCore.getSpellAPI().getSpell((((PerkSpell) perk).getSpellName())).isPassive()))
             addPassivesToMap(player.getUniqueId());
-        else if (perk instanceof PerkBaseStat)
-            RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId()).increaseStat(((PerkBaseStat) perk).getStat(), ((PerkBaseStat) perk).getBonusAmount());
+            // Increase stat SYNC
+        else if (perk instanceof PerkBaseStat) {
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
+                    () -> RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId())
+                            .increaseStat(((PerkBaseStat) perk).getStat(), ((PerkBaseStat) perk).getBonusAmount()));
+        }
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
         try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             this.writeToJedis(player.getUniqueId(), jedis, slot);
         }
+        return true;
     }
 
     @Override

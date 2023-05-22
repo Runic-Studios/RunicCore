@@ -14,7 +14,7 @@ public enum ItemType {
         }
         if (itemStack.getType() == Material.SHEARS) {
             return switch (((Damageable) itemStack.getItemMeta()).getDamage()) {
-                case 236, 237 -> OFFHAND;
+                case 235, 236, 237 -> OFFHAND;
                 default -> CLOTH;
             };
         } else {
