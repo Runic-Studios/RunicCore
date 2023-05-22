@@ -2,6 +2,7 @@ package com.runicrealms.plugin.music;
 
 import com.runicrealms.plugin.RunicCore;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
+import net.raidstone.wgevents.events.RegionLeftEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -28,14 +29,29 @@ public class MusicListener implements Listener {
         if (!MUSIC_REGION_MAP.containsKey(regionName)) return;
         Player player = event.getPlayer();
         if (player == null) return;
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> player.playSound
-                (
-                        player.getLocation(),
-                        "music." + MUSIC_REGION_MAP.get(regionName),
-                        SoundCategory.MUSIC,
-                        0.5f,
-                        1.0f
-                ), 20L);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+            Bukkit.broadcastMessage("starting music");
+            // Play music
+            player.playSound
+                    (
+                            player.getLocation(),
+                            "music." + MUSIC_REGION_MAP.get(regionName),
+                            SoundCategory.MUSIC,
+                            0.5f,
+                            1.0f
+                    );
+        }, 20L);
+    }
+
+    @EventHandler
+    public void onRegionLeft(RegionLeftEvent event) {
+        if (MUSIC_REGION_MAP.isEmpty()) return;
+        String regionName = event.getRegionName().toLowerCase();
+        // Ensure there is music for this region
+        if (!MUSIC_REGION_MAP.containsKey(regionName)) return;
+        Player player = event.getPlayer();
+        if (player == null) return;
+        MUSIC_REGION_MAP.forEach((region, song) -> player.stopSound("music." + song, SoundCategory.MUSIC));
     }
 
 }
