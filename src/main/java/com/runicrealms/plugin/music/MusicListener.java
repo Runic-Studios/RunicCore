@@ -30,7 +30,6 @@ public class MusicListener implements Listener {
         Player player = event.getPlayer();
         if (player == null) return;
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            Bukkit.broadcastMessage("starting music");
             // Play music
             player.playSound
                     (
