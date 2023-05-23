@@ -4,30 +4,20 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.BasicAttackEvent;
-import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
@@ -144,10 +134,8 @@ public class Diminuendo extends Spell implements DurationSpell, RadiusSpell {
                 affected.set(true);
         });
         if (!affected.get()) return;
-        Bukkit.broadcastMessage("old damage was " + event.getAmount());
         double reduction = event.getAmount() * mobDamageReduction;
         event.setAmount((int) (event.getAmount() - reduction));
-        Bukkit.broadcastMessage("new damage is " + event.getAmount());
     }
 
     /**

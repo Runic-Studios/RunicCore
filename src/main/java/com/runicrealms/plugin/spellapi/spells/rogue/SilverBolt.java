@@ -3,20 +3,11 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -144,12 +135,10 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
         if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;
         if (BRANDED_ENEMIES_MAP.isEmpty()) return;
-        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!BRANDED_ENEMIES_MAP.containsKey(event.getPlayer().getUniqueId())) return;
         if (BRANDED_ENEMIES_MAP.get(event.getPlayer().getUniqueId()).equals(event.getVictim().getUniqueId())) {
-            // todo: sound
-            Bukkit.broadcastMessage("YUH");
-            DamageUtil.damageEntityPhysical(physicalDamage, event.getVictim(), event.getPlayer(), false, false, this);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2.0f);
+            DamageUtil.damageEntitySpell(magicDamage, event.getVictim(), event.getPlayer(), this);
         }
     }
 
