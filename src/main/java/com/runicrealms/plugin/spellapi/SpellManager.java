@@ -317,7 +317,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new TwinFangs());
         this.spellList.add(new Cocoon());
         this.spellList.add(new FromTheShadows());
-        this.spellList.add(new RapidReload());
+        this.spellList.add(new Scurvy());
         this.spellList.add(new CallOfTheDeep());
         this.spellList.add(new Adrenaline());
         this.spellList.add(new Unstoppable());

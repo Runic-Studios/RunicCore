@@ -1,21 +1,21 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
-import com.runicrealms.plugin.spellapi.spelltypes.Spell;
-import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -96,12 +96,73 @@ public class Sprint extends Spell implements DurationSpell, PhysicalDamageSpell 
         Player player = event.getPlayer();
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GRASS_BREAK, 0.5f, 0.5f);
         player.getWorld().spawnParticle(Particle.CRIT_MAGIC, event.getVictim().getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-        DamageUtil.damageEntityPhysical(damage, event.getVictim(), player, false, false, this);
+        EmpoweredSprintEvent sprintEvent = new EmpoweredSprintEvent(event.getPlayer(), event.getVictim(), damage);
+        Bukkit.getPluginManager().callEvent(sprintEvent);
+        if (sprintEvent.isCancelled) return;
+        DamageUtil.damageEntityPhysical(sprintEvent.getDamage(), event.getVictim(), player, false, false, this);
         sprintTasks.remove(player.getUniqueId());
     }
 
     public void setLevel(int level) {
         this.level = level;
     }
+
+    /**
+     * This custom event is called when the player hits a target w/ empowered spring attack
+     */
+    public static class EmpoweredSprintEvent extends Event implements Cancellable {
+        private static final HandlerList handlers = new HandlerList();
+        private final Player caster;
+        private final LivingEntity victim;
+        private double damage;
+        private boolean isCancelled;
+
+        /**
+         * @param caster player who cast heal spell
+         */
+        public EmpoweredSprintEvent(Player caster, LivingEntity victim, double damage) {
+            this.caster = caster;
+            this.victim = victim;
+            this.damage = damage;
+            this.isCancelled = false;
+        }
+
+        public static HandlerList getHandlerList() {
+            return handlers;
+        }
+
+        public double getDamage() {
+            return damage;
+        }
+
+        public void setDamage(double damage) {
+            this.damage = damage;
+        }
+
+        public LivingEntity getVictim() {
+            return victim;
+        }
+
+        public Player getCaster() {
+            return this.caster;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public HandlerList getHandlers() {
+            return handlers;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return this.isCancelled;
+        }
+
+        @Override
+        public void setCancelled(boolean arg0) {
+            this.isCancelled = arg0;
+        }
+    }
+
 }
 
