@@ -2,6 +2,7 @@ package com.runicrealms.plugin.character.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
@@ -9,7 +10,6 @@ import com.runicrealms.plugin.model.ProjectedData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterDeleteEvent;
 import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
@@ -35,11 +35,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Manages the character select menu which the player sees upon login
@@ -349,18 +345,16 @@ public class CharacterGuiManager implements Listener {
                 event.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD) {
             Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
                 UUID uuid = event.getPlayer().getUniqueId();
-                try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                    ProjectedData projectedData = RunicCore.getPlayerDataAPI().getProjectedDataMap().get(uuid);
-                    if (projectedData == null) {
-                        projectedData = new ProjectedData(event.getPlayer(), jedis);
-                        RunicCore.getPlayerDataAPI().getProjectedDataMap().put(uuid, projectedData);
-                    }
+                // Load only necessary fields from Mongo
+                ProjectedData projectedData = RunicCore.getPlayerDataAPI().getProjectedDataMap().get(uuid);
+                if (projectedData == null) {
+                    projectedData = new ProjectedData(event.getPlayer());
+                    RunicCore.getPlayerDataAPI().getProjectedDataMap().put(uuid, projectedData);
                 }
                 try {
                     openSelectGui(event.getPlayer());
                 } catch (Exception exception) {
                     exception.printStackTrace();
-//                    RunicCore.getDataAPI().ge(uuid).remove(projectedData.getUuid());
                     classMenu.remove(uuid);
                 }
             });

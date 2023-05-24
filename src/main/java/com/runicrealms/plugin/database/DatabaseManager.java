@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.PlayerDataAPI;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.model.ProjectedData;
@@ -16,7 +17,6 @@ import com.runicrealms.plugin.rdb.event.CharacterHasQuitEvent;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.rdb.event.MongoSaveEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.runicrestart.RunicRestart;
 import org.bson.types.ObjectId;
@@ -81,9 +81,7 @@ public class DatabaseManager implements CharacterAPI, DataAPI, PlayerDataAPI, Li
                     ApplicationContext context = new AnnotationConfigApplicationContext(CoreMongoConfiguration.class);
                     mongoTemplate = context.getBean("pluginDataMongoTemplate", MongoTemplate.class);
                     mongoClient = context.getBean(MongoClient.class);
-                    String databaseString = RunicCore.getInstance().getConfig().getString("database");
-                    assert databaseString != null;
-                    mongoDatabase = mongoClient.getDatabase(databaseString);
+                    mongoDatabase = mongoClient.getDatabase(RunicDatabase.getDatabaseName());
                 } catch (Exception e) {
                     e.printStackTrace();
                     RunicCore.getInstance().getLogger().log(Level.SEVERE, "Spring initialization failed!");
