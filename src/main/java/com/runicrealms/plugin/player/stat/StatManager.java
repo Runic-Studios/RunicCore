@@ -2,9 +2,9 @@ package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.StatAPI;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
 import com.runicrealms.plugin.model.SkillTreePosition;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.runicitems.Stat;

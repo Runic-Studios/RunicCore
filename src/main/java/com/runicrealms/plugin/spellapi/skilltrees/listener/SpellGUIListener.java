@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.SpellData;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellGUI;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -68,18 +69,17 @@ public class SpellGUIListener implements Listener {
      */
     private void updateSpellInSlot(UUID uuid, SpellGUI spellGUI, String spellName) {
         String spell = ChatColor.stripColor(spellName);
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
         SpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot);
         switch (spellGUI.getSpellField()) {
             case HOT_BAR_ONE -> playerSpellData.setSpellHotbarOne(spell);
             case LEFT_CLICK -> playerSpellData.setSpellLeftClick(spell);
             case RIGHT_CLICK -> playerSpellData.setSpellRightClick(spell);
             case SWAP_HANDS -> playerSpellData.setSpellSwapHands(spell);
-            default ->
-                    throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellField());
+            default -> throw new IllegalStateException("Unexpected value: " + spellGUI.getSpellField());
         }
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
-            playerSpellData.writeToJedis(uuid, jedis, RunicCore.getCharacterAPI().getCharacterSlot(uuid));
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
+            playerSpellData.writeToJedis(uuid, jedis, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid));
         }
     }
 }

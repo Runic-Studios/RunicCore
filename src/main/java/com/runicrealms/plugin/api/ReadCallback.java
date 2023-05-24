@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.api;
 
-import com.runicrealms.plugin.model.SessionDataMongo;
+import com.runicrealms.plugin.rdb.model.SessionDataMongo;
 
 public interface ReadCallback {
 

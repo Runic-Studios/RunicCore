@@ -3,7 +3,9 @@ package com.runicrealms.plugin.model;
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.TitleAPI;
-import com.runicrealms.plugin.api.WriteCallback;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.api.WriteCallback;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +26,7 @@ public class TitleManager implements Listener, TitleAPI {
 
     @Override
     public TitleData checkRedisForTitleData(UUID uuid, Jedis jedis) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         if (jedis.exists(database + ":" + uuid.toString() + ":" + TitleData.DATA_SECTION_PREFIX)) {
             return new TitleData(uuid, jedis);
         }
@@ -34,7 +36,7 @@ public class TitleManager implements Listener, TitleAPI {
     @Override
     public TitleData getTitleData(UUID uuid) {
         // Step 1: Check if title data is memoized
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getCorePlayerData(uuid);
+        CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(uuid);
         if (corePlayerData != null) {
             return corePlayerData.getTitleData();
         }
@@ -44,7 +46,7 @@ public class TitleManager implements Listener, TitleAPI {
     @Override
     public TitleData loadTitleData(UUID uuid, Jedis jedis) {
         // Step 1: Check if title data is cached in redis
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getCorePlayerData(uuid);
+        CorePlayerData corePlayerData = RunicCore.getPlayerDataAPI().getCorePlayerData(uuid);
         TitleData titleDataRedis = checkRedisForTitleData(uuid, jedis);
         if (titleDataRedis != null) {
             corePlayerData.setTitleData(titleDataRedis);
@@ -54,7 +56,7 @@ public class TitleManager implements Listener, TitleAPI {
         Query query = new Query(Criteria.where(CharacterField.PLAYER_UUID.getField()).is(uuid));
         // Project only the fields we need
         query.fields().include("titleData");
-        TitleData titleDataMongo = RunicCore.getDataAPI().getMongoTemplate().findOne(query, TitleData.class);
+        TitleData titleDataMongo = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().findOne(query, TitleData.class);
         if (titleDataMongo != null) {
             corePlayerData.setTitleData(titleDataMongo);
             titleDataMongo.writeToJedis(uuid, jedis);
@@ -72,7 +74,7 @@ public class TitleManager implements Listener, TitleAPI {
         TaskChain<?> chain = RunicCore.newChain();
         chain
                 .asyncFirst(() -> {
-                    try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+                    try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                         TitleData titleData = loadTitleData(uuid, jedis);
                         titleData.setSuffix("");
                         titleData.setPrefix("");

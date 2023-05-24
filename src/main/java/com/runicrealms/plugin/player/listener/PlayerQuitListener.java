@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterHasQuitEvent;
-import com.runicrealms.plugin.character.api.CharacterQuitEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterHasQuitEvent;
+import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,10 +25,10 @@ public class PlayerQuitListener implements Listener {
 
     @EventHandler
     public void onCharacterHasQuit(CharacterHasQuitEvent event) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         UUID uuid = event.getPlayer().getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 jedis.del(database + ":" + uuid + ":" + PlayerQuitListener.DATA_SAVING_KEY);
             }
         });
@@ -35,10 +36,10 @@ public class PlayerQuitListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) // first
     public void onCharacterQuit(CharacterQuitEvent event) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         UUID uuid = event.getPlayer().getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 jedis.set(database + ":" + uuid + ":" + DATA_SAVING_KEY, "true");
                 jedis.expire(database + ":" + uuid + ":" + DATA_SAVING_KEY, DATA_LOCKOUT_TIMEOUT);
             }

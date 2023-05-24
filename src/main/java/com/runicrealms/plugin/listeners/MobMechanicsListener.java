@@ -3,6 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -99,7 +100,7 @@ public final class MobMechanicsListener implements Listener {
     public void onMobRegainHealth(EntityRegainHealthEvent event) {
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
         if (event.getEntity() instanceof ArmorStand) return;
-        if (event.getEntity() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getEntity().getUniqueId()))
+        if (event.getEntity() instanceof Player && !RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getEntity().getUniqueId()))
             return;
         if (event.getEntity().getPassengers().size() == 0) return;
         if (event.getEntity() instanceof Horse) return;
@@ -125,7 +126,7 @@ public final class MobMechanicsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarOnPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
-        if (event.getVictim() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getVictim().getUniqueId()))
+        if (event.getVictim() instanceof Player && !RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getVictim().getUniqueId()))
             return;
         updateDisplayName(event.getVictim(), event.getAmount());
     }
@@ -133,7 +134,7 @@ public final class MobMechanicsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void updateHealthBarSpellDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
-        if (event.getVictim() instanceof Player && !RunicCore.getCharacterAPI().getLoadedCharacters().contains(event.getVictim().getUniqueId()))
+        if (event.getVictim() instanceof Player && !RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters().contains(event.getVictim().getUniqueId()))
             return;
         updateDisplayName(event.getVictim(), event.getAmount());
     }

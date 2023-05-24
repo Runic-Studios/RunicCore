@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.player.utilities;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class HealthUtils {
     public static void setPlayerMaxHealth(Player player) {
 
         // Grab the player's new info
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player); // todo: NULL
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player); // todo: NULL
 
         // For new players
         if (className == null) {

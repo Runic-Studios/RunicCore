@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -33,7 +35,7 @@ public class TitleData implements SessionDataRedis {
      * @param jedis the jedis resource
      */
     public TitleData(UUID uuid, Jedis jedis) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         this.prefix = jedis.get(database + ":" + uuid + ":" + DATA_SECTION_PREFIX);
         this.suffix = jedis.get(database + ":" + uuid + ":" + DATA_SECTION_SUFFIX);
         this.unlockedTitles = getDataMapFromJedis(uuid, jedis).keySet();
@@ -48,7 +50,7 @@ public class TitleData implements SessionDataRedis {
     @Override
     public Map<String, String> getDataMapFromJedis(UUID uuid, Jedis jedis, int... slot) {
         Map<String, String> fieldsMap = new HashMap<>();
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         final String key = uuid + ":" + DATA_SECTION_UNLOCKED_TITLES;
         Set<String> unlockedTitles = new HashSet<>();
         for (int i = 0; i < jedis.llen(database + ":" + key); i++) {
@@ -82,21 +84,21 @@ public class TitleData implements SessionDataRedis {
     @Override
     public void writeToJedis(UUID uuid, Jedis jedis, int... ignored) {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":markedForSave:core", uuid.toString());
         if (this.prefix != null) {
             jedis.set(database + ":" + uuid + ":" + DATA_SECTION_PREFIX, this.prefix);
-            jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_PREFIX, RunicCore.getRedisAPI().getExpireTime());
+            jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_PREFIX, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
         }
         if (this.suffix != null) {
             jedis.set(database + ":" + uuid + ":" + DATA_SECTION_SUFFIX, this.suffix);
-            jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_SUFFIX, RunicCore.getRedisAPI().getExpireTime());
+            jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_SUFFIX, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
         }
         jedis.del(database + ":" + uuid + ":" + DATA_SECTION_UNLOCKED_TITLES); // reset keys
         for (String unlockedTitle : this.unlockedTitles) {
             jedis.lpush(database + ":" + uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, unlockedTitle);
         }
-        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + uuid + ":" + DATA_SECTION_UNLOCKED_TITLES, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
     }
 
     public String getPrefix() {

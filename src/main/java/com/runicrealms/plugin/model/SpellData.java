@@ -1,6 +1,8 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
@@ -64,7 +66,7 @@ public class SpellData implements SessionDataRedis {
      * @param jedis the jedis resource
      */
     public SpellData(UUID uuid, int slot, Jedis jedis) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         Map<String, String> fieldsMap = jedis.hgetAll(database + ":" + getJedisKey(uuid, slot));
         this.spellHotbarOne = fieldsMap.get(SpellField.HOT_BAR_ONE.getField());
         this.spellLeftClick = fieldsMap.get(SpellField.LEFT_CLICK.getField());
@@ -105,7 +107,7 @@ public class SpellData implements SessionDataRedis {
         Map<String, String> fieldsMap = new HashMap<>();
         List<String> fields = new ArrayList<>(getFields());
         String[] fieldsToArray = fields.toArray(new String[0]);
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         List<String> values = jedis.hmget(database + ":" + uuid + ":character:" + slot[0], fieldsToArray);
         for (int i = 0; i < fieldsToArray.length; i++) {
             fieldsMap.put(fieldsToArray[i], values.get(i));
@@ -137,14 +139,14 @@ public class SpellData implements SessionDataRedis {
     @Override
     public void writeToJedis(UUID uuid, Jedis jedis, int... slot) {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":" + "markedForSave:core", uuid.toString());
         // Ensure the system knows that there is data in redis
         jedis.sadd(database + ":" + uuid + ":spellData", String.valueOf(slot[0]));
-        jedis.expire(database + ":" + uuid + ":spellData", RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + uuid + ":spellData", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
         String key = getJedisKey(uuid, slot[0]);
         jedis.hmset(database + ":" + key, this.toMap(uuid));
-        jedis.expire(database + ":" + key, RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + key, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
     }
 
     public String getSpellHotbarOne() {

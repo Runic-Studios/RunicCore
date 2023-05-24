@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.ItemType;
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.common.event.ArmorEquipEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -38,7 +38,7 @@ public class ArmorTypeListener implements Listener {
 
         ItemStack equippedItem = event.getNewArmorPiece();
         Player player = event.getPlayer();
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         ItemType itemType = ItemType.matchType(equippedItem);
         switch (itemType) {
             case PLATE:

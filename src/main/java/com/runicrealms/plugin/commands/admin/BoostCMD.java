@@ -2,6 +2,7 @@ package com.runicrealms.plugin.commands.admin;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -39,7 +40,7 @@ public class BoostCMD implements CommandExecutor {
 
         COMBAT_EXPERIENCE_BOOST = percent;
         ClassUtil.launchFirework(pl, Color.FUCHSIA);
-        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+        for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null) continue;
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);

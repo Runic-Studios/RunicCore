@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -54,7 +55,7 @@ public class Unseen extends Spell implements DurationSpell {
                         ((CraftPlayer) player).getHandle());
 
         // Hide the player, prevent them from disappearing in tab
-        for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+        for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
             Player loaded = Bukkit.getPlayer(uuid);
             if (loaded == null) continue;
             loaded.hidePlayer(plugin, player);
@@ -73,7 +74,7 @@ public class Unseen extends Spell implements DurationSpell {
                 if (count >= duration || markedForEarlyReveal.contains(player.getUniqueId()) || player.isSneaking()) {
                     this.cancel();
                     cloakers.remove(player.getUniqueId());
-                    for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+                    for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                         Player loaded = Bukkit.getPlayer(uuid);
                         if (loaded == null) continue;
                         loaded.showPlayer(plugin, player);

@@ -5,6 +5,7 @@ import com.runicrealms.plugin.WeaponType;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.listeners.DamageListener;
 import com.runicrealms.plugin.model.SettingsData;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
@@ -63,7 +64,7 @@ public class SpellUseListener implements Listener {
                                     " - " + ChatColor.DARK_GRAY + "[1] [L] [R] [F]", 0, SPELL_TIMEOUT * 20, 0
                     );
         } else {
-            castSpell(player, whichSpellToCast, RunicCore.getCharacterAPI().getPlayerClass(player).equalsIgnoreCase("archer"));
+            castSpell(player, whichSpellToCast, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player).equalsIgnoreCase("archer"));
         }
     }
 
@@ -160,13 +161,13 @@ public class SpellUseListener implements Listener {
         if (!casters.containsKey(event.getPlayer().getUniqueId())) return;
         if (event.getNewSlot() != 0) return;
         event.setCancelled(true);
-        castSpell(event.getPlayer(), 1, RunicCore.getCharacterAPI().getPlayerClass(event.getPlayer()).equalsIgnoreCase("archer"));
+        castSpell(event.getPlayer(), 1, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(event.getPlayer()).equalsIgnoreCase("archer"));
     }
 
     @EventHandler
     public void onSwapHands(PlayerSwapHandItemsEvent e) {
         if (!casters.containsKey(e.getPlayer().getUniqueId())) return;
-        castSpell(e.getPlayer(), 4, RunicCore.getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
+        castSpell(e.getPlayer(), 4, RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(e.getPlayer()).equalsIgnoreCase("archer"));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -178,7 +179,7 @@ public class SpellUseListener implements Listener {
         if (heldItemType == WeaponType.GATHERING_TOOL) return;
         if (!DamageListener.matchClass(event.getPlayer(), false)) return;
         Player player = event.getPlayer();
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player); // lowercase
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player); // lowercase
         boolean isArcher = className.equalsIgnoreCase("archer");
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
             activateSpellMode(player, ClickType.LEFT, 2, isArcher);

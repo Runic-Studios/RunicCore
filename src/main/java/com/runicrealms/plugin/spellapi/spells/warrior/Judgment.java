@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -94,7 +94,7 @@ public class Judgment extends Spell implements DurationSpell, HealingSpell, Radi
                     player.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0, 0, 0);
                     loc.subtract(x, y, z);
                 }
-                
+
                 // Radius indicator
                 new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.VILLAGER_HAPPY, loc, Color.GREEN);
 

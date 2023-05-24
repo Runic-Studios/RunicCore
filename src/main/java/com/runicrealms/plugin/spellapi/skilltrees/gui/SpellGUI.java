@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.model.SpellField;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
 import com.runicrealms.plugin.spellapi.skilltrees.util.ArcherTreeUtil;
@@ -10,7 +12,6 @@ import com.runicrealms.plugin.spellapi.skilltrees.util.ClericTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.RogueTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.WarriorTreeUtil;
-import com.runicrealms.plugin.utilities.ColorUtil;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,7 +39,7 @@ public class SpellGUI implements InventoryHolder {
      * @return a perk that can be used to build an itemstack
      */
     private Perk determineDefaultSpellPerk() {
-        switch (RunicCore.getCharacterAPI().getPlayerClass(player)) {
+        switch (RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player)) {
             case "Archer":
                 return ArcherTreeUtil.DEFAULT_ARCHER_SPELL_PERK;
             case "Cleric":
@@ -76,7 +77,7 @@ public class SpellGUI implements InventoryHolder {
      * @param index        which index to begin filling items
      */
     private int grabUnlockedSpellsFromTree(SkillTreePosition treePosition, int index) {
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
         if (RunicCore.getSkillTreeAPI().loadSkillTreeData(player.getUniqueId(), slot, treePosition) == null)
             return index;
         for (Perk perk : RunicCore.getSkillTreeAPI().loadSkillTreeData(player.getUniqueId(), slot, treePosition).getPerks()) {

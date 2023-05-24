@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.converter;
 
+import com.runicrealms.plugin.rdb.api.ConverterAPI;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.ArrayList;

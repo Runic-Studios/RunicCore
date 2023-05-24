@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.api.event;
 
-import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -30,7 +30,7 @@ public class ScoreboardUpdateEvent extends Event {
         super(true);
         this.player = player;
         this.scoreboard = scoreboard;
-        this.jedis = RunicCore.getRedisAPI().getNewJedisResource();
+        this.jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource();
         this.profession = "";
         this.professionLevel = 0;
         this.isOutlaw = false;
@@ -101,7 +101,7 @@ public class ScoreboardUpdateEvent extends Event {
     public Scoreboard getScoreboard() {
         return this.scoreboard;
     }
- 
+
     public boolean isOutlaw() {
         return isOutlaw;
     }

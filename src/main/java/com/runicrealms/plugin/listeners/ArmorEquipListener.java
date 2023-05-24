@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.ArmorType;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.common.event.ArmorEquipEvent;
+import com.runicrealms.plugin.common.util.ArmorType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

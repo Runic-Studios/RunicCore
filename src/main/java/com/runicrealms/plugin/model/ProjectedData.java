@@ -1,20 +1,20 @@
 package com.runicrealms.plugin.model;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.model.CharacterField;
 import org.bukkit.entity.Player;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * This intermediary object acts as an easy way to pass data from mongo to memory to redis, or vice versa
+ * This intermediary object acts as an easy way to retrieve fields from Mongo
  * It is used during login to both display data in the character select screen and load basic info for the player
- * on character select, then it is removed after.
+ * on character select, then it is removed after CharacterLoadEvent
  *
  * @author Skyfallin
  */
@@ -22,25 +22,14 @@ public class ProjectedData {
     private final UUID uuid;
     private final Map<Integer, ClassData> playerCharacters;
 
-    public ProjectedData(Player player, Jedis jedis) {
+    public ProjectedData(Player player) {
         this.uuid = player.getUniqueId();
         this.playerCharacters = new HashMap<>();
         try {
-            for (int i = 1; i <= RunicCore.getDataAPI().getMaxCharacterSlot(); i++) {
-                // Try to project character data from redis
-                boolean foundInRedis = false;
-//                boolean foundInRedis = updateFromRedis(this.uuid, i, jedis); // todo: add redis logic back
-//                Bukkit.getLogger().warning("found in redis char " + i + " was " + foundInRedis);
-                // Try to project from mongo
-                if (!foundInRedis) {
-                    ClassData result = loadClassData(i);
-                    // todo: add to redis
-                    if (result != null) {
-//                        Bukkit.getLogger().warning("loading class data for char " + i + " was not null");
-                        playerCharacters.put(i, result);
-                    } else {
-//                        Bukkit.getLogger().warning("loading class data for char " + i + " was null!!");
-                    }
+            for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
+                ClassData result = loadClassData(i);
+                if (result != null) {
+                    playerCharacters.put(i, result);
                 }
             }
         } catch (Exception e) {
@@ -60,7 +49,7 @@ public class ProjectedData {
      * Used when making a new character
      */
     public int findFirstUnusedSlot() {
-        for (int i = 1; i <= RunicCore.getDataAPI().getMaxCharacterSlot(); i++) {
+        for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
             if (this.playerCharacters.get(i) == null) {
                 return i;
             }
@@ -91,7 +80,7 @@ public class ProjectedData {
                 .include("coreCharacterDataMap." + slot + "." + CharacterField.CLASS_TYPE.getField())
                 .include("coreCharacterDataMap." + slot + "." + CharacterField.CLASS_LEVEL.getField())
                 .include("coreCharacterDataMap." + slot + "." + CharacterField.CLASS_EXP.getField());
-        CorePlayerData corePlayerData = RunicCore.getDataAPI().getMongoTemplate().findOne(query, CorePlayerData.class);
+        CorePlayerData corePlayerData = RunicDatabase.getAPI().getDataAPI().getMongoTemplate().findOne(query, CorePlayerData.class);
         if (corePlayerData == null) return null;
         if (corePlayerData.getCharacter(slot) == null) return null; // character not found
         CharacterClass classType = corePlayerData.getCharacter(slot).getClassType();
@@ -110,21 +99,4 @@ public class ProjectedData {
         this.findFirstUnusedSlot();
     }
 
-    /**
-     * Updates the memoized list of player characters for display in the character select menu.
-     * Used on logout and whenever the class data might change in-game (levels, etc.)
-     * Designed this way because if they're only playing one character over and over, no need to load everything into redis.
-     * We can just read whatever they have already loaded. Idk. Maybe this object should be cached.
-     *
-     * @param uuid of the player
-     * @param slot of the character
-     */
-    private boolean updateFromRedis(UUID uuid, int slot, Jedis jedis) {
-        if (jedis.exists(uuid + ":character:" + slot)) {
-            ClassData classData = new ClassData(uuid, slot, jedis);
-            this.playerCharacters.put(slot, classData);
-            return true;
-        }
-        return false;
-    }
 }

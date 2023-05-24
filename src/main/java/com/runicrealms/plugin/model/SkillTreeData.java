@@ -1,8 +1,10 @@
 package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.classes.SubClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkSpell;
@@ -60,7 +62,7 @@ public class SkillTreeData implements SessionDataRedis {
         SubClass subClass = SubClass.determineSubClass(uuid, slot, position, jedis);
         this.perks = getSkillTreeBySubClass(subClass); // load default perks
         String key = getJedisKey(uuid, slot, position);
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         Map<String, String> perkDataMap = jedis.hgetAll(database + ":" + key); // get all the values for skill tree in position
         for (String perkId : perkDataMap.keySet()) { // update stored perk data for this object
             Perk perk = getPerk(Integer.parseInt(perkId));
@@ -99,7 +101,7 @@ public class SkillTreeData implements SessionDataRedis {
         /*
         Wipe the memoized perk data
          */
-        int slot = RunicCore.getCharacterAPI().getCharacterSlot(uuid);
+        int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid);
         SkillTreeData first = RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, SkillTreePosition.FIRST);
         SkillTreeData second = RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, SkillTreePosition.SECOND);
         SkillTreeData third = RunicCore.getSkillTreeAPI().loadSkillTreeData(uuid, slot, SkillTreePosition.THIRD);
@@ -110,16 +112,16 @@ public class SkillTreeData implements SessionDataRedis {
         second.setPerks(second.getSkillTreeBySubClass(second.getSubClass(uuid)));
         third.setPerks(third.getSkillTreeBySubClass(third.getSubClass(uuid)));
         // --------------------------------------------
-        RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot).resetSpells(RunicCore.getCharacterAPI().getPlayerClass(uuid)); // reset assigned spells in-memory
+        RunicCore.getSkillTreeAPI().getPlayerSpellData(uuid, slot).resetSpells(RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid)); // reset assigned spells in-memory
         RunicCore.getSkillTreeAPI().getPassives(uuid).clear(); // reset passives
         RunicCore.getStatAPI().getPlayerStatContainer(player.getUniqueId()).resetValues(); // reset stat values
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Your skill trees have been reset!");
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
-            first.writeToJedis(uuid, jedis, RunicCore.getCharacterAPI().getCharacterSlot(uuid));
-            second.writeToJedis(uuid, jedis, RunicCore.getCharacterAPI().getCharacterSlot(uuid));
-            third.writeToJedis(uuid, jedis, RunicCore.getCharacterAPI().getCharacterSlot(uuid));
-            SpellData playerSpellData = RunicCore.getSkillTreeAPI().loadSpellDataFromMemory(uuid, RunicCore.getCharacterAPI().getCharacterSlot(uuid), RunicCore.getCharacterAPI().getPlayerClass(uuid));
-            playerSpellData.writeToJedis(uuid, jedis, RunicCore.getCharacterAPI().getCharacterSlot(uuid));
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
+            first.writeToJedis(uuid, jedis, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid));
+            second.writeToJedis(uuid, jedis, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid));
+            third.writeToJedis(uuid, jedis, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid));
+            SpellData playerSpellData = RunicCore.getSkillTreeAPI().loadSpellDataFromMemory(uuid, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid), RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid));
+            playerSpellData.writeToJedis(uuid, jedis, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(uuid));
         }
     }
 
@@ -189,7 +191,7 @@ public class SkillTreeData implements SessionDataRedis {
         }
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         player.sendMessage(ChatColor.GREEN + "You purchased a new perk!");
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             this.writeToJedis(player.getUniqueId(), jedis, slot);
         }
         return true;
@@ -197,7 +199,7 @@ public class SkillTreeData implements SessionDataRedis {
 
     @Override
     public Map<String, String> getDataMapFromJedis(UUID uuid, Jedis jedis, int... slot) {
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         String key = getJedisKey(uuid, slot[0], position);
         /*
         Get all the values for skill tree in position. Stored as id-pointsAllocated key-value pair
@@ -229,14 +231,14 @@ public class SkillTreeData implements SessionDataRedis {
     @Override
     public void writeToJedis(UUID uuid, Jedis jedis, int... slot) {
         // Inform the server that this player should be saved to mongo on next task (jedis data is refreshed)
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         jedis.sadd(database + ":" + "markedForSave:core", uuid.toString());
         // Ensure the system knows that there is data in redis
         jedis.sadd(database + ":" + uuid + ":skillTreeData", String.valueOf(slot[0]));
-        jedis.expire(database + ":" + uuid + ":skillTreeData", RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + uuid + ":skillTreeData", RunicDatabase.getAPI().getRedisAPI().getExpireTime());
         String key = getJedisKey(uuid, slot[0], this.getPosition());
         jedis.hmset(database + ":" + key, this.toMap(uuid));
-        jedis.expire(database + ":" + key, RunicCore.getRedisAPI().getExpireTime());
+        jedis.expire(database + ":" + key, RunicDatabase.getAPI().getRedisAPI().getExpireTime());
     }
 
     /**
@@ -297,7 +299,7 @@ public class SkillTreeData implements SessionDataRedis {
     }
 
     public SubClass getSubClass(UUID uuid) {
-        String className = RunicCore.getCharacterAPI().getPlayerClass(uuid);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid);
         CharacterClass characterClass = CharacterClass.getFromName(className);
         return SubClass.determineSubClass(characterClass, position);
     }

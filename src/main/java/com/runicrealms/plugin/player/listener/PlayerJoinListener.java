@@ -2,12 +2,13 @@ package com.runicrealms.plugin.player.listener;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
-import com.runicrealms.plugin.character.api.CharacterSelectEvent;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
 import com.runicrealms.plugin.player.utilities.HealthUtils;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
+import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
 import com.runicrealms.plugin.resourcepack.ResourcePackManager;
 import com.runicrealms.plugin.taskchain.TaskChainUtil;
 import org.bukkit.Bukkit;
@@ -44,7 +45,7 @@ public class PlayerJoinListener implements Listener {
         // For benchmarking
         long startTime = System.nanoTime();
         characterSelectEvent.getPluginsToLoadData().add("core");
-        CorePlayerData corePlayerData = characterSelectEvent.getCorePlayerData();
+        CorePlayerData corePlayerData = (CorePlayerData) characterSelectEvent.getSessionDataMongo();
         CoreCharacterData coreCharacterData = corePlayerData.getCharacter(characterSelectEvent.getSlot());
         LOADING_PLAYERS.add(player.getUniqueId());
         player.setLevel(coreCharacterData.getLevel());
@@ -84,7 +85,7 @@ public class PlayerJoinListener implements Listener {
         player.setHealthScale(HealthUtils.getHeartAmount());
         player.setHealth(player.getMaxHealth());
         int slot = event.getCharacterSelectEvent().getSlot();
-        player.teleport(event.getCharacterSelectEvent().getCorePlayerData().getCharacter(slot).getLocation());
+        player.teleport(((CorePlayerData) event.getCharacterSelectEvent().getSessionDataMongo()).getCharacter(slot).getLocation());
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> LOADING_PLAYERS.remove(event.getPlayer().getUniqueId()), 7L);
     }
 
@@ -119,10 +120,10 @@ public class PlayerJoinListener implements Listener {
         // Sync task to load player's data object, or will call an async task to create it in mongo
         TaskChain<?> chain = RunicCore.newChain();
         chain
-                .asyncFirst(() -> RunicCore.getDataAPI().loadCorePlayerData(uuid))
+                .asyncFirst(() -> RunicCore.getPlayerDataAPI().loadCorePlayerData(uuid))
                 .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to load on join!")
                 .syncLast(corePlayerData -> {
-                    RunicCore.getDataAPI().getCorePlayerDataMap().put(uuid, corePlayerData);
+                    RunicCore.getPlayerDataAPI().getCorePlayerDataMap().put(uuid, corePlayerData);
                     ResourcePackManager.openPackForPlayer(player); // Prompt resource pack (triggers character select screen)
                 })
                 .execute();
@@ -142,7 +143,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
-        try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+        try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
             if (jedis.exists(event.getUniqueId() + ":" + PlayerQuitListener.DATA_SAVING_KEY)) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                         ChatColor.GREEN + "You recently played and your data is saving!" +

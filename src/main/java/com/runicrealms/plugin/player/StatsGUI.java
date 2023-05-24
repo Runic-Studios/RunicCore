@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.player;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
@@ -126,7 +127,7 @@ public class StatsGUI implements InventoryHolder {
                 PlayerLevelUtil.calculateHealthAtLevel
                         (
                                 player.getLevel(),
-                                RunicCore.getCharacterAPI().getPlayerClass(player)
+                                RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player)
                         );
         return GUIUtil.dispItem(
                 Material.PAPER,

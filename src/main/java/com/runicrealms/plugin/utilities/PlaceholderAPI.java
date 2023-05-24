@@ -26,6 +26,7 @@ package com.runicrealms.plugin.utilities;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.model.TitleData;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -65,9 +66,9 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
         switch (lowerArg) {
             case "class":
-                return RunicCore.getCharacterAPI().getPlayerClass(player);
+                return RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
             case "class_prefix":
-                return RunicCore.getCharacterAPI().getPlayerClass(player).substring(0, 2);
+                return RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player).substring(0, 2);
             case "level":
                 return player.getLevel() + "";
             case "prof":

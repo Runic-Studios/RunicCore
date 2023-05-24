@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.SettingsData;
 import com.runicrealms.plugin.player.StatsGUI;
 import com.runicrealms.plugin.player.settings.SettingsUI;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,7 +50,7 @@ public class PlayerMenuListener implements Listener {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
 
-            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
 
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
@@ -207,7 +208,7 @@ public class PlayerMenuListener implements Listener {
             player.openInventory(new StatsGUI(player).getInventory());
         } else if (event.getSlot() == 4) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 player.openInventory(new SettingsUI
                         (
                                 player,

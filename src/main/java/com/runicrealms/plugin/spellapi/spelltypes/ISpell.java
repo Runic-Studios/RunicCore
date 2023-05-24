@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.spellapi.spelltypes;
 
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.common.CharacterClass;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

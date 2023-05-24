@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.player.utilities;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.model.CoreCharacterData;
-import com.runicrealms.plugin.utilities.ChatUtils;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -54,11 +55,11 @@ public class PlayerLevelUtil {
      */
     public static void giveExperience(Player player, int expGained) {
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            try (Jedis jedis = RunicCore.getRedisAPI().getNewJedisResource()) {
+            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
                 int currentLevel = player.getLevel();
                 if (currentLevel >= MAX_LEVEL) return;
-                int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
-                CoreCharacterData characterData = RunicCore.getDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
+                int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
+                CoreCharacterData characterData = RunicCore.getPlayerDataAPI().getCorePlayerDataMap().get(player.getUniqueId()).getCharacter(slot);
                 int currentExp = characterData.getExp();
                 currentExp = currentExp + expGained;
 
@@ -96,7 +97,7 @@ public class PlayerLevelUtil {
      * @param classLv the level they reached
      */
     private static void sendLevelMessage(Player player, int classLv) {
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         if (className == null) return;
         player.sendTitle(
                 ChatColor.GREEN + "Level Up!",
@@ -140,8 +141,7 @@ public class PlayerLevelUtil {
             case "mage" -> PlayerLevelUtil.getMageHpLv();
             case "rogue" -> PlayerLevelUtil.getRogueHpLv();
             case "warrior" -> PlayerLevelUtil.getWarriorHpLv();
-            default ->
-                    throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
+            default -> throw new IllegalStateException("Unexpected value: " + className.toLowerCase());
         };
     }
 

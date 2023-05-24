@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.CityLocation;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.character.api.CharacterLoadedEvent;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;

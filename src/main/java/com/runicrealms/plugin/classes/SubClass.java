@@ -1,8 +1,9 @@
 package com.runicrealms.plugin.classes;
 
-import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.item.util.ItemUtils;
 import com.runicrealms.plugin.model.SkillTreePosition;
+import com.runicrealms.plugin.rdb.RunicDatabase;
+import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.runicitems.util.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
@@ -126,7 +127,7 @@ public enum SubClass {
      * @return their subclass, or null (bad!)
      */
     public static SubClass determineSubClass(UUID uuid, int characterSlot, SkillTreePosition position, Jedis jedis) {
-        String className = RunicCore.getCharacterAPI().getPlayerClass(uuid, characterSlot, jedis);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(uuid, characterSlot, jedis);
         CharacterClass characterClass = CharacterClass.getFromName(className);
         return determineSubClass(characterClass, position);
     }

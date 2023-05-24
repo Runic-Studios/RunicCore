@@ -1,9 +1,10 @@
 package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.model.SpellData;
-import com.runicrealms.plugin.utilities.ChatUtils;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -73,7 +74,7 @@ public class SpellEditorGUI implements InventoryHolder {
     private ItemStack ancientRunestone() {
         ItemStack skillTreeButton = new ItemStack(Material.POPPED_CHORUS_FRUIT);
         try {
-            int slot = RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId());
+            int slot = RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId());
             SpellData playerSpellData = RunicCore.getSkillTreeAPI().getPlayerSpellData(player.getUniqueId(), slot);
             ItemMeta meta = skillTreeButton.getItemMeta();
             if (meta == null) return skillTreeButton;

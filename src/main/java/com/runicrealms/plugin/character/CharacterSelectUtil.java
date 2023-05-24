@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.character;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
 import com.runicrealms.plugin.classes.SubClass;
-import com.runicrealms.plugin.utilities.ChatUtils;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.common.CharacterClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,19 +20,18 @@ import java.util.Map;
 
 public class CharacterSelectUtil {
 
-    private static final FileConfiguration FILE_CONFIGURATION = RunicCore.getInstance().getConfig();
-    private static final short ARCHER_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.archer.damage");
-    private static final short CLERIC_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.cleric.damage");
-    private static final short MAGE_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.mage.damage");
-    private static final short ROGUE_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.rogue.damage");
-    private static final short WARRIOR_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.warrior.damage");
-
     public static final ItemStack CHARACTER_CREATE_ITEM;
     public static final ItemStack ONLY_KNIGHT_CREATE_ITEM;
     public static final ItemStack ONLY_CHAMPION_CREATE_ITEM;
     public static final ItemStack GO_BACK_ITEM;
     public static final ItemStack CONFIRM_DELETION_ITEM;
     public static final ItemStack EXIT_GAME_ITEM;
+    private static final FileConfiguration FILE_CONFIGURATION = RunicCore.getInstance().getConfig();
+    private static final short ARCHER_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.archer.damage");
+    private static final short CLERIC_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.cleric.damage");
+    private static final short MAGE_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.mage.damage");
+    private static final short ROGUE_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.rogue.damage");
+    private static final short WARRIOR_ITEM_DURABILITY = (short) FILE_CONFIGURATION.getInt("class-icons.warrior.damage");
     private static final Map<CharacterClass, ItemStack> CLASS_ICONS = new HashMap<>();
 
     static {

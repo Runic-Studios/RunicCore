@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.utilities.ColorUtil;
+import com.runicrealms.plugin.common.util.ColorUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

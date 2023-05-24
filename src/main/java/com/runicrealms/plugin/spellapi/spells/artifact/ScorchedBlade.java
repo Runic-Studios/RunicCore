@@ -1,11 +1,11 @@
 //package com.runicrealms.plugin.spellapi.spells.artifact;
 //
 //import com.runicrealms.plugin.RunicCore;
-//import com.runicrealms.plugin.classes.CharacterClass;
+//import com.runicrealms.plugin.common.CharacterClass;
 //import com.runicrealms.plugin.spellapi.spelltypes.ArtifactSpell;
 //import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 //import com.runicrealms.plugin.spellapi.spellutil.HealUtil;
-//import com.runicrealms.runicitems.item.event.RunicItemArtifactTriggerEvent;
+//import com.runicrealms.plugin.item.artifact.event.RunicItemArtifactTriggerEvent;
 //import org.bukkit.ChatColor;
 //import org.bukkit.entity.Player;
 //import org.bukkit.event.EventHandler;

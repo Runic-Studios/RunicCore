@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import co.aikar.taskchain.TaskChain;
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SkillTreeGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SubClassGUI;
@@ -64,7 +65,7 @@ public class SkillTreeGUIListener implements Listener {
             // Purchase perk and write to Redis async
             TaskChain<?> chain = RunicCore.newChain();
             chain
-                    .asyncFirst(() -> skillTreeGUI.getSkillTree().attemptToPurchasePerk(player, RunicCore.getCharacterAPI().getCharacterSlot(player.getUniqueId()), previous, perk))
+                    .asyncFirst(() -> skillTreeGUI.getSkillTree().attemptToPurchasePerk(player, RunicDatabase.getAPI().getCharacterAPI().getCharacterSlot(player.getUniqueId()), previous, perk))
                     .abortIfNull(TaskChainUtil.CONSOLE_LOG, null, "RunicCore failed to purchase a skill tree perk!")
                     .syncLast(result -> {
                         skillTreeGUI.getInventory().setItem(event.getRawSlot(),

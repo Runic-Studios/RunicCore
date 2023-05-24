@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.ItemType;
-import com.runicrealms.plugin.events.ArmorEquipEvent;
+import com.runicrealms.plugin.common.event.ArmorEquipEvent;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;

@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.ScoreboardAPI;
 import com.runicrealms.plugin.api.event.ScoreboardUpdateEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
@@ -43,7 +44,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
      */
     public ScoreboardHandler() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
-            for (UUID uuid : RunicCore.getCharacterAPI().getLoadedCharacters()) {
+            for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
                 updatePlayerCombatInfo(player, player.getScoreboard());
@@ -64,7 +65,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
     }
 
     private String playerClass(final Player player) {
-        String className = RunicCore.getCharacterAPI().getPlayerClass(player);
+        String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         int currentLevel = player.getLevel();
         String display;
         if (className == null) {
@@ -87,7 +88,7 @@ public class ScoreboardHandler implements ScoreboardAPI {
      */
     private String playerGuild(final Player player, Jedis jedis) {
         String display;
-        String database = RunicCore.getDataAPI().getMongoDatabase().getName();
+        String database = RunicDatabase.getAPI().getDataAPI().getMongoDatabase().getName();
         if (!jedis.exists(database + ":" + player.getUniqueId() + ":guild")) {
             display = NO_GUILD_STRING;
         } else {

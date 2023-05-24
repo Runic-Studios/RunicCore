@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.Pair;
 import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.event.StatusEffectEvent;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;

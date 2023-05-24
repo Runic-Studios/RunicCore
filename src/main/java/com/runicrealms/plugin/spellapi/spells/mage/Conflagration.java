@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.classes.CharacterClass;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -14,12 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Conflagration extends Spell implements DurationSpell {
-    private final Map<UUID, ConflagrationContainer> conflagrationMap = new HashMap<>();
+    private final Map<UUID, ConflagrationContainer> conflagrationMap = new ConcurrentHashMap<>();
     private int period;
     private double percent;
     private int damageCapPerTick;
@@ -106,17 +108,26 @@ public class Conflagration extends Spell implements DurationSpell {
         new BukkitRunnable() {
             @Override
             public void run() {
+                // Store keys to be removed
+                List<UUID> toRemove = new ArrayList<>();
+
                 for (UUID uuid : conflagrationMap.keySet()) {
                     ConflagrationContainer container = conflagrationMap.get(uuid);
                     container.setDurationRemaining(container.getDurationRemaining() - period);
                     conflagration(container.getCaster(), container.getVictim());
                     if (container.getDurationRemaining() <= 0) {
-                        conflagrationMap.remove(uuid);
+                        toRemove.add(uuid);
                     }
+                }
+
+                // Remove the keys
+                for (UUID uuid : toRemove) {
+                    conflagrationMap.remove(uuid);
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, period * 20L);
     }
+
 
     static class ConflagrationContainer {
         private final Player caster;
