@@ -41,43 +41,43 @@ public class ArmorTypeListener implements Listener {
         String className = RunicDatabase.getAPI().getCharacterAPI().getPlayerClass(player);
         ItemType itemType = ItemType.matchType(equippedItem);
         switch (itemType) {
-            case PLATE:
+            case PLATE -> {
                 if (!className.equalsIgnoreCase("Warrior")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
-                break;
-            case GILDED:
+            }
+            case GILDED -> {
                 if (!className.equalsIgnoreCase("Cleric")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
-                break;
-            case MAIL:
+            }
+            case MAIL -> {
                 if (!className.equalsIgnoreCase("Archer")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
-                break;
-            case LEATHER:
+            }
+            case LEATHER -> {
                 if (!className.equalsIgnoreCase("Rogue")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
-                break;
-            case CLOTH:
+            }
+            case CLOTH -> {
                 if (!className.equalsIgnoreCase("Mage")) {
                     player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 1);
                     event.setCancelled(true);
                     player.sendMessage(armorMessage(className));
                 }
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
     }
 }
