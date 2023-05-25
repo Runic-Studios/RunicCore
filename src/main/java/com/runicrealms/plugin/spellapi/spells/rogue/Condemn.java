@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.*;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Color;
@@ -58,6 +59,7 @@ public class Condemn extends Spell implements DistanceSpell, DurationSpell, Phys
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
             targets.forEach(target -> {
+                new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.SPELL_WITCH, livingEntity.getLocation());
                 addStatusEffect((LivingEntity) target, RunicStatusEffect.SLOW_II, duration, false);
                 DamageUtil.damageEntityPhysical(damage,
                         (LivingEntity) target, player, false, false, this);

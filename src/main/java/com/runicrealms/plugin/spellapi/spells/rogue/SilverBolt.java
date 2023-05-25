@@ -62,9 +62,9 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
             VectorUtil.drawLine(player, Particle.REDSTONE, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.05f);
-            spawnArrowTip(livingEntity.getEyeLocation(), new Particle.DustOptions(Color.RED, 1), player, 1);
+            spawnArrowTip(livingEntity.getEyeLocation(), new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1), player, 1);
             DamageUtil.damageEntityPhysical(physicalDamage, livingEntity, player, false, true, this);
-            Cone.coneEffect(livingEntity, Particle.REDSTONE, duration, 0, 20, Color.SILVER);
+            Cone.coneEffect(livingEntity, Particle.REDSTONE, duration, 0, 20, Color.WHITE);
             BRANDED_ENEMIES_MAP.put(player.getUniqueId(), livingEntity.getUniqueId());
             Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> BRANDED_ENEMIES_MAP.remove(player.getUniqueId()), (long) duration * 20L);
         }
