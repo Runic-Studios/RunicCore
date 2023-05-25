@@ -8,103 +8,24 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
-import com.runicrealms.plugin.api.CodecAPI;
-import com.runicrealms.plugin.api.CombatAPI;
-import com.runicrealms.plugin.api.ConfigAPI;
-import com.runicrealms.plugin.api.LootTableAPI;
-import com.runicrealms.plugin.api.PartyAPI;
-import com.runicrealms.plugin.api.PlayerDataAPI;
-import com.runicrealms.plugin.api.RegionAPI;
-import com.runicrealms.plugin.api.ScoreboardAPI;
-import com.runicrealms.plugin.api.ShopAPI;
-import com.runicrealms.plugin.api.SkillTreeAPI;
-import com.runicrealms.plugin.api.SpellAPI;
-import com.runicrealms.plugin.api.StatAPI;
-import com.runicrealms.plugin.api.StatusEffectAPI;
-import com.runicrealms.plugin.api.TabAPI;
-import com.runicrealms.plugin.api.TitleAPI;
+import com.runicrealms.plugin.api.*;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.codec.CodecHandler;
-import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
-import com.runicrealms.plugin.commands.admin.BoostCMD;
-import com.runicrealms.plugin.commands.admin.CooldownCMD;
-import com.runicrealms.plugin.commands.admin.FireworkCMD;
-import com.runicrealms.plugin.commands.admin.GameModeCMD;
-import com.runicrealms.plugin.commands.admin.ManaCMD;
-import com.runicrealms.plugin.commands.admin.ResetTreeCMD;
-import com.runicrealms.plugin.commands.admin.RunicBossCMD;
-import com.runicrealms.plugin.commands.admin.RunicDamage;
-import com.runicrealms.plugin.commands.admin.RunicGiveCMD;
-import com.runicrealms.plugin.commands.admin.RunicTeleportCMD;
-import com.runicrealms.plugin.commands.admin.SetCMD;
-import com.runicrealms.plugin.commands.admin.SpeedCMD;
-import com.runicrealms.plugin.commands.admin.TravelCMD;
-import com.runicrealms.plugin.commands.admin.VanishCMD;
-import com.runicrealms.plugin.commands.player.ExpCMD;
-import com.runicrealms.plugin.commands.player.HelpCMD;
-import com.runicrealms.plugin.commands.player.MapLink;
-import com.runicrealms.plugin.commands.player.RunicVoteCMD;
-import com.runicrealms.plugin.commands.player.SpawnCMD;
+import com.runicrealms.plugin.commands.admin.*;
+import com.runicrealms.plugin.commands.player.*;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
-import com.runicrealms.plugin.item.lootchests.BossChestListener;
-import com.runicrealms.plugin.item.lootchests.BossTagger;
-import com.runicrealms.plugin.item.lootchests.LootChestListener;
-import com.runicrealms.plugin.item.lootchests.LootChestManager;
-import com.runicrealms.plugin.item.lootchests.LootTableManager;
+import com.runicrealms.plugin.item.lootchests.*;
 import com.runicrealms.plugin.item.shops.RunicItemShopManager;
 import com.runicrealms.plugin.item.shops.RunicShopManager;
-import com.runicrealms.plugin.listeners.AllyVerifyListener;
-import com.runicrealms.plugin.listeners.ArmorEquipListener;
-import com.runicrealms.plugin.listeners.ArmorTypeListener;
-import com.runicrealms.plugin.listeners.BasicAttackListener;
-import com.runicrealms.plugin.listeners.BedEnterListener;
-import com.runicrealms.plugin.listeners.BlockBreakListener;
-import com.runicrealms.plugin.listeners.BlockInteractListener;
-import com.runicrealms.plugin.listeners.BlockPlaceListener;
-import com.runicrealms.plugin.listeners.BowListener;
-import com.runicrealms.plugin.listeners.CampfireListener;
-import com.runicrealms.plugin.listeners.CraftingListener;
-import com.runicrealms.plugin.listeners.CreatureSpawnListener;
-import com.runicrealms.plugin.listeners.DamageListener;
-import com.runicrealms.plugin.listeners.DaylightCycleListener;
-import com.runicrealms.plugin.listeners.DeathListener;
-import com.runicrealms.plugin.listeners.DurabilityListener;
-import com.runicrealms.plugin.listeners.EnderpearlListener;
-import com.runicrealms.plugin.listeners.EnemyVerifyListener;
-import com.runicrealms.plugin.listeners.EnvironmentDamageListener;
-import com.runicrealms.plugin.listeners.ExpBoostListener;
-import com.runicrealms.plugin.listeners.GenericDamageListener;
-import com.runicrealms.plugin.listeners.HearthstoneListener;
-import com.runicrealms.plugin.listeners.HerbFallDamageListener;
-import com.runicrealms.plugin.listeners.HorseFeedListener;
-import com.runicrealms.plugin.listeners.InventoryClickListener;
-import com.runicrealms.plugin.listeners.KeyClickListener;
-import com.runicrealms.plugin.listeners.MinLevelListener;
-import com.runicrealms.plugin.listeners.MobCleanupListener;
-import com.runicrealms.plugin.listeners.MobMechanicsListener;
-import com.runicrealms.plugin.listeners.MobTagger;
-import com.runicrealms.plugin.listeners.NoJockeysListener;
-import com.runicrealms.plugin.listeners.NpcListener;
-import com.runicrealms.plugin.listeners.PreCommandListener;
-import com.runicrealms.plugin.listeners.ResourcePackListener;
-import com.runicrealms.plugin.listeners.RuneListener;
-import com.runicrealms.plugin.listeners.RunicExpListener;
-import com.runicrealms.plugin.listeners.ServerListPingListener;
-import com.runicrealms.plugin.listeners.SheepShearListener;
-import com.runicrealms.plugin.listeners.ShieldListener;
-import com.runicrealms.plugin.listeners.SkillPointsListener;
-import com.runicrealms.plugin.listeners.StaffListener;
-import com.runicrealms.plugin.listeners.SwapHandsListener;
-import com.runicrealms.plugin.listeners.WorldChangeListener;
+import com.runicrealms.plugin.listeners.*;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
-import com.runicrealms.plugin.music.MusicListener;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
@@ -113,16 +34,7 @@ import com.runicrealms.plugin.player.CombatManager;
 import com.runicrealms.plugin.player.PlayerHungerManager;
 import com.runicrealms.plugin.player.RegenManager;
 import com.runicrealms.plugin.player.death.GravestoneManager;
-import com.runicrealms.plugin.player.listener.CombatListener;
-import com.runicrealms.plugin.player.listener.ExpListener;
-import com.runicrealms.plugin.player.listener.ManaListener;
-import com.runicrealms.plugin.player.listener.OffhandListener;
-import com.runicrealms.plugin.player.listener.PlayerJoinListener;
-import com.runicrealms.plugin.player.listener.PlayerLevelListener;
-import com.runicrealms.plugin.player.listener.PlayerMenuListener;
-import com.runicrealms.plugin.player.listener.PlayerQuitListener;
-import com.runicrealms.plugin.player.listener.PlayerRegenListener;
-import com.runicrealms.plugin.player.listener.StatsGUIListener;
+import com.runicrealms.plugin.player.listener.*;
 import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
@@ -138,17 +50,11 @@ import com.runicrealms.plugin.redis.RedisManager;
 import com.runicrealms.plugin.region.RegionEventListener;
 import com.runicrealms.plugin.scoreboard.ScoreboardHandler;
 import com.runicrealms.plugin.scoreboard.ScoreboardListener;
-import com.runicrealms.plugin.spellapi.ArtifactSpellListener;
-import com.runicrealms.plugin.spellapi.SpellManager;
-import com.runicrealms.plugin.spellapi.SpellScalingListener;
-import com.runicrealms.plugin.spellapi.SpellUseListener;
-import com.runicrealms.plugin.spellapi.StatusEffectManager;
+import com.runicrealms.plugin.sound.ambient.AmbientSoundHandler;
+import com.runicrealms.plugin.sound.music.MusicListener;
+import com.runicrealms.plugin.spellapi.*;
 import com.runicrealms.plugin.spellapi.skilltrees.SkillTreeManager;
-import com.runicrealms.plugin.spellapi.skilltrees.listener.RuneGUIListener;
-import com.runicrealms.plugin.spellapi.skilltrees.listener.SkillTreeGUIListener;
-import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellEditorGUIListener;
-import com.runicrealms.plugin.spellapi.skilltrees.listener.SpellGUIListener;
-import com.runicrealms.plugin.spellapi.skilltrees.listener.SubClassGUIListener;
+import com.runicrealms.plugin.spellapi.skilltrees.listener.*;
 import com.runicrealms.plugin.tablist.TabListManager;
 import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.NametagHandler;
@@ -201,6 +107,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static PlayerDataAPI playerDataAPI;
     private static ConverterAPI converterAPI;
     private static RedisAPI redisAPI;
+    private static AmbientSoundHandler ambientSoundHandler;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -323,6 +230,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return playerDataAPI;
     }
 
+    public static AmbientSoundHandler getAmbientSoundHandler() {
+        return ambientSoundHandler;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -369,6 +280,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         playerDataAPI = null;
         converterAPI = null;
         redisAPI = null;
+        ambientSoundHandler = null;
     }
 
     @Override
@@ -433,6 +345,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         mongoTask = new MongoTask();
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();
+        ambientSoundHandler = new AmbientSoundHandler();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();

@@ -9,18 +9,20 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 public class Castigate extends Spell implements DurationSpell, MagicDamageSpell {
-    private final Set<UUID> buffedPlayersSet = new HashSet<>();
+    private final Map<UUID, BukkitTask> buffedMap = new HashMap<>();
     private double damage;
     private double damagePerLevel;
     private double durationToHit;
@@ -47,16 +49,8 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
         this.percent = percent;
     }
 
-    public double getNumberOfTicks() {
-        return numberOfTicks;
-    }
-
     public void setNumberOfTicks(double numberOfTicks) {
         this.numberOfTicks = numberOfTicks;
-    }
-
-    public double getDurationToHit() {
-        return durationToHit;
     }
 
     public void setDurationToHit(double durationToHit) {
@@ -97,9 +91,10 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        buffedPlayersSet.add(event.getCaster().getUniqueId());
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
-                () -> buffedPlayersSet.remove(event.getCaster().getUniqueId()), (long) durationToHit * 20L);
+        if (buffedMap.containsKey(event.getCaster().getUniqueId()))
+            buffedMap.get(event.getCaster().getUniqueId()).cancel(); // Cancel removal task
+        buffedMap.put(event.getCaster().getUniqueId(), Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> buffedMap.remove(event.getCaster().getUniqueId()), (long) durationToHit * 20L));
     }
 
     @EventHandler
@@ -107,7 +102,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
         if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (!buffedPlayersSet.contains(event.getPlayer().getUniqueId())) return;
+        if (!buffedMap.containsKey(event.getPlayer().getUniqueId())) return;
         applyCastigation(event.getPlayer(), event.getVictim());
     }
 
@@ -118,12 +113,12 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
 
             @Override
             public void run() {
-
-                count += 1;
                 if (count > numberOfTicks)
                     this.cancel();
                 else {
-                    Bukkit.broadcastMessage("test");
+                    count += 1;
+                    victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
+                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.5f);
                     DamageUtil.damageEntitySpell(damage, victim, caster, spell);
                 }
 

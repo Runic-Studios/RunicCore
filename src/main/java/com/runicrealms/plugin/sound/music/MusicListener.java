@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.music;
+package com.runicrealms.plugin.sound.music;
 
 import com.runicrealms.plugin.RunicCore;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
