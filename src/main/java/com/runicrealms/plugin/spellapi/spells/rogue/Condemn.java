@@ -5,7 +5,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.*;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -72,7 +71,7 @@ public class Condemn extends Spell implements DistanceSpell, DurationSpell, Phys
     }
 
     private void condemnEffect(Player player) {
-        SlashEffect.slashVertical(player, Particle.REDSTONE, false, Color.WHITE);
+        SlashEffect.slashVertical(player, Particle.CRIT, false);
     }
 
     @Override
