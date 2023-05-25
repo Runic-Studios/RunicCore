@@ -57,12 +57,12 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
 
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) distance).getLocation().add(0.5, 1, 0.5); // Center on block
-            VectorUtil.drawLine(player, Particle.REDSTONE, Color.SILVER, player.getEyeLocation(), location, 0.5D, 1, 0.05f);
-            spawnArrowTip(location, new Particle.DustOptions(Color.WHITE, 1), player, 1);
+            VectorUtil.drawLine(player, Particle.REDSTONE, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.05f);
+            spawnArrowTip(location, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1), player, 1);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            VectorUtil.drawLine(player, Particle.REDSTONE, Color.SILVER, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.05f);
-            spawnArrowTip(livingEntity.getEyeLocation(), new Particle.DustOptions(Color.WHITE, 1), player, 1);
+            VectorUtil.drawLine(player, Particle.REDSTONE, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.05f);
+            spawnArrowTip(livingEntity.getEyeLocation(), new Particle.DustOptions(Color.RED, 1), player, 1);
             DamageUtil.damageEntityPhysical(physicalDamage, livingEntity, player, false, true, this);
             Cone.coneEffect(livingEntity, Particle.REDSTONE, duration, 0, 20, Color.SILVER);
             BRANDED_ENEMIES_MAP.put(player.getUniqueId(), livingEntity.getUniqueId());
@@ -143,18 +143,47 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
     }
 
     public void spawnArrowTip(Location center, Particle.DustOptions dustOptions, Player player, double size) {
-        Vector[] directions = {
+        // Create a rotation matrix around the Y axis by the player's rotation angle
+        double yaw = Math.toRadians(player.getLocation().getYaw() + 180); // +90 as Minecraft yaw 0 is east.
+        double cosYaw = Math.cos(yaw);
+        double sinYaw = Math.sin(yaw);
+
+        Vector[] baseDirections = {
                 new Vector(size, 0, size), // upper right direction
-                new Vector(-size, 0, size), // upper left direction
-                new Vector(0, 0, -size) // bottom direction
+                new Vector(-size, 0, size)  // upper left direction
         };
 
-        for (Vector direction : directions) {
+        Vector[] directions = new Vector[baseDirections.length];
+        for (int i = 0; i < baseDirections.length; i++) {
+            Vector baseDirection = baseDirections[i];
+            // Rotate the base direction vectors using the rotation matrix
+            directions[i] = new Vector(
+                    baseDirection.getX() * cosYaw - baseDirection.getZ() * sinYaw,
+                    baseDirection.getY(),
+                    baseDirection.getX() * sinYaw + baseDirection.getZ() * cosYaw
+            );
+        }
+
+        for (Vector dir : directions) {
             Location start = center.clone();
-            Location end = center.clone().add(direction);
+            Location end = center.clone().add(dir);
             spawnParticleLine(start, end, dustOptions, player);
         }
     }
+
+//    public void spawnArrowTip(Location center, Particle.DustOptions dustOptions, Player player, double size) {
+//        Vector[] directions = {
+//                new Vector(size, 0, size), // upper right direction
+//                new Vector(-size, 0, size), // upper left direction
+////                new Vector(0, 0, -size) // bottom direction
+//        };
+//
+//        for (Vector direction : directions) {
+//            Location start = center.clone();
+//            Location end = center.clone().add(direction);
+//            spawnParticleLine(start, end, dustOptions, player);
+//        }
+//    }
 
     public void spawnParticleLine(Location start, Location end, Particle.DustOptions dustOptions, Player player) {
         // Get the vector from the start location to the end

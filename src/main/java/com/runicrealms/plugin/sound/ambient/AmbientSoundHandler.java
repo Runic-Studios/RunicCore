@@ -15,7 +15,7 @@ import java.util.*;
  * Plays different music tracks from the resource pack when certain areas are entered
  */
 public class AmbientSoundHandler implements Listener {
-    private static final int PERIOD = 10;
+    private static final int PERIOD = 5;
     private static final HashMap<String, List<String>> AMBIENT_SOUND_MAP;
     private static final Set<Player> PLAYERS_IN_REGION = new HashSet<>();
 
@@ -23,29 +23,53 @@ public class AmbientSoundHandler implements Listener {
         AMBIENT_SOUND_MAP = new HashMap<>();
         List<String> forestSounds = new ArrayList<>(Arrays.asList
                 (
+                        "",
                         "frog_idle1",
+                        "",
                         "frog_idle2",
+                        "",
                         "bird_fly",
+                        "",
                         "bird_song",
+                        "",
                         "bird_song2",
+                        "", // Empty sounds to hoodwink randomness
                         "bird_song3",
+                        "",
                         "bird_song4",
-                        "owl_idle",
-                        "raccoon_idle"
+                        "",
+                        "raccoon_idle1",
+                        "",
+                        "raccoon_idle2",
+                        ""
                 ));
         AMBIENT_SOUND_MAP.put("silkwood", forestSounds);
     }
 
     public AmbientSoundHandler() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
+        // Create a Random instance
+        Random rand = new Random();
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             if (PLAYERS_IN_REGION.isEmpty()) return;
-            Bukkit.broadcastMessage("playing music");
+            // Choose a random element from AMBIENT_SOUND_MAP
+            String randomSound1 = AMBIENT_SOUND_MAP.get("silkwood").get(rand.nextInt(AMBIENT_SOUND_MAP.get("silkwood").size()));
+            String randomSound2 = AMBIENT_SOUND_MAP.get("silkwood").get(rand.nextInt(AMBIENT_SOUND_MAP.get("silkwood").size()));
+//            Bukkit.broadcastMessage("playing sound " + randomSound1);
+//            Bukkit.broadcastMessage("playing sound " + randomSound2);
             // Play music
             PLAYERS_IN_REGION.forEach(player -> player.playSound
                     (
                             player.getLocation(),
-                            "littleroom_wilderness:littleroom.wilderness.bird_song", // todo: random
+                            "littleroom_wilderness:littleroom.wilderness." + randomSound1,
+                            SoundCategory.AMBIENT,
+                            0.5f,
+                            1.0f
+                    ));
+            PLAYERS_IN_REGION.forEach(player -> player.playSound
+                    (
+                            player.getLocation(),
+                            "littleroom_wilderness:littleroom.wilderness." + randomSound2,
                             SoundCategory.AMBIENT,
                             0.5f,
                             1.0f

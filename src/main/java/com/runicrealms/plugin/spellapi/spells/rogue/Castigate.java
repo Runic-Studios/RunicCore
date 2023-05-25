@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -14,14 +15,14 @@ import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Castigate extends Spell implements DurationSpell, MagicDamageSpell {
+    private final Set<UUID> weakenedHealers = new HashSet<>();
     private final Map<UUID, BukkitTask> buffedMap = new HashMap<>();
     private double damage;
     private double damagePerLevel;
@@ -87,6 +88,17 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
         this.damage = magicDamage;
     }
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onHeal(SpellHealEvent event) {
+        if (event.isCancelled()) return;
+        if (weakenedHealers.isEmpty()) return;
+        if (!weakenedHealers.contains(event.getPlayer().getUniqueId())) return;
+//        Bukkit.broadcastMessage("was " + event.getAmount());
+        double reduction = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reduction));
+//        Bukkit.broadcastMessage(ChatColor.RED + " is" + event.getAmount());
+    }
+
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
@@ -107,15 +119,17 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
     }
 
     private void applyCastigation(Player caster, LivingEntity victim) {
+        weakenedHealers.add(victim.getUniqueId());
         Spell spell = this;
         new BukkitRunnable() {
             double count = 1;
 
             @Override
             public void run() {
-                if (count > numberOfTicks)
+                if (count > numberOfTicks) {
                     this.cancel();
-                else {
+                    weakenedHealers.remove(victim.getUniqueId());
+                } else {
                     count += 1;
                     victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
                     victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.5f);
