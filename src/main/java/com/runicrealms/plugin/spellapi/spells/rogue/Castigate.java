@@ -1,15 +1,26 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Castigate extends Spell implements DurationSpell, MagicDamageSpell {
+    private final Set<UUID> buffedPlayersSet = new HashSet<>();
     private double damage;
     private double damagePerLevel;
     private double durationToHit;
@@ -19,7 +30,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
     public Castigate() {
         super("Castigate", CharacterClass.ROGUE);
         this.setIsPassive(true);
-        this.setDescription("After casting a spell, your next attack " +
+        this.setDescription("After casting a spell, your next basic attack " +
                 "within " + durationToHit + "s now burns the target " +
                 "for (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage " +
@@ -84,7 +95,40 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
 
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
-// todo:
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
+        buffedPlayersSet.add(event.getCaster().getUniqueId());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> buffedPlayersSet.remove(event.getCaster().getUniqueId()), (long) durationToHit * 20L);
+    }
+
+    @EventHandler
+    public void onBasicAttack(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!event.isBasicAttack()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (!buffedPlayersSet.contains(event.getPlayer().getUniqueId())) return;
+        applyCastigation(event.getPlayer(), event.getVictim());
+    }
+
+    private void applyCastigation(Player caster, LivingEntity victim) {
+        Spell spell = this;
+        new BukkitRunnable() {
+            double count = 1;
+
+            @Override
+            public void run() {
+
+                count += 1;
+                if (count > numberOfTicks)
+                    this.cancel();
+                else {
+                    Bukkit.broadcastMessage("test");
+                    DamageUtil.damageEntitySpell(damage, victim, caster, spell);
+                }
+
+            }
+        }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
 
     @Override
