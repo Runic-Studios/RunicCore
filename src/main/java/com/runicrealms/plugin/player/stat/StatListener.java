@@ -2,10 +2,16 @@ package com.runicrealms.plugin.player.stat;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
-import com.runicrealms.plugin.events.*;
+import com.runicrealms.plugin.events.HealthRegenEvent;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.ManaRegenEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.RunicExpEvent;
+import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
 import com.runicrealms.runicitems.Stat;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -84,12 +90,10 @@ public class StatListener implements Listener {
         if (event.isCancelled()) return;
         // No exp boost to quest exp
         if (event.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST) return;
-        Bukkit.broadcastMessage("amount is " + event.getFinalAmount());
         UUID uuid = event.getPlayer().getUniqueId();
         double wisdomBonusPercent = Stat.getExpMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
         double bonus = wisdomBonusPercent * event.getOriginalAmount();
         event.setFinalAmount((int) (event.getFinalAmount() + bonus));
-        Bukkit.broadcastMessage("amount is now " + event.getFinalAmount());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

@@ -59,7 +59,7 @@ public class SkillPointsListener implements Listener {
             player.sendMessage
                     (
                             ChatColor.RED + "[!] " + ChatColor.LIGHT_PURPLE + "You have " + ChatColor.WHITE +
-                                    levelsRemainingUntilSkillTrees + ChatColor.LIGHT_PURPLE + " level(s) remaining until you unlock " +
+                                    levelsRemainingUntilSkillTrees + ChatColor.LIGHT_PURPLE + " level(s) left until you unlock " +
                                     ChatColor.GREEN + ChatColor.BOLD + "SKILL TREES" + ChatColor.LIGHT_PURPLE + "!"
                     );
         }
