@@ -77,7 +77,7 @@ public class BossTagger implements Listener {
             Bukkit.broadcastMessage(player.getName() + " did " + integer + " damage");
             player.sendMessage(ChatColor.YELLOW + "You dealt " + ChatColor.RED + ChatColor.BOLD + integer + ChatColor.YELLOW + " damage to the boss!");
         });
-        Bukkit.broadcastMessage("looter size is " + bossLooters.get(event.getEntity().getUniqueId()).size() + " people");
+        Bukkit.broadcastMessage("looter size is totally " + bossLooters.get(event.getEntity().getUniqueId()).size() + " people");
         bossFighters.get(event.getEntity().getUniqueId()).clear(); // clear damage tracking map
     }
 
