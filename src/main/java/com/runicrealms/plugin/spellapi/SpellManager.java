@@ -6,7 +6,6 @@ import com.runicrealms.plugin.api.event.SpellShieldEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.model.SpellData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.spellapi.spells.Consumable;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spells.archer.*;
 import com.runicrealms.plugin.spellapi.spells.artifact.*;
@@ -352,7 +351,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Thundershock());
         this.spellList.add(new ThunderousRift());
         this.spellList.add(new Cannonfire());
-        this.spellList.add(new Consumable());
 //        this.spellList.add(new ScorchedBlade()); sunken artifact passives
 //        this.spellList.add(new BlessingOfFire());
 //        this.spellList.add(new FlamingShield());
