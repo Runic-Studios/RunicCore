@@ -8,6 +8,7 @@ import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,11 +105,15 @@ public class ShopConfigLoader {
      */
     public static RunicShopItem loadShopItem(ConfigurationSection section, String runicItemId) throws ShopLoadException {
         try {
+            int stacksize = 1;
             Map<String, Integer> requiredItems = new HashMap<>();
             for (String key : section.getKeys(false)) {
-                requiredItems.put(key, section.getInt(key));
+                if (!key.equalsIgnoreCase("stack-size")) requiredItems.put(key, section.getInt(key));
+                else stacksize = section.getInt("stack-size");
             }
-            return new RunicShopItem(requiredItems, RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem());
+            ItemStack item = RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem();
+            item.setAmount(stacksize);
+            return new RunicShopItem(requiredItems, item);
         } catch (Exception exception) {
             exception.printStackTrace();
             throw new ShopLoadException("item initialization syntax error for " + runicItemId).setErrorMessage(exception.getMessage());
