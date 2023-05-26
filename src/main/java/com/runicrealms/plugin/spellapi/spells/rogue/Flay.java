@@ -1,10 +1,16 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.spellapi.spelltypes.*;
+import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -17,16 +23,16 @@ import org.bukkit.util.RayTraceResult;
 
 import java.util.Collection;
 
-public class Condemn extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
+public class Flay extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
     public static final double BEAM_WIDTH = 2;
     private double damage;
     private double damagePerLevel;
     private double distance;
     private double duration;
 
-    public Condemn() {
-        super("Condemn", CharacterClass.ROGUE);
-        this.setDescription("You lash out with your blade, " +
+    public Flay() {
+        super("Flay", CharacterClass.ROGUE);
+        this.setDescription("You lash out with a spectral blade, " +
                 "dealing (" + damage + " + &f" + damagePerLevel +
                 "x&7 lvl) physical⚔ damage to " +
                 "enemies within " + distance + " blocks and breaking their will, " +
@@ -50,18 +56,17 @@ public class Condemn extends Spell implements DistanceSpell, DurationSpell, Phys
             Location location = player.getTargetBlock(null, (int) distance).getLocation();
             location.setDirection(player.getLocation().getDirection());
             location.setY(player.getLocation().add(0, 1, 0).getY());
-            condemnEffect(player);
+            flayEffect(player);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            condemnEffect(player);
+            flayEffect(player);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
             targets.forEach(target -> {
-                new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.SPELL_WITCH, livingEntity.getLocation());
+                new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.SOUL_FIRE_FLAME, livingEntity.getLocation());
                 addStatusEffect((LivingEntity) target, RunicStatusEffect.SLOW_II, duration, false);
-                DamageUtil.damageEntityPhysical(damage,
-                        (LivingEntity) target, player, false, false, this);
+                DamageUtil.damageEntityPhysical(damage, (LivingEntity) target, player, false, false, this);
                 if (SilverBolt.getBrandedEnemiesMap().contains(target.getUniqueId())) {
                     ((LivingEntity) target).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20L), -999));
                 }
@@ -70,8 +75,8 @@ public class Condemn extends Spell implements DistanceSpell, DurationSpell, Phys
         }
     }
 
-    private void condemnEffect(Player player) {
-        SlashEffect.slashVertical(player, Particle.CRIT, false);
+    private void flayEffect(Player player) {
+        SlashEffect.slashVertical(player, Particle.REDSTONE, false, Color.TEAL);
     }
 
     @Override

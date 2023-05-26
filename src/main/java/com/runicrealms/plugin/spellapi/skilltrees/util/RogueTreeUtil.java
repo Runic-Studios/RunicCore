@@ -61,7 +61,7 @@ public class RogueTreeUtil {
         perks.add(new PerkSpell(122, 1, 0, 1, "Castigate"));
         perks.add(new PerkBaseStat(123, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(124, 1, 0, 3, Stat.DEXTERITY));
-        perks.add(new PerkSpell(125, 1, 0, 1, "Condemn"));
+        perks.add(new PerkSpell(125, 1, 0, 1, "Flay"));
         perks.add(new PerkBaseStat(126, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(127, 1, 0, 3, Stat.DEXTERITY));
         perks.add(new PerkBaseStat(129, 1, 0, 5, Stat.INTELLIGENCE));
