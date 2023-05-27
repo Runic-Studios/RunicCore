@@ -3,7 +3,7 @@ package com.runicrealms.plugin.item.shops;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 public interface RunicItemShop {
@@ -36,10 +36,10 @@ public interface RunicItemShop {
      */
     String getName();
 
-    LinkedHashSet<RunicShopItem> getItemsForSale();
+    List<RunicShopItem> getItemsForSale();
+
+    void setItemsForSale(List<RunicShopItem> itemsForSale);
 
     void registerRunicItemShop();
-
-    void setItemsForSale(LinkedHashSet<RunicShopItem> itemsForSale);
 }
 

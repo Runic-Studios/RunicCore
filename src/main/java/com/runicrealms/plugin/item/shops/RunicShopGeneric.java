@@ -7,19 +7,19 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 public class RunicShopGeneric implements RunicItemShop {
-
-    private static final int LOAD_DELAY = 10;
+    private static final int LOAD_DELAY = 10; // Seconds
     private final int size;
     private final String shopName;
     private final Collection<Integer> runicNpcIds;
-    private LinkedHashSet<RunicShopItem> itemsForSale;
+    private List<RunicShopItem> itemsForSale;
     private Map<Integer, RunicShopItem> inventoryItems;
 
     /**
@@ -43,7 +43,7 @@ public class RunicShopGeneric implements RunicItemShop {
      * @param runicNpcIds  that will trigger the shop
      * @param itemsForSale a set of items that can be purchased
      */
-    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashSet<RunicShopItem> itemsForSale) {
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, ArrayList<RunicShopItem> itemsForSale) {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
@@ -59,7 +59,7 @@ public class RunicShopGeneric implements RunicItemShop {
      * @param itemsForSale a set of items that can be purchased
      * @param itemSlots    shape of the items. by default, loads them in the GUI left --> right
      */
-    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, LinkedHashSet<RunicShopItem> itemsForSale, int[] itemSlots) {
+    public RunicShopGeneric(int size, String shopName, Collection<Integer> runicNpcIds, ArrayList<RunicShopItem> itemsForSale, int[] itemSlots) {
         this.size = size;
         this.shopName = shopName;
         this.runicNpcIds = runicNpcIds;
@@ -123,12 +123,12 @@ public class RunicShopGeneric implements RunicItemShop {
     }
 
     @Override
-    public LinkedHashSet<RunicShopItem> getItemsForSale() {
+    public List<RunicShopItem> getItemsForSale() {
         return this.itemsForSale;
     }
 
     @Override
-    public void setItemsForSale(LinkedHashSet<RunicShopItem> itemsForSale) {
+    public void setItemsForSale(List<RunicShopItem> itemsForSale) {
         this.itemsForSale = itemsForSale;
         registerRunicItemShop();
     }

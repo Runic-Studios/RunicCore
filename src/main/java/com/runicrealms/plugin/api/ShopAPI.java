@@ -1,10 +1,11 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.item.shops.RunicItemShop;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
+import java.util.List;
 
 public interface ShopAPI {
 
@@ -17,7 +18,7 @@ public interface ShopAPI {
      * @param removePayment   true if payment should be removed
      * @return true if transaction is successful
      */
-    boolean checkItemRequirement(Player player, Map<String, Integer> requiredItems,
+    boolean checkItemRequirement(Player player, List<Pair<String, Integer>> requiredItems,
                                  String itemDisplayName, boolean removePayment);
 
     /**
@@ -31,11 +32,11 @@ public interface ShopAPI {
     /**
      * Check if a player has ALL required items (for quest / shops)
      *
-     * @param player   to check
-     * @param reqItems a map of item TEMPLATE IDS and their required amounts
+     * @param player        to check
+     * @param requiredItems a list of pairs of item TEMPLATE IDS and their required amounts
      * @return true if player has all needed items
      */
-    boolean hasAllReqItems(Player player, Map<String, Integer> reqItems);
+    boolean hasAllReqItems(Player player, List<Pair<String, Integer>> requiredItems);
 
     /**
      * Check if a player has required item (for quest or shops)

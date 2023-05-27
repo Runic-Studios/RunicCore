@@ -76,7 +76,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
     }
 
     private void flayEffect(Player player) {
-        SlashEffect.slashVertical(player, Particle.REDSTONE, false, Color.TEAL);
+        SlashEffect.slashVertical(player, Particle.REDSTONE, false, Color.AQUA);
     }
 
     @Override
