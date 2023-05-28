@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * This method clears 'dungeon keys' from player inventories when they leave the dungeon world
+ *
  * @author Skyfallin_
  */
 public class WorldChangeListener implements Listener {
@@ -31,7 +32,7 @@ public class WorldChangeListener implements Listener {
                 if (itemStack.getType() == Material.PRISMARINE_CRYSTALS || itemStack.getType() == Material.PRISMARINE_SHARD) {
                     itemStack.setAmount(0);
                     if (!hasSentMessage) {
-                        pl.sendMessage(ChatColor.GRAY + "Your dungeon items have been removed.");
+                        pl.sendMessage(ChatColor.GRAY + "Your dungeon keys have been removed.");
                         hasSentMessage = true;
                     }
                 }

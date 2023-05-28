@@ -6,7 +6,6 @@ import com.runicrealms.plugin.exception.ShopLoadException;
 import com.runicrealms.plugin.item.shops.RunicShopGeneric;
 import com.runicrealms.plugin.item.shops.RunicShopItem;
 import com.runicrealms.runicitems.RunicItemsAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -49,26 +48,6 @@ public class ShopConfigLoader {
      * @throws ShopLoadException if the syntax is configured incorrectly
      */
     public static RunicShopGeneric loadShop(FileConfiguration config) throws ShopLoadException {
-//        try {
-//            String name = config.getString("name");
-//            int size = config.getInt("size");
-//            ArrayList<RunicShopItem> shopItems = new ArrayList<>();
-//
-//            for (String itemId : config.getConfigurationSection("items").getKeys(false)) {
-//                RunicShopItem runicShopItem;
-//                try {
-//                    runicShopItem = loadShopItem(config.getConfigurationSection("items." + itemId), itemId);
-//                } catch (ShopLoadException exception) {
-//                    exception.addMessage(itemId + "", "item: " + itemId);
-//                    throw exception;
-//                }
-//                shopItems.add(runicShopItem);
-//            }
-//
-//            Set<Integer> npcs = new HashSet<>();
-//            for (String string : config.getStringList("npcs")) {
-//                npcs.add(Integer.parseInt(string));
-//            }
         try {
             String name = config.getString("name");
             int size = config.getInt("size");
@@ -76,11 +55,9 @@ public class ShopConfigLoader {
 
             ConfigurationSection itemsSection = config.getConfigurationSection("items");
             for (String itemString : itemsSection.getKeys(false)) {
-//                Bukkit.getLogger().info(ChatColor.GREEN + itemString);
                 RunicShopItem runicShopItem;
                 try {
                     String runicItemId = itemsSection.getString(itemString + ".id");
-//                    Bukkit.getLogger().info(ChatColor.DARK_GREEN + runicItemId);
                     runicShopItem = loadShopItem(itemsSection.getConfigurationSection(itemString), runicItemId);
                 } catch (ShopLoadException exception) {
                     exception.addMessage(itemString + "", "item: " + itemString);
@@ -134,11 +111,9 @@ public class ShopConfigLoader {
                 if (key.equalsIgnoreCase("stack-size")) {
                     stacksize = section.getInt("stack-size");
                 } else if (!key.equalsIgnoreCase("id")) {
-                    Bukkit.getLogger().info(ChatColor.AQUA + key);
                     requiredItems.add(Pair.pair(key, section.getInt(key)));
                 }
             }
-            Bukkit.getLogger().info("key is " + ChatColor.LIGHT_PURPLE + runicItemId);
             ItemStack item = RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem();
             item.setAmount(stacksize);
             return new RunicShopItem(requiredItems, item);
@@ -147,22 +122,6 @@ public class ShopConfigLoader {
             throw new ShopLoadException("item initialization syntax error for " + runicItemId).setErrorMessage(exception.getMessage());
         }
     }
-//    public static RunicShopItem loadShopItem(ConfigurationSection section, String runicItemId) throws ShopLoadException {
-//        try {
-//            int stacksize = 1;
-//            Map<String, Integer> requiredItems = new HashMap<>();
-//            for (String key : section.getKeys(false)) {
-//                if (!key.equalsIgnoreCase("stack-size")) requiredItems.put(key, section.getInt(key));
-//                else stacksize = section.getInt("stack-size");
-//            }
-//            ItemStack item = RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem();
-//            item.setAmount(stacksize);
-//            return new RunicShopItem(requiredItems, item);
-//        } catch (Exception exception) {
-//            exception.printStackTrace();
-//            throw new ShopLoadException("item initialization syntax error for " + runicItemId).setErrorMessage(exception.getMessage());
-//        }
-//    }
 
     /**
      * Dummy method to force the class to load

@@ -28,11 +28,19 @@ public class RunicItemShopHelper {
     private static final List<Pair<String, Integer>> SILVER_KEY_ITEM = new ArrayList<>();
     private static final List<Pair<String, Integer>> GOLD_KEY_ITEM = new ArrayList<>();
     private static final List<Pair<String, Integer>> ETHEREAL_KEY_ITEM = new ArrayList<>();
+    private static final String SILVER_KEY = "silver-key";
+    private static final String GOLD_KEY = "gold-key";
+    private static final String ETHEREAL_KEY = "silver-key";
+    private static final String GENERALS_KEY = "generals-key";
+    private static final String KEEPERS_KEY = "keepers-key";
+    private static final String WARDENS_KEY = "wardens-key";
+    private static final String BOREALIS_KEY = "borealis-key";
+    private static final String XALAKYTE_KEY = "xalakyte-key";
 
     static {
-        SILVER_KEY_ITEM.add(Pair.pair("SilverKey", 1));
-        GOLD_KEY_ITEM.add(Pair.pair("GoldKey", 1));
-        ETHEREAL_KEY_ITEM.add(Pair.pair("EtherealKey", 1));
+        SILVER_KEY_ITEM.add(Pair.pair(SILVER_KEY, 1));
+        GOLD_KEY_ITEM.add(Pair.pair(GOLD_KEY, 1));
+        ETHEREAL_KEY_ITEM.add(Pair.pair(ETHEREAL_KEY, 1));
     }
 
     /*
@@ -142,9 +150,9 @@ public class RunicItemShopHelper {
     public Set<RunicShopGeneric> getCavernGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         List<Pair<String, Integer>> requiredItems = new ArrayList<>();
-        requiredItems.add(Pair.pair("SilverKey", 1));
-        requiredItems.add(Pair.pair("EtherealKey", 1));
-        requiredItems.add(Pair.pair("GoldKey", 1));
+        requiredItems.add(Pair.pair(SILVER_KEY, 1));
+        requiredItems.add(Pair.pair(ETHEREAL_KEY, 1));
+        requiredItems.add(Pair.pair(GOLD_KEY, 1));
         Gatekeeper first = new Gatekeeper(517, requiredItems, DungeonLocation.CRYSTAL_CAVERN, 1);
         gateKeepers.add(first);
         return gateKeepers;
@@ -165,8 +173,8 @@ public class RunicItemShopHelper {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(537, createReqItemMap("FrozenHeart"), DungeonLocation.FROZEN_FORTRESS, 0);
         Gatekeeper second = new Gatekeeper(525, SILVER_KEY_ITEM, DungeonLocation.FROZEN_FORTRESS, 1);
-        Gatekeeper third = new Gatekeeper(526, createReqItemMap("XalakyteKey"), DungeonLocation.FROZEN_FORTRESS, 2);
-        Gatekeeper fourth = new Gatekeeper(527, createReqItemMap("BorealisKey"), DungeonLocation.FROZEN_FORTRESS, 3);
+        Gatekeeper third = new Gatekeeper(526, createReqItemMap(XALAKYTE_KEY), DungeonLocation.FROZEN_FORTRESS, 2);
+        Gatekeeper fourth = new Gatekeeper(527, createReqItemMap(BOREALIS_KEY), DungeonLocation.FROZEN_FORTRESS, 3);
         gateKeepers.add(first);
         gateKeepers.add(second);
         gateKeepers.add(third);
@@ -183,9 +191,9 @@ public class RunicItemShopHelper {
     public Set<RunicShopGeneric> getJorundrsKeepGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         List<Pair<String, Integer>> requiredItems = new ArrayList<>();
-        requiredItems.add(Pair.pair("GeneralsKey", 1));
-        requiredItems.add(Pair.pair("KeepersKey", 1));
-        requiredItems.add(Pair.pair("WardensKey", 1));
+        requiredItems.add(Pair.pair(GENERALS_KEY, 1));
+        requiredItems.add(Pair.pair(KEEPERS_KEY, 1));
+        requiredItems.add(Pair.pair(WARDENS_KEY, 1));
         Gatekeeper first = new Gatekeeper(623, requiredItems, DungeonLocation.JORUNDRS_KEEP, 1);
         gateKeepers.add(first);
         return gateKeepers;
@@ -194,9 +202,9 @@ public class RunicItemShopHelper {
     public Set<RunicShopGeneric> getLibraryGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         List<Pair<String, Integer>> requiredItems = new ArrayList<>();
-        requiredItems.add(Pair.pair("SilverKey", 1));
-        requiredItems.add(Pair.pair("EtherealKey", 1));
-        requiredItems.add(Pair.pair("GoldKey", 1));
+        requiredItems.add(Pair.pair(SILVER_KEY, 1));
+        requiredItems.add(Pair.pair(ETHEREAL_KEY, 1));
+        requiredItems.add(Pair.pair(GOLD_KEY, 1));
         Gatekeeper first = new Gatekeeper(519, requiredItems, DungeonLocation.SUNKEN_LIBRARY, 1);
         gateKeepers.add(first);
         return gateKeepers;
