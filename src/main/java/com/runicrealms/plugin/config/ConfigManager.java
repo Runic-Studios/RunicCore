@@ -24,10 +24,12 @@ public class ConfigManager implements ConfigAPI {
 
     @Override
     public FileConfiguration getYamlConfigFromFile(String fileName, File folder) {
-        FileConfiguration config;
-        File file;
-        file = new File(folder, fileName);
-        config = new YamlConfiguration();
+        return getYamlConfigFromFile(new File(folder, fileName));
+    }
+
+    @Override
+    public FileConfiguration getYamlConfigFromFile(File file) {
+        FileConfiguration config = new YamlConfiguration();
         try {
             if (!file.exists()) {
                 file.createNewFile();
