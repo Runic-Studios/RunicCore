@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -149,7 +149,9 @@ public class Slam extends Spell implements PhysicalDamageSpell, RadiusSpell {
                 if (player.isOnGround() || player.getFallDistance() == 1) {
 
                     this.cancel();
-                    Bukkit.getPluginManager().callEvent(new SlamLandEvent(player));
+                    SlamLandEvent slamLandEvent = new SlamLandEvent(player);
+                    Bukkit.getPluginManager().callEvent(slamLandEvent);
+                    if (slamLandEvent.isCancelled) return;
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.25f, 2.0f);
                     player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(),

@@ -11,6 +11,7 @@ import com.runicrealms.plugin.events.RunicExpEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -100,6 +101,7 @@ public class StatListener implements Listener {
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (event.getSpell() == null) return; // potions, other effects
+        if (event.getSpell() instanceof Potion) return;
         UUID uuid = event.getCaster().getUniqueId();
         double abilityHaste = Stat.getAbilityHaste() * RunicCore.getStatAPI().getPlayerDexterity(uuid);
         double secondsToReduce = event.getSpell().getCooldown() * abilityHaste;

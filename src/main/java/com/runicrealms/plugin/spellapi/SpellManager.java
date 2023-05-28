@@ -96,14 +96,18 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Adrenaline;
 import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
 import com.runicrealms.plugin.spellapi.spells.warrior.Bolster;
+import com.runicrealms.plugin.spellapi.spells.warrior.BoulderToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.Cleave;
 import com.runicrealms.plugin.spellapi.spells.warrior.Consecrate;
+import com.runicrealms.plugin.spellapi.spells.warrior.Earthquake;
 import com.runicrealms.plugin.spellapi.spells.warrior.Ironhide;
 import com.runicrealms.plugin.spellapi.spells.warrior.Judgment;
 import com.runicrealms.plugin.spellapi.spells.warrior.LastResort;
 import com.runicrealms.plugin.spellapi.spells.warrior.Resolve;
 import com.runicrealms.plugin.spellapi.spells.warrior.Rift;
 import com.runicrealms.plugin.spellapi.spells.warrior.Salvation;
+import com.runicrealms.plugin.spellapi.spells.warrior.SeismicForce;
+import com.runicrealms.plugin.spellapi.spells.warrior.Shockwave;
 import com.runicrealms.plugin.spellapi.spells.warrior.Slam;
 import com.runicrealms.plugin.spellapi.spells.warrior.Smite;
 import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
@@ -434,6 +438,11 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Flay());
         this.spellList.add(new WardingGlyph());
         this.spellList.add(new Hereticize());
+        this.spellList.add(new Shockwave());
+        this.spellList.add(new SeismicForce());
+        this.spellList.add(new BoulderToss());
+        this.spellList.add(new Earthquake());
+        this.spellList.add(new Shockwave());
         /*
         Items
          */
