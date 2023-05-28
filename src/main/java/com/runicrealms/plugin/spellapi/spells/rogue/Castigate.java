@@ -136,7 +136,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
                 } else {
                     count += 1;
                     victim.getWorld().spawnParticle(Particle.SOUL, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
-                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.5f);
+                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.25f, 0.5f);
                     DamageUtil.damageEntitySpell(damage, victim, caster, spell);
                 }
 

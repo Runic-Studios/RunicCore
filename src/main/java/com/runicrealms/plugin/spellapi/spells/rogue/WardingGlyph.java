@@ -1,25 +1,35 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.StatusEffectEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
     private static final int POINTS = 5; // Number of points on the pentagram.
     private static final double RADIANS_PER_POINT = 2 * Math.PI / POINTS;
     private static final int PARTICLES_PER_LINE = 25; // Number of particles per line.
+    private final Map<UUID, Location> glyphCasters = new ConcurrentHashMap<>();
     private double duration;
     private double durationSilence;
     private double radius;
@@ -45,25 +55,50 @@ public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
         setDurationSilence(durationSilence.doubleValue());
     }
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onStatusEffect(StatusEffectEvent event) {
+        if (event.isCancelled()) return;
+        // Only listen for debuffs
+        if (event.getRunicStatusEffect().isBuff()) return;
+        if (glyphCasters.isEmpty()) return;
+        for (UUID uuid : glyphCasters.keySet()) {
+            Player glyphCaster = Bukkit.getPlayer(uuid); // The caster
+            if (glyphCaster == null) continue;
+            // Check if the player to be debuffed is in party with a glyph caster
+            if (!RunicCore.getPartyAPI().isPartyMember(event.getLivingEntity().getUniqueId(), glyphCaster)) continue;
+            Location glyphLocation = glyphCasters.get(uuid);
+            // Ensure they are within distance
+            if (event.getLivingEntity().getLocation().distanceSquared(glyphLocation) > radius * radius) continue;
+            // Cancel the debuff
+            Bukkit.broadcastMessage("cancelling debuff");
+            event.getLivingEntity().getWorld().playSound(glyphLocation, Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.0f);
+            event.setCancelled(true);
+        }
+    }
+
     @Override
     public void executeSpell(Player player, SpellItemType type) {
         Location castLocation = player.getLocation();
+        glyphCasters.put(player.getUniqueId(), castLocation);
         new BukkitRunnable() {
             int count = 1;
 
             @Override
             public void run() {
-
                 count++;
-                if (count > duration)
+                if (count > duration) {
                     this.cancel();
+                    glyphCasters.remove(player.getUniqueId());
+                } else {
+                    createRunicMarking(castLocation, player);
+                    player.getWorld().playSound(castLocation, Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 2.0f); // todo: does this work?
 
-                createRunicMarking(castLocation, player);
-                player.getWorld().playSound(castLocation, Sound.BLOCK_CAMPFIRE_CRACKLE, 0.5f, 0.5f);
-
-//                for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
-//                    applySpeed((Player) entity);
-//                }
+                    for (Entity entity : player.getWorld().getNearbyEntities(castLocation, radius, radius, radius, target -> isValidAlly(player, target))) {
+                        if (!SilverBolt.getBrandedEnemiesMap().contains(entity.getUniqueId())) continue;
+                        // Silence branded enemies within glyph
+                        addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, durationSilence, true);
+                    }
+                }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0, 20L);
     }
