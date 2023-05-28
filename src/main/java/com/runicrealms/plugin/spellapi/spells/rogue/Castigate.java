@@ -19,7 +19,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Castigate extends Spell implements DurationSpell, MagicDamageSpell {
     private final Set<UUID> weakenedHealers = new HashSet<>();
@@ -131,7 +135,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
                     weakenedHealers.remove(victim.getUniqueId());
                 } else {
                     count += 1;
-                    victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
+                    victim.getWorld().spawnParticle(Particle.SOUL, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
                     victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.5f);
                     DamageUtil.damageEntitySpell(damage, victim, caster, spell);
                 }

@@ -6,17 +6,20 @@ import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import org.bukkit.Color;
+import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.Map;
-import java.util.Random;
 
 public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
+    private static final int POINTS = 5; // Number of points on the pentagram.
+    private static final double RADIANS_PER_POINT = 2 * Math.PI / POINTS;
+    private static final int PARTICLES_PER_LINE = 25; // Number of particles per line.
     private double duration;
     private double durationSilence;
     private double radius;
@@ -66,34 +69,37 @@ public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
     }
 
     public void createRunicMarking(Location center, Player player) {
-        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.FUCHSIA, 1);
-        double increment = Math.PI / 8;
-        Random random = new Random();
+        new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.SOUL, center, 7.5f);
+        drawPentagram(center, radius);
+    }
 
-        // Draw the circle.
-        for (double angle = 0; angle <= 2 * Math.PI; angle += increment) {
-            double x = radius * Math.cos(angle);
-            double z = radius * Math.sin(angle);
+    /**
+     * Method for linear interpolation
+     */
+    private Vector linearInterpolation(Vector start, Vector end, double t) {
+        return end.clone().subtract(start).multiply(t).add(start);
+    }
 
-            // Create a location for the particle.
-            Location particleLocation = center.clone().add(x, 0, z);
+    private void drawPentagram(Location location, double radius) {
+        assert location != null;
+        assert location.getWorld() != null;
+        Vector center = location.toVector();
 
-            // Spawn the particle.
-            player.spawnParticle(Particle.REDSTONE, particleLocation, 1, dustOptions);
+        for (int i = 0; i < POINTS; i++) {
+            // Calculate the start and end points of each line.
+            Vector start = calculatePoint(center, radius, i * RADIANS_PER_POINT);
+            Vector end = calculatePoint(center, radius, ((i + 2) % POINTS) * RADIANS_PER_POINT);
+
+            // Draw the line.
+            for (int j = 0; j < PARTICLES_PER_LINE; j++) {
+                Vector point = linearInterpolation(start, end, (double) j / (PARTICLES_PER_LINE - 1));
+                location.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, point.toLocation(location.getWorld()), 0);
+            }
         }
+    }
 
-        // Add random particles inside the circle.
-        for (int i = 0; i < radius * 10; i++) { // Adjust the multiplier for more or less particles.
-            double angle = 2 * Math.PI * random.nextDouble(); // Random angle.
-            double r = radius * Math.sqrt(random.nextDouble()); // Random distance from center.
-
-            double x = r * Math.cos(angle);
-            double z = r * Math.sin(angle);
-
-            Location particleLocation = center.clone().add(x, 0, z);
-
-            player.spawnParticle(Particle.REDSTONE, particleLocation, 1, dustOptions);
-        }
+    private Vector calculatePoint(Vector center, double radius, double angle) {
+        return center.clone().add(new Vector(radius * Math.cos(angle), 0, radius * Math.sin(angle)));
     }
 
 

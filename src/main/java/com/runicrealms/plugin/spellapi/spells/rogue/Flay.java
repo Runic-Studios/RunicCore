@@ -32,7 +32,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
 
     public Flay() {
         super("Flay", CharacterClass.ROGUE);
-        this.setDescription("You lash out with a spectral blade, " +
+        this.setDescription("You lash out with a phantom blade, " +
                 "dealing (" + damage + " + &f" + damagePerLevel +
                 "x&7 lvl) physical⚔ damage to " +
                 "enemies within " + distance + " blocks and breaking their will, " +
@@ -64,7 +64,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
             targets.forEach(target -> {
-                new HelixParticleFrame(1.0F, 30, 10.0F).playParticle(player, Particle.SOUL_FIRE_FLAME, livingEntity.getLocation());
+                new HelixParticleFrame(1.0F, 30, 40.0F).playParticle(player, Particle.SOUL_FIRE_FLAME, livingEntity.getLocation());
                 addStatusEffect((LivingEntity) target, RunicStatusEffect.SLOW_II, duration, false);
                 DamageUtil.damageEntityPhysical(damage, (LivingEntity) target, player, false, false, this);
                 if (SilverBolt.getBrandedEnemiesMap().contains(target.getUniqueId())) {
