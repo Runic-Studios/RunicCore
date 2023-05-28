@@ -40,21 +40,26 @@ public class DragonsBreath extends Spell implements DurationSpell, MagicDamageSp
     private void conjureBreath(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2.0f);
         // Visual effect
+        double maxAngle = 45;
+
         Vector middle = player.getEyeLocation().getDirection().normalize();
-        Vector one = rotateVectorAroundY(middle, -40);
-        Vector two = rotateVectorAroundY(middle, -20);
-        Vector three = rotateVectorAroundY(middle, 20);
-        Vector four = rotateVectorAroundY(middle, 40);
+        Vector one = rotateVectorAroundY(middle, -maxAngle);
+        Vector two = rotateVectorAroundY(middle, -maxAngle / 2);
+        Vector three = rotateVectorAroundY(middle, maxAngle / 2);
+        Vector four = rotateVectorAroundY(middle, maxAngle);
+
         Vector[] vectors = new Vector[]{one, two, three, four};
         for (Vector vector : vectors) {
             spawnWaveFlameLine(player, vector, player.getEyeLocation());
         }
+        double maxAngleCos = Math.cos(Math.toRadians(maxAngle));
         // Damage entities in front of the player
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
             Location entityLocation = entity.getLocation();
             Vector directionToEntity = entityLocation.subtract(player.getLocation()).toVector().normalize();
             // Check if the entity is in front of the player (cosine of the angle between the vectors > 0)
-            if (player.getLocation().getDirection().dot(directionToEntity) < 0) continue;
+            double dot = player.getLocation().getDirection().dot(directionToEntity);
+            if (dot < maxAngleCos) continue;
             DamageUtil.damageEntitySpell(damageAmt, (LivingEntity) entity, player, this);
         }
     }
