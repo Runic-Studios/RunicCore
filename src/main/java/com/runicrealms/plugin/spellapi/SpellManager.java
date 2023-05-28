@@ -113,6 +113,7 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Smite;
 import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
 import com.runicrealms.plugin.spellapi.spells.warrior.Unstoppable;
 import com.runicrealms.plugin.spellapi.spells.warrior.Whirlwind;
+import com.runicrealms.plugin.spellapi.spells.warrior.WreckingBall;
 import com.runicrealms.plugin.spellapi.spelltypes.Shield;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -442,7 +443,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new SeismicForce());
         this.spellList.add(new BoulderToss());
         this.spellList.add(new Earthquake());
-        this.spellList.add(new Shockwave());
+        this.spellList.add(new WreckingBall());
         /*
         Items
          */

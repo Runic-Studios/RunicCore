@@ -34,7 +34,7 @@ public class WarriorTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(156, 1, 0, 1, "Shockwave"));
         perks.add(new PerkBaseStat(157, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(158, 1, 0, 1, "Seismic Slam"));
+        perks.add(new PerkSpell(158, 1, 0, 1, "Seismic Force"));
         perks.add(new PerkBaseStat(159, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkBaseStat(160, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkSpell(161, 1, 0, 1, "Boulder Toss"));

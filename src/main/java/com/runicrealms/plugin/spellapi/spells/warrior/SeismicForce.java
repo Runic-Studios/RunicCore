@@ -1,6 +1,5 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
-import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -31,7 +30,6 @@ public class SeismicForce extends Spell implements RadiusSpell {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         event.setCancelled(true);
-        if (RunicCore.getSpellAPI().isOnCooldown(event.getCaster(), "Seismic Slam")) return;
         Bukkit.broadcastMessage("custom effect");
     }
 
