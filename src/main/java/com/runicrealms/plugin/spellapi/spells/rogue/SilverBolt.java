@@ -3,11 +3,20 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.spellapi.spelltypes.*;
+import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.Cone;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -57,14 +66,14 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
 
         if (rayTraceResult == null) {
             Location location = player.getTargetBlock(null, (int) distance).getLocation().add(0.5, 1, 0.5); // Center on block
-            VectorUtil.drawLine(player, Particle.REDSTONE, Color.WHITE, player.getEyeLocation(), location, 0.5D, 1, 0.05f);
+            VectorUtil.drawLine(player, Particle.REDSTONE, Color.fromRGB(200, 230, 255), player.getEyeLocation(), location, 0.5D, 1, 0.05f);
             spawnArrowTip(location, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1), player, 1);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            VectorUtil.drawLine(player, Particle.REDSTONE, Color.WHITE, player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.05f);
+            VectorUtil.drawLine(player, Particle.REDSTONE, Color.fromRGB(200, 230, 255), player.getEyeLocation(), livingEntity.getEyeLocation(), 0.5D, 1, 0.05f);
             spawnArrowTip(livingEntity.getEyeLocation(), new Particle.DustOptions(Color.fromRGB(210, 180, 140), 1), player, 1);
             DamageUtil.damageEntityPhysical(physicalDamage, livingEntity, player, false, true, this);
-            Cone.coneEffect(livingEntity, Particle.REDSTONE, duration, 0, 20, Color.WHITE);
+            Cone.coneEffect(livingEntity, Particle.REDSTONE, duration, 0, 20, Color.fromRGB(200, 230, 255));
             BRANDED_ENEMIES_MAP.put(player.getUniqueId(), livingEntity.getUniqueId());
             Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(), () -> BRANDED_ENEMIES_MAP.remove(player.getUniqueId()), (long) duration * 20L);
         }

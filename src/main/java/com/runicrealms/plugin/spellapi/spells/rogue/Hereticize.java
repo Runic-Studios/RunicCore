@@ -78,6 +78,7 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
     public void onMagicDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
         if (SilverBolt.getBrandedEnemiesMap().isEmpty()) return;
+        if (event.getSpell() == this) return;
         hereticDamage(event.getVictim());
     }
 

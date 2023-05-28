@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import org.bukkit.Bukkit;
@@ -34,7 +34,7 @@ public class Surge extends Spell {
 
     public Surge() {
         super("Surge", CharacterClass.ARCHER);
-        this.setDescription("You launch yourself forward then upwards!");
+        this.setDescription("You launch yourself forward!");
     }
 
     @Override
@@ -106,24 +106,12 @@ public class Surge extends Spell {
         setVerticalPower(verticalPower.doubleValue());
     }
 
-    public double getLaunchMultiplier() {
-        return launchMultiplier;
-    }
-
     public void setLaunchMultiplier(double launchMultiplier) {
         this.launchMultiplier = launchMultiplier;
     }
 
-    public double getSpeedMultiplier() {
-        return speedMultiplier;
-    }
-
     public void setSpeedMultiplier(double speedMultiplier) {
         this.speedMultiplier = speedMultiplier;
-    }
-
-    public double getVerticalPower() {
-        return verticalPower;
     }
 
     public void setVerticalPower(double verticalPower) {

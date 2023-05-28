@@ -1,13 +1,14 @@
 package com.runicrealms.plugin.spellapi.spells.archer;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -24,17 +25,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Charged extends Spell implements AttributeSpell, DurationSpell {
     private static final int MAX_STACKS = 5;
     private final Map<UUID, ChargedTask> chargedMap = new HashMap<>();
-    private int duration = 6;
-    private double intMultiplier = 0.1;
-    private int baseInt = 2;
-    private String statName = "";
+    private int duration;
+    private double multiplier;
+    private double baseValue;
+    private String statName;
 
     public Charged() {
         super("Charged", CharacterClass.ARCHER);
         this.setIsPassive(true);
+        Stat stat = Stat.getFromName(statName);
+        String prefix = stat == null ? "" : stat.getPrefix();
         this.setDescription("Every time you cast a spell, gain " +
-                "additional magicʔ damage equal to (" + baseInt + " + &f"
-                + intMultiplier + "x &7lvl) of your &e" + getStatName() + "ʔ&7! " +
+                "additional magicʔ damage equal to (" + baseValue + " + &f" + multiplier + "x &e" + prefix + "&7)! " +
                 "This effect can stack up to " + MAX_STACKS + " times. " +
                 "After not casting a spell for " + duration + "s, remove all stacks. " +
                 "When fully charged, you glow brightly!");
@@ -86,22 +88,22 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
 
     @Override
     public double getBaseValue() {
-        return baseInt;
+        return baseValue;
     }
 
     @Override
     public void setBaseValue(double baseValue) {
-        this.baseInt = (int) baseValue;
+        this.baseValue = (int) baseValue;
     }
 
     @Override
     public double getMultiplier() {
-        return intMultiplier;
+        return multiplier;
     }
 
     @Override
     public void setMultiplier(double multiplier) {
-        this.intMultiplier = multiplier;
+        this.multiplier = multiplier;
     }
 
     @Override
@@ -129,7 +131,7 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
         if (event.isCancelled()) return;
         if (!chargedMap.containsKey(event.getPlayer().getUniqueId())) return;
         UUID uuid = event.getPlayer().getUniqueId();
-        int damageToGrant = (int) (baseInt + (RunicCore.getStatAPI().getStat(uuid, getStatName()) * intMultiplier));
+        int damageToGrant = (int) (baseValue + (RunicCore.getStatAPI().getStat(uuid, getStatName()) * multiplier));
         damageToGrant *= chargedMap.get(event.getPlayer().getUniqueId()).getStacks().get();
         event.setAmount(event.getAmount() + damageToGrant);
     }

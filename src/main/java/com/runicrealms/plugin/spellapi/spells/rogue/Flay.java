@@ -10,7 +10,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HelixParticleFrame;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -64,7 +63,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
             targets.forEach(target -> {
-                new HelixParticleFrame(1.0F, 30, 40.0F).playParticle(player, Particle.SOUL_FIRE_FLAME, livingEntity.getLocation());
+                new HelixParticleFrame(1.0F, 30, 40.0F).playParticle(player, Particle.SOUL, livingEntity.getLocation());
                 addStatusEffect((LivingEntity) target, RunicStatusEffect.SLOW_II, duration, false);
                 DamageUtil.damageEntityPhysical(damage, (LivingEntity) target, player, false, false, this);
                 if (SilverBolt.getBrandedEnemiesMap().contains(target.getUniqueId())) {
@@ -76,7 +75,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
     }
 
     private void flayEffect(Player player) {
-        SlashEffect.slashVertical(player, Particle.REDSTONE, false, Color.AQUA);
+        SlashEffect.slashVertical(player, Particle.SOUL_FIRE_FLAME, false, 0.25f);
     }
 
     @Override
