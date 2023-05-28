@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.ItemType;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.utilities.GUIUtil;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,13 +34,12 @@ import java.util.UUID;
  * Item Menu to scrap items
  */
 public class ItemScrapper implements RunicShop {
-
     public static final Collection<Integer> SCRAPPER_NPC_IDS = Arrays.asList(144, 143, 145, 147, 148, 149, 151, 152, 153, 154, 155);
     public static final Collection<Integer> SCRAPPER_SLOTS = Arrays.asList(10, 11, 12, 13, 14);
     private static final int SHOP_SIZE = 27;
     private static final String SHOP_NAME = ChatColor.YELLOW + "Item Scrapper";
     private final InventoryHolder inventoryHolder;
-    private final HashMap<UUID, List<ItemStack>> storedItems; // list of items NOT to return
+    private final HashMap<UUID, List<ItemStack>> storedItems; // List of items NOT to return (invalid items)
 
     public ItemScrapper(Player player) {
         this.inventoryHolder = new ItemScrapperHolder(player, SHOP_SIZE, SHOP_NAME);
@@ -68,43 +69,32 @@ public class ItemScrapper implements RunicShop {
      */
     private static RunicItem determineRunicItemScrap(ItemStack itemStack) {
         switch (itemStack.getType()) {
-            case CHAINMAIL_HELMET:
-            case CHAINMAIL_CHESTPLATE:
-            case CHAINMAIL_LEGGINGS:
-            case CHAINMAIL_BOOTS:
-            case FEATHER:
+            case CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS, FEATHER -> {
                 return RunicItemsAPI.generateItemFromTemplate("chain-link");
-            case GOLDEN_HELMET:
-            case GOLDEN_CHESTPLATE:
-            case GOLDEN_LEGGINGS:
-            case GOLDEN_BOOTS:
-            case STONE_SHOVEL:
-            case WOODEN_SHOVEL:
-            case STONE_HOE:
+            }
+            case GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS, STONE_SHOVEL, WOODEN_SHOVEL, STONE_HOE -> {
                 return RunicItemsAPI.generateItemFromTemplate("gold-bar");
-            case DIAMOND_HELMET:
-            case DIAMOND_CHESTPLATE:
-            case DIAMOND_LEGGINGS:
-            case DIAMOND_BOOTS:
+            }
+            case DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS -> {
                 return RunicItemsAPI.generateItemFromTemplate("thread");
-            case LEATHER_HELMET:
-            case LEATHER_CHESTPLATE:
-            case LEATHER_LEGGINGS:
-            case LEATHER_BOOTS:
+            }
+            case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS -> {
                 return RunicItemsAPI.generateItemFromTemplate("animal-hide");
-            case IRON_HELMET:
-            case IRON_CHESTPLATE:
-            case IRON_LEGGINGS:
-            case IRON_BOOTS:
-            case SHIELD:
-            case WOODEN_AXE:
-            case STONE_SWORD:
-            case WOODEN_SWORD:
-            case BOW:
-            case WOODEN_HOE:
+            }
+            case IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, SHIELD, WOODEN_AXE, STONE_SWORD, WOODEN_SWORD, BOW, WOODEN_HOE -> {
                 return RunicItemsAPI.generateItemFromTemplate("iron-bar");
-            default:
+            }
+            // Offhands made from shears
+            case SHEARS -> {
+                if (itemStack.getItemMeta() == null) return null;
+                if (ItemType.OFFHAND_ITEM_IDS.contains(((Damageable) itemStack.getItemMeta()).getDamage()))
+                    return RunicItemsAPI.generateItemFromTemplate("iron-bar");
+                else
+                    return null;
+            }
+            default -> {
                 return null;
+            }
         }
     }
 
@@ -127,23 +117,15 @@ public class ItemScrapper implements RunicShop {
             runicItemRarity = ((RunicItemOffhand) runicItem).getRarity();
             itemLevel = ((RunicItemOffhand) runicItem).getLevel();
         } else {
-            return -1; // something went wrong!
+            return -1; // Something went wrong!
         }
-        switch (runicItemRarity) {
-            case CRAFTED:
-            case COMMON:
-                return (int) Math.ceil(1 + (itemLevel * 0.1));
-            case UNCOMMON:
-                return (int) Math.ceil(2 + (itemLevel * 0.15));
-            case RARE:
-                return (int) Math.ceil(3 + (itemLevel * 0.2));
-            case EPIC:
-            case LEGENDARY:
-            case UNIQUE:
-                return (int) Math.ceil(4 + (itemLevel * 0.35));
-            default:
-                return 1;
-        }
+        return switch (runicItemRarity) {
+            case CRAFTED, COMMON -> (int) Math.ceil(1 + (itemLevel * 0.1));
+            case UNCOMMON -> (int) Math.ceil(2 + (itemLevel * 0.15));
+            case RARE -> (int) Math.ceil(3 + (itemLevel * 0.2));
+            case EPIC, LEGENDARY, UNIQUE -> (int) Math.ceil(4 + (itemLevel * 0.35));
+            default -> 1;
+        };
     }
 
     public static ItemStack checkMark() {

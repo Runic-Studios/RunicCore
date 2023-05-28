@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.item.shops;
 
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.RunicItemArmor;
@@ -9,11 +10,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class RunicShopItem {
-    private final Map<String, Integer> requiredItems;
+    private final List<Pair<String, Integer>> requiredItems;
     private final ItemStack shopItem;
     private final RunicItemRunnable runicItemRunnable;
     private List<ShopCondition> extraConditions = new ArrayList<>(); // A list of additional requirements to purchase items
@@ -22,13 +23,24 @@ public class RunicShopItem {
     /**
      * Creates a 'buy item' for the shop!
      *
-     * @param requiredItems Map of string name(s) of template ID for RunicItem currency to an amount of that item
+     * @param requiredItems list of pairs of string name(s) of template ID for RunicItem currency and an amount of that item
      * @param shopItem      to be purchased
      */
-    public RunicShopItem(Map<String, Integer> requiredItems, ItemStack shopItem) {
+    public RunicShopItem(List<Pair<String, Integer>> requiredItems, ItemStack shopItem) {
         this.requiredItems = requiredItems;
         this.shopItem = shopItem;
         this.runicItemRunnable = runDefaultBuy();
+    }
+
+    /**
+     * Shorthand constructor for simple shop items that cost only gold coins
+     *
+     * @param cost of the item in gold coins
+     */
+    public RunicShopItem(int cost, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
+        this.requiredItems = Collections.singletonList(Pair.pair("coin", cost));
+        this.shopItem = shopItem;
+        this.runicItemRunnable = runicItemRunnable;
     }
 
     /**
@@ -36,7 +48,7 @@ public class RunicShopItem {
      *
      * @param runicItemRunnable a custom runnable to be executed upon item purchase
      */
-    public RunicShopItem(Map<String, Integer> requiredItems, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
+    public RunicShopItem(List<Pair<String, Integer>> requiredItems, ItemStack shopItem, RunicItemRunnable runicItemRunnable) {
         this.requiredItems = requiredItems;
         this.shopItem = shopItem;
         this.runicItemRunnable = runicItemRunnable;
@@ -45,9 +57,22 @@ public class RunicShopItem {
     /**
      * @param extraConditions a set of extra conditions which must be met to purchase item
      */
-    public RunicShopItem(Map<String, Integer> requiredItems, ItemStack shopItem,
+    public RunicShopItem(List<Pair<String, Integer>> requiredItems, ItemStack shopItem,
                          RunicItemRunnable runicItemRunnable, List<ShopCondition> extraConditions) {
         this.requiredItems = requiredItems;
+        this.shopItem = shopItem;
+        this.runicItemRunnable = runicItemRunnable;
+        this.extraConditions = extraConditions;
+    }
+
+    /**
+     * Shorthand constructor for simple shop items that cost only gold coins
+     *
+     * @param cost of the item in gold coins
+     */
+    public RunicShopItem(int cost, ItemStack shopItem,
+                         RunicItemRunnable runicItemRunnable, List<ShopCondition> extraConditions) {
+        this.requiredItems = Collections.singletonList(Pair.pair("coin", cost));
         this.shopItem = shopItem;
         this.runicItemRunnable = runicItemRunnable;
         this.extraConditions = extraConditions;
@@ -85,17 +110,18 @@ public class RunicShopItem {
         List<String> lore = new ArrayList<>();
         lore.add("");
         lore.add(ChatColor.GOLD + "Price: ");
-        for (String templateID : this.requiredItems.keySet()) {
+        for (Pair<String, Integer> pair : this.requiredItems) {
+            String templateID = pair.first;
             String displayName = RunicItemsAPI.generateItemFromTemplate(templateID).getDisplayableItem().getDisplayName();
-            lore.add(ChatColor.GOLD + "- " + ChatColor.GREEN + ChatColor.BOLD + this.requiredItems.get(templateID) + " " + displayName);
+            lore.add(ChatColor.GOLD + "- " + ChatColor.GREEN + ChatColor.BOLD + pair.second + " " + ChatColor.WHITE + displayName);
         }
         return lore;
     }
 
     /**
-     * @return a map of the runic item id to the number
+     * @return a list of pairs of the runic item id and the cost of the item
      */
-    public Map<String, Integer> getRequiredItems() {
+    public List<Pair<String, Integer>> getRequiredItems() {
         return requiredItems;
     }
 

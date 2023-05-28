@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.config;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.exception.ShopLoadException;
 import com.runicrealms.plugin.item.shops.RunicShopGeneric;
 import com.runicrealms.plugin.item.shops.RunicShopItem;
@@ -12,11 +13,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -53,14 +51,16 @@ public class ShopConfigLoader {
         try {
             String name = config.getString("name");
             int size = config.getInt("size");
-            LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+            ArrayList<RunicShopItem> shopItems = new ArrayList<>();
 
-            for (String itemId : config.getConfigurationSection("items").getKeys(false)) {
+            ConfigurationSection itemsSection = config.getConfigurationSection("items");
+            for (String itemString : itemsSection.getKeys(false)) {
                 RunicShopItem runicShopItem;
                 try {
-                    runicShopItem = loadShopItem(config.getConfigurationSection("items." + itemId), itemId);
+                    String runicItemId = itemsSection.getString(itemString + ".id");
+                    runicShopItem = loadShopItem(itemsSection.getConfigurationSection(itemString), runicItemId);
                 } catch (ShopLoadException exception) {
-                    exception.addMessage(itemId + "", "item: " + itemId);
+                    exception.addMessage(itemString + "", "item: " + itemString);
                     throw exception;
                 }
                 shopItems.add(runicShopItem);
@@ -106,10 +106,13 @@ public class ShopConfigLoader {
     public static RunicShopItem loadShopItem(ConfigurationSection section, String runicItemId) throws ShopLoadException {
         try {
             int stacksize = 1;
-            Map<String, Integer> requiredItems = new HashMap<>();
+            List<Pair<String, Integer>> requiredItems = new ArrayList<>();
             for (String key : section.getKeys(false)) {
-                if (!key.equalsIgnoreCase("stack-size")) requiredItems.put(key, section.getInt(key));
-                else stacksize = section.getInt("stack-size");
+                if (key.equalsIgnoreCase("stack-size")) {
+                    stacksize = section.getInt("stack-size");
+                } else if (!key.equalsIgnoreCase("id")) {
+                    requiredItems.add(Pair.pair(key, section.getInt(key)));
+                }
             }
             ItemStack item = RunicItemsAPI.generateItemFromTemplate(runicItemId).generateGUIItem();
             item.setAmount(stacksize);

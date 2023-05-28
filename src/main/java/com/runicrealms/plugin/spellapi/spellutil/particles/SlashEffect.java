@@ -61,6 +61,14 @@ public class SlashEffect {
         slashVertical(player, leftOrRight, leftOrRight, particle, .05f, color);
     }
 
+    /**
+     * @param density of the particles
+     */
+    public static void slashVertical(Player player, Particle particle,
+                                     boolean leftOrRight, float density, Color... color) {
+        slashVertical(player, leftOrRight, leftOrRight, particle, density, color);
+    }
+
     public static void slashHorizontal(Player player, Particle particle, float density) {
         boolean topOrBottom = ThreadLocalRandom.current().nextBoolean();
 
@@ -101,7 +109,7 @@ public class SlashEffect {
         int timer = 0;
 
         if (leftOrRight) {
-            for (double i = -1.5; i < 1.5; i += .05) {
+            for (double i = -1.5; i < 1.5; i += density) {
                 if (count > 10) {
 
                     timer++;
@@ -139,7 +147,7 @@ public class SlashEffect {
                 count++;
             }
         } else {
-            for (double i = 1.5; i > -1.5; i -= .05) {
+            for (double i = 1.5; i > -1.5; i -= density) {
                 if (count > 10) {
                     timer++;
                     double finalI = i;

@@ -5,6 +5,7 @@ import com.runicrealms.plugin.DungeonLocation;
 import com.runicrealms.plugin.TravelLocation;
 import com.runicrealms.plugin.TravelType;
 import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,28 +14,35 @@ import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Helper class to create runic item shops with custom purchase runnables
  */
 public class RunicItemShopHelper {
+    private static final List<Pair<String, Integer>> SILVER_KEY_ITEM = new ArrayList<>();
+    private static final List<Pair<String, Integer>> GOLD_KEY_ITEM = new ArrayList<>();
+    private static final List<Pair<String, Integer>> ETHEREAL_KEY_ITEM = new ArrayList<>();
+    private static final String SILVER_KEY = "silver-key";
+    private static final String GOLD_KEY = "gold-key";
+    private static final String ETHEREAL_KEY = "silver-key";
+    private static final String GENERALS_KEY = "generals-key";
+    private static final String KEEPERS_KEY = "keepers-key";
+    private static final String WARDENS_KEY = "wardens-key";
+    private static final String BOREALIS_KEY = "borealis-key";
+    private static final String XALAKYTE_KEY = "xalakyte-key";
 
-    private static final Map<String, Integer> SILVER_KEY_MAP = new HashMap<String, Integer>() {{
-        put("SilverKey", 1);
-    }};
-    private static final Map<String, Integer> GOLD_KEY_MAP = new HashMap<String, Integer>() {{
-        put("GoldKey", 1);
-    }};
-    private static final Map<String, Integer> ETHEREAL_KEY_MAP = new HashMap<String, Integer>() {{
-        put("EtherealKey", 1);
-    }};
+    static {
+        SILVER_KEY_ITEM.add(Pair.pair(SILVER_KEY, 1));
+        GOLD_KEY_ITEM.add(Pair.pair(GOLD_KEY, 1));
+        ETHEREAL_KEY_ITEM.add(Pair.pair(ETHEREAL_KEY, 1));
+    }
+
     /*
     INNKEEPERS
      */
@@ -86,10 +94,8 @@ public class RunicItemShopHelper {
      * @param item templateID of price item
      * @return a map to pass to constructor
      */
-    static Map<String, Integer> createReqItemMap(String item) {
-        return new HashMap<String, Integer>() {{
-            put(item, 1);
-        }};
+    static List<Pair<String, Integer>> createReqItemMap(String item) {
+        return Collections.singletonList(Pair.pair(item, 1));
     }
 
     private ItemStack boatItem(TravelType travelType, TravelLocation travelLocation) {
@@ -103,25 +109,25 @@ public class RunicItemShopHelper {
     }
 
     public RunicShopGeneric getCaptain() {
-        Map<String, Integer> coin = new HashMap<String, Integer>() {{
-            put("coin", 120);
-        }};
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        ArrayList<RunicShopItem> shopItems = new ArrayList<>();
         shopItems.add
                 (
-                        new RunicShopItem(coin,
+                        new RunicShopItem(
+                                120,
                                 boatItem(TravelType.BOAT, TravelLocation.SUNS_REACH_CITADEL),
                                 runBoatBuy(TravelLocation.SUNS_REACH_CITADEL))
                 );
         shopItems.add
                 (
-                        new RunicShopItem(coin,
+                        new RunicShopItem(
+                                120,
                                 boatItem(TravelType.BOAT, TravelLocation.BLACKGUARD_STRONGHOLD),
                                 runBoatBuy(TravelLocation.BLACKGUARD_STRONGHOLD))
                 );
         shopItems.add
                 (
-                        new RunicShopItem(coin,
+                        new RunicShopItem(
+                                120,
                                 boatItem(TravelType.BOAT, TravelLocation.CRIMSON_CHAPEL),
                                 runBoatBuy(TravelLocation.CRIMSON_CHAPEL))
                 );
@@ -130,8 +136,8 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getCaveGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        Gatekeeper first = new Gatekeeper(515, SILVER_KEY_MAP, DungeonLocation.SEBATHS_CAVE, 1);
-        Gatekeeper second = new Gatekeeper(516, GOLD_KEY_MAP, DungeonLocation.SEBATHS_CAVE, 2);
+        Gatekeeper first = new Gatekeeper(515, SILVER_KEY_ITEM, DungeonLocation.SEBATHS_CAVE, 1);
+        Gatekeeper second = new Gatekeeper(516, GOLD_KEY_ITEM, DungeonLocation.SEBATHS_CAVE, 2);
         gateKeepers.add(first);
         gateKeepers.add(second);
         return gateKeepers;
@@ -143,11 +149,10 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getCavernGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        Map<String, Integer> requiredItems = new HashMap<String, Integer>() {{
-            put("SilverKey", 1);
-            put("EtherealKey", 1);
-            put("GoldKey", 1);
-        }};
+        List<Pair<String, Integer>> requiredItems = new ArrayList<>();
+        requiredItems.add(Pair.pair(SILVER_KEY, 1));
+        requiredItems.add(Pair.pair(ETHEREAL_KEY, 1));
+        requiredItems.add(Pair.pair(GOLD_KEY, 1));
         Gatekeeper first = new Gatekeeper(517, requiredItems, DungeonLocation.CRYSTAL_CAVERN, 1);
         gateKeepers.add(first);
         return gateKeepers;
@@ -155,9 +160,9 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getCryptsGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        Gatekeeper first = new Gatekeeper(522, SILVER_KEY_MAP, DungeonLocation.CRYPTS_OF_DERA, 1);
-        Gatekeeper second = new Gatekeeper(523, ETHEREAL_KEY_MAP, DungeonLocation.CRYPTS_OF_DERA, 2);
-        Gatekeeper third = new Gatekeeper(524, GOLD_KEY_MAP, DungeonLocation.CRYPTS_OF_DERA, 3);
+        Gatekeeper first = new Gatekeeper(522, SILVER_KEY_ITEM, DungeonLocation.CRYPTS_OF_DERA, 1);
+        Gatekeeper second = new Gatekeeper(523, ETHEREAL_KEY_ITEM, DungeonLocation.CRYPTS_OF_DERA, 2);
+        Gatekeeper third = new Gatekeeper(524, GOLD_KEY_ITEM, DungeonLocation.CRYPTS_OF_DERA, 3);
         gateKeepers.add(first);
         gateKeepers.add(second);
         gateKeepers.add(third);
@@ -167,9 +172,9 @@ public class RunicItemShopHelper {
     public Set<RunicShopGeneric> getFortressGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
         Gatekeeper first = new Gatekeeper(537, createReqItemMap("FrozenHeart"), DungeonLocation.FROZEN_FORTRESS, 0);
-        Gatekeeper second = new Gatekeeper(525, SILVER_KEY_MAP, DungeonLocation.FROZEN_FORTRESS, 1);
-        Gatekeeper third = new Gatekeeper(526, createReqItemMap("XalakyteKey"), DungeonLocation.FROZEN_FORTRESS, 2);
-        Gatekeeper fourth = new Gatekeeper(527, createReqItemMap("BorealisKey"), DungeonLocation.FROZEN_FORTRESS, 3);
+        Gatekeeper second = new Gatekeeper(525, SILVER_KEY_ITEM, DungeonLocation.FROZEN_FORTRESS, 1);
+        Gatekeeper third = new Gatekeeper(526, createReqItemMap(XALAKYTE_KEY), DungeonLocation.FROZEN_FORTRESS, 2);
+        Gatekeeper fourth = new Gatekeeper(527, createReqItemMap(BOREALIS_KEY), DungeonLocation.FROZEN_FORTRESS, 3);
         gateKeepers.add(first);
         gateKeepers.add(second);
         gateKeepers.add(third);
@@ -178,21 +183,17 @@ public class RunicItemShopHelper {
     }
 
     public RunicShopGeneric getInnkeeper(String identifier, ItemStack hearthstone, int innkeeperId) {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        Map<String, Integer> coin = new HashMap<String, Integer>() {{
-            put("coin", 0);
-        }};
-        shopItems.add(new RunicShopItem(coin, hearthstone, runHearthstoneChange(identifier)));
+        ArrayList<RunicShopItem> shopItems = new ArrayList<>();
+        shopItems.add(new RunicShopItem(0, hearthstone, runHearthstoneChange(identifier)));
         return new RunicShopGeneric(9, ChatColor.YELLOW + "Innkeeper", Collections.singletonList(innkeeperId), shopItems);
     }
 
     public Set<RunicShopGeneric> getJorundrsKeepGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        Map<String, Integer> requiredItems = new HashMap<String, Integer>() {{
-            put("GeneralsKey", 1);
-            put("KeepersKey", 1);
-            put("WardensKey", 1);
-        }};
+        List<Pair<String, Integer>> requiredItems = new ArrayList<>();
+        requiredItems.add(Pair.pair(GENERALS_KEY, 1));
+        requiredItems.add(Pair.pair(KEEPERS_KEY, 1));
+        requiredItems.add(Pair.pair(WARDENS_KEY, 1));
         Gatekeeper first = new Gatekeeper(623, requiredItems, DungeonLocation.JORUNDRS_KEEP, 1);
         gateKeepers.add(first);
         return gateKeepers;
@@ -200,30 +201,26 @@ public class RunicItemShopHelper {
 
     public Set<RunicShopGeneric> getLibraryGatekeepers() {
         Set<RunicShopGeneric> gateKeepers = new HashSet<>();
-        Map<String, Integer> requiredItems = new HashMap<String, Integer>() {{
-            put("SilverKey", 1);
-            put("EtherealKey", 1);
-            put("GoldKey", 1);
-        }};
+        List<Pair<String, Integer>> requiredItems = new ArrayList<>();
+        requiredItems.add(Pair.pair(SILVER_KEY, 1));
+        requiredItems.add(Pair.pair(ETHEREAL_KEY, 1));
+        requiredItems.add(Pair.pair(GOLD_KEY, 1));
         Gatekeeper first = new Gatekeeper(519, requiredItems, DungeonLocation.SUNKEN_LIBRARY, 1);
         gateKeepers.add(first);
         return gateKeepers;
     }
 
     public RunicShopGeneric getNazmoraCaptain() {
-        Map<String, Integer> free = new HashMap<String, Integer>() {{
-            put("coin", 0);
-        }};
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
+        ArrayList<RunicShopItem> shopItems = new ArrayList<>();
         shopItems.add
                 (
-                        new RunicShopItem(free,
+                        new RunicShopItem(0,
                                 boatItem(TravelType.BOAT, TravelLocation.NAZMORA),
                                 runBoatBuy(TravelLocation.NAZMORA))
                 );
         shopItems.add
                 (
-                        new RunicShopItem(free,
+                        new RunicShopItem(0,
                                 boatItem(TravelType.BOAT, TravelLocation.ORC_OUTPOST),
                                 runBoatBuy(TravelLocation.ORC_OUTPOST))
                 );
@@ -231,11 +228,8 @@ public class RunicItemShopHelper {
     }
 
     public RunicShopGeneric getRunicMage() {
-        LinkedHashSet<RunicShopItem> shopItems = new LinkedHashSet<>();
-        Map<String, Integer> coin = new HashMap<String, Integer>() {{
-            put("coin", 0);
-        }};
-        shopItems.add(new RunicShopItem(coin, resetSkillTreesIcon(), runRunicMageBuy()));
+        ArrayList<RunicShopItem> shopItems = new ArrayList<>();
+        shopItems.add(new RunicShopItem(0, resetSkillTreesIcon(), runRunicMageBuy()));
         return new RunicShopGeneric(9, ChatColor.LIGHT_PURPLE + "Runic Mage", Arrays.asList(131, 133, 134, 135, 136, 138, 139, 140, 141), shopItems);
     }
 

@@ -19,7 +19,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Castigate extends Spell implements DurationSpell, MagicDamageSpell {
     private final Set<UUID> weakenedHealers = new HashSet<>();
@@ -27,6 +31,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
     private double damage;
     private double damagePerLevel;
     private double durationToHit;
+    private double healingReductionDuration;
     private double numberOfTicks;
     private double percent;
 
@@ -37,7 +42,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
                 "within " + durationToHit + "s now burns the target " +
                 "for (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage " +
-                "per second for " + numberOfTicks + "s. During this time, " +
+                "per second for " + numberOfTicks + "s. For " + healingReductionDuration + "s, " +
                 "the target receives " + (percent * 100) + "% less healing " +
                 "from all sources!");
     }
@@ -62,10 +67,16 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
     public void loadDurationData(Map<String, Object> spellData) {
         Number durationToHit = (Number) spellData.getOrDefault("duration-to-hit", 0);
         setDurationToHit(durationToHit.doubleValue());
+        Number healingReductionDuration = (Number) spellData.getOrDefault("healing-reduction-duration", 0);
+        setHealingReductionDuration(healingReductionDuration.doubleValue());
         Number numberOfTicks = (Number) spellData.getOrDefault("number-of-ticks", 0);
         setNumberOfTicks(numberOfTicks.doubleValue());
         Number percent = (Number) spellData.getOrDefault("percent", 0);
         setPercent(percent.doubleValue());
+    }
+
+    public void setHealingReductionDuration(double healingReductionDuration) {
+        this.healingReductionDuration = healingReductionDuration;
     }
 
     @Override
@@ -120,6 +131,7 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
 
     private void applyCastigation(Player caster, LivingEntity victim) {
         weakenedHealers.add(victim.getUniqueId());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> weakenedHealers.remove(victim.getUniqueId()), (long) healingReductionDuration * 20L);
         Spell spell = this;
         new BukkitRunnable() {
             double count = 1;
@@ -128,11 +140,10 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
             public void run() {
                 if (count > numberOfTicks) {
                     this.cancel();
-                    weakenedHealers.remove(victim.getUniqueId());
                 } else {
                     count += 1;
-                    victim.getWorld().spawnParticle(Particle.SPELL_WITCH, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
-                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.5f, 0.5f);
+                    victim.getWorld().spawnParticle(Particle.SOUL, victim.getLocation(), 5, 0.5f, 0.5f, 0.5f, 0);
+                    victim.getWorld().playSound(victim.getLocation(), Sound.ENTITY_WITCH_HURT, 0.25f, 0.5f);
                     DamageUtil.damageEntitySpell(damage, victim, caster, spell);
                 }
 
