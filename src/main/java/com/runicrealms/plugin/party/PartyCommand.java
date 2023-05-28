@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 @CommandAlias("party")
 public class PartyCommand extends BaseCommand {
 
@@ -321,11 +322,12 @@ public class PartyCommand extends BaseCommand {
             return;
         }
         for (Player target : party.getMembersWithLeader()) {
-            if (target == player) continue;
+            if (target.equals(player)) continue;
             if (target.getWorld() != player.getWorld()) continue;
             double squaredDistance = player.getLocation().distanceSquared(target.getLocation());
             // Compare the squared distance to the squared threshold (128 * 128 = 16384)
             if (squaredDistance > 16384) continue;
+            target.teleport(player);
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou were teleported with your party!"));
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported nearby party members to your location!"));
