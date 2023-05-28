@@ -2,8 +2,6 @@ package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
-import com.runicrealms.plugin.events.MagicDamageEvent;
-import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
@@ -33,7 +31,7 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
                 "&7&oBranded &7enemies take an additional " +
                 "(" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage on " +
-                "hit whenever they suffer damage from any source!");
+                "hit whenever they suffer damage from basic attacks!");
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -46,7 +44,6 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
             if (!uuidBranded.equals(event.getCaster().getUniqueId())) continue;
             Player witchHunter = Bukkit.getPlayer(witchHunterUuid);
             if (witchHunter == null) continue;
-            // todo: sound effect for witch hunter player
             ConcurrentHashMap.KeySetView<Spell, Long> spellsOnCooldown = RunicCore.getSpellAPI().getSpellsOnCooldown(witchHunterUuid);
             if (spellsOnCooldown == null) continue; // No spells on cooldown for Witch Hunter
             spellsOnCooldown.forEach(spell -> RunicCore.getSpellAPI().reduceCooldown(witchHunter, spell, duration));
@@ -58,7 +55,6 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
             if (uuidVictim.equals(livingEntity.getUniqueId())) {
                 Player player = Bukkit.getPlayer(uuidCaster);
                 if (player != null) {
-                    Bukkit.broadcastMessage("heretic damage here");
                     livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_WITCH_HURT, 0.25f, 2.0f);
                     DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
                 }
@@ -66,26 +62,11 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
         });
     }
 
-    @EventHandler
-    public void onMobDamage(MobDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (SilverBolt.getBrandedEnemiesMap().isEmpty()) return;
-        if (!(event.getVictim() instanceof LivingEntity)) return;
-        hereticDamage((LivingEntity) event.getVictim());
-    }
-
-    @EventHandler
-    public void onMagicDamage(MagicDamageEvent event) {
-        if (event.isCancelled()) return;
-        if (SilverBolt.getBrandedEnemiesMap().isEmpty()) return;
-        if (event.getSpell() == this) return;
-        hereticDamage(event.getVictim());
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (SilverBolt.getBrandedEnemiesMap().isEmpty()) return;
+        if (!event.isBasicAttack()) return;
         hereticDamage(event.getVictim());
     }
 

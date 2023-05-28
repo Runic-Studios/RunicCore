@@ -55,7 +55,7 @@ public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
         setDurationSilence(durationSilence.doubleValue());
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOW)
     public void onStatusEffect(StatusEffectEvent event) {
         if (event.isCancelled()) return;
         // Only listen for debuffs
@@ -65,12 +65,12 @@ public class WardingGlyph extends Spell implements DurationSpell, RadiusSpell {
             Player glyphCaster = Bukkit.getPlayer(uuid); // The caster
             if (glyphCaster == null) continue;
             // Check if the player to be debuffed is in party with a glyph caster
-            if (!RunicCore.getPartyAPI().isPartyMember(event.getLivingEntity().getUniqueId(), glyphCaster)) continue;
+            if (event.getLivingEntity().getUniqueId() != uuid && !RunicCore.getPartyAPI().isPartyMember(event.getLivingEntity().getUniqueId(), glyphCaster))
+                continue;
             Location glyphLocation = glyphCasters.get(uuid);
             // Ensure they are within distance
             if (event.getLivingEntity().getLocation().distanceSquared(glyphLocation) > radius * radius) continue;
             // Cancel the debuff
-            Bukkit.broadcastMessage("cancelling debuff");
             event.getLivingEntity().getWorld().playSound(glyphLocation, Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.0f);
             event.setCancelled(true);
         }

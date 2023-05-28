@@ -16,11 +16,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
-
-import java.util.Collection;
 
 public class Flay extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
     public static final double BEAM_WIDTH = 2;
@@ -36,7 +32,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
                 "x&7 lvl) physical⚔ damage to " +
                 "enemies within " + distance + " blocks and breaking their will, " +
                 "slowing them for " + duration + "s. If an affected enemy is &7&obranded&7, " +
-                "they are grounded for the duration!");
+                "they are silenced for the duration!");
     }
 
     @Override
@@ -60,17 +56,14 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
             flayEffect(player);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
-            Collection<Entity> targets = player.getWorld().getNearbyEntities
-                    (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));
-            targets.forEach(target -> {
-                new HelixParticleFrame(1.0F, 30, 40.0F).playParticle(player, Particle.SOUL, livingEntity.getLocation());
-                addStatusEffect((LivingEntity) target, RunicStatusEffect.SLOW_II, duration, false);
-                DamageUtil.damageEntityPhysical(damage, (LivingEntity) target, player, false, false, this);
-                if (SilverBolt.getBrandedEnemiesMap().contains(target.getUniqueId())) {
-                    ((LivingEntity) target).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20L), -999));
+            for (Entity entity : player.getWorld().getNearbyEntities(livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target))) {
+                new HelixParticleFrame(1.0F, 30, 40.0F).playParticle(player, Particle.SOUL, entity.getLocation());
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, duration, false);
+                DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, this);
+                if (SilverBolt.getBrandedEnemiesMap().contains(entity.getUniqueId())) {
+                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, duration, true);
                 }
-
-            });
+            }
         }
     }
 
