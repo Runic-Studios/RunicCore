@@ -25,9 +25,9 @@ import java.util.UUID;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Shockwave extends Spell implements DistanceSpell, PhysicalDamageSpell {
-    private static final double BEAM_SPEED = 1.6; // 0.8
+    private static final double BEAM_SPEED = 200.0; // 0.8
     private static final double BEAM_WIDTH = 0.5;
-    private final Map<UUID, Set<UUID>> hitEntityMap = new HashMap<>();
+    private final Map<UUID, Set<UUID>> hitEntityMap = new HashMap<>(); // todo:
     private double damage;
     private double damagePerLevel;
     private double distance;
@@ -88,7 +88,7 @@ public class Shockwave extends Spell implements DistanceSpell, PhysicalDamageSpe
                         15, 0, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(210, 180, 140), 3));
                 checkForEnemies(player, finalBeamLocation);
             }
-        }.runTaskTimer(plugin, 0, 5L);
+        }.runTaskTimer(plugin, 0, 1L);
 
     }
 

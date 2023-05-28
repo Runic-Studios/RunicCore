@@ -18,12 +18,15 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
+import java.util.Map;
+
 public class Flay extends Spell implements DistanceSpell, DurationSpell, PhysicalDamageSpell {
     public static final double BEAM_WIDTH = 2;
     private double damage;
     private double damagePerLevel;
     private double distance;
     private double duration;
+    private double silenceDuration;
 
     public Flay() {
         super("Flay", CharacterClass.ROGUE);
@@ -32,7 +35,19 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
                 "x&7 lvl) physical⚔ damage to " +
                 "enemies within " + distance + " blocks and breaking their will, " +
                 "slowing them for " + duration + "s. If an affected enemy is &7&obranded&7, " +
-                "they are silenced for the duration!");
+                "they are silenced for " + silenceDuration + "s!");
+    }
+
+    private void setSilenceDuration(double silenceDuration) {
+        this.silenceDuration = silenceDuration;
+    }
+
+    @Override
+    public void loadDurationData(Map<String, Object> spellData) {
+        Number duration = (Number) spellData.getOrDefault("duration", 0);
+        setDuration(duration.doubleValue());
+        Number silenceDuration = (Number) spellData.getOrDefault("silence-duration", 0);
+        setSilenceDuration(silenceDuration.doubleValue());
     }
 
     @Override
@@ -61,7 +76,7 @@ public class Flay extends Spell implements DistanceSpell, DurationSpell, Physica
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.SLOW_II, duration, false);
                 DamageUtil.damageEntityPhysical(damage, (LivingEntity) entity, player, false, false, this);
                 if (SilverBolt.getBrandedEnemiesMap().contains(entity.getUniqueId())) {
-                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, duration, true);
+                    addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, silenceDuration, true);
                 }
             }
         }
