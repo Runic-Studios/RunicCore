@@ -147,6 +147,7 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
         if (!BRANDED_ENEMIES_MAP.containsKey(event.getPlayer().getUniqueId())) return;
         if (BRANDED_ENEMIES_MAP.get(event.getPlayer().getUniqueId()).equals(event.getVictim().getUniqueId())) {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2.0f);
+            Bukkit.broadcastMessage("test");
             DamageUtil.damageEntitySpell(magicDamage, event.getVictim(), event.getPlayer(), this);
         }
     }
@@ -179,20 +180,6 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
             spawnParticleLine(start, end, dustOptions, player);
         }
     }
-
-//    public void spawnArrowTip(Location center, Particle.DustOptions dustOptions, Player player, double size) {
-//        Vector[] directions = {
-//                new Vector(size, 0, size), // upper right direction
-//                new Vector(-size, 0, size), // upper left direction
-////                new Vector(0, 0, -size) // bottom direction
-//        };
-//
-//        for (Vector direction : directions) {
-//            Location start = center.clone();
-//            Location end = center.clone().add(direction);
-//            spawnParticleLine(start, end, dustOptions, player);
-//        }
-//    }
 
     public void spawnParticleLine(Location start, Location end, Particle.DustOptions dustOptions, Player player) {
         // Get the vector from the start location to the end
