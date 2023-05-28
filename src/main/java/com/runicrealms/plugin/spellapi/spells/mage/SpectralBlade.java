@@ -2,14 +2,15 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.StaffAttackEvent;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.listeners.StaffListener;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import com.runicrealms.runicitems.Stat;
 import com.runicrealms.runicitems.item.RunicItemWeapon;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -66,7 +67,11 @@ public class SpectralBlade extends Spell {
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, ArcaneSlash.BEAM_WIDTH, target -> isValidEnemy(player, target));
-            targets.forEach(target -> DamageUtil.damageEntitySpell(randomNum, (LivingEntity) target, player, this));
+            // Scale attack off STR first
+            double physicalDamageBonusPercent = Stat.getPhysicalDmgMult() * RunicCore.getStatAPI().getPlayerStrength(player.getUniqueId());
+            double finalDamage = randomNum + Math.ceil(randomNum * physicalDamageBonusPercent);
+            // Then pass to double-scale off INT
+            targets.forEach(target -> DamageUtil.damageEntitySpell(finalDamage, (LivingEntity) target, player, this));
         }
 
         player.setCooldown(runicItemWeapon.getDisplayableItem().getMaterial(), StaffListener.STAFF_COOLDOWN);
