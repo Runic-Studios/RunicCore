@@ -29,7 +29,7 @@ import java.util.Set;
 @SuppressWarnings("unused")
 @CommandAlias("party")
 public class PartyCommand extends BaseCommand {
-
+    private static final int PARTY_TELEPORT_RADIUS = 1024;
     private static final String PREFIX = "&2[Party] &6»";
 
     public PartyCommand() {
@@ -325,8 +325,8 @@ public class PartyCommand extends BaseCommand {
             if (target.equals(player)) continue;
             if (target.getWorld() != player.getWorld()) continue;
             double squaredDistance = player.getLocation().distanceSquared(target.getLocation());
-            // Compare the squared distance to the squared threshold (128 * 128 = 16384)
-            if (squaredDistance > 16384) continue;
+            // Compare the squared distance to the squared threshold (256 * 256)
+            if (squaredDistance > (PARTY_TELEPORT_RADIUS * PARTY_TELEPORT_RADIUS)) continue;
             target.teleport(player);
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou were teleported with your party!"));
         }

@@ -7,7 +7,6 @@ import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -74,10 +73,13 @@ public class BossTagger implements Listener {
         if (!isBoss(event.getEntity().getUniqueId())) return;
         if (!bossFighters.containsKey(event.getMob().getUniqueId())) return;
         bossFighters.get(event.getEntity().getUniqueId()).forEach((player, integer) -> {
-            Bukkit.broadcastMessage(player.getName() + " did " + integer + " damage");
             player.sendMessage(ChatColor.YELLOW + "You dealt " + ChatColor.RED + ChatColor.BOLD + integer + ChatColor.YELLOW + " damage to the boss!");
+            if (bossLooters.get(event.getEntity().getUniqueId()).contains(player.getUniqueId())) {
+                player.sendMessage(ChatColor.GREEN + "You qualified for boss loot!");
+            } else {
+                player.sendMessage(ChatColor.RED + "You did not qualify for boss loot!");
+            }
         });
-        Bukkit.broadcastMessage("looter size is totally " + bossLooters.get(event.getEntity().getUniqueId()).size() + " people");
         bossFighters.get(event.getEntity().getUniqueId()).clear(); // clear damage tracking map
     }
 
