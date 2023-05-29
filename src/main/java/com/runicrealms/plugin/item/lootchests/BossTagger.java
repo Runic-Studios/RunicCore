@@ -7,7 +7,6 @@ import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -51,7 +50,6 @@ public class BossTagger implements Listener {
      * @return true if it is the name of a dungeon boss
      */
     public static boolean isBoss(String internalName) {
-        Bukkit.broadcastMessage(internalName);
         return BOSS_INTERNAL_NAMES.contains(internalName);
     }
 
@@ -62,7 +60,6 @@ public class BossTagger implements Listener {
     public static boolean isBoss(Entity entity) {
         if (!MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) return false;
         ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
-        Bukkit.broadcastMessage(am.getMobType());
         return BOSS_INTERNAL_NAMES.contains(am.getMobType());
     }
 
