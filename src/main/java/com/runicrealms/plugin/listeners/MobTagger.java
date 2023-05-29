@@ -141,7 +141,7 @@ public class MobTagger implements Listener {
         if (entity instanceof Player) return;
         UUID playerId = player.getUniqueId();
         UUID entityId = entity.getUniqueId();
-        if (BossTagger.isBoss(entityId)) return; // handled separately
+        if (BossTagger.isBoss(entity)) return; // handled separately
         if (taggedMobs.containsKey(playerId)) { // if player is on the list (has tagged ANY mob)
             if (taggedMobs.get(playerId).equals(entityId)) { // if mob is tied to player
                 taggedTimers.put(playerId, System.currentTimeMillis()); // update timer ONLY if mob linked to player

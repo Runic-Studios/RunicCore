@@ -400,6 +400,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         converterAPI = new ConverterHandler();
         redisAPI = new RedisManager();
         DatabaseManager databaseManager = new DatabaseManager();
+        // Implement interface logic from RDB
         RunicDatabase.getInstance().setAPIImplementation(new RunicDatabaseAPI() {
             @Override
             public CharacterAPI getCharacterAPI() {
@@ -450,7 +451,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();
         ambientSoundHandler = new AmbientSoundHandler();
-        weaponSkinAPI = new WeaponSkinManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();
@@ -460,6 +460,8 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
+        // Load skin closet AFTER command manager is loaded
+        weaponSkinAPI = new WeaponSkinManager();
         registerACFCommands();
         commandManager.getCommandConditions().addCondition("is-console-or-op", context -> {
             if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender) && !context.getIssuer().getIssuer().isOp()) // ops can execute console commands
