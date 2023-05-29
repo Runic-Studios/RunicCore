@@ -488,7 +488,6 @@ public class LootTableManager implements LootTableAPI {
         FROZEN_FORTRESS.addEntry(new ChestItem("frozen-fortress-rogue-artifact", 1, 1), 5);
         FROZEN_FORTRESS.addEntry(new ChestItem("frozen-fortress-warrior-artifact", 1, 1), 5);
         FROZEN_FORTRESS.addEntry(new ChestItem("token-of-valor", 1, 2), 15);
-        FROZEN_FORTRESS.addEntry(new ChestItem("ambrosia-root", 1, 4), 15);
     }
 
     @Override
