@@ -147,7 +147,6 @@ public class SilverBolt extends Spell implements DistanceSpell, DurationSpell, M
         if (!BRANDED_ENEMIES_MAP.containsKey(event.getPlayer().getUniqueId())) return;
         if (BRANDED_ENEMIES_MAP.get(event.getPlayer().getUniqueId()).equals(event.getVictim().getUniqueId())) {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ITEM_FIRECHARGE_USE, 0.5f, 2.0f);
-            Bukkit.broadcastMessage("test");
             DamageUtil.damageEntitySpell(magicDamage, event.getVictim(), event.getPlayer(), this);
         }
     }

@@ -104,10 +104,8 @@ public class Castigate extends Spell implements DurationSpell, MagicDamageSpell 
         if (event.isCancelled()) return;
         if (weakenedHealers.isEmpty()) return;
         if (!weakenedHealers.contains(event.getPlayer().getUniqueId())) return;
-//        Bukkit.broadcastMessage("was " + event.getAmount());
         double reduction = event.getAmount() * percent;
         event.setAmount((int) (event.getAmount() - reduction));
-//        Bukkit.broadcastMessage(ChatColor.RED + " is" + event.getAmount());
     }
 
     @EventHandler

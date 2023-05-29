@@ -56,7 +56,6 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
                 Player player = Bukkit.getPlayer(uuidCaster);
                 if (player != null) {
                     livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_WITCH_HURT, 0.25f, 2.0f);
-                    Bukkit.broadcastMessage("double test");
                     DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
                 }
             }
@@ -68,6 +67,7 @@ public class Hereticize extends Spell implements DurationSpell, MagicDamageSpell
         if (event.isCancelled()) return;
         if (SilverBolt.getBrandedEnemiesMap().isEmpty()) return;
         if (!event.isBasicAttack()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         hereticDamage(event.getVictim());
     }
 
