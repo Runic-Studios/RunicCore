@@ -1,5 +1,6 @@
-package com.runicrealms.plugin.weaponskin;
+package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.weaponskin.WeaponSkin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +8,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public interface WeaponSkinAPI {
+
+    /**
+     * Checks if a player has permission to activate a specific weapon skin
+     */
+    boolean canActivateSkin(Player player, WeaponSkin skin);
+
+    /**
+     * Activates a weapon skin for a player. Throw illegal state if player does not have permission.
+     */
+    void activateSkin(Player player, WeaponSkin skin);
+
+    /**
+     * Deactivates a weapon skin for a player.
+     */
+    void deactivateSkin(Player player, WeaponSkin skin);
 
     /**
      * Gets a list of all skins loaded from config
