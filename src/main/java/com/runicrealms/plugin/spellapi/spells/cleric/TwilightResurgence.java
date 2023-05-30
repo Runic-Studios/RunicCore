@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,9 +18,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class TwilightResurgence extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    private final Set<UUID> cooldownPlayerSet = new HashSet<>();
     private double blindDuration;
     private double damage;
     private double damagePerLevel;
@@ -46,8 +51,12 @@ public class TwilightResurgence extends Spell implements DurationSpell, MagicDam
         if (event.isCancelled()) return;
         ShieldPayload shieldPayload = event.getShieldPayload();
         if (shieldPayload == null) return; // Fixes a bug from race condition due to shield removal task
+        if (cooldownPlayerSet.contains(shieldPayload.source().getUniqueId())) return;
         if (!hasPassive(shieldPayload.source().getUniqueId(), this.getName()))
             return; // Ensure the caster has this buff
+        cooldownPlayerSet.add(shieldPayload.source().getUniqueId());
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                () -> cooldownPlayerSet.remove(shieldPayload.source().getUniqueId()), (long) effectCooldown * 20L);
         RunicCore.getSpellAPI().reduceCooldown(shieldPayload.source(), "Cosmic Prism", duration);
         Player player = shieldPayload.player();
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {

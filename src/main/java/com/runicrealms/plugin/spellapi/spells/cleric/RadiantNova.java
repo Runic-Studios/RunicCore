@@ -36,7 +36,7 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
         super("Radiant Nova", CharacterClass.CLERIC);
         this.setDescription("You charge a burst of brilliant energy, slowing yourself for " + warmup + "s. " +
                 "After, you heal✦ yourself and allies within " + radius + " blocks for " +
-                "(" + healAmt + " + &f" + (int) healingPerLevel + "x&7 lvl) health!");
+                "(" + healAmt + " + &f" + healingPerLevel + "x&7 lvl) health!");
     }
 
     private void executeHeal(Player player) {

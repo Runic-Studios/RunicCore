@@ -1,9 +1,11 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface StatusEffectAPI {
 
@@ -15,6 +17,8 @@ public interface StatusEffectAPI {
      * @param durationInSecs    (in seconds) of effect
      */
     void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage);
+
+    ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> getStatusEffectValues(UUID uuid);
 
     /**
      * Check whether the given player is effected by the given status effect

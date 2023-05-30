@@ -37,6 +37,7 @@ public class ShieldListener implements Listener {
             for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 if (!RunicCore.getSpellAPI().isShielded(uuid)) continue;
                 ShieldPayload shieldPayload = RunicCore.getSpellAPI().getShieldedPlayers().get(uuid);
+                if (shieldPayload == null) continue;
                 long lastShieldTime = shieldPayload.shield().getStartTime();
                 if (System.currentTimeMillis() - lastShieldTime > SHIELD_EXPIRE_TIME * 1000) {
                     Player player = Bukkit.getPlayer(uuid);

@@ -45,6 +45,11 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
+    public ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> getStatusEffectValues(UUID uuid) {
+        return statusEffectMap.get(uuid);
+    }
+
+    @Override
     public boolean hasStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
         if (!statusEffectMap.containsKey(uuid)) return false;
         return statusEffectMap.get(uuid).containsKey(statusEffect);
