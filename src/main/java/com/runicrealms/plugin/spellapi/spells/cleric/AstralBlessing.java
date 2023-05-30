@@ -19,12 +19,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class AstralBlessing extends Spell implements DurationSpell, ShieldingSpell {
-    private final Map<UUID, BukkitTask> blessingMap = new ConcurrentHashMap<>();
+    private final Map<UUID, AstralTask> blessingMap = new HashMap<>();
     private double duration;
     private double shield;
     private double shieldPerLevel;
@@ -81,41 +81,75 @@ public class AstralBlessing extends Spell implements DurationSpell, ShieldingSpe
     @EventHandler
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (!blessingMap.containsKey(event.getVictim().getUniqueId())) return;
-        blessingMap.get(event.getVictim().getUniqueId()).cancel();
+        // Person who bonked the victim must be allied with the source of the debuff to receive shield
+        if (!isValidAlly(blessingMap.get(event.getVictim().getUniqueId()).getCaster(), event.getPlayer()))
+            return;
+        blessingMap.get(event.getVictim().getUniqueId()).getBukkitTask().cancel();
         blessingMap.remove(event.getVictim().getUniqueId());
         Player caster = event.getPlayer();
         RunicCore.getSpellAPI().shieldPlayer(caster, caster, shield, this);
     }
 
     private void applyBlessing(Player caster, LivingEntity victim) {
-        blessingMap.put(victim.getUniqueId(), new BukkitRunnable() {
-            double count = 0;
+        blessingMap.put(victim.getUniqueId(), new AstralTask
+                (
+                        caster,
+                        new BukkitRunnable() {
+                            double count = 0;
 
-            @Override
-            public void run() {
-                if (count >= duration) {
-                    this.cancel();
-                    blessingMap.remove(victim.getUniqueId());
-                } else {
-                    count += 1;
-                    new HorizontalCircleFrame((float) 0.5, false).playParticle(caster, Particle.REDSTONE, victim.getEyeLocation(), 30, Color.YELLOW);
-                }
-            }
-        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L));
+                            @Override
+                            public void run() {
+                                if (count >= duration) {
+                                    this.cancel();
+                                    blessingMap.remove(victim.getUniqueId());
+                                } else {
+                                    count += 1;
+                                    new HorizontalCircleFrame((float) 0.5, false).playParticle(caster, Particle.REDSTONE, victim.getEyeLocation(), 30, Color.YELLOW);
+                                }
+                            }
+                        }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L)));
     }
 
     @EventHandler
     public void onMobDeath(MythicMobDeathEvent event) {
         if (!blessingMap.containsKey(event.getEntity().getUniqueId())) return;
-        blessingMap.get(event.getEntity().getUniqueId()).cancel();
+        blessingMap.get(event.getEntity().getUniqueId()).getBukkitTask().cancel();
         blessingMap.remove(event.getEntity().getUniqueId());
     }
 
     @EventHandler
     public void onPlayerDeath(RunicDeathEvent event) {
         if (!blessingMap.containsKey(event.getVictim().getUniqueId())) return;
-        blessingMap.get(event.getVictim().getUniqueId()).cancel();
+        blessingMap.get(event.getVictim().getUniqueId()).getBukkitTask().cancel();
         blessingMap.remove(event.getVictim().getUniqueId());
+    }
+
+    /**
+     * Used to keep track of the Radiant Fire stack refresh task.
+     * Uses AtomicInteger to be thread-safe
+     */
+    static class AstralTask {
+        private final Player caster;
+        private BukkitTask bukkitTask;
+
+        public AstralTask(Player caster, BukkitTask bukkitTask) {
+            this.caster = caster;
+            this.bukkitTask = bukkitTask;
+        }
+
+        public Player getCaster() {
+            return caster;
+        }
+
+        public BukkitTask getBukkitTask() {
+            return bukkitTask;
+        }
+
+        public void setBukkitTask(BukkitTask bukkitTask) {
+            this.bukkitTask = bukkitTask;
+        }
+
+
     }
 
 }
