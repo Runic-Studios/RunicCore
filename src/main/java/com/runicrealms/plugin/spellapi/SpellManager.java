@@ -113,7 +113,7 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
 import com.runicrealms.plugin.spellapi.spells.warrior.Unstoppable;
 import com.runicrealms.plugin.spellapi.spells.warrior.Whirlwind;
 import com.runicrealms.plugin.spellapi.spells.warrior.WreckingBall;
-import com.runicrealms.plugin.spellapi.spelltypes.Shield;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -138,7 +138,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpellManager implements Listener, SpellAPI {
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
-    private final HashMap<UUID, Shield> shieldedPlayers;
+    private final HashMap<UUID, ShieldPayload> shieldedPlayers;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
@@ -207,7 +207,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public HashMap<UUID, Shield> getShieldedPlayers() {
+    public HashMap<UUID, ShieldPayload> getShieldedPlayers() {
         return this.shieldedPlayers;
     }
 

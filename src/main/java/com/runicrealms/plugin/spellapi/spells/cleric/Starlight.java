@@ -85,7 +85,7 @@ public class Starlight extends Spell implements DistanceSpell, DurationSpell, Ma
                 // Refresh shield uptime for allies
             } else if (isValidAlly(player, entity)) {
                 if (!RunicCore.getSpellAPI().getShieldedPlayers().containsKey(entity.getUniqueId())) continue;
-                RunicCore.getSpellAPI().getShieldedPlayers().get(entity.getUniqueId()).setStartTime(System.currentTimeMillis());
+                RunicCore.getSpellAPI().getShieldedPlayers().get(entity.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
             }
         }
     }

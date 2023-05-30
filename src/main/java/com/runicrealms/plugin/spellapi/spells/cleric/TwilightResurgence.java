@@ -1,10 +1,21 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.api.event.ShieldBreakEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Map;
 
@@ -28,6 +39,21 @@ public class TwilightResurgence extends Spell implements DurationSpell, MagicDam
                 + "x&7 lvl) magicʔ damage " +
                 "in a " + radius + " block radius and blinds " +
                 "enemies for " + blindDuration + "s!");
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onShieldBreak(ShieldBreakEvent event) {
+        if (event.isCancelled()) return;
+        ShieldPayload shieldPayload = event.getShieldPayload();
+        if (shieldPayload == null) return; // Fixes a bug from race condition due to shield removal task
+        if (!hasPassive(shieldPayload.source().getUniqueId(), this.getName()))
+            return; // Ensure the caster has this buff
+        RunicCore.getSpellAPI().reduceCooldown(shieldPayload.source(), "Cosmic Prism", duration);
+        Player player = shieldPayload.player();
+        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+            DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, shieldPayload.source(), this);
+            ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) blindDuration * 20, 2));
+        }
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.api;
 
-import com.runicrealms.plugin.spellapi.spelltypes.Shield;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,9 +32,9 @@ public interface SpellAPI {
     /**
      * Maps a player UUID to a shield object
      *
-     * @return a list of players currently affected by shields
+     * @return a map of players currently affected by shields
      */
-    HashMap<UUID, Shield> getShieldedPlayers();
+    Map<UUID, ShieldPayload> getShieldedPlayers();
 
     /**
      * Get the spell object matching name

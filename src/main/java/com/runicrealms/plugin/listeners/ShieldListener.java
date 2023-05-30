@@ -9,8 +9,8 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
-import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Shield;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,7 +22,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,15 +36,12 @@ public class ShieldListener implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             for (UUID uuid : RunicDatabase.getAPI().getCharacterAPI().getLoadedCharacters()) {
                 if (!RunicCore.getSpellAPI().isShielded(uuid)) continue;
-                long lastShieldTime = RunicCore.getSpellAPI().getShieldedPlayers().get(uuid).getStartTime();
+                ShieldPayload shieldPayload = RunicCore.getSpellAPI().getShieldedPlayers().get(uuid);
+                long lastShieldTime = shieldPayload.shield().getStartTime();
                 if (System.currentTimeMillis() - lastShieldTime > SHIELD_EXPIRE_TIME * 1000) {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player == null) continue;
-                    Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
-                            (
-                                    player,
-                                    RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
-                            ));
+                    Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(shieldPayload));
                 }
             }
         }, 0, 5L);
@@ -60,21 +56,16 @@ public class ShieldListener implements Listener {
      * @return the damage left over after the shield
      */
     private double damageShield(Player player, double damage) {
-        Map<UUID, Shield> shieldedPlayers = RunicCore.getSpellAPI().getShieldedPlayers();
-        double shield = shieldedPlayers.get(player.getUniqueId()).getAmount();
+        Map<UUID, ShieldPayload> shieldedPlayers = RunicCore.getSpellAPI().getShieldedPlayers();
+        double shield = shieldedPlayers.get(player.getUniqueId()).shield().getAmount();
         double shieldLeftOver = shield - damage;
         if (shieldLeftOver > 0) {
             player.setAbsorptionAmount(shieldLeftOver / HALF_HEART_AMOUNT);
-            shieldedPlayers.get(player.getUniqueId()).setAmount(shieldLeftOver);
-            shieldedPlayers.get(player.getUniqueId()).setStartTime(System.currentTimeMillis());
+            shieldedPlayers.get(player.getUniqueId()).shield().setAmount(shieldLeftOver);
+            shieldedPlayers.get(player.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
         } else if (shieldLeftOver <= 0) {
             // Shield was broken and there's leftover damage
-            Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                    () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
-                            (
-                                    player,
-                                    RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
-                            )));
+            Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(shieldedPlayers.get(player.getUniqueId())));
         }
         return shieldLeftOver;
     }
@@ -116,31 +107,12 @@ public class ShieldListener implements Listener {
     }
 
     /**
-     * Remove shield on character select async
-     */
-    @EventHandler
-    public void onQuit(CharacterSelectEvent event) {
-        Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
-                        (
-                                player,
-                                RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
-                        )));
-    }
-
-    /**
      * Remove shield on character quit async
      */
     @EventHandler
     public void onQuit(CharacterQuitEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(),
-                () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent
-                        (
-                                player,
-                                RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())
-                        )));
+        Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -149,16 +121,16 @@ public class ShieldListener implements Listener {
         Player caster = event.getPlayer();
         Player recipient = event.getRecipient();
         int amount = event.getAmount();
-        HashMap<UUID, Shield> shieldedPlayers = RunicCore.getSpellAPI().getShieldedPlayers();
+        Map<UUID, ShieldPayload> shieldedPlayers = RunicCore.getSpellAPI().getShieldedPlayers();
         if (shieldedPlayers.containsKey(recipient.getUniqueId())) {
-            Shield oldShield = shieldedPlayers.get(recipient.getUniqueId());
-            shieldedPlayers.get(recipient.getUniqueId()).setAmount(amount + oldShield.getAmount());
-            shieldedPlayers.get(recipient.getUniqueId()).setStartTime(System.currentTimeMillis());
-            shieldedPlayers.get(recipient.getUniqueId()).addSource(caster.getUniqueId());
+            Shield oldShield = shieldedPlayers.get(recipient.getUniqueId()).shield();
+            shieldedPlayers.get(recipient.getUniqueId()).shield().setAmount(amount + oldShield.getAmount());
+            shieldedPlayers.get(recipient.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
+            shieldedPlayers.get(recipient.getUniqueId()).shield().addSource(caster.getUniqueId());
         } else {
-            shieldedPlayers.put(recipient.getUniqueId(), new Shield(amount, System.currentTimeMillis(), caster.getUniqueId()));
+            shieldedPlayers.put(recipient.getUniqueId(), new ShieldPayload(recipient, event.getPlayer(), new Shield(amount, System.currentTimeMillis(), caster.getUniqueId())));
         }
-        double currentAmount = shieldedPlayers.get(recipient.getUniqueId()).getAmount();
+        double currentAmount = shieldedPlayers.get(recipient.getUniqueId()).shield().getAmount();
         recipient.setAbsorptionAmount(currentAmount / HALF_HEART_AMOUNT);
         HologramUtil.createCombatHologram(Arrays.asList(caster, recipient), recipient.getEyeLocation(), ChatColor.YELLOW + "+" + amount + " ❤✦");
         recipient.playSound(recipient.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25f, 0.5f);
@@ -168,7 +140,7 @@ public class ShieldListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onShieldBreak(ShieldBreakEvent event) {
         if (event.isCancelled()) return;
-        Player player = event.getPlayer();
+        Player player = event.getShieldPayload().player();
         player.setAbsorptionAmount(0);
         RunicCore.getSpellAPI().getShieldedPlayers().remove(player.getUniqueId());
         player.playSound(player.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.0f, 0.5f);
