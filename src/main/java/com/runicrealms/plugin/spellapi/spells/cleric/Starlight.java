@@ -73,15 +73,20 @@ public class Starlight extends Spell implements DistanceSpell, DurationSpell, Ma
         // Particles
         player.getWorld().spawnParticle(Particle.REDSTONE, location,
                 2, 0.5f, 0.5f, 0.5f, new Particle.DustOptions(Color.YELLOW, 1));
-        new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.BLOCK_CRACK, location, Color.YELLOW);
+        new HorizontalCircleFrame(BEAM_RADIUS, true).playParticle(player, Particle.BLOCK_CRACK, location, Color.BLUE);
         player.getWorld().playSound(location, Sound.BLOCK_GLASS_BREAK, 0.25f, 2.0f);
         player.getWorld().playSound(location, Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 2.25f);
-        for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS, target -> isValidEnemy(player, target))) {
-            if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
-            DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
-            addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, duration, true);
-            damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
-            // todo: shield refresh
+        for (Entity entity : player.getWorld().getNearbyEntities(location, BEAM_RADIUS, BEAM_RADIUS, BEAM_RADIUS)) {
+            if (isValidEnemy(player, entity)) {
+                if (damageMap.get(player.getUniqueId()).contains(entity.getUniqueId())) continue;
+                DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
+                addStatusEffect((LivingEntity) entity, RunicStatusEffect.SILENCE, duration, true);
+                damageMap.get(player.getUniqueId()).add(entity.getUniqueId());
+                // Refresh shield uptime for allies
+            } else if (isValidAlly(player, entity)) {
+                if (!RunicCore.getSpellAPI().getShieldedPlayers().containsKey(entity.getUniqueId())) continue;
+                RunicCore.getSpellAPI().getShieldedPlayers().get(entity.getUniqueId()).setStartTime(System.currentTimeMillis());
+            }
         }
     }
 
