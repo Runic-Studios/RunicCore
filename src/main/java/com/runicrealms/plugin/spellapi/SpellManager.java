@@ -42,6 +42,7 @@ import com.runicrealms.plugin.spellapi.spells.cleric.Discord;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.Encore;
 import com.runicrealms.plugin.spellapi.spells.cleric.Lightwell;
+import com.runicrealms.plugin.spellapi.spells.cleric.Nightfall;
 import com.runicrealms.plugin.spellapi.spells.cleric.Purify;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantFire;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantNova;
@@ -51,6 +52,7 @@ import com.runicrealms.plugin.spellapi.spells.cleric.RighteousBlade;
 import com.runicrealms.plugin.spellapi.spells.cleric.SacredSpring;
 import com.runicrealms.plugin.spellapi.spells.cleric.Sear;
 import com.runicrealms.plugin.spellapi.spells.cleric.Starlight;
+import com.runicrealms.plugin.spellapi.spells.cleric.TwilightResurgence;
 import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
@@ -437,6 +439,8 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Starlight());
         this.spellList.add(new AstralBlessing());
         this.spellList.add(new CosmicPrism());
+        this.spellList.add(new Nightfall());
+        this.spellList.add(new TwilightResurgence());
         /*
         Items
          */
