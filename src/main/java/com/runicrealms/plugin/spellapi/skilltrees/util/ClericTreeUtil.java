@@ -47,20 +47,20 @@ public class ClericTreeUtil {
         return perks;
     }
 
-    public static List<Perk> soulreaverPerkList() {
+    public static List<Perk> starweaverPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(48, 1, 0, 1, "Despair"));
-        perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(50, 1, 0, 1, "Touch Of Death"));
-        perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkBaseStat(52, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(53, 1, 0, 1, "Umbral Grasp"));
-        perks.add(new PerkBaseStat(54, 1, 0, 3, Stat.INTELLIGENCE));
-        perks.add(new PerkBaseStat(55, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(56, 1, 0, 5, Stat.INTELLIGENCE));
-        perks.add(new PerkSpell(57, 1, 0, 1, "Ruination"));
-        perks.add(new PerkBaseStat(58, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(59, 1, 0, 1, "Corrupted Waters"));
+        perks.add(new PerkSpell(48, 1, 0, 1, "Starlight"));
+        perks.add(new PerkBaseStat(49, 1, 0, 5, Stat.WISDOM));
+        perks.add(new PerkSpell(50, 1, 0, 1, "Astral Blessing"));
+        perks.add(new PerkBaseStat(51, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(52, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(53, 1, 0, 1, "Cosmic Prism"));
+        perks.add(new PerkBaseStat(54, 1, 0, 3, Stat.DEXTERITY));
+        perks.add(new PerkBaseStat(55, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkBaseStat(56, 1, 0, 5, Stat.DEXTERITY));
+        perks.add(new PerkSpell(57, 1, 0, 1, "Nightfall"));
+        perks.add(new PerkBaseStat(58, 1, 0, 3, Stat.WISDOM));
+        perks.add(new PerkSpell(59, 1, 0, 1, "Twilight Resurgence"));
         return perks;
     }
 }

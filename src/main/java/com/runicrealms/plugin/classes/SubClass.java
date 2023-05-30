@@ -1,8 +1,8 @@
 package com.runicrealms.plugin.classes;
 
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.rdb.RunicDatabase;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.runicitems.util.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public enum SubClass {
      */
     BARD("Bard", 1, CharacterClass.CLERIC, bardItem(), "Bard is a hybrid &3magicalʔ &7and &cphysical⚔ &7fighter who controls the flow of battle with &aally buffs &7and &aenemy debuffs&7!"),
     LIGHTBRINGER("Lightbringer", 2, CharacterClass.CLERIC, lightbringerItem(), "Lightbringer blasts enemies with light to &aheal✦ &7allies and keep them strong!"),
-    SOULREAVER("Soulreaver", 3, CharacterClass.CLERIC, soulreaverItem(), "Soulreaver uses dark &3magicʔ &7to bring death to their enemies on the front lines!"),
+    STARWEAVER("Starweaver", 3, CharacterClass.CLERIC, starweaverItem(), "Starweaver calls upon the heavens to &ashield &7allies and disable enemies!"),
     /*
      Mage
      */
@@ -149,8 +149,8 @@ public enum SubClass {
                 "RleHR1cmUvZWM1NmY4Zjk2ZDE0MWUyYWI0MmE1ODkzMjZjNmFiZjYzNTc4NmZhMmM4NzA5ZWZkNDZmZGYyOWY3YTJjOTI3NCJ9fX0=");
     }
 
-    private static ItemStack soulreaverItem() {
-        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQ5MTdiNTFlNDYyMzA1Yzc3NjczNTM3MGQ4MmQ3MmNmOTU5Njg1MmRmMWM0YmI5ODNmMmViMDIwYTRlNjg1NyJ9fX0=");
+    private static ItemStack starweaverItem() {
+        return ItemUtils.getHead("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM5YTA0YTJlMTZkMDliYzgzNjY1Zjc2Yzc4MDA4YzNkNzRjYmRhMTgxOGU4MDFlMTNiZTZlN2M0YmMyZjgyNCJ9fX0=");
     }
 
     private static ItemStack lightbringerItem() {

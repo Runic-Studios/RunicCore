@@ -78,8 +78,7 @@ public class Accelerando extends Spell implements DurationSpell, RadiusSpell {
     @EventHandler(priority = EventPriority.LOW)
     public void onPotionBreak(PotionSplashEvent event) {
         if (event.isCancelled()) return;
-        if (!(SacredSpring.getThrownPotionSet().contains(event.getPotion())
-                || DefiledFont.getThrownPotionSet().contains(event.getPotion())))
+        if (!(SacredSpring.getThrownPotionSet().contains(event.getPotion())))
             return;
         if (!(event.getPotion().getShooter() instanceof Player player)) return;
         if (!hasPassive(player.getUniqueId(), this.getName())) return;

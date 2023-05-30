@@ -35,9 +35,6 @@ import com.runicrealms.plugin.spellapi.spells.artifact.ThunderousRift;
 import com.runicrealms.plugin.spellapi.spells.artifact.Thundershock;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
 import com.runicrealms.plugin.spellapi.spells.cleric.Consecration;
-import com.runicrealms.plugin.spellapi.spells.cleric.CorruptedWaters;
-import com.runicrealms.plugin.spellapi.spells.cleric.DefiledFont;
-import com.runicrealms.plugin.spellapi.spells.cleric.Despair;
 import com.runicrealms.plugin.spellapi.spells.cleric.Diminuendo;
 import com.runicrealms.plugin.spellapi.spells.cleric.Discord;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
@@ -49,11 +46,9 @@ import com.runicrealms.plugin.spellapi.spells.cleric.RadiantNova;
 import com.runicrealms.plugin.spellapi.spells.cleric.RayOfLight;
 import com.runicrealms.plugin.spellapi.spells.cleric.Rejuvenate;
 import com.runicrealms.plugin.spellapi.spells.cleric.RighteousBlade;
-import com.runicrealms.plugin.spellapi.spells.cleric.Ruination;
 import com.runicrealms.plugin.spellapi.spells.cleric.SacredSpring;
 import com.runicrealms.plugin.spellapi.spells.cleric.Sear;
-import com.runicrealms.plugin.spellapi.spells.cleric.TouchOfDeath;
-import com.runicrealms.plugin.spellapi.spells.cleric.UmbralGrasp;
+import com.runicrealms.plugin.spellapi.spells.cleric.Starlight;
 import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
@@ -410,14 +405,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Surge());
         this.spellList.add(new SnapFreeze());
         this.spellList.add(new WintersGrasp());
-        this.spellList.add(new Despair());
-        this.spellList.add(new TouchOfDeath());
         this.spellList.add(new Diminuendo());
-        DefiledFont defiledFont = new DefiledFont();
-        this.spellList.add(defiledFont);
-        this.spellList.add(new CorruptedWaters(defiledFont));
-        this.spellList.add(new UmbralGrasp());
-        this.spellList.add(new Ruination());
         this.spellList.add(new ArcaneSlash());
         this.spellList.add(new TwinFangs());
         this.spellList.add(new Cocoon());
@@ -444,6 +432,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new BoulderToss());
         this.spellList.add(new Earthquake());
         this.spellList.add(new WreckingBall());
+        this.spellList.add(new Starlight());
         /*
         Items
          */
