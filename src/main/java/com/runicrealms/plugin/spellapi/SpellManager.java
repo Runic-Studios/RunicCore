@@ -36,6 +36,7 @@ import com.runicrealms.plugin.spellapi.spells.artifact.Thundershock;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
 import com.runicrealms.plugin.spellapi.spells.cleric.AstralBlessing;
 import com.runicrealms.plugin.spellapi.spells.cleric.Consecration;
+import com.runicrealms.plugin.spellapi.spells.cleric.CosmicPrism;
 import com.runicrealms.plugin.spellapi.spells.cleric.Diminuendo;
 import com.runicrealms.plugin.spellapi.spells.cleric.Discord;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
@@ -435,6 +436,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new WreckingBall());
         this.spellList.add(new Starlight());
         this.spellList.add(new AstralBlessing());
+        this.spellList.add(new CosmicPrism());
         /*
         Items
          */

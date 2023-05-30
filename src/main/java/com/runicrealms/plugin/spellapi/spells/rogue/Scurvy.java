@@ -29,11 +29,11 @@ public class Scurvy extends Spell implements DurationSpell {
     public void onEmpoweredSprint(Sprint.EmpoweredSprintEvent event) {
         if (event.isCancelled()) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
-        event.getVictim().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) duration * 20, 999));
+        event.getVictim().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) duration * 20, 9));
         // Players lose hunger bars and get nausea
         if (event.getVictim() instanceof Player playerVictim) {
             playerVictim.setFoodLevel(playerVictim.getFoodLevel() - (int) hungerBars);
-            playerVictim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) duration * 20, 999));
+            playerVictim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) duration * 20, 9));
         } else {
             event.setDamage(event.getDamage() + (event.getDamage() * percent));
         }
