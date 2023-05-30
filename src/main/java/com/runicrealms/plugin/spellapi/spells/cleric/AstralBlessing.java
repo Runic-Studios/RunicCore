@@ -4,10 +4,12 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -100,6 +102,20 @@ public class AstralBlessing extends Spell implements DurationSpell, ShieldingSpe
                 }
             }
         }.runTaskTimerAsynchronously(RunicCore.getInstance(), 0, 20L));
+    }
+
+    @EventHandler
+    public void onMobDeath(MythicMobDeathEvent event) {
+        if (!blessingMap.containsKey(event.getEntity().getUniqueId())) return;
+        blessingMap.get(event.getEntity().getUniqueId()).cancel();
+        blessingMap.remove(event.getEntity().getUniqueId());
+    }
+
+    @EventHandler
+    public void onPlayerDeath(RunicDeathEvent event) {
+        if (!blessingMap.containsKey(event.getVictim().getUniqueId())) return;
+        blessingMap.get(event.getVictim().getUniqueId()).cancel();
+        blessingMap.remove(event.getVictim().getUniqueId());
     }
 
 }

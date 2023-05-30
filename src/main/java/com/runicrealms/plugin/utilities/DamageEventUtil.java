@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.utilities;
 
-import com.runicrealms.plugin.events.GenericDamageEvent;
+import com.runicrealms.plugin.events.EnvironmentDamage;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -21,9 +21,9 @@ public class DamageEventUtil {
      * @param eventDamage the vanilla damage
      * @return the runic damage to apply
      */
-    public static int calculateRunicDamageFromVanillaDamage(Player player, double eventDamage, GenericDamageEvent.DamageCauses damageCause) {
+    public static int calculateRunicDamageFromVanillaDamage(Player player, double eventDamage, EnvironmentDamage.DamageCauses damageCause) {
         double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-        double multiplier = damageCause == GenericDamageEvent.DamageCauses.CONTACT ? getContactDamageMultiplier() : getEnvironmentDamageMultiplier();
+        double multiplier = damageCause == EnvironmentDamage.DamageCauses.CONTACT ? getContactDamageMultiplier() : getEnvironmentDamageMultiplier();
         double percentDamage = ((eventDamage / 2) / 10) * multiplier; // first divide by 2 to account for half-hearts
         return (int) (maxHealth * percentDamage);
     }

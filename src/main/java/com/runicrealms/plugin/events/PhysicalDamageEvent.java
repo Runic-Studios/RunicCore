@@ -5,6 +5,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This custom event is called when a player successfully weapon attacks an enemy with their artifact,
@@ -13,7 +14,7 @@ import org.bukkit.event.HandlerList;
  * or applying different knockback for ranged spells, etc.
  */
 public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable {
-
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final boolean isBasicAttack;
     private final boolean isRanged;
@@ -41,6 +42,10 @@ public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable
         this.isCancelled = false;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Player getPlayer() {
         return this.player;
     }
@@ -61,13 +66,13 @@ public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable
         return this.isCritical;
     }
 
+    public void setCritical(boolean isCritical) {
+        this.isCritical = isCritical;
+    }
+
     @Override
     public boolean isCancelled() {
         return this.isCancelled;
-    }
-
-    public void setCritical(boolean isCritical) {
-        this.isCritical = isCritical;
     }
 
     @Override
@@ -75,15 +80,10 @@ public class PhysicalDamageEvent extends RunicDamageEvent implements Cancellable
         this.isCancelled = arg0;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
+    @NotNull
     @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }

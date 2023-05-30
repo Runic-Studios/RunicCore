@@ -3,7 +3,7 @@ package com.runicrealms.plugin.listeners;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.ShieldBreakEvent;
 import com.runicrealms.plugin.api.event.SpellShieldEvent;
-import com.runicrealms.plugin.events.GenericDamageEvent;
+import com.runicrealms.plugin.events.EnvironmentDamage;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
@@ -80,7 +80,7 @@ public class ShieldListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onGenericDamage(GenericDamageEvent event) {
+    public void onGenericDamage(EnvironmentDamage event) {
         if (event.isCancelled()) return;
         if (!(event.getVictim() instanceof Player victim)) return;
         if (!RunicCore.getSpellAPI().isShielded(victim.getUniqueId())) return;

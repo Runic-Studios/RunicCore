@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.GenericDamageEvent;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -118,9 +118,9 @@ public class Lunge extends Spell implements DurationSpell {
      * Disable fall damage for players who are lunging
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(GenericDamageEvent event) {
+    public void onFallDamage(EnvironmentDamage event) {
         if (!LUNGE_TASKS.containsKey(event.getVictim().getUniqueId())) return;
-        if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE)
+        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
 

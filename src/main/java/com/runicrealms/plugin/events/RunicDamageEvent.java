@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * Superclass of all custom damage event mechanics on runic
  */
 public abstract class RunicDamageEvent extends Event implements Cancellable {
-    
+    private static final HandlerList handlers = new HandlerList();
     private final LivingEntity victim;
     private int amount;
     private boolean isCancelled;
@@ -25,6 +25,10 @@ public abstract class RunicDamageEvent extends Event implements Cancellable {
         this.victim = victim;
         this.amount = amount;
         this.isCancelled = false;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     /**
@@ -64,15 +68,9 @@ public abstract class RunicDamageEvent extends Event implements Cancellable {
         isCancelled = cancelled;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
     @Override
     @NotNull
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }

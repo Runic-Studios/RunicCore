@@ -9,7 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -25,20 +24,20 @@ public class RunicDamage implements CommandExecutor {
 
         try {
             Entity caster = Bukkit.getEntity(UUID.fromString(args[0]));
-            Player pl = Bukkit.getPlayer(args[1]);
+            Player player = Bukkit.getPlayer(args[1]);
             int amount = Integer.parseInt(args[2]);
             if (caster == null)
                 return true;
-            if (pl == null)
+            if (player == null)
                 return true;
-            if (pl.getGameMode() == GameMode.CREATIVE)
+            if (player.getGameMode() == GameMode.CREATIVE)
                 return true;
 
-            MobDamageEvent e = new MobDamageEvent(amount, caster, pl, false);
-            Bukkit.getPluginManager().callEvent(e);
-            if (!e.isCancelled())
-                DamageUtil.damageEntityMob(Math.ceil(e.getAmount()),
-                        (LivingEntity) e.getVictim(), e.getDamager(), e.shouldApplyMechanics());
+            MobDamageEvent mobDamageEvent = new MobDamageEvent(amount, caster, player, false);
+            Bukkit.getPluginManager().callEvent(mobDamageEvent);
+            if (!mobDamageEvent.isCancelled()) {
+                DamageUtil.damageEntityMob(mobDamageEvent.getAmount(), mobDamageEvent.getVictim(), mobDamageEvent.getEntity(), mobDamageEvent.shouldApplyMechanics());
+            }
             return true;
 
         } catch (Exception e) {

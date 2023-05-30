@@ -6,11 +6,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 /**
  * This custom event is called for damage sources OTHER than entities (lava, fall, etc.)
  */
-public class GenericDamageEvent extends RunicDamageEvent {
-
+public class EnvironmentDamage extends RunicDamageEvent {
     private final DamageCauses cause;
 
-    public GenericDamageEvent(LivingEntity victim, int amount, DamageCauses cause) {
+    public EnvironmentDamage(LivingEntity victim, int amount, DamageCauses cause) {
         super(victim, amount);
         this.cause = cause;
     }
@@ -43,10 +42,6 @@ public class GenericDamageEvent extends RunicDamageEvent {
             this.cause = cause;
         }
 
-        private EntityDamageEvent.DamageCause getCause() {
-            return this.cause;
-        }
-
         public static DamageCauses getFromDamageCause(EntityDamageEvent.DamageCause cause) {
             for (DamageCauses causes : DamageCauses.values()) {
                 if (causes.getCause().equals(cause)) {
@@ -55,6 +50,10 @@ public class GenericDamageEvent extends RunicDamageEvent {
             }
 
             return null;
+        }
+
+        private EntityDamageEvent.DamageCause getCause() {
+            return this.cause;
         }
     }
 }
