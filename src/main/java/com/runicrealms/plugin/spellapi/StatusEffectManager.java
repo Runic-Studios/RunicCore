@@ -177,6 +177,11 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     @EventHandler(priority = EventPriority.HIGH)
     public void onStatusEffect(StatusEffectEvent event) {
         if (event.isCancelled()) return;
+        // Can't apply negative effects to invuln players
+        if (hasStatusEffect(event.getLivingEntity().getUniqueId(), RunicStatusEffect.INVULNERABILITY) && !event.getRunicStatusEffect().isBuff()) {
+            event.setCancelled(true);
+            return;
+        }
         UUID uuid = event.getLivingEntity().getUniqueId();
         LivingEntity livingEntity = event.getLivingEntity();
         RunicStatusEffect runicStatusEffect = event.getRunicStatusEffect();

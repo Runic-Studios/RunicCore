@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -61,6 +62,7 @@ public class TwilightResurgence extends Spell implements DurationSpell, MagicDam
         RunicCore.getSpellAPI().reduceCooldown(shieldPayload.source(), "Cosmic Prism", duration);
         Player player = shieldPayload.player();
         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
+            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
             DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, shieldPayload.source(), this);
             ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) blindDuration * 20, 2));
         }
