@@ -1,11 +1,9 @@
 package com.runicrealms.plugin.api;
 
-import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public interface StatusEffectAPI {
 
@@ -18,7 +16,19 @@ public interface StatusEffectAPI {
      */
     void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage);
 
-    ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> getStatusEffectValues(UUID uuid);
+    /**
+     * Cleanses all negative status effects from given uuid
+     *
+     * @param uuid to cleanse
+     */
+    void cleanse(UUID uuid);
+
+    /**
+     * Purges all positive status effects from given uuid
+     *
+     * @param uuid to purge
+     */
+    void purge(UUID uuid);
 
     /**
      * Check whether the given player is effected by the given status effect

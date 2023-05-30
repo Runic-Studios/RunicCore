@@ -12,13 +12,14 @@ import org.jetbrains.annotations.NotNull;
 public class ShieldBreakEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final ShieldPayload shieldPayload;
+    private final BreakReason breakReason;
     private boolean isCancelled;
-
     /**
      * @param shieldPayload containing player, source, shield
      */
-    public ShieldBreakEvent(@NotNull ShieldPayload shieldPayload) {
+    public ShieldBreakEvent(@NotNull ShieldPayload shieldPayload, BreakReason breakReason) {
         this.shieldPayload = shieldPayload;
+        this.breakReason = breakReason;
         this.isCancelled = false;
     }
 
@@ -28,6 +29,10 @@ public class ShieldBreakEvent extends Event implements Cancellable {
 
     public ShieldPayload getShieldPayload() {
         return shieldPayload;
+    }
+
+    public BreakReason getBreakReason() {
+        return breakReason;
     }
 
     @SuppressWarnings("NullableProblems")
@@ -44,6 +49,11 @@ public class ShieldBreakEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean arg0) {
         this.isCancelled = arg0;
+    }
+
+    public enum BreakReason {
+        DAMAGE,
+        FALLOFF
     }
 
 }

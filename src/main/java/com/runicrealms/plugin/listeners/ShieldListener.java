@@ -9,6 +9,7 @@ import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.event.CharacterQuitEvent;
+import com.runicrealms.plugin.rdb.event.CharacterSelectEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.Shield;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.utilities.HologramUtil;
@@ -42,7 +43,8 @@ public class ShieldListener implements Listener {
                 if (System.currentTimeMillis() - lastShieldTime > SHIELD_EXPIRE_TIME * 1000) {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player == null) continue;
-                    Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(shieldPayload));
+                    Bukkit.getScheduler().runTask(RunicCore.getInstance(),
+                            () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(shieldPayload, ShieldBreakEvent.BreakReason.FALLOFF)));
                 }
             }
         }, 0, 5L);
@@ -66,7 +68,8 @@ public class ShieldListener implements Listener {
             shieldedPlayers.get(player.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
         } else if (shieldLeftOver <= 0) {
             // Shield was broken and there's leftover damage
-            Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(shieldedPlayers.get(player.getUniqueId())));
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(),
+                    () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(shieldedPlayers.get(player.getUniqueId()), ShieldBreakEvent.BreakReason.DAMAGE)));
         }
         return shieldLeftOver;
     }
@@ -108,12 +111,21 @@ public class ShieldListener implements Listener {
     }
 
     /**
+     * Remove shield on select
+     */
+    @EventHandler
+    public void onSelect(CharacterSelectEvent event) {
+        event.getPlayer().setAbsorptionAmount(0);
+    }
+
+    /**
      * Remove shield on character quit async
      */
     @EventHandler
     public void onQuit(CharacterQuitEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId())));
+        Bukkit.getScheduler().runTask(RunicCore.getInstance(),
+                () -> Bukkit.getPluginManager().callEvent(new ShieldBreakEvent(RunicCore.getSpellAPI().getShieldedPlayers().get(player.getUniqueId()), ShieldBreakEvent.BreakReason.FALLOFF)));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -141,6 +153,7 @@ public class ShieldListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onShieldBreak(ShieldBreakEvent event) {
         if (event.isCancelled()) return;
+        if (event.getShieldPayload() == null) return;
         Player player = event.getShieldPayload().player();
         player.setAbsorptionAmount(0);
         RunicCore.getSpellAPI().getShieldedPlayers().remove(player.getUniqueId());

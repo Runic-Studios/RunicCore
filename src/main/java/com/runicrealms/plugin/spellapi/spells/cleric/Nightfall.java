@@ -88,20 +88,10 @@ public class Nightfall extends Spell implements DurationSpell, RadiusSpell, Warm
             if (isValidEnemy(player, entity)) {
                 entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(knockupMultiplier));
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) duration * 20, 2));
-                // Purge // todo:
-                RunicCore.getStatusEffectAPI().getStatusEffectValues(entity.getUniqueId()).forEach((runicStatusEffect, longDoublePair) -> {
-                    if (runicStatusEffect.isBuff()) {
-                        RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
-                    }
-                });
+                RunicCore.getStatusEffectAPI().purge(entity.getUniqueId());
             } else if (isValidAlly(player, entity)) {
                 addStatusEffect((LivingEntity) entity, RunicStatusEffect.INVULNERABILITY, durationInvulnerable, true);
-                // Cleanse todo: make API method
-                RunicCore.getStatusEffectAPI().getStatusEffectValues(entity.getUniqueId()).forEach((runicStatusEffect, longDoublePair) -> {
-                    if (!runicStatusEffect.isBuff()) {
-                        RunicCore.getStatusEffectAPI().removeStatusEffect(entity.getUniqueId(), runicStatusEffect);
-                    }
-                });
+                RunicCore.getStatusEffectAPI().cleanse(entity.getUniqueId());
             }
         }
     }

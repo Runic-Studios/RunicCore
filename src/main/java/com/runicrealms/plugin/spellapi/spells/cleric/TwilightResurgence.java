@@ -49,6 +49,7 @@ public class TwilightResurgence extends Spell implements DurationSpell, MagicDam
     @EventHandler(priority = EventPriority.NORMAL)
     public void onShieldBreak(ShieldBreakEvent event) {
         if (event.isCancelled()) return;
+        if (event.getBreakReason() != ShieldBreakEvent.BreakReason.DAMAGE) return;
         ShieldPayload shieldPayload = event.getShieldPayload();
         if (shieldPayload == null) return; // Fixes a bug from race condition due to shield removal task
         if (cooldownPlayerSet.contains(shieldPayload.source().getUniqueId())) return;

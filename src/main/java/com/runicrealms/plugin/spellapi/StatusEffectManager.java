@@ -45,8 +45,25 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
-    public ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> getStatusEffectValues(UUID uuid) {
-        return statusEffectMap.get(uuid);
+    public void cleanse(UUID uuid) {
+        if (!statusEffectMap.containsKey(uuid)) return;
+        ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> statusEffects = statusEffectMap.get(uuid);
+        statusEffects.forEach((runicStatusEffect, longDoublePair) -> {
+            if (!runicStatusEffect.isBuff()) {
+                RunicCore.getStatusEffectAPI().removeStatusEffect(uuid, runicStatusEffect);
+            }
+        });
+    }
+
+    @Override
+    public void purge(UUID uuid) {
+        if (!statusEffectMap.containsKey(uuid)) return;
+        ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> statusEffects = statusEffectMap.get(uuid);
+        statusEffects.forEach((runicStatusEffect, longDoublePair) -> {
+            if (runicStatusEffect.isBuff()) {
+                RunicCore.getStatusEffectAPI().removeStatusEffect(uuid, runicStatusEffect);
+            }
+        });
     }
 
     @Override
