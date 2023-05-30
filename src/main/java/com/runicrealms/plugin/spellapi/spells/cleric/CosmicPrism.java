@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
@@ -7,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.Hexagon;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -58,13 +60,9 @@ public class CosmicPrism extends Spell implements AttributeSpell, DurationSpell,
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        Location castLocation = player.getEyeLocation();
-        starlightEffect(player, castLocation);
-
-    }
-
-    private void starlightEffect(Player player, Location location) {
-
+        Location castLocation = player.getLocation();
+        new Hexagon(castLocation, duration, radius).runTaskTimer(RunicCore.getInstance(), 0, 20L);
+        // todo: everything else
     }
 
     @Override
