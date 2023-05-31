@@ -76,7 +76,7 @@ public class FromTheShadows extends Spell {
             double duration = lunge.getDuration();
             double launchMultiplier = lunge.getLaunchMultiplier();
             double verticalPower = lunge.getVerticalPower();
-            Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower);
+            Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower, false);
         } else if (event.getSpell() instanceof TwinFangs twinFangs) {
             actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), twinFangs);
         } else if (event.getSpell() instanceof Cocoon cocoon) {
