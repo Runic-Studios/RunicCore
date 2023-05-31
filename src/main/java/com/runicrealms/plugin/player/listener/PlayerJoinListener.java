@@ -21,7 +21,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
@@ -129,17 +128,19 @@ public class PlayerJoinListener implements Listener {
                 .execute();
     }
 
-    /**
-     * Allows donator ranks to enter a full server
-     */
-    @EventHandler
-    public void onJoinFullServer(PlayerLoginEvent event) {
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (event.getPlayer().hasPermission("core.full.join")) {
-                event.allow();
-            }
-        }
-    }
+    // REMOVED IN FAVOR OF QUEUE SYSTEM
+
+//    /**
+//     * Allows donator ranks to enter a full server
+//     */
+//    @EventHandler
+//    public void onJoinFullServer(PlayerLoginEvent event) {
+//        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+//            if (event.getPlayer().hasPermission("core.full.join")) {
+//                event.allow();
+//            }
+//        }
+//    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPreJoin(AsyncPlayerPreLoginEvent event) {
