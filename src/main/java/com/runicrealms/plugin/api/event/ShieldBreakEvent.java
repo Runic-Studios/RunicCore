@@ -1,7 +1,6 @@
 package com.runicrealms.plugin.api.event;
 
-import com.runicrealms.plugin.spellapi.spelltypes.Shield;
-import org.bukkit.entity.Player;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -12,18 +11,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ShieldBreakEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private final Player player;
-    private final Shield shield;
+    private final ShieldPayload shieldPayload;
+    private final BreakReason breakReason;
     private boolean isCancelled;
-
     /**
-     * @param player whose shield was broken
-     * @param shield container that broke
+     * @param shieldPayload containing player, source, shield
      */
-    public ShieldBreakEvent(Player player, @NotNull Shield shield) {
-        super(true);
-        this.player = player;
-        this.shield = shield;
+    public ShieldBreakEvent(@NotNull ShieldPayload shieldPayload, BreakReason breakReason) {
+        this.shieldPayload = shieldPayload;
+        this.breakReason = breakReason;
         this.isCancelled = false;
     }
 
@@ -31,18 +27,18 @@ public class ShieldBreakEvent extends Event implements Cancellable {
         return handlers;
     }
 
+    public ShieldPayload getShieldPayload() {
+        return shieldPayload;
+    }
+
+    public BreakReason getBreakReason() {
+        return breakReason;
+    }
+
     @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
         return handlers;
-    }
-
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    public Shield getShield() {
-        return this.shield;
     }
 
     @Override
@@ -53,6 +49,11 @@ public class ShieldBreakEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean arg0) {
         this.isCancelled = arg0;
+    }
+
+    public enum BreakReason {
+        DAMAGE,
+        FALLOFF
     }
 
 }

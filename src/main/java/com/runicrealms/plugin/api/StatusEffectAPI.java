@@ -17,6 +17,20 @@ public interface StatusEffectAPI {
     void addStatusEffect(LivingEntity livingEntity, RunicStatusEffect runicStatusEffect, double durationInSecs, boolean displayMessage);
 
     /**
+     * Cleanses all negative status effects from given uuid
+     *
+     * @param uuid to cleanse
+     */
+    void cleanse(UUID uuid);
+
+    /**
+     * Purges all positive status effects from given uuid
+     *
+     * @param uuid to purge
+     */
+    void purge(UUID uuid);
+
+    /**
      * Check whether the given player is effected by the given status effect
      *
      * @param uuid              of player or entity to check

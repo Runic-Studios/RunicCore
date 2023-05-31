@@ -34,26 +34,25 @@ import com.runicrealms.plugin.spellapi.spells.artifact.Maelstrom;
 import com.runicrealms.plugin.spellapi.spells.artifact.ThunderousRift;
 import com.runicrealms.plugin.spellapi.spells.artifact.Thundershock;
 import com.runicrealms.plugin.spellapi.spells.cleric.Accelerando;
+import com.runicrealms.plugin.spellapi.spells.cleric.AstralBlessing;
 import com.runicrealms.plugin.spellapi.spells.cleric.Consecration;
-import com.runicrealms.plugin.spellapi.spells.cleric.CorruptedWaters;
-import com.runicrealms.plugin.spellapi.spells.cleric.DefiledFont;
-import com.runicrealms.plugin.spellapi.spells.cleric.Despair;
+import com.runicrealms.plugin.spellapi.spells.cleric.CosmicPrism;
 import com.runicrealms.plugin.spellapi.spells.cleric.Diminuendo;
 import com.runicrealms.plugin.spellapi.spells.cleric.Discord;
 import com.runicrealms.plugin.spellapi.spells.cleric.DivineShield;
 import com.runicrealms.plugin.spellapi.spells.cleric.Encore;
 import com.runicrealms.plugin.spellapi.spells.cleric.Lightwell;
+import com.runicrealms.plugin.spellapi.spells.cleric.Nightfall;
 import com.runicrealms.plugin.spellapi.spells.cleric.Purify;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantFire;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantNova;
 import com.runicrealms.plugin.spellapi.spells.cleric.RayOfLight;
 import com.runicrealms.plugin.spellapi.spells.cleric.Rejuvenate;
 import com.runicrealms.plugin.spellapi.spells.cleric.RighteousBlade;
-import com.runicrealms.plugin.spellapi.spells.cleric.Ruination;
 import com.runicrealms.plugin.spellapi.spells.cleric.SacredSpring;
 import com.runicrealms.plugin.spellapi.spells.cleric.Sear;
-import com.runicrealms.plugin.spellapi.spells.cleric.TouchOfDeath;
-import com.runicrealms.plugin.spellapi.spells.cleric.UmbralGrasp;
+import com.runicrealms.plugin.spellapi.spells.cleric.Starlight;
+import com.runicrealms.plugin.spellapi.spells.cleric.TwilightResurgence;
 import com.runicrealms.plugin.spellapi.spells.cleric.Warsong;
 import com.runicrealms.plugin.spellapi.spells.mage.ArcaneSlash;
 import com.runicrealms.plugin.spellapi.spells.mage.Blink;
@@ -97,7 +96,6 @@ import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
 import com.runicrealms.plugin.spellapi.spells.warrior.Bolster;
 import com.runicrealms.plugin.spellapi.spells.warrior.BoulderToss;
-import com.runicrealms.plugin.spellapi.spells.warrior.Cleave;
 import com.runicrealms.plugin.spellapi.spells.warrior.Consecrate;
 import com.runicrealms.plugin.spellapi.spells.warrior.Earthquake;
 import com.runicrealms.plugin.spellapi.spells.warrior.Ironhide;
@@ -105,6 +103,7 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Judgment;
 import com.runicrealms.plugin.spellapi.spells.warrior.LastResort;
 import com.runicrealms.plugin.spellapi.spells.warrior.Resolve;
 import com.runicrealms.plugin.spellapi.spells.warrior.Rift;
+import com.runicrealms.plugin.spellapi.spells.warrior.Rupture;
 import com.runicrealms.plugin.spellapi.spells.warrior.Salvation;
 import com.runicrealms.plugin.spellapi.spells.warrior.SeismicForce;
 import com.runicrealms.plugin.spellapi.spells.warrior.Shockwave;
@@ -114,7 +113,7 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
 import com.runicrealms.plugin.spellapi.spells.warrior.Unstoppable;
 import com.runicrealms.plugin.spellapi.spells.warrior.Whirlwind;
 import com.runicrealms.plugin.spellapi.spells.warrior.WreckingBall;
-import com.runicrealms.plugin.spellapi.spelltypes.Shield;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.HologramUtil;
 import net.md_5.bungee.api.ChatMessageType;
@@ -139,7 +138,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpellManager implements Listener, SpellAPI {
     private final List<Spell> spellList;
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<Spell, Long>> cooldownMap;
-    private final HashMap<UUID, Shield> shieldedPlayers;
+    private final HashMap<UUID, ShieldPayload> shieldedPlayers;
     private final RunicCore plugin = RunicCore.getInstance();
 
     public SpellManager() {
@@ -208,7 +207,7 @@ public class SpellManager implements Listener, SpellAPI {
     }
 
     @Override
-    public HashMap<UUID, Shield> getShieldedPlayers() {
+    public HashMap<UUID, ShieldPayload> getShieldedPlayers() {
         return this.shieldedPlayers;
     }
 
@@ -384,7 +383,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Riftwalk());
         this.spellList.add(new SpectralBlade());
         this.spellList.add(new Manashield());
-        this.spellList.add(new Cleave());
+        this.spellList.add(new Rupture());
         this.spellList.add(new Whirlwind());
         this.spellList.add(new LastResort());
         this.spellList.add(new Bolster());
@@ -410,14 +409,7 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Surge());
         this.spellList.add(new SnapFreeze());
         this.spellList.add(new WintersGrasp());
-        this.spellList.add(new Despair());
-        this.spellList.add(new TouchOfDeath());
         this.spellList.add(new Diminuendo());
-        DefiledFont defiledFont = new DefiledFont();
-        this.spellList.add(defiledFont);
-        this.spellList.add(new CorruptedWaters(defiledFont));
-        this.spellList.add(new UmbralGrasp());
-        this.spellList.add(new Ruination());
         this.spellList.add(new ArcaneSlash());
         this.spellList.add(new TwinFangs());
         this.spellList.add(new Cocoon());
@@ -444,6 +436,11 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new BoulderToss());
         this.spellList.add(new Earthquake());
         this.spellList.add(new WreckingBall());
+        this.spellList.add(new Starlight());
+        this.spellList.add(new AstralBlessing());
+        this.spellList.add(new CosmicPrism());
+        this.spellList.add(new Nightfall());
+        this.spellList.add(new TwilightResurgence());
         /*
         Items
          */

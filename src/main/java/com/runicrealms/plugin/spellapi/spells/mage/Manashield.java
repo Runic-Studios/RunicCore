@@ -4,7 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.api.event.ShieldBreakEvent;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
-import com.runicrealms.plugin.spellapi.spelltypes.Shield;
+import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -111,10 +111,10 @@ public class Manashield extends Spell implements RadiusSpell, ShieldingSpell {
     @EventHandler(priority = EventPriority.LOW)
     public void onShieldBreak(ShieldBreakEvent event) {
         if (event.isCancelled()) return;
-        Shield shield = event.getShield();
-        if (shield == null) return; // Fixes a bug from race condition due to shield removal task
+        ShieldPayload shieldPayload = event.getShieldPayload();
+        if (shieldPayload == null) return; // Fixes a bug from race condition due to shield removal task
         for (UUID uuid : shieldedPlayersMap.keySet()) { // The casters who apply mana shields
-            if (shieldedPlayersMap.get(uuid).stream().anyMatch(value -> shield.getSources().contains(value))) { // If a mana shield caster contributed to this shield
+            if (shieldedPlayersMap.get(uuid).stream().anyMatch(value -> shieldPayload.shield().getSources().contains(value))) { // If a mana shield caster contributed to this shield
                 Player player = Bukkit.getPlayer(uuid);
                 if (player != null) {
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1.0f, 2.0f);

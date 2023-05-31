@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.events.GenericDamageEvent;
+import com.runicrealms.plugin.events.EnvironmentDamage;
 import com.runicrealms.plugin.utilities.DamageEventUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -13,36 +13,32 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class EnvironmentDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST) // very early
-    public void onEnvironmentDamage(EntityDamageEvent e) {
-        Entity entity = e.getEntity();
-        switch (e.getCause()) {
-            case CONTACT:
-            case DROWNING:
-            case FIRE:
-            case HOT_FLOOR:
-            case LAVA:
-                e.setCancelled(true);
+    public void onEnvironmentDamage(EntityDamageEvent event) {
+        Entity entity = event.getEntity();
+        switch (event.getCause()) {
+            case CONTACT, DROWNING, FIRE, HOT_FLOOR, LAVA -> {
+                event.setCancelled(true);
                 if (entity instanceof Player) {
-                    createGenericDamageEvent((Player) entity, e.getCause(), e.getDamage());
+                    createGenericDamageEvent((Player) entity, event.getCause(), event.getDamage());
                 }
-                break;
-            case FALL: // not cancelled for most mobs
+            }
+            case FALL -> { // not cancelled for most mobs
                 if (entity instanceof Player) {
-                    e.setCancelled(true);
-                    createGenericDamageEvent((Player) entity, e.getCause(), e.getDamage());
+                    event.setCancelled(true);
+                    createGenericDamageEvent((Player) entity, event.getCause(), event.getDamage());
                 }
-                break;
+            }
         }
     }
 
     private void createGenericDamageEvent(Player player, EntityDamageEvent.DamageCause cause, double eventDamage) {
-        GenericDamageEvent.DamageCauses damageCauses = GenericDamageEvent.DamageCauses.getFromDamageCause(cause);
-        GenericDamageEvent genericDamageEvent = new GenericDamageEvent
+        EnvironmentDamage.DamageCauses damageCauses = EnvironmentDamage.DamageCauses.getFromDamageCause(cause);
+        EnvironmentDamage environmentDamage = new EnvironmentDamage
                 (
                         player,
                         DamageEventUtil.calculateRunicDamageFromVanillaDamage(player, eventDamage, damageCauses),
                         damageCauses
                 );
-        Bukkit.getPluginManager().callEvent(genericDamageEvent);
+        Bukkit.getPluginManager().callEvent(environmentDamage);
     }
 }

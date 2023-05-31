@@ -6,9 +6,12 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -26,7 +29,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell {
+public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell, WarmupSpell {
     private static final int AMOUNT = 4;
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 12;
@@ -35,13 +38,15 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
     private double damage;
     private double radius;
     private double damagePerLevel;
+    private double warmup;
     private LargeFireball meteor;
 
     public MeteorShower() {
         super("Meteor Shower", CharacterClass.MAGE);
-        this.setDescription("You conjure a shower of meteors at your target " +
+        this.setDescription("You mark an area at your target " +
                 "enemy or location within " + MAX_DIST + " blocks! " +
-                "Four projectile meteors rain from the shower that deal " +
+                "After " + warmup + "s, " +
+                "four projectile meteors rain from the shower that deal " +
                 "(" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks on impact!");
     }
@@ -66,7 +71,12 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
         } else {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
         }
-        summonMeteorShower(player, location);
+        // Create shower after delay
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
+        final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
+        VectorUtil.drawLine(player, Particle.FLAME, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.5D, 5);
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> summonMeteorShower(player, location), (long) warmup * 20L);
     }
 
     /**
@@ -168,6 +178,16 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
                 }
             }
         }.runTaskTimer(RunicCore.getInstance(), 0L, 20L);
+    }
+
+    @Override
+    public double getWarmup() {
+        return warmup;
+    }
+
+    @Override
+    public void setWarmup(double warmup) {
+        this.warmup = warmup;
     }
 }
 

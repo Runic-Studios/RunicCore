@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.GenericDamageEvent;
-import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.EnvironmentDamage;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -43,7 +43,7 @@ public class Lunge extends Spell implements DurationSpell {
      *
      * @param player who cast the spell
      */
-    public static void lunge(Player player, double duration, double launchMultiplier, double verticalPower) {
+    public static void lunge(Player player, double duration, double launchMultiplier, double verticalPower, boolean damage) {
         // Spell variables, vectors
         Location location = player.getLocation();
         Vector look = location.getDirection();
@@ -58,7 +58,8 @@ public class Lunge extends Spell implements DurationSpell {
         player.setVelocity(launchPath); // .multiply(launchMultiplier)
         BukkitTask lungeDamageTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                 () -> LUNGE_TASKS.remove(player.getUniqueId()), (int) duration * 20L);
-        LUNGE_TASKS.put(player.getUniqueId(), lungeDamageTask);
+        if (damage)
+            LUNGE_TASKS.put(player.getUniqueId(), lungeDamageTask);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class Lunge extends Spell implements DurationSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        lunge(player, duration, launchMultiplier, verticalPower);
+        lunge(player, duration, launchMultiplier, verticalPower, true);
     }
 
     @Override
@@ -118,9 +119,9 @@ public class Lunge extends Spell implements DurationSpell {
      * Disable fall damage for players who are lunging
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(GenericDamageEvent event) {
+    public void onFallDamage(EnvironmentDamage event) {
         if (!LUNGE_TASKS.containsKey(event.getVictim().getUniqueId())) return;
-        if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE)
+        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE)
             event.setCancelled(true);
     }
 

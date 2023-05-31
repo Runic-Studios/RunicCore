@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -30,7 +30,7 @@ public class FromTheShadows extends Spell {
 
                 &aSprint &7- You lunge forward on cast!
                 &aTwin Fangs &7- This spell will critically strike!
-                &aCocoon &7- Your web now stuns your target (duration halved)!
+                &aCocoon &7- Your web now roots your target (duration halved)!
                 """);
     }
 
@@ -43,7 +43,7 @@ public class FromTheShadows extends Spell {
         if (event.getSpell() instanceof Cocoon) {
             actuallyBuffedPlayers.remove(event.getPlayer().getUniqueId());
             Spell spell = RunicCore.getSpellAPI().getSpell("Cocoon");
-            addStatusEffect(event.getVictim(), RunicStatusEffect.STUN, ((DurationSpell) spell).getDuration() / 2, true);
+            addStatusEffect(event.getVictim(), RunicStatusEffect.ROOT, ((DurationSpell) spell).getDuration() / 2, true);
             potentialBuffedPlayers.remove(event.getPlayer().getUniqueId());
         } else if (event.getSpell() instanceof TwinFangs) {
             event.setCritical(true);
@@ -76,7 +76,7 @@ public class FromTheShadows extends Spell {
             double duration = lunge.getDuration();
             double launchMultiplier = lunge.getLaunchMultiplier();
             double verticalPower = lunge.getVerticalPower();
-            Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower);
+            Lunge.lunge(event.getCaster(), duration, launchMultiplier, verticalPower, false);
         } else if (event.getSpell() instanceof TwinFangs twinFangs) {
             actuallyBuffedPlayers.put(event.getCaster().getUniqueId(), twinFangs);
         } else if (event.getSpell() instanceof Cocoon cocoon) {

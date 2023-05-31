@@ -35,7 +35,7 @@ public class HorizontalCircleFrame implements ParticleFormat {
             Vector vector;
             BlockData blockData = null;
             if (particle == Particle.BLOCK_CRACK) {
-                blockData = Bukkit.createBlockData(Material.BLUE_ICE);
+                blockData = color.length > 0 && color[0] == Color.BLUE ? Bukkit.createBlockData(Material.LAPIS_BLOCK) : Bukkit.createBlockData(Material.BLUE_ICE);
             }
             Particle.DustOptions dustOptions = null;
             if (particle == Particle.REDSTONE) {

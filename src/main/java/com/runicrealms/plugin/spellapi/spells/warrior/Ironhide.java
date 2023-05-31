@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -95,7 +95,7 @@ public class Ironhide extends Spell implements MagicDamageSpell {
     @EventHandler
     public void onMobDamage(MobDamageEvent event) {
         if (!(event.getVictim() instanceof Player victim)) return;
-        if (!(event.getDamager() instanceof LivingEntity damager)) return;
+        if (!(event.getEntity() instanceof LivingEntity damager)) return;
         UUID id = victim.getUniqueId();
         if (this.ironPlayers.contains(id)) {
             victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.25f, 2.0f);

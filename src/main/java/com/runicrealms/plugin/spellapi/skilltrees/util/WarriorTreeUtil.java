@@ -17,7 +17,7 @@ public class WarriorTreeUtil {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(144, 1, 0, 1, "Whirlwind"));
         perks.add(new PerkBaseStat(145, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(146, 1, 0, 1, "Cleave"));
+        perks.add(new PerkSpell(146, 1, 0, 1, "Rupture"));
         perks.add(new PerkBaseStat(147, 1, 0, 3, Stat.VITALITY));
         perks.add(new PerkBaseStat(148, 1, 0, 3, Stat.STRENGTH));
         perks.add(new PerkSpell(149, 1, 0, 1, "Axe Toss"));

@@ -30,7 +30,7 @@ public class RunicItemShopHelper {
     private static final List<Pair<String, Integer>> ETHEREAL_KEY_ITEM = new ArrayList<>();
     private static final String SILVER_KEY = "silver-key";
     private static final String GOLD_KEY = "gold-key";
-    private static final String ETHEREAL_KEY = "silver-key";
+    private static final String ETHEREAL_KEY = "ethereal-key";
     private static final String GENERALS_KEY = "generals-key";
     private static final String KEEPERS_KEY = "keepers-key";
     private static final String WARDENS_KEY = "wardens-key";

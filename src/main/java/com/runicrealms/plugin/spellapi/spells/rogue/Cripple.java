@@ -1,10 +1,10 @@
 package com.runicrealms.plugin.spellapi.spells.rogue;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.PhysicalDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -79,7 +79,7 @@ public class Cripple extends Spell implements PhysicalDamageSpell {
 
     @EventHandler
     public void onMobDamage(MobDamageEvent event) {
-        if (!crippledEntities.contains(event.getDamager().getUniqueId())) return;
+        if (!crippledEntities.contains(event.getEntity().getUniqueId())) return;
         double percent = PERCENT / 100;
         double reduced = event.getAmount() * percent;
         event.setAmount((int) (event.getAmount() - reduced));

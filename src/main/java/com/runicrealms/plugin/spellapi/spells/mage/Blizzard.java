@@ -2,12 +2,15 @@ package com.runicrealms.plugin.spellapi.spells.mage;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
+import com.runicrealms.plugin.spellapi.spellutil.VectorUtil;
 import com.runicrealms.plugin.spellapi.spellutil.particles.HorizontalCircleFrame;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
@@ -30,9 +33,8 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+public class Blizzard extends Spell implements DistanceSpell, DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
     private static final int HEIGHT = 9;
-    private static final int MAX_DIST = 10;
     private static final int SLOW_DURATION = 2;
     private static final double SNOWBALL_SPEED = 0.5;
     private static final double RAY_SIZE = 1.0D;
@@ -40,15 +42,18 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
     private final Set<Snowball> blizzardSnowballs = new HashSet<>();
     private double damage;
     private double damagePerLevel;
+    private double distance;
     private double duration;
     private double radius;
+    private double warmup;
 
     public Blizzard() {
         super("Blizzard", CharacterClass.MAGE);
-        this.setDescription("You summon a cloud of snow that " +
-                "rains down snowballs for " + duration + " seconds, " +
-                "each dealing (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage to enemies and slowing them!");
+        this.setDescription("You mark an area at your target " +
+                "enemy or location within " + distance + " blocks! " +
+                "After " + warmup + "s, you rain down snowballs for " + duration + "s, " +
+                "dealing (" + damage + " + &f" + damagePerLevel
+                + "x&7 lvl) magicʔ damage to enemies in the area and slowing them!");
     }
 
     private void blizzardDamage(Player player, Location location) {
@@ -64,20 +69,20 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
         RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities(
                 player.getLocation(),
                 player.getLocation().getDirection(),
-                MAX_DIST,
+                distance,
                 RAY_SIZE,
                 entity -> isValidEnemy(player, entity)
         );
 
         Location location;
         if (rayTraceResult == null) {
-            location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            location = player.getTargetBlock(null, (int) distance).getLocation();
         } else if (rayTraceResult.getHitEntity() != null) {
             location = rayTraceResult.getHitEntity().getLocation();
         } else if (rayTraceResult.getHitBlock() != null) {
             location = rayTraceResult.getHitBlock().getLocation();
         } else {
-            location = player.getTargetBlock(null, MAX_DIST).getLocation();
+            location = player.getTargetBlock(null, (int) distance).getLocation();
         }
 
         if (location.getWorld() == null) {
@@ -86,12 +91,18 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
         }
 
         // Cast a ray downwards to get the ground location
-        RayTraceResult groundRayTraceResult = location.getWorld().rayTraceBlocks(location, new Vector(0, -1, 0), MAX_DIST);
+        RayTraceResult groundRayTraceResult = location.getWorld().rayTraceBlocks(location, new Vector(0, -1, 0), distance);
         if (groundRayTraceResult != null && groundRayTraceResult.getHitBlock() != null) {
             location = groundRayTraceResult.getHitBlock().getLocation().add(0.5, 1, 0.5);
         }
 
-        spawnBlizzard(player, location);
+        // Create blizzard after delay
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
+        final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
+        VectorUtil.drawLine(player, Particle.SNOWBALL, Color.WHITE, trailLoc[0], location.clone().subtract(0, 20, 0), 2.5D, 5);
+        Location finalLocation = location;
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> spawnBlizzard(player, finalLocation), (long) warmup * 20L);
     }
 
     @Override
@@ -207,5 +218,24 @@ public class Blizzard extends Spell implements DurationSpell, MagicDamageSpell, 
         }
     }
 
+    @Override
+    public double getWarmup() {
+        return warmup;
+    }
+
+    @Override
+    public void setWarmup(double warmup) {
+        this.warmup = warmup;
+    }
+
+    @Override
+    public double getDistance() {
+        return distance;
+    }
+
+    @Override
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
 }
 

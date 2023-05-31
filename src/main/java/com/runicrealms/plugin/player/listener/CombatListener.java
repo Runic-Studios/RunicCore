@@ -6,6 +6,7 @@ import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
+import com.runicrealms.plugin.player.CombatManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ public class CombatListener implements Listener {
     @EventHandler
     public void onEnterCombat(EnterCombatEvent event) {
         if (event.isCancelled()) return;
-        EnterCombatEvent.tagPlayerAndPartyInCombat(event.getPlayer());
+        EnterCombatEvent.tagPlayerAndPartyInCombat(event.getPlayer(), event.getCombatType());
     }
 
     @EventHandler
@@ -33,9 +34,8 @@ public class CombatListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST) // runs LAST
     public void onMobDamage(MobDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!(event.getVictim() instanceof Player)) return; // only listen when a player takes damage
-        Player player = (Player) event.getVictim();
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(player);
+        if (!(event.getVictim() instanceof Player player)) return; // only listen when a player takes damage
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(player, CombatManager.CombatType.MOB);
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 
@@ -47,7 +47,7 @@ public class CombatListener implements Listener {
     public void onPhysicalDamage(PhysicalDamageEvent event) {
         if (event.isCancelled()) return;
         if (event.getVictim() instanceof Player) return; // handled in RunicPvP
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer());
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer(), CombatManager.CombatType.MOB);
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 
@@ -59,7 +59,7 @@ public class CombatListener implements Listener {
     public void onSpellDamage(MagicDamageEvent event) {
         if (event.isCancelled()) return;
         if (event.getVictim() instanceof Player) return; // handled in RunicPvP
-        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer());
+        EnterCombatEvent enterCombatEvent = new EnterCombatEvent(event.getPlayer(), CombatManager.CombatType.MOB);
         Bukkit.getPluginManager().callEvent(enterCombatEvent);
     }
 }

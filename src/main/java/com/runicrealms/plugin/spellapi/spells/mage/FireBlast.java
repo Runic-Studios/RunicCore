@@ -15,10 +15,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.Map;
+
 public class FireBlast extends Spell implements MagicDamageSpell, RadiusSpell {
     private static final int MAX_DIST = 10;
-    private static final double KNOCKUP_MULTIPLIER = 1.0;
     private static final double RAY_SIZE = 1.5D;
+    private double knockupMultiplier;
     private double damage;
     private double damagePerLevel;
     private double radius;
@@ -30,6 +32,18 @@ public class FireBlast extends Spell implements MagicDamageSpell, RadiusSpell {
                 "(" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage to enemies within " + radius + " blocks and " +
                 "knocks them up!");
+    }
+
+    @Override
+    public void loadRadiusData(Map<String, Object> spellData) {
+        Number knockupMultiplier = (Number) spellData.getOrDefault("knockup-multiplier", 0);
+        setKnockupMultiplier(knockupMultiplier.doubleValue());
+        Number radius = (Number) spellData.getOrDefault("radius", 0);
+        setRadius(radius.doubleValue());
+    }
+
+    public void setKnockupMultiplier(double knockupMultiplier) {
+        this.knockupMultiplier = knockupMultiplier;
     }
 
     @Override
@@ -69,7 +83,7 @@ public class FireBlast extends Spell implements MagicDamageSpell, RadiusSpell {
             LivingEntity livingEntity = (LivingEntity) entity;
             DamageUtil.damageEntitySpell(damage, livingEntity, player, this);
             entity.getWorld().spawnParticle(Particle.FLAME, livingEntity.getEyeLocation(), 15, 0.5f, 0.5f, 0.5f, 0);
-            entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(KNOCKUP_MULTIPLIER));
+            entity.setVelocity(new Vector(0, 1, 0).normalize().multiply(knockupMultiplier));
         }
     }
 

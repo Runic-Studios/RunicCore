@@ -84,8 +84,7 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
     @EventHandler(priority = EventPriority.LOW)
     public void onPotionBreak(PotionSplashEvent event) {
         if (event.isCancelled()) return;
-        if (!(SacredSpring.getThrownPotionSet().contains(event.getPotion())
-                || DefiledFont.getThrownPotionSet().contains(event.getPotion())))
+        if (!(SacredSpring.getThrownPotionSet().contains(event.getPotion())))
             return;
         if (!(event.getPotion().getShooter() instanceof Player player)) return;
         if (!hasPassive(player.getUniqueId(), this.getName())) return;
@@ -109,7 +108,7 @@ public class Lightwell extends Spell implements DurationSpell, HealingSpell, Rad
                 player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, location, 25, 0.75f, 0.75f, 0.75f, 0);
 
                 for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-                    if (isValidAlly(player, entity) && !DefiledFont.getThrownPotionSet().contains(event.getPotion())) { // Defiled Font cannot heal
+                    if (isValidAlly(player, entity)) {
                         healPlayer(player, (Player) entity, healAmt, spell);
                     } else if (isValidEnemy(player, entity)) {
                         entity.getWorld().spawnParticle(Particle.REDSTONE, ((LivingEntity) entity).getEyeLocation(), 5, 0.5f, 0.5f, 0.5f,

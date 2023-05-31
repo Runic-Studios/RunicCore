@@ -82,7 +82,7 @@ public class BowListener implements Listener {
                 ActiveMob mm = MythicMobs.inst().getAPIHelper().getMythicMobInstance(shooter);
                 dmgAmt = mm.getDamage();
             }
-            MobDamageEvent mobDamageEvent = new MobDamageEvent((int) Math.ceil(dmgAmt), event.getDamager(), event.getEntity(), false);
+            MobDamageEvent mobDamageEvent = new MobDamageEvent((int) Math.ceil(dmgAmt), event.getDamager(), (LivingEntity) event.getEntity(), false);
             Bukkit.getPluginManager().callEvent(mobDamageEvent);
             if (!mobDamageEvent.isCancelled())
                 DamageUtil.damageEntityMob(Math.ceil(mobDamageEvent.getAmount()),

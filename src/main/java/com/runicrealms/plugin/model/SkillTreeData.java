@@ -2,8 +2,8 @@ package com.runicrealms.plugin.model;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.SubClass;
-import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.model.SessionDataRedis;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;
@@ -285,7 +285,7 @@ public class SkillTreeData implements SessionDataRedis {
             case WARDEN -> ArcherTreeUtil.wardenPerkList();
             case BARD -> ClericTreeUtil.bardPerkList();
             case LIGHTBRINGER -> ClericTreeUtil.lightbringerPerkList();
-            case SOULREAVER -> ClericTreeUtil.soulreaverPerkList();
+            case STARWEAVER -> ClericTreeUtil.starweaverPerkList();
             case CRYOMANCER -> MageTreeUtil.cryomancerPerkList();
             case PYROMANCER -> MageTreeUtil.pyromancerPerkList();
             case SPELLSWORD -> MageTreeUtil.spellswordPerkList();

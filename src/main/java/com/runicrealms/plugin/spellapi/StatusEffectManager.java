@@ -45,6 +45,28 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     }
 
     @Override
+    public void cleanse(UUID uuid) {
+        if (!statusEffectMap.containsKey(uuid)) return;
+        ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> statusEffects = statusEffectMap.get(uuid);
+        statusEffects.forEach((runicStatusEffect, longDoublePair) -> {
+            if (!runicStatusEffect.isBuff()) {
+                RunicCore.getStatusEffectAPI().removeStatusEffect(uuid, runicStatusEffect);
+            }
+        });
+    }
+
+    @Override
+    public void purge(UUID uuid) {
+        if (!statusEffectMap.containsKey(uuid)) return;
+        ConcurrentHashMap<RunicStatusEffect, Pair<Long, Double>> statusEffects = statusEffectMap.get(uuid);
+        statusEffects.forEach((runicStatusEffect, longDoublePair) -> {
+            if (runicStatusEffect.isBuff()) {
+                RunicCore.getStatusEffectAPI().removeStatusEffect(uuid, runicStatusEffect);
+            }
+        });
+    }
+
+    @Override
     public boolean hasStatusEffect(UUID uuid, RunicStatusEffect statusEffect) {
         if (!statusEffectMap.containsKey(uuid)) return false;
         return statusEffectMap.get(uuid).containsKey(statusEffect);
@@ -85,7 +107,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
             removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
         }
-        UUID mobUuid = event.getDamager().getUniqueId();
+        UUID mobUuid = event.getEntity().getUniqueId();
         if (hasStatusEffect(mobUuid, RunicStatusEffect.SILENCE) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.STUN) ||
                 hasStatusEffect(mobUuid, RunicStatusEffect.DISARM) ||
@@ -108,6 +130,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 
     @EventHandler
     public void onPhysicalDamage(PhysicalDamageEvent event) {
+        // Disarms ONLY stop basic attacks
         if (event.isBasicAttack() && hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.DISARM)) {
             event.setCancelled(true);
             return;
@@ -116,8 +139,13 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
             removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
         }
-        if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.SILENCE)
-                || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)
+        // Silences stop everything except basic attacks
+        if (!event.isBasicAttack() && hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.SILENCE)) {
+            event.setCancelled(true);
+            return;
+        }
+        // Stuns and invulns stop this event entirely
+        if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)
                 || hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.INVULNERABILITY)) {
             event.setCancelled(true);
         }
@@ -155,6 +183,11 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
     @EventHandler(priority = EventPriority.HIGH)
     public void onStatusEffect(StatusEffectEvent event) {
         if (event.isCancelled()) return;
+        // Can't apply negative effects to invuln players
+        if (hasStatusEffect(event.getLivingEntity().getUniqueId(), RunicStatusEffect.INVULNERABILITY) && !event.getRunicStatusEffect().isBuff()) {
+            event.setCancelled(true);
+            return;
+        }
         UUID uuid = event.getLivingEntity().getUniqueId();
         LivingEntity livingEntity = event.getLivingEntity();
         RunicStatusEffect runicStatusEffect = event.getRunicStatusEffect();

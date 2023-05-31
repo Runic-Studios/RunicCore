@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.spellapi.spells.mage;
 
-import com.runicrealms.plugin.events.GenericDamageEvent;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.EnvironmentDamage;
 import com.runicrealms.plugin.spellapi.spelltypes.DistanceSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
@@ -110,9 +110,9 @@ public class Blink extends Spell implements DistanceSpell {
      * Disable fall damage for players who are lunging
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onFallDamage(GenericDamageEvent event) {
+    public void onFallDamage(EnvironmentDamage event) {
         if (!blinkers.contains(event.getVictim().getUniqueId())) return;
-        if (event.getCause() == GenericDamageEvent.DamageCauses.FALL_DAMAGE) {
+        if (event.getCause() == EnvironmentDamage.DamageCauses.FALL_DAMAGE) {
             event.setCancelled(true);
             blinkers.remove(event.getVictim().getUniqueId());
         }

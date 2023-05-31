@@ -16,13 +16,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 public class BossTagger implements Listener {
     private static final double DAMAGE_PERCENT = .05; // threshold to receive loot (4%)
-
+    private static final List<String> BOSS_INTERNAL_NAMES = new ArrayList<>();
     private final HashMap<UUID, HashMap<Player, Integer>> bossFighters; // a single boss is mapped to many players (damage threshold tracked here)
     private final HashMap<UUID, HashSet<UUID>> bossLooters;
     private final HashMap<UUID, BossChest> activeBossLootChests;
@@ -31,19 +34,33 @@ public class BossTagger implements Listener {
         bossFighters = new HashMap<>();
         bossLooters = new HashMap<>();
         activeBossLootChests = new HashMap<>();
+        BOSS_INTERNAL_NAMES.addAll(Arrays.asList
+                (
+                        "sebath",
+                        "Jorundr",
+                        "GlitchedEntity",
+                        "TheLibrarian",
+                        "DeraPharaoh",
+                        "Eldrid"
+                ));
     }
 
     /**
-     * Checks whether the given mob is a boss (based on faction)
-     *
-     * @param entityId uuid of the entity
-     * @return true if mob is a boss
+     * @param internalName the unique internal name of the boss
+     * @return true if it is the name of a dungeon boss
      */
-    public static boolean isBoss(UUID entityId) {
-        if (!MythicMobs.inst().getMobManager().getActiveMob(entityId).isPresent()) return false;
-        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entityId).get();
-        if (am.getFaction() == null) return false;
-        return (am.getFaction().equalsIgnoreCase("boss"));
+    public static boolean isBoss(String internalName) {
+        return BOSS_INTERNAL_NAMES.contains(internalName);
+    }
+
+    /**
+     * @param entity that will be tracked
+     * @return true if it is the name of a dungeon boss
+     */
+    public static boolean isBoss(Entity entity) {
+        if (!MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).isPresent()) return false;
+        ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId()).get();
+        return BOSS_INTERNAL_NAMES.contains(am.getMobType());
     }
 
     /**
@@ -70,7 +87,7 @@ public class BossTagger implements Listener {
      */
     @EventHandler
     public void onBossDeath(MythicMobDeathEvent event) {
-        if (!isBoss(event.getEntity().getUniqueId())) return;
+        if (!isBoss(event.getMobType().getInternalName())) return;
         if (!bossFighters.containsKey(event.getMob().getUniqueId())) return;
         bossFighters.get(event.getEntity().getUniqueId()).forEach((player, integer) -> {
             player.sendMessage(ChatColor.YELLOW + "You dealt " + ChatColor.RED + ChatColor.BOLD + integer + ChatColor.YELLOW + " damage to the boss!");
@@ -80,7 +97,7 @@ public class BossTagger implements Listener {
                 player.sendMessage(ChatColor.RED + "You did not qualify for boss loot!");
             }
         });
-        bossFighters.get(event.getEntity().getUniqueId()).clear(); // clear damage tracking map
+        bossFighters.get(event.getEntity().getUniqueId()).clear(); // Clear damage tracking map
     }
 
     /**
@@ -117,9 +134,8 @@ public class BossTagger implements Listener {
      * @param eventAmount the damage from the event
      */
     private void trackBossDamage(Player player, Entity entity, int eventAmount) {
-        if (!isBoss(entity.getUniqueId())) return;
+        if (!isBoss(entity)) return;
         if (bossLooters.get(entity.getUniqueId()) == null) return;
-//        if (bossLooters.get(entity.getUniqueId()).contains(player.getUniqueId())) return;
         UUID playerId = player.getUniqueId();
         UUID bossId = entity.getUniqueId();
         LivingEntity livingEntity = (LivingEntity) entity;
