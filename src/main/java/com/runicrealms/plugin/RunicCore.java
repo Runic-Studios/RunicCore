@@ -127,6 +127,7 @@ import com.runicrealms.plugin.player.listener.StatsGUIListener;
 import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
+import com.runicrealms.plugin.playerqueue.PlayerQueueManager;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.RunicDatabaseAPI;
 import com.runicrealms.plugin.rdb.api.CharacterAPI;
@@ -456,6 +457,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         new ArtifactOnCastListener();
         new ArtifactOnHitListener();
         new ArtifactOnKillListener();
+        new PlayerQueueManager();
 
 
         // ACF commands
