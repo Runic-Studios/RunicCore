@@ -71,6 +71,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
         } else {
             location = player.getTargetBlock(null, MAX_DIST).getLocation();
         }
+        // Create shower after delay
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.5f, 2.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 0.5f, 1.0f);
         final Location[] trailLoc = {location.clone().add(0, HEIGHT, 0)};
