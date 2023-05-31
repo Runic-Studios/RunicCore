@@ -66,8 +66,6 @@ public class CombatManager implements CombatAPI, Listener {
                 if (playersInCombat.containsKey(uuid)) {
                     CombatType combatType = playersInCombat.get(uuid).getCombatType();
                     double duration = combatType == CombatType.PLAYER ? COMBAT_DURATION_PLAYERS : COMBAT_DURATION_MOBS;
-                    Bukkit.broadcastMessage(duration + " is duration of combat");
-                    Bukkit.broadcastMessage("remaining duration is " + (System.currentTimeMillis() - playersInCombat.get(uuid).getLastRefreshTime()));
                     if (System.currentTimeMillis() - playersInCombat.get(uuid).getLastRefreshTime() >= (duration * 1000)) {
                         LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(player);
                         Bukkit.getPluginManager().callEvent(leaveCombatEvent);
