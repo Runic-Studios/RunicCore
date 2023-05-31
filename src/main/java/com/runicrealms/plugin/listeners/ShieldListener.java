@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class ShieldListener implements Listener {
     private static final int HALF_HEART_AMOUNT = 50; // how much health is 1/2 heart?
     private static final int SHIELD_EXPIRE_TIME = 5; // Seconds
+    private static final double CAP_MULTIPLIER = 0.33;
 
     /**
      * Running async task to expire shields after expire time
@@ -135,11 +137,16 @@ public class ShieldListener implements Listener {
         Player recipient = event.getRecipient();
         int amount = event.getAmount();
         Map<UUID, ShieldPayload> shieldedPlayers = RunicCore.getSpellAPI().getShieldedPlayers();
+        // Increment shield (no farther than cap)
         if (shieldedPlayers.containsKey(recipient.getUniqueId())) {
             Shield oldShield = shieldedPlayers.get(recipient.getUniqueId()).shield();
-            shieldedPlayers.get(recipient.getUniqueId()).shield().setAmount(amount + oldShield.getAmount());
+            double newAmount = amount + oldShield.getAmount();
+            if (newAmount > recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * CAP_MULTIPLIER)
+                newAmount = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * CAP_MULTIPLIER;
+            shieldedPlayers.get(recipient.getUniqueId()).shield().setAmount(newAmount);
             shieldedPlayers.get(recipient.getUniqueId()).shield().setStartTime(System.currentTimeMillis());
             shieldedPlayers.get(recipient.getUniqueId()).shield().addSource(caster.getUniqueId());
+            // Create shield
         } else {
             shieldedPlayers.put(recipient.getUniqueId(), new ShieldPayload(recipient, event.getPlayer(), new Shield(amount, System.currentTimeMillis(), caster.getUniqueId())));
         }
