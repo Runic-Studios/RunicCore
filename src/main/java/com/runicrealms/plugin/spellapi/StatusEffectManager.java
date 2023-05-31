@@ -130,6 +130,7 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
 
     @EventHandler
     public void onPhysicalDamage(PhysicalDamageEvent event) {
+        // Disarms ONLY stop basic attacks
         if (event.isBasicAttack() && hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.DISARM)) {
             event.setCancelled(true);
             return;
@@ -138,8 +139,13 @@ public class StatusEffectManager implements Listener, StatusEffectAPI {
         if (hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT)) {
             removeStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.ROOT);
         }
-        if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.SILENCE)
-                || hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)
+        // Silences stop everything except basic attacks
+        if (!event.isBasicAttack() && hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.SILENCE)) {
+            event.setCancelled(true);
+            return;
+        }
+        // Stuns and invulns stop this event entirely
+        if (hasStatusEffect(event.getPlayer().getUniqueId(), RunicStatusEffect.STUN)
                 || hasStatusEffect(event.getVictim().getUniqueId(), RunicStatusEffect.INVULNERABILITY)) {
             event.setCancelled(true);
         }
