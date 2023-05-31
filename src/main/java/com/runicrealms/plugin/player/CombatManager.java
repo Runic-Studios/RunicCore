@@ -18,9 +18,9 @@ import java.util.UUID;
  * which is why we need both a HashMap and a List.
  */
 public class CombatManager implements CombatAPI, Listener {
-
-    private static final double COMBAT_DURATION = 10;
-    private final HashMap<UUID, Long> playersInCombat;
+    private static final double COMBAT_DURATION_MOBS = 10;
+    private static final double COMBAT_DURATION_PLAYERS = 30;
+    private final HashMap<UUID, CombatPayload> playersInCombat;
 
     public CombatManager() {
         this.playersInCombat = new HashMap<>();
@@ -29,13 +29,15 @@ public class CombatManager implements CombatAPI, Listener {
     }
 
     @Override
-    public void enterCombat(UUID uuid) {
+    public void enterCombat(UUID uuid, CombatType combatType) {
         Player player = Bukkit.getPlayer(uuid);
         assert player != null;
         if (!playersInCombat.containsKey(uuid)) {
             player.sendMessage(ChatColor.RED + "You have entered combat!");
         }
-        playersInCombat.put(uuid, System.currentTimeMillis());
+        if (playersInCombat.containsKey(uuid) && playersInCombat.get(uuid).getCombatType() == CombatType.PLAYER)
+            combatType = CombatType.PLAYER; // Once you're in PvP, can't switch to mob combat until you drop combat
+        playersInCombat.put(uuid, new CombatPayload(player, System.currentTimeMillis(), combatType));
     }
 
     @Override
@@ -62,7 +64,11 @@ public class CombatManager implements CombatAPI, Listener {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) continue;
                 if (playersInCombat.containsKey(uuid)) {
-                    if (System.currentTimeMillis() - playersInCombat.get(uuid) >= (COMBAT_DURATION * 1000)) {
+                    CombatType combatType = playersInCombat.get(uuid).getCombatType();
+                    double duration = combatType == CombatType.PLAYER ? COMBAT_DURATION_PLAYERS : COMBAT_DURATION_MOBS;
+                    Bukkit.broadcastMessage(duration + " is duration of combat");
+                    Bukkit.broadcastMessage("remaining duration is " + (System.currentTimeMillis() - playersInCombat.get(uuid).getLastRefreshTime()));
+                    if (System.currentTimeMillis() - playersInCombat.get(uuid).getLastRefreshTime() >= (duration * 1000)) {
                         LeaveCombatEvent leaveCombatEvent = new LeaveCombatEvent(player);
                         Bukkit.getPluginManager().callEvent(leaveCombatEvent);
                     }
@@ -70,4 +76,42 @@ public class CombatManager implements CombatAPI, Listener {
             }
         }, 0, 20L);
     }
+
+    public enum CombatType {
+        MOB,
+        PLAYER
+    }
+
+    static class CombatPayload {
+        private final Player player;
+        private long lastRefreshTime;
+        private CombatType combatType;
+
+        public CombatPayload(Player player, long lastRefreshTime, CombatType combatType) {
+            this.player = player;
+            this.lastRefreshTime = lastRefreshTime;
+            this.combatType = combatType;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+
+        public long getLastRefreshTime() {
+            return lastRefreshTime;
+        }
+
+        public void setLastRefreshTime(long lastRefreshTime) {
+            this.lastRefreshTime = lastRefreshTime;
+        }
+
+        public CombatType getCombatType() {
+            return combatType;
+        }
+
+        public void setCombatType(CombatType combatType) {
+            this.combatType = combatType;
+        }
+    }
+
 }

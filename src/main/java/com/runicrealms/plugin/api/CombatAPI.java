@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.api;
 
+import com.runicrealms.plugin.player.CombatManager;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -11,7 +12,7 @@ public interface CombatAPI {
      *
      * @param uuid of the player to add
      */
-    void enterCombat(UUID uuid);
+    void enterCombat(UUID uuid, CombatManager.CombatType combatType);
 
     /**
      * Gives the specified player exp toward their combat level
