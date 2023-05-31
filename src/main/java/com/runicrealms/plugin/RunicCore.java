@@ -10,7 +10,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.CodecAPI;
 import com.runicrealms.plugin.api.CombatAPI;
-import com.runicrealms.plugin.api.ConfigAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
@@ -23,7 +22,6 @@ import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.api.TitleAPI;
-import com.runicrealms.plugin.api.WeaponSkinAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.codec.CodecHandler;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
@@ -47,6 +45,7 @@ import com.runicrealms.plugin.commands.player.HelpCMD;
 import com.runicrealms.plugin.commands.player.MapLink;
 import com.runicrealms.plugin.commands.player.RunicVoteCMD;
 import com.runicrealms.plugin.commands.player.SpawnCMD;
+import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
@@ -102,6 +101,7 @@ import com.runicrealms.plugin.listeners.ShieldListener;
 import com.runicrealms.plugin.listeners.SkillPointsListener;
 import com.runicrealms.plugin.listeners.StaffListener;
 import com.runicrealms.plugin.listeners.SwapHandsListener;
+import com.runicrealms.plugin.listeners.WeaponSkinListener;
 import com.runicrealms.plugin.listeners.WorldChangeListener;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
@@ -158,7 +158,7 @@ import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
-import com.runicrealms.plugin.weaponskin.WeaponSkinManager;
+import com.runicrealms.runicitems.api.WeaponSkinAPI;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -184,7 +184,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ScoreboardAPI scoreboardAPI;
     private static SpellAPI spellAPI;
     private static TabAPI tabAPI;
-    private static ConfigAPI configAPI;
     private static LootTableAPI lootTableAPI;
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
@@ -240,10 +239,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static TabAPI getTabAPI() {
         return tabAPI;
-    }
-
-    public static ConfigAPI getConfigAPI() {
-        return configAPI;
     }
 
     public static LootTableAPI getLootTableAPI() {
@@ -363,7 +358,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         scoreboardAPI = null;
         spellAPI = null;
         tabAPI = null;
-        configAPI = null;
         lootTableAPI = null;
         mobTagger = null;
         bossTagger = null;
@@ -434,7 +428,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         scoreboardAPI = new ScoreboardHandler();
         spellAPI = new SpellManager();
         tabAPI = new TabListManager(this);
-        configAPI = new ConfigManager();
+        RunicCommon.registerConfigAPI(new ConfigManager());
         lootTableAPI = new LootTableManager();
         regionAPI = new RegionHelper();
         mobTagger = new MobTagger();
@@ -462,8 +456,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // ACF commands
         commandManager = new PaperCommandManager(this);
-        // Load skin closet AFTER command manager is loaded
-        weaponSkinAPI = new WeaponSkinManager();
         registerACFCommands();
         commandManager.getCommandConditions().addCondition("is-console-or-op", context -> {
             if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender) && !context.getIssuer().getIssuer().isOp()) // ops can execute console commands
@@ -607,6 +599,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new BasicAttackListener(), this);
         pm.registerEvents(new SettingsUIListener(), this);
         pm.registerEvents(new SheepShearListener(), this);
+        pm.registerEvents(new WeaponSkinListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

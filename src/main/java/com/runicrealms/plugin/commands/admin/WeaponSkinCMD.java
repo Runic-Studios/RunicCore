@@ -6,16 +6,16 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.weaponskin.WeaponSkin;
+import com.runicrealms.runicitems.weaponskin.WeaponSkin;
 import org.bukkit.entity.Player;
+
+import java.util.stream.Collectors;
 
 @CommandAlias("weaponskin")
 @Conditions("is-op")
-@Private
 public class WeaponSkinCMD extends BaseCommand {
 
     @Default
@@ -25,7 +25,7 @@ public class WeaponSkinCMD extends BaseCommand {
     }
 
     @Subcommand("equip")
-    @CommandCompletion("@weapon-skins")
+    @CommandCompletion("@weaponskins")
     public void onCommandEquip(Player player, String[] args) {
         for (String skinName : args) {
             WeaponSkin weaponSkin = RunicCore.getWeaponSkinAPI().getAllSkins()
@@ -46,7 +46,7 @@ public class WeaponSkinCMD extends BaseCommand {
     }
 
     @Subcommand("unequip")
-    @CommandCompletion("@weapon-skins")
+    @CommandCompletion("@weaponskins")
     public void onCommandUnequip(Player player, String[] args) {
         for (String skinName : args) {
             WeaponSkin weaponSkin = RunicCore.getWeaponSkinAPI().getAllSkins()
@@ -60,6 +60,11 @@ public class WeaponSkinCMD extends BaseCommand {
             RunicCore.getWeaponSkinAPI().deactivateSkin(player, weaponSkin);
             player.sendMessage(ColorUtil.format("&aUnequiped weapon skin: " + skinName));
         }
+    }
+
+    @Subcommand("list")
+    public void onCommandList(Player player) {
+        player.sendMessage(ColorUtil.format("&aAll skins: " + RunicCore.getWeaponSkinAPI().getAllSkins().stream().map(WeaponSkin::customName).collect(Collectors.joining(", "))));
     }
 
 }

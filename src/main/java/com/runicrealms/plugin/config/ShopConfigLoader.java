@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.config;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.common.util.Pair;
 import com.runicrealms.plugin.exception.ShopLoadException;
 import com.runicrealms.plugin.item.shops.RunicShopGeneric;
@@ -26,12 +27,12 @@ public class ShopConfigLoader {
     Static block to load our shop list into memory from file storage on startup
      */
     static {
-        File shopsFolder = RunicCore.getConfigAPI().getSubFolder(RunicCore.getInstance().getDataFolder(), "shops");
+        File shopsFolder = RunicCommon.getConfigAPI().getSubFolder(RunicCore.getInstance().getDataFolder(), "shops");
         for (File shopFile : shopsFolder.listFiles()) {
             if (shopFile.isDirectory()) continue; // ignore subdirectories
             try {
                 // noinspection unused
-                RunicShopGeneric ignored = loadShop(RunicCore.getConfigAPI().getYamlConfigFromFile(shopFile.getName(), shopsFolder)); // adds to in-memory cache here
+                RunicShopGeneric ignored = loadShop(RunicCommon.getConfigAPI().getYamlConfigFromFile(shopFile.getName(), shopsFolder)); // adds to in-memory cache here
             } catch (ShopLoadException exception) {
                 exception.addMessage("Error loading shop for file: " + shopFile.getName());
                 exception.displayToConsole();

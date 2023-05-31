@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.config;
 
-import com.runicrealms.plugin.api.ConfigAPI;
+import com.runicrealms.plugin.common.api.ConfigAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
