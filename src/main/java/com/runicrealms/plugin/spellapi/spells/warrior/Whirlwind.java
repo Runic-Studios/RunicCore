@@ -51,7 +51,7 @@ public class Whirlwind extends Spell implements DurationSpell, PhysicalDamageSpe
                 new HorizontalCircleFrame((float) radius, false).playParticle(player, Particle.CLOUD, player.getEyeLocation());
 
                 for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), radius, radius, radius, target -> isValidEnemy(player, target))) {
-                    DamageUtil.damageEntityPhysical(damageAmt, (LivingEntity) entity, player, false, false, spell);
+                    DamageUtil.damageEntityPhysical(damageAmt, (LivingEntity) entity, player, false, false, false, spell);
                 }
             }
         };

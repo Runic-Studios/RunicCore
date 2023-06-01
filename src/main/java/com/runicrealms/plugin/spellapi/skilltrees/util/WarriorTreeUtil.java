@@ -30,7 +30,7 @@ public class WarriorTreeUtil {
         return perks;
     }
 
-    public static List<Perk> earthshakerPerkList() {
+    public static List<Perk> dreadlordPerkList() {
         List<Perk> perks = new ArrayList<>();
         perks.add(new PerkSpell(156, 1, 0, 1, "Shockwave"));
         perks.add(new PerkBaseStat(157, 1, 0, 5, Stat.VITALITY));

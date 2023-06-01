@@ -65,6 +65,11 @@ public class DamageUtil {
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) finalDamage + " ❤ʔ");
     }
 
+    public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
+                                            boolean isBasicAttack, boolean isRanged, Spell... spell) {
+        damageEntityPhysical(dmgAmt, recipient, caster, isBasicAttack, isRanged, true, spell);
+    }
+
     /**
      * Our universal method to apply physical damage to a player using custom calculation.
      *
@@ -73,10 +78,11 @@ public class DamageUtil {
      * @param caster        player who cast the healing spell
      * @param isBasicAttack whether the attack will be treated as an basic attack (for on-hit effects)
      * @param isRanged      whether the attack is ranged
+     * @param knockback     whether to apply knockback
      * @param spell         include a reference to spell for spell scaling
      */
     public static void damageEntityPhysical(double dmgAmt, LivingEntity recipient, Player caster,
-                                            boolean isBasicAttack, boolean isRanged, Spell... spell) {
+                                            boolean isBasicAttack, boolean isRanged, boolean knockback, Spell... spell) {
         // prevent healing
         if (dmgAmt < 0) {
             dmgAmt = 0;
@@ -101,7 +107,7 @@ public class DamageUtil {
 
         // Apply the damage
         double finalDamage = event.isCritical() ? (dmgAmt * CRITICAL_MULTIPLIER) : dmgAmt;
-        damageEntityByEntity(finalDamage, recipient, caster, isRanged);
+        damageEntityByEntity(finalDamage, recipient, caster, isRanged, knockback);
         ChatColor chatColor = event.isCritical() ? ChatColor.GOLD : ChatColor.RED;
         HologramUtil.createCombatHologram(Collections.singletonList(caster), recipient.getEyeLocation(), chatColor + "-" + (int) finalDamage + " ❤⚔");
     }

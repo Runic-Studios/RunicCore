@@ -293,7 +293,7 @@ public class SkillTreeData implements SessionDataRedis {
             case WITCH_HUNTER -> RogueTreeUtil.witchHunterPerkList();
             case NIGHTCRAWLER -> RogueTreeUtil.nightcrawlerPerkList();
             case BERSERKER -> WarriorTreeUtil.berserkerPerkList();
-            case EARTHSHAKER -> WarriorTreeUtil.earthshakerPerkList();
+            case DREADLORD -> WarriorTreeUtil.dreadlordPerkList();
             case PALADIN -> WarriorTreeUtil.paladinPerkList();
         };
     }
