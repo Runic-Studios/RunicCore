@@ -1,11 +1,11 @@
 package com.runicrealms.plugin.spellapi.skilltrees.listener;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SpellData;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellEditorGUI;
 import com.runicrealms.plugin.spellapi.skilltrees.gui.SpellGUI;
-import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
