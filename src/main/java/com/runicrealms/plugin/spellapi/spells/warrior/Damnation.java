@@ -9,26 +9,58 @@ import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
 import com.runicrealms.plugin.spellapi.spelltypes.WarmupSpell;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class Damnation extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell, WarmupSpell {
     private double damage;
     private double damagePerLevel;
+    private double damagePerSouls;
     private double duration;
     private double radius;
+    private double radiusPerSouls;
     private double warmup;
 
     public Damnation() {
         super("Damnation", CharacterClass.WARRIOR);
         this.setDescription("You prime yourself with unholy magic, slowing yourself for " + warmup + "s. " +
-                "Then, you consume all of your &7&osouls &7to get an aura around you " +
-                "that lasts " + duration + "s! The aura’s radius and magic damage are equal to " +
-                "Radius=(1 + souls x 1) and D=(5 + souls x 6). " +
+                "Then, you consume all of your &f&osouls &7to get an aura around you " +
+                "that lasts " + duration + "s! The aura’s radius is equal to " +
+                "(" + radius + " + &f" + radiusPerSouls
+                + "x&7 &f&osouls&7) and its magicʔ damage is (" + damage + " + &f" + damagePerSouls
+                + "x&7 &f&osouls&7)! " +
                 "Enemies within the aura are slowed and pulled " +
                 "towards you each second while the aura persists!");
     }
 
     @Override
+    public void loadRadiusData(Map<String, Object> spellData) {
+        Number radius = (Number) spellData.getOrDefault("radius", 0);
+        setRadius(radius.doubleValue());
+        Number radiusPerSouls = (Number) spellData.getOrDefault("radius-per-souls", 0);
+        setRadiusPerSouls(radiusPerSouls.doubleValue());
+    }
+
+    @Override
+    public void loadMagicData(Map<String, Object> spellData) {
+        Number magicDamage = (Number) spellData.getOrDefault("magic-damage", 0);
+        setMagicDamage(magicDamage.doubleValue());
+        Number magicDamagePerLevel = (Number) spellData.getOrDefault("magic-damage-per-level", 0);
+        setMagicDamagePerLevel(magicDamagePerLevel.doubleValue());
+        Number magicDamagePerSouls = (Number) spellData.getOrDefault("magic-damage-per-souls", 0);
+        setDamagePerSouls(magicDamagePerSouls.doubleValue());
+    }
+
+    @Override
     public void executeSpell(Player player, SpellItemType type) {
 
+    }
+
+    public void setDamagePerSouls(double damagePerSouls) {
+        this.damagePerSouls = damagePerSouls;
+    }
+
+    public void setRadiusPerSouls(double radiusPerSouls) {
+        this.radiusPerSouls = radiusPerSouls;
     }
 
     @Override

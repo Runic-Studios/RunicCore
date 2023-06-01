@@ -12,6 +12,7 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     private double damage;
     private double damagePerLevel;
     private double duration;
+    private double effectCooldown;
     private double requiredSouls;
     private double percent;
     private double radius;
@@ -19,18 +20,25 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     public Ruination() {
         super("Ruination", CharacterClass.WARRIOR);
         this.setIsPassive(true);
-        this.setDescription("After claiming " + requiredSouls + " souls, your next spell unleashes the spirits of your victims! " +
+        this.setDescription("After claiming " + requiredSouls + " &f&osouls&7, your next spell unleashes the spirits of your victims! " +
                 "For the next " + duration + "s, the souls stream out of your body, " +
                 "dealing (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage per second " +
                 "and lowering healing received by " +
-                (percent * 100) + "% in a " + radius + " block cone in front of you!");
+                (percent * 100) + "% in a " + radius + " block cone in front of you! " +
+                "Cannot occur more than once every " + effectCooldown + "s.");
+    }
+
+    public void setEffectCooldown(double effectCooldown) {
+        this.effectCooldown = effectCooldown;
     }
 
     @Override
     public void loadDurationData(Map<String, Object> spellData) {
         Number duration = (Number) spellData.getOrDefault("duration", 0);
         setDuration(duration.doubleValue());
+        Number effectCooldown = (Number) spellData.getOrDefault("effect-cooldown", 0);
+        setEffectCooldown(effectCooldown.doubleValue());
         Number percent = (Number) spellData.getOrDefault("percent", 0);
         setPercent(percent.doubleValue());
         Number requiredSouls = (Number) spellData.getOrDefault("required-souls", 0);

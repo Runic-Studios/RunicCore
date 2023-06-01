@@ -15,7 +15,7 @@ public class SoulReaper extends Spell implements DurationSpell {
         super("Soul Reaper", CharacterClass.WARRIOR);
         this.setIsPassive(true);
         this.setDescription("Landing your &aDevour &7or &aUmbral Grasp &7spell " +
-                "on enemies builds up &7&osouls&7. " +
+                "on enemies builds up &f&osouls&7. " +
                 "For each stack of souls you have, " +
                 "you take " + (percent * 100) + "% less damage! " +
                 "Your souls last " + duration + "s and have their duration reset when stacked. " +
