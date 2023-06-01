@@ -1,6 +1,6 @@
 package com.runicrealms.plugin.listeners;
 
-import com.runicrealms.plugin.events.RunicDeathEvent;
+import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.runicitems.RunicItems;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,14 +14,18 @@ public class WeaponSkinListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (RunicItems.getWeaponSkinAPI().weaponSkinActive(event.getPlayer(), event.getItemDrop().getItemStack().getType())) {
-            event.getItemDrop().setItemStack(RunicItems.getWeaponSkinAPI().disableSkin(event.getItemDrop().getItemStack()));
-        }
+        event.getItemDrop().setItemStack(RunicItems.getWeaponSkinAPI().disableSkin(event.getItemDrop().getItemStack()));
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onRunicDeath(RunicDeathEvent event) {
-        event.getVictim().getInventory().forEach(RunicItems.getWeaponSkinAPI()::disableSkin);
+    // Handled directly in death listener
+//    @EventHandler(priority = EventPriority.LOWEST)
+//    public void onRunicDeath(RunicDeathEvent event) {
+//        event.getVictim().getInventory().forEach(RunicItems.getWeaponSkinAPI()::disableSkin);
+//    }
+
+    @EventHandler
+    public void onCharacterLoaded(CharacterLoadedEvent event) {
+        event.getPlayer().getInventory().forEach((item) -> RunicItems.getWeaponSkinAPI().disableDisallowedSkin(event.getPlayer(), item));
     }
 
 }

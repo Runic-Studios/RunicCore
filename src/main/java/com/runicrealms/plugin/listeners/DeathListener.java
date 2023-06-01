@@ -7,6 +7,7 @@ import com.runicrealms.plugin.events.LeaveCombatEvent;
 import com.runicrealms.plugin.events.RunicDeathEvent;
 import com.runicrealms.plugin.player.death.Gravestone;
 import com.runicrealms.plugin.player.listener.ManaListener;
+import com.runicrealms.runicitems.RunicItems;
 import com.runicrealms.runicitems.RunicItemsAPI;
 import com.runicrealms.runicitems.item.RunicItem;
 import com.runicrealms.runicitems.item.stats.RunicItemTag;
@@ -57,7 +58,7 @@ public class DeathListener implements Listener {
             if (runicItem.getTags().contains(RunicItemTag.QUEST_ITEM)) continue;
             if (runicItem.getTags().contains(RunicItemTag.SOULBOUND)) continue;
             if (runicItem.getTags().contains(RunicItemTag.UNTRADEABLE)) continue;
-            itemsToDrop.add(itemStack);
+            itemsToDrop.add(RunicItems.getWeaponSkinAPI().disableSkin(itemStack));
             ItemUtils.takeItem(player, itemStack, itemStack.getAmount());
         }
 

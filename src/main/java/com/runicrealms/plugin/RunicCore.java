@@ -39,7 +39,6 @@ import com.runicrealms.plugin.commands.admin.SetCMD;
 import com.runicrealms.plugin.commands.admin.SpeedCMD;
 import com.runicrealms.plugin.commands.admin.TravelCMD;
 import com.runicrealms.plugin.commands.admin.VanishCMD;
-import com.runicrealms.plugin.commands.admin.WeaponSkinCMD;
 import com.runicrealms.plugin.commands.player.ExpCMD;
 import com.runicrealms.plugin.commands.player.HelpCMD;
 import com.runicrealms.plugin.commands.player.MapLink;
@@ -158,7 +157,6 @@ import com.runicrealms.plugin.utilities.FilterUtil;
 import com.runicrealms.plugin.utilities.NametagHandler;
 import com.runicrealms.plugin.utilities.PlaceholderAPI;
 import com.runicrealms.plugin.utilities.RegionHelper;
-import com.runicrealms.runicitems.api.WeaponSkinAPI;
 import com.runicrealms.runicrestart.event.PreShutdownEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -206,7 +204,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ConverterAPI converterAPI;
     private static RedisAPI redisAPI;
     private static AmbientSoundHandler ambientSoundHandler;
-    private static WeaponSkinAPI weaponSkinAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -329,10 +326,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return ambientSoundHandler;
     }
 
-    public static WeaponSkinAPI getWeaponSkinAPI() {
-        return weaponSkinAPI;
-    }
-
     /**
      * @return a TaskChain for thread context switching
      */
@@ -379,7 +372,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         converterAPI = null;
         redisAPI = null;
         ambientSoundHandler = null;
-        weaponSkinAPI = null;
     }
 
     @Override
@@ -392,6 +384,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         instance = this;
 
         // Set database stuff first
+        RunicCommon.registerConfigAPI(new ConfigManager());
+
         converterAPI = new ConverterHandler();
         redisAPI = new RedisManager();
         DatabaseManager databaseManager = new DatabaseManager();
@@ -428,7 +422,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         scoreboardAPI = new ScoreboardHandler();
         spellAPI = new SpellManager();
         tabAPI = new TabListManager(this);
-        RunicCommon.registerConfigAPI(new ConfigManager());
         lootTableAPI = new LootTableManager();
         regionAPI = new RegionHelper();
         mobTagger = new MobTagger();
@@ -522,7 +515,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new GameModeCMD());
         commandManager.registerCommand(new ArmorStandCMD());
         commandManager.registerCommand(new ExpCMD());
-        commandManager.registerCommand(new WeaponSkinCMD());
     }
 
     private void registerEvents() {
