@@ -15,14 +15,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class Frostbolt extends Spell implements MagicDamageSpell {
     private static final double SPEED_MULT = 2.5;
+    private final Map<UUID, Snowball> snowballMap = new HashMap<>();
     private double damage;
     private double damagePerLevel;
-    private Snowball snowball;
 
     public Frostbolt() {
         super("Frostbolt", CharacterClass.MAGE);
@@ -34,7 +38,8 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        snowball = player.launchProjectile(Snowball.class);
+        snowballMap.put(player.getUniqueId(), player.launchProjectile(Snowball.class));
+        Snowball snowball = snowballMap.get(player.getUniqueId());
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(SPEED_MULT);
         snowball.setVelocity(velocity);
         snowball.setShooter(player);
@@ -62,31 +67,24 @@ public class Frostbolt extends Spell implements MagicDamageSpell {
         this.damagePerLevel = magicDamagePerLevel;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
-    public void onSnowballDamage(EntityDamageByEntityEvent event) {
-
-        // only listen for our snowball
-        if (!(event.getDamager().equals(this.snowball))) return;
-
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onFireballDamage(ProjectileHitEvent event) {
+        if (snowballMap.isEmpty()) return;
+        if (event.getEntity().getShooter() == null) return;
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+        if (!snowballMap.containsKey(player.getUniqueId())) return;
+        Snowball snowball = snowballMap.get(player.getUniqueId());
+        snowball.remove();
+        snowballMap.remove(player.getUniqueId());
         event.setCancelled(true);
-
-        // grab our variables
-        Player player = (Player) snowball.getShooter();
-        if (player == null) return;
-
-        LivingEntity victim = (LivingEntity) event.getEntity();
+        if (!(event.getHitEntity() instanceof LivingEntity victim)) return;
         if (!isValidEnemy(player, victim)) return;
-
-        // cancel the event, apply spell mechanics
         DamageUtil.damageEntitySpell(damage, victim, player, this);
-
-        // slow
         addStatusEffect(victim, RunicStatusEffect.SLOW_III, 5, false);
-
-        // particles, sounds
         victim.getWorld().spawnParticle(Particle.BLOCK_DUST, victim.getEyeLocation(),
                 5, 0.5F, 0.5F, 0.5F, 0, Material.PACKED_ICE.createBlockData());
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 0.5f, 1);
     }
+
 }
 

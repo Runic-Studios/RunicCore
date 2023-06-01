@@ -20,14 +20,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell {
+    private final Map<UUID, Trident> tridentMap = new HashMap<>();
     private double damage;
     private double damagePerLevel;
     private double duration;
     private double tridentSpeed;
-    private Trident trident;
 
     public Harpoon() {
         super("Harpoon", CharacterClass.ROGUE);
@@ -39,7 +41,8 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        trident = player.launchProjectile(Trident.class);
+        tridentMap.put(player.getUniqueId(), player.launchProjectile(Trident.class));
+        Trident trident = tridentMap.get(player.getUniqueId());
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(tridentSpeed);
         trident.setDamage(0);
         trident.setVelocity(velocity);
@@ -103,13 +106,15 @@ public class Harpoon extends Spell implements DurationSpell, PhysicalDamageSpell
 
     @EventHandler
     public void onTridentDamage(ProjectileCollideEvent event) {
-        if (!event.getEntity().equals(this.trident)) return;
-        event.setCancelled(true);
-        event.getEntity().remove();
+        if (tridentMap.isEmpty()) return;
+        if (event.getEntity().getShooter() == null) return;
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+        if (!tridentMap.containsKey(player.getUniqueId())) return;
+        Trident trident = tridentMap.get(player.getUniqueId());
+        trident.remove();
+        tridentMap.remove(player.getUniqueId());
 
         // grab our variables
-        Player player = (Player) trident.getShooter();
-        if (player == null) return;
         LivingEntity victim = (LivingEntity) event.getCollidedWith();
         if (isValidAlly(player, victim)) {
             player.teleport(victim.getEyeLocation());
