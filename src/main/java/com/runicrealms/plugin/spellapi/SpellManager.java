@@ -95,12 +95,18 @@ import com.runicrealms.plugin.spellapi.spells.warrior.Adrenaline;
 import com.runicrealms.plugin.spellapi.spells.warrior.AxeToss;
 import com.runicrealms.plugin.spellapi.spells.warrior.BlessedBlade;
 import com.runicrealms.plugin.spellapi.spells.warrior.Consecrate;
+import com.runicrealms.plugin.spellapi.spells.warrior.Damnation;
+import com.runicrealms.plugin.spellapi.spells.warrior.Devour;
 import com.runicrealms.plugin.spellapi.spells.warrior.Judgment;
+import com.runicrealms.plugin.spellapi.spells.warrior.Ruination;
 import com.runicrealms.plugin.spellapi.spells.warrior.Rupture;
 import com.runicrealms.plugin.spellapi.spells.warrior.Salvation;
 import com.runicrealms.plugin.spellapi.spells.warrior.Slam;
 import com.runicrealms.plugin.spellapi.spells.warrior.Smite;
+import com.runicrealms.plugin.spellapi.spells.warrior.SoulReaper;
 import com.runicrealms.plugin.spellapi.spells.warrior.Taunt;
+import com.runicrealms.plugin.spellapi.spells.warrior.UmbralGrasp;
+import com.runicrealms.plugin.spellapi.spells.warrior.Unstoppable;
 import com.runicrealms.plugin.spellapi.spells.warrior.Whirlwind;
 import com.runicrealms.plugin.spellapi.spelltypes.ShieldPayload;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
@@ -353,13 +359,11 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Lunge());
         this.spellList.add(new Harpoon());
         this.spellList.add(new Warsong());
-        this.spellList.add(new Ironhide());
         this.spellList.add(new ThunderArrow());
         this.spellList.add(new Sear());
         this.spellList.add(new SacredSpring());
         this.spellList.add(new RadiantFire());
         this.spellList.add(new Agility());
-        this.spellList.add(new Resolve());
         this.spellList.add(new Taunt());
         this.spellList.add(new Frostbite());
         this.spellList.add(new Cripple());
@@ -374,9 +378,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Manashield());
         this.spellList.add(new Rupture());
         this.spellList.add(new Whirlwind());
-        this.spellList.add(new LastResort());
-        this.spellList.add(new Bolster());
-        this.spellList.add(new Rift());
         this.spellList.add(new DivineShield());
         this.spellList.add(new Encore());
         this.spellList.add(new Discord());
@@ -420,16 +421,16 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new Flay());
         this.spellList.add(new WardingGlyph());
         this.spellList.add(new Hereticize());
-        this.spellList.add(new Shockwave());
-        this.spellList.add(new SeismicForce());
-        this.spellList.add(new BoulderToss());
-        this.spellList.add(new Earthquake());
-        this.spellList.add(new WreckingBall());
         this.spellList.add(new Starlight());
         this.spellList.add(new AstralBlessing());
         this.spellList.add(new CosmicPrism());
         this.spellList.add(new Nightfall());
         this.spellList.add(new TwilightResurgence());
+        this.spellList.add(new Devour());
+        this.spellList.add(new SoulReaper());
+        this.spellList.add(new UmbralGrasp());
+        this.spellList.add(new Damnation());
+        this.spellList.add(new Ruination());
         /*
         Items
          */
