@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.player.listener;
 
+import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.player.StatsGUI;
-import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -2,6 +2,7 @@ package com.runicrealms.plugin.spellapi.skilltrees.gui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SkillTreePosition;
 import com.runicrealms.plugin.model.SpellField;
 import com.runicrealms.plugin.rdb.RunicDatabase;
@@ -12,7 +13,6 @@ import com.runicrealms.plugin.spellapi.skilltrees.util.ClericTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.MageTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.RogueTreeUtil;
 import com.runicrealms.plugin.spellapi.skilltrees.util.WarriorTreeUtil;
-import com.runicrealms.plugin.utilities.GUIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
