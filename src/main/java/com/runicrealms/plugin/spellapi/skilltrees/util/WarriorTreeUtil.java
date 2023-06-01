@@ -32,18 +32,18 @@ public class WarriorTreeUtil {
 
     public static List<Perk> dreadlordPerkList() {
         List<Perk> perks = new ArrayList<>();
-        perks.add(new PerkSpell(156, 1, 0, 1, "Shockwave"));
+        perks.add(new PerkSpell(156, 1, 0, 1, "Devour"));
         perks.add(new PerkBaseStat(157, 1, 0, 5, Stat.VITALITY));
-        perks.add(new PerkSpell(158, 1, 0, 1, "Seismic Force"));
-        perks.add(new PerkBaseStat(159, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkSpell(158, 1, 0, 1, "Soul Reaper"));
+        perks.add(new PerkBaseStat(159, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(160, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(161, 1, 0, 1, "Boulder Toss"));
-        perks.add(new PerkBaseStat(162, 1, 0, 3, Stat.STRENGTH));
+        perks.add(new PerkSpell(161, 1, 0, 1, "Umbral Grasp"));
+        perks.add(new PerkBaseStat(162, 1, 0, 3, Stat.INTELLIGENCE));
         perks.add(new PerkBaseStat(163, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkBaseStat(164, 1, 0, 5, Stat.STRENGTH));
-        perks.add(new PerkSpell(165, 1, 0, 1, "Earthquake"));
+        perks.add(new PerkBaseStat(164, 1, 0, 5, Stat.INTELLIGENCE));
+        perks.add(new PerkSpell(165, 1, 0, 1, "Damnation"));
         perks.add(new PerkBaseStat(166, 1, 0, 3, Stat.VITALITY));
-        perks.add(new PerkSpell(167, 1, 0, 1, "Wrecking Ball"));
+        perks.add(new PerkSpell(167, 1, 0, 1, "Ruination"));
         return perks;
     }
 
