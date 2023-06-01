@@ -39,13 +39,16 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
                 "(" + healAmt + " + &f" + healingPerLevel + "x&7 lvl) health!");
     }
 
-    private void executeHeal(Player player) {
+    private void executeHeal(Player player, boolean hasWarmup) {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.0f);
         Location location = player.getEyeLocation();
         spawnSphere(player, location);
         for (Entity entity : player.getWorld().getNearbyEntities(location, radius, radius, radius, target -> isValidAlly(player, target))) {
             Player ally = (Player) entity;
             healPlayer(player, ally, healAmt, this);
+            if (!hasWarmup) {
+                RunicCore.getStatusEffectAPI().cleanse(ally.getUniqueId());
+            }
         }
     }
 
@@ -59,9 +62,9 @@ public class RadiantNova extends Spell implements HealingSpell, RadiusSpell, War
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 2.0f);
             Cone.coneEffect(player, Particle.FIREWORKS_SPARK, 1, 0, 20, Color.WHITE);
             addStatusEffect(player, RunicStatusEffect.SLOW_III, warmup, false);
-            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> executeHeal(player), (long) warmup * 20L);
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> executeHeal(player, true), (long) warmup * 20L);
         } else {
-            executeHeal(player); // No warmup
+            executeHeal(player, false); // No warmup
         }
     }
 

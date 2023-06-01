@@ -1,9 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.cleric;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
-import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
@@ -35,7 +35,7 @@ public class RadiantFire extends Spell implements AttributeSpell, DurationSpell 
                 "a stack (and refresh current stacks) of Radiant Fire! For each stack, you gain " + (multiplier * 100) +
                 "% of your total &eWisdom✸ &7as increased healing! " +
                 "While at max stacks, you glow bright with divine power " +
-                "and your &aRadiant Nova &7has no warmup!" +
+                "and your &aRadiant Nova &7has no warmup and cleanses!" +
                 "\nMax stacks: " + (int) maxStacks + "\nStacks expiry: " + stackDuration + "s");
     }
 
