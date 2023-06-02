@@ -48,6 +48,9 @@ import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
+import com.runicrealms.plugin.donator.AddBoostCommand;
+import com.runicrealms.plugin.donator.DonorCommand;
+import com.runicrealms.plugin.donator.DonorUIListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
@@ -515,6 +518,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new GameModeCMD());
         commandManager.registerCommand(new ArmorStandCMD());
         commandManager.registerCommand(new ExpCMD());
+        commandManager.registerCommand(new AddBoostCommand());
+        commandManager.registerCommand(new DonorCommand());
     }
 
     private void registerEvents() {
@@ -577,7 +582,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryClickListener(), this);
         pm.registerEvents(new RegionEventListener(), this);
         pm.registerEvents(new DeathListener(), this);
-        pm.registerEvents(new NoJockeysListener(), this);
+        pm.registerEvents(new NoJockeysListener(), git stathis);
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new CampfireListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
@@ -592,6 +597,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SettingsUIListener(), this);
         pm.registerEvents(new SheepShearListener(), this);
         pm.registerEvents(new WeaponSkinListener(), this);
+        pm.registerEvents(new DonorUIListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

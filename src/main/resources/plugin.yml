@@ -21,6 +21,7 @@ depend:
   - ProtocolLib
   - Tabbed
   - ViaVersion
+  - LuckPerms
 commands:
   3d:
     usage: /<commands>
