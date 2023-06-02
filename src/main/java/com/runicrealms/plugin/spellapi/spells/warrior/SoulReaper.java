@@ -3,6 +3,8 @@ package com.runicrealms.plugin.spellapi.spells.warrior;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
@@ -26,8 +28,6 @@ public class SoulReaper extends Spell implements DurationSpell {
     private double maxStacks;
     private double percent;
 
-    // todo: damage reduction on mob, magic, physical
-
     public SoulReaper() {
         super("Soul Reaper", CharacterClass.WARRIOR);
         this.setIsPassive(true);
@@ -38,6 +38,31 @@ public class SoulReaper extends Spell implements DurationSpell {
                 "Your souls last " + duration + "s and have their duration reset when stacked. " +
                 "Max " + maxStacks + " souls.");
         startParticleTask();
+    }
+
+    @EventHandler
+    public void onMobDamage(MobDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getVictim().getUniqueId(), this.getName())) return;
+        if (reaperTaskMap.isEmpty()) return;
+        if (!(event.getVictim() instanceof Player victim)) return;
+        event.setAmount(reducedDamage(victim, event.getAmount()));
+    }
+
+    @EventHandler
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getVictim().getUniqueId(), this.getName())) return;
+        if (reaperTaskMap.isEmpty()) return;
+        if (!(event.getVictim() instanceof Player victim)) return;
+        event.setAmount(reducedDamage(victim, event.getAmount()));
+    }
+
+    private int reducedDamage(Player victim, int amount) {
+        if (!reaperTaskMap.containsKey(victim)) return amount;
+        int stacks = reaperTaskMap.get(victim).getStacks().get();
+        double reducedAmount = amount * (stacks * percent);
+        return (int) (amount - reducedAmount);
     }
 
     private void startParticleTask() {
@@ -55,19 +80,25 @@ public class SoulReaper extends Spell implements DurationSpell {
     @EventHandler
     public void onCast(MagicDamageEvent event) {
         if (event.isCancelled()) return;
-        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
-        if (event.getSpell() == null) return;
-        if (!(event.getSpell() instanceof Devour || event.getSpell() instanceof UmbralGrasp)) return;
-        Player player = event.getPlayer();
-        if (!reaperTaskMap.containsKey(player)) {
-            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> cleanupTask(player), (long) duration * 20L);
-            reaperTaskMap.put(player, new StackTask(player, this, new AtomicInteger(1), bukkitTask));
-        } else {
-            if (reaperTaskMap.get(player).getStacks().get() <= maxStacks) {
-                reaperTaskMap.get(player).getStacks().getAndIncrement();
+        // Damage reduction mechanic
+        if (event.getVictim() instanceof Player victim && reaperTaskMap.containsKey(victim)) {
+            event.setAmount(reducedDamage(victim, event.getAmount()));
+        }
+        // Soul stacking mechanic
+        if (event.getSpell() instanceof Devour || event.getSpell() instanceof UmbralGrasp) {
+            if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+            if (event.getSpell() == null) return;
+            Player player = event.getPlayer();
+            if (!reaperTaskMap.containsKey(player)) {
+                BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                        () -> cleanupTask(player), (long) duration * 20L);
+                reaperTaskMap.put(player, new StackTask(player, this, new AtomicInteger(1), bukkitTask));
+            } else {
+                if (reaperTaskMap.get(player).getStacks().get() <= maxStacks) {
+                    reaperTaskMap.get(player).getStacks().getAndIncrement();
+                }
+                reaperTaskMap.get(player).reset((long) duration, () -> cleanupTask(player));
             }
-            reaperTaskMap.get(player).reset((long) duration, () -> cleanupTask(player));
         }
     }
 
