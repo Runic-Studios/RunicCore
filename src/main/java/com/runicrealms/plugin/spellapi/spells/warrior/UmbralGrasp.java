@@ -7,7 +7,6 @@ import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RunicStatusEffect;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
-import com.runicrealms.plugin.spellapi.spellutil.particles.EntityTrail;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -50,7 +49,6 @@ public class UmbralGrasp extends Spell implements DurationSpell, MagicDamageSpel
     public void executeSpell(Player player, SpellItemType type) {
         witherSkullMap.put(player.getUniqueId(), player.launchProjectile(WitherSkull.class));
         WitherSkull witherSkull = witherSkullMap.get(player.getUniqueId());
-        EntityTrail.entityTrail(witherSkull, Particle.SLIME);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(speedMultiplier);
         witherSkull.setVelocity(velocity);
         witherSkull.setShooter(player);
