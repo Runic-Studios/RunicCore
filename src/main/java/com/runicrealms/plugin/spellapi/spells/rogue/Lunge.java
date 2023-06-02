@@ -130,7 +130,7 @@ public class Lunge extends Spell implements DurationSpell {
         if (!LUNGE_TASKS.containsKey(event.getPlayer().getUniqueId())) return;
         event.setAmount((int) (event.getAmount() * percent));
         event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 0.5f, 2.0f);
-        SlashEffect.slashHorizontal(event.getPlayer());
+        SlashEffect.slashHorizontal(event.getPlayer().getLocation());
         LUNGE_TASKS.remove(event.getPlayer().getUniqueId());
     }
 

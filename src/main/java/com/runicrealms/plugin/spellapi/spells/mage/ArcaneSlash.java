@@ -53,10 +53,10 @@ public class ArcaneSlash extends Spell implements DistanceSpell, MagicDamageSpel
             Location location = player.getTargetBlock(null, (int) distance).getLocation();
             location.setDirection(player.getLocation().getDirection());
             location.setY(player.getLocation().add(0, 1, 0).getY());
-            SlashEffect.slashHorizontal(player, Particle.SPELL_WITCH);
+            SlashEffect.slashHorizontal(player.getLocation(), Particle.SPELL_WITCH);
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            SlashEffect.slashHorizontal(player, Particle.SPELL_WITCH);
+            SlashEffect.slashHorizontal(player.getLocation(), Particle.SPELL_WITCH);
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             Collection<Entity> targets = player.getWorld().getNearbyEntities
                     (livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target));

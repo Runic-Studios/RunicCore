@@ -11,10 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SlashEffect {
 
-    public static void slashHorizontal(Player player) {
+    public static void slashHorizontal(Location location) {
         boolean topOrBottom = ThreadLocalRandom.current().nextBoolean();
         boolean leftOrRight = ThreadLocalRandom.current().nextBoolean();
-        slashHorizontal(player, topOrBottom, leftOrRight, Particle.CRIT, .05f);
+        slashHorizontal(location, topOrBottom, leftOrRight, Particle.CRIT, .05f);
 
     }
 
@@ -27,14 +27,14 @@ public class SlashEffect {
     /**
      * Creates a horizontal-style slash
      *
-     * @param player
+     * @param location
      * @param particle
      * @param color    optional param for redstone particle
      */
-    public static void slashHorizontal(Player player, Particle particle, Color... color) {
+    public static void slashHorizontal(Location location, Particle particle, Color... color) {
         boolean topOrBottom = ThreadLocalRandom.current().nextBoolean();
         boolean leftOrRight = ThreadLocalRandom.current().nextBoolean();
-        slashHorizontal(player, topOrBottom, leftOrRight, particle, .05f, color);
+        slashHorizontal(location, topOrBottom, leftOrRight, particle, .05f, color);
     }
 
     /**
@@ -190,16 +190,16 @@ public class SlashEffect {
     /**
      * draws a slash particle in front of the player
      *
-     * @param player      player to draw the particles for
+     * @param location    to draw the particles for
      * @param topOrBottom if true slash top to bottom
      * @param leftOrRight if true slashes from left to right
      * @param particle    the particle to display
      * @param density     space between particles
      * @param color       optional param for redstone particle
      */
-    public static void slashHorizontal(Player player, boolean topOrBottom, boolean leftOrRight,
+    public static void slashHorizontal(Location location, boolean topOrBottom, boolean leftOrRight,
                                        Particle particle, float density, Color... color) {
-        Location playerLocationClone = player.getLocation().clone();
+        Location playerLocationClone = location.clone();
         if (playerLocationClone.getPitch() > 60 || playerLocationClone.getPitch() < -60)
             playerLocationClone.setPitch(0);
         playerLocationClone.add(0, 1, 0);
@@ -218,10 +218,10 @@ public class SlashEffect {
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
                             if (particle == Particle.REDSTONE && color.length > 0) {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
                                         new Particle.DustOptions(color[0], 1));
                             } else {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
                             }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
@@ -234,10 +234,10 @@ public class SlashEffect {
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
                             if (particle == Particle.REDSTONE && color.length > 0) {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
                                         new Particle.DustOptions(color[0], 1));
                             } else {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
                             }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
@@ -255,10 +255,10 @@ public class SlashEffect {
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
                             if (particle == Particle.REDSTONE && color.length > 0) {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
                                         new Particle.DustOptions(color[0], 1));
                             } else {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
                             }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);
@@ -271,10 +271,10 @@ public class SlashEffect {
                         public void run() {
                             Location location = playerLocationClone.clone().add(playerLocationClone.getDirection().clone().multiply(2).rotateAroundY(finalI)).clone().add(0, finalI / 2 * finalDirection, 0);
                             if (particle == Particle.REDSTONE && color.length > 0) {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0,
                                         new Particle.DustOptions(color[0], 1));
                             } else {
-                                player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
+                                location.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
                             }
                         }
                     }.runTaskLater(RunicCore.getInstance(), timer);

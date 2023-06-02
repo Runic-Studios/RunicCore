@@ -9,6 +9,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.HealingSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, MagicDamageSpell, RadiusSpell {
-    private final Map<UUID, BladeTask> blessedBladeMap = new HashMap<>();
+    private final Map<UUID, StackTask> blessedBladeMap = new HashMap<>();
     private double duration;
     private double heal;
     private double healingPerLevel;
@@ -117,7 +118,7 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
         if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
         if (!this.blessedBladeMap.containsKey(event.getPlayer().getUniqueId())) return;
         Player player = event.getPlayer();
-        this.blessedBladeMap.get(player.getUniqueId()).decrement();
+        this.blessedBladeMap.get(player.getUniqueId()).getStacks().getAndDecrement();
         // Additional damage
         DamageUtil.damageEntitySpell(magicDamage, event.getVictim(), player, this);
         // Heal caster and allies
@@ -131,8 +132,8 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
                 break;
         }
         // Remove player if needed
-        if (this.blessedBladeMap.get(player.getUniqueId()).getCharges().get() <= 0) {
-            this.blessedBladeMap.remove(player.getUniqueId());
+        if (this.blessedBladeMap.get(player.getUniqueId()).getStacks().get() <= 0) {
+            cleanupTask(player);
         }
     }
 
@@ -143,10 +144,15 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
         if (!blessedBladeMap.containsKey(event.getCaster().getUniqueId())) {
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                     () -> cleanupTask(event.getCaster()), (long) duration * 20L);
-            blessedBladeMap.put(event.getCaster().getUniqueId(), new BladeTask(event.getCaster(), new AtomicInteger(maxCharges), bukkitTask));
+            blessedBladeMap.put(event.getCaster().getUniqueId(), new StackTask(event.getCaster(), this, new AtomicInteger(maxCharges), bukkitTask));
         } else {
-            blessedBladeMap.get(event.getCaster().getUniqueId()).reset();
+            blessedBladeMap.get(event.getCaster().getUniqueId()).reset((long) duration, () -> reset(event.getCaster()));
         }
+    }
+
+    public void reset(Player player) {
+        blessedBladeMap.get(player.getUniqueId()).reset((long) duration, () -> cleanupTask(player));
+        blessedBladeMap.get(player.getUniqueId()).getStacks().getAndSet(maxCharges);
     }
 
     /**
@@ -154,7 +160,6 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
      */
     private void cleanupTask(Player player) {
         blessedBladeMap.remove(player.getUniqueId());
-        player.setGlowing(false);
         player.sendMessage(ChatColor.GRAY + "Blessed Blades has expired.");
     }
 
@@ -170,41 +175,6 @@ public class BlessedBlade extends Spell implements DurationSpell, HealingSpell, 
     @Override
     public void setDuration(double duration) {
         this.duration = duration;
-    }
-
-    class BladeTask {
-        private final Player caster;
-        private final AtomicInteger charges;
-        private BukkitTask bukkitTask;
-
-        public BladeTask(Player caster, AtomicInteger charges, BukkitTask bukkitTask) {
-            this.caster = caster;
-            this.charges = charges;
-            this.bukkitTask = bukkitTask;
-        }
-
-        public void decrement() {
-            this.charges.getAndDecrement();
-        }
-
-        public BukkitTask getBukkitTask() {
-            return bukkitTask;
-        }
-
-        public void setBukkitTask(BukkitTask bukkitTask) {
-            this.bukkitTask = bukkitTask;
-        }
-
-        public AtomicInteger getCharges() {
-            return charges;
-        }
-
-        public void reset() {
-            this.bukkitTask.cancel();
-            this.bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> cleanupTask(caster), (long) duration * 20L);
-            this.charges.getAndSet(maxCharges);
-        }
     }
 
 }

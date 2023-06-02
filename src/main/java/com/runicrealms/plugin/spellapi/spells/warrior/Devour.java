@@ -63,10 +63,12 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
             Location location = player.getTargetBlock(null, (int) radius).getLocation();
             location.setDirection(player.getLocation().getDirection());
             location.setY(player.getLocation().add(0, 1, 0).getY());
-            SlashEffect.slashHorizontal(player, true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
+            SlashEffect.slashHorizontal(player.getLocation(), true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
+            SlashEffect.slashHorizontal(player.getLocation().add(0, 0.5, 0), true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
         } else if (rayTraceResult.getHitEntity() != null) {
             LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
-            SlashEffect.slashHorizontal(player, true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
+            SlashEffect.slashHorizontal(player.getLocation(), true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
+            SlashEffect.slashHorizontal(player.getLocation().add(0, 0.5, 0), true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
             livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
             for (Entity entity : player.getWorld().getNearbyEntities(livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target))) {
                 debuffedEntities.add(entity.getUniqueId());

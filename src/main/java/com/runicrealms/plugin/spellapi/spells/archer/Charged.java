@@ -8,6 +8,7 @@ import com.runicrealms.plugin.spellapi.spells.Potion;
 import com.runicrealms.plugin.spellapi.spelltypes.AttributeSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
 import com.runicrealms.runicitems.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Charged extends Spell implements AttributeSpell, DurationSpell {
     private static final int MAX_STACKS = 5;
-    private final Map<UUID, ChargedTask> chargedMap = new HashMap<>();
+    private final Map<UUID, StackTask> chargedMap = new HashMap<>();
     private int duration;
     private double multiplier;
     private double baseValue;
@@ -52,7 +53,7 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
         if (!chargedMap.containsKey(event.getCaster().getUniqueId())) {
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
                     () -> cleanupTask(event.getCaster()), duration * 20L);
-            chargedMap.put(event.getCaster().getUniqueId(), new ChargedTask(new AtomicInteger(1), bukkitTask));
+            chargedMap.put(event.getCaster().getUniqueId(), new StackTask(event.getCaster(), this, new AtomicInteger(1), bukkitTask));
         } else {
             AtomicInteger stacks = chargedMap.get(event.getCaster().getUniqueId()).getStacks();
 
@@ -67,7 +68,7 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
             event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 0.5f, 0.5f);
             event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.5f, 0.5f);
             event.getCaster().playSound(event.getCaster().getLocation(), Sound.BLOCK_FURNACE_FIRE_CRACKLE, 0.5f, 1);
-            chargedMap.get(event.getCaster().getUniqueId()).getAndIncrement();
+            chargedMap.get(event.getCaster().getUniqueId()).getStacks().getAndIncrement();
             stacks = chargedMap.get(event.getCaster().getUniqueId()).getStacks();
             if (stacks.get() >= MAX_STACKS) {
                 event.getCaster().setGlowing(true);
@@ -145,34 +146,5 @@ public class Charged extends Spell implements AttributeSpell, DurationSpell {
         attemptToStackCharged(event);
     }
 
-    /**
-     * Used to keep track of the Charged stack refresh task.
-     * Uses AtomicInteger to be thread-safe
-     */
-    static class ChargedTask {
-        private final AtomicInteger stacks;
-        private BukkitTask bukkitTask;
-
-        public ChargedTask(AtomicInteger stacks, BukkitTask bukkitTask) {
-            this.stacks = stacks;
-            this.bukkitTask = bukkitTask;
-        }
-
-        public void getAndIncrement() {
-            this.stacks.getAndIncrement();
-        }
-
-        public BukkitTask getBukkitTask() {
-            return bukkitTask;
-        }
-
-        public void setBukkitTask(BukkitTask bukkitTask) {
-            this.bukkitTask = bukkitTask;
-        }
-
-        public AtomicInteger getStacks() {
-            return stacks;
-        }
-    }
 }
 

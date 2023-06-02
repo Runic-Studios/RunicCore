@@ -48,7 +48,6 @@ import com.runicrealms.plugin.spellapi.spells.cleric.RadiantFire;
 import com.runicrealms.plugin.spellapi.spells.cleric.RadiantNova;
 import com.runicrealms.plugin.spellapi.spells.cleric.RayOfLight;
 import com.runicrealms.plugin.spellapi.spells.cleric.Rejuvenate;
-import com.runicrealms.plugin.spellapi.spells.cleric.RighteousBlade;
 import com.runicrealms.plugin.spellapi.spells.cleric.SacredSpring;
 import com.runicrealms.plugin.spellapi.spells.cleric.Sear;
 import com.runicrealms.plugin.spellapi.spells.cleric.Starlight;
@@ -384,7 +383,6 @@ public class SpellManager implements Listener, SpellAPI {
         this.spellList.add(new RayOfLight());
         this.spellList.add(new Lightwell());
         this.spellList.add(new Purify());
-        this.spellList.add(new RighteousBlade());
         this.spellList.add(new Consecration());
         this.spellList.add(new Inferno());
         this.spellList.add(new Remedy());

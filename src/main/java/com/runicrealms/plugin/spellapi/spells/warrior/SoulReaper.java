@@ -1,12 +1,26 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
+import com.runicrealms.plugin.spellapi.spellutil.particles.RotatingParticleEffect;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SoulReaper extends Spell implements DurationSpell {
+    private final Map<UUID, StackTask> reaperTaskMap = new HashMap<>();
     private double duration;
     private double maxStacks;
     private double percent;
@@ -22,6 +36,36 @@ public class SoulReaper extends Spell implements DurationSpell {
                 "Max " + maxStacks + " souls.");
     }
 
+    // todo: damage reduction on mob, magic, physical
+
+    @EventHandler
+    public void onCast(MagicDamageEvent event) {
+        if (event.isCancelled()) return;
+        if (!hasPassive(event.getPlayer().getUniqueId(), this.getName())) return;
+        if (event.getSpell() == null) return;
+        if (!(event.getSpell() instanceof Devour || event.getSpell() instanceof UmbralGrasp)) return;
+        Player player = event.getPlayer();
+        if (!reaperTaskMap.containsKey(player.getUniqueId())) {
+            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+                    () -> cleanupTask(player), (long) duration * 20L);
+            reaperTaskMap.put(player.getUniqueId(), new StackTask(player, this, new AtomicInteger(1), bukkitTask));
+        } else {
+            if (reaperTaskMap.get(player.getUniqueId()).getStacks().get() <= maxStacks) {
+                reaperTaskMap.get(player.getUniqueId()).getStacks().getAndIncrement();
+            }
+            reaperTaskMap.get(player.getUniqueId()).reset((long) duration, () -> cleanupTask(player));
+        }
+        // todo: make this a single task for the whole spell
+        for (int i = 0; i < reaperTaskMap.get(player.getUniqueId()).getStacks().get(); i++) {
+            new RotatingParticleEffect(player, Particle.FLAME, 1.0, 10, 20).start();
+        }
+        Bukkit.broadcastMessage(reaperTaskMap.get(player.getUniqueId()).getStacks().get() + " is stacks");
+    }
+
+    private void cleanupTask(Player player) {
+        reaperTaskMap.remove(player.getUniqueId());
+        player.sendMessage(ChatColor.GRAY + "Soul Reaper has expired.");
+    }
 
     @Override
     public double getDuration() {
