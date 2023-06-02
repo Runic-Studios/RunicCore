@@ -1,16 +1,37 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
+import com.runicrealms.plugin.events.MagicDamageEvent;
+import com.runicrealms.plugin.events.MobDamageEvent;
+import com.runicrealms.plugin.events.PhysicalDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.spellapi.spelltypes.SpellItemType;
+import com.runicrealms.plugin.spellapi.spellutil.particles.SlashEffect;
+import com.runicrealms.plugin.utilities.DamageUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.util.RayTraceResult;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class Devour extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    public static final double BEAM_WIDTH = 2;
+    private final Set<UUID> debuffedEntities = new HashSet<>();
     private double damage;
     private double damagePerLevel;
     private double duration;
@@ -28,7 +49,59 @@ public class Devour extends Spell implements DurationSpell, MagicDamageSpell, Ra
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.25f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_HURT, 0.5f, 1.0f);
+        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities
+                (
+                        player.getLocation(),
+                        player.getLocation().getDirection(),
+                        radius,
+                        BEAM_WIDTH,
+                        entity -> isValidEnemy(player, entity)
+                );
+        if (rayTraceResult == null) {
+            Location location = player.getTargetBlock(null, (int) radius).getLocation();
+            location.setDirection(player.getLocation().getDirection());
+            location.setY(player.getLocation().add(0, 1, 0).getY());
+            SlashEffect.slashHorizontal(player, true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
+        } else if (rayTraceResult.getHitEntity() != null) {
+            LivingEntity livingEntity = (LivingEntity) rayTraceResult.getHitEntity();
+            SlashEffect.slashHorizontal(player, true, true, Particle.REDSTONE, 0.04f, Color.fromRGB(185, 251, 185));
+            livingEntity.getWorld().playSound(livingEntity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 2.0f);
+            for (Entity entity : player.getWorld().getNearbyEntities(livingEntity.getLocation(), BEAM_WIDTH, BEAM_WIDTH, BEAM_WIDTH, target -> isValidEnemy(player, target))) {
+                debuffedEntities.add(entity.getUniqueId());
+                Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
+                        () -> debuffedEntities.remove(entity.getUniqueId()), (long) duration * 20L);
+                DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, this);
+            }
+        }
+    }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMobDamage(MobDamageEvent event) {
+        if (debuffedEntities.isEmpty()) return;
+        if (event.isCancelled()) return;
+        if (!debuffedEntities.contains(event.getEntity().getUniqueId())) return;
+        double reducedAmount = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reducedAmount));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMagicDamage(MagicDamageEvent event) {
+        if (debuffedEntities.isEmpty()) return;
+        if (event.isCancelled()) return;
+        if (!debuffedEntities.contains(event.getVictim().getUniqueId())) return;
+        double reducedAmount = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reducedAmount));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        if (debuffedEntities.isEmpty()) return;
+        if (event.isCancelled()) return;
+        if (!debuffedEntities.contains(event.getVictim().getUniqueId())) return;
+        double reducedAmount = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reducedAmount));
     }
 
     @Override

@@ -29,17 +29,21 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell, WarmupSpell {
     private static final int AMOUNT = 4;
     private static final int HEIGHT = 8;
     private static final int MAX_DIST = 12;
     private static final double FIREBALL_SPEED = 1.25D;
     private static final double RAY_SIZE = 1.0D;
+    private final Set<UUID> meteorCasterSet = new HashSet<>();
     private double damage;
     private double radius;
     private double damagePerLevel;
     private double warmup;
-    private LargeFireball meteor;
 
     public MeteorShower() {
         super("Meteor Shower", CharacterClass.MAGE);
@@ -131,13 +135,14 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onFireballDamage(ProjectileHitEvent event) {
-        if (!event.getEntity().equals(meteor)) return;
-        Location location = meteor.getLocation();
-        meteor.remove();
+    public void onMeteorDamage(ProjectileHitEvent event) {
+        if (meteorCasterSet.isEmpty()) return;
+        if (event.getEntity().getShooter() == null) return;
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+        if (!meteorCasterSet.contains(player.getUniqueId())) return;
+        Location location = event.getEntity().getLocation();
+        event.getEntity().remove();
         event.setCancelled(true);
-        Player player = (Player) meteor.getShooter();
-        if (player == null) return;
         explode(player, location);
     }
 
@@ -146,6 +151,7 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
      * @param location to spawn the meteor
      */
     private void summonMeteorShower(Player player, Location location) {
+        meteorCasterSet.add(player.getUniqueId());
         final Location[] meteorLocation = {location.clone().add(0, HEIGHT, 0)};
         new BukkitRunnable() {
             int count = 0;
@@ -154,10 +160,11 @@ public class MeteorShower extends Spell implements MagicDamageSpell, RadiusSpell
             public void run() {
                 if (count >= AMOUNT) {
                     this.cancel();
+                    meteorCasterSet.remove(player.getUniqueId());
                 } else {
                     count += 1;
                     final Vector velocity = new Vector(0, -1, 0).multiply(FIREBALL_SPEED);
-                    meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
+                    LargeFireball meteor = (LargeFireball) player.getWorld().spawnEntity(meteorLocation[0].setDirection(velocity), EntityType.FIREBALL);
                     EntityTrail.entityTrail(meteor, Particle.FLAME);
                     meteor.setInvulnerable(true);
                     meteor.setIsIncendiary(false);

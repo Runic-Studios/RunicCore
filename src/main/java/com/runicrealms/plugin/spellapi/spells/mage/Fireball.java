@@ -15,11 +15,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class Fireball extends Spell implements MagicDamageSpell {
     private static final double FIREBALL_SPEED = 2;
+    private final Map<UUID, SmallFireball> fireballMap = new HashMap<>();
     private double magicDamage;
     private double magicDamagePerLevel;
-    private SmallFireball fireball;
 
     public Fireball() {
         super("Fireball", CharacterClass.MAGE);
@@ -33,7 +37,8 @@ public class Fireball extends Spell implements MagicDamageSpell {
 
     @Override
     public void executeSpell(Player player, SpellItemType type) {
-        fireball = player.launchProjectile(SmallFireball.class);
+        fireballMap.put(player.getUniqueId(), player.launchProjectile(SmallFireball.class));
+        SmallFireball fireball = fireballMap.get(player.getUniqueId());
         fireball.setIsIncendiary(false);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(FIREBALL_SPEED);
         fireball.setVelocity(velocity);
@@ -63,16 +68,20 @@ public class Fireball extends Spell implements MagicDamageSpell {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onFireballDamage(ProjectileHitEvent event) {
-        if (!event.getEntity().equals(fireball)) return;
+        if (fireballMap.isEmpty()) return;
+        if (event.getEntity().getShooter() == null) return;
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+        if (!fireballMap.containsKey(player.getUniqueId())) return;
+        SmallFireball fireball = fireballMap.get(player.getUniqueId());
         fireball.remove();
+        fireballMap.remove(player.getUniqueId());
         event.setCancelled(true);
-        Player player = (Player) fireball.getShooter();
-        if (player == null) return;
         if (!(event.getHitEntity() instanceof LivingEntity victim)) return;
         if (!isValidEnemy(player, victim)) return;
         DamageUtil.damageEntitySpell(this.magicDamage, victim, player, this);
         victim.getWorld().spawnParticle(Particle.FLAME, victim.getEyeLocation(), 3, 0.5F, 0.5F, 0.5F, 0);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1);
     }
+
 }
 
