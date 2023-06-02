@@ -50,7 +50,7 @@ public class UmbralGrasp extends Spell implements DurationSpell, MagicDamageSpel
     public void executeSpell(Player player, SpellItemType type) {
         witherSkullMap.put(player.getUniqueId(), player.launchProjectile(WitherSkull.class));
         WitherSkull witherSkull = witherSkullMap.get(player.getUniqueId());
-        EntityTrail.entityTrail(witherSkull, Particle.SLIME); // Color.fromRGB(185, 251, 185)
+        EntityTrail.entityTrail(witherSkull, Particle.SLIME);
         final Vector velocity = player.getLocation().getDirection().normalize().multiply(speedMultiplier);
         witherSkull.setVelocity(velocity);
         witherSkull.setShooter(player);
