@@ -129,10 +129,11 @@ import com.runicrealms.plugin.player.listener.PlayerLevelListener;
 import com.runicrealms.plugin.player.listener.PlayerMenuListener;
 import com.runicrealms.plugin.player.listener.PlayerQuitListener;
 import com.runicrealms.plugin.player.listener.PlayerRegenListener;
-import com.runicrealms.plugin.player.listener.StatsGUIListener;
 import com.runicrealms.plugin.player.settings.SettingsUIListener;
 import com.runicrealms.plugin.player.stat.StatListener;
 import com.runicrealms.plugin.player.stat.StatManager;
+import com.runicrealms.plugin.player.ui.ProfileUIListener;
+import com.runicrealms.plugin.player.ui.StatsGUIListener;
 import com.runicrealms.plugin.playerqueue.PlayerQueueManager;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.rdb.RunicDatabaseAPI;
@@ -613,6 +614,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new DonorUIListener(), this);
         pm.registerEvents(new BoostsUIListener(), this);
         pm.registerEvents(new BoostConfirmUIListener(), this);
+        pm.registerEvents(new ProfileUIListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

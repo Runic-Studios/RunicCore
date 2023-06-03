@@ -5,7 +5,7 @@ import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.model.SkillTreeData;
-import com.runicrealms.plugin.player.StatsGUI;
+import com.runicrealms.plugin.player.ui.StatsGUI;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import com.runicrealms.plugin.spellapi.skilltrees.Perk;
 import com.runicrealms.plugin.spellapi.skilltrees.PerkBaseStat;

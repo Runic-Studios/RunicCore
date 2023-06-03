@@ -33,12 +33,14 @@ public class DonorUIListener implements Listener {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         event.setCancelled(true);
 
-        if (event.getSlot() == 19) {
+        if (event.getSlot() == 0) {
+            player.closeInventory();
+        } else if (event.getSlot() == 20) {
             player.closeInventory();
             Bukkit.dispatchCommand(player, "weaponry");
         } else if (event.getSlot() == 22) {
             player.openInventory(new BoostsUI(player).getInventory());
-        } else if (event.getSlot() == 25) {
+        } else if (event.getSlot() == 24) {
             // TODO open additional perks menu
         }
     }

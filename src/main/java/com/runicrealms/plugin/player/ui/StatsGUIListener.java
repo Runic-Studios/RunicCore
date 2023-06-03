@@ -1,7 +1,6 @@
-package com.runicrealms.plugin.player.listener;
+package com.runicrealms.plugin.player.ui;
 
 import com.runicrealms.plugin.common.util.GUIUtil;
-import com.runicrealms.plugin.player.StatsGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,35 +15,35 @@ import org.bukkit.inventory.ItemStack;
 public class StatsGUIListener implements Listener {
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() == null) return;
-        if (!(e.getView().getTopInventory().getHolder() instanceof StatsGUI)) return;
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() == null) return;
+        if (!(event.getView().getTopInventory().getHolder() instanceof StatsGUI)) return;
         // prevent clicking items in player inventory
-        if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
-            e.setCancelled(true);
+        if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            event.setCancelled(true);
             return;
         }
 
-        StatsGUI statsGUI = (StatsGUI) e.getClickedInventory().getHolder();
+        StatsGUI statsGUI = (StatsGUI) event.getClickedInventory().getHolder();
         if (statsGUI == null) {
             Bukkit.getLogger().info(ChatColor.DARK_RED + "A stat menu failed to load!");
             return;
         }
 
         // insurance
-        if (!e.getWhoClicked().equals(statsGUI.getPlayer())) {
-            e.setCancelled(true);
-            e.getWhoClicked().closeInventory();
+        if (!event.getWhoClicked().equals(statsGUI.getPlayer())) {
+            event.setCancelled(true);
+            event.getWhoClicked().closeInventory();
             return;
         }
-        Player player = (Player) e.getWhoClicked();
-        if (e.getCurrentItem() == null) return;
-        if (statsGUI.getInventory().getItem(e.getRawSlot()) == null) return;
-        ItemStack item = e.getCurrentItem();
+        Player player = (Player) event.getWhoClicked();
+        if (event.getCurrentItem() == null) return;
+        if (statsGUI.getInventory().getItem(event.getRawSlot()) == null) return;
+        ItemStack item = event.getCurrentItem();
         Material material = item.getType();
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-        e.setCancelled(true);
+        event.setCancelled(true);
         if (material == GUIUtil.CLOSE_BUTTON.getType())
-            e.getWhoClicked().closeInventory();
+            player.closeInventory();
     }
 }

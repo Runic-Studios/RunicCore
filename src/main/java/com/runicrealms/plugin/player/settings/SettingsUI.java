@@ -20,7 +20,7 @@ public class SettingsUI implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&ePlayer Settings Menu"));
         this.player = player;
         this.settingsData = settingsData;
-        openMenu();
+        generateMenu();
     }
 
     @NotNull
@@ -38,12 +38,12 @@ public class SettingsUI implements InventoryHolder {
     }
 
     /**
-     * Opens the inventory associated w/ this GUI, ordering perks
+     * Generates the inventory associated w/ this GUI, ordering perks
      */
-    private void openMenu() {
+    private void generateMenu() {
         this.inventory.clear();
         GUIUtil.fillInventoryBorders(this.inventory);
-        this.inventory.setItem(0, GUIUtil.CLOSE_BUTTON);
+        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         boolean castMenuEnabled = this.settingsData.isCastMenuEnabled();
         ChatColor chatColor = castMenuEnabled ? ChatColor.GREEN : ChatColor.RED;
         this.inventory.setItem(22, GUIUtil.dispItem(

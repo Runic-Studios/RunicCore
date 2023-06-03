@@ -26,34 +26,52 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class BoostManager implements BoostAPI, Listener {
 
-    // What is the minimum number of minutes between the end of a booster, and a server restart
-    private static final int RESTART_BUFFER_DURATION_MIN = 10;
+    private static final int RESTART_BUFFER_DURATION_MIN = 10; // What is the minimum number of minutes between the end of a booster, and a server restart
+    private static final int BOSS_BAR_CYCLE_DURATION = 20 * 5; // In ticks
+
+
     private final Map<UUID, Map<StoreBoost, Integer>> playerBoosts = new ConcurrentHashMap<>();
-    private final Map<Boost, BoostBossBar> activeBoosts = new HashMap<>();
+    private final List<ActiveBoost> activeBoosts = new ArrayList<>();
     private final long startTimestamp = System.currentTimeMillis(); // For cancelling restarts
-    // Checks if we have already delayed a runic restart. If so, prevent more bombs from being thrown.
-    private boolean hasDelayedRestart = false;
+    private final BossBar activeBossBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+    private boolean hasDelayedRestart = false; // Checks if we have already delayed a runic restart. If so, prevent more bombs from being thrown.
 
     public BoostManager() {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
-
+        AtomicReference<ActiveBoost> displayedBoost = new AtomicReference<>(null);
         Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
-            for (Map.Entry<Boost, BoostBossBar> entry : activeBoosts.entrySet()) {
-                entry.getValue().updateBossBarProgress();
+            if (activeBoosts.size() > 0) {
+                if (displayedBoost.get() == null) {
+                    displayedBoost.set(activeBoosts.get(activeBoosts.size() - 1));
+                } else {
+                    int index = activeBoosts.indexOf(displayedBoost.get()) + 1;
+                    if (index >= activeBoosts.size()) index = 0;
+                    displayedBoost.set(activeBoosts.get(index));
+                }
+            } else if (displayedBoost.get() != null) {
+                displayedBoost.set(null);
             }
-        }, 0L, 20 * 10);
+
+            if (activeBoosts.size() > 0 && !activeBossBar.isVisible()) activeBossBar.setVisible(true);
+            else if (activeBoosts.size() == 0 && activeBossBar.isVisible()) activeBossBar.setVisible(false);
+            if (displayedBoost.get() != null) displayedBoost.get().applyBossBar(activeBossBar);
+        }, 0L, BOSS_BAR_CYCLE_DURATION);
     }
 
     @EventHandler
@@ -64,12 +82,12 @@ public class BoostManager implements BoostAPI, Listener {
 
     @EventHandler
     public void onCharacterLoaded(CharacterLoadedEvent event) {
-        for (Boost boost : activeBoosts.keySet()) {
-            BoostBossBar boostBossBar = activeBoosts.get(boost);
-            boostBossBar.bossBar.addPlayer(event.getPlayer());
+        activeBossBar.addPlayer(event.getPlayer());
+        for (ActiveBoost activeBoost : activeBoosts) {
+            Boost boost = activeBoost.getBoost();
             event.getPlayer().sendMessage(ColorUtil.format(
                     "&5[Runic Realms] &dThere is an active &r&f&l" + boost.getName() + " Experience Boost &r&dfor &f"
-                            + ((int) (boost.getAdditionalMultiplier() * 100)) + "%&d additional experience for &f" + (boostBossBar.getRemainingSeconds() / 60) + " &dremaining minutes!"
+                            + (1 + boost.getAdditionalMultiplier()) + "x&d experience for &f" + (activeBoost.getRemainingSeconds() / 60) + " &dminutes!"
             ));
         }
     }
@@ -77,9 +95,7 @@ public class BoostManager implements BoostAPI, Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         playerBoosts.remove(event.getPlayer().getUniqueId());
-        for (BoostBossBar boostBossBar : activeBoosts.values()) {
-            boostBossBar.bossBar.removePlayer(event.getPlayer());
-        }
+        activeBossBar.removePlayer(event.getPlayer());
     }
 
     @Override
@@ -96,7 +112,7 @@ public class BoostManager implements BoostAPI, Listener {
     @Override
     public void activateStoreBoost(Player player, StoreBoost boost) {
         UUID target = player.getUniqueId();
-        if (activeBoosts.containsKey(boost))
+        if (activeBoosts.stream().anyMatch(activeBoost -> activeBoost.getBoost() == boost))
             throw new IllegalStateException("Cannot activate " + boost.getIdentifier() + ": one is already active");
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) - 1);
         DAO.queueSave(target, playerBoosts.get(target));
@@ -105,19 +121,16 @@ public class BoostManager implements BoostAPI, Listener {
 
     @Override
     public void activateBoost(Player activator, Boost boost) {
-        BoostBossBar boostBossBar = new BoostBossBar(Bukkit.createBossBar(
-                ColorUtil.format("&4&l" + activator.getName() + "&r&c&l's " + boost.getName() + " Experience Boost"),
-                BarColor.RED,
-                BarStyle.SOLID
-        ), boost);
-        activeBoosts.put(boost, boostBossBar);
+        ActiveBoost activeBoost = new ActiveBoost(boost, ColorUtil.format("&a&l" + activator.getName() + "'s &r&f&l" + boost.getName() + " &r&a&lExperience Boost"));
+        activeBoosts.add(activeBoost);
+        activeBoost.applyBossBar(activeBossBar);
+        if (!activeBossBar.isVisible()) activeBossBar.setVisible(true);
 
         Bukkit.getOnlinePlayers().forEach(online -> {
-            activeBoosts.get(boost).bossBar.addPlayer(online);
-            ClassUtil.launchFirework(online, Color.RED);
+            ClassUtil.launchFirework(online, Color.GREEN);
             online.sendMessage(ColorUtil.format(
                     "&5[Runic Realms] &f" + activator.getName() + " &dhas activated a &f"
-                            + ((int) (boost.getAdditionalMultiplier() * 100)) + "% &dadditional experience &r&f&l" + boost.getName()
+                            + (1 + boost.getAdditionalMultiplier()) + "x &dexperience &r&f&l" + boost.getName()
                             + " Boost&r&d for &f" + boost.getDuration() + " &dminutes!"
             ));
         });
@@ -126,7 +139,7 @@ public class BoostManager implements BoostAPI, Listener {
         final String playerName = activator.getName();
         final UUID activatorUUID = activator.getUniqueId();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
-            activeBoosts.get(boost).bossBar.removeAll();
+            if (activeBoosts.size() == 1 && activeBossBar.isVisible()) activeBossBar.setVisible(false);
             activeBoosts.remove(boost);
             Bukkit.broadcastMessage(ColorUtil.format("&5[Runic Realms] &f" + playerName + "&d's &f&l" + boost.getName()
                     + " Experience Boost &r&dhas ended! Visit &fstore.runicrealms.com&d to purchase more."));
@@ -155,12 +168,12 @@ public class BoostManager implements BoostAPI, Listener {
 
     @Override
     public Collection<Boost> getCurrentActiveBoosts() {
-        return activeBoosts.keySet();
+        return activeBoosts.stream().map(ActiveBoost::getBoost).collect(Collectors.toList());
     }
 
     @Override
     public boolean isBoostActive(Boost boost) {
-        return activeBoosts.containsKey(boost);
+        return activeBoosts.stream().anyMatch(activeBoost -> activeBoost.getBoost() == boost);
     }
 
     @Override
@@ -171,33 +184,39 @@ public class BoostManager implements BoostAPI, Listener {
     @Override
     public double getAdditionalExperienceMultiplier(BoostExperienceType experienceType) {
         double total = 0.0;
-        for (Boost boost : activeBoosts.keySet()) {
-            if (boost.getExperienceType() == experienceType) total += boost.getAdditionalMultiplier();
+        for (ActiveBoost activeBoost : activeBoosts) {
+            if (activeBoost.getBoost().getExperienceType() == experienceType)
+                total += activeBoost.getBoost().getAdditionalMultiplier();
         }
         return total;
     }
 
-    private static class BoostBossBar {
+    private static class ActiveBoost {
 
-        private final BossBar bossBar;
         private final long startTimeStamp = System.currentTimeMillis();
-        private final int boostDuration; // Minutes
+        private final String title;
+        private final Boost boost;
 
-        private BoostBossBar(BossBar bossBar, Boost boost) {
-            this.bossBar = bossBar;
-            this.boostDuration = boost.getDuration();
+        private ActiveBoost(Boost boost, String bossBarTitle) {
+            this.boost = boost;
+            this.title = bossBarTitle;
+        }
+
+        public Boost getBoost() {
+            return this.boost;
         }
 
         public int getRemainingSeconds() {
-            return (int) (((boostDuration * 60000L) + startTimeStamp - System.currentTimeMillis()) / 1000);
+            return (int) (((boost.getDuration() * 60000L) + startTimeStamp - System.currentTimeMillis()) / 1000);
         }
 
         public int getProgressSeconds() {
             return (int) ((System.currentTimeMillis() - startTimeStamp) / 1000);
         }
 
-        public void updateBossBarProgress() {
-            bossBar.setProgress(((double) getRemainingSeconds()) / (boostDuration * 60.0));
+        public void applyBossBar(BossBar bossBar) {
+            bossBar.setProgress(((double) getRemainingSeconds()) / (boost.getDuration() * 60.0));
+            bossBar.setTitle(title);
         }
 
     }
