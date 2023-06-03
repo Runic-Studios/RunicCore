@@ -2,9 +2,8 @@ package com.runicrealms.plugin.player.listener;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.model.SettingsData;
+import com.runicrealms.plugin.donor.ui.DonorUI;
 import com.runicrealms.plugin.player.StatsGUI;
-import com.runicrealms.plugin.player.settings.SettingsUI;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
@@ -30,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,15 +151,25 @@ public class PlayerMenuListener implements Listener {
      * @return an ItemStack to display
      */
     private ItemStack groupFinderIcon(Player player) {
+//        return item
+//                (
+//                        player,
+//                        Material.BELL,
+//                        ChatColor.YELLOW + "Settings",
+//                        """
+//
+//                                &6&lCLICK
+//                                &7To open your player settings!"""
+//                );
         return item
                 (
                         player,
-                        Material.BELL,
-                        ChatColor.YELLOW + "Settings",
+                        Material.EXPERIENCE_BOTTLE,
+                        ChatColor.RED + "Donor Perks",
                         """
 
                                 &6&lCLICK
-                                &7To open your player settings!"""
+                                &7To view and activate donor perks!"""
                 );
     }
 
@@ -208,13 +216,14 @@ public class PlayerMenuListener implements Listener {
             player.openInventory(new StatsGUI(player).getInventory());
         } else if (event.getSlot() == 4) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-                player.openInventory(new SettingsUI
-                        (
-                                player,
-                                (SettingsData) RunicCore.getSettingsManager().loadSessionData(player.getUniqueId(), jedis)
-                        ).getInventory());
-            }
+//            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
+//                player.openInventory(new SettingsUI
+//                        (
+//                                player,
+//                                (SettingsData) RunicCore.getSettingsManager().loadSessionData(player.getUniqueId(), jedis)
+//                        ).getInventory());
+//            }
+            player.openInventory(new DonorUI(player).getInventory());
         }
     }
 

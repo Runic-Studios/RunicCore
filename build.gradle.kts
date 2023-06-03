@@ -40,6 +40,7 @@ dependencies {
     compileOnly(commonLibs.worldguardlegacy)
     compileOnly(commonLibs.viaversion)
     compileOnly(commonLibs.acf)
+    compileOnly(commonLibs.luckperms)
 }
 
 java {
