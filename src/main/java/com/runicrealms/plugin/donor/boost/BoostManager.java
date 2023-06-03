@@ -170,10 +170,11 @@ public class BoostManager implements BoostAPI, Listener {
 
     @Override
     public double getAdditionalExperienceMultiplier(BoostExperienceType experienceType) {
-        return activeBoosts.keySet().stream()
-                .filter((boost) -> boost.getExperienceType() == experienceType)
-                .mapToDouble(Boost::getAdditionalMultiplier)
-                .sum();
+        double total = 0.0;
+        for (Boost boost : activeBoosts.keySet()) {
+            if (boost.getExperienceType() == experienceType) total += boost.getAdditionalMultiplier();
+        }
+        return total;
     }
 
     private static class BoostBossBar {

@@ -17,7 +17,7 @@ public class ExpBoostListener implements Listener {
         if (event.isCancelled()) return;
         if (event.getRunicExpSource() != RunicExpEvent.RunicExpSource.MOB) return; // only mobs
         double booster = RunicCore.getBoostAPI().getAdditionalExperienceMultiplier(BoostExperienceType.COMBAT);
-        int boosted = (int) booster * event.getOriginalAmount();
+        int boosted = (int) (booster * event.getOriginalAmount());
         event.setFinalAmount(event.getFinalAmount() + boosted);
     }
 }
