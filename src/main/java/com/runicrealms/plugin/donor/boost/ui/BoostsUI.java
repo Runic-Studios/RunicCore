@@ -1,6 +1,7 @@
 package com.runicrealms.plugin.donor.boost.ui;
 
 import com.runicrealms.plugin.RunicCore;
+import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
 import com.runicrealms.plugin.donor.boost.api.StoreBoost;
@@ -11,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,11 +26,8 @@ public class BoostsUI implements InventoryHolder {
     static {
         topElement = new ItemStack(Material.EXPERIENCE_BOTTLE);
         ItemMeta meta = topElement.getItemMeta();
-        meta.setDisplayName(ColorUtil.format("&cExperience Boosts"));
-        meta.setLore(List.of(
-                ColorUtil.format("&7All online players are boosted for a limited duration"),
-                ColorUtil.format("&7View combat, crafting, and gathering boosts"),
-                ColorUtil.format("&7Purchase more boosts at &estore.runicrealms.com")));
+        meta.setDisplayName(ColorUtil.format("&2Experience Boosts"));
+        meta.setLore(ChatUtils.formattedText("&7View your combat, crafting, and gathering boosts. Purchase more at &estore.runicrealms.com&7. All online players are boosted for a limited duration."));
         topElement.setItemMeta(meta);
     }
 
@@ -37,7 +36,7 @@ public class BoostsUI implements InventoryHolder {
 
     public BoostsUI(Player player) {
         this.player = player;
-        this.inventory = Bukkit.createInventory(this, 45, ColorUtil.format("&cActivate EXP Boosts"));
+        this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&2Activate EXP Boosts"));
         generateMenu();
     }
 
@@ -53,71 +52,73 @@ public class BoostsUI implements InventoryHolder {
 
     private void generateMenu() {
         this.inventory.clear();
-        for (int i = 0; i < 9; i++) {
-            if (i != 4) this.inventory.setItem(i, GUIUtil.BORDER_ITEM);
-        }
+        GUIUtil.fillInventoryBorders(this.inventory);
+        this.inventory.setItem(0, GUIUtil.BACK_BUTTON);
         this.inventory.setItem(4, topElement);
         Bukkit.getScheduler().runTaskAsynchronously(RunicCore.getInstance(), () -> {
-            boolean hasCraftingBoost = RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.CRAFTING);
-            ItemStack craftingIcon = new ItemStack(
-                    RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.CRAFTING) ? Material.ANVIL : Material.BARRIER,
-                    hasCraftingBoost ? RunicCore.getBoostAPI().getStoreBoostCount(player.getUniqueId(), StoreBoost.CRAFTING) : 1);
-            ItemMeta meta = craftingIcon.getItemMeta();
-            meta.setDisplayName(ColorUtil.format("&cActivate &lCrafting &r&cExperience Boost"));
-            List<String> lore = new ArrayList<>();
-            if (!hasCraftingBoost) {
-                lore.add(ColorUtil.format("&c&lYou do not have any crafting boosts."));
-                lore.add(ColorUtil.format("&cVisit store.runicrealms.com to purchase more."));
-                lore.add("");
-            }
-            lore.add(ColorUtil.format("&7The boost will apply to &feveryone online"));
-            lore.add(ColorUtil.format("&7Duration: &f" + StoreBoost.CRAFTING.getDuration() + "&7 minutes"));
-            lore.add(ColorUtil.format("&7Additional Experience multiplier: &f" + ((int) (StoreBoost.CRAFTING.getAdditionalMultiplier() * 100)) + "%"));
-            meta.setLore(lore);
-            craftingIcon.setItemMeta(meta);
-            this.inventory.setItem(19, craftingIcon);
-
             boolean hasCombatBoost = RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.COMBAT);
             ItemStack combatIcon = new ItemStack(
-                    RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.COMBAT) ? Material.WOODEN_SWORD : Material.BARRIER,
+                    RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.COMBAT) ? Material.ZOMBIE_HEAD : Material.BARRIER,
                     hasCombatBoost ? RunicCore.getBoostAPI().getStoreBoostCount(player.getUniqueId(), StoreBoost.COMBAT) : 1);
-            meta = combatIcon.getItemMeta();
+            ItemMeta meta = combatIcon.getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
             meta.setUnbreakable(true);
-            meta.setDisplayName(ColorUtil.format("&cActivate &lCombat &r&cExperience Boost"));
-            lore = new ArrayList<>();
+            meta.setDisplayName(ColorUtil.format("&2Activate &lCombat &r&2Experience Boost"));
+            List<String> lore = new ArrayList<>();
             if (!hasCombatBoost) {
-                lore.add(ColorUtil.format("&c&lYou do not have any combat boosts."));
+                lore.add(ColorUtil.format("&4&lYou do not have any combat boosts."));
                 lore.add(ColorUtil.format("&cVisit store.runicrealms.com to purchase more."));
                 lore.add("");
             }
             lore.add(ColorUtil.format("&7The boost will apply to &feveryone online"));
             lore.add(ColorUtil.format("&7Duration: &f" + StoreBoost.COMBAT.getDuration() + "&7 minutes"));
-            lore.add(ColorUtil.format("&7Additional Experience multiplier: &f" + ((int) (StoreBoost.COMBAT.getAdditionalMultiplier() * 100)) + "%"));
+            lore.add(ColorUtil.format("&7Experience Multiplier: &f" + (1 + StoreBoost.COMBAT.getAdditionalMultiplier()) + "x"));
             meta.setLore(lore);
             combatIcon.setItemMeta(meta);
-            this.inventory.setItem(22, combatIcon);
+            this.inventory.setItem(20, combatIcon);
+
+            boolean hasCraftingBoost = RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.CRAFTING);
+            ItemStack craftingIcon = new ItemStack(
+                    RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.CRAFTING) ? Material.ANVIL : Material.BARRIER,
+                    hasCraftingBoost ? RunicCore.getBoostAPI().getStoreBoostCount(player.getUniqueId(), StoreBoost.CRAFTING) : 1);
+            meta = craftingIcon.getItemMeta();
+            meta.setDisplayName(ColorUtil.format("&2Activate &lCrafting &r&2Experience Boost"));
+            lore = new ArrayList<>();
+            if (!hasCraftingBoost) {
+                lore.add(ColorUtil.format("&4&lYou do not have any crafting boosts."));
+                lore.add(ColorUtil.format("&cVisit store.runicrealms.com to purchase more."));
+                lore.add("");
+            }
+            lore.add(ColorUtil.format("&7The boost will apply to &feveryone online"));
+            lore.add(ColorUtil.format("&7Duration: &f" + StoreBoost.CRAFTING.getDuration() + "&7 minutes"));
+            lore.add(ColorUtil.format("&7Experience Multiplier: &f" + (1 + StoreBoost.CRAFTING.getAdditionalMultiplier()) + "x"));
+            meta.setLore(lore);
+            craftingIcon.setItemMeta(meta);
+            this.inventory.setItem(22, craftingIcon);
 
             boolean hasGatheringBoost = RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.GATHERING);
             ItemStack gatheringIcon = new ItemStack(
-                    RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.GATHERING) ? Material.WOODEN_PICKAXE : Material.BARRIER,
+                    RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.GATHERING) ? Material.IRON_PICKAXE : Material.BARRIER,
                     hasGatheringBoost ? RunicCore.getBoostAPI().getStoreBoostCount(player.getUniqueId(), StoreBoost.GATHERING) : 1);
+            Damageable damageable = (Damageable) gatheringIcon.getItemMeta();
+            damageable.setDamage(5);
+            gatheringIcon.setItemMeta((ItemMeta) damageable);
             meta = gatheringIcon.getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
             meta.setUnbreakable(true);
-            meta.setDisplayName(ColorUtil.format("&cActivate &lGathering &r&cExperience Boost"));
+            meta.setDisplayName(ColorUtil.format("&2Activate &lGathering &r&2Experience Boost"));
             lore = new ArrayList<>();
             if (!hasGatheringBoost) {
-                lore.add(ColorUtil.format("&c&lYou do not have any gathering boosts."));
+                lore.add(ColorUtil.format("&4&lYou do not have any gathering boosts."));
                 lore.add(ColorUtil.format("&cVisit store.runicrealms.com to purchase more."));
                 lore.add("");
             }
             lore.add(ColorUtil.format("&7The boost will apply to &feveryone online"));
             lore.add(ColorUtil.format("&7Duration: &f" + StoreBoost.GATHERING.getDuration() + "&7 minutes"));
-            lore.add(ColorUtil.format("&7Additional Experience multiplier: &f" + ((int) (StoreBoost.GATHERING.getAdditionalMultiplier() * 100)) + "%"));
+            lore.add(ColorUtil.format("&7Experience Multiplier: &f" + (1 + StoreBoost.GATHERING.getAdditionalMultiplier()) + "x"));
             meta.setLore(lore);
             gatheringIcon.setItemMeta(meta);
-            this.inventory.setItem(25, gatheringIcon);
+            this.inventory.setItem(24, gatheringIcon);
         });
     }
 }

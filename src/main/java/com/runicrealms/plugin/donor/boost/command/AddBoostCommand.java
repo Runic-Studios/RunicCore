@@ -11,6 +11,7 @@ import com.runicrealms.plugin.donor.boost.api.StoreBoost;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -41,11 +42,13 @@ public class AddBoostCommand extends BaseCommand {
 
         sender.sendMessage(ChatColor.GREEN + "Added " + boost.getName() + " Boost for " + target);
 
-        Bukkit.getOnlinePlayers()
-                .stream().filter((online) -> online.getUniqueId() == target).findFirst()
-                .ifPresent(player ->
-                        player.sendMessage(ColorUtil.format("&4[Runic Realms] &dYou have purchased a &r&f&l"
-                                + boost.getName()
-                                + " Boost&r&d. Thank you for supporting the project!")));
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (online.getUniqueId().equals(target)) {
+                online.sendMessage(ColorUtil.format("&5[Runic Realms] &dYou have purchased a &r&f&l"
+                        + boost.getName()
+                        + " Boost&r&d. Thank you for supporting the project!"));
+                return;
+            }
+        }
     }
 }

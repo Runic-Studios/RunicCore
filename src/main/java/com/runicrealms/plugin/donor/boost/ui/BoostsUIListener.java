@@ -2,6 +2,7 @@ package com.runicrealms.plugin.donor.boost.ui;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.donor.boost.api.StoreBoost;
+import com.runicrealms.plugin.donor.ui.DonorUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -34,17 +35,19 @@ public class BoostsUIListener implements Listener {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
         event.setCancelled(true);
 
-        if (event.getSlot() == 19 && RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.CRAFTING)) {
-            if (RunicCore.getBoostAPI().isBoostActive(StoreBoost.CRAFTING)) {
-                player.sendMessage(ChatColor.RED + "You cannot activate a crafting boost while another one is already activated!");
-                player.closeInventory();
-            } else player.openInventory(new BoostConfirmUI(player, StoreBoost.CRAFTING).getInventory());
-        } else if (event.getSlot() == 22 && RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.COMBAT)) {
+        if (event.getSlot() == 0) {
+            player.openInventory(new DonorUI(player).getInventory());
+        } else if (event.getSlot() == 20 && RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.COMBAT)) {
             if (RunicCore.getBoostAPI().isBoostActive(StoreBoost.COMBAT)) {
                 player.sendMessage(ChatColor.RED + "You cannot activate a combat boost while another one is already activated!");
                 player.closeInventory();
             } else player.openInventory(new BoostConfirmUI(player, StoreBoost.COMBAT).getInventory());
-        } else if (event.getSlot() == 25 && RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.GATHERING)) {
+        } else if (event.getSlot() == 22 && RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.CRAFTING)) {
+            if (RunicCore.getBoostAPI().isBoostActive(StoreBoost.CRAFTING)) {
+                player.sendMessage(ChatColor.RED + "You cannot activate a crafting boost while another one is already activated!");
+                player.closeInventory();
+            } else player.openInventory(new BoostConfirmUI(player, StoreBoost.CRAFTING).getInventory());
+        } else if (event.getSlot() == 24 && RunicCore.getBoostAPI().hasStoreBoost(player.getUniqueId(), StoreBoost.GATHERING)) {
             if (RunicCore.getBoostAPI().isBoostActive(StoreBoost.GATHERING)) {
                 player.sendMessage(ChatColor.RED + "You cannot activate a gathering boost while another one is already activated!");
                 player.closeInventory();

@@ -3,7 +3,8 @@ package com.runicrealms.plugin.player.listener;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.donor.ui.DonorUI;
-import com.runicrealms.plugin.player.StatsGUI;
+import com.runicrealms.plugin.player.ui.ProfileUI;
+import com.runicrealms.plugin.player.ui.StatsGUI;
 import com.runicrealms.plugin.rdb.RunicDatabase;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
@@ -62,10 +63,10 @@ public class PlayerMenuListener implements Listener {
 
                     // uses packets to create visual items clientside that can't interact w/ the server
                     // prevents duping
-                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(achievementsIcon(player)));
+                    PacketPlayOutSetSlot packet1 = new PacketPlayOutSetSlot(0, 1, CraftItemStack.asNMSCopy(profileIcon(player)));
                     PacketPlayOutSetSlot packet2 = new PacketPlayOutSetSlot(0, 2, CraftItemStack.asNMSCopy(gemMenuIcon(player)));
                     PacketPlayOutSetSlot packet3 = new PacketPlayOutSetSlot(0, 3, CraftItemStack.asNMSCopy(gatheringLevelItemStack(player)));
-                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(groupFinderIcon(player)));
+                    PacketPlayOutSetSlot packet4 = new PacketPlayOutSetSlot(0, 4, CraftItemStack.asNMSCopy(donorPerksIcon(player)));
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet1);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet2);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet3);
@@ -80,21 +81,22 @@ public class PlayerMenuListener implements Listener {
     }
 
     /**
-     * Creates the menu icon for the
+     * Creates the menu icon for the profile
      *
      * @param player who the menu belongs to
-     * @return a visual menu item for settings
+     * @return a visual menu item for profile
      */
-    private ItemStack achievementsIcon(Player player) {
+    private ItemStack profileIcon(Player player) {
         return item
                 (
                         player,
                         Material.PLAYER_HEAD,
-                        "&e" + player.getName() + "'s Achievements",
+                        "&e" + player.getName() + "'s Profile",
                         """
 
                                 &6&lCLICK
-                                &7To view your achievements!"""
+                                &7To view your settings
+                                &7and achievements!"""
                 );
     }
 
@@ -145,27 +147,17 @@ public class PlayerMenuListener implements Listener {
     }
 
     /**
-     * The info item for the player to find a group
+     * The info item for the donor perks icon
      *
      * @param player to display menu for
      * @return an ItemStack to display
      */
-    private ItemStack groupFinderIcon(Player player) {
-//        return item
-//                (
-//                        player,
-//                        Material.BELL,
-//                        ChatColor.YELLOW + "Settings",
-//                        """
-//
-//                                &6&lCLICK
-//                                &7To open your player settings!"""
-//                );
+    private ItemStack donorPerksIcon(Player player) {
         return item
                 (
                         player,
                         Material.EXPERIENCE_BOTTLE,
-                        ChatColor.RED + "Donor Perks",
+                        ChatColor.YELLOW + "Donor Perks",
                         """
 
                                 &6&lCLICK
@@ -211,18 +203,14 @@ public class PlayerMenuListener implements Listener {
         if (event.getCursor() == null) return;
         if (event.getCursor().getType() != Material.AIR)
             return; // prevents clicking with items on cursor
-        if (event.getSlot() == 2) {
+        if (event.getSlot() == 1) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
+            player.openInventory((new ProfileUI(player)).getInventory());
+        } else if (event.getSlot() == 2) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
             player.openInventory(new StatsGUI(player).getInventory());
         } else if (event.getSlot() == 4) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.0f);
-//            try (Jedis jedis = RunicDatabase.getAPI().getRedisAPI().getNewJedisResource()) {
-//                player.openInventory(new SettingsUI
-//                        (
-//                                player,
-//                                (SettingsData) RunicCore.getSettingsManager().loadSessionData(player.getUniqueId(), jedis)
-//                        ).getInventory());
-//            }
             player.openInventory(new DonorUI(player).getInventory());
         }
     }
