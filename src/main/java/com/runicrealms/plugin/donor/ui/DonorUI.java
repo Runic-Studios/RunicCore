@@ -1,4 +1,4 @@
-package com.runicrealms.plugin.donator;
+package com.runicrealms.plugin.donor.ui;
 
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
@@ -16,30 +16,31 @@ import java.util.List;
 
 public class DonorUI implements InventoryHolder {
 
-    private static ItemStack topElement;
-    private static ItemStack weaponSkinElement;
-    private static ItemStack boostsElement;
-    private static ItemStack additionalPerksElement;
+    private static final ItemStack topElement;
+    private static final ItemStack weaponSkinElement;
+    private static final ItemStack boostsElement;
+    private static final ItemStack additionalPerksElement;
 
     static {
         topElement = new ItemStack(Material.EMERALD);
         ItemMeta meta = topElement.getItemMeta();
         meta.setDisplayName(ColorUtil.format("&cDonor Perk Menu"));
         meta.setLore(List.of(ColorUtil.format("&7View perks exclusive to your rank as a donor!")));
+        topElement.setItemMeta(meta);
         weaponSkinElement = new ItemStack(Material.WOODEN_AXE);
         meta = weaponSkinElement.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES);
         meta.setUnbreakable(true);
         meta.setDisplayName(ColorUtil.format("&eOpen Weaponry"));
-        meta.setLore(List.of(ColorUtil.format("&7Modify the appearance of your weapons and artifacts")));
-        meta.setLore(List.of(ColorUtil.format("&7with custom weapon skins exclusively for donors")));
+        meta.setLore(List.of(ColorUtil.format("&7Modify the appearance of your weapons and artifacts"),
+                ColorUtil.format("&7with custom weapon skins exclusively for donors")));
         weaponSkinElement.setItemMeta(meta);
         boostsElement = new ItemStack(Material.EXPERIENCE_BOTTLE);
         meta = boostsElement.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ATTRIBUTES);
-        meta.setDisplayName(ColorUtil.format("&cActivate Network XP Boosts"));
+        meta.setDisplayName(ColorUtil.format("&cActivate Experience Boosts"));
         meta.setLore(List.of(
-                ColorUtil.format("&7View your combat, crafting and gathering boosts"),
+                ColorUtil.format("&7View your combat, crafting, and gathering boosts"),
                 ColorUtil.format("&7You can buy more boosts at &estore.runicrealms.com")));
         boostsElement.setItemMeta(meta);
         additionalPerksElement = new ItemStack(Material.WRITABLE_BOOK);
@@ -54,7 +55,7 @@ public class DonorUI implements InventoryHolder {
 
     public DonorUI(Player player) {
         this.player = player;
-        this.inventory = Bukkit.createInventory(this, 54, ColorUtil.format("&cDonor Perk Menu"));
+        this.inventory = Bukkit.createInventory(this, 45, ColorUtil.format("&cDonor Perk Menu"));
         generateMenu();
     }
 
@@ -74,9 +75,9 @@ public class DonorUI implements InventoryHolder {
             if (i != 4) this.inventory.setItem(i, GUIUtil.BORDER_ITEM);
         }
         this.inventory.setItem(4, topElement);
-        this.inventory.setItem(20, weaponSkinElement);
-        this.inventory.setItem(23, boostsElement);
-        this.inventory.setItem(26, additionalPerksElement);
+        this.inventory.setItem(19, weaponSkinElement);
+        this.inventory.setItem(22, boostsElement);
+        this.inventory.setItem(25, additionalPerksElement);
     }
 
 }

@@ -25,7 +25,6 @@ import com.runicrealms.plugin.api.TitleAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.codec.CodecHandler;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
-import com.runicrealms.plugin.commands.admin.BoostCMD;
 import com.runicrealms.plugin.commands.admin.CooldownCMD;
 import com.runicrealms.plugin.commands.admin.FireworkCMD;
 import com.runicrealms.plugin.commands.admin.GameModeCMD;
@@ -48,9 +47,14 @@ import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
 import com.runicrealms.plugin.database.DatabaseManager;
-import com.runicrealms.plugin.donator.AddBoostCommand;
-import com.runicrealms.plugin.donator.DonorCommand;
-import com.runicrealms.plugin.donator.DonorUIListener;
+import com.runicrealms.plugin.donor.DonorCommand;
+import com.runicrealms.plugin.donor.boost.BoostManager;
+import com.runicrealms.plugin.donor.boost.api.BoostAPI;
+import com.runicrealms.plugin.donor.boost.command.AddBoostCommand;
+import com.runicrealms.plugin.donor.boost.command.BoostCommand;
+import com.runicrealms.plugin.donor.boost.ui.BoostConfirmUIListener;
+import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
+import com.runicrealms.plugin.donor.ui.DonorUIListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnKillListener;
@@ -207,6 +211,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static ConverterAPI converterAPI;
     private static RedisAPI redisAPI;
     private static AmbientSoundHandler ambientSoundHandler;
+    private static BoostAPI boostAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -329,6 +334,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return ambientSoundHandler;
     }
 
+    public static BoostAPI getBoostAPI() {
+        return boostAPI;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -375,6 +384,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         converterAPI = null;
         redisAPI = null;
         ambientSoundHandler = null;
+        boostAPI = null;
     }
 
     @Override
@@ -442,6 +452,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         statusEffectAPI = new StatusEffectManager();
         gravestoneManager = new GravestoneManager();
         ambientSoundHandler = new AmbientSoundHandler();
+        boostAPI = new BoostManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();
@@ -520,6 +531,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new ExpCMD());
         commandManager.registerCommand(new AddBoostCommand());
         commandManager.registerCommand(new DonorCommand());
+        commandManager.registerCommand(new BoostCommand());
+
     }
 
     private void registerEvents() {
@@ -582,7 +595,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new InventoryClickListener(), this);
         pm.registerEvents(new RegionEventListener(), this);
         pm.registerEvents(new DeathListener(), this);
-        pm.registerEvents(new NoJockeysListener(), git stathis);
+        pm.registerEvents(new NoJockeysListener(), this);
         pm.registerEvents(new ArmorEquipListener(), this);
         pm.registerEvents(new CampfireListener(), this);
         pm.registerEvents(new EnderpearlListener(), this);
@@ -598,15 +611,13 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new SheepShearListener(), this);
         pm.registerEvents(new WeaponSkinListener(), this);
         pm.registerEvents(new DonorUIListener(), this);
+        pm.registerEvents(new BoostsUIListener(), this);
+        pm.registerEvents(new BoostConfirmUIListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
 
     private void registerOldStyleCommands() {
-
-        // boost
-        getCommand("boost").setExecutor(new BoostCMD());
-
         Bukkit.getPluginCommand("map").setExecutor(new MapLink());
         Bukkit.getPluginCommand("runicdamage").setExecutor(new RunicDamage());
         Bukkit.getPluginCommand("runicfirework").setExecutor(new FireworkCMD());
