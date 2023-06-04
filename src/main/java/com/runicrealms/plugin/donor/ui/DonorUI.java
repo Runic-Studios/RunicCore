@@ -3,7 +3,9 @@ package com.runicrealms.plugin.donor.ui;
 import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.common.util.GUIUtil;
+import com.runicrealms.plugin.donor.DonorRank;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,14 +16,11 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class DonorUI implements InventoryHolder {
 
     private static final ItemStack topElement;
     private static final ItemStack weaponSkinElement;
     private static final ItemStack boostsElement;
-    private static final ItemStack additionalPerksElement;
 
     static {
         topElement = new ItemStack(Material.EMERALD);
@@ -45,11 +44,6 @@ public class DonorUI implements InventoryHolder {
         meta.setDisplayName(ColorUtil.format("&aActivate Experience Boosts"));
         meta.setLore(ChatUtils.formattedText("&7View your combat, crafting, and gathering boosts, you can buy more at &estore.runicrealms.com"));
         boostsElement.setItemMeta(meta);
-        additionalPerksElement = new ItemStack(Material.WRITABLE_BOOK);
-        meta = additionalPerksElement.getItemMeta();
-        meta.setDisplayName(ColorUtil.format("&cAdditional Donor perks"));
-        meta.setLore(List.of(ColorUtil.format("&7TODO")));
-        additionalPerksElement.setItemMeta(meta);
     }
 
     private final Player player;
@@ -78,6 +72,12 @@ public class DonorUI implements InventoryHolder {
         this.inventory.setItem(4, topElement);
         this.inventory.setItem(20, weaponSkinElement);
         this.inventory.setItem(22, boostsElement);
+        ItemStack additionalPerksElement = new ItemStack(Material.WRITABLE_BOOK);
+        ItemMeta meta = additionalPerksElement.getItemMeta();
+        meta.setDisplayName(ColorUtil.format("&cAdditional Donor perks"));
+        DonorRank rank = DonorRank.getDonorRank(player);
+        meta.setLore(ChatUtils.formattedText("&7View additional perks available to you through your current donor rank of: " + rank.getChatColor() + ChatColor.BOLD + rank.getName().toUpperCase()));
+        additionalPerksElement.setItemMeta(meta);
         this.inventory.setItem(24, additionalPerksElement);
     }
 

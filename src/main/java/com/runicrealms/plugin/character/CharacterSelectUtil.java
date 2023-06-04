@@ -2,9 +2,9 @@ package com.runicrealms.plugin.character;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.SubClass;
+import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.ChatUtils;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.common.CharacterClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,6 +22,7 @@ public class CharacterSelectUtil {
 
     public static final ItemStack CHARACTER_CREATE_ITEM;
     public static final ItemStack ONLY_KNIGHT_CREATE_ITEM;
+    public static final ItemStack ONLY_HERO_CREATE_ITEM;
     public static final ItemStack ONLY_CHAMPION_CREATE_ITEM;
     public static final ItemStack GO_BACK_ITEM;
     public static final ItemStack CONFIRM_DELETION_ITEM;
@@ -52,12 +53,20 @@ public class CharacterSelectUtil {
         knightMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.AQUA + "Knight" + ChatColor.RED + " rank to use this slot");
         ONLY_KNIGHT_CREATE_ITEM.setItemMeta(knightMeta);
 
+        ONLY_HERO_CREATE_ITEM = new ItemStack(Material.BARRIER, 1);
+        ItemMeta heroMeta = ONLY_HERO_CREATE_ITEM.getItemMeta();
+        assert heroMeta != null;
+        heroMeta.setUnbreakable(true);
+        heroMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        heroMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.YELLOW + "Hero" + ChatColor.RED + " rank to use this slot");
+        ONLY_HERO_CREATE_ITEM.setItemMeta(heroMeta);
+
         ONLY_CHAMPION_CREATE_ITEM = new ItemStack(Material.BARRIER, 1);
         ItemMeta championMeta = ONLY_CHAMPION_CREATE_ITEM.getItemMeta();
         assert championMeta != null;
         championMeta.setUnbreakable(true);
         championMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        championMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Champion" + ChatColor.RED + "" + ChatColor.BOLD + " rank to use this slot");
+        championMeta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "You need " + ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Champion" + ChatColor.RED + "" + ChatColor.BOLD + " rank to use this slot");
         ONLY_CHAMPION_CREATE_ITEM.setItemMeta(championMeta);
 
         GO_BACK_ITEM = new ItemStack(Material.BARRIER);

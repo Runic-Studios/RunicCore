@@ -4,6 +4,7 @@ import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.character.CharacterSelectUtil;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.common.util.GUIUtil;
+import com.runicrealms.plugin.donor.DonorRank;
 import com.runicrealms.plugin.model.ClassData;
 import com.runicrealms.plugin.model.CoreCharacterData;
 import com.runicrealms.plugin.model.CorePlayerData;
@@ -368,20 +369,26 @@ public class CharacterGuiManager implements Listener {
     private void openSelectGui(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Select Your Character");
         ProjectedData projectedData = RunicCore.getPlayerDataAPI().getProjectedDataMap().get(player.getUniqueId());
+        final int characterSlots = DonorRank.getDonorRank(player).getClassSlots();
+        int addedSlots = 0;
         for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
             if (projectedData.getPlayerCharacters().get(i) != null) {
                 inventory.setItem(i <= 5 ? i + 1 : i + 5, getCharacterIcon(projectedData.getPlayerCharacters().get(i)));
+                addedSlots++;
             } else {
-                if (i == 6) {
-                    inventory.setItem(
-                            i <= 5 ? i + 1 : i + 5,
-                            player.hasPermission("runic.rank.knight") || player.hasPermission("runic.rank.champion") ? CharacterSelectUtil.CHARACTER_CREATE_ITEM : CharacterSelectUtil.ONLY_KNIGHT_CREATE_ITEM);
-                } else if (i >= 7 && i <= 10) {
-                    inventory.setItem(
-                            i <= 5 ? i + 1 : i + 5,
-                            player.hasPermission("runic.rank.champion") ? CharacterSelectUtil.CHARACTER_CREATE_ITEM : CharacterSelectUtil.ONLY_CHAMPION_CREATE_ITEM);
-                } else {
+                if (addedSlots < characterSlots) {
                     inventory.setItem(i <= 5 ? i + 1 : i + 5, CharacterSelectUtil.CHARACTER_CREATE_ITEM);
+                    addedSlots++;
+                } else {
+                    ItemStack icon = null;
+                    if (i >= 9) {
+                        icon = CharacterSelectUtil.ONLY_CHAMPION_CREATE_ITEM;
+                    } else if (i >= 7) {
+                        icon = CharacterSelectUtil.ONLY_HERO_CREATE_ITEM;
+                    } else if (i == 6) {
+                        icon = CharacterSelectUtil.ONLY_KNIGHT_CREATE_ITEM;
+                    }
+                    if (icon != null) inventory.setItem(i + 5, icon);
                 }
             }
         }

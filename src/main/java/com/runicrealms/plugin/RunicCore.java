@@ -55,6 +55,7 @@ import com.runicrealms.plugin.donor.boost.command.AddBoostCommand;
 import com.runicrealms.plugin.donor.boost.command.BoostCommand;
 import com.runicrealms.plugin.donor.boost.ui.BoostConfirmUIListener;
 import com.runicrealms.plugin.donor.boost.ui.BoostsUIListener;
+import com.runicrealms.plugin.donor.ui.DonorPerksUIListener;
 import com.runicrealms.plugin.donor.ui.DonorUIListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnCastListener;
 import com.runicrealms.plugin.item.artifact.ArtifactOnHitListener;
@@ -616,6 +617,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new BoostsUIListener(), this);
         pm.registerEvents(new BoostConfirmUIListener(), this);
         pm.registerEvents(new ProfileUIListener(), this);
+        pm.registerEvents(new DonorPerksUIListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }
