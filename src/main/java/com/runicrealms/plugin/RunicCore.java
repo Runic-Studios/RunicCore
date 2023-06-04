@@ -43,6 +43,7 @@ import com.runicrealms.plugin.commands.player.HelpCMD;
 import com.runicrealms.plugin.commands.player.MapLink;
 import com.runicrealms.plugin.commands.player.RunicVoteCMD;
 import com.runicrealms.plugin.commands.player.SpawnCMD;
+import com.runicrealms.plugin.commands.player.WhoIsCMD;
 import com.runicrealms.plugin.common.RunicCommon;
 import com.runicrealms.plugin.config.ConfigManager;
 import com.runicrealms.plugin.converter.ConverterHandler;
@@ -533,7 +534,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new AddBoostCommand());
         commandManager.registerCommand(new DonorCommand());
         commandManager.registerCommand(new BoostCommand());
-
+        commandManager.registerCommand(new WhoIsCMD());
     }
 
     private void registerEvents() {

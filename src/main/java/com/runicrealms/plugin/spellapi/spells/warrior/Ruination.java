@@ -51,9 +51,10 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     }
 
     private void conjureNightfall(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 0.5f, 2.0f);
+        
         // Visual effect
         double maxAngle = 45;
-
         Vector middle = player.getEyeLocation().getDirection().normalize();
         Vector one = rotateVectorAroundY(middle, -maxAngle);
         Vector two = rotateVectorAroundY(middle, -maxAngle / 2);
@@ -105,7 +106,7 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (SoulReaper.getReaperTaskMap().get(event.getCaster()).getStacks().get() < requiredSouls) return;
         Player player = event.getCaster();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 0.5f, 2.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, 0.5f, 1.0f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 0.25f);
         SoulReaper.getReaperTaskMap().get(event.getCaster()).reset(0, () -> {
         });

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 public class SkillTreeData implements SessionDataRedis {
     public static final int FIRST_POINT_LEVEL = 10;
@@ -135,6 +137,13 @@ public class SkillTreeData implements SessionDataRedis {
      */
     public static String getJedisKey(UUID uuid, int slot, SkillTreePosition skillTreePosition) {
         return uuid + ":character:" + slot + ":" + PATH_LOCATION + ":" + skillTreePosition.getValue();
+    }
+
+    public long getTotalPoints() {
+        AtomicInteger result = new AtomicInteger();
+        Stream<Perk> boughtPerks = this.perks.stream().filter(perk -> perk.getCurrentlyAllocatedPoints() > 0);
+        boughtPerks.forEach(perk -> result.addAndGet(perk.getCurrentlyAllocatedPoints()));
+        return result.get();
     }
 
     /**
