@@ -140,7 +140,7 @@ public class BoostManager implements BoostAPI, Listener {
         final UUID activatorUUID = activator.getUniqueId();
         Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
             if (activeBoosts.size() == 1 && activeBossBar.isVisible()) activeBossBar.setVisible(false);
-            activeBoosts.remove(boost);
+            activeBoosts.remove(activeBoost);
             Bukkit.broadcastMessage(ColorUtil.format("&5[Runic Realms] &f" + playerName + "&d's &f&l" + boost.getName()
                     + " Experience Boost &r&dhas ended! Visit &fstore.runicrealms.com&d to purchase more."));
             Bukkit.getPluginManager().callEvent(new BoostEndEvent(playerName, activatorUUID, boost));
