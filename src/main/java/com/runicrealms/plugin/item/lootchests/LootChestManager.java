@@ -44,6 +44,10 @@ public class LootChestManager {
                 LootChestTier lootChestTier = LootChestTier.getFromIdentifier(tier);
                 if (lootChestTier == null) continue;
                 String worldName = locations.getString(id + ".world");
+                if (worldName == null) {
+                    Bukkit.getLogger().severe("Error: World name is null for loot chest ID: " + id);
+                    continue;
+                }
                 World world = Bukkit.getWorld(worldName);
                 double x = locations.getDouble(id + ".x");
                 double y = locations.getDouble(id + ".y");
