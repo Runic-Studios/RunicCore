@@ -56,17 +56,17 @@ public class BoostConfirmUI implements InventoryHolder {
             ItemStack topElement = new ItemStack(Material.WRITABLE_BOOK);
             ItemMeta meta = topElement.getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            meta.setDisplayName(ColorUtil.format("&a&lCONFIRM:"));
+            meta.setDisplayName(ColorUtil.format("&a&lCONFIRM"));
             meta.setLore(List.of(ColorUtil.format("&2Activate &f" + boost.getName() + " &2EXP Boost")));
             topElement.setItemMeta(meta);
             this.inventory.setItem(4, topElement);
 
             ItemStack confirm = new ItemStack(Material.EXPERIENCE_BOTTLE);
             meta = confirm.getItemMeta();
-            meta.setDisplayName(ColorUtil.format("&a&lCONFIRM:"));
+            meta.setDisplayName(ColorUtil.format("&a&lCONFIRM"));
 
             List<String> confirmLore = new ArrayList<>();
-            confirmLore.add("&2Activate &f" + boost.getName() + " &2EXP Boost");
+            confirmLore.add(ColorUtil.format("&2Activate &f" + boost.getName() + " &2EXP Boost"));
             confirmLore.add("");
             confirmLore.addAll(ChatUtils.formattedText("&7Doing so will immediately apply this " + boost.getName().toLowerCase()
                     + " experience boost to all players on this server shard. This boost will be removed from your boost inventory."));
@@ -78,7 +78,7 @@ public class BoostConfirmUI implements InventoryHolder {
 
             ItemStack deny = new ItemStack(Material.BARRIER);
             meta = deny.getItemMeta();
-            meta.setDisplayName(ColorUtil.format("&cDENY:"));
+            meta.setDisplayName(ColorUtil.format("&c&lDENY"));
             List<String> denyLore = new ArrayList<>();
             denyLore.add(ColorUtil.format("&4Activate &f" + boost.getName() + " &4EXP Boost"));
             denyLore.add("");

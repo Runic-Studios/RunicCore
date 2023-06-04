@@ -46,7 +46,7 @@ public class AddBoostCommand extends BaseCommand {
             if (online.getUniqueId().equals(target)) {
                 online.sendMessage(ColorUtil.format("&5[Runic Realms] &dYou have purchased a &r&f&l"
                         + boost.getName()
-                        + " Boost&r&d. Thank you for supporting the project!"));
+                        + " Experience Boost&r&d. Thank you for supporting the project!"));
                 return;
             }
         }
