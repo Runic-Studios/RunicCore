@@ -2,7 +2,7 @@ package com.runicrealms.plugin.listeners;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.donor.boost.api.BoostExperienceType;
-import com.runicrealms.plugin.events.RunicExpEvent;
+import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,11 +13,10 @@ import org.bukkit.event.Listener;
 public class ExpBoostListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onExpGain(RunicExpEvent event) {
+    public void onExpGain(RunicCombatExpEvent event) {
         if (event.isCancelled()) return;
-        if (event.getRunicExpSource() != RunicExpEvent.RunicExpSource.MOB) return; // only mobs
+        if (event.getRunicExpSource() != RunicCombatExpEvent.RunicExpSource.MOB) return; // only mobs
         double booster = RunicCore.getBoostAPI().getAdditionalExperienceMultiplier(BoostExperienceType.COMBAT);
-        int boosted = (int) (booster * event.getOriginalAmount());
-        event.setFinalAmount(event.getFinalAmount() + boosted);
+        event.setBonus(RunicCombatExpEvent.BonusType.BOOST, booster);
     }
 }

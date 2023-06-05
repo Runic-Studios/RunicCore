@@ -6,8 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This custom event is called when a player is damaged by a magic source.
@@ -15,9 +14,10 @@ import javax.annotation.Nullable;
  */
 public class SpellCastEvent extends Event implements Cancellable {
 
+    private static final HandlerList handlers = new HandlerList();
     private final Player caster;
-    private Spell spellCasted;
     private final Entity[] recipients;
+    private Spell spellCasted;
     private boolean isCancelled;
     private boolean willExecute; // for tier sets
 
@@ -27,6 +27,10 @@ public class SpellCastEvent extends Event implements Cancellable {
         this.recipients = recipients;
         this.isCancelled = false;
         this.willExecute = true;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public Player getCaster() {
@@ -68,15 +72,9 @@ public class SpellCastEvent extends Event implements Cancellable {
         this.willExecute = willExecute;
     }
 
-    private static final HandlerList handlers = new HandlerList();
-
     @SuppressWarnings("NullableProblems")
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }

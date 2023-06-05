@@ -1,7 +1,7 @@
 package com.runicrealms.plugin.commands.player;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.RunicExpEvent;
+import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -52,13 +52,12 @@ public class RunicVoteCMD implements CommandExecutor, Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onExperienceGain(RunicExpEvent e) {
-        if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST) return;
-        if (e.getRunicExpSource() == RunicExpEvent.RunicExpSource.OTHER) return;
-        if (votingBonuses.get(e.getPlayer().getUniqueId()) == null) return;
+    public void onExperienceGain(RunicCombatExpEvent event) {
+        if (event.getRunicExpSource() == RunicCombatExpEvent.RunicExpSource.QUEST) return;
+        if (event.getRunicExpSource() == RunicCombatExpEvent.RunicExpSource.OTHER) return;
+        if (votingBonuses.get(event.getPlayer().getUniqueId()) == null) return;
         // calculate voting exp modifier (if applicable)
-        double votePercent = votingBonuses.get(e.getPlayer().getUniqueId()) / 100;
-        double voteBoost = votePercent * e.getOriginalAmount();
-        e.setFinalAmount(e.getFinalAmount() + (int) voteBoost);
+        double votePercent = votingBonuses.get(event.getPlayer().getUniqueId()) / 100;
+        event.setBonus(RunicCombatExpEvent.BonusType.VOTE, votePercent);
     }
 }
