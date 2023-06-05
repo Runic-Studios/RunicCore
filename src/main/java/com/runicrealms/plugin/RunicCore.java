@@ -37,6 +37,7 @@ import com.runicrealms.plugin.commands.admin.RunicGiveCMD;
 import com.runicrealms.plugin.commands.admin.RunicTeleportCMD;
 import com.runicrealms.plugin.commands.admin.SetCMD;
 import com.runicrealms.plugin.commands.admin.SpeedCMD;
+import com.runicrealms.plugin.commands.admin.TPHereCMD;
 import com.runicrealms.plugin.commands.admin.TempbanCMD;
 import com.runicrealms.plugin.commands.admin.TempunbanCMD;
 import com.runicrealms.plugin.commands.admin.TravelCMD;
@@ -553,6 +554,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new WhoIsCMD());
         commandManager.registerCommand(new TempbanCMD());
         commandManager.registerCommand(new TempunbanCMD());
+        commandManager.registerCommand(new TPHereCMD());
     }
 
     private void registerEvents() {
