@@ -76,7 +76,7 @@ public class RunicExpListener implements Listener {
             if (voteExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + voteExpBonus + " &7vote exp"));
             int outlawExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.OUTLAW);
             if (outlawExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + outlawExpBonus + " &7outlaw exp"));
-            hologramList.add("&f" + player.getName());
+            hologramList.add(ColorUtil.format("&f" + player.getName()));
             createExpHologram(player, event.getHologramLocation(), hologramList, 2.5f);
         }
 
