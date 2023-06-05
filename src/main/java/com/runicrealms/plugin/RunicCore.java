@@ -11,7 +11,6 @@ import com.runicrealms.RunicChat;
 import com.runicrealms.plugin.api.CodecAPI;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
-import com.runicrealms.plugin.api.LuckPermsAPI;
 import com.runicrealms.plugin.api.PartyAPI;
 import com.runicrealms.plugin.api.PlayerDataAPI;
 import com.runicrealms.plugin.api.RegionAPI;
@@ -217,7 +216,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static RedisAPI redisAPI;
     private static AmbientSoundHandler ambientSoundHandler;
     private static BoostAPI boostAPI;
-    private static LuckPermsAPI luckPermsAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -344,10 +342,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         return boostAPI;
     }
 
-    public static LuckPermsAPI getLuckPermsAPI() {
-        return luckPermsAPI;
-    }
-
     /**
      * @return a TaskChain for thread context switching
      */
@@ -395,7 +389,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         redisAPI = null;
         ambientSoundHandler = null;
         boostAPI = null;
-        luckPermsAPI = null;
     }
 
     @Override
@@ -409,6 +402,7 @@ public class RunicCore extends JavaPlugin implements Listener {
 
         // Set database stuff first
         RunicCommon.registerConfigAPI(new ConfigManager());
+        RunicCommon.registerLuckPermsAPI(new LuckPermsManager());
 
         converterAPI = new ConverterHandler();
         redisAPI = new RedisManager();
@@ -464,7 +458,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         gravestoneManager = new GravestoneManager();
         ambientSoundHandler = new AmbientSoundHandler();
         boostAPI = new BoostManager();
-        luckPermsAPI = new LuckPermsManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();

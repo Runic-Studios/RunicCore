@@ -1,5 +1,6 @@
 package com.runicrealms.plugin.luckperms;
 
+import com.runicrealms.plugin.common.api.LuckPermsData;
 import net.luckperms.api.cacheddata.CachedMetaData;
 
 import java.util.HashMap;

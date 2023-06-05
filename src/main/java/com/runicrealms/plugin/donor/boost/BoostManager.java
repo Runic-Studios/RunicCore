@@ -2,6 +2,9 @@ package com.runicrealms.plugin.donor.boost;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
+import com.runicrealms.plugin.common.RunicCommon;
+import com.runicrealms.plugin.common.api.LuckPermsData;
+import com.runicrealms.plugin.common.api.LuckPermsPayload;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.donor.boost.api.Boost;
 import com.runicrealms.plugin.donor.boost.api.BoostAPI;
@@ -9,8 +12,6 @@ import com.runicrealms.plugin.donor.boost.api.BoostExperienceType;
 import com.runicrealms.plugin.donor.boost.api.StoreBoost;
 import com.runicrealms.plugin.donor.boost.event.BoostActivateEvent;
 import com.runicrealms.plugin.donor.boost.event.BoostEndEvent;
-import com.runicrealms.plugin.luckperms.LuckPermsData;
-import com.runicrealms.plugin.luckperms.LuckPermsPayload;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.runicrestart.RunicRestart;
 import org.bukkit.Bukkit;
@@ -70,7 +71,7 @@ public class BoostManager implements BoostAPI, Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        RunicCore.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAcceptAsync(data -> {
+        RunicCommon.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAcceptAsync(data -> {
             Map<StoreBoost, Integer> boosts = new HashMap<>();
             for (StoreBoost boost : StoreBoost.values()) {
                 if (data.getKeys().contains(boost.getPermission())) {
@@ -104,7 +105,7 @@ public class BoostManager implements BoostAPI, Listener {
     @Override
     public void addStoreBoost(UUID target, StoreBoost boost, int count) {
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) + count);
-        RunicCore.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
+        RunicCommon.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
     }
 
     @Override
@@ -118,7 +119,7 @@ public class BoostManager implements BoostAPI, Listener {
         if (activeBoosts.stream().anyMatch(activeBoost -> activeBoost.getBoost() == boost))
             throw new IllegalStateException("Cannot activate " + boost.getIdentifier() + ": one is already active");
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) - 1);
-        RunicCore.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
+        RunicCommon.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
         activateBoost(player, boost);
     }
 

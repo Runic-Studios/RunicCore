@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.luckperms;
 
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.api.LuckPermsAPI;
+import com.runicrealms.plugin.common.api.LuckPermsAPI;
+import com.runicrealms.plugin.common.api.LuckPermsData;
+import com.runicrealms.plugin.common.api.LuckPermsPayload;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.MetaNode;
