@@ -2,6 +2,7 @@ package com.runicrealms.plugin.playerqueue;
 
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.donor.DonorRank;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,12 +21,6 @@ import java.util.UUID;
 
 public class PlayerQueueManager implements Listener {
 
-    private static final String[] PRIORITY_QUEUE_PERMISSIONS = {
-            "runic.rank.hero",
-            "runic.rank.champion",
-            "runic.rank.knight",
-            "runic.rank.alpha"
-    };
     private static final String BYPASS_PERMISSION = "runic.queuebypass";
     private final int MAX_PLAYER_SLOTS = RunicCore.getInstance().getConfig().getInt("server-slots");
     private final int QUEUE_SAVE_MIN = 2; // how many minutes do we save your spot for
@@ -143,10 +138,8 @@ public class PlayerQueueManager implements Listener {
     }
 
     private boolean canJoinPriorityQueue(Player player) {
-        for (String perm : PRIORITY_QUEUE_PERMISSIONS) {
-            if (player.hasPermission(perm)) return true;
-        }
-        return false;
+        DonorRank rank = DonorRank.getDonorRank(player);
+        return rank.hasPriorityQueue();
     }
 
 }
