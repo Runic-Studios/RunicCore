@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,6 +43,11 @@ public class SoulReaper extends Spell implements DurationSpell {
 
     public static Map<Player, StackTask> getReaperTaskMap() {
         return REAPER_TASK_MAP;
+    }
+
+    public static void cleanupTask(Player player) {
+        REAPER_TASK_MAP.remove(player);
+        player.sendMessage(ChatColor.GRAY + "Soul Reaper has expired.");
     }
 
     @EventHandler
@@ -72,12 +78,22 @@ public class SoulReaper extends Spell implements DurationSpell {
     private void startParticleTask() {
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (REAPER_TASK_MAP.isEmpty()) return;
-            REAPER_TASK_MAP.forEach((player, stackTask) -> {
-                int stacks = stackTask.getStacks().get();
-                double t = tMap.getOrDefault(player, 0.0);
-                new RotatingParticleEffect(player, Particle.REDSTONE, 1.0, 360.0 / stacks, t, Color.fromRGB(185, 251, 185)).show();
-                tMap.put(player, t + Math.PI / 16);
-            });
+            Iterator<Map.Entry<Player, StackTask>> iterator = REAPER_TASK_MAP.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<Player, StackTask> entry = iterator.next();
+                Player player = entry.getKey();
+                StackTask stackTask = entry.getValue();
+
+                if (!player.isOnline()) {
+                    iterator.remove(); // safely remove the entry from the map
+                } else {
+                    int stacks = stackTask.getStacks().get();
+                    double t = tMap.getOrDefault(player, 0.0);
+                    new RotatingParticleEffect(player, Particle.REDSTONE, 1.0, 360.0 / stacks, t, Color.fromRGB(185, 251, 185)).show();
+                    tMap.put(player, t + Math.PI / 16);
+                }
+            }
         }, 0, 1L);
     }
 
@@ -103,13 +119,7 @@ public class SoulReaper extends Spell implements DurationSpell {
                 }
                 REAPER_TASK_MAP.get(player).reset((long) duration, () -> cleanupTask(player));
             }
-            Bukkit.broadcastMessage("stacks are " + REAPER_TASK_MAP.get(player).getStacks().get());
         }
-    }
-
-    private void cleanupTask(Player player) {
-        REAPER_TASK_MAP.remove(player);
-        player.sendMessage(ChatColor.GRAY + "Soul Reaper has expired.");
     }
 
     @Override

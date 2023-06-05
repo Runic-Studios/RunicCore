@@ -1,7 +1,9 @@
 package com.runicrealms.plugin.spellapi.spells.warrior;
 
+import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.SpellCastEvent;
+import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.MagicDamageSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
@@ -17,14 +19,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.bukkit.util.noise.SimplexOctaveGenerator;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 public class Ruination extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    private final Set<UUID> weakenedHealers = new HashSet<>();
     private double damage;
     private double damagePerLevel;
     private double duration;
@@ -39,9 +46,9 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
         this.setDescription("After claiming " + requiredSouls + " &f&osouls&7, " +
                 "your next spell unleashes the spirits of your victims! " +
                 "For the next " + duration + "s, the souls stream out of your body, " +
-                "dealing (" + damage + " + &f" + damagePerLevel
-                + "x&7 lvl) magicʔ damage per second " +
-                "and lowering healing received by " +
+                "resetting your stacks and dealing (" + damage + " + &f" + damagePerLevel
+                + "x&7 lvl) magicʔ damage per second, " +
+                "as well as lowering enemy healing received by " +
                 (percent * 100) + "% in a " + radius + " block cone in front of you! " +
                 "Cannot occur more than once every " + effectCooldown + "s.");
     }
@@ -51,8 +58,8 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     }
 
     private void conjureNightfall(Player player) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 0.5f, 2.0f);
-        
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_DEATH, 0.25f, 0.5f);
+
         // Visual effect
         double maxAngle = 45;
         Vector middle = player.getEyeLocation().getDirection().normalize();
@@ -74,10 +81,21 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
             double dot = player.getLocation().getDirection().dot(directionToEntity);
             if (dot < maxAngleCos) continue;
             if (isValidEnemy(player, entity)) {
+                weakenedHealers.add(entity.getUniqueId());
+                Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> weakenedHealers.remove(entity.getUniqueId()), (long) duration * 20L);
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);
                 DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, false, this);
-                // todo: healing debuff
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onHeal(SpellHealEvent event) {
+        if (event.isCancelled()) return;
+        if (weakenedHealers.isEmpty()) return;
+        if (!weakenedHealers.contains(event.getPlayer().getUniqueId())) return;
+        double reduction = event.getAmount() * percent;
+        event.setAmount((int) (event.getAmount() - reduction));
     }
 
     public void soulWaveEffect(Player player, Vector vector, Location location) {
@@ -106,10 +124,13 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (SoulReaper.getReaperTaskMap().get(event.getCaster()).getStacks().get() < requiredSouls) return;
         Player player = event.getCaster();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, 0.5f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.15f, 0.5f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 0.25f);
+        // Cancel the future task to reset souls
         SoulReaper.getReaperTaskMap().get(event.getCaster()).reset(0, () -> {
         });
+        // Manually reset souls
+        SoulReaper.cleanupTask(player);
         new BukkitRunnable() {
             int count = 0;
 
