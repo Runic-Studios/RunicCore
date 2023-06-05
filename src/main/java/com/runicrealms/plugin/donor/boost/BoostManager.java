@@ -3,8 +3,6 @@ package com.runicrealms.plugin.donor.boost;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.classes.utilities.ClassUtil;
 import com.runicrealms.plugin.common.RunicCommon;
-import com.runicrealms.plugin.common.api.LuckPermsData;
-import com.runicrealms.plugin.common.api.LuckPermsPayload;
 import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.donor.boost.api.Boost;
 import com.runicrealms.plugin.donor.boost.api.BoostAPI;
@@ -105,7 +103,7 @@ public class BoostManager implements BoostAPI, Listener {
     @Override
     public void addStoreBoost(UUID target, StoreBoost boost, int count) {
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) + count);
-        RunicCommon.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
+        saveCurrentBoosts(target);
     }
 
     @Override
@@ -119,7 +117,7 @@ public class BoostManager implements BoostAPI, Listener {
         if (activeBoosts.stream().anyMatch(activeBoost -> activeBoost.getBoost() == boost))
             throw new IllegalStateException("Cannot activate " + boost.getIdentifier() + ": one is already active");
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) - 1);
-        RunicCommon.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
+        saveCurrentBoosts(target);
         activateBoost(player, boost);
     }
 
@@ -195,6 +193,16 @@ public class BoostManager implements BoostAPI, Listener {
         return total;
     }
 
+    private void saveCurrentBoosts(UUID target) {
+        RunicCommon.getLuckPermsAPI().savePayload(RunicCommon.getLuckPermsAPI().createPayload(target, (data) -> {
+            for (StoreBoost storedBoost : playerBoosts.get(target).keySet()) {
+                if (!data.containsKey(storedBoost.getPermission()) && playerBoosts.get(target).get(storedBoost) == 0)
+                    continue;
+                data.set(storedBoost.getPermission(), playerBoosts.get(target).get(storedBoost));
+            }
+        }));
+    }
+
     private static class ActiveBoost {
 
         private final long startTimeStamp = System.currentTimeMillis();
@@ -223,16 +231,6 @@ public class BoostManager implements BoostAPI, Listener {
             bossBar.setTitle(title);
         }
 
-    }
-
-    private record BoostPayload(UUID owner, Map<StoreBoost, Integer> boosts) implements LuckPermsPayload {
-        @Override
-        public void saveToData(LuckPermsData data) {
-            for (StoreBoost boost : boosts.keySet()) {
-                if (!data.containsKey(boost.getPermission()) && boosts.get(boost) == 0) continue;
-                data.set(boost.getPermission(), boosts.get(boost));
-            }
-        }
     }
 
 }

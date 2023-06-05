@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class LuckPermsManager implements LuckPermsAPI, Listener {
@@ -59,6 +60,21 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
     @Override
     public CompletableFuture<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
         return payloadManagers.get(owner).loadData(ignoreCache);
+    }
+
+    @Override
+    public LuckPermsPayload createPayload(final UUID owner, final Consumer<LuckPermsData> writeConsumer) {
+        return new LuckPermsPayload() {
+            @Override
+            public void saveToData(LuckPermsData data) {
+                writeConsumer.accept(data);
+            }
+
+            @Override
+            public UUID owner() {
+                return owner;
+            }
+        };
     }
 
     private static class UserPayloadManager {
