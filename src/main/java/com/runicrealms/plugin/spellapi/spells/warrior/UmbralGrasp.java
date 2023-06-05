@@ -41,7 +41,7 @@ public class UmbralGrasp extends Spell implements DurationSpell, MagicDamageSpel
         this.setDescription("You conjure a spectral skull and launch it forwards! " +
                 "Hitting an enemy deals (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage on impact, " +
-                "pulls you away and then directory to the target, then slows them for " + duration + "s " +
+                "launches you backwards, teleports you directory to the target, then slows them for " + duration + "s " +
                 "and deals the same damage again!");
     }
 

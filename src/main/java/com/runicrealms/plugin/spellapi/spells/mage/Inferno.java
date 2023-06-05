@@ -5,10 +5,12 @@ import com.runicrealms.plugin.common.CharacterClass;
 import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.spellapi.spelltypes.DurationSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
+import com.runicrealms.plugin.spellapi.spelltypes.StackTask;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inferno extends Spell implements DurationSpell {
-    private final Map<UUID, InfernoTask> infernoMap = new ConcurrentHashMap<>();
+    private final Map<UUID, StackTask> infernoMap = new ConcurrentHashMap<>();
     private int period;
     private double percent;
     private int damageCapPerTick;
@@ -33,7 +35,7 @@ public class Inferno extends Spell implements DurationSpell {
     public Inferno() {
         super("Inferno", CharacterClass.MAGE);
         this.setIsPassive(true);
-        this.setDescription("Casting a Pyromancer spell creates a stack of &7&oinferno&7. " +
+        this.setDescription("Casting a fire spell creates a stack of &7&oinferno&7. " +
                 "After gaining " + stacksRequired + " stacks, your next spell releases the inferno! " +
                 "&7&oInfernal &7spells burn targets for " + (percent * 100) +
                 "% max health every second for " + duration + "s. " +
@@ -51,6 +53,7 @@ public class Inferno extends Spell implements DurationSpell {
     }
 
     private void triggerInferno(Player player, LivingEntity victim) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 2.0f);
         boolean isCapped = !(victim instanceof Player);
         new BukkitRunnable() {
             int count = 0;
@@ -120,24 +123,28 @@ public class Inferno extends Spell implements DurationSpell {
         if (event.getSpell() == null) return;
         // Trigger inferno
         if (infernoMap.containsKey(event.getPlayer().getUniqueId())
-                && infernoMap.get(event.getPlayer().getUniqueId()).getCharges().get() == stacksRequired) {
+                && infernoMap.get(event.getPlayer().getUniqueId()).getStacks().get() == stacksRequired) {
             infernoMap.get(event.getPlayer().getUniqueId()).getBukkitTask().cancel();
             infernoMap.remove(event.getPlayer().getUniqueId());
             triggerInferno(event.getPlayer(), event.getVictim());
             return;
         }
         // Stack inferno
-        if (!(event.getSpell() instanceof DragonsBreath
+        if (!(event.getSpell() instanceof Fireball
+                || event.getSpell() instanceof DragonsBreath
                 || event.getSpell() instanceof FireBlast
                 || event.getSpell() instanceof MeteorShower)) return;
         Player caster = event.getPlayer();
         if (!infernoMap.containsKey(caster.getUniqueId())) {
             BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> cleanupTask(caster), (long) duration * 20L);
-            infernoMap.put(caster.getUniqueId(), new InfernoTask(caster, new AtomicInteger(1), bukkitTask));
-        } else if (infernoMap.get(caster.getUniqueId()).getCharges().get() < stacksRequired) {
-            infernoMap.get(caster.getUniqueId()).getAndIncrement();
+                    () -> cleanupTask(caster), (long) durationFalloff * 20L);
+            infernoMap.put(caster.getUniqueId(), new StackTask(caster, this, new AtomicInteger(1), bukkitTask));
+        } else if (infernoMap.get(caster.getUniqueId()).getStacks().get() < stacksRequired) {
+            infernoMap.get(caster.getUniqueId()).getStacks().getAndIncrement();
+            infernoMap.get(caster.getUniqueId()).reset((long) durationFalloff, () -> cleanupTask(caster));
         }
+        // Send message feedback
+        caster.sendMessage(ChatColor.GRAY + "Inferno stacks: " + ChatColor.YELLOW + infernoMap.get(caster.getUniqueId()).getStacks().get());
     }
 
     /**
@@ -147,41 +154,6 @@ public class Inferno extends Spell implements DurationSpell {
         infernoMap.remove(player.getUniqueId());
         player.setGlowing(false);
         player.sendMessage(ChatColor.GRAY + "Inferno has expired.");
-    }
-
-    class InfernoTask {
-        private final Player caster;
-        private final AtomicInteger charges;
-        private BukkitTask bukkitTask;
-
-        public InfernoTask(Player caster, AtomicInteger charges, BukkitTask bukkitTask) {
-            this.caster = caster;
-            this.charges = charges;
-            this.bukkitTask = bukkitTask;
-        }
-
-        public BukkitTask getBukkitTask() {
-            return bukkitTask;
-        }
-
-        public void setBukkitTask(BukkitTask bukkitTask) {
-            this.bukkitTask = bukkitTask;
-        }
-
-        public AtomicInteger getCharges() {
-            return charges;
-        }
-
-        public void getAndIncrement() {
-            this.charges.getAndIncrement();
-            Bukkit.broadcastMessage(this.charges.get() + " charges");
-        }
-
-        public void reset() {
-            this.bukkitTask.cancel();
-            this.bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                    () -> cleanupTask(caster), (long) duration * 20L);
-        }
     }
 
 }

@@ -1,31 +1,37 @@
 package com.runicrealms.plugin.spellapi.spellutil.particles;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
-public class ParticleSphere extends BukkitRunnable {
-    private final Location center;
+public class ParticleSphere {
+    private final Player player;
+    private final Sound sound;
     private final double radius;
     private final Particle particleType;
     private final int particleCount;
-    private final long endTime;
+    private Color color;
 
-    public ParticleSphere(Location center, double radius, Particle particleType, int particleCount, int duration) {
-        this.center = center;
+    public ParticleSphere(Player player, Sound sound, double radius, Color color, int particleCount) {
+        this.player = player;
+        this.sound = sound;
+        this.radius = radius;
+        this.particleType = Particle.REDSTONE;
+        this.color = color;
+        this.particleCount = particleCount;
+    }
+
+    public ParticleSphere(Player player, Sound sound, double radius, Particle particleType, int particleCount) {
+        this.player = player;
+        this.sound = sound;
         this.radius = radius;
         this.particleType = particleType;
         this.particleCount = particleCount;
-        this.endTime = System.currentTimeMillis() + (duration * 1000L);
     }
-
-    @Override
-    public void run() {
-        if (System.currentTimeMillis() >= endTime) {
-            this.cancel();
-            return;
-        }
-
+    
+    public void show() {
         for (int i = 0; i < particleCount; i++) {
             double theta = 2.0 * Math.PI * Math.random();
             double phi = Math.acos(2.0 * Math.random() - 1.0);
@@ -33,9 +39,13 @@ public class ParticleSphere extends BukkitRunnable {
             double y = radius * Math.sin(phi) * Math.sin(theta);
             double z = radius * Math.cos(phi);
 
-            Location particleLocation = center.clone().add(x, y, z);
-
-            center.getWorld().spawnParticle(particleType, particleLocation, 1, 0, 0, 0, 0);
+            Location particleLocation = player.getLocation().clone().add(x, y, z);
+            if (this.color != null) {
+                player.getWorld().spawnParticle(particleType, particleLocation, 1, 0, 0, 0, 0, new Particle.DustOptions(color, 1));
+            } else {
+                player.getWorld().spawnParticle(particleType, particleLocation, 1, 0, 0, 0, 0);
+            }
         }
+        player.getWorld().playSound(player.getLocation(), sound, 0.5f, 0.25f);
     }
 }
