@@ -51,8 +51,8 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     }
 
     private void conjureNightfall(Player player) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 0.5f, 2.0f);
-        
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_DEATH, 0.25f, 0.5f);
+
         // Visual effect
         double maxAngle = 45;
         Vector middle = player.getEyeLocation().getDirection().normalize();
@@ -74,6 +74,7 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
             double dot = player.getLocation().getDirection().dot(directionToEntity);
             if (dot < maxAngleCos) continue;
             if (isValidEnemy(player, entity)) {
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.5f, 1.0f);
                 DamageUtil.damageEntitySpell(damage, (LivingEntity) entity, player, false, this);
                 // todo: healing debuff
             }
@@ -106,10 +107,13 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (SoulReaper.getReaperTaskMap().get(event.getCaster()).getStacks().get() < requiredSouls) return;
         Player player = event.getCaster();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, 0.5f, 1.0f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.15f, 0.5f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 0.25f);
+        // Cancel the future task to reset souls
         SoulReaper.getReaperTaskMap().get(event.getCaster()).reset(0, () -> {
         });
+        // Manually reset souls
+        SoulReaper.cleanupTask(player);
         new BukkitRunnable() {
             int count = 0;
 

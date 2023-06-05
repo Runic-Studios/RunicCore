@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Maintains a reference to a BukkitTask to remove all stacks, which can be cancelled and refreshed
  */
 public class StackTask {
+    private static final StackTaskRegistry STACK_TASK_REGISTRY = new StackTaskRegistry();
+
     private final Player caster;
     private final Spell spell;
     private final AtomicInteger stacks;
@@ -29,6 +31,8 @@ public class StackTask {
         this.spell = spell;
         this.stacks = stacks;
         this.bukkitTask = bukkitTask;
+        // Register this task so that we can cancel it if the player crashes, logs out, etc.
+        STACK_TASK_REGISTRY.registerStackTask(this);
     }
 
     public Spell getSpell() {
@@ -53,7 +57,7 @@ public class StackTask {
 
     public void reset(long duration, Runnable cleanupTask) {
         this.bukkitTask.cancel();
-        this.bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
+        this.bukkitTask = Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(),
                 cleanupTask, duration * 20L);
     }
 
