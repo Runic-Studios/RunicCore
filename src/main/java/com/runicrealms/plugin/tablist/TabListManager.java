@@ -94,13 +94,18 @@ public class TabListManager implements Listener, TabAPI {
         }
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
+    @Override
+    public void refreshAllTabLists() {
         for (Player online : Bukkit.getOnlinePlayers()) {
             if (online.hasMetadata("NPC")) continue;
             RunicCore.getInstance().getServer().getScheduler().runTaskLaterAsynchronously
                     (RunicCore.getInstance(), () -> setupTab(online), 1);
         }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        refreshAllTabLists();
     }
 
     /**

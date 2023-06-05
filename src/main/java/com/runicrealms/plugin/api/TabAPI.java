@@ -28,4 +28,9 @@ public interface TabAPI {
      * @param player to set up tab for
      */
     void setupTab(Player player);
+
+    /**
+     * Refreshs everyone's tablists
+     */
+    void refreshAllTabLists();
 }

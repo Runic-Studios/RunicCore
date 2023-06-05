@@ -61,6 +61,7 @@ public class VanishManager implements VanishAPI, Listener {
             throw new IllegalArgumentException("Cannot hide player that is already vanished.");
         vanishedPlayers.add(player);
         for (Player online : Bukkit.getOnlinePlayers()) online.hidePlayer(RunicCore.getInstance(), player);
+        RunicCore.getTabAPI().refreshAllTabLists();
     }
 
     @Override
@@ -69,5 +70,6 @@ public class VanishManager implements VanishAPI, Listener {
             throw new IllegalArgumentException("Cannot show player that is not vanished.");
         vanishedPlayers.remove(player);
         for (Player online : Bukkit.getOnlinePlayers()) online.showPlayer(RunicCore.getInstance(), player);
+        RunicCore.getTabAPI().refreshAllTabLists();
     }
 }
