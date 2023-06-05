@@ -9,12 +9,10 @@ import com.runicrealms.plugin.donor.boost.api.BoostExperienceType;
 import com.runicrealms.plugin.donor.boost.api.StoreBoost;
 import com.runicrealms.plugin.donor.boost.event.BoostActivateEvent;
 import com.runicrealms.plugin.donor.boost.event.BoostEndEvent;
+import com.runicrealms.plugin.luckperms.LuckPermsData;
+import com.runicrealms.plugin.luckperms.LuckPermsPayload;
 import com.runicrealms.plugin.rdb.event.CharacterLoadedEvent;
 import com.runicrealms.runicrestart.RunicRestart;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.cacheddata.CachedMetaData;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.MetaNode;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.boss.BarColor;
@@ -31,13 +29,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class BoostManager implements BoostAPI, Listener {
@@ -76,8 +70,17 @@ public class BoostManager implements BoostAPI, Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        DAO.loadBoostCounts(event.getPlayer().getUniqueId()).thenAccept((payload) ->
-                playerBoosts.put(event.getPlayer().getUniqueId(), payload.boosts));
+        RunicCore.getLuckPermsAPI().retrieveData(event.getPlayer().getUniqueId()).thenAcceptAsync(data -> {
+            Map<StoreBoost, Integer> boosts = new HashMap<>();
+            for (StoreBoost boost : StoreBoost.values()) {
+                if (data.getKeys().contains(boost.getPermission())) {
+                    boosts.put(boost, data.getInteger(boost.getPermission()));
+                } else {
+                    boosts.put(boost, 0);
+                }
+            }
+            playerBoosts.put(event.getPlayer().getUniqueId(), boosts);
+        });
     }
 
     @EventHandler
@@ -101,7 +104,7 @@ public class BoostManager implements BoostAPI, Listener {
     @Override
     public void addStoreBoost(UUID target, StoreBoost boost, int count) {
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) + count);
-        DAO.queueSave(target, playerBoosts.get(target));
+        RunicCore.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
     }
 
     @Override
@@ -115,7 +118,7 @@ public class BoostManager implements BoostAPI, Listener {
         if (activeBoosts.stream().anyMatch(activeBoost -> activeBoost.getBoost() == boost))
             throw new IllegalStateException("Cannot activate " + boost.getIdentifier() + ": one is already active");
         playerBoosts.get(target).put(boost, playerBoosts.get(target).get(boost) - 1);
-        DAO.queueSave(target, playerBoosts.get(target));
+        RunicCore.getLuckPermsAPI().savePayload(new BoostPayload(target, playerBoosts.get(target)));
         activateBoost(player, boost);
     }
 
@@ -221,70 +224,15 @@ public class BoostManager implements BoostAPI, Listener {
 
     }
 
-    // Data access object
-    private static class DAO {
-        // This prevents us from saving boosts more than one at a time
-        private static final ConcurrentLinkedQueue<Payload> queuedSaves = new ConcurrentLinkedQueue<>();
-        private static CompletableFuture<Void> currentFuture = CompletableFuture.completedFuture(null);
-
-        private static CompletableFuture<Payload> loadBoostCounts(UUID target) {
-            CompletableFuture<Payload> future = new CompletableFuture<>();
-            LuckPermsProvider.get().getUserManager().loadUser(target).thenAcceptAsync(user -> {
-                Map<StoreBoost, Integer> boosts = new HashMap<>();
-                CachedMetaData meta = user.getCachedData().getMetaData();
-                for (StoreBoost boost : StoreBoost.values()) {
-                    if (meta.getMeta().containsKey(boost.getPermission())) {
-                        boosts.put(boost, Integer.parseInt(Objects.requireNonNull(meta.getMetaValue(boost.getPermission()))));
-                    } else {
-                        boosts.put(boost, 0);
-                    }
-                }
-                future.complete(new Payload(target, boosts));
-            });
-            return future;
-        }
-
-        private static CompletableFuture<Void> savePayload(Payload payload) {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-            LuckPermsProvider.get().getUserManager().loadUser(payload.target).thenAcceptAsync(user -> {
-                try {
-                    CachedMetaData meta = user.getCachedData().getMetaData();
-                    for (StoreBoost boost : payload.boosts.keySet()) {
-                        if (meta.getMeta().containsKey(boost.getPermission())) {
-                            user.data().clear(NodeType.META.predicate(metaNode -> metaNode.getMetaKey().equalsIgnoreCase(boost.getPermission())));
-                        }
-                        if (payload.boosts.get(boost) > 0)
-                            user.data().add(MetaNode.builder(boost.getPermission(), payload.boosts.get(boost).toString()).build());
-                    }
-                    LuckPermsProvider.get().getUserManager().saveUser(user).thenAcceptAsync(unused -> {
-                        future.complete(null);
-                    });
-                } catch (Exception exception) {
-                    Bukkit.getLogger().log(Level.INFO, "ERROR: could not save boost payload!");
-                    exception.printStackTrace();
-                }
-            });
-            return future;
-        }
-
-        private static void queueSave(UUID target, Map<StoreBoost, Integer> boosts) {
-            synchronized (DAO.class) {
-                queuedSaves.add(new Payload(target, boosts));
-                if (currentFuture.isDone()) {
-                    currentFuture = CompletableFuture.runAsync(() -> {
-                        Payload payload = queuedSaves.poll();
-                        if (payload != null) currentFuture = savePayload(payload);
-                    });
-                } else {
-                    currentFuture = currentFuture.thenRunAsync(() -> {
-                        Payload payload = queuedSaves.poll();
-                        if (payload != null) currentFuture = savePayload(payload);
-                    });
-                }
+    private record BoostPayload(UUID owner, Map<StoreBoost, Integer> boosts) implements LuckPermsPayload {
+        @Override
+        public void saveToData(LuckPermsData data) {
+            for (StoreBoost boost : boosts.keySet()) {
+                if (data.containsKey(boost.getPermission()) && data.getInteger(boost.getPermission()) == boosts.get(boost))
+                    continue;
+                data.set(boost.getPermission(), boosts.get(boost));
             }
         }
-
-        private record Payload(UUID target, Map<StoreBoost, Integer> boosts) {
-        }
     }
+
 }
