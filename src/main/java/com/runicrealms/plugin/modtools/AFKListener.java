@@ -26,7 +26,7 @@ public class AFKListener implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(RunicCore.getInstance(), () -> {
             long currentTime = System.currentTimeMillis();
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.hasPermission("runic.antiafk")) continue;
+                if (player.hasPermission("runiccore.antiafk")) continue;
                 Location location = player.getLocation();
                 Location lastLocation = lastLocations.get(player.getUniqueId());
                 if (lastLocation != null && !lastLocation.equals(location)) {

@@ -3,55 +3,54 @@ package com.runicrealms.plugin.commands.admin;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.Conditions;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import com.runicrealms.plugin.RunicCore;
+import co.aikar.commands.annotation.Subcommand;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
 
 @CommandAlias("gamemode|gm")
 public class GameModeCMD extends BaseCommand {
 
-    public GameModeCMD() {
-        RunicCore.getCommandManager().getCommandCompletions().registerAsyncCompletion("gamemodes", context -> new HashSet<String>() {{
-            add("survival");
-            add("creative");
-            add("adventure");
-        }});
-    }
-
-    // gamemode [gamemode]
-
     @Default
     @CatchUnknown
-    @CommandCompletion("@gamemodes")
-    @Conditions("is-console-or-op")
-    public void onCommand(CommandSender commandSender, String[] args) {
-        if (args.length != 1) {
-            commandSender.sendMessage(ChatColor.YELLOW + "Error, incorrect arguments. Usage: gamemode [gamemode]");
-            return;
-        }
-//        Player player = Bukkit.getPlayer(args[0]);
-//        if (player == null) return;
-        // todo: disable from console
-        // todo: aliases
-        Player player = (Player) commandSender;
-        String gamemode = args[0];
-        if (gamemode.equalsIgnoreCase("adventure")) {
+    public void onCommand(Player player) {
+        if (player.hasPermission("runiccore.gamemode.adventure")) {
             player.setGameMode(GameMode.ADVENTURE);
-        } else if (gamemode.equalsIgnoreCase("creative")) {
-            player.setGameMode(GameMode.CREATIVE);
-        } else if (gamemode.equalsIgnoreCase("survival")) {
-            player.setGameMode(GameMode.SURVIVAL);
-        } else if (gamemode.equalsIgnoreCase("spectator")) {
-            player.setGameMode(GameMode.SPECTATOR);
+            player.sendMessage(ChatColor.GREEN + "Set your gamemode to adventure");
         } else {
-            player.sendMessage(ChatColor.RED + "Error, please enter a valid gamemode");
+            player.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
         }
     }
+
+    @Subcommand("creative")
+    @CommandPermission("runiccore.gamemode.creative")
+    public void onCommandCreative(Player player) {
+        player.setGameMode(GameMode.CREATIVE);
+        player.sendMessage(ChatColor.GREEN + "Set your gamemode to creative");
+    }
+
+    @Subcommand("adventure")
+    @CommandPermission("runiccore.gamemode.adventure")
+    public void onCommandAdventure(Player player) {
+        player.setGameMode(GameMode.ADVENTURE);
+        player.sendMessage(ChatColor.GREEN + "Set your gamemode to adventure");
+    }
+
+    @Subcommand("survival")
+    @CommandPermission("runiccore.gamemode.survival")
+    public void onCommandSurvival(Player player) {
+        player.setGameMode(GameMode.SURVIVAL);
+        player.sendMessage(ChatColor.GREEN + "Set your gamemode to survival");
+    }
+
+    @Subcommand("spectator")
+    @CommandPermission("runiccore.gamemode.spectator")
+    public void onCommandSpectator(Player player) {
+        player.setGameMode(GameMode.SPECTATOR);
+        player.sendMessage(ChatColor.GREEN + "Set your gamemode to spectator");
+    }
+
 }
