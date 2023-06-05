@@ -23,13 +23,18 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
@@ -376,16 +381,75 @@ public class PartyCommand extends BaseCommand {
                 player.sendMessage(ColorUtil.format(PREFIX + " &cThis command can only be used in safezones!"));
                 return;
             }
-            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
-                for (Player partyMember : party.getMembers()) {
-                    partyMember.teleport(player.getLocation());
-                    partyMember.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&a has summoned you to their location!"));
-                }
-            });
-            player.sendMessage(ColorUtil.format(PREFIX + " &aYou have summoned your party to your location! You will be able to use this command again in &224 hours&a."));
+//            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+//                for (Player partyMember : party.getMembers()) {
+//                    partyMember.teleport(player.getLocation());
+//                }
+//            });
+            new PartySummon(player, party);
+            player.sendMessage(ColorUtil.format(PREFIX + " &aYou have activated a &2party summon &ato your location! " +
+                    "Your party members must stand still for 5 seconds for it to activate. " +
+                    "&cYou will be able to use this command again in &424 hours&c."));
             user.data().add(Node.builder("runic.cooldown.partysummon").expiry(24, TimeUnit.HOURS).build());
             LuckPermsProvider.get().getUserManager().saveUser(user);
         });
     }
+
+    private static class PartySummon {
+
+        private final BukkitTask timer;
+        private final Map<UUID, Location> locations = new HashMap<>();
+        private final Map<UUID, Integer> countdowns = new HashMap<>();
+        private final Set<UUID> finishedTeleport = new HashSet<>();
+
+        public PartySummon(Player leader, Party party) {
+            for (Player player : party.getMembers()) {
+                player.sendMessage(ColorUtil.format(PREFIX + " &f" + leader.getName() + "&a has summoned you to their location. &2&lSTAND STILL &r&afor 5 seconds to be teleported."));
+            }
+            final Location teleportLocation = leader.getLocation();
+            timer = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
+                for (Player player : party.getMembers()) {
+                    if (finishedTeleport.contains(player.getUniqueId())) continue;
+                    Location lastLocation = locations.get(player.getUniqueId());
+                    Location playerLocation = player.getLocation();
+                    locations.put(player.getUniqueId(), playerLocation);
+                    if (lastLocation != null && !locationMatches(lastLocation, playerLocation, 0.5f)) {
+                        countdowns.put(player.getUniqueId(), 0);
+                        player.sendMessage(ColorUtil.format(PREFIX + " &cYou moved! &4&lSTAND STILL &cto continue your teleport!"));
+                    } else {
+                        Integer currentCountdown = countdowns.get(player.getUniqueId());
+                        if (currentCountdown == null) currentCountdown = 0;
+                        currentCountdown++;
+                        if (currentCountdown >= 6) {
+                            player.sendMessage(ColorUtil.format(PREFIX + " &aYou have been summoned to &f" + leader.getName() + "&a's location!"));
+                            leader.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&a has been summoned you your location!"));
+                            player.teleport(teleportLocation);
+                            finishedTeleport.add(player.getUniqueId());
+                        } else {
+                            int countdown = 5 - currentCountdown + 1;
+                            player.sendMessage(ColorUtil.format(PREFIX + " &aTeleporting in " + countdown + "..."));
+                        }
+                        countdowns.put(player.getUniqueId(), currentCountdown);
+                    }
+                }
+            }, 0L, 20);
+            Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
+                timer.cancel();
+                for (Player player : party.getMembers()) {
+                    if (finishedTeleport.contains(player.getUniqueId())) continue;
+                    player.sendMessage(ColorUtil.format(PREFIX + " &cYou failed your summon to &f" + leader.getName() + "&c's location."));
+                    leader.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&c's teleport failed because they kept moving."));
+                }
+            }, 20 * 10 + 1);
+        }
+
+        private static boolean locationMatches(Location locationOne, Location locationTwo, float maxOffset) {
+            return Math.abs(locationOne.getX() - locationTwo.getX()) <= maxOffset
+                    && Math.abs(locationOne.getY() - locationTwo.getY()) <= maxOffset
+                    && Math.abs(locationOne.getZ() - locationTwo.getZ()) <= maxOffset;
+        }
+
+    }
+
 
 }
