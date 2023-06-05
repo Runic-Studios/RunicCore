@@ -45,9 +45,17 @@ public class SoulReaper extends Spell implements DurationSpell {
         return REAPER_TASK_MAP;
     }
 
-    public static void cleanupTask(Player player) {
+    public static void cleanupTask(Player player, String text) {
         REAPER_TASK_MAP.remove(player);
-        player.sendMessage(ChatColor.GRAY + "Soul Reaper has expired.");
+        player.sendMessage(ChatColor.GRAY + text);
+    }
+
+    public double getMaxStacks() {
+        return maxStacks;
+    }
+
+    public void setMaxStacks(double maxStacks) {
+        this.maxStacks = maxStacks;
     }
 
     @EventHandler
@@ -111,14 +119,16 @@ public class SoulReaper extends Spell implements DurationSpell {
             Player player = event.getPlayer();
             if (!REAPER_TASK_MAP.containsKey(player)) {
                 BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(RunicCore.getInstance(),
-                        () -> cleanupTask(player), (long) duration * 20L);
+                        () -> cleanupTask(player, "Soul Reaper has expired."), (long) duration * 20L);
                 REAPER_TASK_MAP.put(player, new StackTask(player, this, new AtomicInteger(1), bukkitTask));
             } else {
                 if (REAPER_TASK_MAP.get(player).getStacks().get() < maxStacks) {
                     REAPER_TASK_MAP.get(player).getStacks().getAndIncrement();
                 }
-                REAPER_TASK_MAP.get(player).reset((long) duration, () -> cleanupTask(player));
+                REAPER_TASK_MAP.get(player).reset((long) duration, () -> cleanupTask(player, "Soul Reaper has expired."));
             }
+            // Send message feedback
+            player.sendMessage(ChatColor.GRAY + "Souls: " + ChatColor.YELLOW + REAPER_TASK_MAP.get(player).getStacks().get());
         }
     }
 
@@ -130,10 +140,6 @@ public class SoulReaper extends Spell implements DurationSpell {
     @Override
     public void setDuration(double duration) {
         this.duration = duration;
-    }
-
-    public void setMaxStacks(double maxStacks) {
-        this.maxStacks = maxStacks;
     }
 
     public void setPercent(double percent) {

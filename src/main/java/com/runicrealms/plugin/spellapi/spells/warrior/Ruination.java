@@ -10,6 +10,7 @@ import com.runicrealms.plugin.spellapi.spelltypes.RadiusSpell;
 import com.runicrealms.plugin.spellapi.spelltypes.Spell;
 import com.runicrealms.plugin.utilities.DamageUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Ruination extends Spell implements DurationSpell, MagicDamageSpell, RadiusSpell {
+    private final Set<UUID> cooldownPlayers = new HashSet<>();
     private final Set<UUID> weakenedHealers = new HashSet<>();
     private double damage;
     private double damagePerLevel;
@@ -46,7 +48,7 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
         this.setDescription("After claiming " + requiredSouls + " &f&osouls&7, " +
                 "your next spell unleashes the spirits of your victims! " +
                 "For the next " + duration + "s, the souls stream out of your body, " +
-                "resetting your stacks and dealing (" + damage + " + &f" + damagePerLevel
+                "dealing (" + damage + " + &f" + damagePerLevel
                 + "x&7 lvl) magicʔ damage per second, " +
                 "as well as lowering enemy healing received by " +
                 (percent * 100) + "% in a " + radius + " block cone in front of you! " +
@@ -58,7 +60,9 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
     }
 
     private void conjureNightfall(Player player) {
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_DEATH, 0.25f, 0.5f);
+        cooldownPlayers.add(player.getUniqueId());
+        Bukkit.getScheduler().runTaskLater(plugin, () -> cooldownPlayers.remove(player.getUniqueId()), (long) effectCooldown * 20L);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_DEATH, 0.35f, 0.5f);
 
         // Visual effect
         double maxAngle = 45;
@@ -111,26 +115,22 @@ public class Ruination extends Spell implements DurationSpell, MagicDamageSpell,
             Vector offset = new Vector(0, yOffset, 0);
             Vector particleDirection = look.clone().multiply(distance).add(offset);
             Location particleLocation = location.clone().add(particleDirection);
-            world.spawnParticle(Particle.SLIME, particleLocation, 0, 0, 0, 0, 0);
+            world.spawnParticle(Particle.REDSTONE, particleLocation, 0, 0, 0, 0, 0, new Particle.DustOptions(Color.TEAL, 1));
             world.spawnParticle(Particle.BLOCK_CRACK, particleLocation, 0, 0, 0, 0, 0, Bukkit.createBlockData(Material.SLIME_BLOCK));
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onSpellCast(SpellCastEvent event) {
         if (event.isCancelled()) return;
         if (SoulReaper.getReaperTaskMap().isEmpty()) return;
         if (!SoulReaper.getReaperTaskMap().containsKey(event.getCaster())) return;
+        if (cooldownPlayers.contains(event.getCaster().getUniqueId())) return;
         if (!hasPassive(event.getCaster().getUniqueId(), this.getName())) return;
         if (SoulReaper.getReaperTaskMap().get(event.getCaster()).getStacks().get() < requiredSouls) return;
         Player player = event.getCaster();
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.15f, 0.5f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.35f, 0.5f);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, 0.5f, 0.25f);
-        // Cancel the future task to reset souls
-        SoulReaper.getReaperTaskMap().get(event.getCaster()).reset(0, () -> {
-        });
-        // Manually reset souls
-        SoulReaper.cleanupTask(player);
         new BukkitRunnable() {
             int count = 0;
 
