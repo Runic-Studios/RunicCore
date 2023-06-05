@@ -22,6 +22,7 @@ import com.runicrealms.plugin.api.StatAPI;
 import com.runicrealms.plugin.api.StatusEffectAPI;
 import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.api.TitleAPI;
+import com.runicrealms.plugin.api.VanishAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
 import com.runicrealms.plugin.codec.CodecHandler;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
@@ -115,6 +116,7 @@ import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
+import com.runicrealms.plugin.modtools.VanishManager;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
 import com.runicrealms.plugin.party.PartyDamageListener;
@@ -216,6 +218,7 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static RedisAPI redisAPI;
     private static AmbientSoundHandler ambientSoundHandler;
     private static BoostAPI boostAPI;
+    private static VanishAPI vanishAPI;
 
     // getters for handlers
     public static RunicCore getInstance() {
@@ -342,6 +345,10 @@ public class RunicCore extends JavaPlugin implements Listener {
         return boostAPI;
     }
 
+    public static VanishAPI getVanishAPI() {
+        return vanishAPI;
+    }
+
     /**
      * @return a TaskChain for thread context switching
      */
@@ -389,6 +396,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         redisAPI = null;
         ambientSoundHandler = null;
         boostAPI = null;
+        vanishAPI = null;
     }
 
     @Override
@@ -458,6 +466,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         gravestoneManager = new GravestoneManager();
         ambientSoundHandler = new AmbientSoundHandler();
         boostAPI = new BoostManager();
+        vanishAPI = new VanishManager();
         new DaylightCycleListener();
         new NpcListener();
         new ArtifactOnCastListener();

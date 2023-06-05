@@ -83,6 +83,7 @@ public class TabListManager implements Listener, TabAPI {
             int i = 0;
             int j = 0;
             for (Player online : Bukkit.getOnlinePlayers()) {
+                if (RunicCore.getVanishAPI().getVanishedPlayers().contains(online)) continue;
                 if (i > 19) j = 1;
                 if (i > 39) break;
                 tableTabList.set(j, i + 1, new TextTabItem(online.getName(), getPing(online), Skins.getPlayer(online)));
