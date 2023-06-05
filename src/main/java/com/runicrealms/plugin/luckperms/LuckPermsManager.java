@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -105,7 +106,8 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
                 LuckPermsProvider.get().getUserManager().loadUser(owner).thenAcceptAsync(user -> {
                     try {
                         // Clear the metadata keys that we are overwriting, if they exist
-                        user.data().clear(NodeType.META.predicate(metaNode -> data.containsKey(metaNode.getMetaKey())));
+                        user.data().clear(NodeType.META.predicate(metaNode -> data.containsKey(metaNode.getMetaKey())
+                                && !Objects.equals(data.get(metaNode.getMetaKey()).toString(), metaNode.getMetaValue())));
                         // Write each metadata key
                         for (String key : data.getKeys())
                             user.data().add(MetaNode.builder(key, data.get(key).toString()).build());

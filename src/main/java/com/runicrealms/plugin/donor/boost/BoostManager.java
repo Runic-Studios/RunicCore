@@ -228,8 +228,7 @@ public class BoostManager implements BoostAPI, Listener {
         @Override
         public void saveToData(LuckPermsData data) {
             for (StoreBoost boost : boosts.keySet()) {
-                if (data.containsKey(boost.getPermission()) && data.getInteger(boost.getPermission()) == boosts.get(boost))
-                    continue;
+                if (!data.containsKey(boost.getPermission()) && boosts.get(boost) == 0) continue;
                 data.set(boost.getPermission(), boosts.get(boost));
             }
         }
