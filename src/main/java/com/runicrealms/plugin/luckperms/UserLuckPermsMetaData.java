@@ -80,6 +80,15 @@ public class UserLuckPermsMetaData implements LuckPermsData {
     }
 
     @Override
+    public long getLong(String key) {
+        try {
+            return Long.parseLong(data.get(key));
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Cannot retrieve key \"" + key + "\": value \"" + data.get(key) + "\" is not a long!");
+        }
+    }
+
+    @Override
     public Object get(String key) {
         return data.get(key);
     }
