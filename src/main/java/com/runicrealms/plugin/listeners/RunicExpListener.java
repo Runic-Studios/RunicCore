@@ -7,6 +7,7 @@ import com.runicrealms.plugin.common.util.ColorUtil;
 import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +34,7 @@ public class RunicExpListener implements Listener {
         hologram.getVisibilityManager().setVisibleByDefault(false);
         linesToDisplay.forEach(hologram::appendTextLine);
         hologram.getVisibilityManager().showTo(player);
-        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), hologram::delete, 40L); // 2s
+        Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), hologram::delete, 60L); // 2s
     }
 
     /**
@@ -60,22 +61,38 @@ public class RunicExpListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST) // executes last
     public void onExperienceGain(RunicCombatExpEvent event) {
+        if (event.isCancelled()) return;
+        
         Player player = event.getPlayer();
         if (event.getHologramLocation() != null) { // world mobs
             List<String> hologramList = new LinkedList<>();
-            hologramList.add(ColorUtil.format("&7+ &f" + event.getAmountNoBonuses() + " &7exp"));
-            int boostExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.BOOST);
-            if (boostExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + boostExpBonus + " &7boost exp"));
-            int partyExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.PARTY);
-            if (partyExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + partyExpBonus + " &7party exp"));
-            int wisdomExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.WISDOM);
-            if (wisdomExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + wisdomExpBonus + " &7wisdom exp"));
-            int guildExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.GUILD);
-            if (guildExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + guildExpBonus + " &7guild exp"));
-            int voteExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.VOTE);
-            if (voteExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + voteExpBonus + " &7vote exp"));
-            int outlawExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.OUTLAW);
-            if (outlawExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + outlawExpBonus + " &7outlaw exp"));
+            ChatColor expColor = event.getAmountNoBonuses() == 0 ? ChatColor.RED : ChatColor.WHITE;
+            hologramList.add(ColorUtil.format("&7+ " + expColor + event.getAmountNoBonuses() + " &7exp"));
+            if (event.getAmountNoBonuses() > 0) {
+                int boostExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.BOOST);
+                if (boostExpBonus != 0)
+                    hologramList.add(ColorUtil.format("&7+ &d" + boostExpBonus + " &7boost exp"));
+
+                int partyExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.PARTY);
+                if (partyExpBonus != 0)
+                    hologramList.add(ColorUtil.format("&7+ &d" + partyExpBonus + " &7party exp"));
+
+                int wisdomExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.WISDOM);
+                if (wisdomExpBonus != 0)
+                    hologramList.add(ColorUtil.format("&7+ &d" + wisdomExpBonus + " &7wisdom exp"));
+
+                int guildExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.GUILD);
+                if (guildExpBonus != 0)
+                    hologramList.add(ColorUtil.format("&7+ &d" + guildExpBonus + " &7guild exp"));
+
+                int voteExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.VOTE);
+                if (voteExpBonus != 0)
+                    hologramList.add(ColorUtil.format("&7+ &d" + voteExpBonus + " &7vote exp"));
+
+                int outlawExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.OUTLAW);
+                if (outlawExpBonus != 0)
+                    hologramList.add(ColorUtil.format("&7+ &d" + outlawExpBonus + " &7outlaw exp"));
+            }
             hologramList.add(ColorUtil.format("&f" + player.getName()));
             createExpHologram(player, event.getHologramLocation(), hologramList, 2.5f);
         }
