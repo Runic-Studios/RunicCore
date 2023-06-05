@@ -10,8 +10,13 @@ import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ChatUtils;
+import com.runicrealms.plugin.common.util.ColorUtil;
+import com.runicrealms.plugin.donor.DonorRank;
 import com.runicrealms.plugin.party.event.LeaveReason;
 import com.runicrealms.plugin.party.event.PartyLeaveEvent;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.node.Node;
+import net.luckperms.api.node.types.PermissionNode;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -25,6 +30,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 @CommandAlias("party")
@@ -331,6 +337,55 @@ public class PartyCommand extends BaseCommand {
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYou were teleported with your party!"));
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aTeleported nearby party members to your location!"));
+    }
+
+    @Subcommand("summon")
+    public void onCommandSummon(Player player) {
+        DonorRank rank = DonorRank.getDonorRank(player);
+        if (!rank.hasPartySummon()) {
+            player.sendMessage(ColorUtil.format(PREFIX + " &cYou do not have permission to use this command! Purchase &5&lCHAMPION &r&crank to gain access to this command."));
+            return;
+        }
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
+        if (party == null) {
+            player.sendMessage(ColorUtil.format(PREFIX + " &cYou must be in a party to use this command!"));
+            return;
+        }
+        if (party.getLeader().getUniqueId() != player.getUniqueId()) {
+            player.sendMessage(ColorUtil.format(PREFIX + " &cYou must be your party's leader to use this command!"));
+            return;
+        }
+        LuckPermsProvider.get().getUserManager().loadUser(player.getUniqueId()).thenAcceptAsync(user -> {
+            for (Node node : user.getNodes()) {
+                if (node instanceof PermissionNode permissionNode && permissionNode.getPermission().equalsIgnoreCase("runic.cooldown.partysummon")) {
+                    if (node.hasExpiry()) {
+                        int cooldown = (int) (node.getExpiryDuration().getSeconds() / 60 / 60);
+                        String text = cooldown > 1 ? cooldown + " hours" : (cooldown == 1 ? "1 hour" : (node.getExpiryDuration().getSeconds() / 60) + " minutes");
+                        player.sendMessage(ColorUtil.format(PREFIX + " &cThis command is on cooldown for " + text + "!"));
+                    } else {
+                        player.sendMessage(ColorUtil.format(PREFIX + " &cThere was an error executing this command!"));
+                    }
+                    return;
+                }
+            }
+            if (RunicCore.getCombatAPI().isInCombat(player.getUniqueId())) {
+                player.sendMessage(ColorUtil.format(PREFIX + " &cYou cannot use this command while in combat!"));
+                return;
+            }
+            if (!RunicCore.getRegionAPI().isSafezone(player.getLocation())) {
+                player.sendMessage(ColorUtil.format(PREFIX + " &cThis command can only be used in safezones!"));
+                return;
+            }
+            Bukkit.getScheduler().runTask(RunicCore.getInstance(), () -> {
+                for (Player partyMember : party.getMembers()) {
+                    partyMember.teleport(player.getLocation());
+                    partyMember.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&a has summoned you to their location!"));
+                }
+            });
+            player.sendMessage(ColorUtil.format(PREFIX + " &aYou have summoned your party to your location! You will be able to use this command again in &224 hours&a."));
+            user.data().add(Node.builder("runic.cooldown.partysummon").expiry(24, TimeUnit.HOURS).build());
+            LuckPermsProvider.get().getUserManager().saveUser(user);
+        });
     }
 
 }
