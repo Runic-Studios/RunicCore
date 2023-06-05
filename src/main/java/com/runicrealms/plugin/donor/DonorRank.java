@@ -17,12 +17,16 @@ public enum DonorRank {
             "knight", 2, "runic.rank.knight", "Knight", "The Bold", ChatColor.AQUA,
             6, true, false, 5, 3, WeaponSkinTier.ENHANCED
     ),
+    ALPHA(
+            "alpha", 3, "runic.rank.alpha", "Alpha", "Alpha", ChatColor.BLUE,
+            6, true, false, 5, 3, WeaponSkinTier.ENHANCED
+    ),
     HERO(
-            "hero", 3, "runic.rank.hero", "Hero", "The Valiant", ChatColor.YELLOW,
+            "hero", 4, "runic.rank.hero", "Hero", "The Valiant", ChatColor.YELLOW,
             8, true, false, 8, 5, WeaponSkinTier.ENHANCED
     ),
     CHAMPION(
-            "champion", 4, "runic.rank.champion", "Champion", "The Magnificent", ChatColor.DARK_PURPLE,
+            "champion", 5, "runic.rank.champion", "Champion", "The Magnificent", ChatColor.DARK_PURPLE,
             10, true, true, 10, 6, WeaponSkinTier.ENHANCED
     );
 
