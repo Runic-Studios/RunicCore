@@ -26,7 +26,7 @@ public class PlayerQueueManager implements Listener {
             "runic.rank.knight",
             "runic.rank.alpha"
     };
-    private static final String BYPASS_PERMISSION = "runic.team";
+    private static final String BYPASS_PERMISSION = "runic.queuebypass";
     private final int MAX_PLAYER_SLOTS = RunicCore.getInstance().getConfig().getInt("server-slots");
     private final int QUEUE_SAVE_MIN = 2; // how many minutes do we save your spot for
     private final long MAX_JOIN_INTERVAL = 5 * 60 * 1000; // explanation:
