@@ -118,6 +118,7 @@ import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
+import com.runicrealms.plugin.modtools.AFKListener;
 import com.runicrealms.plugin.modtools.TempbanListener;
 import com.runicrealms.plugin.modtools.VanishManager;
 import com.runicrealms.plugin.party.PartyChannel;
@@ -635,6 +636,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new ProfileUIListener(), this);
         pm.registerEvents(new DonorPerksUIListener(), this);
         pm.registerEvents(new TempbanListener(), this);
+        pm.registerEvents(new AFKListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

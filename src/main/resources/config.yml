@@ -20,3 +20,4 @@ queue-recommended:
     crypts-of-dera: 5
     the-frozen-fortress: 10
 server-slots: 50
+afk-kick-seconds: 300
