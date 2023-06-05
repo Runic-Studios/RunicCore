@@ -6,7 +6,10 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Conditions;
 import co.aikar.commands.annotation.Subcommand;
 import com.runicrealms.plugin.RunicCore;
-import com.runicrealms.plugin.events.RunicExpEvent;
+import com.runicrealms.plugin.events.RunicCombatExpEvent;
+import com.runicrealms.plugin.events.RunicMobCombatExpEvent;
+import com.runicrealms.plugin.party.Party;
+import com.runicrealms.plugin.party.PartyExpPayload;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -34,35 +37,34 @@ public class RunicGiveCMD extends BaseCommand {
 
         // skip all other calculations for quest exp
         if (args.length == 3) {
-            RunicExpEvent e = new RunicExpEvent(exp, exp, player, RunicExpEvent.RunicExpSource.QUEST, 0, null);
+            RunicCombatExpEvent e = new RunicCombatExpEvent(exp, false, player, RunicCombatExpEvent.RunicExpSource.QUEST, null);
             Bukkit.getPluginManager().callEvent(e);
             return;
         }
 
+        Party party = RunicCore.getPartyAPI().getParty(player.getUniqueId());
+
         // if the player doesn't have a party, or they're in by themselves, give them regular exp.
-        if (RunicCore.getPartyAPI().getParty(player.getUniqueId()) == null
-                || RunicCore.getPartyAPI().getParty(player.getUniqueId()) != null
-                && RunicCore.getPartyAPI().getParty(player.getUniqueId()).getSize() < 2) {
+        if (party == null || party.getSize() < 2) {
             if (args.length != 6) {
-                RunicExpEvent e = new RunicExpEvent(exp, exp, player, RunicExpEvent.RunicExpSource.DUNGEON, 0, null);
+                RunicCombatExpEvent e = new RunicCombatExpEvent(exp, true, player, RunicCombatExpEvent.RunicExpSource.DUNGEON, null);
                 Bukkit.getPluginManager().callEvent(e);
             } else {
                 int mobLv = Integer.parseInt(args[5]);
                 Location loc = new Location(player.getWorld(), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
-                RunicExpEvent e = new RunicExpEvent(exp, exp, player, RunicExpEvent.RunicExpSource.MOB, mobLv, loc);
+                RunicCombatExpEvent e = new RunicMobCombatExpEvent(exp, true, player, mobLv, loc);
                 Bukkit.getPluginManager().callEvent(e);
             }
 
-            // otherwise, apply party exp bonus (now calculated in listener)
+            // otherwise, send party exp
         } else {
+            int mobLevel = Integer.parseInt(args[5]);
+            Location location = null;
             if (args.length == 6) {
-                Location loc = new Location(player.getWorld(), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]));
-                RunicExpEvent e = new RunicExpEvent(exp, exp, player, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[5]), loc);
-                Bukkit.getPluginManager().callEvent(e);
-            } else {
-                RunicExpEvent e = new RunicExpEvent(exp, exp, player, RunicExpEvent.RunicExpSource.MOB, Integer.parseInt(args[5]), null);
-                Bukkit.getPluginManager().callEvent(e);
+                location = new Location(player.getWorld(), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]));
             }
+            PartyExpPayload payload = new PartyExpPayload(player, party, exp, mobLevel, location);
+            payload.distributePartyExp();
         }
     }
 

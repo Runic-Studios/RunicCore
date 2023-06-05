@@ -4,18 +4,16 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.runicrealms.plugin.RunicCore;
 import com.runicrealms.plugin.common.util.ColorUtil;
-import com.runicrealms.plugin.events.RunicExpEvent;
-import com.runicrealms.plugin.party.PartyExpPayload;
+import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import com.runicrealms.plugin.player.utilities.PlayerLevelUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,56 +47,39 @@ public class RunicExpListener implements Listener {
                 && RunicCore.getPartyAPI().getParty(uuid).getSize() >= 2;
     }
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onExperienceGainParty(RunicCombatExpEvent event) {
+        if (isInPartyOfMinSizeTwo(event.getPlayer().getUniqueId())) {
+            event.setBonus(RunicCombatExpEvent.BonusType.PARTY, PARTY_BONUS);
+        }
+    }
+
     /**
      * This code finally dishes out experience once all modifiers have been applied.
      * Also applies logic for party bonus
      */
     @EventHandler(priority = EventPriority.HIGHEST) // executes last
-    public void onExperienceGain(RunicExpEvent event) {
+    public void onExperienceGain(RunicCombatExpEvent event) {
         Player player = event.getPlayer();
-
-
-        // quests and other sources don't get exp modifiers, so skip calculations
-        if (event.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST
-                || event.getRunicExpSource() == RunicExpEvent.RunicExpSource.OTHER
-                || event.getRunicExpSource() == RunicExpEvent.RunicExpSource.PARTY) {
-            PlayerLevelUtil.giveExperience(event.getPlayer(), event.getFinalAmount());
-            return;
+        if (event.getHologramLocation() != null) { // world mobs
+            List<String> hologramList = new LinkedList<>();
+            hologramList.add(ColorUtil.format("&7+ &f" + event.getAmountNoBonuses() + " &7exp"));
+            int boostExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.BOOST);
+            if (boostExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + boostExpBonus + " &7boost exp"));
+            int partyExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.PARTY);
+            if (partyExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + partyExpBonus + " &7party exp"));
+            int wisdomExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.WISDOM);
+            if (wisdomExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + wisdomExpBonus + " &7wisdom exp"));
+            int guildExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.GUILD);
+            if (guildExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + guildExpBonus + " &7guild exp"));
+            int voteExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.VOTE);
+            if (voteExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + voteExpBonus + " &7vote exp"));
+            int outlawExpBonus = event.getExpFromBonus(RunicCombatExpEvent.BonusType.OUTLAW);
+            if (outlawExpBonus != 0) hologramList.add(ColorUtil.format("&7+ &d" + outlawExpBonus + " &7outlaw exp"));
+            hologramList.add("&f" + player.getName());
+            createExpHologram(player, event.getHologramLocation(), hologramList, 2.5f);
         }
 
-        if (!isInPartyOfMinSizeTwo(player.getUniqueId())) {
-            if (event.getLocation() != null) { // world mobs
-                Location loc = event.getLocation();
-                int plLv = player.getLevel();
-                ChatColor expColor = ChatColor.WHITE;
-                if (event.getMobLevel() > (plLv + LEVEL_CUTOFF) || event.getMobLevel() < (plLv - LEVEL_CUTOFF)) {
-                    event.setFinalAmount(0);
-                    expColor = ChatColor.RED;
-                }
-
-                createExpHologram(player, loc, Collections.singletonList(ColorUtil.format("&7+ " + expColor + event.getFinalAmount() + " &7exp")), 2.5f);
-                createExpHologram(player, loc, Collections.singletonList(ColorUtil.format("&f" + player.getName())), 2.25f);
-            }
-
-            PlayerLevelUtil.giveExperience(event.getPlayer(), event.getFinalAmount());
-
-            // Player has valid party
-        } else {
-            int extraAmt = (int) (event.getOriginalAmount() * PARTY_BONUS);
-            if (extraAmt < 1)
-                extraAmt = 1;
-            event.setFinalAmount(event.getFinalAmount() + extraAmt);
-            /*
-            Use final amount in this case, so we have Outlaw bonus's included in party bonus.
-            (Only outlaws can party with outlaws)
-             */
-            PartyExpPayload partyExpPayload = new PartyExpPayload
-                    (
-                            player,
-                            RunicCore.getPartyAPI().getParty(player.getUniqueId()),
-                            event
-                    );
-            partyExpPayload.distributePartyExp();
-        }
+        PlayerLevelUtil.giveExperience(event.getPlayer(), event.getFinalAmount());
     }
 }

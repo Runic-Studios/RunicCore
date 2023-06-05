@@ -7,7 +7,7 @@ import com.runicrealms.plugin.events.MagicDamageEvent;
 import com.runicrealms.plugin.events.ManaRegenEvent;
 import com.runicrealms.plugin.events.MobDamageEvent;
 import com.runicrealms.plugin.events.PhysicalDamageEvent;
-import com.runicrealms.plugin.events.RunicExpEvent;
+import com.runicrealms.plugin.events.RunicCombatExpEvent;
 import com.runicrealms.plugin.events.SpellCastEvent;
 import com.runicrealms.plugin.events.SpellHealEvent;
 import com.runicrealms.plugin.player.listener.ManaListener;
@@ -87,14 +87,13 @@ public class StatListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onExp(RunicExpEvent event) {
+    public void onExp(RunicCombatExpEvent event) {
         if (event.isCancelled()) return;
         // No exp boost to quest exp
-        if (event.getRunicExpSource() == RunicExpEvent.RunicExpSource.QUEST) return;
+        if (event.getRunicExpSource() == RunicCombatExpEvent.RunicExpSource.QUEST) return;
         UUID uuid = event.getPlayer().getUniqueId();
         double wisdomBonusPercent = Stat.getExpMult() * RunicCore.getStatAPI().getPlayerWisdom(uuid);
-        double bonus = wisdomBonusPercent * event.getOriginalAmount();
-        event.setFinalAmount((int) (event.getFinalAmount() + bonus));
+        event.setBonus(RunicCombatExpEvent.BonusType.WISDOM, wisdomBonusPercent);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
