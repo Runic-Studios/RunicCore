@@ -45,6 +45,7 @@ import com.runicrealms.plugin.commands.admin.VanishCMD;
 import com.runicrealms.plugin.commands.player.ExpCMD;
 import com.runicrealms.plugin.commands.player.HelpCMD;
 import com.runicrealms.plugin.commands.player.MapLink;
+import com.runicrealms.plugin.commands.player.RollCMD;
 import com.runicrealms.plugin.commands.player.RunicVoteCMD;
 import com.runicrealms.plugin.commands.player.SpawnCMD;
 import com.runicrealms.plugin.commands.player.WhoIsCMD;
@@ -548,6 +549,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new GameModeCMD());
         commandManager.registerCommand(new ArmorStandCMD());
         commandManager.registerCommand(new ExpCMD());
+        commandManager.registerCommand(new RollCMD());
         commandManager.registerCommand(new AddBoostCommand());
         commandManager.registerCommand(new DonorCommand());
         commandManager.registerCommand(new BoostCommand());
