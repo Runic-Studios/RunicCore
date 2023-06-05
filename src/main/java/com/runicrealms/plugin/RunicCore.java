@@ -37,6 +37,8 @@ import com.runicrealms.plugin.commands.admin.RunicGiveCMD;
 import com.runicrealms.plugin.commands.admin.RunicTeleportCMD;
 import com.runicrealms.plugin.commands.admin.SetCMD;
 import com.runicrealms.plugin.commands.admin.SpeedCMD;
+import com.runicrealms.plugin.commands.admin.TempbanCMD;
+import com.runicrealms.plugin.commands.admin.TempunbanCMD;
 import com.runicrealms.plugin.commands.admin.TravelCMD;
 import com.runicrealms.plugin.commands.admin.VanishCMD;
 import com.runicrealms.plugin.commands.player.ExpCMD;
@@ -116,6 +118,7 @@ import com.runicrealms.plugin.luckperms.LuckPermsManager;
 import com.runicrealms.plugin.model.MongoTask;
 import com.runicrealms.plugin.model.SettingsManager;
 import com.runicrealms.plugin.model.TitleManager;
+import com.runicrealms.plugin.modtools.TempbanListener;
 import com.runicrealms.plugin.modtools.VanishManager;
 import com.runicrealms.plugin.party.PartyChannel;
 import com.runicrealms.plugin.party.PartyCommand;
@@ -547,6 +550,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         commandManager.registerCommand(new DonorCommand());
         commandManager.registerCommand(new BoostCommand());
         commandManager.registerCommand(new WhoIsCMD());
+        commandManager.registerCommand(new TempbanCMD());
+        commandManager.registerCommand(new TempunbanCMD());
     }
 
     private void registerEvents() {
@@ -629,6 +634,7 @@ public class RunicCore extends JavaPlugin implements Listener {
         pm.registerEvents(new BoostConfirmUIListener(), this);
         pm.registerEvents(new ProfileUIListener(), this);
         pm.registerEvents(new DonorPerksUIListener(), this);
+        pm.registerEvents(new TempbanListener(), this);
         partyChannel = new PartyChannel();
         RunicChat.getRunicChatAPI().registerChatChannel(partyChannel);
     }

@@ -40,7 +40,7 @@ public class PlayerQueueManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, RunicCore.getInstance());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(PlayerLoginEvent event) {
         if (event.getPlayer().hasPermission(BYPASS_PERMISSION)) {
             event.allow();

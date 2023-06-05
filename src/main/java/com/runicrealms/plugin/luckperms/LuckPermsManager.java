@@ -34,7 +34,8 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        payloadManagers.put(event.getPlayer().getUniqueId(), new UserPayloadManager(event.getPlayer().getUniqueId()));
+        if (!payloadManagers.containsKey(event.getPlayer().getUniqueId()))
+            payloadManagers.put(event.getPlayer().getUniqueId(), new UserPayloadManager(event.getPlayer().getUniqueId()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -59,6 +60,8 @@ public class LuckPermsManager implements LuckPermsAPI, Listener {
 
     @Override
     public CompletableFuture<LuckPermsData> retrieveData(UUID owner, boolean ignoreCache) {
+        if (!payloadManagers.containsKey(owner))
+            payloadManagers.put(owner, new UserPayloadManager(owner));
         return payloadManagers.get(owner).loadData(ignoreCache);
     }
 
