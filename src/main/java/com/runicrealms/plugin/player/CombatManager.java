@@ -51,6 +51,12 @@ public class CombatManager implements CombatAPI, Listener {
     }
 
     @Override
+    public CombatType getCombatType(UUID uuid) {
+        if (!playersInCombat.containsKey(uuid)) return null;
+        return playersInCombat.get(uuid).getCombatType();
+    }
+
+    @Override
     public void leaveCombat(UUID uuid) {
         playersInCombat.remove(uuid);
     }

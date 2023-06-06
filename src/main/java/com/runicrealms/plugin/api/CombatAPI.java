@@ -31,6 +31,14 @@ public interface CombatAPI {
     boolean isInCombat(UUID uuid);
 
     /**
+     * If the player is in combat, returns the type of combat. Else, returns null
+     *
+     * @param uuid of player
+     * @return the type of combat (mob, PvP)
+     */
+    CombatManager.CombatType getCombatType(UUID uuid);
+
+    /**
      * Removes the specified player from combat
      *
      * @param uuid of player to remove from combat
