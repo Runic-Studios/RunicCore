@@ -23,7 +23,7 @@ public enum DonorRank {
     ),
     HERO(
             "hero", 4, "runic.rank.hero", "Hero", "The Valiant", ChatColor.YELLOW,
-            8, true, false, 8, 5, WeaponSkinTier.ENHANCED
+            8, true, true, 8, 5, WeaponSkinTier.ENHANCED
     ),
     CHAMPION(
             "champion", 5, "runic.rank.champion", "Champion", "The Magnificent", ChatColor.DARK_PURPLE,
