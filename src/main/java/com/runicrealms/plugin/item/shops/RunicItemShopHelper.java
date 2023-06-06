@@ -58,6 +58,7 @@ public class RunicItemShopHelper {
     private final ItemStack zenythHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-zenyth").generateItem();
     private final ItemStack naheenHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-naheen").generateItem();
     private final ItemStack nazmoraHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-nazmora").generateItem();
+    private final ItemStack stonehavenHearthstone = RunicItemsAPI.generateItemFromTemplate("hearthstone-stonehaven").generateItem();
 
     public RunicItemShopHelper() {
         /*
@@ -230,7 +231,7 @@ public class RunicItemShopHelper {
     public RunicShopGeneric getRunicMage() {
         ArrayList<RunicShopItem> shopItems = new ArrayList<>();
         shopItems.add(new RunicShopItem(0, resetSkillTreesIcon(), runRunicMageBuy()));
-        return new RunicShopGeneric(9, ChatColor.LIGHT_PURPLE + "Runic Mage", Arrays.asList(131, 133, 134, 135, 136, 138, 139, 140, 141), shopItems);
+        return new RunicShopGeneric(9, ChatColor.LIGHT_PURPLE + "Runic Mage", Arrays.asList(131, 133, 134, 135, 136, 138, 139, 140, 141, 734), shopItems);
     }
 
     public void initializeInnkeepers() {
@@ -246,6 +247,7 @@ public class RunicItemShopHelper {
         getInnkeeper("zenyth", zenythHearthstone, 390);
         getInnkeeper("naheen", naheenHearthstone, 400);
         getInnkeeper("nazmora", nazmoraHearthstone, 392);
+        getInnkeeper("stonehaven", stonehavenHearthstone, 732);
     }
 
     private RunicItemRunnable runBoatBuy(TravelLocation travelLocation) {

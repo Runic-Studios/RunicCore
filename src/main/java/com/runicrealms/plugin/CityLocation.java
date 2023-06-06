@@ -34,7 +34,9 @@ public enum CityLocation {
     NAHEEN("naheen", "Naheen",
             new Location(Bukkit.getWorld("Alterra"), 1962.5, 42, 349.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAHEEN_ITEMSTACK),
     NAZMORA("nazmora", "Naz'mora",
-            new Location(Bukkit.getWorld("Alterra"), 2587.5, 33, 979.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAZMORA_ITEMSTACK);
+            new Location(Bukkit.getWorld("Alterra"), 2587.5, 33, 979.5, 270, 0), HearthstoneItemUtil.HEARTHSTONE_NAZMORA_ITEMSTACK),
+    STONEHAVEN("stonehaven", "Stonehaven",
+            new Location(Bukkit.getWorld("Alterra"), -788.5, 37, 749.5, 90, 0), HearthstoneItemUtil.HEARTHSTONE_STONEHAVEN_ITEMSTACK);
 
     private final String identifier;
     private final String display;
@@ -46,22 +48,6 @@ public enum CityLocation {
         this.display = display;
         this.location = location;
         this.itemStack = itemStack;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public String getDisplay() {
-        return display;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public ItemStack getItemStack() {
-        return itemStack;
     }
 
     /**
@@ -102,5 +88,21 @@ public enum CityLocation {
         RunicItem runicItemHearthstone = RunicItemsAPI.getRunicItemFromItemStack(hearthstone);
         String identifier = runicItemHearthstone.getData().get("location");
         return getLocationFromIdentifier(identifier);
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 }

@@ -57,4 +57,9 @@ public class HearthstoneItemUtil {
     public static final RunicItemGeneric HEARTHSTONE_NAZMORA = (RunicItemGeneric) RunicItemsAPI.generateItemFromTemplate("hearthstone-nazmora");
 
     public static final ItemStack HEARTHSTONE_NAZMORA_ITEMSTACK = HEARTHSTONE_NAZMORA.generateItem();
+
+    public static final RunicItemGeneric HEARTHSTONE_STONEHAVEN = (RunicItemGeneric) RunicItemsAPI.generateItemFromTemplate("hearthstone-stonehaven");
+
+    public static final ItemStack HEARTHSTONE_STONEHAVEN_ITEMSTACK = HEARTHSTONE_STONEHAVEN.generateItem();
+
 }
