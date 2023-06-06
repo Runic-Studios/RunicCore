@@ -27,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -35,7 +36,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
 @CommandAlias("party")
@@ -386,36 +389,93 @@ public class PartyCommand extends BaseCommand {
 //                    partyMember.teleport(player.getLocation());
 //                }
 //            });
-            new PartySummon(player, party);
-            player.sendMessage(ColorUtil.format(PREFIX + " &aYou have activated a &2party summon &ato your location! " +
-                    "Your party members must stand still for 5 seconds for it to activate. " +
-                    "&cYou will be able to use this command again in &424 hours&c."));
-            user.data().add(Node.builder("runic.cooldown.partysummon").expiry(24, TimeUnit.HOURS).build());
-            LuckPermsProvider.get().getUserManager().saveUser(user);
+            PartySummon summon = new PartySummon(player, party);
+            summon.begin().thenAcceptAsync((success) -> {
+                if (success) {
+                    player.sendMessage(ColorUtil.format(PREFIX + " &aYour party summon has been completed. &cYou will be able to use this command again in &424 hours&c."));
+                    user.data().add(Node.builder("runic.cooldown.partysummon").expiry(24, TimeUnit.HOURS).build());
+                    LuckPermsProvider.get().getUserManager().saveUser(user);
+                } else if (summon.beganPartySummon) {
+                    player.sendMessage(ColorUtil.format(PREFIX + " &cYour party summon has failed because none of your party members stood still."));
+                }
+            });
         });
     }
 
     private static class PartySummon {
 
-        private final BukkitTask timer;
-        private final Map<UUID, Location> locations = new HashMap<>();
-        private final Map<UUID, Integer> countdowns = new HashMap<>();
-        private final Set<UUID> finishedTeleport = new HashSet<>();
+        private final Player leader;
+        private final Party party;
+        private final CompletableFuture<Boolean> onComplete = new CompletableFuture<>(); // boolean is success?
+
+        private boolean beganPartySummon = false;
+
 
         public PartySummon(Player leader, Party party) {
+            this.leader = leader;
+            this.party = party;
+        }
+
+        private static boolean locationMatches(Location locationOne, Location locationTwo, float maxOffset) {
+            return Math.abs(locationOne.getX() - locationTwo.getX()) <= maxOffset
+                    && Math.abs(locationOne.getY() - locationTwo.getY()) <= maxOffset
+                    && Math.abs(locationOne.getZ() - locationTwo.getZ()) <= maxOffset;
+        }
+
+        private CompletableFuture<Boolean> begin() {
+            Location lastLocation = leader.getLocation();
+            AtomicInteger countdown = new AtomicInteger(6);
+            leader.sendMessage(ColorUtil.format(PREFIX + " &aYou have initiated a party summon. &2&lSTAND STILL &r&ato begin the summon."));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!locationMatches(lastLocation, leader.getLocation(), 0.5f)) {
+                        leader.sendMessage(ColorUtil.format(PREFIX + " &cYou moved, party summon canceled."));
+                        this.cancel();
+                        onComplete.complete(false);
+                    } else {
+                        countdown.getAndDecrement();
+                        if (countdown.get() <= 0) {
+                            leader.sendMessage(ColorUtil.format(PREFIX + " &aYou have activated a &2party summon &ato your location! " +
+                                    "Your party members must stand still for 5 seconds for it to activate. "));
+                            this.cancel();
+                            beginPartySummon();
+                        } else {
+                            leader.sendMessage(ColorUtil.format(PREFIX + " &aBeginning summon in " + countdown + "..."));
+                        }
+                    }
+                }
+            }.runTaskTimer(RunicCore.getInstance(), 20, 20);
+            return onComplete;
+        }
+
+        private void beginPartySummon() {
+            beganPartySummon = true;
+            Map<UUID, Location> locations = new HashMap<>();
+            Map<UUID, Integer> countdowns = new HashMap<>();
+            Set<UUID> finishedTeleport = new HashSet<>();
+            Set<UUID> failedTeleport = new HashSet<>();
+
             for (Player player : party.getMembers()) {
                 player.sendMessage(ColorUtil.format(PREFIX + " &f" + leader.getName() + "&a has summoned you to their location. &2&lSTAND STILL &r&afor 5 seconds to be teleported."));
             }
             final Location teleportLocation = leader.getLocation();
-            timer = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
+            AtomicInteger iterations = new AtomicInteger();
+            BukkitTask timer = Bukkit.getScheduler().runTaskTimer(RunicCore.getInstance(), () -> {
                 for (Player player : party.getMembers()) {
-                    if (finishedTeleport.contains(player.getUniqueId())) continue;
+                    if (finishedTeleport.contains(player.getUniqueId()) || failedTeleport.contains(player.getUniqueId()))
+                        continue;
                     Location lastLocation = locations.get(player.getUniqueId());
                     Location playerLocation = player.getLocation();
                     locations.put(player.getUniqueId(), playerLocation);
                     if (lastLocation != null && !locationMatches(lastLocation, playerLocation, 0.5f)) {
                         countdowns.put(player.getUniqueId(), 0);
-                        player.sendMessage(ColorUtil.format(PREFIX + " &cYou moved! &4&lSTAND STILL &cto continue your teleport!"));
+                        if (iterations.get() <= 9) {
+                            player.sendMessage(ColorUtil.format(PREFIX + " &cYou moved! &4&lSTAND STILL &cto continue your teleport!"));
+                        } else {
+                            player.sendMessage(ColorUtil.format(PREFIX + " &cYou moved, and &4&lFAILED &cyour party leader's summon!"));
+                            failedTeleport.add(player.getUniqueId());
+                        }
                     } else {
                         Integer currentCountdown = countdowns.get(player.getUniqueId());
                         if (currentCountdown == null) currentCountdown = 0;
@@ -432,21 +492,20 @@ public class PartyCommand extends BaseCommand {
                         countdowns.put(player.getUniqueId(), currentCountdown);
                     }
                 }
-            }, 0L, 20);
+                iterations.getAndIncrement();
+            }, 20, 20);
             Bukkit.getScheduler().runTaskLater(RunicCore.getInstance(), () -> {
                 timer.cancel();
+                boolean atleastOneSuccess = false;
                 for (Player player : party.getMembers()) {
-                    if (finishedTeleport.contains(player.getUniqueId())) continue;
-                    player.sendMessage(ColorUtil.format(PREFIX + " &cYou failed your summon to &f" + leader.getName() + "&c's location."));
+                    if (finishedTeleport.contains(player.getUniqueId())) {
+                        atleastOneSuccess = true;
+                        continue;
+                    }
                     leader.sendMessage(ColorUtil.format(PREFIX + " &f" + player.getName() + "&c's teleport failed because they kept moving."));
                 }
-            }, 20 * 10 + 1);
-        }
-
-        private static boolean locationMatches(Location locationOne, Location locationTwo, float maxOffset) {
-            return Math.abs(locationOne.getX() - locationTwo.getX()) <= maxOffset
-                    && Math.abs(locationOne.getY() - locationTwo.getY()) <= maxOffset
-                    && Math.abs(locationOne.getZ() - locationTwo.getZ()) <= maxOffset;
+                onComplete.complete(atleastOneSuccess);
+            }, 20 * 16 + 1);
         }
 
     }
