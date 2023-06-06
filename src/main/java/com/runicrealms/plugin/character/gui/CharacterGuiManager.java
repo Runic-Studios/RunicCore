@@ -369,7 +369,8 @@ public class CharacterGuiManager implements Listener {
     private void openSelectGui(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GREEN + "Select Your Character");
         ProjectedData projectedData = RunicCore.getPlayerDataAPI().getProjectedDataMap().get(player.getUniqueId());
-        final int characterSlots = DonorRank.getDonorRank(player).getClassSlots();
+        int characterSlots = DonorRank.getDonorRank(player).getClassSlots();
+        if (player.hasPermission("runic.team")) characterSlots = 10;
         int addedSlots = 0;
         for (int i = 1; i <= RunicDatabase.getAPI().getDataAPI().getMaxCharacterSlot(); i++) {
             if (projectedData.getPlayerCharacters().get(i) != null) {
