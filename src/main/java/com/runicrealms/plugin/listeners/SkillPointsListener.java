@@ -37,7 +37,7 @@ public class SkillPointsListener implements Listener {
                 if (pointsToSpend > 0)
                     sendSkillPointsReminderMessage(player, pointsToSpend);
             }
-        }, 0, ANNOUNCEMENT_TIME * 20L);
+        }, 60 * 20, ANNOUNCEMENT_TIME * 20L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
