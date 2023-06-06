@@ -28,12 +28,12 @@ public class ArtifactOnKillListener implements Listener {
      * @param entity    the entity that was killed (player or mob)
      */
     private void checkForKillTrigger(Player player, ItemStack itemStack, Entity entity) {
-        ArtifactUtil.ArtifactAndBooleanWrapper artifactAndBooleanWrapper = ArtifactUtil.checkForArtifactTrigger(itemStack, RunicArtifactAbilityTrigger.ON_KILL);
-        if (!artifactAndBooleanWrapper.isTrigger()) return;
+        ArtifactUtil.ArtifactWithTrigger artifactWithTrigger = ArtifactUtil.checkForArtifactTrigger(itemStack, RunicArtifactAbilityTrigger.ON_KILL);
+        if (!artifactWithTrigger.isTrigger()) return;
         Bukkit.getPluginManager().callEvent(new RunicArtifactOnKillEvent
                 (
                         player,
-                        artifactAndBooleanWrapper.getRunicItemArtifact(),
+                        artifactWithTrigger.getRunicItemArtifact(),
                         itemStack,
                         RunicArtifactAbilityTrigger.ON_KILL,
                         null,

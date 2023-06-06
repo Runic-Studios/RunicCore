@@ -22,16 +22,16 @@ public class ArtifactOnHitListener implements Listener {
         if (event.isCancelled()) return;
         if (!event.isBasicAttack()) return;
         ItemStack itemStack = event.getPlayer().getInventory().getItemInMainHand();
-        ArtifactUtil.ArtifactAndBooleanWrapper artifactAndBooleanWrapper = ArtifactUtil.checkForArtifactTrigger
+        ArtifactUtil.ArtifactWithTrigger artifactWithTrigger = ArtifactUtil.checkForArtifactTrigger
                 (
                         itemStack,
                         RunicArtifactAbilityTrigger.ON_HIT
                 );
-        if (!artifactAndBooleanWrapper.isTrigger()) return;
+        if (!artifactWithTrigger.isTrigger()) return;
         Bukkit.getPluginManager().callEvent(new RunicArtifactOnHitEvent
                 (
                         event.getPlayer(),
-                        artifactAndBooleanWrapper.getRunicItemArtifact(),
+                        artifactWithTrigger.getRunicItemArtifact(),
                         itemStack,
                         RunicArtifactAbilityTrigger.ON_HIT,
                         null,

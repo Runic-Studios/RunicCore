@@ -21,12 +21,12 @@ public class ArtifactOnCastListener implements Listener {
     public void onSpellCast(SpellCastEvent e) {
         if (e.isCancelled()) return;
         ItemStack itemStack = e.getCaster().getInventory().getItemInMainHand();
-        ArtifactUtil.ArtifactAndBooleanWrapper artifactAndBooleanWrapper = ArtifactUtil.checkForArtifactTrigger(itemStack, RunicArtifactAbilityTrigger.ON_CAST);
-        if (!artifactAndBooleanWrapper.isTrigger()) return;
+        ArtifactUtil.ArtifactWithTrigger artifactWithTrigger = ArtifactUtil.checkForArtifactTrigger(itemStack, RunicArtifactAbilityTrigger.ON_CAST);
+        if (!artifactWithTrigger.isTrigger()) return;
         Bukkit.getPluginManager().callEvent(new RunicArtifactOnCastEvent
                 (
                         e.getCaster(),
-                        artifactAndBooleanWrapper.getRunicItemArtifact(),
+                        artifactWithTrigger.getRunicItemArtifact(),
                         itemStack,
                         RunicArtifactAbilityTrigger.ON_CAST,
                         null,
