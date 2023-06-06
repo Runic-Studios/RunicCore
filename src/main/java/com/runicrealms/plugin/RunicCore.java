@@ -8,7 +8,6 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.runicrealms.RunicChat;
-import com.runicrealms.plugin.api.CodecAPI;
 import com.runicrealms.plugin.api.CombatAPI;
 import com.runicrealms.plugin.api.LootTableAPI;
 import com.runicrealms.plugin.api.PartyAPI;
@@ -24,7 +23,6 @@ import com.runicrealms.plugin.api.TabAPI;
 import com.runicrealms.plugin.api.TitleAPI;
 import com.runicrealms.plugin.api.VanishAPI;
 import com.runicrealms.plugin.character.gui.CharacterGuiManager;
-import com.runicrealms.plugin.codec.CodecHandler;
 import com.runicrealms.plugin.commands.admin.ArmorStandCMD;
 import com.runicrealms.plugin.commands.admin.CooldownCMD;
 import com.runicrealms.plugin.commands.admin.FireworkCMD;
@@ -205,7 +203,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static MobTagger mobTagger;
     private static BossTagger bossTagger;
     private static ProtocolManager protocolManager;
-    private static CodecAPI codecAPI;
     private static RegionAPI regionAPI;
     private static PartyChannel partyChannel;
     private static PaperCommandManager commandManager;
@@ -220,8 +217,6 @@ public class RunicCore extends JavaPlugin implements Listener {
     private static StatusEffectAPI statusEffectAPI;
     private static GravestoneManager gravestoneManager;
     private static PlayerDataAPI playerDataAPI;
-    private static ConverterAPI converterAPI;
-    private static RedisAPI redisAPI;
     private static AmbientSoundHandler ambientSoundHandler;
     private static BoostAPI boostAPI;
     private static VanishAPI vanishAPI;
@@ -273,10 +268,6 @@ public class RunicCore extends JavaPlugin implements Listener {
 
     public static ProtocolManager getProtocolManager() {
         return protocolManager;
-    }
-
-    public static CodecAPI getCodecAPI() {
-        return codecAPI;
     }
 
     public static ShopAPI getShopAPI() {
@@ -383,7 +374,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         lootTableAPI = null;
         mobTagger = null;
         bossTagger = null;
-        codecAPI = null;
         regionAPI = null;
         partyChannel = null;
         skillTreeAPI = null;
@@ -398,8 +388,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         taskChainFactory = null;
         gravestoneManager = null;
         playerDataAPI = null;
-        converterAPI = null;
-        redisAPI = null;
         ambientSoundHandler = null;
         boostAPI = null;
         vanishAPI = null;
@@ -418,8 +406,8 @@ public class RunicCore extends JavaPlugin implements Listener {
         RunicCommon.registerConfigAPI(new ConfigManager());
         RunicCommon.registerLuckPermsAPI(new LuckPermsManager());
 
-        converterAPI = new ConverterHandler();
-        redisAPI = new RedisManager();
+        ConverterAPI converterAPI = new ConverterHandler();
+        RedisAPI redisAPI = new RedisManager();
         DatabaseManager databaseManager = new DatabaseManager();
         // Implement interface logic from RDB
         RunicDatabase.getInstance().setAPIImplementation(new RunicDatabaseAPI() {
@@ -459,7 +447,6 @@ public class RunicCore extends JavaPlugin implements Listener {
         mobTagger = new MobTagger();
         bossTagger = new BossTagger();
         protocolManager = ProtocolLibrary.getProtocolManager();
-        codecAPI = new CodecHandler();
         skillTreeAPI = new SkillTreeManager();
         statAPI = new StatManager();
         runicShopManager = new RunicShopManager();
